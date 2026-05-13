@@ -8,16 +8,16 @@ Vendor dependencies first: `bash scripts/vendor.sh`
 
 ```html
 <script type="importmap">
-  {
-    "imports": {
-      "preact": "./vendor/preact.module.js",
-      "preact/hooks": "./vendor/hooks.module.js",
-      "@preact/signals-core": "./vendor/signals-core.mjs",
-      "@preact/signals": "./vendor/signals.mjs",
-      "htm": "./vendor/htm.module.js",
-      "htm/preact": "./vendor/htm.module.js"
+    {
+        "imports": {
+            "preact": "./vendor/preact.module.js",
+            "preact/hooks": "./vendor/hooks.module.js",
+            "@preact/signals-core": "./vendor/signals-core.mjs",
+            "@preact/signals": "./vendor/signals.mjs",
+            "htm": "./vendor/htm.module.js",
+            "htm/preact": "./vendor/htm.module.js"
+        }
     }
-  }
 </script>
 ```
 
@@ -27,18 +27,18 @@ For compat mode, vendor additional files from the preact package (`compat/dist/c
 
 ```html
 <script type="importmap">
-  {
-    "imports": {
-      "preact": "./vendor/preact.module.js",
-      "preact/hooks": "./vendor/hooks.module.js",
-      "react": "./vendor/compat.module.js",
-      "react-dom": "./vendor/compat.module.js",
-      "@preact/signals-core": "./vendor/signals-core.mjs",
-      "@preact/signals": "./vendor/signals.mjs",
-      "htm": "./vendor/htm.module.js",
-      "htm/preact": "./vendor/htm.module.js"
+    {
+        "imports": {
+            "preact": "./vendor/preact.module.js",
+            "preact/hooks": "./vendor/hooks.module.js",
+            "react": "./vendor/compat.module.js",
+            "react-dom": "./vendor/compat.module.js",
+            "@preact/signals-core": "./vendor/signals-core.mjs",
+            "@preact/signals": "./vendor/signals.mjs",
+            "htm": "./vendor/htm.module.js",
+            "htm/preact": "./vendor/htm.module.js"
+        }
     }
-  }
 </script>
 ```
 
@@ -53,11 +53,11 @@ import { render } from 'preact';
 import { html } from 'htm/preact';
 
 function App() {
-  return html`
-    <div class="container">
-      <h1>Hello World</h1>
-    </div>
-  `;
+    return html`
+        <div class="container">
+            <h1>Hello World</h1>
+        </div>
+    `;
 }
 
 render(html`<${App} />`, document.getElementById('app'));
@@ -70,11 +70,11 @@ const name = 'World';
 const count = 42;
 
 html`
-  <div class=${className}>
-    <h1>Hello ${name}!</h1>
-    <button onClick=${handleClick}>Count: ${count}</button>
-    <${CustomComponent} value=${count} />
-  </div>
+    <div class=${className}>
+        <h1>Hello ${name}!</h1>
+        <button onClick=${handleClick}>Count: ${count}</button>
+        <${CustomComponent} value=${count} />
+    </div>
 `;
 ```
 
@@ -82,9 +82,9 @@ html`
 
 ```javascript
 html`
-  <div>
-    ${isLoggedIn && html`<UserProfile />`} ${error ? html`<ErrorMessage />` : html`<content />`}
-  </div>
+    <div>
+        ${isLoggedIn && html`<UserProfile />`} ${error ? html`<ErrorMessage />` : html`<content />`}
+    </div>
 `;
 ```
 
@@ -92,9 +92,9 @@ html`
 
 ```javascript
 html`
-  <ul>
-    ${items.map((item) => html` <li key=${item.id}>${item.name}</li> `)}
-  </ul>
+    <ul>
+        ${items.map((item) => html` <li key=${item.id}>${item.name}</li> `)}
+    </ul>
 `;
 ```
 
@@ -140,12 +140,12 @@ import { toChildArray } from 'preact';
 
 // WRONG - may break
 function Bad(props) {
-  const count = props.children.length; // Error if children isn't array
+    const count = props.children.length; // Error if children isn't array
 }
 
 // CORRECT
 function Good(props) {
-  const count = toChildArray(props.children).length;
+    const count = toChildArray(props.children).length;
 }
 ```
 
@@ -159,7 +159,7 @@ this.setState({ counter: this.state.counter + 1 });
 
 // CORRECT
 this.setState((prevState) => ({
-  counter: prevState.counter + 1,
+    counter: prevState.counter + 1,
 }));
 ```
 
@@ -192,7 +192,7 @@ count.value += 1;
 
 // Use directly in JSX (auto-subscribes)
 function Counter() {
-  return html`<div>Count: ${count}</div>`;
+    return html`<div>Count: ${count}</div>`;
 }
 ```
 
@@ -217,12 +217,12 @@ Run **side effects** when signals change:
 
 ```javascript
 effect(() => {
-  console.log(`Count is now: ${count.value}`);
+    console.log(`Count is now: ${count.value}`);
 
-  // Optional cleanup
-  return () => {
-    console.log('Cleaning up');
-  };
+    // Optional cleanup
+    return () => {
+        console.log('Cleaning up');
+    };
 });
 
 count.value = 5; // Logs: "Count is now: 5"
@@ -234,9 +234,9 @@ count.value = 5; // Logs: "Count is now: 5"
 import { batch } from '@preact/signals';
 
 batch(() => {
-  count.value = 1;
-  text.value = 'updated';
-  // Only triggers one re-render
+    count.value = 1;
+    text.value = 'updated';
+    // Only triggers one re-render
 });
 ```
 
@@ -246,15 +246,15 @@ batch(() => {
 import { useSignal, useComputed } from '@preact/signals';
 
 function Counter() {
-  const count = useSignal(0);
-  const double = useComputed(() => count.value * 2);
+    const count = useSignal(0);
+    const double = useComputed(() => count.value * 2);
 
-  return html`
-    <div>
-      <p>${count} x 2 = ${double}</p>
-      <button onClick=${() => count.value++}>Increment</button>
-    </div>
-  `;
+    return html`
+        <div>
+            <p>${count} x 2 = ${double}</p>
+            <button onClick=${() => count.value++}>Increment</button>
+        </div>
+    `;
 }
 ```
 
@@ -282,15 +282,15 @@ customElements.define('context-menu', class extends HTMLElement {
 import { useRef, useEffect } from 'preact/hooks';
 
 function Foo() {
-  const myRef = useRef(null);
+    const myRef = useRef(null);
 
-  useEffect(() => {
-    if (myRef.current) {
-      myRef.current.doSomething(); // Call custom element method
-    }
-  }, []);
+    useEffect(() => {
+        if (myRef.current) {
+            myRef.current.doSomething(); // Call custom element method
+        }
+    }, []);
 
-  return html`<x-foo ref=${myRef} />`;
+    return html`<x-foo ref=${myRef} />`;
 }
 ```
 
@@ -310,12 +310,12 @@ const Expensive = memo(({ value }) => html` <div>${value}</div> `);
 ```javascript
 // Re-renders component when count changes
 function Unoptimized() {
-  return html`<p>${count.value}</p>`;
+    return html`<p>${count.value}</p>`;
 }
 
 // Updates text directly without component re-render
 function Optimized() {
-  return html`<p>${count}</p>`; // No .value access
+    return html`<p>${count}</p>`; // No .value access
 }
 ```
 
@@ -328,12 +328,12 @@ import { useContext } from 'preact/hooks';
 const Theme = createContext('light');
 
 function ThemedButton() {
-  const theme = useContext(Theme);
-  return html`<button class="btn-${theme}">Click</button>`;
+    const theme = useContext(Theme);
+    return html`<button class="btn-${theme}">Click</button>`;
 }
 
 function App() {
-  return html`
+    return html`
     <${Theme.Provider} value="dark">
       <${ThemedButton} />
     </${Theme.Provider}>
@@ -345,25 +345,25 @@ function App() {
 
 ```javascript
 class ErrorBoundary extends Component {
-  constructor() {
-    super();
-    this.state = { errored: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { errored: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    logErrorToService(error, errorInfo);
-  }
-
-  render(props, state) {
-    if (state.errored) {
-      return html`<p>Something went wrong</p>`;
+    constructor() {
+        super();
+        this.state = { errored: false };
     }
-    return props.children;
-  }
+
+    static getDerivedStateFromError(error) {
+        return { errored: true };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        logErrorToService(error, errorInfo);
+    }
+
+    render(props, state) {
+        if (state.errored) {
+            return html`<p>Something went wrong</p>`;
+        }
+        return props.children;
+    }
 }
 ```
 
@@ -384,14 +384,14 @@ items.map((item) => html`<li key=${item.id}>${item}</li>`);
 ```javascript
 // WRONG
 useEffect(() => {
-  subscription.subscribe();
-  subscription.unsubscribe(); // Called immediately!
+    subscription.subscribe();
+    subscription.unsubscribe(); // Called immediately!
 });
 
 // CORRECT
 useEffect(() => {
-  subscription.subscribe();
-  return () => subscription.unsubscribe();
+    subscription.subscribe();
+    return () => subscription.unsubscribe();
 });
 ```
 
@@ -401,9 +401,9 @@ useEffect(() => {
 const inputRef = useRef(null);
 
 useEffect(() => {
-  if (inputRef.current) {
-    inputRef.current.focus();
-  }
+    if (inputRef.current) {
+        inputRef.current.focus();
+    }
 }, []);
 ```
 

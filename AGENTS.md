@@ -1,239 +1,212 @@
-This document serves as a comprehensive Technical Specification and Project Roadmap for **Holocron Sheet Manager**, a web-based character sheet assistant for the Star Wars WEG/WoD hybrid system.
-
----
-
-# AGENTS.md
+# Holocron Sheet Manager - Project Cheat Sheet
 
 ## 1. Project Overview
 
-A modular React-based application designed to digitize, manage, and automate character sheets for a Star Wars conversion of the World of Darkness (WoD) system. The application prioritizes local-first data persistence and modularity to accommodate diverse templates (Sentients, Droids, Vehicles).
+A modular React-based character sheet manager for a Star Wars WEG/WoD hybrid system. Features local-first persistence via IndexedDB (localForage) and supports multiple character types (sentient, droid, vehicle).
 
-**Development Routes:**
+**Routes:** `/` - Main app | `/storybook` - Component playground
 
-- `/` - Main application (blank for now)
-- `/storybook` - Component playground (manual route for testing atomic components during development)
+---
 
 ## 2. Tech Stack
 
-- **Package Manager:** yarn@1.22.22
-- **Build Tool:** Vite
-- **Frontend:** React 19+ (Functional Components, Hooks)
-- **Language:** TypeScript (Strict mode)
-- **State Management:** **Zustand** (Lightweight, ideal for nested character states)
-- **Styling:** Tailwind CSS + **Shadcn/UI** (Radix UI)
-- **Form Handling:** React Hook Form + **Zod** (Schema validation for JSON import/export)
-- **Icons:** Lucide-react
-- **Persistence:** LocalStorage (initial), IndexedDB via **localForage** (for scalability)
-- **Code Quality:** ESLint (Airbnb/Strict), Prettier
-
-Это отличное решение. Для проекта, который строится на «модульных улучшениях» и кастомных UI-элементах (вроде специфических шкал здоровья или точек параметров), **Storybook** является индустриальным стандартом. Он позволит тебе тестировать логику компонентов (например, переключение «дотсов») в изоляции от основного стора и бизнес-логики.
-
-Ниже — обновленный и дополненный раздел для `AGENTS.md`, который включает инфраструктуру для UI-кита и дебага.
+| Concern         | Technology                          |
+| --------------- | ----------------------------------- |
+| Package Manager | yarn@1.22.22                        |
+| Build Tool      | Vite                                |
+| Frontend        | React 19 + TypeScript (strict)      |
+| State           | Zustand 5 (with persist middleware) |
+| Styling         | Tailwind CSS + clsx                 |
+| Forms           | React Hook Form + Zod               |
+| Persistence     | localForage (IndexedDB)             |
+| Icons           | Lucide-react                        |
+| Components      | Radix UI primitives                 |
+| Testing         | Vitest + Playwright                 |
+| Docs            | Storybook 10                        |
 
 ---
-
-### Update for AGENTS.md
-
-## 2.1. Tooling & Development Environment
-
-- **Component Sandbox:** **Storybook 8+** (Vite-native).
-- **Documentation:** **TypeDoc** (for generating documentation from TS comments, optional but useful for complex systems).
-- **Testing:** **Vitest** + **React Testing Library** (for logic validation of "Smart" calculations).
-- **Visual Regression:** **Chromatic** (optional) or simple snapshot testing in Storybook.
 
 ## 3. Project Structure
 
-```text
-/context            # Game reference materials (PDFs, docs, character sheets)
-  - `Star_Wars_WEG_to_WoD_Conversion.md` — Full text of the source PDF (auto-converted). **Warning:** ~11,000 lines with conversion artifacts (broken tables, orphaned symbols). Use `grep` to locate specific sections rather than reading sequentially.
-/src
-  /assets          # Static assets (fonts, Star Wars UI textures)
-  /components      # Atomic UI components (Buttons, Inputs, Progress Bars)
-    /ui            # Shadcn/Radix components
-    /shared        # App-specific shared components (StatBlock, AttributeRow)
-  /features        # Modular business logic
-    /sheet         # Character sheet rendering and editing
-    /manager       # Library view, character switching, CRUD
-    /dice          # Dice roller integration logic
-    /automation    # Calculated stats (Smart Assistant)
-  /hooks           # Custom hooks (useCharacter, useLocalStorage)
-  /store           # Zustand stores (useCharacterStore, useAppStore)
-  /templates       # Config files for different sheet types (Character, Droid, Ship)
-  /types           # TypeScript interfaces and Zod schemas
-  /utils           # Math helpers, JSON parsers, Dice logic
-
 ```
-
-## 4. Code Quality & Linting
-
-After making code changes, always run the following commands:
-
-```bash
-# Run ESLint to check for issues
-yarn lint
-
-# Auto-fix ESLint issues
-yarn lint:fix
-
-# Check code formatting with Prettier
-yarn format:check
-
-# Auto-format code with Prettier
-yarn format
-
-# Run full type check
-yarn typecheck
+src/
+├── components/
+│   └── shared/           # Atomic/molecular UI components
+│       ├── StatDot.tsx          # WoD-style dot selector (1-5 dots)
+│       ├── StatLabel.tsx        # Label with optional tooltip
+│       ├── TraitRow.tsx         # Label + StatDot row (simple & with input)
+│       ├── ConditionSquare.tsx   # Health track square (empty/slash/cross/filled)
+│       ├── MeritFlawRow.tsx     # Merit/Flaw list editor
+│       └── index.ts
+├── features/
+│   └── sheet/            # Character sheet feature module
+│       ├── components/
+│       │   ├── CharacterSheet.tsx   # Main sheet orchestrator
+│       │   ├── SheetHeader.tsx      # Import/Export/Reset + metadata fields
+│       │   ├── AttributeBlock.tsx   # 9 attributes (Physical/Social/Mental)
+│       │   ├── SkillBlock.tsx       # Skills (Talents/Skills/Knowledges)
+│       │   ├── AdvantagesBlock.tsx  # Backgrounds, Merits, Flaws
+│       │   ├── PowerBlock.tsx       # Force Skills, Virtues, Willpower, Force Points
+│       │   ├── HealthBlock.tsx      # Bashing/Lethal damage tracker
+│       │   ├── InventoryBlock.tsx   # Items, Armor, Weapons
+│       │   └── StatsBlock.tsx       # Derived stats + Experience
+│       └── index.ts
+├── hooks/
+│   ├── index.ts
+│   └── useLocalStorageState.ts   # useExpandedState hook for collapsible sections
+├── store/
+│   └── characterStore.ts   # Zustand store (CRUD, import, persistence)
+├── types/
+│   └── character.ts       # Zod schemas + TypeScript types + default factory
+├── App.tsx
+└── main.tsx
 ```
-
-**Prettier Settings:**
-
-- `semi: true`
-- `singleQuote: true`
-- `tabWidth: 2`
 
 ---
 
-## 5. Development Roadmap
+## 4. Theme & Colors (Tailwind)
 
-### Phase 1: Core Character Engine (MVP)
+Custom colors defined in `tailwind.config.js` and `src/index.css`:
 
-- **Objective:** Functional digital sheet for a standard character with import/export.
-- **Tasks:**
-- Define `BaseCharacter` TypeScript interface based on the provided PDF/Image.
-- Implement **React Hook Form** for data entry (Attributes, Skills, Health levels).
-- Develop `JsonHandler` utility for downloading/uploading character state.
-- Auto-save to `localStorage` on every change with debouncing.
-
-- **Format:** Standard "Dots" UI for WoD-style attributes.
-
-### Phase 2: Template Registry & Manager
-
-- **Objective:** Support for multiple characters and non-human templates.
-- **Tasks:**
-- **Template Engine:** Create a registry where `Droid` and `Vehicle` templates extend the `BaseCharacter` schema.
-- **Library Dashboard:** A sidebar or home screen to list saved characters from IndexedDB.
-- **Dynamic Rendering:** The UI should adapt based on the `templateType` property (e.g., Droids might lack "Medicine" but have "Repair").
-
-### Phase 3: The "Smart" Assistant & Dice
-
-- **Objective:** Automation and interactive play features.
-- **Calculated Stats:**
-- Auto-derive **Initiative** (Dexterity + Wits equivalent).
-- Dynamic **Health Penalties** (applying -1, -2, etc., to dice pools based on current health track).
-- **Force Pool/Willpower** trackers with reset logic.
-
-- **Dice Integration:**
-- Implement a bridge to the [3D Dice Roller](https://github.com/3d-dice/dice-box-threejs) as `@3d-dice/dice-box-threejs` package.
-- Click-to-roll functionality: clicking a Skill name triggers a roll event that passes `(Attribute + Skill)` as the dice pool to the roller.
+```css
+--rebel-red: #b91c1c /* Health, flaws, accents */ --imperial-blue: #1e40af /* Willpower, virtues */
+    --hologram-blue: #0ea5e9 /* Primary actions, force skills */ --cyber-yellow: #eab308
+    /* Experience, skills */ --dark-saber: #0f172a /* Dark backgrounds */;
+```
 
 ---
 
-## 6. Technical Specifications
+## 5. Key Components
 
-### Data Schema (Draft)
+### StatDot (`src/components/shared/StatDot.tsx`)
+
+WoD-style rating selector with optional flags (Specialization/Practiced/Experienced).
+
+**Props:** `value`, `maxValue` (default 5), `onChange`, `disabled`, `size` (sm/md/lg), `showFlags`, `specialization`, `experienced`, `practiced`, `minimal`
+
+**Behavior:** Click dot N → sets value to N. Click active dot → resets to 0 (or minimal). Toggle S/P/E flags when `showFlags=true`.
+
+### ConditionSquare / ConditionTrack (`src/components/shared/ConditionSquare.tsx`)
+
+Health track cells cycling through: empty → `/` → `X` → `●`
+
+**Marks:** `'empty' | 'slash' | 'cross' | 'filled'`
+
+### TraitRow / TraitRowWithInput (`src/components/shared/TraitRow.tsx`)
+
+- `TraitRow` - Simple label + StatDot
+- `TraitRowWithInput` - Label + editable specialization text + StatDot
+- `CustomTraitList` - Dynamic list with add/remove (used for custom skills)
+
+### CharacterStore (`src/store/characterStore.ts`)
 
 ```typescript
-interface Character {
-  id: string;
-  metadata: {
-    name: string;
-    type: 'sentient' | 'droid' | 'vehicle';
-    template: string;
-  };
-  attributes: Record<string, number>; // e.g., Strength: 3
-  skills: Record<string, number>; // e.g., Blaster: 2
-  health: {
-    current: number;
-    max: number;
-    penalties: boolean;
-  };
-  inventory: Item[];
-  notes: string;
+interface CharacterState {
+    currentCharacter: BaseCharacter | null;
+    characters: BaseCharacter[];
+    setCurrentCharacter;
+    updateCharacter;
+    loadCharacter;
+    createNewCharacter;
+    deleteCharacter;
+    importCharacter;
 }
 ```
 
-### Key Logic: The "Dice Pool" Bridge
-
-The integration will use a window message or URL params strategy to communicate with the 3D roller, or utilize a local instance of the library if possible.
-
-- **Logic:** `Total Pool = Attribute + Skill + Modifiers - Wound Penalties`.
-
-### Linter & Formatter Config
-
-- **ESLint:** Focus on unused imports and accessibility (A11y).
-- **Prettier:** `semi: true`, `singleQuote: true`, `tabWidth: 2`.
+Uses `localforage` via custom storage adapter for persistence.
 
 ---
 
-## 7. Implementation Notes for AI Agents
+## 6. Character Data Schema (`src/types/character.ts`)
 
-1. **Strict Typing:** Always generate Zod schemas for the character state to ensure `JSON.parse` doesn't break the app.
-2. **Modular Components:** Keep the "Stat Dot" component separate from the "Sheet Column" component to allow for easy layout shifts.
-3. **Tailwind Strategy:** Use CSS variables for Star Wars-themed colors (e.g., `--rebel-red`, `--imperial-blue`) for easy skinning.
-
-## 8. Component Library & Pattern System (UI Kit)
-
-To ensure modularity, all UI elements must be developed in isolation before being integrated into the `Sheet` feature.
-
-### 8.1. Atomic Components (Foundations)
-
-- `StatDot`: The primitive for 1-10 value selection.
-- `StatLabel`: Typography for skill/attribute names with optional "hover info" (tooltip).
-- `TraitRow`: A horizontal flex-row combining `StatLabel` and `StatDot`.
-- `ConditionSquare`: Specifically for the Health/Wound track (supports different marks: empty, '/', 'X').
-
-### 8.2. Composite Components (Molecules)
-
-- `AttributeBlock`: A 3x3 or vertical grid of `TraitRows`.
-- `InventoryTable`: Modular list for items/weapons.
-- `ResourcePool`: Large-scale trackers for Willpower/Force Points.
-
-### 8.3. Storybook Implementation Strategy
-
-- **States:** Every component must have stories for `Default`, `Active`, `Disabled`, and `Error` states.
-- **Mock Data:** Use a dedicated `mocks/` folder to provide sample character JSONs for Storybook "Play" functions.
-- **Debugging Tool:** Use Storybook's `Controls` addon to manually toggle "Smart Assistant" features (e.g., how the UI reacts when health reaches "Incapacitated").
+```typescript
+const BaseCharacterSchema = z.object({
+    id: z.string().uuid(),
+    metadata: CharacterMetadataSchema,
+    attributes: z.record(TraitValueSchema),   // { Strength: { value, specialization, experienced, practiced } }
+    skills: z.record(TraitValueSchema),
+    forceSkills: z.record(TraitValueSchema).optional(),
+    virtues: z.record(TraitValueSchema).optional(),
+    backgrounds: z.array(BackgroundSchema).optional(),
+    merits: z.array(MeritFlawSchema).optional(),
+    flaws: z.array(MeritFlawSchema).optional(),
+    willpower: z.object({ current, max }).optional(),
+    forcePoints: z.object({ current, max, bashing, lethal }).optional(),
+    darkSideResistance: z.number().optional(),
+    health: HealthSchema,
+    inventory: z.array(ItemSchema),
+    armor: z.array(ArmorItemSchema),
+    weapons: z.array(WeaponItemSchema),
+    customTalents/Skills/Knowledges: z.array(CustomSkillSchema),
+    notes: z.string(),
+});
+```
 
 ---
 
-### UI/UX Specification (Phase 1: Digital Datapad)
+## 7. Development Commands
 
-#### 1. Visual Style
-
-- **Theme:** "Galactic Datapad" (Dark mode by default).
-- **Colors:** Deep grays (`#1a1a1a`), accents in "Rebel Orange" or "Holographic Blue".
-- **Typography:** Monospaced fonts for stats, clean Sans-serif for labels.
-
-#### 2. Layout Structure
-
-The interface is a single-page responsive container (`max-w-4xl`) mimicking the physical paper sheet.
-
-- **Top Bar (Global Actions):** \* Sticky/Fixed position.
-- Buttons: `[ Import JSON ]`, `[ Export JSON ]`, `[ Reset Sheet ]`.
-
-- **Header Section:** \* Input fields for: `Character Name`, `Player`, `Concept`, `Species`, `Rank`.
-- **Main Grid (Three-Column Layout on Desktop):**
-- **Column 1: Attributes.** Physical (Str, Dex, Stm), Social (Cha, Man, App), Mental (Per, Int, Wit).
-- **Column 2: Abilities (Skills).** Grouped by Talents, Skills, and Knowledges.
-- **Column 3: Advantages & Stats.** Force Powers, Backgrounds, Virtues.
-
-- **Footer Section:**
-- **Health Track:** A list of status levels (Healthy, Bruised, etc.) with checkboxes.
-- **Pools:** Large indicators for `Willpower` and `Force Points`.
-
-#### 3. Core Component: `StatDot`
-
-This is the primary interactive element for WoD-style sheets.
-
-- **Behavior:** \* A row of 5 (or 10) circles.
-- Clicking the 3rd circle sets the value to 3. Clicking it again (if already 3) could optionaly toggle to 2 or 0 depending on implementation.
-- Visuals: Filled circle (`●`) for active, empty circle (`○`) for inactive.
-
-- **Implementation:** Use a generic component `<StatDot value={n} maxValue={5} onChange={...} />`.
-
-#### 4. Import/Export Logic
-
-- **Export:** Serializes the current Zustand store state into a `.json` blob and triggers a browser download: `character_name_timestamp.json`.
-- **Import:** A file input that reads the JSON, validates it via **Zod schema**, and hydrates the Zustand store.
+```bash
+yarn dev              # Start dev server
+yarn build            # Production build
+yarn storybook        # Storybook on :6006
+yarn typecheck        # TypeScript check
+yarn lint             # ESLint
+yarn lint:fix         # Auto-fix lint
+yarn format           # Prettier format
+```
 
 ---
+
+## 8. Code Conventions
+
+- **Prettier:** `semi: true`, `singleQuote: true`, `tabWidth: 2`
+- **ESLint:** React hooks + accessibility focused
+- **Styling:** Tailwind + `clsx` for conditional classes
+- **Icons:** Lucide-react
+- **No comments** unless explicitly requested
+
+---
+
+## 9. Patterns & Tips
+
+### Adding a new attribute/skill block
+
+1. Add constant in block component (e.g., `ATTRIBUTES` in `AttributeBlock.tsx`)
+2. Render using `TraitRowWithInput` or `CustomTraitList`
+3. Wire to `updateCharacter(id, { [key]: newValue })`
+
+### Import/Export flow (`SheetHeader.tsx`)
+
+- **Export:** `JSON.stringify(currentCharacter)` → Blob → download
+- **Import:** FileReader → `BaseCharacterSchema.parse()` → `importCharacter()`
+
+### Collapsible sections
+
+Use `useExpandedState(sectionKey, defaultExpanded)` from `hooks/index.ts`. Persists to localStorage.
+
+### Block colors (by section)
+
+| Section         | Color  | Tailwind class                              |
+| --------------- | ------ | ------------------------------------------- |
+| Attributes      | Blue   | `text-hologram-blue`                        |
+| Skills          | Yellow | `text-cyber-yellow`                         |
+| Advantages      | Red    | `text-rebel-red`                            |
+| Force/Willpower | Blue   | `text-hologram-blue` / `text-imperial-blue` |
+
+---
+
+## 10. Context Files
+
+```
+context/
+└── Star_Wars_WEG_to_WoD_Conversion.md  # ~11k line source doc (use grep)
+```
+
+---
+
+## 11. Roadmap (Current Status)
+
+- [x] **Phase 1:** Core character engine (attributes, skills, health, import/export)
+- [x] **Phase 2:** Template registry + character CRUD (in progress)
+- [ ] **Phase 3:** Smart assistant (auto-calculated stats) + Dice integration

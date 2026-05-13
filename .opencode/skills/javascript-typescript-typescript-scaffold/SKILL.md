@@ -104,30 +104,30 @@ nextjs-project/
 
 ```json
 {
-  "name": "nextjs-project",
-  "version": "0.1.0",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "test": "vitest",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "next": "^14.1.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.11.0",
-    "@types/react": "^18.2.0",
-    "typescript": "^5.3.0",
-    "vitest": "^1.2.0",
-    "@vitejs/plugin-react": "^4.2.0",
-    "eslint": "^8.56.0",
-    "eslint-config-next": "^14.1.0"
-  }
+    "name": "nextjs-project",
+    "version": "0.1.0",
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "test": "vitest",
+        "type-check": "tsc --noEmit"
+    },
+    "dependencies": {
+        "next": "^14.1.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.0",
+        "@types/react": "^18.2.0",
+        "typescript": "^5.3.0",
+        "vitest": "^1.2.0",
+        "@vitejs/plugin-react": "^4.2.0",
+        "eslint": "^8.56.0",
+        "eslint-config-next": "^14.1.0"
+    }
 }
 ```
 
@@ -135,27 +135,27 @@ nextjs-project/
 
 ```json
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "jsx": "preserve",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "incremental": true,
-    "paths": {
-      "@/*": ["./src/*"]
+    "compilerOptions": {
+        "target": "ES2022",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "jsx": "preserve",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "resolveJsonModule": true,
+        "allowJs": true,
+        "strict": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "incremental": true,
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+        "plugins": [{ "name": "next" }]
     },
-    "plugins": [{ "name": "next" }]
-  },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+    "exclude": ["node_modules"]
 }
 ```
 
@@ -174,20 +174,20 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
+    plugins: [react()],
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './src'),
+        },
     },
-  },
-  server: {
-    port: 3000,
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './tests/setup.ts',
-  },
+    server: {
+        port: 3000,
+    },
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: './tests/setup.ts',
+    },
 });
 ```
 
@@ -227,31 +227,31 @@ nodejs-api/
 
 ```json
 {
-  "name": "nodejs-api",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "vitest",
-    "lint": "eslint src --ext .ts"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "dotenv": "^16.4.0",
-    "zod": "^3.22.0"
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.11.0",
-    "typescript": "^5.3.0",
-    "tsx": "^4.7.0",
-    "vitest": "^1.2.0",
-    "eslint": "^8.56.0",
-    "@typescript-eslint/parser": "^6.19.0",
-    "@typescript-eslint/eslint-plugin": "^6.19.0"
-  }
+    "name": "nodejs-api",
+    "version": "0.1.0",
+    "type": "module",
+    "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "test": "vitest",
+        "lint": "eslint src --ext .ts"
+    },
+    "dependencies": {
+        "express": "^4.18.2",
+        "dotenv": "^16.4.0",
+        "zod": "^3.22.0"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.21",
+        "@types/node": "^20.11.0",
+        "typescript": "^5.3.0",
+        "tsx": "^4.7.0",
+        "vitest": "^1.2.0",
+        "eslint": "^8.56.0",
+        "@typescript-eslint/parser": "^6.19.0",
+        "@typescript-eslint/eslint-plugin": "^6.19.0"
+    }
 }
 ```
 
@@ -264,14 +264,14 @@ import { userRouter } from './routes/users.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 export function createApp(): Express {
-  const app = express();
+    const app = express();
 
-  app.use(express.json());
-  app.use('/health', healthRouter);
-  app.use('/api/users', userRouter);
-  app.use(errorHandler);
+    app.use(express.json());
+    app.use('/health', healthRouter);
+    app.use('/api/users', userRouter);
+    app.use(errorHandler);
 
-  return app;
+    return app;
 }
 ```
 
@@ -294,27 +294,27 @@ library-name/
 
 ```json
 {
-  "name": "@scope/library-name",
-  "version": "0.1.0",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "name": "@scope/library-name",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "files": ["dist"],
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json",
+        "test": "vitest",
+        "prepublishOnly": "pnpm build"
+    },
+    "devDependencies": {
+        "typescript": "^5.3.0",
+        "vitest": "^1.2.0"
     }
-  },
-  "files": ["dist"],
-  "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "test": "vitest",
-    "prepublishOnly": "pnpm build"
-  },
-  "devDependencies": {
-    "typescript": "^5.3.0",
-    "vitest": "^1.2.0"
-  }
 }
 ```
 
@@ -335,14 +335,14 @@ JWT_SECRET=your-secret-key
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  test: {
-    globals: true,
-    environment: 'node',
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+    test: {
+        globals: true,
+        environment: 'node',
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'json', 'html'],
+        },
     },
-  },
 });
 ```
 
@@ -350,12 +350,12 @@ export default defineConfig({
 
 ```json
 {
-  "parser": "@typescript-eslint/parser",
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
-  "rules": {
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-unused-vars": "error"
-  }
+    "parser": "@typescript-eslint/parser",
+    "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+    "rules": {
+        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/no-unused-vars": "error"
+    }
 }
 ```
 

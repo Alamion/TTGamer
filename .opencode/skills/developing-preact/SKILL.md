@@ -2,7 +2,7 @@
 name: developing-preact
 description: Specialized Preact development skill for standards-based web applications with native-first architecture and minimal dependency footprint. Use when building Preact projects, particularly those involving data visualization, interactive applications, single-page apps with HTM syntax, Web Components integration, CSV/JSON data parsing, WebGL shader visualizations, or zero-build solutions with vendored ESM imports.
 metadata:
-  version: 1.2.0
+    version: 1.2.0
 ---
 
 # Preact Developer
@@ -87,16 +87,16 @@ Always use this exact import map structure for standalone examples. Dependencies
 
 ```html
 <script type="importmap">
-  {
-    "imports": {
-      "preact": "./vendor/preact.module.js",
-      "preact/hooks": "./vendor/hooks.module.js",
-      "@preact/signals-core": "./vendor/signals-core.mjs",
-      "@preact/signals": "./vendor/signals.mjs",
-      "htm": "./vendor/htm.module.js",
-      "htm/preact": "./vendor/htm.module.js"
+    {
+        "imports": {
+            "preact": "./vendor/preact.module.js",
+            "preact/hooks": "./vendor/hooks.module.js",
+            "@preact/signals-core": "./vendor/signals-core.mjs",
+            "@preact/signals": "./vendor/signals.mjs",
+            "htm": "./vendor/htm.module.js",
+            "htm/preact": "./vendor/htm.module.js"
+        }
     }
-  }
 </script>
 ```
 
@@ -139,33 +139,33 @@ HTM uses JavaScript template literals. Everything that was `{expression}` in JSX
 
 1. **Component references need `${}`**: The component name is a JavaScript expression
 
-   ```javascript
-   // JSX
-   <Button onClick={handleClick}>Save</Button>
+    ```javascript
+    // JSX
+    <Button onClick={handleClick}>Save</Button>
 
-   // HTM
-   <${Button} onClick=${handleClick}>Save</${Button}>
-   ```
+    // HTM
+    <${Button} onClick=${handleClick}>Save</${Button}>
+    ```
 
 2. **Nested templates for conditional components**: When conditionally rendering components (not HTML elements), wrap in `html\`\``
 
-   ```javascript
-   // JSX
-   {isOpen && <Modal title="Hello" />}
+    ```javascript
+    // JSX
+    {isOpen && <Modal title="Hello" />}
 
-   // HTM
-   ${isOpen && html`<${Modal} title="Hello" />`}
-   ```
+    // HTM
+    ${isOpen && html`<${Modal} title="Hello" />`}
+    ```
 
 3. **No braces for spread**: In HTM, spread uses `...${obj}` directly
 
-   ```javascript
-   // JSX
-   <Input {...inputProps} />
+    ```javascript
+    // JSX
+    <Input {...inputProps} />
 
-   // HTM
-   <${Input} ...${inputProps} />
-   ```
+    // HTM
+    <${Input} ...${inputProps} />
+    ```
 
 4. **class vs className**: Both work in Preact, but prefer `class` for consistency and smaller output
 
@@ -293,26 +293,26 @@ For data-heavy applications:
 import { useSignal } from '@preact/signals';
 
 function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  const headers = lines[0].split(',').map((h) => h.trim());
-  return lines.slice(1).map((line) => {
-    const values = line.split(',').map((v) => v.trim());
-    return Object.fromEntries(headers.map((h, i) => [h, values[i]]));
-  });
+    const lines = text.trim().split('\n');
+    const headers = lines[0].split(',').map((h) => h.trim());
+    return lines.slice(1).map((line) => {
+        const values = line.split(',').map((v) => v.trim());
+        return Object.fromEntries(headers.map((h, i) => [h, values[i]]));
+    });
 }
 
 function DataAnalyzer() {
-  const data = useSignal([]);
+    const data = useSignal([]);
 
-  const handleFile = async (e) => {
-    const text = await e.target.files[0].text();
-    data.value = parseCSV(text);
-  };
+    const handleFile = async (e) => {
+        const text = await e.target.files[0].text();
+        data.value = parseCSV(text);
+    };
 
-  return html`
-    <input type="file" accept=".csv" onChange=${handleFile} />
-    <div>Loaded ${data.value.length} rows</div>
-  `;
+    return html`
+        <input type="file" accept=".csv" onChange=${handleFile} />
+        <div>Loaded ${data.value.length} rows</div>
+    `;
 }
 ```
 
@@ -324,21 +324,21 @@ For shader-based visualizations:
 import { useEffect, useRef } from 'preact/hooks';
 
 function ShaderCanvas({ fragmentShader }) {
-  const canvasRef = useRef(null);
+    const canvasRef = useRef(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const gl = canvas.getContext('webgl2');
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const gl = canvas.getContext('webgl2');
 
-    // Setup WebGL context, shaders, buffers
-    // Render loop
+        // Setup WebGL context, shaders, buffers
+        // Render loop
 
-    return () => {
-      // Cleanup
-    };
-  }, [fragmentShader]);
+        return () => {
+            // Cleanup
+        };
+    }, [fragmentShader]);
 
-  return html`<canvas ref=${canvasRef} class="w-full h-full" />`;
+    return html`<canvas ref=${canvasRef} class="w-full h-full" />`;
 }
 ```
 
@@ -393,36 +393,36 @@ import { users, isAuthenticated } from './state.js';
 ```html
 <!DOCTYPE html>
 <html>
-  <head>
-    <!-- Run: bash scripts/vendor.sh -->
-    <script type="importmap">
-      {
-        "imports": {
-          "preact": "./vendor/preact.module.js",
-          "preact/hooks": "./vendor/hooks.module.js",
-          "@preact/signals-core": "./vendor/signals-core.mjs",
-          "@preact/signals": "./vendor/signals.mjs",
-          "htm": "./vendor/htm.module.js",
-          "htm/preact": "./vendor/htm.module.js"
-        }
-      }
-    </script>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module">
-      import { render } from 'preact';
-      import { useSignal } from '@preact/signals';
-      import { html } from 'htm/preact';
+    <head>
+        <!-- Run: bash scripts/vendor.sh -->
+        <script type="importmap">
+            {
+                "imports": {
+                    "preact": "./vendor/preact.module.js",
+                    "preact/hooks": "./vendor/hooks.module.js",
+                    "@preact/signals-core": "./vendor/signals-core.mjs",
+                    "@preact/signals": "./vendor/signals.mjs",
+                    "htm": "./vendor/htm.module.js",
+                    "htm/preact": "./vendor/htm.module.js"
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script type="module">
+            import { render } from 'preact';
+            import { useSignal } from '@preact/signals';
+            import { html } from 'htm/preact';
 
-      function App() {
-        const count = useSignal(0);
-        return html` <button onClick=${() => count.value++}>Count: ${count}</button> `;
-      }
+            function App() {
+                const count = useSignal(0);
+                return html` <button onClick=${() => count.value++}>Count: ${count}</button> `;
+            }
 
-      render(html`<${App} />`, document.getElementById('app'));
-    </script>
-  </body>
+            render(html`<${App} />`, document.getElementById('app'));
+        </script>
+    </body>
 </html>
 ```
 

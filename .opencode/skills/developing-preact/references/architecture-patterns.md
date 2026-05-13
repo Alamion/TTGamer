@@ -45,8 +45,8 @@ Use for isolated component logic:
 import { useSignal } from '@preact/signals';
 
 function Counter() {
-  const count = useSignal(0);
-  return html` <button onClick=${() => count.value++}>Count: ${count}</button> `;
+    const count = useSignal(0);
+    return html` <button onClick=${() => count.value++}>Count: ${count}</button> `;
 }
 ```
 
@@ -76,8 +76,8 @@ import { useContext } from 'preact/hooks';
 const ApiContext = createContext(null);
 
 function App() {
-  const api = createApiClient();
-  return html`
+    const api = createApiClient();
+    return html`
     <${ApiContext.Provider} value=${api}>
       <${MainApp} />
     </${ApiContext.Provider}>
@@ -101,27 +101,27 @@ Consider Zustand or Jotai only when:
 import { useSignal, useSignalEffect } from '@preact/signals';
 
 function UserProfile({ userId }) {
-  const user = useSignal(null);
-  const loading = useSignal(true);
-  const error = useSignal(null);
+    const user = useSignal(null);
+    const loading = useSignal(true);
+    const error = useSignal(null);
 
-  useSignalEffect(() => {
-    loading.value = true;
-    fetch(`/api/users/${userId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        user.value = data;
-        loading.value = false;
-      })
-      .catch((err) => {
-        error.value = err;
-        loading.value = false;
-      });
-  });
+    useSignalEffect(() => {
+        loading.value = true;
+        fetch(`/api/users/${userId}`)
+            .then((r) => r.json())
+            .then((data) => {
+                user.value = data;
+                loading.value = false;
+            })
+            .catch((err) => {
+                error.value = err;
+                loading.value = false;
+            });
+    });
 
-  if (loading.value) return html`<div>Loading...</div>`;
-  if (error.value) return html`<div>Error: ${error.value.message}</div>`;
-  return html`<div>${user.value.name}</div>`;
+    if (loading.value) return html`<div>Loading...</div>`;
+    if (error.value) return html`<div>Error: ${error.value.message}</div>`;
+    return html`<div>${user.value.name}</div>`;
 }
 ```
 
@@ -132,36 +132,36 @@ import { Suspense, lazy } from 'preact/compat';
 
 // Resource pattern
 function wrapPromise(promise) {
-  let status = 'pending';
-  let result;
-  const suspender = promise.then(
-    (r) => {
-      status = 'success';
-      result = r;
-    },
-    (e) => {
-      status = 'error';
-      result = e;
-    }
-  );
-  return {
-    read() {
-      if (status === 'pending') throw suspender;
-      if (status === 'error') throw result;
-      return result;
-    },
-  };
+    let status = 'pending';
+    let result;
+    const suspender = promise.then(
+        (r) => {
+            status = 'success';
+            result = r;
+        },
+        (e) => {
+            status = 'error';
+            result = e;
+        }
+    );
+    return {
+        read() {
+            if (status === 'pending') throw suspender;
+            if (status === 'error') throw result;
+            return result;
+        },
+    };
 }
 
 const userResource = wrapPromise(fetch('/api/user').then((r) => r.json()));
 
 function UserData() {
-  const user = userResource.read();
-  return html`<div>${user.name}</div>`;
+    const user = userResource.read();
+    return html`<div>${user.name}</div>`;
 }
 
 function App() {
-  return html`
+    return html`
     <${Suspense} fallback=${html`<div>Loading...</div>`}>
       <${UserData} />
     </${Suspense}>
@@ -179,18 +179,18 @@ import { useSignal, useSignalEffect } from '@preact/signals';
 const currentRoute = signal(window.location.hash.slice(1) || '/');
 
 window.addEventListener('hashchange', () => {
-  currentRoute.value = window.location.hash.slice(1) || '/';
+    currentRoute.value = window.location.hash.slice(1) || '/';
 });
 
 function App() {
-  return html`
-    <nav>
-      <a href="#/">Home</a>
-      <a href="#/about">About</a>
-    </nav>
-    ${currentRoute.value === '/' && html`<${HomePage} />`}
-    ${currentRoute.value === '/about' && html`<${AboutPage} />`}
-  `;
+    return html`
+        <nav>
+            <a href="#/">Home</a>
+            <a href="#/about">About</a>
+        </nav>
+        ${currentRoute.value === '/' && html`<${HomePage} />`}
+        ${currentRoute.value === '/about' && html`<${AboutPage} />`}
+    `;
 }
 ```
 
@@ -210,22 +210,22 @@ Leverage HTML5 validation before JavaScript:
 
 ```javascript
 function SignupForm() {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!e.target.checkValidity()) return;
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!e.target.checkValidity()) return;
 
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
-    // Submit data
-  };
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        // Submit data
+    };
 
-  return html`
-    <form onSubmit=${handleSubmit}>
-      <input name="email" type="email" required placeholder="Email" />
-      <input name="password" type="password" required minlength="8" placeholder="Password" />
-      <button type="submit">Sign Up</button>
-    </form>
-  `;
+    return html`
+        <form onSubmit=${handleSubmit}>
+            <input name="email" type="email" required placeholder="Email" />
+            <input name="password" type="password" required minlength="8" placeholder="Password" />
+            <button type="submit">Sign Up</button>
+        </form>
+    `;
 }
 ```
 
@@ -233,16 +233,16 @@ function SignupForm() {
 
 ```javascript
 function SearchBox() {
-  const query = useSignal('');
+    const query = useSignal('');
 
-  return html`
-    <input
-      value=${query}
-      onInput=${(e) => (query.value = e.target.value)}
-      placeholder="Search..."
-    />
-    <div>Results for: ${query}</div>
-  `;
+    return html`
+        <input
+            value=${query}
+            onInput=${(e) => (query.value = e.target.value)}
+            placeholder="Search..."
+        />
+        <div>Results for: ${query}</div>
+    `;
 }
 ```
 
@@ -259,32 +259,32 @@ function SearchBox() {
 ```javascript
 // Works without JS (details/summary), enhanced with JS
 function Accordion({ items }) {
-  const openItems = useSignal(new Set());
+    const openItems = useSignal(new Set());
 
-  return html`
-    <div>
-      ${items.map(
-        (item, i) => html`
-          <details
-            key=${item.id}
-            open=${openItems.value.has(i)}
-            onToggle=${(e) => {
-              const newSet = new Set(openItems.value);
-              if (e.target.open) {
-                newSet.add(i);
-              } else {
-                newSet.delete(i);
-              }
-              openItems.value = newSet;
-            }}
-          >
-            <summary>${item.title}</summary>
-            <div>${item.content}</div>
-          </details>
-        `
-      )}
-    </div>
-  `;
+    return html`
+        <div>
+            ${items.map(
+                (item, i) => html`
+                    <details
+                        key=${item.id}
+                        open=${openItems.value.has(i)}
+                        onToggle=${(e) => {
+                            const newSet = new Set(openItems.value);
+                            if (e.target.open) {
+                                newSet.add(i);
+                            } else {
+                                newSet.delete(i);
+                            }
+                            openItems.value = newSet;
+                        }}
+                    >
+                        <summary>${item.title}</summary>
+                        <div>${item.content}</div>
+                    </details>
+                `
+            )}
+        </div>
+    `;
 }
 ```
 
@@ -294,26 +294,26 @@ function Accordion({ items }) {
 
 ```javascript
 function Modal({ isOpen, onClose, children }) {
-  const modalRef = useRef(null);
+    const modalRef = useRef(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
+    useEffect(() => {
+        if (!isOpen) return;
 
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') onClose();
+        };
 
-    document.addEventListener('keydown', handleKeyDown);
-    modalRef.current?.focus();
+        document.addEventListener('keydown', handleKeyDown);
+        modalRef.current?.focus();
 
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+    if (!isOpen) return null;
 
-  return html`
-    <div role="dialog" aria-modal="true" ref=${modalRef} tabindex="-1">${children}</div>
-  `;
+    return html`
+        <div role="dialog" aria-modal="true" ref=${modalRef} tabindex="-1">${children}</div>
+    `;
 }
 ```
 
@@ -321,16 +321,16 @@ function Modal({ isOpen, onClose, children }) {
 
 ```javascript
 function SearchResults({ results, loading }) {
-  return html`
-    <div>
-      <div role="status" aria-live="polite" aria-atomic="true">
-        ${loading ? 'Loading results...' : `${results.length} results found`}
-      </div>
-      <ul role="list">
-        ${results.map((r) => html` <li key=${r.id}>${r.title}</li> `)}
-      </ul>
-    </div>
-  `;
+    return html`
+        <div>
+            <div role="status" aria-live="polite" aria-atomic="true">
+                ${loading ? 'Loading results...' : `${results.length} results found`}
+            </div>
+            <ul role="list">
+                ${results.map((r) => html` <li key=${r.id}>${r.title}</li> `)}
+            </ul>
+        </div>
+    `;
 }
 ```
 
@@ -344,7 +344,7 @@ import { Suspense, lazy } from 'preact/compat';
 const HeavyComponent = lazy(() => import('./HeavyComponent.js'));
 
 function App() {
-  return html`
+    return html`
     <${Suspense} fallback=${html`<div>Loading...</div>`}>
       <${HeavyComponent} />
     </${Suspense}>
@@ -360,21 +360,21 @@ import { memo } from 'preact/compat';
 
 // Memoize expensive computations
 function DataGrid({ rows }) {
-  const sortedRows = useMemo(() => rows.sort((a, b) => a.name.localeCompare(b.name)), [rows]);
+    const sortedRows = useMemo(() => rows.sort((a, b) => a.name.localeCompare(b.name)), [rows]);
 
-  return html`<table>
-    ...
-  </table>`;
+    return html`<table>
+        ...
+    </table>`;
 }
 
 // Memoize components
 const ExpensiveRow = memo(
-  ({ data }) => html`
-    <tr>
-      <td>${data.name}</td>
-      <td>${data.value}</td>
-    </tr>
-  `
+    ({ data }) => html`
+        <tr>
+            <td>${data.name}</td>
+            <td>${data.value}</td>
+        </tr>
+    `
 );
 ```
 
@@ -394,11 +394,11 @@ import { render } from '@testing-library/preact';
 import { html } from 'htm/preact';
 
 test('Counter increments', async () => {
-  const { getByText } = render(html`<${Counter} />`);
-  const button = getByText(/count:/i);
+    const { getByText } = render(html`<${Counter} />`);
+    const button = getByText(/count:/i);
 
-  fireEvent.click(button);
-  expect(button.textContent).toBe('Count: 1');
+    fireEvent.click(button);
+    expect(button.textContent).toBe('Count: 1');
 });
 ```
 
@@ -417,14 +417,14 @@ Use Playwright or Cypress for:
 ```javascript
 // BAD - Signal not needed for local state
 function Toggle() {
-  const isOpen = signal(false); // Global signal!
-  // ...
+    const isOpen = signal(false); // Global signal!
+    // ...
 }
 
 // GOOD - Use useSignal for component-local state
 function Toggle() {
-  const isOpen = useSignal(false);
-  // ...
+    const isOpen = useSignal(false);
+    // ...
 }
 ```
 
@@ -444,7 +444,7 @@ Always wrap async operations in error boundaries:
 
 ```javascript
 function App() {
-  return html`
+    return html`
     <${ErrorBoundary}>
       <${Suspense} fallback=${html`<Loading />`}>
         <${AsyncComponent} />
@@ -462,12 +462,12 @@ items.map((item) => html` <button onClick=${() => handleClick(item.id)}>${item.n
 
 // GOOD - Create handler outside loop or use data attributes
 const handleItemClick = (e) => {
-  const id = e.target.dataset.id;
-  handleClick(id);
+    const id = e.target.dataset.id;
+    handleClick(id);
 };
 
 items.map(
-  (item) => html` <button onClick=${handleItemClick} data-id=${item.id}>${item.name}</button> `
+    (item) => html` <button onClick=${handleItemClick} data-id=${item.id}>${item.name}</button> `
 );
 ```
 
@@ -479,13 +479,13 @@ Prefer Tailwind utilities for rapid development:
 
 ```javascript
 html`
-  <div class="flex items-center gap-4 p-4 bg-white rounded-lg shadow">
-    <img class="w-12 h-12 rounded-full" src=${avatar} />
-    <div>
-      <h3 class="text-lg font-semibold">${name}</h3>
-      <p class="text-gray-600">${email}</p>
+    <div class="flex items-center gap-4 p-4 bg-white rounded-lg shadow">
+        <img class="w-12 h-12 rounded-full" src=${avatar} />
+        <div>
+            <h3 class="text-lg font-semibold">${name}</h3>
+            <p class="text-gray-600">${email}</p>
+        </div>
     </div>
-  </div>
 `;
 ```
 
@@ -495,18 +495,18 @@ For complex layouts or animations:
 
 ```html
 <style>
-  @keyframes slideIn {
-    from {
-      transform: translateX(-100%);
+    @keyframes slideIn {
+        from {
+            transform: translateX(-100%);
+        }
+        to {
+            transform: translateX(0);
+        }
     }
-    to {
-      transform: translateX(0);
-    }
-  }
 
-  .sidebar {
-    animation: slideIn 0.3s ease-out;
-  }
+    .sidebar {
+        animation: slideIn 0.3s ease-out;
+    }
 </style>
 ```
 
@@ -518,7 +518,7 @@ For component-scoped styles in larger apps:
 import styles from './Button.module.css';
 
 function Button({ children }) {
-  return html` <button class=${styles.button}>${children}</button> `;
+    return html` <button class=${styles.button}>${children}</button> `;
 }
 ```
 
@@ -542,15 +542,15 @@ For forms that mutate state:
 
 ```javascript
 function DeleteForm({ itemId, csrfToken }) {
-  const handleDelete = async () => {
-    await fetch(`/api/items/${itemId}`, {
-      method: 'DELETE',
-      headers: {
-        'X-CSRF-Token': csrfToken,
-      },
-    });
-  };
+    const handleDelete = async () => {
+        await fetch(`/api/items/${itemId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-Token': csrfToken,
+            },
+        });
+    };
 
-  return html` <button onClick=${handleDelete}>Delete</button> `;
+    return html` <button onClick=${handleDelete}>Delete</button> `;
 }
 ```

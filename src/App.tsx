@@ -1,7 +1,7 @@
 import { CharacterSheet } from './features/sheet';
 
 function App() {
-  return <CharacterSheet />;
+    return <CharacterSheet />;
 }
 
 export default App;

@@ -82,8 +82,8 @@ function email(e) {}
 ```typescript
 // ✅ ALWAYS use spread operator
 const updatedUser = {
-  ...user,
-  name: 'New Name',
+    ...user,
+    name: 'New Name',
 };
 
 const updatedArray = [...items, newItem];
@@ -98,24 +98,24 @@ items.push(newItem); // BAD
 ```typescript
 // ✅ GOOD: Comprehensive error handling
 async function fetchData(url: string) {
-  try {
-    const response = await fetch(url);
+    try {
+        const response = await fetch(url);
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Fetch failed:', error);
+        throw new Error('Failed to fetch data');
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Fetch failed:', error);
-    throw new Error('Failed to fetch data');
-  }
 }
 
 // ❌ BAD: No error handling
 async function fetchData(url) {
-  const response = await fetch(url);
-  return response.json();
+    const response = await fetch(url);
+    return response.json();
 }
 ```
 
@@ -136,19 +136,19 @@ const stats = await fetchStats();
 ```typescript
 // ✅ GOOD: Proper types
 interface Market {
-  id: string;
-  name: string;
-  status: 'active' | 'resolved' | 'closed';
-  created_at: Date;
+    id: string;
+    name: string;
+    status: 'active' | 'resolved' | 'closed';
+    created_at: Date;
 }
 
 function getMarket(id: string): Promise<Market> {
-  // Implementation
+    // Implementation
 }
 
 // ❌ BAD: Using 'any'
 function getMarket(id: any): Promise<any> {
-  // Implementation
+    // Implementation
 }
 ```
 
@@ -193,17 +193,17 @@ export function Button(props) {
 ```typescript
 // ✅ GOOD: Reusable custom hook
 export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
 
-    return () => clearTimeout(handler);
-  }, [value, delay]);
+        return () => clearTimeout(handler);
+    }, [value, delay]);
 
-  return debouncedValue;
+    return debouncedValue;
 }
 
 // Usage
@@ -256,30 +256,30 @@ GET /api/markets?status=active&limit=10&offset=0
 ```typescript
 // ✅ GOOD: Consistent response structure
 interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  meta?: {
-    total: number;
-    page: number;
-    limit: number;
-  };
+    success: boolean;
+    data?: T;
+    error?: string;
+    meta?: {
+        total: number;
+        page: number;
+        limit: number;
+    };
 }
 
 // Success response
 return NextResponse.json({
-  success: true,
-  data: markets,
-  meta: { total: 100, page: 1, limit: 10 },
+    success: true,
+    data: markets,
+    meta: { total: 100, page: 1, limit: 10 },
 });
 
 // Error response
 return NextResponse.json(
-  {
-    success: false,
-    error: 'Invalid request',
-  },
-  { status: 400 }
+    {
+        success: false,
+        error: 'Invalid request',
+    },
+    { status: 400 }
 );
 ```
 
@@ -290,30 +290,30 @@ import { z } from 'zod';
 
 // ✅ GOOD: Schema validation
 const CreateMarketSchema = z.object({
-  name: z.string().min(1).max(200),
-  description: z.string().min(1).max(2000),
-  endDate: z.string().datetime(),
-  categories: z.array(z.string()).min(1),
+    name: z.string().min(1).max(200),
+    description: z.string().min(1).max(2000),
+    endDate: z.string().datetime(),
+    categories: z.array(z.string()).min(1),
 });
 
 export async function POST(request: Request) {
-  const body = await request.json();
+    const body = await request.json();
 
-  try {
-    const validated = CreateMarketSchema.parse(body);
-    // Proceed with validated data
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Validation failed',
-          details: error.errors,
-        },
-        { status: 400 }
-      );
+    try {
+        const validated = CreateMarketSchema.parse(body);
+        // Proceed with validated data
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Validation failed',
+                    details: error.errors,
+                },
+                { status: 400 }
+            );
+        }
     }
-  }
 }
 ```
 
@@ -387,7 +387,7 @@ name = user.name;
  * ```
  */
 export async function searchMarkets(query: string, limit: number = 10): Promise<Market[]> {
-  // Implementation
+    // Implementation
 }
 ````
 
@@ -400,12 +400,12 @@ import { useMemo, useCallback } from 'react';
 
 // ✅ GOOD: Memoize expensive computations
 const sortedMarkets = useMemo(() => {
-  return markets.sort((a, b) => b.volume - a.volume);
+    return markets.sort((a, b) => b.volume - a.volume);
 }, [markets]);
 
 // ✅ GOOD: Memoize callbacks
 const handleSearch = useCallback((query: string) => {
-  setSearchQuery(query);
+    setSearchQuery(query);
 }, []);
 ```
 
@@ -442,15 +442,15 @@ const { data } = await supabase.from('markets').select('*');
 
 ```typescript
 test('calculates similarity correctly', () => {
-  // Arrange
-  const vector1 = [1, 0, 0];
-  const vector2 = [0, 1, 0];
+    // Arrange
+    const vector1 = [1, 0, 0];
+    const vector2 = [0, 1, 0];
 
-  // Act
-  const similarity = calculateCosineSimilarity(vector1, vector2);
+    // Act
+    const similarity = calculateCosineSimilarity(vector1, vector2);
 
-  // Assert
-  expect(similarity).toBe(0);
+    // Assert
+    expect(similarity).toBe(0);
 });
 ```
 
@@ -476,14 +476,14 @@ Watch for these anti-patterns:
 ```typescript
 // ❌ BAD: Function > 50 lines
 function processMarketData() {
-  // 100 lines of code
+    // 100 lines of code
 }
 
 // ✅ GOOD: Split into smaller functions
 function processMarketData() {
-  const validated = validateData();
-  const transformed = transformData(validated);
-  return saveData(transformed);
+    const validated = validateData();
+    const transformed = transformData(validated);
+    return saveData(transformed);
 }
 ```
 
@@ -492,15 +492,15 @@ function processMarketData() {
 ```typescript
 // ❌ BAD: 5+ levels of nesting
 if (user) {
-  if (user.isAdmin) {
-    if (market) {
-      if (market.isActive) {
-        if (hasPermission) {
-          // Do something
+    if (user.isAdmin) {
+        if (market) {
+            if (market.isActive) {
+                if (hasPermission) {
+                    // Do something
+                }
+            }
         }
-      }
     }
-  }
 }
 
 // ✅ GOOD: Early returns
