@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --rebel-red: #b91c1c;
+  --imperial-blue: #1e40af;
+  --hologram-blue: #0ea5e9;
+  --cyber-yellow: #eab308;
+  --dark-saber: #0f172a;
+}
+
+body {
+  @apply bg-slate-900 text-slate-100;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  @apply min-h-screen;
+}
