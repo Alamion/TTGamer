@@ -1,0 +1,75 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+@tailwind components;
+@tailwind utilities;
+
+/* Overall style pattern: "Industrial Military Utility"; Clone/stormtrooper equipment*/
+
+:root {
+    /* You can override the default Infima variables here. */
+    --ifm-color-primary: rgb(var(--primary));
+    --ifm-color-primary-dark: rgb(var(--primary) / 0.8);
+    --ifm-color-primary-darker: rgb(var(--primary) / 0.6);
+    --ifm-color-primary-darkest: rgb(var(--primary) / 0.4);
+    --ifm-color-primary-light: rgb(var(--primary) / 1.2);
+    --ifm-color-primary-lighter: rgb(var(--primary) / 1.4);
+    --ifm-color-primary-lightest: rgb(var(--primary) / 1.6);
+    --ifm-code-font-size: 95%;
+    --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+    --ifm-navbar-background-color: rgb(var(--bg-surface));
+
+    /* Базовые (Броня) */
+    --bg-base: 245 245 249;
+    --bg-surface: 249 249 255;
+    --text-primary: 15 23 42;
+    --text-secondary: 71 85 105;
+
+    /* Акценты (Маркеры отряда) */
+    --primary: 220 38 38;
+    --on-primary: 255 255 255;
+    --secondary: 202 138 4;
+    --on-secondary: 0 0 0;
+
+    /* Состояния (Интерфейс) */
+    --border: 226 232 240;
+    --border-more-contrast: 206 212 220;
+    --error: 185 28 28;
+    --warning: 245 158 11;
+    --info: 2 132 199;
+    --success: 21 128 61;
+
+    /* Star Wars */
+    --sw-jedi-blue: 0 153 255;
+    --sw-jedi-green: 0 255 64;
+    --sw-jedi-violet: 150 0 255;
+    --sw-jedi-red: 255 0 0;
+    --sw-empire-grey: 170 175 180;
+    --sw-empire-black: 20 20 20;
+    --sw-empire-white: 240 240 245;
+    --sw-droid-gold: 212 175 55;
+    --sw-droid-orange: 255 127 0;
+    --sw-droid-rust: 210 180 140;
+    --sw-mandalorian: 0 153 255;
+    --sw-hyperjump: 220 240 255;
+}
+
+[data-theme='dark'] {
+    --bg-base: 15 23 42;
+    --bg-surface: 30 41 59;
+    --text-primary: 248 250 252;
+    --text-secondary: 148 163 184;
+    --border: 51 65 85;
+    --border-more-contrast: 71 85 105;
+    /*--ifm-color-primary: #25c2a0;*/
+    /*--ifm-color-primary-dark: #21af90;*/
+    /*--ifm-color-primary-darker: #1fa588;*/
+    /*--ifm-color-primary-darkest: #1a8870;*/
+    /*--ifm-color-primary-light: #29d5b0;*/
+    /*--ifm-color-primary-lighter: #32d8b4;*/
+    /*--ifm-color-primary-lightest: #4fddbf;*/
+    /*--docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);*/
+}

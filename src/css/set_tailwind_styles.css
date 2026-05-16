@@ -1,0 +1,236 @@
+.tailwind-root {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+  -webkit-tap-highlight-color: transparent;
+}
+.tailwind-root *,
+.tailwind-root ::before,
+.tailwind-root ::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+  margin: 0;
+}
+.tailwind-root html {
+  line-height: 1.5;
+}
+.tailwind-root body {
+  line-height: inherit;
+}
+.tailwind-root hr {
+  height: 0;
+  color: inherit;
+  border-top-width: 1px;
+}
+.tailwind-root abbr:where([title]) {
+  text-decoration: underline dotted;
+}
+.tailwind-root h1,
+.tailwind-root h2,
+.tailwind-root h3,
+.tailwind-root h4,
+.tailwind-root h5,
+.tailwind-root h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+.tailwind-root a {
+  color: inherit;
+  text-decoration: inherit;
+}
+.tailwind-root b,
+.tailwind-root strong {
+  font-weight: bolder;
+}
+.tailwind-root code,
+.tailwind-root kbd,
+.tailwind-root samp,
+.tailwind-root pre {
+  font-family: ui-monospace, monospace;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+  font-size: 1em;
+}
+.tailwind-root small {
+  font-size: 80%;
+}
+.tailwind-root sub,
+.tailwind-root sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+.tailwind-root sub {
+  bottom: -0.25em;
+}
+.tailwind-root sup {
+  top: -0.5em;
+}
+.tailwind-root table {
+  text-indent: 0;
+  border-color: inherit;
+  border-collapse: collapse;
+}
+.tailwind-root button,
+.tailwind-root input,
+.tailwind-root optgroup,
+.tailwind-root select,
+.tailwind-root textarea {
+  font-family: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+}
+.tailwind-root button,
+.tailwind-root select {
+  text-transform: none;
+}
+.tailwind-root button,
+.tailwind-root input:where([type=button]),
+.tailwind-root input:where([type=reset]),
+.tailwind-root input:where([type=submit]) {
+  -webkit-appearance: button;
+  background-color: transparent;
+  background-image: none;
+}
+.tailwind-root :-moz-focusring {
+  outline: auto;
+}
+.tailwind-root :-moz-ui-invalid {
+  box-shadow: none;
+}
+.tailwind-root progress {
+  vertical-align: baseline;
+}
+.tailwind-root ::-webkit-inner-spin-button,
+.tailwind-root ::-webkit-outer-spin-button {
+  height: auto;
+}
+.tailwind-root ::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+.tailwind-root ::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  font: inherit;
+}
+.tailwind-root summary {
+  display: list-item;
+}
+.tailwind-root blockquote,
+.tailwind-root dl,
+.tailwind-root dd,
+.tailwind-root h1,
+.tailwind-root h2,
+.tailwind-root h3,
+.tailwind-root h4,
+.tailwind-root h5,
+.tailwind-root h6,
+.tailwind-root hr,
+.tailwind-root figure,
+.tailwind-root p,
+.tailwind-root pre {
+  margin: 0;
+}
+.tailwind-root fieldset {
+  margin: 0;
+  padding: 0;
+}
+.tailwind-root ol,
+.tailwind-root ul,
+.tailwind-root menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tailwind-root dialog {
+  padding: 0;
+}
+.tailwind-root textarea {
+  resize: vertical;
+}
+.tailwind-root ::placeholder {
+  opacity: 1;
+}
+.tailwind-root ::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+.tailwind-root input::placeholder,
+.tailwind-root textarea::placeholder {
+  opacity: 1;
+  color: #9ca3af;
+}
+.tailwind-root button,
+.tailwind-root [role=button] {
+  cursor: pointer;
+}
+.tailwind-root :disabled {
+  cursor: default;
+}
+.tailwind-root img,
+.tailwind-root svg,
+.tailwind-root video,
+.tailwind-root canvas,
+.tailwind-root audio,
+.tailwind-root iframe,
+.tailwind-root embed,
+.tailwind-root object {
+  display: block;
+  vertical-align: middle;
+}
+.tailwind-root img,
+.tailwind-root video {
+  max-width: 100%;
+  height: auto;
+}
+
+.tailwind-root {
+  @apply bg-[var(--bg-base)] text-[var(--text-primary)] min-h-screen;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.tailwind-root input[type=text],
+.tailwind-root input[type=email],
+.tailwind-root input[type=number],
+.tailwind-root input[type=password],
+.tailwind-root input[type=search],
+.tailwind-root input[type=tel],
+.tailwind-root input[type=url],
+.tailwind-root textarea,
+.tailwind-root select {
+  @apply focus:border-primary focus:outline-none;
+}
+.tailwind-root input[type=number] {
+  -moz-appearance: textfield;
+}
+.tailwind-root input::-webkit-outer-spin-button,
+.tailwind-root input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.tailwind-root div,
+.tailwind-root input,
+.tailwind-root button,
+.tailwind-root textarea,
+.tailwind-root select {
+  @apply border-border;
+}
+.tailwind-root td,
+.tailwind-root th {
+  @apply border-borderMoreContrast;
+}
+
+/*# sourceMappingURL=set_tailwind_styles.css.map */

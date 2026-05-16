@@ -1,11 +1,17 @@
 {
+    "extends": "@docusaurus/tsconfig",
     "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@site/*": ["./*"]
+        },
         "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
         "target": "es2023",
         "lib": ["ES2023", "DOM"],
         "module": "esnext",
-        "types": ["vite/client"],
+        "types": ["@docusaurus/module-type-aliases"],
         "skipLibCheck": true,
+        "ignoreDeprecations": "6.0",
 
         /* Bundler mode */
         "moduleResolution": "bundler",

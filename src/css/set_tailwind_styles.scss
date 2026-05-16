@@ -1,0 +1,41 @@
+@import 'tailwind-base-reset';
+
+.tailwind-root {
+    @apply bg-[var(--bg-base)] text-[var(--text-primary)] min-h-screen;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    input[type='text'],
+    input[type='email'],
+    input[type='number'],
+    input[type='password'],
+    input[type='search'],
+    input[type='tel'],
+    input[type='url'],
+    textarea,
+    select {
+        @apply focus:border-primary focus:outline-none;
+    }
+    input[type='number'] {
+        -moz-appearance: textfield;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    div,
+    input,
+    button,
+    textarea,
+    select {
+        @apply border-border;
+    }
+    td,
+    th {
+        @apply border-borderMoreContrast;
+    }
+}
