@@ -1,4 +1,5 @@
 import { useCharacterStore } from '../../../store/characterStore';
+import { SectionCard } from '@site/app/components/shared';
 
 export function DerivedStatsBlock() {
     const { currentCharacter } = useCharacterStore();
@@ -24,10 +25,7 @@ export function DerivedStatsBlock() {
     const runningSpeedMultiplier = Math.min(controlDots, telekinesisDots) || 1;
 
     return (
-        <div className="bg-bgSurface border rounded-lg p-4">
-            <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-3">
-                Derived Stats
-            </h3>
+        <SectionCard title="Derived Stats">
             <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex justify-between">
                     <span className="text-textSecondary">Willpower</span>
@@ -54,7 +52,7 @@ export function DerivedStatsBlock() {
                     <span className="text-textPrimary font-mono">×{runningSpeedMultiplier}</span>
                 </div>
             </div>
-        </div>
+        </SectionCard>
     );
 }
 
@@ -66,10 +64,7 @@ export function ExperienceBlock() {
     const experience = currentCharacter.experience ?? { total: 0, spent: 0 };
 
     return (
-        <div className="bg-bgSurface border rounded-lg p-4">
-            <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-3">
-                Experience
-            </h3>
+        <SectionCard title="Experience">
             <div className="space-y-3">
                 <div className="flex justify-between items-center">
                     <span className="text-textSecondary text-sm">Total XP</span>
@@ -106,6 +101,6 @@ export function ExperienceBlock() {
                     </span>
                 </div>
             </div>
-        </div>
+        </SectionCard>
     );
 }

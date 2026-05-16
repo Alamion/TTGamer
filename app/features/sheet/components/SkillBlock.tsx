@@ -1,4 +1,5 @@
-import { CollapsibleBlock } from '../../../components/shared';
+import { CollapsibleBlock, SectionCard } from '../../../components/shared';
+import type { AccentColor } from '../../../components/shared';
 import { CustomTraitList, TraitRowWithInput } from '../../../components/shared';
 import { useCharacterStore } from '../../../store/characterStore';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character';
@@ -51,7 +52,11 @@ const SKILL_CATEGORIES: { key: SkillCategory; label: string }[] = [
     { key: 'knowledges', label: 'Knowledges' },
 ];
 
-export function SkillBlock() {
+interface SkillBlockProps {
+    accentColor?: AccentColor;
+}
+
+export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
 
     if (!currentCharacter) return null;
@@ -78,7 +83,7 @@ export function SkillBlock() {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        const currentSkill = currentCharacter.skills[key] || { ...DEFAULT_TRAIT_VALUE };
+        const currentSkill = currentCharacter.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
         updateCharacter(currentCharacter.id, {
             skills: {
                 ...currentCharacter.skills,
@@ -93,7 +98,7 @@ export function SkillBlock() {
     };
 
     const handleSkillSpecializationChange = (key: string, specializationText: string) => {
-        const currentSkill = currentCharacter.skills[key] || { ...DEFAULT_TRAIT_VALUE };
+        const currentSkill = currentCharacter.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
         updateCharacter(currentCharacter.id, {
             skills: {
                 ...currentCharacter.skills,
@@ -165,34 +170,32 @@ export function SkillBlock() {
     const renderSkillColumn = (category: SkillCategory, skillsList: readonly string[]) => {
         const customList = getCustomList(category);
         return (
-            <div className="bg-bgSurface border rounded-lg p-4">
-                <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-3">
-                    {SKILL_CATEGORIES.find((c) => c.key === category)?.label}
-                </h3>
-                <div className="space-y-0">
-                    {skillsList.map((skill) => {
-                        const trait = currentCharacter.skills[skill] || { ...DEFAULT_TRAIT_VALUE };
-                        return (
-                            <TraitRowWithInput
-                                key={skill}
-                                name={skill}
-                                specializationText={trait.specializationText}
-                                value={trait.value}
-                                onChange={(val, spec, exp, prc) =>
-                                    handleSkillChange(skill, val, spec, exp, prc)
-                                }
-                                onSpecializationTextChange={(text) =>
-                                    handleSkillSpecializationChange(skill, text)
-                                }
-                                size="sm"
-                                showFlags={true}
-                                specialization={trait.specialization}
-                                experienced={trait.experienced}
-                                practiced={trait.practiced}
-                            />
-                        );
-                    })}
-                </div>
+            <SectionCard title={SKILL_CATEGORIES.find((c) => c.key === category)?.label}>
+                {skillsList.map((skill) => {
+                    const trait = currentCharacter.skills[skill] || {
+                        ...DEFAULT_TRAIT_VALUE,
+                        value: 0,
+                    };
+                    return (
+                        <TraitRowWithInput
+                            key={skill}
+                            name={skill}
+                            specializationText={trait.specializationText}
+                            value={trait.value}
+                            onChange={(val, spec, exp, prc) =>
+                                handleSkillChange(skill, val, spec, exp, prc)
+                            }
+                            onSpecializationTextChange={(text) =>
+                                handleSkillSpecializationChange(skill, text)
+                            }
+                            size="sm"
+                            showFlags={true}
+                            specialization={trait.specialization}
+                            experienced={trait.experienced}
+                            practiced={trait.practiced}
+                        />
+                    );
+                })}
                 <CustomTraitList
                     items={customList}
                     onAdd={() => addCustomSkill(category)}
@@ -212,12 +215,12 @@ export function SkillBlock() {
                     size="sm"
                     showFlags={true}
                 />
-            </div>
+            </SectionCard>
         );
     };
 
     return (
-        <CollapsibleBlock title="Abilities" accentColor="secondary" storageKey="skillBlock">
+        <CollapsibleBlock title="Abilities" accentColor={accentColor} storageKey="skillBlock">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {renderSkillColumn('talents', SKILLS.talents)}
                 {renderSkillColumn('skills', SKILLS.skills)}

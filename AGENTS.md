@@ -37,67 +37,68 @@ A Docusaurus-based site hosting docs, blog, and a modular React character sheet 
 ```
 ├── app/                          # Original Vite React app (character sheet)
 │   ├── components/
-│   │   ├── shared/               # Atomic/molecular UI components
-│   │   │   ├── StatDot.tsx       # WoD-style dot selector (1-5 dots)
-│   │   │   ├── StatLabel.tsx     # Label with optional tooltip
-│   │   │   ├── TraitRow.tsx      # Label + StatDot row (simple & with input, custom list)
-│   │   │   ├── MeritFlawRow.tsx  # Merit/Flaw list editor (exports MeritFlawList)
-│   │   │   ├── CollapsibleBlock.tsx # Collapsible section wrapper
-│   │   │   ├── DataTable.tsx     # Reusable table component with CRUD operations
-│   │   │   ├── ConfirmDialog.tsx # Radix UI confirmation dialog
-│   │   │   └── index.ts
-│   │   └── ui/                   # Radix UI primitives (empty, planned)
+│   │   └── shared/               # Atomic/molecular UI components
+│   │       ├── CharacterManagerModal.tsx # Character list modal (load/delete)
+│   │       ├── CollapsibleBlock.tsx      # Collapsible section wrapper
+│   │       ├── ConfirmDialog.tsx          # Radix UI confirmation dialog
+│   │       ├── DataTable.tsx              # Reusable table component with CRUD
+│   │       ├── MeritFlawRow.tsx           # Merit/Flaw list editor
+│   │       ├── StatDot.tsx                # WoD-style dot selector (1-5 dots)
+│   │       ├── StatLabel.tsx              # Label with optional tooltip
+│   │       ├── TraitRow.tsx               # Label + StatDot row (simple, with input, custom list)
+│   │       └── index.ts
 │   ├── features/
 │   │   ├── automation/           # Planned: auto-calculated stats
 │   │   ├── dice/                 # Planned: dice integration
 │   │   ├── manager/              # Planned: character management
 │   │   └── sheet/                # Character sheet feature module
-│   │       ├── components/
-│   │       │   ├── CharacterSheet.tsx   # Main sheet orchestrator
-│   │       │   ├── SheetHeader.tsx      # Import/Export/Reset + metadata fields
-│   │       │   ├── AttributeBlock.tsx   # 9 attributes (Physical/Social/Mental)
-│   │       │   ├── SkillBlock.tsx       # Skills (Talents/Skills/Knowledge)
-│   │       │   ├── AdvantagesBlock.tsx  # Backgrounds, Merits, Flaws
-│   │       │   ├── PowerBlock.tsx       # Force Skills, Virtues, Willpower, Force Points
-│   │       │   ├── HealthBlock.tsx      # Bashing/Lethal damage tracker
-│   │       │   ├── StatsBlock.tsx       # Derived stats + Experience
-│   │       │   ├── BodyBlock.tsx        # Inventory, Armor, Weapons + Health
-│   │       │   └── OtherBlock.tsx       # Misc fields
-│   │       └── index.ts
+│   │       └── components/
+│   │           ├── AttributeBlock.tsx     # 9 attributes (Physical/Social/Mental)
+│   │           ├── AdvantagesBlock.tsx   # Backgrounds, Merits, Flaws
+│   │           ├── BaseBlock.tsx          # Character metadata (name, concept, species...)
+│   │           ├── BodyBlock.tsx          # Inventory, Armor, Weapons + Health
+│   │           ├── CharacterSheet.tsx     # Main sheet orchestrator
+│   │           ├── HealthBlock.tsx        # Bashing/Lethal damage tracker
+│   │           ├── OtherBlock.tsx         # Misc fields
+│   │           ├── PowerBlock.tsx         # Force Skills, Virtues, Willpower, Force Points
+│   │           ├── SheetLayout.tsx        # Layout with universal buttons
+│   │           ├── SkillBlock.tsx         # Skills (Talents/Skills/Knowledge)
+│   │           └── StatsBlock.tsx         # Derived stats + Experience
 │   ├── hooks/
-│   │   ├── useLocalStorageState.ts      # useExpandedState for collapsible sections
-│   │   └── useTraitUpdater.ts           # Generic hook for trait (attribute/skill) updates
+│   │   ├── index.ts
+│   │   ├── useLocalStorageState.ts         # useExpandedState for collapsible sections
+│   │   └── useTraitUpdater.ts              # Generic hook for trait (attribute/skill) updates
 │   ├── store/
-│   │   └── characterStore.ts            # Zustand store (CRUD, import, persistence)
-│   ├── templates/                       # Character templates
+│   │   └── characterStore.ts               # Zustand store (CRUD, import, persistence)
+│   ├── templates/                          # Character templates
 │   ├── types/
-│   │   └── character.ts                 # Zod schemas + TypeScript types + default factory
-│   └── utils/                           # Utility functions
+│   │   └── character.ts                    # Zod schemas + TypeScript types + default factory
+│   └── utils/                              # Utility functions
 │
 ├── src/                          # Docusaurus source
 │   ├── @types/
-│   │   └── docusaurus-theme-augment.d.ts # Augmented types for @theme/Layout, @theme/Heading
+│   │   └── docusaurus-theme-augment.d.ts   # Augmented types for @theme/Layout, @theme/Heading
 │   ├── components/
-│   │   └── HomepageFeatures/             # Homepage feature cards
+│   │   └── HomepageFeatures/               # Homepage feature cards
 │   ├── css/
-│   │   ├── custom.css                    # Global CSS + Tailwind imports + CSS variables
-│   │   └── sheet-reset.css               # Tailwind base reset scoped to .tailwind-root
+│   │   ├── custom.css                      # Global CSS + Tailwind imports + CSS variables
+│   │   └── sheet-reset.css                 # Tailwind base reset scoped to .tailwind-root
 │   └── pages/
-│       ├── index.tsx                     # Homepage (wrapped in <Layout>)
-│       └── universal_sheet.tsx           # Sheet Manager page (imports from app/)
+│       ├── index.tsx                       # Homepage (wrapped in <Layout>)
+│       └── universal_sheet.tsx             # Sheet Manager page (imports from app/)
 │
 ├── docs/                         # Docusaurus documentation (MDX)
 ├── blog/                         # Docusaurus blog posts
 ├── static/                       # Static assets (served at root)
 ├── i18n/                         # Internationalization (en, ru)
 │
-├── docusaurus.config.ts          # Site configuration
-├── sidebars.ts                   # Docs sidebar configuration
-├── tailwind.config.cjs           # Tailwind config (CommonJS for webpack)
-├── postcss.config.js             # PostCSS config (CommonJS)
-├── tsconfig.json                 # Solution file (references tsconfig.app.json)
-├── tsconfig.app.json             # App tsconfig (extends @docusaurus/tsconfig)
-└── tsconfig.node.json            # Node-side tsconfig (config files, plugins)
+├── docusaurus.config.ts         # Site configuration
+├── sidebars.ts                  # Docs sidebar configuration
+├── tailwind.config.cjs          # Tailwind config (CommonJS for webpack)
+├── postcss.config.js            # PostCSS config (CommonJS)
+├── tsconfig.json                # Solution file (references tsconfig.app.json)
+├── tsconfig.app.json            # App tsconfig (extends @docusaurus/tsconfig)
+└── tsconfig.node.json           # Node-side tsconfig (config files, plugins)
 ```
 
 ---
@@ -110,6 +111,10 @@ A Docusaurus-based site hosting docs, blog, and a modular React character sheet 
 - `src/pages/universal_sheet.tsx` imports `CharacterSheet` from `../../app/features/sheet`
 - All page components must be wrapped in `<Layout>` from `@theme/Layout` to get navbar/footer
 - `app/` retains its own `package.json`, `vite.config.ts`, and tsconfigs for standalone development
+
+### Layout Pattern
+
+`SheetLayout` renders universal controls (Export, Import, Reset, Manage, New Character) that are always visible, plus "No Character Loaded" placeholder when no character is active. `BaseBlock` is the first block rendered and contains all character metadata fields.
 
 ### Tailwind Isolation
 
@@ -180,6 +185,18 @@ List editor for Merits and Flaws with add/remove functionality.
 
 Wrapper component for collapsible sections with persistence.
 
+### CharacterManagerModal (`app/components/shared/CharacterManagerModal.tsx`)
+
+Modal dialog for managing characters — displays list, allows loading/deleting. New Character button was moved to `SheetLayout`.
+
+### BaseBlock (`app/features/sheet/components/BaseBlock.tsx`)
+
+First block in character sheet, styled like other blocks with CollapsibleBlock wrapper. Contains all 9 character metadata fields (Name, Concept, Species, Player, Nature, Home World, Adventure, Demeanor, Age) in a 3-column grid layout. Only renders when `currentCharacter` exists.
+
+### SheetLayout (`app/features/sheet/components/SheetLayout.tsx`)
+
+Layout wrapper with universal buttons (Export, Import, Reset, Manage, New Character). Shows "No Character Loaded" placeholder when no character is active. Child blocks only render when `currentCharacter` exists.
+
 ### CharacterStore (`app/store/characterStore.ts`)
 
 ```typescript
@@ -219,7 +236,7 @@ const BaseCharacterSchema = z.object({
     inventory: z.array(ItemSchema),
     armor: z.array(ArmorItemSchema),
     weapons: z.array(WeaponItemSchema),
-    'customTalents/Skills/Knowledges': z.array(CustomSkillSchema),
+    'customTalents/Skills/Knowledge': z.array(CustomSkillSchema),
     notes: z.string(),
 });
 ```
@@ -269,7 +286,7 @@ cd app && yarn build    # Vite production build
 2. Render using `TraitRowWithInput` or `CustomTraitList`
 3. Wire to `updateCharacter(id, { [key]: newValue })`
 
-### Import/Export flow (`SheetHeader.tsx`)
+### Import/Export flow (`SheetLayout.tsx`)
 
 - **Export:** `JSON.stringify(currentCharacter)` → Blob → download
 - **Import:** FileReader → `BaseCharacterSchema.parse()` → `importCharacter()`
@@ -350,30 +367,11 @@ Derived stats are auto-calculated from attributes, skills, and virtues:
 
 ---
 
-## 14. Block Registry Pattern (Phase 5)
-
-CharacterSheet renders blocks in hardcoded order. For character type support (sentient/droid/vehicle), blocks should be registered via a registry:
-
-```typescript
-type BlockRegistration = {
-    id: string;
-    component: ComponentType;
-    characterTypes: CharacterType[];
-};
-
-const BLOCK_REGISTRY: BlockRegistration[] = [
-    { id: 'attributes', component: AttributeBlock, characterTypes: ['sentient', 'droid'] },
-    { id: 'skills', component: SkillBlock, characterTypes: ['sentient', 'droid'] },
-    // ...
-];
-```
-
----
-
 ## 15. Roadmap (Current Status)
 
 - [x] **Phase 1:** Core character engine (attributes, skills, health, import/export)
 - [x] **Phase 2:** Template registry + character CRUD
 - [x] **Phase 3:** Migrate to Docusaurus site with embedded app
+- [x] **Phase 3.5:** Layout refactor (BaseBlock, SheetLayout, universal buttons)
 - [ ] **Phase 4:** Smart assistant (auto-calculated stats) + Dice integration
 - [ ] **Phase 5:** Automation features

@@ -41,11 +41,7 @@ export function DataTable<T extends { id: string }>({
                                 <th
                                     key={i}
                                     scope="col"
-                                    className={clsx(
-                                        'text-left py-2',
-                                        i < columns.length - 1 && 'border-r',
-                                        col.width
-                                    )}
+                                    className={clsx('text-left py-2', col.width)}
                                 >
                                     {col.header}
                                 </th>
@@ -57,13 +53,7 @@ export function DataTable<T extends { id: string }>({
                         {items.map((item) => (
                             <tr key={String(item[idKey])}>
                                 {columns.map((col, i) => (
-                                    <td
-                                        key={i}
-                                        className={clsx(
-                                            'py-1',
-                                            i < columns.length - 1 && 'border-r'
-                                        )}
-                                    >
+                                    <td key={i} className={clsx('py-1')}>
                                         {col.render(item)}
                                     </td>
                                 ))}

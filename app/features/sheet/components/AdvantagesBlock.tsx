@@ -1,9 +1,14 @@
-import { CollapsibleBlock } from '../../../components/shared';
+import { CollapsibleBlock, SectionCard } from '../../../components/shared';
+import type { AccentColor } from '../../../components/shared';
 import { CustomTraitList, MeritFlawList } from '../../../components/shared';
 import { useCharacterStore } from '../../../store/characterStore';
 import type { Background, MeritFlawItem } from '../../../types/character';
 
-export function AdvantagesBlock() {
+interface AdvantagesBlockProps {
+    accentColor?: AccentColor;
+}
+
+export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
 
     if (!currentCharacter) return null;
@@ -72,12 +77,9 @@ export function AdvantagesBlock() {
     };
 
     return (
-        <CollapsibleBlock title="Advantages" accentColor="primary" storageKey="advantagesBlock">
+        <CollapsibleBlock title="Advantages" accentColor={accentColor} storageKey="advantagesBlock">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-bgSurface border rounded-lg p-4">
-                    <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-3">
-                        Backgrounds
-                    </h3>
+                <SectionCard title="Backgrounds">
                     <CustomTraitList
                         items={backgrounds}
                         onAdd={addBackground}
@@ -87,7 +89,7 @@ export function AdvantagesBlock() {
                         size="sm"
                         placeholder="Background name..."
                     />
-                </div>
+                </SectionCard>
 
                 <MeritFlawList
                     title="Merits"

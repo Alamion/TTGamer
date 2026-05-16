@@ -17,6 +17,7 @@ export const CharacterMetadataSchema = z.object({
     species: z.string().optional(),
     homeWorld: z.string().optional(),
     age: z.string().optional(),
+    setting: z.string().optional(),
 });
 
 export const HEALTH_LEVELS = [
@@ -162,6 +163,7 @@ export function createDefaultCharacter(): BaseCharacter {
             species: '',
             homeWorld: '',
             age: '',
+            setting: 'Star Wars WoD 2e',
         },
         attributes: {
             Strength: { ...DEFAULT_TRAIT_VALUE },

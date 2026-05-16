@@ -1,8 +1,13 @@
-import { CollapsibleBlock } from '../../../components/shared';
+import { CollapsibleBlock, SectionCard } from '../../../components/shared';
+import type { AccentColor } from '../../../components/shared';
 import { TraitRowWithInput } from '../../../components/shared';
 import { StatDot } from '../../../components/shared';
 import { useCharacterStore } from '../../../store/characterStore';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character';
+
+interface PowerBlockProps {
+    accentColor?: AccentColor;
+}
 
 const FORCE_SKILLS = ['Control', 'Dynamism', 'Rapport', 'Sense', 'Telekinesis'] as const;
 const VIRTUES = ['Conscience', 'Passion', 'Self Control'] as const;
@@ -14,7 +19,7 @@ function getDarkSideColor(percentage: number): { bg: string; border: string } {
     return { bg: 'bg-secondary', border: 'border-secondary' };
 }
 
-export function PowerBlock() {
+export function PowerBlock({ accentColor = 'secondary' }: PowerBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
 
     if (!currentCharacter) return null;
@@ -110,101 +115,84 @@ export function PowerBlock() {
     };
 
     return (
-        <CollapsibleBlock title="Power" accentColor="secondary" storageKey="powerBlock">
+        <CollapsibleBlock title="Power" accentColor={accentColor} storageKey="powerBlock">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-bgSurface border rounded-lg p-4">
-                    <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-3">
-                        Force Skills
-                    </h3>
-                    <div className="space-y-0">
-                        {FORCE_SKILLS.map((skill) => {
-                            const trait = currentCharacter.forceSkills?.[skill] || {
-                                ...DEFAULT_TRAIT_VALUE,
-                            };
-                            return (
-                                <TraitRowWithInput
-                                    key={skill}
-                                    name={skill}
-                                    specializationText={trait.specializationText}
-                                    value={trait.value}
-                                    onChange={(val, spec, exp, prc) =>
-                                        handleForceSkillChange(skill, val, spec, exp, prc)
-                                    }
-                                    onSpecializationTextChange={(text) =>
-                                        handleForceSkillSpecializationChange(skill, text)
-                                    }
-                                    size="sm"
-                                />
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <div className="bg-bgSurface border rounded-lg p-4">
-                    <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-3">
-                        Virtues
-                    </h3>
-                    <div className="space-y-0">
-                        {VIRTUES.map((virtue) => {
-                            const trait = currentCharacter.virtues?.[virtue] || {
-                                ...DEFAULT_TRAIT_VALUE,
-                            };
-                            return (
-                                <TraitRowWithInput
-                                    key={virtue}
-                                    name={virtue}
-                                    specializationText={trait.specializationText}
-                                    value={trait.value}
-                                    onChange={(val, spec, exp, prc) =>
-                                        handleVirtueChange(virtue, val, spec, exp, prc)
-                                    }
-                                    onSpecializationTextChange={(text) =>
-                                        handleVirtueSpecializationChange(virtue, text)
-                                    }
-                                    size="sm"
-                                    minimal={1}
-                                />
-                            );
-                        })}
-                    </div>
-                </div>
-
-                <div className="bg-bgSurface border rounded-lg p-4">
-                    <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-3">
-                        Resolve
-                    </h3>
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-textPrimary">Willpower</span>
-                            <StatDot
-                                value={willpower.current}
-                                maxValue={10}
-                                onChange={(val) => handleWillpowerChange(val)}
-                                size="md"
-                                minimal={willpowerMinimal}
+                <SectionCard title="Force Skills">
+                    {FORCE_SKILLS.map((skill) => {
+                        const trait = currentCharacter.forceSkills?.[skill] || {
+                            ...DEFAULT_TRAIT_VALUE,
+                        };
+                        return (
+                            <TraitRowWithInput
+                                key={skill}
+                                name={skill}
+                                specializationText={trait.specializationText}
+                                value={trait.value}
+                                onChange={(val, spec, exp, prc) =>
+                                    handleForceSkillChange(skill, val, spec, exp, prc)
+                                }
+                                onSpecializationTextChange={(text) =>
+                                    handleForceSkillSpecializationChange(skill, text)
+                                }
+                                size="sm"
                             />
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-textPrimary">Force Points</span>
-                            <StatDot
-                                value={forcePoints.current}
-                                maxValue={Math.max(1, forcePointsMax)}
-                                onChange={(val) => handleForcePointsChange(val)}
-                                size="md"
+                        );
+                    })}
+                </SectionCard>
+                <SectionCard title="Virtues">
+                    {VIRTUES.map((virtue) => {
+                        const trait = currentCharacter.virtues?.[virtue] || {
+                            ...DEFAULT_TRAIT_VALUE,
+                        };
+                        return (
+                            <TraitRowWithInput
+                                key={virtue}
+                                name={virtue}
+                                specializationText={trait.specializationText}
+                                value={trait.value}
+                                onChange={(val, spec, exp, prc) =>
+                                    handleVirtueChange(virtue, val, spec, exp, prc)
+                                }
+                                onSpecializationTextChange={(text) =>
+                                    handleVirtueSpecializationChange(virtue, text)
+                                }
+                                size="sm"
+                                minimal={1}
                             />
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-textPrimary">Dark Side Resistance</span>
-                            <StatDot
-                                value={darkSide}
-                                maxValue={10}
-                                onChange={(val) => handleDarkSideChange(val)}
-                                size="md"
-                                activeColor={getDarkSideColor((darkSide / 10) * 100)}
-                            />
-                        </div>
+                        );
+                    })}
+                </SectionCard>
+                <SectionCard title="Resolve">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-textPrimary">Willpower</span>
+                        <StatDot
+                            value={willpower.current}
+                            maxValue={10}
+                            onChange={(val) => handleWillpowerChange(val)}
+                            size="md"
+                            minimal={willpowerMinimal}
+                        />
                     </div>
-                </div>
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-textPrimary">Force Points</span>
+                        <StatDot
+                            value={forcePoints.current}
+                            maxValue={Math.max(1, forcePointsMax)}
+                            onChange={(val) => handleForcePointsChange(val)}
+                            size="md"
+                        />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-textPrimary">Dark Side Resistance</span>
+                        <StatDot
+                            value={darkSide}
+                            maxValue={10}
+                            onChange={(val) => handleDarkSideChange(val)}
+                            size="md"
+                            activeColor={getDarkSideColor((darkSide / 10) * 100)}
+                        />
+                    </div>
+                </SectionCard>
             </div>
         </CollapsibleBlock>
     );

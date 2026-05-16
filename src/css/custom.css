@@ -21,20 +21,18 @@
     --ifm-code-font-size: 95%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
     --ifm-navbar-background-color: rgb(var(--bg-surface));
+    --ifm-background-color: rgb(var(--bg-base));
 
-    /* Базовые (Броня) */
     --bg-base: 245 245 249;
     --bg-surface: 249 249 255;
     --text-primary: 15 23 42;
     --text-secondary: 71 85 105;
 
-    /* Акценты (Маркеры отряда) */
     --primary: 220 38 38;
     --on-primary: 255 255 255;
     --secondary: 202 138 4;
     --on-secondary: 0 0 0;
 
-    /* Состояния (Интерфейс) */
     --border: 226 232 240;
     --border-more-contrast: 206 212 220;
     --error: 185 28 28;
@@ -42,7 +40,6 @@
     --info: 2 132 199;
     --success: 21 128 61;
 
-    /* Star Wars */
     --sw-jedi-blue: 0 153 255;
     --sw-jedi-green: 0 255 64;
     --sw-jedi-violet: 150 0 255;

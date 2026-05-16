@@ -38,6 +38,7 @@ export function HealthBlock() {
     };
 
     return (
+        // can't use <SectionCard> because I need header on right side and overall div flex-start
         <div className="bg-bgSurface border rounded-lg p-4 self-start">
             <h3 className="text-sm text-textSecondary font-semibold uppercase tracking-wider text-right mb-4 pr-3">
                 Health

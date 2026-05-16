@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useExpandedState } from '../../hooks';
 
-type AccentColor = 'primary' | 'secondary' | 'error';
+export type AccentColor = 'primary' | 'secondary';
 
 interface CollapsibleBlockProps {
     title: string;
@@ -14,7 +14,6 @@ interface CollapsibleBlockProps {
 const accentColorClasses: Record<AccentColor, string> = {
     primary: 'bg-primary',
     secondary: 'bg-secondary',
-    error: 'bg-error',
 };
 
 export function CollapsibleBlock({

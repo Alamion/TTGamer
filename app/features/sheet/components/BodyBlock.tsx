@@ -1,9 +1,9 @@
-import { CollapsibleBlock } from '../../../components/shared';
+import { CollapsibleBlock, SectionCard } from '../../../components/shared';
+import type { AccentColor } from '../../../components/shared';
 import { DataTable } from '../../../components/shared';
 import type { DataTableColumn } from '../../../components/shared';
 import { useCharacterStore } from '../../../store/characterStore';
-import { useLocalStorageState } from '../../../hooks';
-import { ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { HealthBlock } from './HealthBlock.tsx';
 import type { ArmorItem, WeaponItem, Item } from '../../../types/character';
 
@@ -13,23 +13,18 @@ interface SectionState {
     weapons: boolean;
 }
 
-export function BodyBlock() {
+interface BodyBlockProps {
+    accentColor?: AccentColor;
+}
+
+export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
-    const [expandedSections, setExpandedSections] = useLocalStorageState('bodyBlock_sections', {
-        inventory: true,
-        armor: false,
-        weapons: false,
-    } as SectionState);
 
     if (!currentCharacter) return null;
 
     const inventory = currentCharacter.inventory || [];
     const armor = currentCharacter.armor || [];
     const weapons = currentCharacter.weapons || [];
-
-    const toggleSection = (section: keyof SectionState) => {
-        setExpandedSections({ ...expandedSections, [section]: !expandedSections[section] });
-    };
 
     const addInventoryItem = () => {
         updateCharacter(currentCharacter.id, {
@@ -208,28 +203,13 @@ export function BodyBlock() {
         title: string,
         content: React.ReactNode
     ) => (
-        <div className="bg-bgSurface border rounded-lg overflow-hidden">
-            <button
-                onClick={() => toggleSection(section)}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-bgBase/30 transition-colors"
-                aria-expanded={expandedSections[section]}
-                aria-label={`Toggle ${title} section`}
-            >
-                <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider">
-                    {title}
-                </h3>
-                {expandedSections[section] ? (
-                    <ChevronUp className="w-5 h-5 text-textSecondary" aria-hidden="true" />
-                ) : (
-                    <ChevronDown className="w-5 h-5 text-textSecondary" aria-hidden="true" />
-                )}
-            </button>
-            {expandedSections[section] && content}
-        </div>
+        <SectionCard title={title} storageKey={`bodyBlock_${section}`}>
+            {content}
+        </SectionCard>
     );
 
     return (
-        <CollapsibleBlock title="Body" accentColor="primary" storageKey="bodyBlock">
+        <CollapsibleBlock title="Body" accentColor={accentColor} storageKey="bodyBlock">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="col-span-2 space-y-4">
                     {renderCollapsibleSection(

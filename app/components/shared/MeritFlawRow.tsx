@@ -1,4 +1,5 @@
 import { Plus, X } from 'lucide-react';
+import { SectionCard } from './SectionCard';
 
 interface MeritFlawItem {
     id: string;
@@ -26,10 +27,7 @@ export function MeritFlawList({
     disabled = false,
 }: MeritFlawListProps) {
     return (
-        <div className="bg-bgSurface border rounded-lg p-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 pb-2 text-textSecondary">
-                {title}
-            </h3>
+        <SectionCard title={title}>
             <div className="space-y-2">
                 {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-2">
@@ -75,6 +73,6 @@ export function MeritFlawList({
                 <Plus className="w-4 h-4" />
                 Add {title.slice(0, -1)}
             </button>
-        </div>
+        </SectionCard>
     );
 }

@@ -196,7 +196,7 @@ export function CustomTraitList({
     };
 
     return (
-        <div className="space-y-0">
+        <div className="space-y-1">
             {items.map((item) => (
                 <div key={item.id} className="flex items-end gap-2 relative py-1">
                     <input
