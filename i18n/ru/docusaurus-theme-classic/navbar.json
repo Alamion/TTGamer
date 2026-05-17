@@ -1,0 +1,18 @@
+{
+    "title": {
+        "message": "TTGamer",
+        "description": "The title in the navbar"
+    },
+    "logo.alt": {
+        "message": "TTGamer Logo",
+        "description": "The alt text of navbar logo"
+    },
+    "item.label.Sheet Manager": {
+        "message": "Sheet Manager",
+        "description": "Navbar item with label Sheet Manager"
+    },
+    "item.label.Core Books": {
+        "message": "Core Books",
+        "description": "Navbar item with label Core Books"
+    }
+}

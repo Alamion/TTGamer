@@ -314,36 +314,6 @@ Note: The app can also be run embedded in Docusaurus at `/universal_sheet` via `
 
 ---
 
-## 9.1. Documentation Conventions (MDX)
-
-- **Admonitions** — use bracket syntax for titles: `:::type[Title]` NOT `:::type Title`
-
-    ```mdx
-    :::tip[Before you begin]
-    Open the [Character Sheet](/universal_sheet) in a new tab.
-    :::
-
-    :::note[Difficulty reference]
-    Standard difficulty is 6.
-    :::
-
-    :::caution[Soaking Lethal damage]
-    PCs always lose at least 1 Health level.
-    :::
-
-    :::info[The 80/20 rule]
-    This guide covers 20% of rules for 80% of gameplay.
-    :::
-    ```
-
-- **Cross-references** — use relative links: `[Dice Pools](../core-rules/dice-pools.mdx)`
-- **Dice notation** — inline code: `3d6`, `4d6+1`
-- **Attribute/skill names** — **bold**: **Dexterity**, **Blaster**
-- **Character examples** — _italic_: _Jax Vorn_
-- **UI elements** — `inline code`: click **New**, fill the **Name** field
-
----
-
 ## 10. Patterns & Tips
 
 ### Adding a new attribute/skill block
@@ -484,7 +454,7 @@ Derived stats are auto-calculated from attributes, skills, and virtues:
 
 ---
 
-## 13. Accessibility Rules
+## 14. Accessibility Rules
 
 **Always** include the following for interactive elements:
 
@@ -511,8 +481,9 @@ Features to implement (no strict order):
 
 - [ ] **Documentation:** Write Docusaurus docs about the system built
 - [ ] **Droid & Vehicle Characters:** Add vehicle char list and droid specifics to main character sheet
+- [ ] **i18n internalization:** Add support for multiple languages
 - [ ] **Dice rolls**: Add dice roll visualizer - UI/UX; dice pool, history of rolls, etc.
-- [ ] **3D Dice Rolls:** Implement flexible dice rolls via [@3d-dice/dice-box-threejs](https://github.com/3d-dice/dice-box-threejs)
+- [ ] **3D Dice Rolls:** Implement flexible dice rolls in 3D
 - [ ] **Database + Auth:** Replace localStorage with a proper database + authentication layer
 - [ ] **Trait System:** Add list of traits (merits/flaws) usable in character sheets with mechanical effects + mechanism for adding custom traits
 - [ ] **Item Catalog:** Add pre-existing items list (lasers, lightsabers, food, drinks, etc.) — players can add items to inventory or create new items in their db

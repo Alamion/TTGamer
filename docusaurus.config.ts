@@ -62,15 +62,25 @@ const config: Config = {
                     position: 'left',
                     label: 'Core Books',
                 },
+                // {
+                //     type: 'custom-dice-roller',
+                //     position: 'left',
+                //     customProp: 'Кликни меня!',
+                // },
                 {
                     type: 'localeDropdown',
                     position: 'right',
                 },
                 {
-                    href: 'https://github.com/Alamion/TTGamer',
-                    label: 'GitHub',
+                    href: 'https://github.com/facebook/docusaurus',
                     position: 'right',
+                    className: 'header-github-link',
+                    'aria-label': 'GitHub repository',
                 },
+                // { // Заготовка под search https://docusaurus.io/docs/search - откладываем до момента релиза из-за технических трудностей
+                //     type: 'search',
+                //     position: 'right',
+                // },
             ],
         },
         // footer: {
@@ -102,6 +112,23 @@ const config: Config = {
             darkTheme: prismThemes.dracula,
         },
     } satisfies Preset.ThemeConfig,
+    plugins: [
+        // function myNavbarPlugin() {
+        //     return {
+        //         name: 'my-navbar-plugin',
+        //         configureWebpack() {
+        //             return {
+        //                 resolve: {
+        //                     alias: {
+        //                         // Магия: связываем строку "custom-myButton" с вашим React-компонентом
+        //                         '@theme/NavbarItem/custom-myButton': require.resolve('./src/components/NavbarDiceRoller.tsx'),
+        //                     },
+        //                 },
+        //             };
+        //         },
+        //     };
+        // },
+    ],
 };
 
 export default config;

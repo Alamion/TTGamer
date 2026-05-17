@@ -65,18 +65,18 @@ Opens the site at `http://localhost:3000`.
 
 ## Tech Stack
 
-| Concern         | Technology                            |
-| --------------- | ------------------------------------- |
-| Site Framework  | Docusaurus 3.10 (preset-classic)      |
-| Frontend        | React 19 + TypeScript (strict)        |
-| State           | Zustand 5 (with persist middleware)   |
-| Styling         | Tailwind CSS 3 + clsx                 |
-| Forms           | React Hook Form + Zod                 |
-| Persistence     | localForage (IndexedDB)               |
-| Icons           | Lucide-react                          |
-| Components      | Radix UI primitives                   |
-| Testing         | Vitest + Playwright                   |
-| i18n            | Docusaurus i18n (en, ru)              |
+| Concern        | Technology                          |
+| -------------- | ----------------------------------- |
+| Site Framework | Docusaurus 3.10 (preset-classic)    |
+| Frontend       | React 19 + TypeScript (strict)      |
+| State          | Zustand 5 (with persist middleware) |
+| Styling        | Tailwind CSS 3 + clsx               |
+| Forms          | React Hook Form + Zod               |
+| Persistence    | localForage (IndexedDB)             |
+| Icons          | Lucide-react                        |
+| Components     | Radix UI primitives                 |
+| Testing        | Vitest + Playwright                 |
+| i18n           | Docusaurus i18n (en, ru)            |
 
 ## Roadmap
 
