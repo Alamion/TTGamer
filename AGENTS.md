@@ -287,27 +287,29 @@ Note: The app can also be run embedded in Docusaurus at `/universal_sheet` via `
 ## 9.1. Documentation Conventions (MDX)
 
 - **Admonitions** — use bracket syntax for titles: `:::type[Title]` NOT `:::type Title`
-  ```mdx
-  :::tip[Before you begin]
-  Open the [Character Sheet](/universal_sheet) in a new tab.
-  :::
 
-  :::note[Difficulty reference]
-  Standard difficulty is 6.
-  :::
+    ```mdx
+    :::tip[Before you begin]
+    Open the [Character Sheet](/universal_sheet) in a new tab.
+    :::
 
-  :::caution[Soaking Lethal damage]
-  PCs always lose at least 1 Health level.
-  :::
+    :::note[Difficulty reference]
+    Standard difficulty is 6.
+    :::
 
-  :::info[The 80/20 rule]
-  This guide covers 20% of rules for 80% of gameplay.
-  :::
-  ```
+    :::caution[Soaking Lethal damage]
+    PCs always lose at least 1 Health level.
+    :::
+
+    :::info[The 80/20 rule]
+    This guide covers 20% of rules for 80% of gameplay.
+    :::
+    ```
+
 - **Cross-references** — use relative links: `[Dice Pools](../core-rules/dice-pools.mdx)`
 - **Dice notation** — inline code: `3d6`, `4d6+1`
 - **Attribute/skill names** — **bold**: **Dexterity**, **Blaster**
-- **Character examples** — *italic*: *Jax Vorn*
+- **Character examples** — _italic_: _Jax Vorn_
 - **UI elements** — `inline code`: click **New**, fill the **Name** field
 
 ---
@@ -315,27 +317,29 @@ Note: The app can also be run embedded in Docusaurus at `/universal_sheet` via `
 ## 9.1. Documentation Conventions (MDX)
 
 - **Admonitions** — use bracket syntax for titles: `:::type[Title]` NOT `:::type Title`
-  ```mdx
-  :::tip[Before you begin]
-  Open the [Character Sheet](/universal_sheet) in a new tab.
-  :::
 
-  :::note[Difficulty reference]
-  Standard difficulty is 6.
-  :::
+    ```mdx
+    :::tip[Before you begin]
+    Open the [Character Sheet](/universal_sheet) in a new tab.
+    :::
 
-  :::caution[Soaking Lethal damage]
-  PCs always lose at least 1 Health level.
-  :::
+    :::note[Difficulty reference]
+    Standard difficulty is 6.
+    :::
 
-  :::info[The 80/20 rule]
-  This guide covers 20% of rules for 80% of gameplay.
-  :::
-  ```
+    :::caution[Soaking Lethal damage]
+    PCs always lose at least 1 Health level.
+    :::
+
+    :::info[The 80/20 rule]
+    This guide covers 20% of rules for 80% of gameplay.
+    :::
+    ```
+
 - **Cross-references** — use relative links: `[Dice Pools](../core-rules/dice-pools.mdx)`
 - **Dice notation** — inline code: `3d6`, `4d6+1`
 - **Attribute/skill names** — **bold**: **Dexterity**, **Blaster**
-- **Character examples** — *italic*: *Jax Vorn*
+- **Character examples** — _italic_: _Jax Vorn_
 - **UI elements** — `inline code`: click **New**, fill the **Name** field
 
 ---

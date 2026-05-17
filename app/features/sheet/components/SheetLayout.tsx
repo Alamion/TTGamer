@@ -7,7 +7,8 @@ import { ConfirmDialog, CharacterManagerModal } from '../../../components/shared
 type SheetLayoutProps = {
     children: React.ReactNode;
 };
-const btnBase = "flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed";
+const btnBase =
+    'flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed';
 
 const btnSecondary = `${btnBase} text-textPrimary bg-bgSurface hover:bg-bgBase`;
 const btnDanger = `${btnBase} text-error bg-bgSurface hover:bg-bgBase`;
@@ -105,7 +106,6 @@ export function SheetLayout({ children }: SheetLayoutProps) {
         <>
             <div className="bg-bgSurface p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 pb-4 sm:pb-0">
-
                     {/* Левая часть: Основные действия с персонажами */}
                     <div className="flex flex-wrap items-center gap-2.5 justify-around">
                         {/* Группа: Файловые операции */}
