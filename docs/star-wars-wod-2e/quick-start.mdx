@@ -3,6 +3,31 @@ sidebar_position: 2
 title: Quick Start
 ---
 
+import { Plus } from 'lucide-react';
+import { DocsComponentWrapper } from '../../app/components/ui/DocsComponentWrapper';
+import { BaseBlock } from "../../app/features/sheet/components/BaseBlock";
+import { AttributeBlock } from "../../app/features/sheet/components/AttributeBlock";
+import { SkillBlock } from "../../app/features/sheet/components/SkillBlock";
+import { AdvantagesBlock } from "../../app/features/sheet/components/AdvantagesBlock";
+import { ForceBlock } from "../../app/features/sheet/components/ForceBlock";
+import { useCharacterStore } from "../../app/store/characterStore";
+
+export function NewCharacterButton() {
+    const { createNewCharacter } = useCharacterStore();
+    return (
+        <DocsComponentWrapper>
+            <button
+                className="items-center justify-center gap-1.5 font-medium border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed text-white bg-primary hover:bg-primary/90 border-transparent px-4 py-2 text-sm inline-flex"
+                onClick={createNewCharacter}
+                title="Create new character"
+            >
+                <Plus className="w-4 h-4" aria-hidden="true" />
+                <span>New</span>
+            </button>
+        </DocsComponentWrapper>
+    );
+}
+
 # Quick Start: Play in 15 Minutes
 
 :::tip[Before you begin]
@@ -65,7 +90,7 @@ If you don't possess the required Ability, you can often still roll your raw bas
 
 ### 1. Initialize the Template
 
-Navigate to the digital sheet manager at `/universal_sheet` and click the `New` button to clear the template.
+Just click the <NewCharacterButton /> button right here. Or, you can navigate to the digital sheet manager at `/universal_sheet` and do the same thing.
 
 ### 2. Fill in the Basics
 
@@ -74,6 +99,8 @@ Navigate to the `Base` block and fill out your identifying concept traits:
 - `Name`: Who are you in the galaxy? (e.g., _Jax Vorn_)
 - `Concept`: Your elevator pitch background (e.g., _Corellian Smuggler_, _Fugitive Padawan_)
 - `Species`: Pick your species template (e.g., _Human_, _Wookiee_, _Twi'lek_)
+
+<DocsComponentWrapper><BaseBlock accentColor="primary"/></DocsComponentWrapper>
 
 ### 3. Distribute Your Attribute Dots
 
@@ -85,20 +112,29 @@ Rank these columns based on your character concept. Distribute your starting dot
 - **Tertiary Column:** Allocate **3 dots** across its three attributes.
 - _Note: Every attribute automatically starts with 1 inherent dot. The maximum rating for a starting character is 5._
 
+<DocsComponentWrapper><AttributeBlock accentColor="secondary"/></DocsComponentWrapper>
+
 ### 4. Distribute Your Ability Dots
 
 Scroll to the `Skills` block, which houses your fields of specialized training across three structural columns: **Talents** (intuitive traits), **Skills** (trained actions), and **Knowledges** (academic study).
 Prioritize these columns and distribute your dots using the **13 / 9 / 5** budget:
 
-- **Primary Column:** Allocate **13 dots** (maximum of 3 dots per individual ability).
+- **Primary Column:** Allocate **13 dots**
 - **Secondary Column:** Allocate **9 dots**.
 - **Tertiary Column:** Allocate **5 dots**.
+- _Note: Every ability starts with 0 inherent dot. The maximum rating for a starting character is 3._
+
+<DocsComponentWrapper><SkillBlock accentColor="primary"/></DocsComponentWrapper>
 
 ### 5. Establish Advantages & Virtues
 
 - **Backgrounds:** In the `Advantages` block, click `Add Background` to allocate your **5 starting dots** into narrative vectors like `Contacts`, `Resources`, or `Vehicle`.
 - **Virtues:** In the `Force` block, locate your core ethics: `Conscience`, `Passion`, and `Self Control`. Distribute **7 dots** among them (each starts with 1 dot inherently).
 
+<DocsComponentWrapper><AdvantagesBlock accentColor="secondary"/></DocsComponentWrapper>
+<br/>
+<DocsComponentWrapper><ForceBlock accentColor="primary"/></DocsComponentWrapper>
+<br/>
 > **Derived Calculations:** The sheet will automatically calculate your secondary pools based on your starting virtues. Your maximum `Willpower` pool equals `Passion + Self Control`. Your starting `Dark Side Resistance` equals `5 + Conscience − Passion`.
 
 ### 6. Fine-Tune with Freebie Points
@@ -108,7 +144,7 @@ You have **15 Freebie Points** to buy additional advantages or custom traits. Sp
 - **Attribute:** 5 points per dot
 - **Ability (Skill/Talent/Knowledge):** 2 points per dot
 - **Virtue:** 2 points per dot
-- **Force Skills / Powers:** 2 points per dot/power _(Requires the `Force Sensitive` Merit)_
+- **Force Skills / Powers:** 3 points per dot/power _(Requires the `Force Sensitive` Merit)_
 - **Backgrounds / Merits:** 1 point per rating dot
 
 :::note[Need a complete catalog?]
@@ -126,6 +162,21 @@ Your digital layout at `/universal_sheet` is segmented into clear, interactive f
 - **Abilities/Skills:** Houses your active modifiers split into **Talents**, **Skills**, and **Knowledges** (such as **Blaster**, **Pilot**, or **Astrogation**).
 - **Advantages & Force:** Manages narrative backgrounds, secondary pools like your active temporary `Force Points`, and active `Force Skills` (`Control`, `Sense`, `Telekinesis`).
 - **Body & Health Track:** Your active inventory tracking, weapon damage profiles, and your **7-level condition monitor** ranging from healthy down to `Incapacitated`.
+
+:::tip[Quick Reference: Common Dice Pools]
+
+| Action | Dice Pool |
+| --- | --- |
+| Shoot a blaster | **Dexterity** + **Blaster** |
+| Dodge incoming fire | **Dexterity** + **Dodge** |
+| Sneak past guards | **Dexterity** + **Stealth** |
+| Persuade an NPC | **Charisma** + **Diplomacy** |
+| Notice a hidden threat | **Perception** + **Alertness** |
+| Repair a broken system | **Dexterity** + **Repair** |
+| Jump to hyperspace | **Intelligence** + **Astrogation** |
+| Resist Force influence | **Self Control** (standalone roll) |
+
+:::
 
 ---
 

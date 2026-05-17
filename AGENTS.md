@@ -511,6 +511,7 @@ Features to implement (no strict order):
 
 - [ ] **Documentation:** Write Docusaurus docs about the system built
 - [ ] **Droid & Vehicle Characters:** Add vehicle char list and droid specifics to main character sheet
+- [ ] **Dice rolls**: Add dice roll visualizer - UI/UX; dice pool, history of rolls, etc.
 - [ ] **3D Dice Rolls:** Implement flexible dice rolls via [@3d-dice/dice-box-threejs](https://github.com/3d-dice/dice-box-threejs)
 - [ ] **Database + Auth:** Replace localStorage with a proper database + authentication layer
 - [ ] **Trait System:** Add list of traits (merits/flaws) usable in character sheets with mechanical effects + mechanism for adding custom traits
