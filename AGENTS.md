@@ -35,45 +35,46 @@ A Docusaurus-based site hosting docs, blog, and a modular React character sheet 
 ## 3. Project Structure
 
 ```
-├── app/                          # Original Vite React app (character sheet)
+├── app/                          # Character sheet React app
 │   ├── components/
-│   │   └── shared/               # Atomic/molecular UI components
-│   │       ├── CharacterManagerModal.tsx # Character list modal (load/delete)
-│   │       ├── CollapsibleBlock.tsx      # Collapsible section wrapper
-│   │       ├── ConfirmDialog.tsx          # Radix UI confirmation dialog
-│   │       ├── DataTable.tsx              # Reusable table component with CRUD
-│   │       ├── MeritFlawRow.tsx           # Merit/Flaw list editor
-│   │       ├── StatDot.tsx                # WoD-style dot selector (1-5 dots)
-│   │       ├── StatLabel.tsx              # Label with optional tooltip
-│   │       ├── TraitRow.tsx               # Label + StatDot row (simple, with input, custom list)
-│   │       └── index.ts
+│   │   ├── shared/               # Atomic/molecular UI components
+│   │   │   ├── CharacterManagerModal.tsx # Character list modal (load/delete)
+│   │   │   ├── CollapsibleBlock.tsx      # Collapsible section wrapper
+│   │   │   ├── ConfirmDialog.tsx          # Radix UI confirmation dialog
+│   │   │   ├── DataTable.tsx              # Reusable table component with CRUD
+│   │   │   ├── MeritFlawRow.tsx           # Merit/Flaw list editor
+│   │   │   ├── SectionCard.tsx            # Collapsible section card with header
+│   │   │   ├── StatDot.tsx                # WoD-style dot selector (1-5 dots)
+│   │   │   ├── StatLabel.tsx              # Label with optional tooltip
+│   │   │   ├── TraitRow.tsx               # Label + StatDot row (simple, with input, custom list)
+│   │   │   └── index.ts
+│   │   └── ui/                    # Placeholder for UI components
 │   ├── features/
 │   │   ├── automation/           # Planned: auto-calculated stats
 │   │   ├── dice/                 # Planned: dice integration
 │   │   ├── manager/              # Planned: character management
 │   │   └── sheet/                # Character sheet feature module
-│   │       └── components/
-│   │           ├── AttributeBlock.tsx     # 9 attributes (Physical/Social/Mental)
-│   │           ├── AdvantagesBlock.tsx   # Backgrounds, Merits, Flaws
-│   │           ├── BaseBlock.tsx          # Character metadata (name, concept, species...)
-│   │           ├── BodyBlock.tsx          # Inventory, Armor, Weapons + Health
-│   │           ├── CharacterSheet.tsx     # Main sheet orchestrator
-│   │           ├── HealthBlock.tsx        # Bashing/Lethal damage tracker
-│   │           ├── OtherBlock.tsx         # Misc fields
-│   │           ├── PowerBlock.tsx         # Force Skills, Virtues, Willpower, Force Points
-│   │           ├── SheetLayout.tsx        # Layout with universal buttons
-│   │           ├── SkillBlock.tsx         # Skills (Talents/Skills/Knowledge)
-│   │           └── StatsBlock.tsx         # Derived stats + Experience
+│   │       ├── components/
+│   │       │   ├── AttributeBlock.tsx     # 9 attributes (Physical/Social/Mental)
+│   │       │   ├── AdvantagesBlock.tsx    # Backgrounds, Merits, Flaws
+│   │       │   ├── BaseBlock.tsx          # Character metadata (name, concept, species...)
+│   │       │   ├── BodyBlock.tsx          # Inventory, Armor, Weapons + Health
+│   │       │   ├── CharacterSheet.tsx     # Main sheet orchestrator
+│   │       │   ├── HealthBlock.tsx        # Bashing/Lethal damage tracker
+│   │       │   ├── OtherBlock.tsx         # Misc fields
+│   │       │   ├── ForceBlock.tsx         # Force Skills, Virtues, Willpower, Force Points
+│   │       │   ├── SheetLayout.tsx        # Layout with universal buttons
+│   │       │   ├── SkillBlock.tsx         # Skills (Talents/Skills/Knowledge)
+│   │       │   └── StatsBlock.tsx          # Derived stats + Experience
+│   │       └── index.ts
 │   ├── hooks/
 │   │   ├── index.ts
 │   │   ├── useLocalStorageState.ts         # useExpandedState for collapsible sections
 │   │   └── useTraitUpdater.ts              # Generic hook for trait (attribute/skill) updates
 │   ├── store/
 │   │   └── characterStore.ts               # Zustand store (CRUD, import, persistence)
-│   ├── templates/                          # Character templates
-│   ├── types/
-│   │   └── character.ts                    # Zod schemas + TypeScript types + default factory
-│   └── utils/                              # Utility functions
+│   └── types/
+│       └── character.ts                    # Zod schemas + TypeScript types + default factory
 │
 ├── src/                          # Docusaurus source
 │   ├── @types/
@@ -107,10 +108,9 @@ A Docusaurus-based site hosting docs, blog, and a modular React character sheet 
 
 ### Docusaurus + App Integration
 
-- The `app/` folder is a standalone Vite React project embedded into Docusaurus via **relative imports** (no workspace or package alias)
+- The `app/` folder is a React app embedded into Docusaurus via **relative imports** (no workspace or package alias)
 - `src/pages/universal_sheet.tsx` imports `CharacterSheet` from `../../app/features/sheet`
 - All page components must be wrapped in `<Layout>` from `@theme/Layout` to get navbar/footer
-- `app/` retains its own `package.json`, `vite.config.ts`, and tsconfigs for standalone development
 
 ### Layout Pattern
 
@@ -185,6 +185,10 @@ List editor for Merits and Flaws with add/remove functionality.
 
 Wrapper component for collapsible sections with persistence.
 
+### SectionCard (`app/components/shared/SectionCard.tsx`)
+
+Collapsible section card with header. Renders a clickable header with chevron icons when `storageKey` is provided for persistence.
+
 ### CharacterManagerModal (`app/components/shared/CharacterManagerModal.tsx`)
 
 Modal dialog for managing characters — displays list, allows loading/deleting. New Character button was moved to `SheetLayout`.
@@ -258,12 +262,14 @@ yarn deploy             # Deploy to GitHub Pages
 yarn clear              # Clear Docusaurus cache
 ```
 
-Standalone app (inside `app/`):
+Standalone app commands (inside `app/`):
 
 ```bash
 cd app && yarn dev      # Start Vite dev server
 cd app && yarn build    # Vite production build
 ```
+
+Note: The app can also be run embedded in Docusaurus at `/universal_sheet` via `yarn start`.
 
 ---
 
@@ -275,6 +281,62 @@ cd app && yarn build    # Vite production build
 - **Icons:** Lucide-react
 - **No comments** unless explicitly requested
 - **Types:** Use `DEFAULT_TRAIT_VALUE` from `app/types/character.ts` for default trait values instead of inline objects
+
+---
+
+## 9.1. Documentation Conventions (MDX)
+
+- **Admonitions** — use bracket syntax for titles: `:::type[Title]` NOT `:::type Title`
+  ```mdx
+  :::tip[Before you begin]
+  Open the [Character Sheet](/universal_sheet) in a new tab.
+  :::
+
+  :::note[Difficulty reference]
+  Standard difficulty is 6.
+  :::
+
+  :::caution[Soaking Lethal damage]
+  PCs always lose at least 1 Health level.
+  :::
+
+  :::info[The 80/20 rule]
+  This guide covers 20% of rules for 80% of gameplay.
+  :::
+  ```
+- **Cross-references** — use relative links: `[Dice Pools](../core-rules/dice-pools.mdx)`
+- **Dice notation** — inline code: `3d6`, `4d6+1`
+- **Attribute/skill names** — **bold**: **Dexterity**, **Blaster**
+- **Character examples** — *italic*: *Jax Vorn*
+- **UI elements** — `inline code`: click **New**, fill the **Name** field
+
+---
+
+## 9.1. Documentation Conventions (MDX)
+
+- **Admonitions** — use bracket syntax for titles: `:::type[Title]` NOT `:::type Title`
+  ```mdx
+  :::tip[Before you begin]
+  Open the [Character Sheet](/universal_sheet) in a new tab.
+  :::
+
+  :::note[Difficulty reference]
+  Standard difficulty is 6.
+  :::
+
+  :::caution[Soaking Lethal damage]
+  PCs always lose at least 1 Health level.
+  :::
+
+  :::info[The 80/20 rule]
+  This guide covers 20% of rules for 80% of gameplay.
+  :::
+  ```
+- **Cross-references** — use relative links: `[Dice Pools](../core-rules/dice-pools.mdx)`
+- **Dice notation** — inline code: `3d6`, `4d6+1`
+- **Attribute/skill names** — **bold**: **Dexterity**, **Blaster**
+- **Character examples** — *italic*: *Jax Vorn*
+- **UI elements** — `inline code`: click **New**, fill the **Name** field
 
 ---
 
@@ -326,12 +388,84 @@ const { getTrait, updateTrait } = useTraitUpdater('attributes');
 
 ```
 ai_context/
+├── [Andrew_Greenberg]_The_Vampire_Players_Guide,_2nd_(libcats.org).md  # ~20k line source doc (use grep)
+├── Vampire_The_Masquerade_2nd_Edition.md  # ~21k line source doc (use grep)
 └── Star_Wars_WEG_to_WoD_Conversion.md  # ~11k line source doc (use grep)
 ```
 
 ---
 
-## 12. Derived Stats Formulas (`StatsBlock.tsx`)
+## 12. Documentation Structure (`docs/`)
+
+```
+docs/
+├── intro.mdx                                    # Project homepage intro
+│
+├── star-wars-wod-2e/                            # Star Wars WEG→WoD hybrid system
+│   ├── intro.mdx                                # System overview & introduction
+│   ├── quick-start.mdx                          # "Play in 15 minutes" guide
+│   ├── example-of-play.mdx                      # Sample combat/roleplay scene
+│   ├── en-ru-termins.mdx                        # English-Russian terminology glossary
+│   ├── equipment.mdx                            # Equipment catalog & rules
+│   │
+│   ├── core-rules/
+│   │   ├── dice-pools.mdx                       # Dice mechanics, difficulty, modifiers
+│   │   └── attributes-skills.mdx                # Core attributes & skills reference
+│   │
+│   ├── character/
+│   │   ├── creation-steps.mdx                   # Step-by-step character creation guide
+│   │   ├── reading-sheet.mdx                    # How to read your character sheet
+│   │   ├── species.mdx                          # Species options & traits
+│   │   ├── backgrounds.mdx                      # Backgrounds system
+│   │   ├── merits-flaws.mdx                     # Merits & Flaws catalog
+│   │   ├── force.mdx                            # Force powers & mechanics
+│   │   ├── virtues-willpower.mdx                # Virtues system & willpower
+│   │   ├── dark_side_resistance.mdx             # Dark side resistance mechanics
+│   │   └── droids-cyborgs.mdx                   # Droid & cyborg character rules
+│   │
+│   ├── combat/
+│   │   ├── combat-flow.mdx                      # Combat sequence & turn order
+│   │   ├── combat-scales.mdx                    # Scale rules (personal, squad, vehicle)
+│   │   └── health-damage-heal.mdx               # Health tracks, damage types, healing
+│   │
+│   ├── creatures/
+│   │   ├── mechanics.mdx                        # Creature creation & stat blocks
+│   │   └── beastiary.mdx                        # Bestiary of creatures
+│   │
+│   ├── gm/                                      # Game Master section
+│   │   ├── running-the-game.mdx                 # Adventure structure, pacing, tips
+│   │   ├── building-encounters.mdx              # NPC creation, difficulty scaling
+│   │   ├── rewards-advancement.mdx              # XP, loot, Force progression
+│   │   └── adventure-design.mdx                 # Hooks, scenes, pacing
+│   │
+│   └── vehicles-mechanisms/
+│       ├── traits-systems.mdx                   # Vehicle traits & systems
+│       ├── space-combat.mdx                     # Space combat rules
+│       ├── durability-damage-repare.mdx         # Vehicle durability, damage, repair
+│       └── modifications.mdx                    # Vehicle modifications & upgrades
+│
+└── wod/                                         # World of Darkness (generic + VtM)
+    ├── intro.mdx                                # WoD system introduction
+    ├── equipment.mdx                            # WoD equipment
+    ├── vehicles.mdx                             # WoD vehicle rules
+    │
+    ├── core-rules/
+    │   ├── dice-pools.mdx                       # WoD dice pool mechanics
+    │   └── attributes-abilities.mdx             # WoD attributes & abilities
+    │
+    └── vtm/                                     # Vampire: The Masquerade
+        └── character/
+            ├── creation-steps.mdx               # Vampire character creation
+            ├── clans.mdx                        # Vampire clans
+            ├── archetypes.mdx                   # Character archetypes
+            ├── merits-flaws.mdx                 # VtM merits & flaws
+            ├── humanity.mdx                     # Humanity & morality
+            └── blood_points.mdx                 # Blood points mechanics
+```
+
+---
+
+## 13. Derived Stats Formulas (`StatsBlock.tsx`)
 
 Derived stats are auto-calculated from attributes, skills, and virtues:
 
@@ -367,11 +501,16 @@ Derived stats are auto-calculated from attributes, skills, and virtues:
 
 ---
 
-## 15. Roadmap (Current Status)
+## 15. Feature Roadmap
 
-- [x] **Phase 1:** Core character engine (attributes, skills, health, import/export)
-- [x] **Phase 2:** Template registry + character CRUD
-- [x] **Phase 3:** Migrate to Docusaurus site with embedded app
-- [x] **Phase 3.5:** Layout refactor (BaseBlock, SheetLayout, universal buttons)
-- [ ] **Phase 4:** Smart assistant (auto-calculated stats) + Dice integration
-- [ ] **Phase 5:** Automation features
+Features to implement (no strict order):
+
+- [ ] **Documentation:** Write Docusaurus docs about the system built
+- [ ] **Droid & Vehicle Characters:** Add vehicle char list and droid specifics to main character sheet
+- [ ] **3D Dice Rolls:** Implement flexible dice rolls via [@3d-dice/dice-box-threejs](https://github.com/3d-dice/dice-box-threejs)
+- [ ] **Database + Auth:** Replace localStorage with a proper database + authentication layer
+- [ ] **Trait System:** Add list of traits (merits/flaws) usable in character sheets with mechanical effects + mechanism for adding custom traits
+- [ ] **Item Catalog:** Add pre-existing items list (lasers, lightsabers, food, drinks, etc.) — players can add items to inventory or create new items in their db
+- [ ] **Vehicle Catalog:** Add pre-existing vehicles with their own character lists
+- [ ] **Creature Catalog:** Add pre-existing creatures with their own character lists
+- [ ] **WoD Systems:** Start implementing other systems (e.g., original WoD's VtM)

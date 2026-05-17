@@ -21,18 +21,17 @@ const config: Config = {
 
     i18n: {
         defaultLocale: 'en',
-        locales: ['en'],
+        locales: ['en', 'ru'],
     },
 
     presets: [
         [
             'classic',
             {
-                docs: false,
-                // docs: {
-                //     sidebarPath: './sidebars.ts',
-                //     editUrl: 'https://github.com/Alamion/TTGamer/tree/master/',
-                // },
+                docs: {
+                    sidebarPath: './sidebars.ts',
+                    editUrl: 'https://github.com/Alamion/TTGamer/tree/master/',
+                },
                 blog: false,
                 theme: {
                     customCss: './src/css/custom.css',
@@ -57,12 +56,16 @@ const config: Config = {
                     label: 'Sheet Manager',
                     position: 'left',
                 },
-                // {
-                //     type: 'docSidebar',
-                //     sidebarId: 'docsSidebar',
-                //     position: 'right',
-                //     label: 'Docs',
-                // },
+                {
+                    type: 'docSidebar',
+                    sidebarId: 'docsSidebar',
+                    position: 'left',
+                    label: 'Core Books',
+                },
+                {
+                    type: 'localeDropdown',
+                    position: 'right',
+                },
                 {
                     href: 'https://github.com/Alamion/TTGamer',
                     label: 'GitHub',

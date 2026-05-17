@@ -7,6 +7,11 @@ import { ConfirmDialog, CharacterManagerModal } from '../../../components/shared
 type SheetLayoutProps = {
     children: React.ReactNode;
 };
+const btnBase = "flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed";
+
+const btnSecondary = `${btnBase} text-textPrimary bg-bgSurface hover:bg-bgBase`;
+const btnDanger = `${btnBase} text-error bg-bgSurface hover:bg-bgBase`;
+const btnPrimary = `${btnBase} text-white bg-primary hover:bg-primary/90 border-transparent`;
 
 export function SheetLayout({ children }: SheetLayoutProps) {
     const {
@@ -98,61 +103,78 @@ export function SheetLayout({ children }: SheetLayoutProps) {
 
     return (
         <>
-            <div className="bg-bgSurface border-b p-4">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={handleExport}
-                            disabled={!currentCharacter}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-textPrimary bg-bgSurface border hover:bg-bgBase rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Export character as JSON"
-                        >
-                            <Download className="w-3.5 h-3.5" aria-hidden="true" />
-                            Export
-                        </button>
-                        <button
-                            onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-textPrimary bg-bgSurface border hover:bg-bgBase rounded transition-colors"
-                            title="Import characters from JSON"
-                        >
-                            <Upload className="w-3.5 h-3.5" aria-hidden="true" />
-                            Import
-                        </button>
-                        <button
-                            onClick={() => setResetDialogOpen(true)}
-                            disabled={!currentCharacter}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-error bg-bgSurface border hover:bg-bgBase rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Reset all sheet data"
-                        >
-                            <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
-                            Reset
-                        </button>
-                        <button
-                            onClick={() => setManagerModalOpen(true)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-textPrimary bg-bgSurface border hover:bg-bgBase rounded transition-colors"
-                            title="Manage characters"
-                        >
-                            <Users className="w-3.5 h-3.5" aria-hidden="true" />
-                            Manage
-                        </button>
+            <div className="bg-bgSurface p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 pb-4 sm:pb-0">
+
+                    {/* Левая часть: Основные действия с персонажами */}
+                    <div className="flex flex-wrap items-center gap-2.5 justify-around">
+                        {/* Группа: Файловые операции */}
+                        <div className="flex items-center gap-1.5 bg-bgSurface/50 p-1 rounded-lg border border-border/20">
+                            <button
+                                onClick={handleExport}
+                                disabled={!currentCharacter}
+                                className={btnSecondary}
+                                title="Export character as JSON"
+                            >
+                                <Download className="w-3.5 h-3.5" aria-hidden="true" />
+                                <span>Export</span>
+                            </button>
+
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className={btnSecondary}
+                                title="Import characters from JSON"
+                            >
+                                <Upload className="w-3.5 h-3.5" aria-hidden="true" />
+                                <span>Import</span>
+                            </button>
+                        </div>
+
+                        {/* Группа: Управление */}
+                        <div className="flex items-center gap-1.5 bg-bgSurface/50 p-1 rounded-lg border border-border/20">
+                            <button
+                                onClick={() => setManagerModalOpen(true)}
+                                className={btnSecondary}
+                                title="Manage characters"
+                            >
+                                <Users className="w-3.5 h-3.5" aria-hidden="true" />
+                                <span>Manage</span>
+                            </button>
+
+                            <button
+                                onClick={() => setResetDialogOpen(true)}
+                                disabled={!currentCharacter}
+                                className={btnDanger}
+                                title="Reset all sheet data"
+                            >
+                                <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                                <span>Reset</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Правая часть: Главное целевое действие (CTA) */}
+                    <div className="flex items-center">
                         <button
                             onClick={createNewCharacter}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-primary rounded hover:bg-primary/80 transition-colors"
+                            className={`${btnPrimary} w-full sm:w-auto px-4 py-2 text-sm`} // Чуть крупнее, так как это главное действие
                             title="Create new character"
                         >
-                            <Plus className="w-3.5 h-3.5" aria-hidden="true" />
-                            New
+                            <Plus className="w-4 h-4" aria-hidden="true" />
+                            <span>New</span>
                         </button>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept=".json,application/json"
-                            onChange={handleImport}
-                            className="hidden"
-                            aria-label="Import character file"
-                            multiple={true}
-                        />
                     </div>
+
+                    {/* Скрытый инпут */}
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".json,application/json"
+                        onChange={handleImport}
+                        className="hidden"
+                        aria-label="Import character file"
+                        multiple
+                    />
                 </div>
 
                 {importError && (

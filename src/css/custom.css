@@ -22,6 +22,7 @@
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
     --ifm-navbar-background-color: rgb(var(--bg-surface));
     --ifm-background-color: rgb(var(--bg-base));
+    --ifm-dropdown-background-color: rgb(var(--bg-surface));
 
     --bg-base: 245 245 249;
     --bg-surface: 249 249 255;

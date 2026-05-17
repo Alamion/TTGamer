@@ -5,7 +5,7 @@ import { StatDot } from '../../../components/shared';
 import { useCharacterStore } from '../../../store/characterStore';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character';
 
-interface PowerBlockProps {
+interface ForceBlockProps {
     accentColor?: AccentColor;
 }
 
@@ -19,7 +19,7 @@ function getDarkSideColor(percentage: number): { bg: string; border: string } {
     return { bg: 'bg-secondary', border: 'border-secondary' };
 }
 
-export function PowerBlock({ accentColor = 'secondary' }: PowerBlockProps) {
+export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
 
     if (!currentCharacter) return null;
@@ -115,7 +115,7 @@ export function PowerBlock({ accentColor = 'secondary' }: PowerBlockProps) {
     };
 
     return (
-        <CollapsibleBlock title="Power" accentColor={accentColor} storageKey="powerBlock">
+        <CollapsibleBlock title="Force" accentColor={accentColor} storageKey="forceBlock">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <SectionCard title="Force Skills">
                     {FORCE_SKILLS.map((skill) => {

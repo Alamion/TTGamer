@@ -220,7 +220,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     };
 
     return (
-        <CollapsibleBlock title="Abilities" accentColor={accentColor} storageKey="skillBlock">
+        <CollapsibleBlock title="Skills" accentColor={accentColor} storageKey="skillBlock">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {renderSkillColumn('talents', SKILLS.talents)}
                 {renderSkillColumn('skills', SKILLS.skills)}

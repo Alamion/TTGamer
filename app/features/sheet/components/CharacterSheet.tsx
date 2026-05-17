@@ -3,7 +3,7 @@ import { BaseBlock } from './BaseBlock';
 import { AttributeBlock } from './AttributeBlock';
 import { SkillBlock } from './SkillBlock';
 import { AdvantagesBlock } from './AdvantagesBlock';
-import { PowerBlock } from './PowerBlock';
+import { ForceBlock } from './ForceBlock.tsx';
 import { BodyBlock } from './BodyBlock';
 import { OtherBlock } from './OtherBlock';
 import type { AccentColor } from '../../../components/shared';
@@ -26,7 +26,7 @@ export function CharacterSheet() {
                 <AttributeBlock accentColor={BLOCK_ACCENT_COLORS[1]} />
                 <SkillBlock accentColor={BLOCK_ACCENT_COLORS[2]} />
                 <AdvantagesBlock accentColor={BLOCK_ACCENT_COLORS[3]} />
-                <PowerBlock accentColor={BLOCK_ACCENT_COLORS[4]} />
+                <ForceBlock accentColor={BLOCK_ACCENT_COLORS[4]} />
                 <BodyBlock accentColor={BLOCK_ACCENT_COLORS[5]} />
                 <OtherBlock accentColor={BLOCK_ACCENT_COLORS[6]} />
             </div>
