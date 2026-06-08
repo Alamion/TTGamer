@@ -4,18 +4,18 @@ title: Quick Start
 ---
 
 import { Plus } from 'lucide-react';
-import { DocsComponentWrapper } from '/app/components/ui/DocsComponentWrapper';
-import { BaseBlock } from '/app/features/sheet/components/BaseBlock';
-import { AttributeBlock } from '/app/features/sheet/components/AttributeBlock';
-import { SkillBlock } from '/app/features/sheet/components/SkillBlock';
-import { AdvantagesBlock } from '/app/features/sheet/components/AdvantagesBlock';
-import { ForceBlock } from '/app/features/sheet/components/ForceBlock';
-import { useCharacterStore } from '/app/store/characterStore';
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { BaseBlock } from '/src/sheet_manager/features/sheet/components/BaseBlock';
+import { AttributeBlock } from '/src/sheet_manager/features/sheet/components/AttributeBlock';
+import { SkillBlock } from '/src/sheet_manager/features/sheet/components/SkillBlock';
+import { AdvantagesBlock } from '/src/sheet_manager/features/sheet/components/AdvantagesBlock';
+import { ForceBlock } from '/src/sheet_manager/features/sheet/components/ForceBlock';
+import { useCharacterStore } from '/src/sheet_manager/store/characterStore';
 
 export function NewCharacterButton() {
     const { createNewCharacter } = useCharacterStore();
     return (
-        <DocsComponentWrapper>
+        <TWWrapper>
             <button
                 className="items-center justify-center gap-1.5 font-medium border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed text-white bg-primary hover:bg-primary/90 border-transparent px-4 py-2 text-sm inline-flex"
                 onClick={createNewCharacter}
@@ -24,7 +24,7 @@ export function NewCharacterButton() {
                 <Plus className="w-4 h-4" aria-hidden="true" />
                 <span>New</span>
             </button>
-        </DocsComponentWrapper>
+        </TWWrapper>
     );
 }
 
@@ -100,9 +100,9 @@ Navigate to the `Base` block and fill out your identifying concept traits:
 - `Concept`: Your elevator pitch background (e.g., _Corellian Smuggler_, _Fugitive Padawan_)
 - `Species`: Pick your species template (e.g., _Human_, _Wookiee_, _Twi'lek_)
 
-<DocsComponentWrapper>
+<TWWrapper>
     <BaseBlock accentColor="primary" />
-</DocsComponentWrapper>
+</TWWrapper>
 
 ### 3. Distribute Your Attribute Dots
 
@@ -114,9 +114,9 @@ Rank these columns based on your character concept. Distribute your starting dot
 - **Tertiary Column:** Allocate **3 dots** across its three attributes.
 - _Note: Every attribute automatically starts with 1 inherent dot. The maximum rating for a starting character is 5._
 
-<DocsComponentWrapper>
+<TWWrapper>
     <AttributeBlock accentColor="secondary" />
-</DocsComponentWrapper>
+</TWWrapper>
 
 ### 4. Distribute Your Ability Dots
 
@@ -128,18 +128,18 @@ Prioritize these columns and distribute your dots using the **13 / 9 / 5** budge
 - **Tertiary Column:** Allocate **5 dots**.
 - _Note: Every ability starts with 0 inherent dot. The maximum rating for a starting character is 3._
 
-<DocsComponentWrapper>
+<TWWrapper>
     <SkillBlock accentColor="primary" />
-</DocsComponentWrapper>
+</TWWrapper>
 
 ### 5. Establish Advantages & Virtues
 
 - **Backgrounds:** In the `Advantages` block, click `Add Background` to allocate your **5 starting dots** into narrative vectors like `Contacts`, `Resources`, or `Vehicle`.
 - **Virtues:** In the `Force` block, locate your core ethics: `Conscience`, `Passion`, and `Self Control`. Distribute **7 dots** among them (each starts with 1 dot inherently).
 
-<DocsComponentWrapper><AdvantagesBlock accentColor="secondary"/></DocsComponentWrapper>
+<TWWrapper><AdvantagesBlock accentColor="secondary"/></TWWrapper>
 <br/>
-<DocsComponentWrapper><ForceBlock accentColor="primary"/></DocsComponentWrapper>
+<TWWrapper><ForceBlock accentColor="primary"/></TWWrapper>
 <br/>
 > **Derived Calculations:** The sheet will automatically calculate your secondary pools based on your starting virtues. Your maximum `Willpower` pool equals `Passion + Self Control`. Your starting `Dark Side Resistance` equals `5 + Conscience − Passion`.
 

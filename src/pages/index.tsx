@@ -7,79 +7,77 @@ import Heading from '@theme/Heading';
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
     return (
-        <div className="tailwind-root">
-            <header className="relative overflow-hidden border-b-2 border-primary/40 bg-gradient-to-b from-bgSurface to-bgBase">
-                <div className="absolute inset-0 opacity-5">
-                    <div
-                        className="absolute inset-0"
-                        style={{
-                            backgroundImage:
-                                'repeating-linear-gradient(0deg, transparent, transparent 49px, rgb(var(--primary) / 0.15) 50px), repeating-linear-gradient(90deg, transparent, transparent 49px, rgb(var(--primary) / 0.15) 50px)',
-                            backgroundSize: '50px 50px',
-                        }}
-                    />
-                </div>
-                <div className="relative container mx-auto px-4 py-16 md:py-24">
-                    <div className="flex flex-col items-center text-center">
-                        <div className="mb-4 inline-flex items-center gap-2 rounded border border-droid-gold/40 bg-droid-gold/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-droid-gold">
-                            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-droid-gold" />
-                            Work in Progress
-                        </div>
-                        <Heading
-                            as="h1"
-                            className="mb-4 text-4xl font-black uppercase tracking-tight text-textPrimary md:text-6xl"
+        <header className="relative overflow-hidden border-b-2 border-primary/40 bg-gradient-to-b from-bgSurface to-bgBase">
+            <div className="absolute inset-0 opacity-5">
+                <div
+                    className="absolute inset-0"
+                    style={{
+                        backgroundImage:
+                            'repeating-linear-gradient(0deg, transparent, transparent 49px, rgb(var(--primary) / 0.15) 50px), repeating-linear-gradient(90deg, transparent, transparent 49px, rgb(var(--primary) / 0.15) 50px)',
+                        backgroundSize: '50px 50px',
+                    }}
+                />
+            </div>
+            <div className="relative container mx-auto px-4 py-16 md:py-24">
+                <div className="flex flex-col items-center text-center">
+                    <div className="mb-4 inline-flex items-center gap-2 rounded border border-droid-gold/40 bg-droid-gold/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-droid-gold">
+                        <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-droid-gold" />
+                        Work in Progress
+                    </div>
+                    <Heading
+                        as="h1"
+                        className="mb-4 text-4xl font-black uppercase tracking-tight text-textPrimary md:text-6xl"
+                    >
+                        {siteConfig.title}
+                    </Heading>
+                    <p className="mb-8 max-w-2xl text-lg font-medium text-textSecondary md:text-xl">
+                        {siteConfig.tagline}
+                    </p>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                        <Link
+                            className="inline-flex items-center justify-center gap-2 rounded border-2 border-primary bg-primary px-8 py-3 font-bold uppercase tracking-wider text-on-primary shadow-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-xl active:scale-95"
+                            to="/universal_sheet"
                         >
-                            {siteConfig.title}
-                        </Heading>
-                        <p className="mb-8 max-w-2xl text-lg font-medium text-textSecondary md:text-xl">
-                            {siteConfig.tagline}
-                        </p>
-                        <div className="flex flex-col gap-3 sm:flex-row">
-                            <Link
-                                className="inline-flex items-center justify-center gap-2 rounded border-2 border-primary bg-primary px-8 py-3 font-bold uppercase tracking-wider text-on-primary shadow-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-xl active:scale-95"
-                                to="/universal_sheet"
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
-                                    <path d="M14 2v6h6" />
-                                    <path d="M12 18v-6" />
-                                    <path d="M9 15h6" />
-                                </svg>
-                                Character Sheet
-                            </Link>
-                            <Link
-                                className="inline-flex items-center justify-center gap-2 rounded border-2 border-border bg-bgSurface px-8 py-3 font-bold uppercase tracking-wider text-textPrimary shadow transition-all duration-200 hover:border-primary/50 hover:text-primary active:scale-95"
-                                to="/docs/star-wars-wod-2e/quick-start"
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+                                <path d="M14 2v6h6" />
+                                <path d="M12 18v-6" />
+                                <path d="M9 15h6" />
+                            </svg>
+                            Character Sheet
+                        </Link>
+                        <Link
+                            className="inline-flex items-center justify-center gap-2 rounded border-2 border-border bg-bgSurface px-8 py-3 font-bold uppercase tracking-wider text-textPrimary shadow transition-all duration-200 hover:border-primary/50 hover:text-primary active:scale-95"
+                            to="/docs/star-wars-wod-2e/quick-start"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-5 w-5"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                                </svg>
-                                Quick Start
-                            </Link>
-                        </div>
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                            </svg>
+                            Quick Start
+                        </Link>
                     </div>
                 </div>
-            </header>
-        </div>
+            </div>
+        </header>
     );
 }
 

@@ -196,11 +196,18 @@
 }
 
 .tailwind-root {
-    @apply bg-[var(--bg-base)] text-[var(--text-primary)] min-h-screen;
+    @apply bg-[var(--bg-base)] text-[var(--text-primary)];
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
+    --tw-rotate: 0;
+    --tw-skew-x: 0;
+    --tw-skew-y: 0;
+    --tw-scale-x: 1;
+    --tw-scale-y: 1;
 }
 .tailwind-root input[type='text'],
 .tailwind-root input[type='email'],

@@ -5,7 +5,7 @@ module.exports = {
     important: '.tailwind-root',
     content: [
         './src/**/*.{js,ts,jsx,tsx,mdx}',
-        './app/**/*.{js,ts,jsx,tsx}',
+        './sheet_manager/**/*.{js,ts,jsx,tsx}',
         './docs/**/*.{tsx,mdx}',
     ],
     theme: {

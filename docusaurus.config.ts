@@ -62,17 +62,16 @@ const config: Config = {
                     position: 'left',
                     label: 'Core Books',
                 },
-                // {
-                //     type: 'custom-dice-roller',
-                //     position: 'left',
-                //     customProp: 'Кликни меня!',
-                // },
+                {
+                    type: 'custom-dice-roller',
+                    position: 'left',
+                },
                 {
                     type: 'localeDropdown',
                     position: 'right',
                 },
                 {
-                    href: 'https://github.com/facebook/docusaurus',
+                    href: 'https://github.com/Alamion/TTGamer',
                     position: 'right',
                     className: 'header-github-link',
                     'aria-label': 'GitHub repository',

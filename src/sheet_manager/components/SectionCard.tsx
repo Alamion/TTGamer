@@ -1,0 +1,62 @@
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useLocalStorageState } from '../hooks';
+import { clsx } from 'clsx';
+
+interface SectionCardProps {
+    title?: string;
+    storageKey?: string;
+    defaultExpanded?: boolean;
+    children: React.ReactNode;
+}
+
+export function SectionCard({
+    title,
+    storageKey,
+    defaultExpanded = true,
+    children,
+}: SectionCardProps) {
+    const [_storedExpanded, _setStoredExpanded] = useLocalStorageState(
+        storageKey ?? '__section_card_never__',
+        defaultExpanded
+    );
+    const isExpanded = storageKey ? _storedExpanded : true;
+    const setIsExpanded = storageKey ? _setStoredExpanded : () => {};
+
+    const storageHeader = (
+        <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="w-full flex items-center justify-between p-4 text-left hover:bg-bgBase/30 transition-colors"
+            aria-expanded={isExpanded}
+            aria-label={`Toggle ${title} section`}
+        >
+            <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider">
+                {title}
+            </h3>
+            {isExpanded ? (
+                <ChevronUp className="w-5 h-5 text-textSecondary" aria-hidden="true" />
+            ) : (
+                <ChevronDown className="w-5 h-5 text-textSecondary" aria-hidden="true" />
+            )}
+        </button>
+    );
+
+    const header = (
+        <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider mb-2">
+            {title}
+        </h3>
+    );
+
+    return (
+        <div
+            className={clsx(
+                'bg-bgSurface border rounded-lg overflow-hidden',
+                !storageKey ? 'p-4' : ''
+            )}
+        >
+            {title ? storageKey ? storageHeader : header : <></>}
+            {(!storageKey || isExpanded) && (
+                <div className={storageKey ? 'px-4 pb-4' : ''}>{children}</div>
+            )}
+        </div>
+    );
+}
