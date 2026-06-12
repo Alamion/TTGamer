@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { rollDices, parseToAST, validateNotation } from '../../src/dice-logic';
-import { extractRawValuesFromAST } from '../../src/dice-logic';
+import { rollDices, parseToAST, validateNotation } from '@site/src/dice_roller/dice-logic';
+import { extractRawValuesFromAST } from '@site/src/dice_roller/dice-logic';
 
 function mockRandom(...values: number[]): () => number {
     let i = 0;
@@ -39,8 +39,10 @@ describe('Integration - full pipeline', () => {
         expect(raw.size).toBe(1);
         const rolls = raw.values().next().value;
         expect(rolls).toHaveLength(2);
-        expect(rolls[0].value).toBe(2);
-        expect(rolls[1].value).toBe(5);
+        if (rolls) {
+            expect(rolls[0].value).toBe(2);
+            expect(rolls[1].value).toBe(5);
+        }
     });
 
     it('validateNotation returns true for valid', () => {

@@ -60,4 +60,7 @@ module.exports = {
         },
     },
     plugins: [],
+    safelist: [
+        // 'border-primary',
+    ],
 };

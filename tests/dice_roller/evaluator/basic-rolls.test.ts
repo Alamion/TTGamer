@@ -1,6 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { parseToAST, evaluateDiceAST, getRawDiceValues, rollDices } from '../../src/dice-logic';
-import type { DiceRoll, ASTNode, DiceGroupNode } from '../../src/dice-logic';
+import {
+    parseToAST,
+    evaluateDiceAST,
+    getRawDiceValues,
+    rollDices,
+} from '@site/src/dice_roller/dice-logic';
+import type { DiceRoll, ASTNode, DiceGroupNode } from '@site/src/dice_roller/dice-logic';
 
 function mockRandom(...values: number[]): () => number {
     let i = 0;

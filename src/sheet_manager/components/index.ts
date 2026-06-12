@@ -12,3 +12,4 @@ export type { ConfirmDialogProps } from './ConfirmDialog.tsx';
 export { CharacterManagerModal } from './CharacterManagerModal.tsx';
 export type { CharacterManagerModalProps } from './CharacterManagerModal.tsx';
 export { SectionCard } from './SectionCard.tsx';
+export { NewCharacterButton } from './NewCharacterButton.tsx';

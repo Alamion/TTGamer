@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { parseToAST } from '../../src/dice-logic';
-import { evaluateDiceAST, detectUnique } from '../../src/dice-logic/dice-evaluator';
-import type { DiceRoll } from '../../src/dice-logic';
+import { parseToAST } from '@site/src/dice_roller/dice-logic';
+import { evaluateDiceAST, detectUnique } from '@site/src/dice_roller/dice-logic/dice-evaluator';
+import type { DiceRoll } from '@site/src/dice_roller/dice-logic';
 
 function pregen(notation: string, rolls: number[], groupIndex = 0): Map<string, DiceRoll[]> {
     const node = parseToAST(notation);

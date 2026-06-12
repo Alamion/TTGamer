@@ -4,7 +4,7 @@ import { PhysicsWorld } from './physics';
 import { DiceShape, createDiceShape } from './shapes';
 import type { DiceGeometryData } from './geometries';
 import { SoundManager } from './sound-manager';
-import { debug } from '../../utils/logging';
+import { debug } from '@site/src/shared/utils/logging';
 import { MAX_ROLL_SECONDS, VELOCITY_THRESHOLD, FRAME_RATE } from '../../utils/constants';
 import { RollCancelledError } from '../errors';
 import { Raycaster, Vector2, type Mesh } from 'three';
@@ -79,8 +79,10 @@ export class DiceRenderer {
     private raycaster = new Raycaster();
     private mouse = new Vector2();
     private hoveredMesh: Mesh | null = null;
+    private hitDieAtPointerDown = false;
     private boundPointerDown: (e: PointerEvent) => void;
     private boundPointerMove: (e: PointerEvent) => void;
+    private boundClickCapture: (e: MouseEvent) => void;
 
     setTimeToReact(enabled: boolean, seconds: number): void {
         this.timeToReactEnabled = enabled;
@@ -135,8 +137,10 @@ export class DiceRenderer {
         this.boundResizeHandler = this.handleResize.bind(this);
         this.boundPointerDown = this.handlePointerDown.bind(this);
         this.boundPointerMove = this.handlePointerMove.bind(this);
+        this.boundClickCapture = this.handleClickCapture.bind(this);
         window.addEventListener('resize', this.boundResizeHandler);
-        document.addEventListener('pointerdown', this.boundPointerDown);
+        document.addEventListener('pointerdown', this.boundPointerDown, { capture: true });
+        document.addEventListener('click', this.boundClickCapture, { capture: true });
         document.addEventListener('pointermove', this.boundPointerMove);
     }
 
@@ -648,7 +652,21 @@ export class DiceRenderer {
         return { session: null, flatIndex: -1 };
     }
 
+    private getHitDieIntersection(
+        sessions: RollSession[]
+    ): { mesh: Mesh; session: RollSession; flatIndex: number } | null {
+        const allMeshes = sessions.flatMap((s) => s.dice.map((d) => d.geometry));
+        const intersects = this.raycaster.intersectObjects(allMeshes, false);
+        if (intersects.length === 0) return null;
+        const hitMesh = intersects[0].object as Mesh;
+        const { session, flatIndex } = this.resolveHit(sessions, hitMesh);
+        if (session === null) return null;
+        return { mesh: hitMesh, session, flatIndex };
+    }
+
     private handlePointerDown(e: PointerEvent): void {
+        this.hitDieAtPointerDown = false;
+
         const sessions = this.getActiveSessions();
         if (sessions.length === 0) return;
 
@@ -656,21 +674,28 @@ export class DiceRenderer {
         if (target.closest('.ddr-loading-bar')) return;
 
         this.updateMouse(e);
-
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
 
-        const allMeshes = sessions.flatMap((s) => s.dice.map((d) => d.geometry));
-        const intersects = this.raycaster.intersectObjects(allMeshes, false);
-        debug('PointerDown: intersections found:', intersects.length);
-
-        if (intersects.length > 0) {
-            const hitMesh = intersects[0].object as Mesh;
-            const { session, flatIndex } = this.resolveHit(sessions, hitMesh);
-            if (session !== null) {
-                this.rerollDieInSession(session, flatIndex);
-                debug('PointerDown: reroll triggered for die', flatIndex, 'in session', session.id);
-            }
+        const hit = this.getHitDieIntersection(sessions);
+        if (hit !== null) {
+            this.hitDieAtPointerDown = true;
+            this.rerollDieInSession(hit.session, hit.flatIndex);
+            debug(
+                'PointerDown: reroll triggered for die',
+                hit.flatIndex,
+                'in session',
+                hit.session.id
+            );
+            e.stopPropagation();
+            e.preventDefault();
         }
+    }
+
+    private handleClickCapture(e: MouseEvent): void {
+        if (!this.hitDieAtPointerDown) return;
+        this.hitDieAtPointerDown = false;
+        e.stopPropagation();
+        e.preventDefault();
     }
 
     private handlePointerMove(e: PointerEvent): void {
@@ -790,7 +815,8 @@ export class DiceRenderer {
             clearTimeout(this.resizeTimeout);
         }
         window.removeEventListener('resize', this.boundResizeHandler);
-        document.removeEventListener('pointerdown', this.boundPointerDown);
+        document.removeEventListener('pointerdown', this.boundPointerDown, { capture: true });
+        document.removeEventListener('click', this.boundClickCapture, { capture: true });
         document.removeEventListener('pointermove', this.boundPointerMove);
         for (const session of this.sessions) {
             this.removeDiceFromScene(session.dice, session.tracker);

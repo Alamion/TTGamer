@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseToAST } from '../../src/dice-logic/dice-parser';
-import { evaluateDiceAST } from '../../src/dice-logic/dice-evaluator';
+import { parseToAST } from '@site/src/dice_roller/dice-logic/dice-parser';
+import { evaluateDiceAST } from '@site/src/dice_roller/dice-logic/dice-evaluator';
 
 function mockRandom(...values: number[]): () => number {
     let i = 0;

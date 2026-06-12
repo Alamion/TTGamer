@@ -39,7 +39,6 @@ src/dice_roller/
 │   ├── commands.ts            # Slash commands (/roll, /r)
 │   ├── macros.ts              # {{ddroll::}} macro
 │   ├── function-tools.ts      # AI function tools
-│   ├── logging.ts             # Logging (debug/info/warn/error)
 │   ├── constants.ts           # Module constants
 │   ├── types-ext.ts           # Extended types (HistoryEntry, etc.)
 │   ├── body-injection.tsx     # React root injection

@@ -3,30 +3,14 @@ sidebar_position: 2
 title: Quick Start
 ---
 
-import { Plus } from 'lucide-react';
 import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { NewCharacterButton } from '/src/sheet_manager/components/NewCharacterButton';
 import { BaseBlock } from '/src/sheet_manager/features/sheet/components/BaseBlock';
 import { AttributeBlock } from '/src/sheet_manager/features/sheet/components/AttributeBlock';
 import { SkillBlock } from '/src/sheet_manager/features/sheet/components/SkillBlock';
 import { AdvantagesBlock } from '/src/sheet_manager/features/sheet/components/AdvantagesBlock';
 import { ForceBlock } from '/src/sheet_manager/features/sheet/components/ForceBlock';
-import { useCharacterStore } from '/src/sheet_manager/store/characterStore';
-
-export function NewCharacterButton() {
-    const { createNewCharacter } = useCharacterStore();
-    return (
-        <TWWrapper>
-            <button
-                className="items-center justify-center gap-1.5 font-medium border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed text-white bg-primary hover:bg-primary/90 border-transparent px-4 py-2 text-sm inline-flex"
-                onClick={createNewCharacter}
-                title="Create new character"
-            >
-                <Plus className="w-4 h-4" aria-hidden="true" />
-                <span>New</span>
-            </button>
-        </TWWrapper>
-    );
-}
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
 
 # Quick Start: Play in 15 Minutes
 
@@ -55,6 +39,10 @@ Every time your character attempts a tactical action or faces an uncertain obsta
 > **The Botch Guardrail:** If your roll yields **zero successes** and at least one `1`, a catastrophic disaster occurs (a **Botch**). If your successes are canceled out to exactly 0 by cards of `1`, it is a regular failure, not a botch.
 
 **Example:** _Jax Vorn_ tries to bypass a security panel. His **Dexterity** is 3 and his **Security** skill is 2, giving him an active dice pool of `5d10`. The GM sets the standard difficulty at 6. He rolls:
+
+<TWWrapper>
+    <InlineRoll notation="5d10>=6f=1@2,5,6,9,1" />
+</TWWrapper>
 
 ```text
 🎲 3, 🎲 5, 🎲 6, 🎲 9, 🎲 1
@@ -90,7 +78,13 @@ If you don't possess the required Ability, you can often still roll your raw bas
 
 ### 1. Initialize the Template
 
-Just click the <NewCharacterButton /> button right here. Or, you can navigate to the digital sheet manager at `/universal_sheet` and do the same thing.
+Just click the button right here:
+
+<TWWrapper>
+    <NewCharacterButton />
+</TWWrapper>
+
+Or, you can navigate to the digital sheet manager at `/universal_sheet` and do the same thing.
 
 ### 2. Fill in the Basics
 

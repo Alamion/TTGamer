@@ -6,7 +6,7 @@ export const VELOCITY_THRESHOLD = 5;
 export const FRAME_RATE = 1 / 60;
 
 export const DEFAULT_SETTINGS = {
-    enable3dDice: true,
+    enable3dDicePanel: true,
     primaryDiceColor: '#ff8040',
     secondaryDiceColor: '#ffffff',
     enableSound: true,
@@ -32,7 +32,7 @@ export interface SettingMetadata {
 }
 
 export const SETTINGS_METADATA: Record<keyof typeof DEFAULT_SETTINGS, SettingMetadata> = {
-    enable3dDice: { type: 'boolean', name: 'Enable 3D Dice Rolls' },
+    enable3dDicePanel: { type: 'boolean', name: 'Enable 3D Dice Rolls in Panel' },
     primaryDiceColor: { type: 'color', name: 'Primary dice color (faces)' },
     secondaryDiceColor: { type: 'color', name: 'Secondary dice color (text)' },
     enableSound: {

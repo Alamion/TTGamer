@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { generateId } from '@site/src/shared/utils/random';
 
 export const CharacterTypeSchema = z.enum(['sentient', 'droid', 'vehicle']);
 
@@ -150,7 +151,7 @@ export const DEFAULT_TRAIT_VALUE: TraitValue = {
 
 export function createDefaultCharacter(): BaseCharacter {
     return {
-        id: crypto.randomUUID(),
+        id: generateId(),
         metadata: {
             name: 'New Character',
             type: 'sentient',

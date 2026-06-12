@@ -4,6 +4,7 @@ import { TraitRowWithInput } from '../../../components';
 import { StatDot } from '../../../components';
 import { useCharacterStore } from '../../../store/characterStore.ts';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
+import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 
 interface ForceBlockProps {
     accentColor?: AccentColor;
@@ -134,7 +135,8 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                                 onSpecializationTextChange={(text) =>
                                     handleForceSkillSpecializationChange(skill, text)
                                 }
-                                size="sm"
+                                size="md"
+                                onDiceRoll={buildDiceNotation}
                             />
                         );
                     })}
@@ -156,14 +158,15 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                                 onSpecializationTextChange={(text) =>
                                     handleVirtueSpecializationChange(virtue, text)
                                 }
-                                size="sm"
+                                size="md"
                                 minimal={1}
+                                onDiceRoll={buildDiceNotation}
                             />
                         );
                     })}
                 </SectionCard>
                 <SectionCard title="Resolve">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between py-1.5">
                         <span className="text-sm text-textPrimary">Willpower</span>
                         <StatDot
                             value={willpower.current}
@@ -171,18 +174,20 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                             onChange={(val) => handleWillpowerChange(val)}
                             size="md"
                             minimal={willpowerMinimal}
+                            onDiceRoll={buildDiceNotation}
                         />
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between py-1.5">
                         <span className="text-sm text-textPrimary">Force Points</span>
                         <StatDot
                             value={forcePoints.current}
                             maxValue={Math.max(1, forcePointsMax)}
                             onChange={(val) => handleForcePointsChange(val)}
                             size="md"
+                            onDiceRoll={buildDiceNotation}
                         />
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between py-1.5">
                         <span className="text-sm text-textPrimary">Dark Side Resistance</span>
                         <StatDot
                             value={darkSide}
@@ -190,6 +195,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                             onChange={(val) => handleDarkSideChange(val)}
                             size="md"
                             activeColor={getDarkSideColor((darkSide / 10) * 100)}
+                            onDiceRoll={buildDiceNotation}
                         />
                     </div>
                 </SectionCard>

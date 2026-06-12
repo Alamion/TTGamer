@@ -29,7 +29,7 @@ const DIE_MATERIAL_SOUND_COUNTS: Record<string, number> = {
 const DIE_SURFACE = 'felt';
 const DIE_MATERIAL = 'plastic';
 
-import { warn } from '../../utils/logging';
+import { warn } from '@site/src/shared/utils/logging';
 
 const SOUND_DELAY_MS = 10;
 

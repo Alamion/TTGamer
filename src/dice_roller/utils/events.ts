@@ -1,4 +1,4 @@
-import { debug, error, warn } from './logging';
+import { debug, error, warn } from '@site/src/shared/utils/logging';
 import { executeUnifiedRoll, execute2DRoll, RollCancelledError } from '../dice-logic';
 import type { RollResult } from '../dice-logic';
 import { notifyRollResult } from '../dice-logic';

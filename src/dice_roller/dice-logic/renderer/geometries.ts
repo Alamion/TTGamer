@@ -8,7 +8,7 @@ import {
     Texture,
     Vector3,
 } from 'three';
-import { debug } from '../../utils/logging';
+import { debug } from '@site/src/shared/utils/logging';
 import { fixBrightness } from '../../utils/recolor_svg';
 
 const MATERIAL_OPTIONS = {

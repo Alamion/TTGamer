@@ -3,6 +3,7 @@ import type { AccentColor } from '../../../components';
 import { TraitRowWithInput } from '../../../components';
 import { useCharacterStore } from '../../../store/characterStore.ts';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
+import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 
 const ATTRIBUTES = {
     physical: [
@@ -80,11 +81,13 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
                         onSpecializationTextChange={(text) =>
                             handleAttributeSpecializationChange(attr.key, text)
                         }
+                        size="lg"
                         minimal={1}
                         showFlags={true}
                         specialization={trait.specialization}
                         experienced={trait.experienced}
                         practiced={trait.practiced}
+                        onDiceRoll={buildDiceNotation}
                     />
                 );
             })}

@@ -198,7 +198,7 @@ export default function Home(): ReactNode {
                             }
                             title="Full Documentation"
                             description="Combat, creatures, GM tools, vehicles, and equipment — comprehensive docs for the Star Wars WEG/WoD hybrid system."
-                            href="/docs/star-wars-wod-2e"
+                            href="/docs/star-wars-wod-2e/quick-start"
                             badge="WIP"
                         />
                     </div>
@@ -224,7 +224,7 @@ export default function Home(): ReactNode {
                             </div>
                             <Link
                                 className="shrink-0 rounded border-2 border-jedi-blue bg-jedi-blue/10 px-6 py-3 font-bold uppercase tracking-wider text-jedi-blue transition-all duration-200 hover:bg-jedi-blue/20"
-                                to="/docs/star-wars-wod-2e"
+                                to="/docs/star-wars-wod-2e/quick-start"
                             >
                                 Learn More
                             </Link>

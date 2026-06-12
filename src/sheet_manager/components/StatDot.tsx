@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 import { clsx } from 'clsx';
+import { Dices, X } from 'lucide-react';
+import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';
 
 interface StatDotProps {
     value: number;
@@ -18,6 +20,13 @@ interface StatDotProps {
     experienced?: boolean | null;
     practiced?: boolean | null;
     activeColor?: { bg?: string; border?: string };
+    onRemove?: () => void;
+    onDiceRoll?: (
+        value: number,
+        specialization: boolean | null,
+        experienced: boolean | null,
+        practiced: boolean | null
+    ) => string | undefined;
 }
 
 export function StatDot({
@@ -32,7 +41,45 @@ export function StatDot({
     experienced = null,
     practiced = null,
     activeColor,
+    onRemove,
+    onDiceRoll,
 }: StatDotProps) {
+    const setNotationInput = useDiceRollerStore((s) => s.setNotationInput);
+    const notationInput = useDiceRollerStore((s) => s.notationInput);
+    const roll = useDiceRollerStore((s) => s.roll);
+
+    const handleDiceLeftClick = useCallback(() => {
+        if (disabled || !onDiceRoll) return;
+        const added_notation = onDiceRoll(value, specialization, experienced, practiced);
+        if (added_notation) {
+            if (notationInput) {
+                setNotationInput(`${notationInput} + ${added_notation}`);
+            } else {
+                setNotationInput(added_notation);
+            }
+        }
+    }, [
+        disabled,
+        onDiceRoll,
+        value,
+        specialization,
+        experienced,
+        practiced,
+        setNotationInput,
+        notationInput,
+    ]);
+
+    const handleDiceRightClick = useCallback(
+        (e: React.MouseEvent) => {
+            e.preventDefault();
+            if (disabled || !onDiceRoll) return;
+            const notation = onDiceRoll(value, specialization, experienced, practiced);
+            if (notation) {
+                roll(notation);
+            }
+        },
+        [disabled, onDiceRoll, value, specialization, experienced, practiced, roll]
+    );
     const handleClick = useCallback(
         (index: number) => {
             if (disabled) return;
@@ -78,58 +125,101 @@ export function StatDot({
         lg: 'w-5 h-5 text-xs',
     };
 
+    const dotPixel = size === 'sm' ? 12 : size === 'lg' ? 20 : 16;
+
     return (
         <div className="flex flex-col items-center gap-1" role="radiogroup" aria-label="Stat value">
-            {showFlags && (
-                <div className="flex gap-0.5">
-                    <button
-                        type="button"
-                        onClick={() => handleFlagToggle('specialization')}
-                        disabled={disabled}
-                        className={clsx(
-                            'rounded font-bold transition-all duration-200',
-                            flagSizeClasses[size],
-                            specialization
-                                ? 'text-jediBlue opacity-100'
-                                : 'text-textSecondary opacity-40 hover:opacity-70',
-                            disabled && 'cursor-not-allowed'
-                        )}
-                        title="Specialization"
-                    >
-                        S
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleFlagToggle('practiced')}
-                        disabled={disabled}
-                        className={clsx(
-                            'rounded font-bold transition-all duration-200',
-                            flagSizeClasses[size],
-                            practiced
-                                ? 'text-droidGold opacity-100'
-                                : 'text-textSecondary opacity-40 hover:opacity-70',
-                            disabled && 'cursor-not-allowed'
-                        )}
-                        title="Practiced"
-                    >
-                        P
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleFlagToggle('experienced')}
-                        disabled={disabled}
-                        className={clsx(
-                            'rounded font-bold transition-all duration-200',
-                            flagSizeClasses[size],
-                            experienced
-                                ? 'text-jediRed opacity-100'
-                                : 'text-textSecondary opacity-40 hover:opacity-70',
-                            disabled && 'cursor-not-allowed'
-                        )}
-                        title="Experienced"
-                    >
-                        E
-                    </button>
+            {(showFlags || onRemove || onDiceRoll) && (
+                <div className="flex w-full">
+                    {onDiceRoll ? (
+                        <button
+                            type="button"
+                            onClick={handleDiceLeftClick}
+                            onContextMenu={handleDiceRightClick}
+                            disabled={disabled}
+                            className={clsx(
+                                'rounded font-bold transition-all duration-200 flex items-center justify-center',
+                                flagSizeClasses[size],
+                                'text-textSecondary opacity-40 hover:opacity-70',
+                                disabled && 'cursor-not-allowed'
+                            )}
+                            title="Roll (left click: set notation, right click: roll)"
+                        >
+                            <Dices size={dotPixel - 2} />
+                        </button>
+                    ) : showFlags && onRemove ? (
+                        <div className={clsx('invisible', flagSizeClasses[size])} />
+                    ) : null}
+                    {showFlags && (
+                        <div className="flex gap-1 mx-auto">
+                            <button
+                                type="button"
+                                onClick={() => handleFlagToggle('specialization')}
+                                disabled={disabled}
+                                className={clsx(
+                                    'rounded font-bold transition-all duration-200',
+                                    flagSizeClasses[size],
+                                    specialization
+                                        ? 'text-jediBlue opacity-100'
+                                        : 'text-textSecondary opacity-40 hover:opacity-70',
+                                    disabled && 'cursor-not-allowed'
+                                )}
+                                title="Specialization"
+                            >
+                                S
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleFlagToggle('practiced')}
+                                disabled={disabled}
+                                className={clsx(
+                                    'rounded font-bold transition-all duration-200',
+                                    flagSizeClasses[size],
+                                    practiced
+                                        ? 'text-droidGold opacity-100'
+                                        : 'text-textSecondary opacity-40 hover:opacity-70',
+                                    disabled && 'cursor-not-allowed'
+                                )}
+                                title="Practiced"
+                            >
+                                P
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleFlagToggle('experienced')}
+                                disabled={disabled}
+                                className={clsx(
+                                    'rounded font-bold transition-all duration-200',
+                                    flagSizeClasses[size],
+                                    experienced
+                                        ? 'text-jediRed opacity-100'
+                                        : 'text-textSecondary opacity-40 hover:opacity-70',
+                                    disabled && 'cursor-not-allowed'
+                                )}
+                                title="Experienced"
+                            >
+                                E
+                            </button>
+                        </div>
+                    )}
+                    {onRemove ? (
+                        <button
+                            type="button"
+                            onClick={onRemove}
+                            disabled={disabled}
+                            className={clsx(
+                                'ml-auto rounded font-bold transition-all duration-200 flex items-center justify-center',
+                                flagSizeClasses[size],
+                                'text-textSecondary opacity-40 hover:opacity-70 hover:text-error',
+                                disabled && 'cursor-not-allowed'
+                            )}
+                            title="Remove"
+                        >
+                            <X size={dotPixel - 2} />
+                        </button>
+                    ) : showFlags && onDiceRoll ? (
+                        <div className={clsx('invisible', flagSizeClasses[size])} />
+                    ) : null}
                 </div>
             )}
             <div className="flex gap-1">

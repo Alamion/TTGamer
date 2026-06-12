@@ -1,7 +1,7 @@
 {
     "name": "ttgamer",
     "packageManager": "yarn@1.22.22",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "private": true,
     "scripts": {
         "docusaurus": "docusaurus",
@@ -18,7 +18,10 @@
         "lint:fix": "eslint . --fix",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "prepare": "husky"
+        "prepare": "husky",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage"
     },
     "dependencies": {
         "@docusaurus/core": "3.10.1",
@@ -27,6 +30,8 @@
         "@hookform/resolvers": "^3.9.0",
         "@mdx-js/react": "^3.0.0",
         "@radix-ui/react-dialog": "^1.1.15",
+        "@radix-ui/react-popover": "^1.1.16",
+        "@tanstack/react-table": "^8.21.3",
         "cannon-es": "^0.20.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.0.0",
@@ -40,6 +45,7 @@
         "react-hot-toast": "^2.6.0",
         "tailwind-merge": "^2.6.0",
         "three": "^0.184.0",
+        "vitest": "^4.1.8",
         "zod": "^3.24.0",
         "zustand": "^5.0.0"
     },

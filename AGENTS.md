@@ -83,7 +83,7 @@ Docusaurus site hosting docs, blog, and modular React modules (character sheet m
 ├── blog/                      # Blog posts
 ├── static/                    # Static assets
 ├── i18n/                      # Translations (en, ru)
-├── ai_context/                # TTRPG source reference docs
+├── context/                   # TTRPG source reference docs
 ├── tests/                     # Tests (dice_roller)
 ├── docusaurus.config.ts
 ├── sidebars.ts

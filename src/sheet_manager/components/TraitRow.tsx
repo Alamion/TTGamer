@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { clsx } from 'clsx';
 import { StatLabel } from './StatLabel.tsx';
 import { StatDot } from './StatDot.tsx';
-import { Plus, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 interface TraitRowProps {
     label: string;
@@ -23,6 +23,12 @@ interface TraitRowProps {
     specialization?: boolean | null;
     experienced?: boolean | null;
     practiced?: boolean | null;
+    onDiceRoll?: (
+        value: number,
+        specialization: boolean | null,
+        experienced: boolean | null,
+        practiced: boolean | null
+    ) => string | undefined;
 }
 
 export function TraitRow({
@@ -39,6 +45,7 @@ export function TraitRow({
     specialization = null,
     experienced = null,
     practiced = null,
+    onDiceRoll,
 }: TraitRowProps) {
     return (
         <div className={clsx('flex items-end justify-between py-1', className)}>
@@ -54,6 +61,7 @@ export function TraitRow({
                 specialization={specialization}
                 experienced={experienced}
                 practiced={practiced}
+                onDiceRoll={onDiceRoll}
             />
         </div>
     );
@@ -80,6 +88,12 @@ interface TraitRowWithInputProps {
     specialization?: boolean | null;
     experienced?: boolean | null;
     practiced?: boolean | null;
+    onDiceRoll?: (
+        value: number,
+        specialization: boolean | null,
+        experienced: boolean | null,
+        practiced: boolean | null
+    ) => string | undefined;
 }
 
 export function TraitRowWithInput({
@@ -98,6 +112,7 @@ export function TraitRowWithInput({
     specialization = null,
     experienced = null,
     practiced = null,
+    onDiceRoll,
 }: TraitRowWithInputProps) {
     const [inputValue, setInputValue] = useState(specializationText);
 
@@ -120,7 +135,7 @@ export function TraitRowWithInput({
     };
 
     return (
-        <div className={clsx('flex items-end gap-2 py-1', className)}>
+        <div className={clsx('flex items-end gap-2 py-1.5', className)}>
             <StatLabel label={name} tooltip={tooltip} />
             <input
                 type="text"
@@ -130,7 +145,7 @@ export function TraitRowWithInput({
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
                 className={clsx(
-                    'flex-1 bg-transparent border-b px-2 py-0.5 text-sm text-textPrimary transition-colors min-w-5',
+                    'flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors min-w-5',
                     disabled && 'opacity-50 cursor-not-allowed'
                 )}
                 // placeholder="Specialization"
@@ -146,6 +161,7 @@ export function TraitRowWithInput({
                 specialization={specialization}
                 experienced={experienced}
                 practiced={practiced}
+                onDiceRoll={onDiceRoll}
             />
         </div>
     );
@@ -175,6 +191,12 @@ interface CustomTraitListProps {
     disabled?: boolean;
     size?: 'sm' | 'md' | 'lg';
     showFlags?: boolean;
+    onDiceRoll?: (
+        value: number,
+        specialization: boolean | null,
+        experienced: boolean | null,
+        practiced: boolean | null
+    ) => string | undefined;
 }
 
 export function CustomTraitList({
@@ -188,17 +210,12 @@ export function CustomTraitList({
     disabled = false,
     size = 'md',
     showFlags = false,
+    onDiceRoll,
 }: CustomTraitListProps) {
-    const sizeClasses = {
-        sm: { button: 'bottom-4 right-0', label: 'w-3.5 h-3.5' },
-        md: { button: 'bottom-5 right-0', label: 'w-4 h-4' },
-        lg: { button: 'bottom-6 right-0', label: 'w-5 h-5' },
-    };
-
     return (
         <div className="space-y-1">
             {items.map((item) => (
-                <div key={item.id} className="flex items-end gap-2 relative py-1">
+                <div key={item.id} className="flex items-end gap-2 py-1">
                     <input
                         type="text"
                         value={item.label}
@@ -217,18 +234,13 @@ export function CustomTraitList({
                         specialization={item.specialization}
                         experienced={item.experienced}
                         practiced={item.practiced}
+                        onRemove={() => onRemove(item.id)}
+                        onDiceRoll={
+                            onDiceRoll
+                                ? (val, spec, exp, prc) => onDiceRoll(val, spec, exp, prc)
+                                : undefined
+                        }
                     />
-                    <button
-                        type="button"
-                        onClick={() => onRemove(item.id)}
-                        disabled={disabled}
-                        className={clsx(
-                            'text-textSecondary hover:text-error transition-colors absolute',
-                            sizeClasses[size].button
-                        )}
-                    >
-                        <X className={clsx(sizeClasses[size].label)} />
-                    </button>
                 </div>
             ))}
             <button

@@ -3,6 +3,7 @@ import type { AccentColor } from '../../../components';
 import { CustomTraitList, MeritFlawList } from '../../../components';
 import { useCharacterStore } from '../../../store/characterStore.ts';
 import type { Background, MeritFlawItem } from '../../../types/character.ts';
+import { generateId } from '@site/src/shared/utils/random';
 
 interface AdvantagesBlockProps {
     accentColor?: AccentColor;
@@ -18,7 +19,7 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     const flaws = currentCharacter.flaws ?? [];
 
     const addBackground = () => {
-        const newBackground: Background = { id: crypto.randomUUID(), label: '', value: 0 };
+        const newBackground: Background = { id: generateId(), label: '', value: 0 };
         updateCharacter(currentCharacter.id, {
             backgrounds: [...backgrounds, newBackground],
         });
@@ -39,7 +40,7 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     };
 
     const addMerit = () => {
-        const newMerit: MeritFlawItem = { id: crypto.randomUUID(), points: 1, label: '' };
+        const newMerit: MeritFlawItem = { id: generateId(), points: 1, label: '' };
         updateCharacter(currentCharacter.id, {
             merits: [...merits, newMerit],
         });
@@ -58,7 +59,7 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     };
 
     const addFlaw = () => {
-        const newFlaw: MeritFlawItem = { id: crypto.randomUUID(), points: 1, label: '' };
+        const newFlaw: MeritFlawItem = { id: generateId(), points: 1, label: '' };
         updateCharacter(currentCharacter.id, {
             flaws: [...flaws, newFlaw],
         });
@@ -86,7 +87,7 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
                         onRemove={removeBackground}
                         onChange={(id, val) => updateBackground(id, val)}
                         onLabelChange={(id, label) => updateBackground(id, 0, label)}
-                        size="sm"
+                        size="md"
                         placeholder="Background name..."
                     />
                 </SectionCard>

@@ -6,6 +6,7 @@ import { useCharacterStore } from '../../../store/characterStore.ts';
 import { Plus, X } from 'lucide-react';
 import { HealthBlock } from './HealthBlock.tsx';
 import type { ArmorItem, WeaponItem, Item } from '../../../types/character.ts';
+import { generateId } from '@site/src/shared/utils/random';
 
 interface SectionState {
     inventory: boolean;
@@ -28,7 +29,7 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
 
     const addInventoryItem = () => {
         updateCharacter(currentCharacter.id, {
-            inventory: [...inventory, { id: crypto.randomUUID(), text: '' } as Item],
+            inventory: [...inventory, { id: generateId(), text: '' } as Item],
         });
     };
 
@@ -48,7 +49,7 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
         updateCharacter(currentCharacter.id, {
             armor: [
                 ...armor,
-                { id: crypto.randomUUID(), type: '', classVal: '', ar: '', dex: '' } as ArmorItem,
+                { id: generateId(), type: '', classVal: '', ar: '', dex: '' } as ArmorItem,
             ],
         });
     };
@@ -68,7 +69,7 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
             weapons: [
                 ...weapons,
                 {
-                    id: crypto.randomUUID(),
+                    id: generateId(),
                     name: '',
                     damage: '',
                     range: '',

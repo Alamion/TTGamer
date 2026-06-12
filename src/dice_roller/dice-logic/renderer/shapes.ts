@@ -7,7 +7,7 @@ import {
     Quaternion as ThreeQuaternion,
 } from 'three';
 import type { DiceGeometryData } from './geometries';
-import { debug } from '../../utils/logging';
+import { debug } from '@site/src/shared/utils/logging';
 
 function cannonQuaternionToThree(cannonQuat: {
     x: number;

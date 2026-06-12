@@ -4,7 +4,7 @@ import { prepareDiceGeometries, startPhysicsRoll } from './renderer';
 import type { DiceGeometryData } from './renderer';
 import type { ASTNode, DiceGroupNode, DiceRoll, RollResult } from './types';
 import { buildGroupKey } from './utils';
-import { debug, warn } from '../utils/logging';
+import { debug, warn } from '@site/src/shared/utils/logging';
 import type { MixedRollConfig } from '../utils/types-ext';
 import { RollCancelledError } from './errors';
 

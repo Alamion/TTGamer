@@ -4,6 +4,8 @@ import { CustomTraitList, TraitRowWithInput } from '../../../components';
 import { useCharacterStore } from '../../../store/characterStore.ts';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
 import type { CustomSkill } from '../../../types/character.ts';
+import { generateId } from '@site/src/shared/utils/random';
+import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 
 const SKILLS = {
     talents: [
@@ -109,7 +111,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
 
     const addCustomSkill = (category: SkillCategory) => {
         const newSkill: CustomSkill = {
-            id: crypto.randomUUID(),
+            id: generateId(),
             label: '',
             value: 0,
             specialization: false,
@@ -188,11 +190,12 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
                             onSpecializationTextChange={(text) =>
                                 handleSkillSpecializationChange(skill, text)
                             }
-                            size="sm"
+                            size="md"
                             showFlags={true}
                             specialization={trait.specialization}
                             experienced={trait.experienced}
                             practiced={trait.practiced}
+                            onDiceRoll={buildDiceNotation}
                         />
                     );
                 })}
@@ -212,8 +215,9 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
                         )
                     }
                     onLabelChange={(id, label) => updateCustomSkill(category, id, 0, label)}
-                    size="sm"
+                    size="md"
                     showFlags={true}
+                    onDiceRoll={buildDiceNotation}
                 />
             </SectionCard>
         );

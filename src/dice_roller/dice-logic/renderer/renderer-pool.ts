@@ -1,6 +1,6 @@
 import { DiceRenderer, type DiceRendererConfig } from './renderer';
 import type { DiceGeometryData } from './geometries';
-import { debug } from '../../utils/logging';
+import { debug } from '@site/src/shared/utils/logging';
 
 let sharedRenderer: DiceRenderer | null = null;
 let disposeTimeoutId: ReturnType<typeof setTimeout> | null = null;

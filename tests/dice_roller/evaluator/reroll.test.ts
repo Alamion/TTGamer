@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { parseToAST, evaluateDiceAST, detectRerolls } from '../../src/dice-logic';
-import type { DiceRoll } from '../../src/dice-logic';
+import { parseToAST, evaluateDiceAST, detectRerolls } from '@site/src/dice_roller/dice-logic';
+import type { DiceRoll } from '@site/src/dice_roller/dice-logic';
 
 function mockRandom(...values: number[]): () => number {
     let i = 0;

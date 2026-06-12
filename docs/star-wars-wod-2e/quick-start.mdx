@@ -1,32 +1,17 @@
 ---
-sidebar_position: 2
-title: Quick Start
+    sidebar_position: 2.1
+    title: Quick Start
 ---
 
-import { Plus } from 'lucide-react';
 import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { NewCharacterButton } from '/src/sheet_manager/components/NewCharacterButton';
 import { BaseBlock } from '/src/sheet_manager/features/sheet/components/BaseBlock';
 import { AttributeBlock } from '/src/sheet_manager/features/sheet/components/AttributeBlock';
 import { SkillBlock } from '/src/sheet_manager/features/sheet/components/SkillBlock';
 import { AdvantagesBlock } from '/src/sheet_manager/features/sheet/components/AdvantagesBlock';
 import { ForceBlock } from '/src/sheet_manager/features/sheet/components/ForceBlock';
-import { useCharacterStore } from '/src/sheet_manager/store/characterStore';
-
-export function NewCharacterButton() {
-    const { createNewCharacter } = useCharacterStore();
-    return (
-        <TWWrapper>
-            <button
-                className="items-center justify-center gap-1.5 font-medium border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed text-white bg-primary hover:bg-primary/90 border-transparent px-4 py-2 text-sm inline-flex"
-                onClick={createNewCharacter}
-                title="Create new character"
-            >
-                <Plus className="w-4 h-4" aria-hidden="true" />
-                <span>New</span>
-            </button>
-        </TWWrapper>
-    );
-}
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { CharRoll } from '/src/shared/components/DocCharData';
 
 # Quick Start: Play in 15 Minutes
 
@@ -54,12 +39,9 @@ Every time your character attempts a tactical action or faces an uncertain obsta
 
 > **The Botch Guardrail:** If your roll yields **zero successes** and at least one `1`, a catastrophic disaster occurs (a **Botch**). If your successes are canceled out to exactly 0 by cards of `1`, it is a regular failure, not a botch.
 
-**Example:** _Jax Vorn_ tries to bypass a security panel. His **Dexterity** is 3 and his **Security** skill is 2, giving him an active dice pool of `5d10`. The GM sets the standard difficulty at 6. He rolls:
+**Example:** _Jax Vorn_ tries to bypass a security panel. His **Dexterity** is 3 and his **Security** skill is 2, giving him an active dice pool of `5d10`. The GM sets the standard difficulty at 6. He rolls: <TWWrapper><InlineRoll notation="5d10>=6f=1@3,5,6,9,1" variant="details" hideForced preroll /> </TWWrapper>
 
-```text
-🎲 3, 🎲 5, 🎲 6, 🎲 9, 🎲 1
-
-```
+{/* Use '\u003e' instead of '>' so IDEs don't get confused, only when you place react elements on separated lines */}
 
 _Evaluation:_ The `6` and `9` are successes (2 total), but the `1` cancels one out. Jax is left with **1 success** — a marginal victory! The lock cycles open just as the patrol passes.
 
@@ -90,7 +72,13 @@ If you don't possess the required Ability, you can often still roll your raw bas
 
 ### 1. Initialize the Template
 
-Just click the <NewCharacterButton /> button right here. Or, you can navigate to the digital sheet manager at `/universal_sheet` and do the same thing.
+Just click the button right here:
+
+<TWWrapper>
+    <NewCharacterButton />
+</TWWrapper>
+
+Or, you can navigate to the digital sheet manager at `/universal_sheet` and do the same thing.
 
 ### 2. Fill in the Basics
 
@@ -141,7 +129,8 @@ Prioritize these columns and distribute your dots using the **13 / 9 / 5** budge
 <br/>
 <TWWrapper><ForceBlock accentColor="primary"/></TWWrapper>
 <br/>
-> **Derived Calculations:** The sheet will automatically calculate your secondary pools based on your starting virtues. Your maximum `Willpower` pool equals `Passion + Self Control`. Your starting `Dark Side Resistance` equals `5 + Conscience − Passion`.
+> **Derived Calculations:** The sheet will automatically calculate your secondary pools based on your starting virtues. Your maximum `Willpower` pool equals `Passion + Self Control` if you are playing as Jedi. Your starting `Dark Side Resistance` equals `5 + Conscience − Passion`.
+> For games with no Force users, ignore Virtues and Dark Side Resistance. Set starting `Willpower` equal to 6 and starting `Force Points` equal to 3.
 
 ### 6. Fine-Tune with Freebie Points
 
@@ -171,16 +160,16 @@ Your digital layout at `/universal_sheet` is segmented into clear, interactive f
 
 :::tip[Quick Reference: Common Dice Pools]
 
-| Action                 | Dice Pool                          |
-| ---------------------- | ---------------------------------- |
-| Shoot a blaster        | **Dexterity** + **Blaster**        |
-| Dodge incoming fire    | **Dexterity** + **Dodge**          |
-| Sneak past guards      | **Dexterity** + **Stealth**        |
-| Persuade an NPC        | **Charisma** + **Diplomacy**       |
-| Notice a hidden threat | **Perception** + **Alertness**     |
-| Repair a broken system | **Dexterity** + **Repair**         |
-| Jump to hyperspace     | **Intelligence** + **Astrogation** |
-| Resist Force influence | **Self Control** (standalone roll) |
+| Action                 | Dice Pool                          | Your Roll                                                                   |
+| ---------------------- | ---------------------------------- | --------------------------------------------------------------------------- |
+| Shoot a blaster        | **Dexterity** + **Blaster**        | <TWWrapper><CharRoll attr="Dexterity" skill="Blaster" /></TWWrapper>        |
+| Dodge incoming fire    | **Dexterity** + **Dodge**          | <TWWrapper><CharRoll attr="Dexterity" skill="Dodge" /></TWWrapper>          |
+| Sneak past guards      | **Dexterity** + **Stealth**        | <TWWrapper><CharRoll attr="Dexterity" skill="Stealth" /></TWWrapper>        |
+| Persuade an NPC        | **Charisma** + **Diplomacy**       | <TWWrapper><CharRoll attr="Charisma" skill="Diplomacy" /></TWWrapper>       |
+| Notice a hidden threat | **Perception** + **Alertness**     | <TWWrapper><CharRoll attr="Perception" skill="Alertness" /></TWWrapper>     |
+| Repair a broken system | **Dexterity** + **Repair**         | <TWWrapper><CharRoll attr="Dexterity" skill="Repair" /></TWWrapper>         |
+| Jump to hyperspace     | **Intelligence** + **Astrogation** | <TWWrapper><CharRoll attr="Intelligence" skill="Astrogation" /></TWWrapper> |
+| Resist Force influence | **Self Control** (standalone roll) | <TWWrapper><CharRoll params={["virtues.Self Control.value"]} /></TWWrapper> |
 
 :::
 
@@ -192,7 +181,7 @@ When talks break down, blasters are unholstered, and lightsabers ignite, action 
 
 ### 1. Establish Turn Order (Initiative)
 
-Before anyone pulls a trigger, establish the active turn order for the scene by rolling your **Wits** + **Alertness** pool. Characters act in descending order of successes. Ties resolve simultaneously.
+Before anyone pulls a trigger, establish the active turn order for the scene by rolling your **Wits** + **Alertness** pool. Characters act in descending order of successes. Ties resolve simultaneously. <TWWrapper><CharRoll attr="Wits" skill="Alertness" variant="details" /></TWWrapper>
 
 ### 2. Take Your Turn Actions
 
@@ -200,13 +189,13 @@ On your initiative count, your character can move a reasonable distance (take co
 
 ### 3. Resolve the Attack Roll
 
-When launching a ranged strike, roll your **Dexterity** + **Blaster** pool against a standard target baseline difficulty of 6. If the target actively attempts to clear the line of fire, they can declare an immediate reaction roll using **Dexterity** + **Dodge**. Every success they roll subtracts exactly one success from your attack roll. If your remaining successes meet or exceed the difficulty, you score a clean hit.
+When launching a ranged strike, roll your **Dexterity** + **Blaster** pool against a standard target baseline difficulty of 6. <TWWrapper><CharRoll attr="Dexterity" skill="Blaster" variant="details" /></TWWrapper> If the target actively attempts to clear the line of fire, they can declare an immediate reaction roll using **Dexterity** + **Dodge**. Every success they roll subtracts exactly one success from your attack roll. If your remaining successes meet or exceed the difficulty, you score a clean hit.
 
 ### 4. Calculate Damage & Soak
 
 If your attack connects, roll your weapon's specific damage pool (e.g., a standard blaster rifle rolls 6 damage dice) at difficulty 6. Every success inflicts one wound level on the target.
 
-- **The Soak Check:** To survive hazardous energy fire, heroic player characters (PCs) and critical named NPCs can immediately make a Soak roll using their **Stamina** dots at difficulty 6 to absorb incoming trauma.
+- **The Soak Check:** To survive hazardous energy fire, heroic player characters (PCs) and critical named NPCs can immediately make a Soak roll using their **Stamina** dots at difficulty 6 to absorb incoming trauma. <TWWrapper><CharRoll attr="Stamina" variant="details" /></TWWrapper>
 - **The Heroic Rule Barrier:** To preserve a cinematic scale, heroes can always attempt to soak Lethal blaster fire with raw **Stamina**. However, plasma ordnance is destructive: if a Lethal attack successfully hits your character, you **must always sustain a minimum of 1 wound level**, regardless of how many soak successes you roll. Unnamed fodder NPCs cannot soak Lethal damage at all and take full impact.
 
 ### 5. Track Health Damage Types

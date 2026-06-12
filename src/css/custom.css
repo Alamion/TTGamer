@@ -77,11 +77,3 @@
 .header-github-link:hover::before {
     background-color: var(--ifm-navbar-link-hover-color);
 }
-
-.button.button--outline-hover-primary:hover {
-    color: var(--ifm-color-primary);
-}
-
-.button.minimal-pudding {
-    padding: 0;
-}

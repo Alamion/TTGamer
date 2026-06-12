@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { parseToAST, validateNotation } from '../../src/dice-logic';
-import type { DiceGroupNode, BinaryOpNode, NumericLiteralNode } from '../../src/dice-logic';
+import { parseToAST, validateNotation } from '@site/src/dice_roller/dice-logic';
+import type {
+    DiceGroupNode,
+    BinaryOpNode,
+    NumericLiteralNode,
+} from '@site/src/dice_roller/dice-logic';
 
 function asDice(node: unknown): DiceGroupNode {
     if (

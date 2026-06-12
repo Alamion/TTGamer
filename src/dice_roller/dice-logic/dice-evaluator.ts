@@ -10,7 +10,7 @@ import type {
     UniqueModifier,
 } from './types';
 import { formatModifiers, applyKeepDrop, formatRollValues, buildGroupKey } from './utils';
-import { debug } from '../utils/logging';
+import { debug } from '@site/src/shared/utils/logging';
 import { MAX_EXPLOSIONS } from '../utils/constants';
 
 function randFloat(randomFn?: () => number): number {

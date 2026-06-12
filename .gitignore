@@ -36,5 +36,5 @@ lerna-debug.log*
 *.sln
 *.sw?
 
-ai_context/*
+context/*
 *~

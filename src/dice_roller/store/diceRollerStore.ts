@@ -18,7 +18,7 @@ const MAX_HISTORY = 50;
 const MAX_RECENT_NOTATIONS = 10;
 
 export interface DiceRollerSettings {
-    enable3dDice: boolean;
+    enable3dDicePanel: boolean;
     primaryDiceColor: string;
     secondaryDiceColor: string;
     enableSound: boolean;
@@ -76,7 +76,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
             const config: MixedRollConfig = {
                 diceColor: s.primaryDiceColor,
                 textColor: s.secondaryDiceColor,
-                enable3dDice: s.enable3dDice,
+                enable3dDice: s.enable3dDicePanel,
                 enableSound: s.enableSound,
                 soundVolume: s.soundVolume,
                 timeToReact: s.timeToReact,

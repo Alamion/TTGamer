@@ -1,0 +1,88 @@
+---
+sidebar_position: 2.22
+title: Attributes & Abilities
+---
+
+import { ATTRIBUTES } from '/src/data/attributes';
+import { renderAttributeDetail } from '/src/data/attributeConfig';
+import { ABILITIES } from '/src/data/abilities';
+import { ABILITY_COLUMNS, renderAbilityDetail } from '/src/data/abilityConfig';
+import { EntityGrid } from '/src/shared/components/EntityCard';
+import { AttributeBlock } from '../../../src/sheet_manager/features/sheet/components/AttributeBlock';
+import { SkillBlock } from '../../../src/sheet_manager/features/sheet/components/SkillBlock';
+import { DataCatalog } from '../../../src/shared/components/DataCatalog';
+
+## Attributes
+
+The nine Attributes define your character's raw capabilities, divided evenly across three categories of three Traits each. They are rolled as part of Dice Pools — almost every action pairs an Attribute with an Ability.
+
+**Starting distribution:** Allocate **7 / 5 / 3** dots across Physical, Social, and Mental (your choice of Primary, Secondary, Tertiary). Every Attribute starts with 1 inherent dot, so nothing can ever drop to 0. The natural maximum for a starting character is 5.
+
+### Physical
+
+Physical Traits describe how strong, dexterous, and sturdy a character is. They are the primary Traits of an action-oriented character, concerning only the strengths and weaknesses of the body.
+
+### Social
+
+Social Traits describe appearance, charm, and familiarity with the minds of others. They are vital in determining first impressions, leadership ability, and the nature of your interactions with others.
+
+### Mental
+
+Mental Traits represent your character's total mental capacity, including memory, perception, and the ability to learn and think.
+
+<div className="tailwind-root">
+    <EntityGrid
+        entities={ATTRIBUTES}
+        renderDetail={renderAttributeDetail}
+        getName={(e) => e.name}
+        getDescription={(e) => e.shortDescription}
+        getTags={(e) => e.specialties}
+        getKey={(e) => e.id}
+    />
+    <br />
+    <AttributeBlock accentColor="secondary" />
+</div>
+
+---
+
+## Abilities
+
+The thirty Abilities (Talents, Skills, Knowledges) are the trained and instinctive competencies your character has developed. They complement Attributes in Dice Pools — where an Attribute provides raw capacity, an Ability provides technique and training.
+
+**Starting distribution:** **13 / 9 / 5** dots across Talents, Skills, and Knowledges. Unlike Attributes, Abilities start at 0 — you must invest dots to gain any proficiency. The natural maximum at character creation is 3.
+
+### Talents
+
+Talents describe untrained, intuitive Abilities. They can never be learned through study — only through direct experience, usually during a story. Because Talents are so natural and instinctive, every character is assumed to have some small capacity in each one. If you use a Talent you do not possess, you roll the base Attribute with no penalty.
+
+### Skills
+
+Skills are Abilities learned through apprenticeships or rigorous training. If you try to use a Skill but have no rating in it, the difficulty of the roll increases by **+1** — you are untrained in its techniques.
+
+### Knowledges
+
+Knowledges require the rigorous application of the mind, not the body. Only Mental Attributes can be used to modify Knowledge rolls. If you do not have a Knowledge dot in a given field, you generally cannot even attempt a roll involving it — though the Storyteller may rule otherwise for trivial information anyone might know.
+
+<div className="tailwind-root">
+    <DataCatalog
+        data={ABILITIES}
+        columns={ABILITY_COLUMNS}
+        renderDetail={renderAbilityDetail}
+        filterColumnId="category"
+    />
+    <br />
+    <SkillBlock accentColor="primary" />
+</div>
+
+---
+
+## Secondary Abilities
+
+Beyond the thirty core Abilities, players may define Secondary Abilities — more specialized traits that allow finer character definition. These are often subcategories of broader Abilities (e.g., Sense Deception narrowing Empathy). The character sheet includes blank spaces for this purpose.
+
+Storytellers may handle Secondary Abilities in one of two ways:
+
+- **Lower difficulty** — Using a more specialized Ability lowers the difficulty of relevant rolls, making it more powerful in its niche.
+- **Lower cost** — Each dot spent on a Secondary Ability during character creation grants two dots instead of one, and raising them costs only 1 Freebie Point per dot (or the current rating in XP after play begins).
+
+This list is not definitive — Storytellers are free to create other Abilities as they see fit.

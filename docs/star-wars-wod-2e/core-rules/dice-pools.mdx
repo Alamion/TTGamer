@@ -1,0 +1,380 @@
+---
+    sidebar_position: 2.21
+    title: Dice Pools
+---
+
+import RollControls from '/src/dice_roller/components/dice_pool/RollControls';
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { CharRoll } from '/src/shared/components/DocCharData';
+import WodTab from '/src/dice_roller/components/dice_pool/DiceTabWod';
+
+# Dice Pools: The Core Engine
+
+Every action under pressure — from shooting a blaster to slicing an Imperial terminal — resolves through a single unified mechanic: **the dice pool**. This document covers everything about how dice work in the system, from the simplest marginal check to cinematic opposed struggles.
+
+## 1. The Core Loop
+
+When your character attempts something risky or tactical, follow this sequence:
+
+1. **Build your pool** — Add the relevant **Attribute** dots to the relevant **Ability** (Skill/Talent/Knowledge) dots. The result is your total dice pool.
+2. **Roll d10s** — Roll that many ten-sided dice. The Game Master sets a **Difficulty** (the number each die must meet or beat to count as a success). The standard baseline is **6**.
+3. **Apply the Rule of One** — Every die showing a `1` cancels exactly one success. Remove both the cancelled success and the `1` from your evaluation.
+4. **Count successes** — Each remaining die that meets or exceeds the difficulty counts as one success. One success is usually enough for standard tasks.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6f=1@2,4,7,8,1'} variant="details" preroll />
+</TWWrapper>
+
+In this roll of 5d10: the `7` and `8` are successes (2 total), but the `1` cancels one — leaving **1 success**. A marginal victory. The lock cycles open just as the patrol passes.
+
+:::info[System Identity]
+This hybrid uses d10 dice pools with variable difficulty and the Rule of One, inherited from **Vampire: The Masquerade 2nd Edition**. Unlike modern WoD games, difficulty fluctuates, ones punish, and botches are a real threat.
+:::
+
+---
+
+## 2. Difficulty & Target Numbers
+
+The Storyteller sets a difficulty between **3** and **10**. This number represents how hard the task is given the circumstances — not your character's skill. A master slicer still rolls against difficulty 6 to crack a standard lock; their skill just means they roll more dice.
+
+### The Difficulty Ladder
+
+| Diff   | Label                  | Why This Label?                                                                                                                             | Example Situations                                                                                                                                                                                                                                                              |
+| ------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **3**  | Easy                   | A gentle breeze couldn't fail. You're acting without pressure, perfect conditions, plenty of time.                                          | - Replacing a power cell on a blaster you've owned for years<br/>- Recalling the name of a famous Senator from your homeworld<br/>- Walking across a stable catwalk in good lighting                                                                                            |
+| **4**  | Routine                | You've done this a hundred times. Your muscle memory can carry you through minor distractions.                                              | - Piloting a landspeeder down an empty straight spaceport lane<br/>- Serving drinks at a busy cantina — you've slung a thousand glasses<br/>- Decrypting a standard-format cargo manifest                                                                                       |
+| **5**  | Straightforward        | The procedure is clear. No surprises, but it requires actual focus. A rookie could do it with guidance.                                     | - Slicing a low-grade commercial security lock<br/>- Applying a field dressing to a clean blaster graze<br/>- Hot-wiring a civilian speeder with standard ignition                                                                                                              |
+| **6**  | **Standard (default)** | Most regular galactic tasks under tactical pressure. This is the baseline for everything that matters.                                      | - Hitting a stormtrooper at moderate range in a firefight<br/>- Dodging incoming blaster bolts<br/>- Jumping across a gap while being shot at<br/>- Persuading a guard to let you pass                                                                                          |
+| **7**  | Challenging            | The situation fights back. Bad lighting, shaky footing, active resistance. You need real focus.                                             | - Searching an unlit garbage chute for hidden codes<br/>- Shooting at a partially covered target<br/>- Negotiating with a hostile official who holds all the cards<br/>- Repairing a hyperdrive motivator while the ship is shaking from turbolaser impacts                     |
+| **8**  | Difficult              | Most people would fail. The environment, the equipment, or the opponent is actively working against your success.                           | - Landing a clean shot on a fast-moving speeder bike<br/>- Tracking a quarry through a driving rainstorm at night<br/>- Bypassing a military-grade security system<br/>- Convincing a skeptical Moff to spare your crew                                                         |
+| **9**  | Extremely Difficult    | You're attempting something that the galaxy considers almost foolhardy. Pure talent won't save you — you need the Force or phenomenal luck. | - Maintaining supreme focus while heavy ordnance detonates three meters away<br/>- Sniping a thermal exhaust port two meters wide<br/>- Piloting through a collapsing asteroid field<br/>- Talking your way past a bounty hunter who has already collected your file            |
+| **10** | Nearly Impossible      | This is the kind of thing that epic songs are written about — if anyone lives to sing them.                                                 | - Breaking down a reinforced blast door with raw physical strength<br/>- Convincing Darth Vader to spare your life through sheer presence<br/>- Landing a crippled starfighter with no thrusters and half a wing<br/>- Resisting direct Force torture from a trained Inquisitor |
+
+:::tip[Difficulty 2]
+A difficulty of 2 is so trivial that you should generally let the player succeed automatically. Reserve 2 for situations where botching is narratively interesting even on a trivial task — like a protocol droid tripping while serving drinks to an Imperial Admiral.
+:::
+
+:::note[Ten Always Succeeds]
+A natural roll of **10** is always a success, regardless of the difficulty. Even at difficulty 10, a die that shows a 10 is a success. A 1 still cancels one success as usual — the 10's success is not immune to the Rule of One.
+:::
+
+### Degrees of Success
+
+Getting more than one success means you performed notably better. The same task with different result levels produces very different outcomes:
+
+| Result      | Successes | Degree       | Meaning                                                   | Slicing Example                                                                                        |
+| ----------- | --------- | ------------ | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Botch       | —         | —            | Catastrophe — action fails and creates a worse situation. | Terminal electrocutes you (1 Lethal) and triggers a **lockdown alarm**.                                |
+| Fail        | 0         | —            | Nothing happens. No progress, no penalty.                 | `ACCESS DENIED`. Door stays shut. Try again — but you've wasted time.                                  |
+| Marginal    | **1**     | Bare minimum | You squeak by. No extra benefit.                          | Door opens. You step through. Alive. That's what matters.                                              |
+| Moderate    | **2**     | Solid        | Clean execution with room to spare.                       | Door opens + you **suppress the access log**.                                                          |
+| Complete    | **3**     | Full success | Unambiguous win. Everything you wanted.                   | Door opens, log wiped, you **grab the detention floorplan**.                                           |
+| Exceptional | **4**     | Standout     | Lasting advantage. GM should grant a tangible bonus.      | All above + you **implant a backdoor** to monitor this terminal for the session.                       |
+| Phenomenal  | **5+**    | Legendary    | The outcome ripples beyond the moment.                    | You own the system + **broadcast a general override** — every door on the level opens, creating chaos. |
+
+### Automatic Success
+
+If your **total dice pool is equal to or greater than the difficulty**, you can skip the roll entirely. The action succeeds as one marginal success — you did it, nothing fancy.
+
+Useful for routine actions under pressure — e.g., _Jax Vorn_ hot-wiring a speeder (diff 5) with Dexterity 3 + Security 3 = 6 dice. The GM doesn't make him roll; he just describes how fast the ignition sparks.
+
+You may **choose to roll anyway** for a shot at more successes (and the risk of a botch). A master slicer with 10 dice against diff 6 might roll hoping for 4+ successes and those exceptional benefits.
+
+---
+
+## 3. The Rule of One & Botches
+
+Ones are not just low rolls — they actively punish you.
+
+- Each `1` cancels out one success (removing both from the count).
+- If **any ones remain after cancelling all successes**, you have **botched** — a catastrophic failure.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6f=1@1,3,1,9,1'} variant="details" preroll />
+</TWWrapper>
+
+This roll: `9` is one success, but three `1`s cancel it — leaving 0 successes with ones remaining. **Botch!** The lock panel explodes in a shower of sparks, welding the door shut and alerting every guard on the level.
+
+### Botch vs. Failure
+
+- **0 successes, 0 ones remaining** = plain failure. The lock doesn't open. The blaster shot misses. Nothing worse happens.
+- **0 successes, 1+ ones remaining** = botch. Your blaster jams, you trip an alarm, you drop the thermal detonator.
+
+:::caution[The Botch Guardrail]
+If your successes are cancelled down to exactly **0** by ones (no excess ones), that is a regular failure — not a botch. A botch requires at least one uncancelled one. Example: you roll two 7s and two 1s. Each `1` cancels one success: `2 successes - 2 ones = 0 successes, 0 ones left`. That's a **failure**, not a botch.
+:::
+
+---
+
+## 4. Action Types
+
+Not every roll works the same way. The Storyteller chooses the appropriate framework for the situation.
+
+### Simple Action
+
+One roll, one result. This covers most combat attacks, single skill checks, and snap decisions. Need **at least 1 success** to succeed.
+
+<TWWrapper>
+    <CharRoll attr="Dexterity" skill="Blaster" />
+</TWWrapper>
+
+### Extended Action
+
+For tasks too complex for a single roll — repairing a hyperdrive, slicing an Imperial mainframe, climbing a cliff. You roll **repeatedly** across turns (or minutes/hours), accumulating successes toward a target total.
+
+- Each roll adds successes to the running total.
+- 0 successes = no progress this turn.
+- A botch can erase progress, cause injury, or destroy equipment.
+- Some tasks are indefinite; others have a hard time limit.
+
+**Examples:**
+
+| Task                        | Target | Pool                         | Diff | Interval    |
+| --------------------------- | ------ | ---------------------------- | ---- | ----------- |
+| Repair hyperdrive motivator | 15     | Dexterity + Repair           | 7    | 1 roll/hour |
+| Climb 50m cliff under fire  | 10     | Strength + Athletics         | 6    | 1 roll/~30s |
+| Research lost Rebel cache   | 20     | Intelligence + Investigation | 8    | 1 roll/hour |
+
+The **Degree** of an extended action depends on how many total successes you accumulate relative to the target:
+
+| Performance         | Meaning                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Barely reach target | You did it, but barely — the hyperdrive works but vibrates loudly; the climb leaves you exhausted             |
+| Double the target   | You did it efficiently — the hyperdrive runs quieter than before; you find a safe ledge to rest on the way up |
+| Triple the target   | Masterful execution — the hyperdrive is now optimized; you discover a hidden cave during your climb           |
+
+### Resisted Action
+
+When two characters directly oppose each other — hiding vs. spotting, hacking vs. counter-hacking, intimidation vs. resolve — both roll and compare successes.
+
+- Your opponent's successes cancel your own, just like ones do.
+- Only the **margin** (your successes minus theirs) counts toward the effect.
+- Even if you fail, you can diminish your opponent's result.
+
+<TWWrapper>
+    <CharRoll attr="Wits" skill="Stealth" variant="details" /> vs.{' '}
+    <CharRoll attr="Perception" skill="Alertness" variant="details" />
+</TWWrapper>
+
+**Example:** _Jax_ rolls 3 successes on Stealth. The guard rolls 2 successes on Alertness. Margin = 1 — Jax slips past, but the guard turns around a heartbeat later, suspicious. If the guard had rolled 4 successes, Jax would be spotted.
+
+### Extended + Resisted
+
+Both characters accumulate successes over multiple turns, each trying to reach a target total before the other. The target is often based on the opponent's **Willpower**.
+
+This is used for:
+
+- **Cinematic duels** — blades locked, each duelist feels out the other's defenses. First to accumulate [opponent's Willpower] successes lands a decisive blow.
+- **Hacking battles** — slicer vs. security AI. First to accumulate 10 successes wins control of the system.
+- **Pursuits** — chasing through a crowded spaceport. First to accumulate 8 successes either catches the target or escapes.
+
+### Teamwork
+
+Multiple characters can contribute to a single extended task. Each rolls separately and their successes are added together.
+
+**When teamwork works:**
+
+- **Repairs** — one character holds the conduit open, another solders. Two engineers can rebuild a hyperdrive faster than one.
+- **Research** — three characters comb different archive sections simultaneously.
+- **Coordinated actions** — lifting a heavy object, performing a group ritual, navigating a starship through a hazard field.
+
+**When teamwork doesn't work (or makes things worse):**
+
+- **Social situations** — too many voices confuse the subject. One person speaks; the rest provide moral support at best.
+- **Fine manipulation** — only one person can fit their hands into the access panel.
+- **Stealth** — more people means more noise, more shadows, more chances to slip up.
+
+**How many can help?** The GM decides. A good rule of thumb: **2–3 is optimal**, 4+ starts causing penalties as people get in each other's way. Some tasks (like lifting) scale linearly with strong backs; others (like surgery) allow only one assistant.
+
+---
+
+## 5. Spending for Success
+
+Heroes can push beyond normal limits.
+
+### Force Points
+
+Spending a Force Point before a roll gives you one of two benefits:
+
+| Option                | Effect                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------------- |
+| **Automatic success** | Gain one automatic success on your roll (does not count as a die, cannot be cancelled by ones) |
+| **Bonus dice**        | Add a number of dice to your pool equal to your **Passion** virtue                             |
+
+<TWWrapper>
+    <InlineRoll notation={'8d10\u003e=6f=1'} variant="details" preroll /> — a Dexterity 3 +
+    Athletics 1 pool boosted by Passion 4 = 8d10
+</TWWrapper>
+
+Force Points are regained through roleplaying your character's Nature, exactly like Willpower in V:TM.
+
+### Willpower
+
+Unlike V:TM, **Willpower points cannot be spent** for automatic successes. Instead, Willpower is a **static defense** — it sets the target number for resisted actions against your character (e.g., someone using Intimidation, interrogation, or Force powers against you).
+
+Your starting Willpower equals **Passion + Self-Control** (or 6 in games without Force users).
+
+---
+
+## 6. Modifying the Pool
+
+Many factors adjust your effective dice pool before you roll.
+
+### Wound Penalties
+
+As damage accumulates, your performance degrades:
+
+| Health Level  | Penalty   |
+| ------------- | --------- |
+| Bruised       | —         |
+| Hurt          | **-1**    |
+| Injured       | **-2**    |
+| Wounded       | **-3**    |
+| Mauled        | **-4**    |
+| Crippled      | **-5**    |
+| Incapacitated | Can't act |
+
+These dice are subtracted directly from every action pool. A Wounded character (‑3) with Dexterity 5 + Blaster 3 = 8 dice rolls only **5 dice**. The pain is real.
+
+### Splitting Pools for Multiple Actions
+
+To do more than one thing in a turn (e.g., shoot and dodge, or shoot twice at different targets), you must **split your dice pool**:
+
+1. Identify your **smallest** relevant pool among the actions (use the same Attribute/Ability combo for each).
+2. Divide that pool **as evenly as possible** among the actions.
+3. Each action uses a separate roll with its allocated dice.
+
+Movement costs **1 die per 3 yards** from whichever pool you choose.
+
+**Example:** _Jax_ wants to shoot one stormtrooper (Dex 5 + Blaster 3 = 8 dice) and shoot another (same 8 dice). His smallest pool is 8. Divided two ways: **4 dice for the first shot, 4 dice for the second**. He makes two separate rolls.
+
+### Untrained Actions
+
+If you lack the relevant Ability, you may roll just your **Attribute** — raw talent without technique.
+
+**When it's appropriate:**
+
+- **Talents** — anyone can try to be intimidating (Charisma alone) or notice something suspicious (Perception alone). Training helps, but instinct works.
+- **Skills** — anyone can pick up a blaster and pull the trigger (Dexterity alone) or attempt to ride a tamed tauntaun (Dexterity alone). The results won't be pretty, but it's possible.
+
+**When the GM should forbid it:**
+
+- **Knowledges** — you cannot attempt Astrogation without training (you'd hyperspace into a star). You cannot perform surgery without Medicine. You cannot slice an Imperial mainframe without Interface. These fields require specialized knowledge, not just raw intelligence.
+
+**Examples:**
+
+| Task                                          | Attribute Only?           | Reason                                                                     |
+| --------------------------------------------- | ------------------------- | -------------------------------------------------------------------------- |
+| Intimidate a captive into talking             | **Yes** (Charisma alone)  | You can shout and threaten; training just makes it more effective          |
+| Fire a blaster rifle for the first time       | **Yes** (Dexterity alone) | Point and shoot — you might miss, but the trigger works                    |
+| Pilot a starfighter through an asteroid field | **No**                    | Without Pilot, you don't know how the controls map to movement             |
+| Translate an ancient Sith inscription         | **No**                    | Without Languages or Cultures, you can't even identify the script          |
+| Climb a crumbling cliff face                  | **Yes** (Strength alone)  | You grab handholds and pull — Athletics training makes it safer and faster |
+| Hack a sealed Imperial terminal               | **No**                    | Without Interface, you don't know where to start or what to touch          |
+
+### Environmental & Situational Modifiers
+
+The Storyteller can add or subtract dice (or shift difficulty) based on any narrative factor. These are guidelines, not rigid rules:
+
+| Situation                                                    | Modifier                               | Why                                                 |
+| ------------------------------------------------------------ | -------------------------------------- | --------------------------------------------------- |
+| Shooting from a moving speeder at full throttle              | **-2 dice**                            | The bumps, wind, and vibration ruin your aim        |
+| Firing from behind reinforced cover (only your head exposed) | **+1 difficulty** (for the attacker)   | Smaller target, harder to hit                       |
+| Trying to negotiate in a deafening cantina                   | **+1 difficulty** on social rolls      | You can barely hear yourself think                  |
+| Using a familiar tool in perfect conditions                  | **-1 difficulty**                      | Your own workshop, your own blaster, your own chair |
+| Operating on a patient while the ship is taking fire         | **-3 dice** to Medicine                | Every tremor could cost a life                      |
+| Searching a pitch-black room with only a tiny glow-rod       | **+2 difficulty**                      | You're working in near-darkness                     |
+| Running on ice during a firefight                            | **-1 die** to all physical pools       | Your footing is unreliable                          |
+| Studying a datapad in a quiet library with unlimited time    | **Automatic success** (if pool ≥ diff) | No pressure, perfect conditions                     |
+
+### Specialization, Practiced & Experienced (SPE)
+
+Each Ability can carry up to three **SPE flags** — toggles representing focused expertise, hard-won wisdom, or relentless practice. These appear as `S`, `P`, and `E` buttons above the dot rating on the character sheet.
+
+#### Specialization (S) — Exploding 10s
+
+Every Ability can have a **specialization** — a focused sub-category written into the field below the trait name (e.g., **Blaster: blaster pistols**, **Pilot: starfighters**, **Diplomacy: bribery**). When you roll within your declared specialization, your **10s explode** — each time you roll a 10, reroll that die and add the result. You keep the success the 10 originally indicated and may roll again for another success, continuing as long as you keep rolling 10s.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6f=1!'} variant="details" preroll />
+</TWWrapper>
+
+A Dexterity 3 + Blaster 2 pool with Blaster (blaster pistols) specialization rolls `5d10>=6f=1!` — the `!` makes every natural 10 explode.
+
+The GM decides if your specialization applies. A character with "Pilot: starfighters" does not get exploding dice when flying a bulk freighter.
+
+#### Experienced (E) — Ignore One `1`
+
+You have made enough mistakes with this Ability that you can recognize them in time. When you roll this Ability, you may **ignore a single `1` result** — one die showing `1` is set aside and does not trigger the Rule of One.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6@2,7,4,1,9'} variant="details" preroll />
+</TWWrapper>
+
+This roll has 2 successes (`7`, `9`) and one `1`. Normally that `1` cancels one success, leaving 1. With **Experienced**, the `1` is ignored — the result stays at **2 successes**.
+
+Experienced is a 1-point Merit and can be taken multiple times (each for a different Ability).
+
+#### Practiced (P) — Round Up When Splitting
+
+You have spent thousands of hours honing this Ability until it becomes second nature. Any time you **split your dice pool** and this Ability is involved, you **round up** your share instead of down when dividing dice.
+
+**Example:** _Duhla_ has Dexterity 4 + Blaster 4 = 8 dice. She wants to shoot two stormtroopers and dive behind cover — three actions. 8 ÷ 3 = 2.66 dice per action, normally rounded down to **2 dice each**. With **Practiced: Blaster**, her Blaster share rounds up to **3 dice** — the extra efficiency comes from muscle memory honed through thousands of repetitions.
+
+Practiced is a 1-point Merit and can be taken multiple times (each for a different Ability).
+
+---
+
+## 7. Soak Rolls & Damage Types
+
+When an attack lands, roll **Stamina** at difficulty 6 to soak. Each success cancels one health level of damage.
+
+| Damage Type                                    | Can Soak?                                                                           | Minimum                                                 | Recovery         |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------- | ---------------- |
+| **Bashing** (fists, falls, blunt)              | Everyone                                                                            | None                                                    | 1 level/hour     |
+| **Lethal** (blasters, lightsabers, explosives) | **Only PCs and named NPCs** — the **Heroic Rule Barrier**. Fodder NPCs cannot soak. | **Minimum 1** — even a perfect soak still takes 1 wound | 1 day–5 months\* |
+| **Stun** (stun setting, ion vs. droids)        | Everyone (soaked like Bashing)                                                      | None                                                    | 1 level/turn     |
+
+_\* Medical attention shortens recovery significantly._
+
+**Stun** replaces V:TM's Aggravated damage. Marked as dots (`•`). If Stun fills the track to **Incapacitated**, the character falls unconscious for **1d10 minutes**. Bashing/Lethal taken while stunned halts quick recovery.
+
+**Botching on Soak:** Overrides the WoD exception that soak rolls can't botch. If you botch any Soak roll, you fall unconscious (or reboot, if a Droid) for **1d10 minutes** from systemic shock, regardless of the damage value.
+
+<TWWrapper>
+    <InlineRoll notation={'3d10\u003e=6'} variant="details" preroll /> — Stamina 3 soak against
+    Lethal. Each success cancels one level, but minimum 1 wound gets through.
+</TWWrapper>
+
+For full details on soak, damage, healing, and the Heroic Rule Barrier, see **[Health & Damage](/docs/star-wars-wod-2e/combat/health-damage-heal)**.
+
+---
+
+## 8. Combat Scales
+
+Size differences between combatants (Rancor vs. Ewok, TIE fighter vs. character) modify attack difficulty and damage difficulty. See **[Combat Scales](/docs/star-wars-wod-2e/combat/combat-scales)** for the full chart and examples.
+
+---
+
+## The Dice Pool Builder
+
+Adjust the difficulty slider, add d10s with or without botch tracking, then roll:
+
+<TWWrapper>
+    <div className="max-w-[375px]">
+        <WodTab />
+        <RollControls />
+    </div>
+</TWWrapper>
+
+---
+
+:::info[Where to Go Next]
+
+- [Quick Start](/docs/star-wars-wod-2e/quick-start) — How to play in 15 minutes
+- [Attributes & Abilities](/docs/star-wars-wod-2e/core-rules/attributes-abilities) — Full trait catalog
+- [Combat Flow](/docs/star-wars-wod-2e/combat/combat-flow) — Turn phases and tactical maneuvers
+- [Health & Damage](/docs/star-wars-wod-2e/combat/health-damage-heal) — Comprehensive healing and recovery
+- [Combat Scales](/docs/star-wars-wod-2e/combat/combat-scales) — Size scaling in detail
+  :::

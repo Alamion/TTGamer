@@ -1,6 +1,6 @@
 import { type LexerToken, tokenize } from './dice-lexer';
 import type { ASTNode, ComparePoint, DiceModifiers, TokenType } from './types';
-import { debug, warn } from '../utils/logging';
+import { debug, warn } from '@site/src/shared/utils/logging';
 
 const PRECEDENCE: Record<string, number> = {
     '^': 4,

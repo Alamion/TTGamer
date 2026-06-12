@@ -11,7 +11,7 @@ import {
     type DiceGeometryData,
 } from './geometries';
 import { type DiceRendererConfig } from './renderer';
-import { warn } from '../../utils/logging';
+import { warn } from '@site/src/shared/utils/logging';
 
 interface DiceGeometryInstance {
     create(): { clone(): DiceGeometryData };

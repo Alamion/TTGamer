@@ -15,7 +15,7 @@ Each task includes: name, description, priority, effort, impact, and dependencie
 
 ### Major
 
-- [ ] **Documentation:** Write Docusaurus docs about the system built
+- [/] **Documentation:** Write Docusaurus docs about the system built
 - [ ] **Droid & Vehicle Characters:** Add vehicle char list and droid specifics to main character sheet
 - [/] **i18n internalization:** Add support for multiple languages
 - [x] **Dice rolls**: Add dice roll visualizer - UI/UX; dice pool, history of rolls, etc.
@@ -33,3 +33,5 @@ Each task includes: name, description, priority, effort, impact, and dependencie
     - Show 3-4 frequently used ones
     - The "More" button → bottom sheet with a full list, search and the ability to add to favorites
 - [ ] Discord hooks (Only after we have a Backend as discord hooks is a sensitive info)
+- [ ] Inline dice rolls
+- [ ] Lazy load of 3d dices packages (three, cannon-es, etc.)
