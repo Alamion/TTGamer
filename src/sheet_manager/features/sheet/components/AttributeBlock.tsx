@@ -2,6 +2,7 @@ import { CollapsibleBlock, SectionCard } from '../../../components';
 import type { AccentColor } from '../../../components';
 import { TraitRowWithInput } from '../../../components';
 import { useCharacterStore } from '../../../store/characterStore.ts';
+import { useCharacterContext } from '../../../context/CharacterContext.tsx';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
 import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 
@@ -29,8 +30,10 @@ interface AttributeBlockProps {
 
 export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
+    const { character: contextChar, readOnly } = useCharacterContext();
 
-    if (!currentCharacter) return null;
+    const character = contextChar ?? currentCharacter;
+    if (!character) return null;
 
     const handleAttributeChange = (
         key: string,
@@ -39,10 +42,11 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        const currentAttr = currentCharacter.attributes[key] || { ...DEFAULT_TRAIT_VALUE };
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        const currentAttr = character.attributes[key] || { ...DEFAULT_TRAIT_VALUE };
+        updateCharacter(character.id, {
             attributes: {
-                ...currentCharacter.attributes,
+                ...character.attributes,
                 [key]: {
                     value,
                     specialization: specialization ?? currentAttr.specialization ?? false,
@@ -54,10 +58,11 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
     };
 
     const handleAttributeSpecializationChange = (key: string, specializationText: string) => {
-        const currentAttr = currentCharacter.attributes[key] || { ...DEFAULT_TRAIT_VALUE };
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        const currentAttr = character.attributes[key] || { ...DEFAULT_TRAIT_VALUE };
+        updateCharacter(character.id, {
             attributes: {
-                ...currentCharacter.attributes,
+                ...character.attributes,
                 [key]: { ...currentAttr, specializationText },
             },
         });
@@ -66,7 +71,7 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
     const renderAttributeColumn = (title: string, attrs: typeof ATTRIBUTES.physical) => (
         <SectionCard title={title}>
             {attrs.map((attr) => {
-                const trait = currentCharacter.attributes[attr.key] || {
+                const trait = character.attributes[attr.key] || {
                     ...DEFAULT_TRAIT_VALUE,
                 };
                 return (
@@ -75,6 +80,7 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
                         name={attr.label}
                         specializationText={trait.specializationText}
                         value={trait.value}
+                        disabled={readOnly}
                         onChange={(val, spec, exp, prc) =>
                             handleAttributeChange(attr.key, val, spec, exp, prc)
                         }
@@ -95,7 +101,12 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
     );
 
     return (
-        <CollapsibleBlock title="Attributes" accentColor={accentColor} storageKey="attributeBlock">
+        <CollapsibleBlock
+            title="Attributes"
+            accentColor={accentColor}
+            storageKey="attributeBlock"
+            docsPath="/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities"
+        >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {renderAttributeColumn('Physical', ATTRIBUTES.physical)}
                 {renderAttributeColumn('Social', ATTRIBUTES.social)}

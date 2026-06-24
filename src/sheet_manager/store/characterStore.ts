@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { BaseCharacter } from '../types/character.ts';
 import { createDefaultCharacter } from '../types/character.ts';
+import { isPresetId } from '../data/presets.ts';
 import type { StateCreator } from 'zustand';
 
 interface CharacterState {
@@ -24,6 +25,7 @@ const stateCreator: StateCreator<CharacterState, [], []> = (set, get) => ({
     },
 
     updateCharacter: (id, updates) => {
+        if (isPresetId(id)) return;
         const { characters, currentCharacter } = get();
         const updatedCharacters = characters.map((c) => (c.id === id ? { ...c, ...updates } : c));
         const updatedCurrent =
@@ -49,6 +51,7 @@ const stateCreator: StateCreator<CharacterState, [], []> = (set, get) => ({
     },
 
     deleteCharacter: (id) => {
+        if (isPresetId(id)) return;
         const { characters, currentCharacter } = get();
         const filtered = characters.filter((c) => c.id !== id);
         set({
@@ -58,6 +61,7 @@ const stateCreator: StateCreator<CharacterState, [], []> = (set, get) => ({
     },
 
     importCharacter: (character) => {
+        if (isPresetId(character.id)) return;
         const { characters } = get();
         const existing = characters.findIndex((c) => c.id === character.id);
         let updatedCharacters: BaseCharacter[];

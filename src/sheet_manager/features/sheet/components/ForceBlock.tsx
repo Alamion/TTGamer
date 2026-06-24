@@ -3,6 +3,7 @@ import type { AccentColor } from '../../../components';
 import { TraitRowWithInput } from '../../../components';
 import { StatDot } from '../../../components';
 import { useCharacterStore } from '../../../store/characterStore.ts';
+import { useCharacterContext } from '../../../context/CharacterContext.tsx';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
 import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 
@@ -22,15 +23,17 @@ function getDarkSideColor(percentage: number): { bg: string; border: string } {
 
 export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
+    const { character: contextChar, readOnly } = useCharacterContext();
 
-    if (!currentCharacter) return null;
+    const character = contextChar ?? currentCharacter;
+    if (!character) return null;
 
-    const forcePoints = currentCharacter.forcePoints ?? { current: 0, max: 10 };
-    const darkSide = currentCharacter.darkSideResistance ?? 5;
-    const willpower = currentCharacter.willpower ?? { current: 5, max: 5 };
+    const forcePoints = character.forcePoints ?? { current: 0, max: 10 };
+    const darkSide = character.darkSideResistance ?? 5;
+    const willpower = character.willpower ?? { current: 5, max: 5 };
 
-    const passion = currentCharacter.virtues?.Passion?.value ?? 1;
-    const selfControl = currentCharacter.virtues?.['Self Control']?.value ?? 1;
+    const passion = character.virtues?.Passion?.value ?? 1;
+    const selfControl = character.virtues?.['Self Control']?.value ?? 1;
 
     const willpowerMinimal = Math.min(passion + selfControl, 10);
     const forcePointsMax = selfControl;
@@ -42,10 +45,11 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        const currentSkill = currentCharacter.forceSkills?.[key] || { ...DEFAULT_TRAIT_VALUE };
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        const currentSkill = character.forceSkills?.[key] || { ...DEFAULT_TRAIT_VALUE };
+        updateCharacter(character.id, {
             forceSkills: {
-                ...currentCharacter.forceSkills,
+                ...character.forceSkills,
                 [key]: {
                     value,
                     specialization: specialization ?? currentSkill.specialization ?? false,
@@ -57,10 +61,11 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleForceSkillSpecializationChange = (key: string, specializationText: string) => {
-        const currentSkill = currentCharacter.forceSkills?.[key] || { ...DEFAULT_TRAIT_VALUE };
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        const currentSkill = character.forceSkills?.[key] || { ...DEFAULT_TRAIT_VALUE };
+        updateCharacter(character.id, {
             forceSkills: {
-                ...currentCharacter.forceSkills,
+                ...character.forceSkills,
                 [key]: { ...currentSkill, specializationText },
             },
         });
@@ -73,10 +78,11 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        const currentVirtue = currentCharacter.virtues?.[key] || { ...DEFAULT_TRAIT_VALUE };
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        const currentVirtue = character.virtues?.[key] || { ...DEFAULT_TRAIT_VALUE };
+        updateCharacter(character.id, {
             virtues: {
-                ...currentCharacter.virtues,
+                ...character.virtues,
                 [key]: {
                     value,
                     specialization: specialization ?? currentVirtue.specialization ?? false,
@@ -88,45 +94,55 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleVirtueSpecializationChange = (key: string, specializationText: string) => {
-        const currentVirtue = currentCharacter.virtues?.[key] || { ...DEFAULT_TRAIT_VALUE };
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        const currentVirtue = character.virtues?.[key] || { ...DEFAULT_TRAIT_VALUE };
+        updateCharacter(character.id, {
             virtues: {
-                ...currentCharacter.virtues,
+                ...character.virtues,
                 [key]: { ...currentVirtue, specializationText },
             },
         });
     };
 
     const handleWillpowerChange = (value: number) => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             willpower: { ...willpower, current: value },
         });
     };
 
     const handleForcePointsChange = (value: number) => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             forcePoints: { current: value, max: forcePointsMax },
         });
     };
 
     const handleDarkSideChange = (value: number) => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             darkSideResistance: value,
         });
     };
 
     return (
-        <CollapsibleBlock title="Force" accentColor={accentColor} storageKey="forceBlock">
+        <CollapsibleBlock
+            title="Force"
+            accentColor={accentColor}
+            storageKey="forceBlock"
+            docsPath="/docs/star-wars-wod-2e/character/force"
+        >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <SectionCard title="Force Skills">
                     {FORCE_SKILLS.map((skill) => {
-                        const trait = currentCharacter.forceSkills?.[skill] || {
+                        const trait = character.forceSkills?.[skill] || {
                             ...DEFAULT_TRAIT_VALUE,
                         };
                         return (
                             <TraitRowWithInput
                                 key={skill}
                                 name={skill}
+                                disabled={readOnly}
                                 specializationText={trait.specializationText}
                                 value={trait.value}
                                 onChange={(val, spec, exp, prc) =>
@@ -143,13 +159,14 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                 </SectionCard>
                 <SectionCard title="Virtues">
                     {VIRTUES.map((virtue) => {
-                        const trait = currentCharacter.virtues?.[virtue] || {
+                        const trait = character.virtues?.[virtue] || {
                             ...DEFAULT_TRAIT_VALUE,
                         };
                         return (
                             <TraitRowWithInput
                                 key={virtue}
                                 name={virtue}
+                                disabled={readOnly}
                                 specializationText={trait.specializationText}
                                 value={trait.value}
                                 onChange={(val, spec, exp, prc) =>
@@ -171,6 +188,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                         <StatDot
                             value={willpower.current}
                             maxValue={10}
+                            disabled={readOnly}
                             onChange={(val) => handleWillpowerChange(val)}
                             size="md"
                             minimal={willpowerMinimal}
@@ -182,6 +200,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                         <StatDot
                             value={forcePoints.current}
                             maxValue={Math.max(1, forcePointsMax)}
+                            disabled={readOnly}
                             onChange={(val) => handleForcePointsChange(val)}
                             size="md"
                             onDiceRoll={buildDiceNotation}
@@ -192,6 +211,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                         <StatDot
                             value={darkSide}
                             maxValue={10}
+                            disabled={readOnly}
                             onChange={(val) => handleDarkSideChange(val)}
                             size="md"
                             activeColor={getDarkSideColor((darkSide / 10) * 100)}

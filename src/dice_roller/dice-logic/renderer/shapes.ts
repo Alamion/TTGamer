@@ -62,6 +62,7 @@ export abstract class DiceShape {
 
     stopped: boolean = false;
     staleIterations = 0;
+    lastMovingTime = 0;
 
     vector!: DiceVector;
 
@@ -324,6 +325,7 @@ export abstract class DiceShape {
         this.vector = this.generateVector(vector);
         this.stopped = false;
         this.staleIterations = 0;
+        this.lastMovingTime = 0;
         this.create();
     }
 
@@ -343,6 +345,8 @@ export abstract class DiceShape {
             this.vector.velocity.y,
             this.vector.velocity.z
         );
+        this.body.ccdSpeedThreshold = 5;
+        this.body.ccdRadius = 0.5;
         this.body.linearDamping = 0.1;
         this.body.angularDamping = 0.1;
         this.body.wakeUp();

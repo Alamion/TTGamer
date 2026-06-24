@@ -13,3 +13,4 @@ export { CharacterManagerModal } from './CharacterManagerModal.tsx';
 export type { CharacterManagerModalProps } from './CharacterManagerModal.tsx';
 export { SectionCard } from './SectionCard.tsx';
 export { NewCharacterButton } from './NewCharacterButton.tsx';
+export { CharacterViewer } from './CharacterViewer.tsx';

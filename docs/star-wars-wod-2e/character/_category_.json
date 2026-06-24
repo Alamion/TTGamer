@@ -1,5 +1,6 @@
 {
     "label": "Character",
+    "position": 2.3,
     "link": {
         "type": "generated-index"
     },

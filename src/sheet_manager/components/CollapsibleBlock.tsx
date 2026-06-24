@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { useExpandedState } from '../hooks';
 
 export type AccentColor = 'primary' | 'secondary';
@@ -9,6 +9,7 @@ interface CollapsibleBlockProps {
     storageKey: string;
     defaultExpanded?: boolean;
     children: React.ReactNode;
+    docsPath?: string;
 }
 
 const accentColorClasses: Record<AccentColor, string> = {
@@ -22,6 +23,7 @@ export function CollapsibleBlock({
     storageKey,
     defaultExpanded = true,
     children,
+    docsPath,
 }: CollapsibleBlockProps) {
     const [isExpanded, toggleExpanded] = useExpandedState(storageKey, defaultExpanded);
 
@@ -31,6 +33,18 @@ export function CollapsibleBlock({
                 <h2 className="text-lg font-semibold text-textPrimary flex items-center gap-2">
                     <span className={`w-1 h-6 ${accentColorClasses[accentColor]} rounded-full`} />
                     {title}
+                    {docsPath && (
+                        <a
+                            href={docsPath}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-textSecondary hover:text-textPrimary transition-colors"
+                            aria-label={`Documentation for ${title}`}
+                        >
+                            <HelpCircle className="w-4 h-4" />
+                        </a>
+                    )}
                 </h2>
                 {isExpanded ? (
                     <ChevronUp className="w-5 h-5 text-textSecondary" />

@@ -37,18 +37,39 @@ Each task includes: name, description, priority, effort, impact, and dependencie
 
 All planned files exist on disk. Status below reflects **content completeness**:
 
-| Phase                             | Status                                 |
-| --------------------------------- | -------------------------------------- |
-| Phase 1 — Core Mechanics          | ✅ **DONE** (both files fully written) |
-| Phase 2 — Character Creation      | ⬜ NOT DONE (8 files, 0-line stubs)    |
-| Phase 3 — Combat                  | ⬜ NOT DONE (3 files, 0-line stubs)    |
-| Phase 4 — Equipment & Gear        | ⬜ NOT DONE (1 file, 0-line stub)      |
-| Phase 5 — Creatures & Adversaries | ⬜ NOT DONE (2 files, 0-line stubs)    |
-| Phase 6 — Vehicles                | ⬜ NOT DONE (4 files, 0-line stubs)    |
-| Phase 7 — GM Section              | ⬜ NOT DONE (4 files, 0-line stubs)    |
-| Phase 8 — Polish                  | ⬜ NOT DONE (3 files, 0-line stubs)    |
+| Phase                             | Status                                  |
+| --------------------------------- | --------------------------------------- |
+| Phase 1 — Core Mechanics          | ✅ **DONE** (both files fully written)  |
+| Phase 2 — Character Creation      | 🟡 **IN PROGRESS** (8 of 10 files done) |
+| Phase 3 — Combat                  | ⬜ NOT DONE (3 files, 0-line stubs)     |
+| Phase 4 — Equipment & Gear        | ⬜ NOT DONE (1 file, 0-line stub)       |
+| Phase 5 — Creatures & Adversaries | ⬜ NOT DONE (2 files, 0-line stubs)     |
+| Phase 6 — Vehicles                | ⬜ NOT DONE (4 files, 0-line stubs)     |
+| Phase 7 — GM Section              | ⬜ NOT DONE (4 files, 0-line stubs)     |
+| Phase 8 — Polish                  | ⬜ NOT DONE (3 files, 0-line stubs)     |
 
 `quick-start.mdx` (241 lines) — not in the build sequence table but fully written and serves as the foundation for Phase 1.
+
+### Side effects from interactive doc implementations
+
+New data files created to support `DataCatalog`-driven tables:
+
+- `src/data/speciesData.ts` — 11 era-variant entries across 8 species with `SpeciesEntry` interface
+- `src/data/speciesConfig.tsx` — columns + `renderSpeciesDetail` for the species table
+- `src/data/alienPhysData.ts` — 27 alien physiology merits/flaws with `AlienPhysEntry` interface
+- `src/data/alienPhysConfig.tsx` — columns + `renderAlienPhysDetail` for the alien physiology table
+- `src/data/backgroundsData.ts` — 12 backgrounds with `BackgroundEntry` interface
+- `src/data/backgroundsConfig.tsx` — columns + `renderBackgroundDetail` for the backgrounds table
+- `src/data/meritsFlawsData.ts` — merits/flaws catalog with `MeritFlawEntry` interface
+- `src/data/meritsFlawsConfig.tsx` — columns + `renderMeritFlawDetail` for the merits/flaws table
+- `src/data/attributes.ts` — 9 attribute entries with `AttributeEntry` interface
+- `src/data/attributeConfig.tsx` — render function for `EntityGrid`
+- `src/data/abilities.ts` — 30 ability entries with `AbilityEntry` interface
+- `src/data/abilityConfig.tsx` — columns + `renderAbilityDetail` for the abilities table
+- `src/data/forcePowersData.ts` — 35 Force Powers with `ForcePowerEntry` interface (skills array, FP cost, full descriptions with difficulty/results gradients)
+- `src/data/forcePowersConfig.tsx` — columns + `renderForcePowerDetail` with skill dots display, boolean filter for FP cost, array filter for skills
+
+`DataCatalog` extended with `filterColumnId2` prop for dual-filter support (used: category + era).
 
 ## Proposed Build Sequence
 
@@ -63,19 +84,19 @@ Each file builds on concepts + component patterns established in prior files. **
 
 These two establish `InlineRoll` patterns (simple, details, multiline) with hardcoded notations like `5d10>=6f=1`, `3d10>=6f=1`, etc.
 
-### Phase 2 — Character Creation (sequenced by creation order) ⬜
+### Phase 2 — Character Creation (sequenced by creation order) 🟡
 
-| #   | File                                 | Builds on | Key content                                                                                                                                                                                                 | Status  |
-| --- | ------------------------------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| 3   | `character/species.mdx`              | #1, #2    | Species table from conversion doc (Ewok, Gamorrean, etc with merits/flaws and freebie point adjustments), droid as species alternative, rules about ignoring WEG min/max                                    | ⬜ stub |
-| 4   | `character/creation-steps.mdx`       | #1–3      | Full step-by-step — concept/nature/demeanor, species choice, 7/5/3 attributes, 13/9/5 abilities, backgrounds, virtues, freebie spending (with cost table), complete worked example (Jax Vorn or similar)    | ⬜ stub |
-| 5   | `character/backgrounds.mdx`          | #4        | All background descriptions from conversion doc (Allies, Contacts, Customization, Droid, Influence, Mentor, Military Rank, Noble Status, Reputation, Resources, Retainers, Vehicle) with dot-rank tables    | ⬜ stub |
-| 6   | `character/merits-flaws.mdx`         | #4, #5    | Full merits/flaws catalog from conversion doc: Psychological, Mental, Awareness, Aptitudes, Galactic Connections, Alien Physiology groups; point costs and freebie point balance rules                      | ⬜ stub |
-| 7   | `character/virtues-willpower.mdx`    | #4        | Conscience, Passion, Self-Control deep-dive (dot descriptions, movie character examples), derived formulas (Willpower = Passion + Self-Control, Force Points = Self-Control), optional non-Force-user rules | ⬜ stub |
-| 8   | `character/dark_side_resistance.mdx` | #7        | DSR formula (5 + Conscience - Passion), humanity-like degeneration, optional social ostracism rule, recovery costs                                                                                          | ⬜ stub |
-| 9   | `character/force.mdx`                | #7, #8    | Force Skill prerequisites (Control, Dynamism, Rapport, Sense, Telekinesis), Force Point spending options (auto-success vs +Passion dice), Force Powers (reference to conversion doc)                        | ⬜ stub |
-| 10  | `character/droids-cyborgs.mdx`       | #9        | Droid creation differences (upgrade vs XP, reprogramming rules with table, memory types by column), NPC droid degree table                                                                                  | ⬜ stub |
-| 11  | `character/reading-sheet.mdx`        | #3–10     | Reference guide to every section of the character sheet with field descriptions, derived stat callouts, sheet layout map                                                                                    | ⬜ stub |
+| #   | File                                 | Builds on | Key content                                                                                                                                                                                                                                                | Status                                 |
+| --- | ------------------------------------ | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| 3   | `character/species.mdx`              | #1, #2    | Species table from conversion doc (Ewok, Gamorrean, etc with merits/flaws and freebie point adjustments), droid as species alternative, rules about ignoring WEG min/max                                                                                   | ✅ **DONE** (91 lines + 4 data files)  |
+| 4   | `character/creation-steps/`          | #1–3      | Full step-by-step directory (10 files): concept/nature/demeanor, species choice, 7/5/3 attributes, 13/9/5 abilities, backgrounds, virtues, freebie spending (with cost table), complete worked example (Jax Vorn)                                          | ✅ **DONE** (10 files)                 |
+| 5   | `character/backgrounds.mdx`          | #4        | All background descriptions from conversion doc (Allies, Contacts, Customization, Droid, Influence, Mentor, Military Rank, Noble Status, Reputation, Resources, Retainers, Vehicle) with dot-rank tables                                                   | ✅ **DONE** (65 lines + 2 data files)  |
+| 6   | `character/merits-flaws.mdx`         | #4, #5    | Full merits/flaws catalog from conversion doc: Psychological, Mental, Awareness, Aptitudes, Galactic Connections, Alien Physiology groups; point costs and freebie point balance rules                                                                     | ✅ **DONE** (70 lines + 2 data files)  |
+| 7   | `character/virtues-willpower.mdx`    | #4        | Conscience, Passion, Self-Control deep-dive (dot descriptions, movie character examples), derived formulas (Willpower = Passion + Self-Control, Force Points = Self-Control), optional non-Force-user rules                                                | ✅ **DONE** (198 lines)                |
+| 8   | `character/dark_side_resistance.mdx` | #7        | DSR formula (5 + Conscience - Passion), humanity-like degeneration, optional social ostracism rule, recovery costs                                                                                                                                         | ✅ **DONE** (143 lines)                |
+| 9   | `character/force.mdx`                | #7, #8    | Force Skills, Force Points for Force users, 35-power Force Powers catalog (DataCatalog with skill + FP filters), Light Side/Dark Side temp increases, common Force rules, Force-related Merits & Flaws catalog (DataCatalog filtered by Force Connections) | ✅ **DONE** (227 lines + 2 data files) |
+| 10  | `character/droids-cyborgs.mdx`       | #9        | Droid creation differences (upgrade vs XP, reprogramming rules with table, memory types by column), NPC droid degree table, cybernetic enhancements (limbs, sensory, uplink, life support, clunky)                                                         | ✅ **DONE** (200 lines)                |
+| 11  | `character/reading-sheet.mdx`        | #3–10     | Reference guide to every section of the character sheet with field descriptions, derived stat callouts, sheet layout map                                                                                                                                   | ⬜ stub (0 lines)                      |
 
 ### Phase 3 — Combat (builds on core mechanics + characters) ⬜
 

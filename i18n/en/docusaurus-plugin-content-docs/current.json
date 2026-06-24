@@ -62,5 +62,17 @@
     "sidebar.docsSidebar.category.World of Darkness": {
         "message": "World of Darkness",
         "description": "The label for category 'World of Darkness' in sidebar 'docsSidebar'"
+    },
+    "sidebar.docsSidebar.category.sw-wod": {
+        "message": "Star Wars WoD 2e",
+        "description": "The label for category 'Star Wars WoD 2e' in sidebar 'docsSidebar'"
+    },
+    "sidebar.docsSidebar.category.sw-wod-creation-steps": {
+        "message": "Creation Steps",
+        "description": "The label for category 'Creation Steps' in sidebar 'docsSidebar'"
+    },
+    "sidebar.docsSidebar.category.sw-wod-creation-steps.link.generated-index.description": {
+        "message": "Step-by-step guide to creating a character for Star Wars WoD 2e.",
+        "description": "The generated-index page description for category 'Creation Steps' in sidebar 'docsSidebar'"
     }
 }

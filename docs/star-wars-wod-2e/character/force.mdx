@@ -1,0 +1,174 @@
+---
+sidebar_position: 2.37
+title: The Force
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { ForceBlock } from '/src/sheet_manager/features/sheet/components/ForceBlock';
+import { FORCE_POWERS } from '/src/data/forcePowersData';
+import { FORCE_POWER_COLUMNS, renderForcePowerDetail } from '/src/data/forcePowersConfig';
+import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
+import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+
+# The Force
+
+The Force is the energy field that binds the galaxy together. For those who can hear its call, it grants abilities that transcend the limits of mortal capability — precognition, telekinesis, mind influence, and more. This chapter covers the mechanics of Force-sensitive characters: how to gain access to the Force, the five Force Skills, and the full catalog of Force Powers.
+
+:::info[Prerequisites]
+To learn Force Skills and Powers, a character must first possess the **Force Sensitive** merit (or an equivalent trait like **Natural Force Power**, **Strong in the Force**, etc.). See the Force-Related Merits section below for the full list. Characters without Force Sensitivity cannot purchase Force Skills at all.
+:::
+
+---
+
+## Force Skills
+
+Force Skills are not used directly — they are applied through Force Powers. Each Force Power pairs one or more Force Skills with an Attribute, Ability, or Virtue to determine its outcome. All five Force Skills start at **0** for a new Force-sensitive character and can be raised with **Freebie Points** (3 per dot) or **Experience Points** (same cost as Abilities).
+
+<TWWrapper>
+    <ForceBlock accentColor="primary" />
+</TWWrapper>
+<br />
+
+| Skill           | Description                                                                                                                                                                                                                                         |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Control**     | The skill of allowing the Force to guide your actions, surrendering your own instincts and reflexes to the Force. Deals with powers affecting the Force user's own physical body — healing, ignoring pain, physical prowess, and lightsaber combat. |
+| **Dynamism**    | The skill of manipulating intangible energy — electricity, electromagnetic waves, heat, plasma, and even the Force itself. Deals with powers affecting energy: containing blaster bolts, Sith lightning, concealment, and meditation.               |
+| **Rapport**     | The skill of interacting with other living beings through the Force. Deals with powers affecting minds and physiology: suggestion (Jedi mind tricks), calming beasts, reading thoughts, probing memories, and transferring life.                    |
+| **Sense**       | The skill of observing the universe through the Force rather than your five senses. Deals with powers of perception: awareness, clairvoyance, reading surface thoughts, and lightsaber combat.                                                      |
+| **Telekinesis** | The skill of moving objects with your mind. Deals with powers that manipulate objects from afar: crushing, heaving, summoning, and manipulating with precision or lethal force.                                                                     |
+
+### Raising Force Skills
+
+| Method                              | Cost              |
+| ----------------------------------- | ----------------- |
+| Freebie Points (character creation) | 3 points per dot  |
+| Experience Points (during play)     | Same as Abilities |
+
+---
+
+## Force Points for Force Users
+
+The base rules for Force Points are covered in [Virtues & Willpower](./virtues-willpower.mdx) and [Dice Pools](../core-rules/dice-pools.mdx). Force-sensitive characters have additional considerations.
+
+### Total vs. Current Force Points
+
+- **Total Force Points** — Your maximum capacity. Equals **Self-Control** at character creation. Can be raised independently (2 Freebie Points per dot).
+- **Current Force Points** — Your total minus any spent points. Spent points are marked as checkboxes below the dots, like Willpower in V:TM.
+
+### Activating Force Powers
+
+Many Force Powers require spending a **Force Point** to activate. When a power description says "Spend 1 FP," you mark one of your current Force Points as spent. You cannot activate a power requiring Force Points if your current Force Points are zero.
+
+### Regaining Force Points Through Force Powers
+
+Force users regain Force Points through roleplaying their Nature (see [Virtues & Willpower](./virtues-willpower.mdx)), but also have two additional options:
+
+- **Meditate** (Light Side) — Enter a trance to regain Force Points through peace and serenity. More effective with higher DSR.
+- **Vanquish** (Dark Side) — Replenish Force Points through conquest. More effective with lower DSR.
+
+Both powers are described in the Force Powers catalog below.
+
+---
+
+## Force Powers
+
+Force Powers are not automatically known. A Force-sensitive character must purchase each Force Power individually at a cost of **2 Freebie Points per power** (during character creation) or with Experience Points (during play). Each power requires at least **one dot** in each of its listed Force Skills.
+
+Use the search bar to find powers by name or effect. Use the **Skills** filter to show only powers requiring a specific Force Skill. Use the **FP** filter to show only powers that cost Force Points to activate. Click any row for the full description with difficulty and results scaling.
+
+<TWWrapper>
+    <DataCatalog
+        data={FORCE_POWERS}
+        columns={FORCE_POWER_COLUMNS}
+        renderDetail={renderForcePowerDetail}
+        filters={[
+            {
+                columnId: 'forcePointCost',
+                label: 'Force Point Cost',
+                optionsMap: { true: 'Costs FP', false: 'Free' },
+            },
+            { columnId: 'skills', label: 'Skills', mode: 'multi' },
+        ]}
+        searchPlaceholder="Search powers by name or effect..."
+    />
+</TWWrapper>
+
+---
+
+## Light Side & Dark Side
+
+Force users can temporarily push beyond their normal limits by drawing on their emotions. The path they choose determines the cost.
+
+### Control Your Fear (Light Side)
+
+Once per game session, in a situation the Storyteller agrees is frightening or where failure would have severe consequences, spend a Force Point and roll **Self-Control** (difficulty 3 + your Passion). If you succeed, substitute your **Conscience** score for one Force Skill of your choice for the duration of the scene.
+
+### Release Your Anger (Dark Side)
+
+Once per game session, substitute your **Passion** score for one Force Skill of your choice for the duration of the scene. No circumstances required, no roll — you simply give in to your anger. The cost: you **automatically lose 1 point of Dark Side Resistance**.
+
+:::caution[The Seduction of the Dark Side]
+The dark path is quicker, easier, and more seductive. Every time you Release Your Anger, your DSR drops, making it harder to regain Force Points through meditation and easier to justify doing it again. See [Dark Side Resistance](./dark_side_resistance.mdx) for full degeneration and recovery rules.
+:::
+
+---
+
+## Common Force Rules
+
+### Concentration
+
+Some Force Powers require absolute concentration. You can speak or move at walking speed over easy terrain while concentrating. Taking any action requiring a dice roll breaks your concentration and ends the power's effect. If you take damage while concentrating, roll **Willpower** (difficulty 8) to maintain focus.
+
+### Line of Sight
+
+Most Force Powers can only target beings or objects within your line of sight. You cannot curve an Energy Burst around a corner or Summon an Object through a solid wall. Storytellers may grant exceptions for powerful or narratively appropriate moments.
+
+### Feats of Strength
+
+When a Force Power calls for a Feat of Strength, use these substitutions:
+
+| Stat       | Replace With          |
+| ---------- | --------------------- |
+| Strength   | Telekinesis dots      |
+| Potence    | Current Force Points  |
+| Willpower  | Willpower (unchanged) |
+| Difficulty | 7                     |
+
+### Difficulty Modifiers
+
+The difficulty of perception and communication powers (Clairvoyance, Project Thoughts, etc.) is modified by relationship to the target, time elapsed, and distance:
+
+| Modifier | Relationship                        | Time                  | Distance                 |
+| -------- | ----------------------------------- | --------------------- | ------------------------ |
+| **0**    | Family, lover, or master/apprentice | Within one month      | Same planet              |
+| **+1**   | Close friend, relative, or ex-lover | More than one month   | Beyond local planet      |
+| **+2**   | Long-time acquaintance              | More than one year    | Beyond local star system |
+| **+3**   | Met once or twice                   | More than one decade  | Beyond local region      |
+| **+4**   | Complete stranger                   | More than one century | Beyond the galaxy        |
+
+---
+
+## Force-Related Merits & Flaws
+
+These merits and flaws relate to the Force. Click any row for full description. Use the Type filter to show only Merits or only Flaws.
+
+<TWWrapper>
+    <DataCatalog
+        data={MERITS_FLAWS.filter((m) => m.category === 'Force Connections')}
+        columns={MF_COLUMNS}
+        renderDetail={renderMeritFlawDetail}
+        filters={[{ columnId: 'type', label: 'Type' }]}
+        searchPlaceholder="Search Force merits & flaws..."
+    />
+</TWWrapper>
+
+---
+
+## Next Steps
+
+- [Virtues & Willpower](./virtues-willpower.mdx) — Virtue descriptions, Willpower as static defense, regaining Force Points through Nature
+- [Dark Side Resistance](./dark_side_resistance.mdx) — Degeneration, recovery, the cost of the dark side
+- [Merits & Flaws](./merits-flaws.mdx) — Full catalog of all merits and flaws
+- [Dice Pools](../core-rules/dice-pools.mdx) — Force Point spend options, core resolution mechanics
+- [Droids & Cyborgs](./droids-cyborgs.mdx) — Droid limitations with Force Skills

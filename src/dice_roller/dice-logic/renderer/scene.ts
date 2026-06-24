@@ -1,3 +1,4 @@
+import { isDevelopment } from '@site/src/shared/utils/env';
 import {
     AmbientLight,
     DirectionalLight,
@@ -132,7 +133,7 @@ export class SceneManager {
         this.directionalLight.shadow.bias = 0.001;
         this.scene.add(this.directionalLight);
 
-        if (process.env.NODE_ENV !== 'production') {
+        if (isDevelopment()) {
             const shadowCameraHelper = new CameraHelper(this.directionalLight.shadow.camera);
             this.scene.add(shadowCameraHelper);
         }

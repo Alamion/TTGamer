@@ -59,12 +59,12 @@ Docusaurus site hosting docs, blog, and modular React modules (character sheet m
 
 ## 6. Feature Roadmap
 
-- [ ] Droid & Vehicle character support
-- [ ] i18n internalization
-- [ ] Dice roll UI/UX (dice pool, history)
-- [ ] 3D Dice visualization
+- [/] Droid & Vehicle character support
+- [/] i18n internalization (en, ru)
+- [x] Dice roll UI/UX (dice pool, history)
+- [x] 3D Dice visualization
 - [ ] Database + Auth layer
-- [ ] Trait system catalog
+- [/] Trait system catalog (data layer complete, mechanical effects pending)
 - [ ] Item / Vehicle / Creature catalogs
 - [ ] WoD (VtM) systems
 

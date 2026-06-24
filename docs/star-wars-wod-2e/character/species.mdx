@@ -1,0 +1,93 @@
+---
+sidebar_position: 2.32
+title: Species
+---
+
+import { SPECIES } from '/src/data/speciesData';
+import { SPECIES_COLUMNS, renderSpeciesDetail } from '/src/data/speciesConfig';
+import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
+import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+
+# Species
+
+Choosing your species is one of the most defining decisions in character creation. This chapter covers how species work in this hybrid system, available species templates across different eras, and the rules for droid characters.
+
+## Core Principles
+
+### No Attribute Minimums or Maximums
+
+The WEG version of Star Wars lists minimum and maximum attribute dice for each species. This conversion discards those limits for player characters. A Gamorrean with high Intelligence or a tech-savvy Ewok is entirely possible — your attributes range freely from **1 to 5** like any other character. Storytellers may still use WEG's norms for NPCs.
+
+### Species Are Defined by Merits & Flaws
+
+Instead of attribute caps, each species is differentiated by a set of **Merits & Flaws** that reflect their biological norms. Cultural and educational norms are deliberately excluded — an Ewok raised in the Correllian shipyards should not have the same flaws as one from Endor.
+
+### Freebie Point Adjustment
+
+If a species' Merits & Flaws are unbalanced compared to a human baseline, the difference is accounted for by adjusting the character's starting **Freebie Points**. A species with net physiological advantages costs more freebie points; a species with net disadvantages grants bonus freebie points.
+
+### Era Dependence & GM Approval
+
+The species below are **examples**, not an exhaustive catalog. Their listed merits and flaws (especially political traits like **Slave Race**) depend heavily on the **era** of your campaign. A Wookiee in the Dark Times is enslaved; a Wookiee in the New Republic is free. The species table includes era-tagged variants to reflect this — use the search bar to filter by era name, and always clear your species choice with the **Storyteller** before play begins. They may add, remove, or rebalance species for their specific setting.
+
+---
+
+## Species Table
+
+Search by species name, era, or category. Click a row to see full details including merit/flaw breakdown.
+
+<TWWrapper>
+    <DataCatalog
+        data={SPECIES}
+        columns={SPECIES_COLUMNS}
+        renderDetail={renderSpeciesDetail}
+        filters={[
+            { columnId: 'category', label: 'Category' },
+            { columnId: 'eras', label: 'Era', mode: 'multi' },
+        ]}
+        searchPlaceholder="Search species, era, or type..."
+    />
+</TWWrapper>
+
+---
+
+## Droid Characters
+
+While not a biological species, droids are common enough in the Star Wars galaxy to warrant full character status. Droid characters follow the same creation process as living characters, with these differences:
+
+- **Attribute Upgrades:** Instead of spending experience on attributes, droids upgrade their systems like vehicles. See the vehicle customization rules for details.
+- **Reprogramming:** Droids may be reprogrammed during play to change their Abilities without spending experience. See the Droid Reprogramming section for details.
+- **No Force Skills:** Droids cannot learn Force Skills. They may still spend and regain Force Points and lose Dark Side Resistance.
+- **Repair Instead of Healing:** Droids do not heal naturally. They recover Health levels through repair, following the vehicle repair rules. They do not need stabilization to avoid bleeding out.
+
+### NPC Droid Degrees
+
+When creating non-player character droids, use the following table to determine starting dots:
+
+| Degree     | Attributes | Abilities | Backgrounds | Virtues |
+| ---------- | ---------- | --------- | ----------- | ------- |
+| **First**  | 7/5/3      | 13/9/5    | 0           | 7       |
+| **Second** | 6/4/2      | 11/7/3    | 0           | 6       |
+| **Third**  | 5/3/1      | 9/5/1     | 0           | 5       |
+| **Fourth** | 4/2/0      | 7/3/0     | 0           | 4       |
+| **Fifth**  | 3/2/0      | 5/1/0     | 0           | 3       |
+
+Most players will choose a First- or Second-degree droid, though lower-degree droids can be upgraded through play.
+
+---
+
+## Alien Physiology Merits & Flaws
+
+The following merits and flaws are available **only** to non-human species and represent physiological traits common to an entire species. They may also be taken individually with Storyteller approval. Use the Type filter to show only Merits or only Flaws.
+
+<TWWrapper>
+    <DataCatalog
+        data={MERITS_FLAWS.filter((m) => m.category === 'Alien Physiology')}
+        columns={MF_COLUMNS}
+        renderDetail={renderMeritFlawDetail}
+        filters={[{ columnId: 'type', label: 'Type' }]}
+        searchPlaceholder="Search merits & flaws..."
+    />
+</TWWrapper>

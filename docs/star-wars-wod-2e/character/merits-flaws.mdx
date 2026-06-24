@@ -1,0 +1,73 @@
+---
+sidebar_position: 2.34
+title: Merits & Flaws
+---
+
+import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
+import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+
+# Merits & Flaws
+
+Merits and Flaws add depth and distinction to your character. **Merits** are advantageous traits — natural talents, cybernetic enhancements, or connections — that cost Freebie Points equal to their listed value. **Flaws** are disadvantages — psychological weaknesses, physical impairments, or social burdens — that grant additional Freebie Points equal to their listed value.
+
+## Rules
+
+- **Net limit:** The total of your Merits minus your Flaws cannot exceed **7 points** at character creation.
+- **Multiple purchases:** Many Merits and Flaws can be taken multiple times. When they can, the description will say so.
+- **Storyteller approval:** All Merits and Flaws require Storyteller approval. Some may be inappropriate for certain campaigns.
+- **In-play acquisition:** Flaws may be acquired during play (through injury, trauma, or story events) without granting Freebie Points. Merits may be purchased with Experience Points after play begins.
+
+---
+
+## Catalog
+
+Search by name or description. Use the **Type** filter to show only Merits or only Flaws. Use the **Category** filter to browse by group.
+
+<TWWrapper>
+    <DataCatalog
+        data={MERITS_FLAWS}
+        columns={MF_COLUMNS}
+        renderDetail={renderMeritFlawDetail}
+        filters={[
+            { columnId: 'type', label: 'Type' },
+            { columnId: 'category', label: 'Category' },
+        ]}
+        searchPlaceholder="Search merits & flaws..."
+    />
+</TWWrapper>
+
+---
+
+## Alien Physiology
+
+The **Alien Physiology** category contains traits that are normally species-specific — they represent biological adaptations that entire species share. These are marked in the detail view as "Species-specific — non-human only."
+
+A human character cannot normally take an Alien Physiology merit or flaw. However, the Storyteller may allow exceptions for characters with cybernetic replacements that mimic these traits, or for unusual origins.
+
+For species templates that include these traits (with their freebie point adjustments already calculated), see the [Species](./species.mdx) page.
+
+---
+
+## Category Reference
+
+| Category                 | Description                                                        |
+| ------------------------ | ------------------------------------------------------------------ |
+| **Psychological**        | Personality traits, compulsions, and emotional tendencies          |
+| **Mental**               | Cognitive abilities, memory, and intellect                         |
+| **Awareness**            | Enhanced or impaired senses                                        |
+| **Aptitudes**            | Learned and natural talents — from ambidexterity to unskilled      |
+| **Galactic Connections** | Relationships with organizations, enemies, and social standing     |
+| **Physical**             | Bodily advantages, injuries, and deformities                       |
+| **Cybernetic**           | Technological body replacements and their complications            |
+| **Force Connections**    | Relationship with the Force — sensitivity, destiny, and corruption |
+| **Alien Physiology**     | Species-specific biological traits (non-human only)                |
+
+---
+
+## Next Steps
+
+- [Species](./species.mdx) — Species with their pre-calculated merits and flaws
+- [Creation Steps](./creation-steps/) — Full step-by-step character creation guide
+- [Dice Pools](../core-rules/dice-pools.mdx) — Core resolution mechanics

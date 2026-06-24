@@ -12,8 +12,8 @@ export interface DataTableProps<T> {
     columns: DataTableColumn<T>[];
     items: T[];
     idKey: keyof T;
-    onAdd: () => void;
-    onRemove: (id: string) => void;
+    onAdd?: () => void;
+    onRemove?: (id: string) => void;
     addLabel: string;
     emptyMessage?: string;
     className?: string;
@@ -57,28 +57,32 @@ export function DataTable<T extends { id: string }>({
                                         {col.render(item)}
                                     </td>
                                 ))}
-                                <td>
-                                    <button
-                                        onClick={() => onRemove(String(item[idKey]))}
-                                        className="text-textSecondary hover:text-error transition-colors"
-                                        aria-label="Remove item"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </td>
+                                {onRemove && (
+                                    <td>
+                                        <button
+                                            onClick={() => onRemove(String(item[idKey]))}
+                                            className="text-textSecondary hover:text-error transition-colors"
+                                            aria-label="Remove item"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
                 </table>
             )}
-            <button
-                onClick={onAdd}
-                className="flex items-center gap-1 text-sm text-textSecondary hover:text-textSecondary/80 transition-colors mt-2"
-                aria-label={addLabel}
-            >
-                <Plus className="w-4 h-4" />
-                {addLabel}
-            </button>
+            {onAdd && (
+                <button
+                    onClick={onAdd}
+                    className="flex items-center gap-1 text-sm text-textSecondary hover:text-textSecondary/80 transition-colors mt-2"
+                    aria-label={addLabel}
+                >
+                    <Plus className="w-4 h-4" />
+                    {addLabel}
+                </button>
+            )}
         </div>
     );
 }

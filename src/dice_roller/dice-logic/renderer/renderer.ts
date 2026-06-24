@@ -5,9 +5,10 @@ import { DiceShape, createDiceShape } from './shapes';
 import type { DiceGeometryData } from './geometries';
 import { SoundManager } from './sound-manager';
 import { debug } from '@site/src/shared/utils/logging';
+import { isDevelopment } from '@site/src/shared/utils/env';
 import { MAX_ROLL_SECONDS, VELOCITY_THRESHOLD, FRAME_RATE } from '../../utils/constants';
 import { RollCancelledError } from '../errors';
-import { Raycaster, Vector2, type Mesh } from 'three';
+import { BoxGeometry, Mesh, MeshBasicMaterial, Raycaster, Vector2, type Material } from 'three';
 
 export interface DiceRendererConfig {
     diceColor: string;
@@ -76,6 +77,7 @@ export class DiceRenderer {
     private acceptBtn: HTMLButtonElement | null = null;
     private cancelBtn: HTMLButtonElement | null = null;
 
+    private wallMeshes: Mesh[] = [];
     private raycaster = new Raycaster();
     private mouse = new Vector2();
     private hoveredMesh: Mesh | null = null;
@@ -129,6 +131,7 @@ export class DiceRenderer {
         const camInfo = this.sceneManager.getCameraInfo();
         if (camInfo) {
             this.physicsWorld.updateBarriers(camInfo.z, camInfo.fov, camInfo.aspect);
+            this.updateWallVisuals();
         }
 
         this.width = width;
@@ -142,6 +145,52 @@ export class DiceRenderer {
         document.addEventListener('pointerdown', this.boundPointerDown, { capture: true });
         document.addEventListener('click', this.boundClickCapture, { capture: true });
         document.addEventListener('pointermove', this.boundPointerMove);
+    }
+
+    private updateWallVisuals(): void {
+        for (const mesh of this.wallMeshes) {
+            this.sceneManager.remove(mesh);
+            mesh.geometry.dispose();
+            (mesh.material as Material).dispose();
+        }
+        this.wallMeshes = [];
+
+        if (!isDevelopment()) return;
+
+        const camInfo = this.sceneManager.getCameraInfo();
+        if (!camInfo) return;
+
+        const fovRad = (camInfo.fov * Math.PI) / 180;
+        const visibleHeight = 2 * camInfo.z * Math.tan(fovRad / 2);
+        const visibleWidth = visibleHeight * camInfo.aspect;
+
+        const limitX = (visibleWidth / 2) * 0.9;
+        const limitY = (visibleHeight / 2) * 0.9;
+
+        const wallMat = new MeshBasicMaterial({
+            color: 0x888888,
+            transparent: true,
+            opacity: 0.15,
+            depthWrite: false,
+        });
+
+        const wallZ = 250;
+        const wallDepth = 600;
+
+        const walls = [
+            { size: [visibleWidth, 2, wallDepth] as const, pos: [0, limitY, wallZ] },
+            { size: [visibleWidth, 2, wallDepth] as const, pos: [0, -limitY, wallZ] },
+            { size: [2, visibleHeight, wallDepth] as const, pos: [limitX, 0, wallZ] },
+            { size: [2, visibleHeight, wallDepth] as const, pos: [-limitX, 0, wallZ] },
+        ];
+
+        for (const { size, pos } of walls) {
+            const geo = new BoxGeometry(...size);
+            const mesh = new Mesh(geo, wallMat);
+            mesh.position.set(pos[0], pos[1], pos[2]);
+            this.sceneManager.add(mesh);
+            this.wallMeshes.push(mesh);
+        }
     }
 
     private handleResize(): void {
@@ -166,6 +215,7 @@ export class DiceRenderer {
                 const camInfo = this.sceneManager.getCameraInfo();
                 if (camInfo) {
                     this.physicsWorld.updateBarriers(camInfo.z, camInfo.fov, camInfo.aspect);
+                    this.updateWallVisuals();
                 }
             } else {
                 this.physicsWorld = new PhysicsWorld(newW, newH);
@@ -174,6 +224,7 @@ export class DiceRenderer {
                 const camInfo = this.sceneManager.getCameraInfo();
                 if (camInfo) {
                     this.physicsWorld.updateBarriers(camInfo.z, camInfo.fov, camInfo.aspect);
+                    this.updateWallVisuals();
                 }
             }
         }, 200);
@@ -272,6 +323,7 @@ export class DiceRenderer {
         const camInfo = this.sceneManager.getCameraInfo();
         if (camInfo) {
             this.physicsWorld.updateBarriers(camInfo.z, camInfo.fov, camInfo.aspect);
+            this.updateWallVisuals();
         }
 
         const tracker = new ResourceTracker();
@@ -607,7 +659,7 @@ export class DiceRenderer {
                 continue;
             }
 
-            if (session.currentIterations > this.maxRollSecs / this.frameRate) {
+            if (elapsed > this.maxRollSecs * 1000) {
                 debug(`Session ${session.id}: Animation timeout for die ${i}`);
                 die.stopped = true;
                 continue;
@@ -617,13 +669,15 @@ export class DiceRenderer {
             const v = die.body.velocity;
 
             if (a.length() < this.velocityThreshold && v.length() < this.velocityThreshold) {
-                die.staleIterations++;
-                if (session.iterations - die.staleIterations > 5) {
+                const now = performance.now();
+                if (die.lastMovingTime === 0) {
+                    die.lastMovingTime = now;
+                } else if (now - die.lastMovingTime > 100) {
                     die.stopped = true;
                 }
             } else {
                 die.stopped = false;
-                die.staleIterations = 0;
+                die.lastMovingTime = 0;
             }
 
             if (!die.stopped) {
@@ -803,6 +857,7 @@ export class DiceRenderer {
             die.body.wakeUp();
             die.stopped = false;
             die.staleIterations = 0;
+            die.lastMovingTime = 0;
         }
 
         session.allStopped = false;
@@ -822,6 +877,14 @@ export class DiceRenderer {
             this.removeDiceFromScene(session.dice, session.tracker);
         }
         this.sessions = [];
+
+        for (const mesh of this.wallMeshes) {
+            this.sceneManager.remove(mesh);
+            mesh.geometry.dispose();
+            (mesh.material as Material).dispose();
+        }
+        this.wallMeshes = [];
+
         this.stopAnimationLoop();
         this.sceneManager.dispose();
         this.soundManager.dispose();

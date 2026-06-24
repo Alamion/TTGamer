@@ -1,0 +1,51 @@
+---
+sidebar_position: 6
+title: Allocate Virtues
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { ForceBlock } from '/src/sheet_manager/features/sheet/components/ForceBlock';
+
+## Step 5: Allocate Virtues (7 Dots)
+
+**Virtues** represent your character's emotional and ethical relationship with the Force. Three virtues, **7 dots** total:
+
+| Virtue           | Description                                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Conscience**   | Your sense of right and wrong. High: Yoda, Padmé Amidala. Low: Jabba, Darth Maul.                             |
+| **Passion**      | Your capacity for strong emotion — love, hate, joy, anger. High: Han Solo, Kylo Ren. Low: Chirrut Îmwe, Yoda. |
+| **Self-Control** | Your patience, resolve, and focus. High: R2-D2, Ben Kenobi. Low: Chewbacca, Kylo Ren.                         |
+
+- Each virtue starts with **1 inherent dot** (so you place 4 more, for a total of 7 dots — but the formula above accounts for this).
+- The maximum at character creation is **5**.
+
+<TWWrapper>
+    <ForceBlock accentColor="primary" />
+</TWWrapper>
+
+<br />
+
+:::info[Games Without Force Users]
+If your campaign has no Force-using characters, you may **ignore Virtues entirely**. Set starting **Willpower** to 6 and starting **Force Points** to 3. Players may raise these with Freebie or Experience points later.
+:::
+
+### Derived Stats
+
+Once Virtues are allocated, calculate these derived values automatically:
+
+| Stat                     | Formula                  |
+| ------------------------ | ------------------------ |
+| **Willpower**            | Passion + Self-Control   |
+| **Force Points**         | Self-Control             |
+| **Dark Side Resistance** | 5 + Conscience - Passion |
+
+- Raising a Virtue later **does not** retrigger these formulas — they are set at creation.
+- Willpower, Force Points, and Dark Side Resistance can each be raised independently with Freebie or Experience points.
+
+See [Virtues & Willpower](../virtues-willpower.mdx) and [Dark Side Resistance](../dark_side_resistance.mdx) for deep dives.
+
+**Example:** _Jax_ — not Force-sensitive — still has Virtues: Conscience 3, Passion 2, Self-Control 3. Derived: Willpower = 5, Force Points = 3, Dark Side Resistance = 6.
+
+---
+
+Continue to [Step 6: Merits & Flaws](./step-6-merits-flaws).

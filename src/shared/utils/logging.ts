@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast';
+import { isDevelopment } from '@site/src/shared/utils/env';
 import { onRollResult } from '@site/src/dice_roller/dice-logic';
 
 const MODULE_NAME = 'TTGamer';
@@ -11,7 +12,7 @@ export function setupRollLogging(): () => void {
 }
 
 export function debug(...args: unknown[]): void {
-    if (process.env.NODE_ENV !== 'production') {
+    if (isDevelopment()) {
         console.log(`[${MODULE_NAME}]`, ...args);
     }
 }

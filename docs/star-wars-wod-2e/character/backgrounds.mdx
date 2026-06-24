@@ -1,0 +1,66 @@
+---
+sidebar_position: 2.33
+title: Backgrounds
+---
+
+import { BACKGROUNDS } from '/src/data/backgroundsData';
+import { BACKGROUND_COLUMNS, renderBackgroundDetail } from '/src/data/backgroundsConfig';
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+
+# Backgrounds
+
+Backgrounds represent the narrative assets and resources your character has accumulated before the start of play. They are not skills you roll — they are people, wealth, status, and equipment that shape who you are and what you can call upon.
+
+You have **5 dots** to allocate among the following backgrounds at character creation. Additional dots may be purchased with **Freebie Points** at a cost of **1 point per dot**.
+
+---
+
+## Background Table
+
+Search by name or description. Click a row to see the full dot-rank descriptions. Use the category filter to browse by type.
+
+<TWWrapper>
+    <DataCatalog
+        data={BACKGROUNDS}
+        columns={BACKGROUND_COLUMNS}
+        renderDetail={renderBackgroundDetail}
+        filters={[{ columnId: 'category', label: 'Category' }]}
+        searchPlaceholder="Search backgrounds..."
+    />
+</TWWrapper>
+
+---
+
+## Spending Freebie Points on Backgrounds
+
+You may raise any background by spending Freebie Points at **1 point per dot**. This is the cheapest way to spend Freebie Points, reflecting that backgrounds are narrative assets rather than personal power.
+
+However, a background dot is only as useful as the Storyteller makes it. A point in **Resources** is always useful; a point in **Allies** depends on whether those allies are in a position to help with the current story.
+
+---
+
+## Splitting Customization
+
+The **Customization** background can be split across multiple items. For example, you might spend 1 dot improving your blaster's range and 2 dots upgrading your ship's shields. Each dot spent on a single item corresponds to the rank description at that level of the scale.
+
+One-for-one attribute trade-offs — such as a weapon trading Range for Damage, or a vehicle trading Durability for Maneuverability — should be allowed for free with the Storyteller's permission.
+
+---
+
+## Droids & Vehicles
+
+Both the **Droid** and **Vehicle** backgrounds require close coordination with the Storyteller. The droid or vehicle you acquire is a story asset — it can be damaged, lost, stolen, or improved during play. Unlike equipment bought with Resources, these are individual characters or vessels with their own histories.
+
+For full rules on droid characters and vehicle mechanics, see:
+
+- [Droids & Cyborgs](./droids-cyborgs.mdx)
+- [Vehicles — Traits & Systems](../vehicles-mechanisms/traits-systems.mdx)
+
+---
+
+## Next Steps
+
+- [Merits & Flaws](./merits-flaws.mdx) — Additional character customization through merits and flaws
+- [Creation Steps](./creation-steps/) — The full step-by-step character creation guide
+- [Dice Pools](../core-rules/dice-pools.mdx) — How to use your character's traits in play

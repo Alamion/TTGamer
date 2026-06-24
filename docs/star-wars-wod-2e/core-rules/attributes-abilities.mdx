@@ -7,6 +7,7 @@ import { ATTRIBUTES } from '/src/data/attributes';
 import { renderAttributeDetail } from '/src/data/attributeConfig';
 import { ABILITIES } from '/src/data/abilities';
 import { ABILITY_COLUMNS, renderAbilityDetail } from '/src/data/abilityConfig';
+import { TWWrapper } from '../../../src/shared/components/TWWrapper';
 import { EntityGrid } from '/src/shared/components/EntityCard';
 import { AttributeBlock } from '../../../src/sheet_manager/features/sheet/components/AttributeBlock';
 import { SkillBlock } from '../../../src/sheet_manager/features/sheet/components/SkillBlock';
@@ -30,7 +31,7 @@ Social Traits describe appearance, charm, and familiarity with the minds of othe
 
 Mental Traits represent your character's total mental capacity, including memory, perception, and the ability to learn and think.
 
-<div className="tailwind-root">
+<TWWrapper>
     <EntityGrid
         entities={ATTRIBUTES}
         renderDetail={renderAttributeDetail}
@@ -41,7 +42,7 @@ Mental Traits represent your character's total mental capacity, including memory
     />
     <br />
     <AttributeBlock accentColor="secondary" />
-</div>
+</TWWrapper>
 
 ---
 
@@ -63,16 +64,16 @@ Skills are Abilities learned through apprenticeships or rigorous training. If yo
 
 Knowledges require the rigorous application of the mind, not the body. Only Mental Attributes can be used to modify Knowledge rolls. If you do not have a Knowledge dot in a given field, you generally cannot even attempt a roll involving it — though the Storyteller may rule otherwise for trivial information anyone might know.
 
-<div className="tailwind-root">
+<TWWrapper>
     <DataCatalog
         data={ABILITIES}
         columns={ABILITY_COLUMNS}
         renderDetail={renderAbilityDetail}
-        filterColumnId="category"
+        filters={[{ columnId: 'category', label: 'Category' }]}
     />
     <br />
     <SkillBlock accentColor="primary" />
-</div>
+</TWWrapper>
 
 ---
 

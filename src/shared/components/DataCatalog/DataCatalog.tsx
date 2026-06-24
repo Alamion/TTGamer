@@ -16,9 +16,26 @@ import type {
     PaginationState,
     SortingState,
 } from '@tanstack/react-table';
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Search, X } from 'lucide-react';
+import {
+    ChevronLeft,
+    ChevronRight,
+    ChevronUp,
+    ChevronDown,
+    Search,
+    X,
+    ChevronDown as ChevronDownIcon,
+} from 'lucide-react';
 import { clsx } from 'clsx';
 import { useHistory, useLocation } from '@docusaurus/router';
+
+type FilterMode = 'single' | 'multi';
+
+interface FilterConfig {
+    columnId: string;
+    label: string;
+    mode?: FilterMode;
+    optionsMap?: Record<string, string>;
+}
 
 export interface DataCatalogProps<T> {
     data: T[];
@@ -26,8 +43,82 @@ export interface DataCatalogProps<T> {
     renderDetail: (item: T) => ReactNode;
     getRowId?: (item: T) => string;
     searchPlaceholder?: string;
-    filterColumnId?: string;
+    filters?: FilterConfig[];
     pageSize?: number;
+}
+
+function MultiSelectDropdown({
+    label,
+    options,
+    selected,
+    onToggle,
+}: {
+    label: string;
+    options: string[];
+    selected: string[];
+    onToggle: (value: string) => void;
+}) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    const displayText = selected.length > 0 ? `${selected.length} selected` : label;
+
+    return (
+        <div ref={ref} className="relative">
+            <button
+                onClick={() => setOpen((o) => !o)}
+                className={clsx(
+                    'flex items-center gap-2 px-3 py-2 text-sm rounded-lg border transition-colors',
+                    selected.length > 0
+                        ? 'border-primary/40 bg-primary/5 text-primary'
+                        : 'border-border bg-bgSurface text-textSecondary hover:border-textSecondary/40'
+                )}
+                aria-label={label}
+                aria-expanded={open}
+            >
+                <span className="whitespace-nowrap">{displayText}</span>
+                <ChevronDownIcon
+                    className={clsx('w-3.5 h-3.5 transition-transform', open && 'rotate-180')}
+                />
+            </button>
+            {open && (
+                <div className="absolute top-full left-0 mt-1 z-50 min-w-[180px] rounded-lg border border-border bg-bgSurface shadow-lg py-1">
+                    {options.map((option) => {
+                        const isSelected = selected.includes(option);
+                        return (
+                            <label
+                                key={option}
+                                className={clsx(
+                                    'flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer transition-colors',
+                                    isSelected
+                                        ? 'bg-primary/10 text-primary'
+                                        : 'text-textSecondary hover:bg-bgBase'
+                                )}
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={() => onToggle(option)}
+                                    className="rounded border-border text-primary focus:ring-primary/30"
+                                />
+                                {option}
+                            </label>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
 }
 
 export function DataCatalog<T extends { id: string }>({
@@ -36,7 +127,7 @@ export function DataCatalog<T extends { id: string }>({
     renderDetail,
     getRowId = (item: T) => item.id,
     searchPlaceholder = 'Search...',
-    filterColumnId,
+    filters,
     pageSize = 15,
 }: DataCatalogProps<T>) {
     const location = useLocation();
@@ -77,40 +168,123 @@ export function DataCatalog<T extends { id: string }>({
         return data.find((item) => getRowId(item) === selectedId) ?? null;
     }, [data, selectedId, getRowId]);
 
-    const categoryValues = useMemo(() => {
-        if (!filterColumnId) return [];
-        const faceted = table.getColumn(filterColumnId)?.getFacetedUniqueValues();
-        if (!faceted) return [];
-        return Array.from(faceted.keys()).sort() as string[];
-    }, [table, filterColumnId]);
+    const filterConfigs: FilterConfig[] = useMemo(
+        () =>
+            (filters ?? []).map((f) => ({
+                mode: 'single' as FilterMode,
+                ...f,
+            })),
+        [filters]
+    );
+
+    const filterValues = useMemo(() => {
+        const result: Record<string, string[]> = {};
+        for (const fc of filterConfigs) {
+            const col = table.getColumn(fc.columnId);
+            if (!col) continue;
+            const faceted = col.getFacetedUniqueValues();
+            if (!faceted) continue;
+            const raw = Array.from(faceted.keys());
+            const flat = new Set<string>();
+            for (const v of raw) {
+                if (Array.isArray(v)) {
+                    for (const item of v) flat.add(String(item));
+                } else {
+                    flat.add(String(v));
+                }
+            }
+            const sorted = Array.from(flat).sort();
+            if (fc.optionsMap) {
+                result[fc.columnId] = sorted.map((k) => fc.optionsMap![k] ?? k);
+            } else {
+                result[fc.columnId] = sorted;
+            }
+        }
+        return result;
+    }, [table, filterConfigs]);
 
     const handleRowClick = (id: string) => {
         setSelectedId((prev) => (prev === id ? null : id));
     };
 
+    const getFilterValue = (id: string): string =>
+        (columnFilters.find((f) => f.id === id)?.value as string) ?? '';
+
+    const getSelectedValues = (id: string): string[] => {
+        const raw = getFilterValue(id);
+        return raw ? raw.split(',').filter(Boolean) : [];
+    };
+
+    const upsertColumnFilter = (id: string, value: string) => {
+        setColumnFilters((prev) => {
+            const filtered = prev.filter((f) => f.id !== id);
+            return value ? [...filtered, { id, value }] : filtered;
+        });
+        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    };
+
+    const toggleMultiFilter = (id: string, option: string) => {
+        const current = getSelectedValues(id);
+        const next = current.includes(option)
+            ? current.filter((v) => v !== option)
+            : [...current, option];
+        upsertColumnFilter(id, next.join(','));
+    };
+
+    const handleSingleFilterChange = (id: string, value: string) => {
+        upsertColumnFilter(id, value);
+    };
+
+    const reverseMap = (fc: FilterConfig, displayValue: string): string => {
+        if (!fc.optionsMap) return displayValue;
+        const entry = Object.entries(fc.optionsMap).find(([, v]) => v === displayValue);
+        return entry ? entry[0] : displayValue;
+    };
+
     function buildSearchString() {
-        const params = new URLSearchParams();
-        if (globalFilter) params.set('search', globalFilter);
-        if (filterColumnId && columnFilters.length > 0) {
-            const cat = columnFilters.find((f) => f.id === filterColumnId)?.value;
-            if (cat) params.set('category', String(cat));
+        const params = new URLSearchParams(location.search);
+        for (const fc of filterConfigs) {
+            params.delete(fc.columnId);
+            const val = columnFilters.find((f) => f.id === fc.columnId)?.value;
+            if (val) params.set(fc.columnId, String(val));
+        }
+        if (globalFilter) {
+            params.set('search', globalFilter);
+        } else {
+            params.delete('search');
         }
         if (sorting.length > 0) {
             const { id, desc } = sorting[0];
             params.set('sort', `${id}:${desc ? 'desc' : 'asc'}`);
+        } else {
+            params.delete('sort');
         }
-        if (selectedId) params.set('selected', selectedId);
-        if (pagination.pageIndex > 0) params.set('page', String(pagination.pageIndex + 1));
-        return params.toString();
+        if (selectedId) {
+            params.set('selected', selectedId);
+        } else {
+            params.delete('selected');
+        }
+        if (pagination.pageIndex > 0) {
+            params.set('page', String(pagination.pageIndex + 1));
+        } else {
+            params.delete('page');
+        }
+        const sorted = new URLSearchParams();
+        Array.from(params.entries())
+            .sort(([a], [b]) => a.localeCompare(b))
+            .forEach(([k, v]) => sorted.set(k, v));
+        return sorted.toString();
     }
 
     function applyUrlParams(search: string) {
         const params = new URLSearchParams(search);
         setGlobalFilter(params.get('search') ?? '');
-        if (filterColumnId) {
-            const cat = params.get('category');
-            setColumnFilters(cat ? [{ id: filterColumnId, value: cat }] : []);
+        const filters: ColumnFiltersState = [];
+        for (const fc of filterConfigs) {
+            const val = params.get(fc.columnId);
+            if (val) filters.push({ id: fc.columnId, value: val });
         }
+        setColumnFilters(filters);
         const sortParam = params.get('sort');
         if (sortParam) {
             const [id, dir] = sortParam.split(':');
@@ -159,11 +333,6 @@ export function DataCatalog<T extends { id: string }>({
         setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     };
 
-    const handleCategoryChange = (value: string) => {
-        setColumnFilters(value ? [{ id: filterColumnId!, value }] : []);
-        setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-    };
-
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center gap-3">
@@ -187,24 +356,43 @@ export function DataCatalog<T extends { id: string }>({
                     )}
                 </div>
 
-                {filterColumnId && (
-                    <select
-                        value={
-                            (columnFilters.find((f) => f.id === filterColumnId)?.value as string) ??
-                            ''
-                        }
-                        onChange={(e) => handleCategoryChange(e.target.value)}
-                        className="px-3 py-2 text-sm rounded-lg border border-border bg-bgSurface text-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-                        aria-label="Filter by category"
-                    >
-                        <option value="">All Categories</option>
-                        {categoryValues.map((value) => (
-                            <option key={value} value={value}>
-                                {value}
-                            </option>
-                        ))}
-                    </select>
-                )}
+                {filterConfigs.map((fc) => {
+                    const vals = filterValues[fc.columnId] ?? [];
+                    if (fc.mode === 'multi') {
+                        const selected = getSelectedValues(fc.columnId);
+                        return (
+                            <MultiSelectDropdown
+                                key={fc.columnId}
+                                label={fc.label}
+                                options={vals}
+                                selected={selected}
+                                onToggle={(displayValue) => {
+                                    const raw = reverseMap(fc, displayValue);
+                                    toggleMultiFilter(fc.columnId, raw);
+                                }}
+                            />
+                        );
+                    }
+                    return (
+                        <select
+                            key={fc.columnId}
+                            value={getFilterValue(fc.columnId)}
+                            onChange={(e) => {
+                                const raw = reverseMap(fc, e.target.value);
+                                handleSingleFilterChange(fc.columnId, raw);
+                            }}
+                            className="px-3 py-2 text-sm rounded-lg border border-border bg-bgSurface text-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                            aria-label={fc.label}
+                        >
+                            <option value="">{fc.label}</option>
+                            {vals.map((displayVal) => (
+                                <option key={displayVal} value={displayVal}>
+                                    {displayVal}
+                                </option>
+                            ))}
+                        </select>
+                    );
+                })}
 
                 <span className="text-sm text-textSecondary whitespace-nowrap">
                     {table.getRowModel().rows.length} / {data.length}
@@ -212,79 +400,85 @@ export function DataCatalog<T extends { id: string }>({
             </div>
 
             <div className="flex flex-col lg:flex-row gap-4">
-                <div className="shrink-0">
-                    <div className="overflow-x-auto rounded-lg border border-border">
-                        <table className="w-auto text-sm">
-                            <thead>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <tr
-                                        key={headerGroup.id}
-                                        className="border-b border-border bg-bgSurface/50"
-                                    >
-                                        {headerGroup.headers.map((header) => (
-                                            <th
-                                                key={header.id}
-                                                scope="col"
-                                                className={clsx(
-                                                    'px-4 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider',
-                                                    header.column.getCanSort() &&
-                                                        'cursor-pointer select-none hover:text-textPrimary transition-colors'
-                                                )}
-                                                onClick={header.column.getToggleSortingHandler()}
-                                            >
-                                                <span className="inline-flex items-center gap-1">
-                                                    {flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
-                                                    {{
-                                                        asc: <ChevronUp className="w-3.5 h-3.5" />,
-                                                        desc: (
-                                                            <ChevronDown className="w-3.5 h-3.5" />
-                                                        ),
-                                                    }[header.column.getIsSorted() as string] ??
-                                                        null}
-                                                </span>
-                                            </th>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </thead>
-                            <tbody>
-                                {table.getRowModel().rows.length === 0 ? (
-                                    <tr>
-                                        <td
-                                            colSpan={columns.length}
-                                            className="px-4 py-12 text-center text-textSecondary"
-                                        >
-                                            No results match your search.
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    table.getRowModel().rows.map((row) => (
+                <div className="lg:flex-1 min-w-0">
+                    <div className="border border-border rounded-lg overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm table">
+                                <thead>
+                                    {table.getHeaderGroups().map((headerGroup) => (
                                         <tr
-                                            key={row.id}
-                                            onClick={() => handleRowClick(getRowId(row.original))}
-                                            className={clsx(
-                                                'border-b border-border last:border-0 transition-colors cursor-pointer',
-                                                selectedId === getRowId(row.original)
-                                                    ? 'bg-primary/10'
-                                                    : 'hover:bg-bgSurface/80'
-                                            )}
+                                            key={headerGroup.id}
+                                            className="border-b border-border bg-bgSurface/50"
                                         >
-                                            {row.getVisibleCells().map((cell) => (
-                                                <td key={cell.id} className="px-4 py-2.5">
-                                                    {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext()
+                                            {headerGroup.headers.map((header) => (
+                                                <th
+                                                    key={header.id}
+                                                    scope="col"
+                                                    className={clsx(
+                                                        'px-4 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider',
+                                                        header.column.getCanSort() &&
+                                                            'cursor-pointer select-none hover:text-textPrimary transition-colors'
                                                     )}
-                                                </td>
+                                                    onClick={header.column.getToggleSortingHandler()}
+                                                >
+                                                    <span className="inline-flex items-center gap-1">
+                                                        {flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
+                                                        {{
+                                                            asc: (
+                                                                <ChevronUp className="w-3.5 h-3.5" />
+                                                            ),
+                                                            desc: (
+                                                                <ChevronDown className="w-3.5 h-3.5" />
+                                                            ),
+                                                        }[header.column.getIsSorted() as string] ??
+                                                            null}
+                                                    </span>
+                                                </th>
                                             ))}
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ))}
+                                </thead>
+                                <tbody>
+                                    {table.getRowModel().rows.length === 0 ? (
+                                        <tr>
+                                            <td
+                                                colSpan={columns.length}
+                                                className="px-4 py-12 text-center text-textSecondary"
+                                            >
+                                                No results match your search.
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        table.getRowModel().rows.map((row) => (
+                                            <tr
+                                                key={row.id}
+                                                onClick={() =>
+                                                    handleRowClick(getRowId(row.original))
+                                                }
+                                                className={clsx(
+                                                    'border-b border-border last:border-0 transition-colors cursor-pointer',
+                                                    selectedId === getRowId(row.original)
+                                                        ? 'bg-primary/10'
+                                                        : 'hover:bg-bgSurface/80'
+                                                )}
+                                            >
+                                                {row.getVisibleCells().map((cell) => (
+                                                    <td key={cell.id} className="px-4 py-2.5">
+                                                        {flexRender(
+                                                            cell.column.columnDef.cell,
+                                                            cell.getContext()
+                                                        )}
+                                                    </td>
+                                                ))}
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                         <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-bgSurface/30">
                             <span className="text-sm text-textSecondary">
                                 Page {pagination.pageIndex + 1} of {table.getPageCount()}

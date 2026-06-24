@@ -15,6 +15,7 @@ interface MeritFlawListProps {
     onChange: (id: string, points: number, label: string) => void;
     isMerit?: boolean;
     disabled?: boolean;
+    docsPath?: string;
 }
 
 export function MeritFlawList({
@@ -25,9 +26,10 @@ export function MeritFlawList({
     onChange,
     isMerit = true,
     disabled = false,
+    docsPath,
 }: MeritFlawListProps) {
     return (
-        <SectionCard title={title}>
+        <SectionCard title={title} docsPath={docsPath}>
             <div className="space-y-2">
                 {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-2">

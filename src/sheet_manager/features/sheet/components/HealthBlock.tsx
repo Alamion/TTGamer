@@ -1,4 +1,6 @@
+import { HelpCircle } from 'lucide-react';
 import { useCharacterStore } from '../../../store/characterStore.ts';
+import { useCharacterContext } from '../../../context/CharacterContext.tsx';
 import type { ConditionMark } from '../../../types/character.ts';
 import { clsx } from 'clsx';
 
@@ -24,15 +26,22 @@ const MARK_SYMBOLS: Record<ConditionMark, string> = {
     cross: 'X',
 };
 
-export function HealthBlock() {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
+interface HealthBlockProps {
+    docsPath?: string;
+}
 
-    if (!currentCharacter) return null;
+export function HealthBlock({ docsPath }: HealthBlockProps) {
+    const { currentCharacter, updateCharacter } = useCharacterStore();
+    const { character: contextChar, readOnly } = useCharacterContext();
+
+    const character = contextChar ?? currentCharacter;
+    if (!character) return null;
 
     const handleHealthChange = (index: number, mark: ConditionMark) => {
-        const newLevels = [...currentCharacter.health.levels];
+        if (readOnly) return;
+        const newLevels = [...character.health.levels];
         newLevels[index] = NEXT_MARK[mark];
-        updateCharacter(currentCharacter.id, {
+        updateCharacter(character.id, {
             health: { levels: newLevels },
         });
     };
@@ -40,8 +49,19 @@ export function HealthBlock() {
     return (
         // can't use <SectionCard> because I need header on right side and overall div flex-start
         <div className="bg-bgSurface border rounded-lg p-4 self-start">
-            <h3 className="text-sm text-textSecondary font-semibold uppercase tracking-wider text-right mb-4 pr-3">
+            <h3 className="text-sm text-textSecondary font-semibold uppercase tracking-wider text-right mb-4 pr-3 flex items-center justify-end gap-2">
                 Health
+                {docsPath && (
+                    <a
+                        href={docsPath}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-textSecondary hover:text-textPrimary transition-colors"
+                        aria-label="Documentation for Health"
+                    >
+                        <HelpCircle className="w-4 h-4" />
+                    </a>
+                )}
             </h3>
 
             <table className="w-full table-fixed">
@@ -59,7 +79,7 @@ export function HealthBlock() {
                 </thead>
                 <tbody>
                     {HEALTH_LEVELS.map((level, index) => {
-                        const mark = currentCharacter.health.levels?.[index] ?? 'empty';
+                        const mark = character.health.levels?.[index] ?? 'empty';
                         const isIncapacitated = level.name === 'Incapacitated';
 
                         return (
@@ -85,6 +105,7 @@ export function HealthBlock() {
                                     <button
                                         type="button"
                                         onClick={() => handleHealthChange(index, mark)}
+                                        disabled={readOnly}
                                         className={clsx(
                                             'w-8 h-8 mx-auto flex items-center justify-center border-2 rounded font-mono font-bold transition-all duration-200',
                                             mark === 'cross'

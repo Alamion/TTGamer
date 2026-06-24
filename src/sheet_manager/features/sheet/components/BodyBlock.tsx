@@ -3,6 +3,7 @@ import type { AccentColor } from '../../../components';
 import { DataTable } from '../../../components';
 import type { DataTableColumn } from '../../../components';
 import { useCharacterStore } from '../../../store/characterStore.ts';
+import { useCharacterContext } from '../../../context/CharacterContext.tsx';
 import { Plus, X } from 'lucide-react';
 import { HealthBlock } from './HealthBlock.tsx';
 import type { ArmorItem, WeaponItem, Item } from '../../../types/character.ts';
@@ -20,33 +21,39 @@ interface BodyBlockProps {
 
 export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
+    const { character: contextChar, readOnly } = useCharacterContext();
 
-    if (!currentCharacter) return null;
+    const character = contextChar ?? currentCharacter;
+    if (!character) return null;
 
-    const inventory = currentCharacter.inventory || [];
-    const armor = currentCharacter.armor || [];
-    const weapons = currentCharacter.weapons || [];
+    const inventory = character.inventory || [];
+    const armor = character.armor || [];
+    const weapons = character.weapons || [];
 
     const addInventoryItem = () => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             inventory: [...inventory, { id: generateId(), text: '' } as Item],
         });
     };
 
     const removeInventoryItem = (id: string) => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             inventory: inventory.filter((item) => item.id !== id),
         });
     };
 
     const updateInventoryItem = (id: string, text: string) => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             inventory: inventory.map((item) => (item.id === id ? { ...item, text } : item)),
         });
     };
 
     const addArmorItem = () => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             armor: [
                 ...armor,
                 { id: generateId(), type: '', classVal: '', ar: '', dex: '' } as ArmorItem,
@@ -55,17 +62,20 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     };
 
     const removeArmorItem = (id: string) => {
-        updateCharacter(currentCharacter.id, { armor: armor.filter((item) => item.id !== id) });
+        if (readOnly) return;
+        updateCharacter(character.id, { armor: armor.filter((item) => item.id !== id) });
     };
 
     const updateArmorItem = (id: string, field: keyof ArmorItem, value: string) => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             armor: armor.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
         });
     };
 
     const addWeaponItem = () => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             weapons: [
                 ...weapons,
                 {
@@ -80,11 +90,13 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     };
 
     const removeWeaponItem = (id: string) => {
-        updateCharacter(currentCharacter.id, { weapons: weapons.filter((item) => item.id !== id) });
+        if (readOnly) return;
+        updateCharacter(character.id, { weapons: weapons.filter((item) => item.id !== id) });
     };
 
     const updateWeaponItem = (id: string, field: keyof WeaponItem, value: string) => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             weapons: weapons.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
         });
     };
@@ -202,12 +214,16 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     const renderCollapsibleSection = (
         section: keyof SectionState,
         title: string,
-        content: React.ReactNode
+        content: React.ReactNode,
+        docsPath?: string
     ) => (
-        <SectionCard title={title} storageKey={`bodyBlock_${section}`}>
+        <SectionCard title={title} storageKey={`bodyBlock_${section}`} docsPath={docsPath}>
             {content}
         </SectionCard>
     );
+
+    const EQUIPMENT_DOCS = '/docs/star-wars-wod-2e/equipment';
+    const HEALTH_DOCS = '/docs/star-wars-wod-2e/combat/health-damage-heal';
 
     return (
         <CollapsibleBlock title="Body" accentColor={accentColor} storageKey="bodyBlock">
@@ -229,30 +245,36 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
                                             onChange={(e) =>
                                                 updateInventoryItem(item.id, e.target.value)
                                             }
-                                            className="flex-1 bg-bgSurface border rounded px-3 py-2 text-sm text-textPrimary resize-none"
+                                            disabled={readOnly}
+                                            className="flex-1 bg-bgSurface border rounded px-3 py-2 text-sm text-textPrimary resize-none disabled:opacity-60 disabled:cursor-default"
                                             rows={2}
                                             placeholder="Item description..."
                                             aria-label="Item description"
                                         />
-                                        <button
-                                            onClick={() => removeInventoryItem(item.id)}
-                                            className="text-textSecondary hover:text-error transition-colors"
-                                            aria-label="Remove item"
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
+                                        {!readOnly && (
+                                            <button
+                                                onClick={() => removeInventoryItem(item.id)}
+                                                className="text-textSecondary hover:text-error transition-colors"
+                                                aria-label="Remove item"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        )}
                                     </div>
                                 ))
                             )}
-                            <button
-                                onClick={addInventoryItem}
-                                className="flex items-center gap-1 text-sm text-textSecondary hover:text-textSecondary/80 transition-colors"
-                                aria-label="Add inventory item"
-                            >
-                                <Plus className="w-4 h-4" aria-hidden="true" />
-                                Add Item
-                            </button>
-                        </div>
+                            {!readOnly && (
+                                <button
+                                    onClick={addInventoryItem}
+                                    className="flex items-center gap-1 text-sm text-textSecondary hover:text-textSecondary/80 transition-colors"
+                                    aria-label="Add inventory item"
+                                >
+                                    <Plus className="w-4 h-4" aria-hidden="true" />
+                                    Add Item
+                                </button>
+                            )}
+                        </div>,
+                        EQUIPMENT_DOCS
                     )}
 
                     {renderCollapsibleSection(
@@ -262,11 +284,12 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
                             columns={armorColumns}
                             items={armor}
                             idKey="id"
-                            onAdd={addArmorItem}
-                            onRemove={removeArmorItem}
+                            onAdd={readOnly ? undefined : addArmorItem}
+                            onRemove={readOnly ? undefined : removeArmorItem}
                             addLabel="Add Armor"
                             emptyMessage="No armor yet..."
-                        />
+                        />,
+                        EQUIPMENT_DOCS
                     )}
 
                     {renderCollapsibleSection(
@@ -276,15 +299,16 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
                             columns={weaponColumns}
                             items={weapons}
                             idKey="id"
-                            onAdd={addWeaponItem}
-                            onRemove={removeWeaponItem}
+                            onAdd={readOnly ? undefined : addWeaponItem}
+                            onRemove={readOnly ? undefined : removeWeaponItem}
                             addLabel="Add Weapon"
                             emptyMessage="No weapons yet..."
-                        />
+                        />,
+                        EQUIPMENT_DOCS
                     )}
                 </div>
 
-                <HealthBlock />
+                <HealthBlock docsPath={HEALTH_DOCS} />
             </div>
         </CollapsibleBlock>
     );

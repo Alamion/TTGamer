@@ -2,6 +2,7 @@ import { CollapsibleBlock, SectionCard } from '../../../components';
 import type { AccentColor } from '../../../components';
 import { CustomTraitList, TraitRowWithInput } from '../../../components';
 import { useCharacterStore } from '../../../store/characterStore.ts';
+import { useCharacterContext } from '../../../context/CharacterContext.tsx';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
 import type { CustomSkill } from '../../../types/character.ts';
 import { generateId } from '@site/src/shared/utils/random';
@@ -60,12 +61,14 @@ interface SkillBlockProps {
 
 export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
+    const { character: contextChar, readOnly } = useCharacterContext();
 
-    if (!currentCharacter) return null;
+    const character = contextChar ?? currentCharacter;
+    if (!character) return null;
 
-    const customTalents = currentCharacter.customTalents || [];
-    const customSkills = currentCharacter.customSkills || [];
-    const customKnowledges = currentCharacter.customKnowledges || [];
+    const customTalents = character.customTalents || [];
+    const customSkills = character.customSkills || [];
+    const customKnowledges = character.customKnowledges || [];
 
     const getCustomList = (category: SkillCategory): CustomSkill[] => {
         switch (category) {
@@ -85,10 +88,11 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        const currentSkill = currentCharacter.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        const currentSkill = character.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
+        updateCharacter(character.id, {
             skills: {
-                ...currentCharacter.skills,
+                ...character.skills,
                 [key]: {
                     value,
                     specialization: specialization ?? currentSkill.specialization ?? false,
@@ -100,16 +104,18 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     };
 
     const handleSkillSpecializationChange = (key: string, specializationText: string) => {
-        const currentSkill = currentCharacter.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        const currentSkill = character.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
+        updateCharacter(character.id, {
             skills: {
-                ...currentCharacter.skills,
+                ...character.skills,
                 [key]: { ...currentSkill, specializationText },
             },
         });
     };
 
     const addCustomSkill = (category: SkillCategory) => {
+        if (readOnly) return;
         const newSkill: CustomSkill = {
             id: generateId(),
             label: '',
@@ -118,7 +124,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
             experienced: false,
             practiced: false,
         };
-        updateCharacter(currentCharacter.id, {
+        updateCharacter(character.id, {
             customTalents: category === 'talents' ? [...customTalents, newSkill] : customTalents,
             customSkills: category === 'skills' ? [...customSkills, newSkill] : customSkills,
             customKnowledges:
@@ -127,7 +133,8 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     };
 
     const removeCustomSkill = (category: SkillCategory, id: string) => {
-        updateCharacter(currentCharacter.id, {
+        if (readOnly) return;
+        updateCharacter(character.id, {
             customTalents:
                 category === 'talents' ? customTalents.filter((s) => s.id !== id) : customTalents,
             customSkills:
@@ -148,6 +155,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
         experienced?: boolean,
         practiced?: boolean
     ) => {
+        if (readOnly) return;
         const updateList = (list: CustomSkill[]) =>
             list.map((s) =>
                 s.id === id
@@ -161,7 +169,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
                       }
                     : s
             );
-        updateCharacter(currentCharacter.id, {
+        updateCharacter(character.id, {
             customTalents: category === 'talents' ? updateList(customTalents) : customTalents,
             customSkills: category === 'skills' ? updateList(customSkills) : customSkills,
             customKnowledges:
@@ -174,7 +182,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
         return (
             <SectionCard title={SKILL_CATEGORIES.find((c) => c.key === category)?.label}>
                 {skillsList.map((skill) => {
-                    const trait = currentCharacter.skills[skill] || {
+                    const trait = character.skills[skill] || {
                         ...DEFAULT_TRAIT_VALUE,
                         value: 0,
                     };
@@ -184,6 +192,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
                             name={skill}
                             specializationText={trait.specializationText}
                             value={trait.value}
+                            disabled={readOnly}
                             onChange={(val, spec, exp, prc) =>
                                 handleSkillChange(skill, val, spec, exp, prc)
                             }
@@ -201,6 +210,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
                 })}
                 <CustomTraitList
                     items={customList}
+                    disabled={readOnly}
                     onAdd={() => addCustomSkill(category)}
                     onRemove={(id) => removeCustomSkill(category, id)}
                     onChange={(id, val, spec, exp, prc) =>
@@ -224,7 +234,12 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     };
 
     return (
-        <CollapsibleBlock title="Skills" accentColor={accentColor} storageKey="skillBlock">
+        <CollapsibleBlock
+            title="Skills"
+            accentColor={accentColor}
+            storageKey="skillBlock"
+            docsPath="/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities"
+        >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {renderSkillColumn('talents', SKILLS.talents)}
                 {renderSkillColumn('skills', SKILLS.skills)}

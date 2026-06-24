@@ -56,7 +56,11 @@ export function DerivedStatsBlock() {
     );
 }
 
-export function ExperienceBlock() {
+interface ExperienceBlockProps {
+    readOnly?: boolean;
+}
+
+export function ExperienceBlock({ readOnly = false }: ExperienceBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
 
     if (!currentCharacter) return null;
@@ -64,19 +68,21 @@ export function ExperienceBlock() {
     const experience = currentCharacter.experience ?? { total: 0, spent: 0 };
 
     return (
-        <SectionCard title="Experience">
+        <SectionCard title="Experience" docsPath="/docs/star-wars-wod-2e/gm/rewards-advancement">
             <div className="space-y-3">
                 <div className="flex justify-between items-center">
                     <span className="text-textSecondary text-sm">Total XP</span>
                     <input
                         type="number"
                         value={experience.total}
-                        onChange={(e) =>
+                        disabled={readOnly}
+                        onChange={(e) => {
+                            if (readOnly) return;
                             updateCharacter(currentCharacter.id, {
                                 experience: { ...experience, total: parseInt(e.target.value) || 0 },
-                            })
-                        }
-                        className="w-20 bg-bgSurface border rounded px-3 py-1.5 text-right text-textPrimary font-mono"
+                            });
+                        }}
+                        className="w-20 bg-bgSurface border rounded px-3 py-1.5 text-right text-textPrimary font-mono disabled:opacity-60 disabled:cursor-default"
                         aria-label="Total experience points"
                     />
                 </div>
@@ -85,12 +91,14 @@ export function ExperienceBlock() {
                     <input
                         type="number"
                         value={experience.spent}
-                        onChange={(e) =>
+                        disabled={readOnly}
+                        onChange={(e) => {
+                            if (readOnly) return;
                             updateCharacter(currentCharacter.id, {
                                 experience: { ...experience, spent: parseInt(e.target.value) || 0 },
-                            })
-                        }
-                        className="w-20 bg-bgSurface border rounded px-3 py-1.5 text-right text-textPrimary font-mono"
+                            });
+                        }}
+                        className="w-20 bg-bgSurface border rounded px-3 py-1.5 text-right text-textPrimary font-mono disabled:opacity-60 disabled:cursor-default"
                         aria-label="Spent experience points"
                     />
                 </div>

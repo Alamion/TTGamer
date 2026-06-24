@@ -19,6 +19,14 @@ export const CharacterMetadataSchema = z.object({
     homeWorld: z.string().optional(),
     age: z.string().optional(),
     setting: z.string().optional(),
+    gender: z.string().optional(),
+    height: z.string().optional(),
+    build: z.string().optional(),
+    hair: z.string().optional(),
+    eyes: z.string().optional(),
+    features: z.string().optional(),
+    biography: z.string().optional(),
+    imageUrl: z.string().optional(),
 });
 
 export const HEALTH_LEVELS = [
@@ -108,7 +116,7 @@ export type TraitModifier = z.infer<typeof TraitModifierSchema>;
 export type TraitValue = z.infer<typeof TraitValueSchema>;
 
 export const BaseCharacterSchema = z.object({
-    id: z.string().uuid(),
+    id: z.string(),
     metadata: CharacterMetadataSchema,
     attributes: z.record(TraitValueSchema),
     skills: z.record(TraitValueSchema),
@@ -165,6 +173,14 @@ export function createDefaultCharacter(): BaseCharacter {
             homeWorld: '',
             age: '',
             setting: 'Star Wars WoD 2e',
+            gender: '',
+            height: '',
+            build: '',
+            hair: '',
+            eyes: '',
+            features: '',
+            biography: '',
+            imageUrl: '',
         },
         attributes: {
             Strength: { ...DEFAULT_TRAIT_VALUE },
