@@ -1,0 +1,24 @@
+---
+sidebar_position: 4
+title: EN-RU Terminology
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+import { TERMINOLOGY } from '/src/data/terminologyData';
+import { TERMINOLOGY_COLUMNS, renderTerminologyDetail } from '/src/data/terminologyConfig';
+
+# EN-RU Terminology
+
+Bilingual glossary of system terms used throughout this conversion.
+
+<TWWrapper>
+    <DataCatalog
+        data={TERMINOLOGY}
+        columns={TERMINOLOGY_COLUMNS}
+        renderDetail={renderTerminologyDetail}
+        searchPlaceholder="Search terms..."
+        filters={[{ columnId: 'category', label: 'Section' }]}
+        id="terminology"
+    />
+</TWWrapper>

@@ -1,0 +1,128 @@
+---
+sidebar_position: 3.3
+title: Combat Scales
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { ScaleChart } from '/src/shared/components/ScaleChart';
+
+# Combat Scales
+
+The galaxy is full of things that are much bigger — or much smaller — than a person. A Rancor swatting at an Ewok and an X-wing strafing a Star Destroyer use the same mechanic: **combat scales**.
+
+---
+
+## The Scale Chart
+
+Find the attacker's scale and the target's scale on this chart. Count the rows between them — each is a **step**.
+
+<TWWrapper>
+    <ScaleChart />
+</TWWrapper>
+
+- **Same scale** — no modifier. Normal combat rules.
+- **Attacker is larger** (higher on the chart) — harder to hit (+1 diff per step), easier to damage (−1 diff per step).
+- **Attacker is smaller** (lower on the chart) — easier to hit (−1 diff per step), harder to damage (+1 diff per step).
+
+---
+
+## Applying the Modifier
+
+Count the steps between the two scales. For each step:
+
+| Direction              | To Hit                            | To Damage                            |
+| ---------------------- | --------------------------------- | ------------------------------------ |
+| Larger attacks smaller | **+1 difficulty** (harder to hit) | **−1 difficulty** (easier to damage) |
+| Smaller attacks larger | **−1 difficulty** (easier to hit) | **+1 difficulty** (harder to damage) |
+
+### Larger vs. Smaller — Attacking Down
+
+A larger attacker has trouble hitting a small, nimble target, but if they connect, the damage is devastating.
+
+<TWWrapper>
+    <InlineRoll notation={'6d10\u003e=8'} variant="details" preroll />
+</TWWrapper>
+
+A Rancor (Walker) attacking an Ewok (Character) — 2 steps down. Difficulty to hit is **6 + 2 = 8**. If it hits, difficulty to damage is **6 − 2 = 4**.
+
+### Smaller vs. Larger — Attacking Up
+
+A smaller attacker finds it easier to land hits on a huge target, but their weapons struggle to do meaningful damage.
+
+<TWWrapper>
+    <InlineRoll notation={'8d10\u003e=4'} variant="details" preroll />
+</TWWrapper>
+
+An Ewok shooting a bowcaster at the Rancor (Character vs. Walker, 2 steps up). Difficulty to hit is **6 − 2 = 4**. Difficulty to damage is **6 + 2 = 8**.
+
+---
+
+## Examples
+
+### Rancor vs. Ewok (Melee)
+
+| Factor    | Value                                                           |
+| --------- | --------------------------------------------------------------- |
+| Scales    | Walker (Rancor) → Character (Ewok)                              |
+| Steps     | **2**                                                           |
+| To hit    | 6 + 2 = **8** (Rancor finds it hard to swat the nimble Ewok)    |
+| To damage | 6 − 2 = **4** (if it connects, the massive claws crush through) |
+
+### X-wing vs. Star Destroyer (Space Combat)
+
+| Factor    | Value                                                 |
+| --------- | ----------------------------------------------------- |
+| Scales    | Starfighter (X-wing) → Capital (Star Destroyer)       |
+| Steps     | **2**                                                 |
+| To hit    | 6 − 2 = **4** (the Star Destroyer is a huge target)   |
+| To damage | 6 + 2 = **8** (laser cannons barely scratch the hull) |
+
+The X-wing would need proton torpedoes (high damage) or a targeted run on a vulnerable point (shield generator, bridge) to have a real effect.
+
+### A-Wing vs. TIE Fighter (Same Scale)
+
+| Factor    | Value                     |
+| --------- | ------------------------- |
+| Scales    | Starfighter → Starfighter |
+| Steps     | **0**                     |
+| To hit    | standard **6**            |
+| To damage | standard **6**            |
+
+A fair fight. Pilot skill determines the outcome.
+
+---
+
+## Determining Scale
+
+Not sure what scale something is? Use these guidelines:
+
+| Scale           | Examples                       | How to Tell                                        |
+| --------------- | ------------------------------ | -------------------------------------------------- |
+| **Death Star**  | Death Star, Starkiller Base    | Can dock a Capital ship                            |
+| **Capitol**     | Super Star Destroyer, Home One | Crew of 10+, can land starfighters                 |
+| **Transport**   | Millennium Falcon, Ghost       | Crew < 10, carries passengers/cargo, goes to space |
+| **Starfighter** | X-wing, TIE Fighter, A-wing    | Goes to space, no passengers, < 1 ton cargo        |
+| **Walker**      | AT-AT, AT-ST, Rancor           | Ground vehicle on legs/treads, cannot fly          |
+| **Speeder**     | Landspeeder, speeder bike, MTT | Flies or hovers, cannot go to space                |
+| **Character**   | Human, Wookie, Ewok, most PCs  | A person-sized being                               |
+| **Vermin**      | Kowakian monkey-lizard, mynock | Smaller than a person, pest-sized                  |
+
+Creatures larger than a person but smaller than a walker (e.g., a Rancor or Rathtar) are **Walker** scale. Creatures smaller than a person are **Vermin** scale.
+
+---
+
+## Vehicles & Combat Scales
+
+Vehicle combat uses the same scale system. A starfighter attacking a capital ship follows the "attacking up" rules — easier to hit, harder to damage.
+
+Vehicle-scale combat adds **Maneuverability** (dice bonus to pilot rolls) and **Durability** (used for soak instead of Stamina). A vehicle's soak roll uses its Durability rating at difficulty 6, modified by scale.
+
+---
+
+## Next Steps
+
+- [Combat Flow](./combat-flow.mdx) — Turn structure, attack resolution, and reactions
+- [Health, Damage & Healing](./health-damage-heal.mdx) — Wound penalties, recovery, and Bacta tanks
+- [Difficulty & Success Reference](../gm/difficulty-reference.mdx) — Scale difficulty probabilities and calibration
+- [Equipment](../equipment.mdx) — Weapons, armor, and gear for your scale

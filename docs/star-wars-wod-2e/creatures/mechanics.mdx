@@ -1,0 +1,237 @@
+---
+sidebar_position: 5.1
+title: Creature & NPC Mechanics
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { ScaleChart } from '/src/shared/components/ScaleChart';
+
+# Creature & NPC Mechanics
+
+The galaxy teems with alien wildlife, from the humble pug-nosed pug to the ravenous rathtar. This chapter covers how to create creatures and NPCs for your game.
+
+---
+
+## Creatures vs. Characters
+
+Creatures (non-sentient beings) use a **simplified** version of the character sheet:
+
+| Aspect                  | Creature                                                                               | Character                          |
+| ----------------------- | -------------------------------------------------------------------------------------- | ---------------------------------- |
+| **Physical Attributes** | Strength, Dexterity, Stamina                                                           | Same                               |
+| **Mental Attributes**   | Perception, Intelligence, Wits                                                         | Same                               |
+| **Social Attributes**   | —                                                                                      | Charisma, Manipulation, Appearance |
+| **Abilities**           | Instinctual only (Athletics, Brawl, Dodge, Alertness, Stealth, Intimidation, Survival) | All 30                             |
+| **Force Skills**        | —                                                                                      | Full set                           |
+| **Virtues**             | —                                                                                      | Conscience, Passion, Self-Control  |
+| **Creation budget**     | None — creatures are not balanced                                                      | Freebie points                     |
+
+Creatures are **not built on a budget**. A Rancor is simply stronger than an Ewok — there is no point-buy equivalence. The conversion guidelines below help translate WEG creature stats into this system.
+
+---
+
+## Creature Scale
+
+Creatures use the same scale system as vehicles and characters (see [Combat Scales](../combat/combat-scales.mdx)). Most creatures fall into one of four scales:
+
+| Scale         | Examples                                 | How to Tell                |
+| ------------- | ---------------------------------------- | -------------------------- |
+| **Vermin**    | Kowakian monkey-lizard, mynock, womp rat | Smaller than a person      |
+| **Character** | Human, Wookiee, most PCs                 | Person-sized               |
+| **Speeder**   | Tauntaun, dewback, bantha                | Large enough to ride; 2–5m |
+| **Walker**    | Rancor, rathtar, wampa, AT-AT            | Larger than a speeder; 5m+ |
+
+<TWWrapper>
+    <ScaleChart />
+</TWWrapper>
+
+### Determining Scale from WEG Stats
+
+If the WEG creature's **Strength is above 5D**, increase scale by one step for each die above 5, and cap Strength at 5D. A Rancor (Strength 8D in WEG) would gain +3 steps — Character → Speeder → Walker → Capitol — but a Rancor is clearly not a capital ship; use judgment. The scale "Walker" fits a Rancor well.
+
+If the creature has a **size** listed in its description, compare it to vehicle sizes for a rough scale match.
+
+---
+
+## Converting WEG Creatures
+
+### Step 1: Species, Type, Scale, Size
+
+| Field       | Source                                                             |
+| ----------- | ------------------------------------------------------------------ |
+| **Species** | The creature's name from the WEG source.                           |
+| **Type**    | Its ecological role (e.g., "Arctic carnivore", "Swamp scavenger"). |
+| **Scale**   | Determined from size and Strength (see above).                     |
+| **Size**    | Physical dimensions from the description (e.g., "3m tall").        |
+
+Optional fields for named creatures:
+
+| Field     | Source                                                 |
+| --------- | ------------------------------------------------------ |
+| **Name**  | If the creature is a specific individual (pet, mount). |
+| **Owner** | The character who owns it.                             |
+
+### Step 2: Physical Attributes
+
+**Strength.** If the WEG score is 5D or less, use it directly (ignore pluses). If above 5D, set to 5D and increase scale accordingly (or assign merits like Powerful or Thick Skinned for creatures that are strong but not much larger).
+
+**Dexterity.** Same as Strength — use directly if 5D or less. If above 5D, cap at 5D and either decrease scale to Vermin, assign the extra dice to Dodge ability, or grant merits like Cat-like Reflexes.
+
+**Stamina.** WEG uses Strength for soak; this system uses Stamina. Give the creature the same rating as its Strength. For custom creatures without WEG stats, Strength and Stamina do not have to match.
+
+### Step 3: Mental Attributes
+
+WEG gives creatures only one mental stat: **Perception**. Use the guidelines below to derive all three:
+
+| Creature Role                             | Perception | Intelligence | Wits      |
+| ----------------------------------------- | ---------- | ------------ | --------- |
+| **Hunted prey** (herbivore, flighty)      | = WEG Per  | −1D          | −1D       |
+| **Domesticated** (trainable, pack animal) | −1D        | = WEG Per    | −1D       |
+| **Predator** (hunts, ambushes)            | −1D        | −1D          | = WEG Per |
+| **Minimal cognition** (WEG Per = 1D)      | 1D         | 1D           | 1D        |
+
+If the WEG Perception is above 5D, cap at 5D and assign the extra dice to Alertness or merits like Acute Hearing or Sixth Sense.
+
+### Step 4: Willpower
+
+Start all creatures with a base Willpower of **5D**. If the WEG stats list an **Orneriness** score, add it (ignore pluses). Adjust up or down based on description text — a particularly willful or compliant species may warrant a custom value.
+
+### Step 5: Abilities
+
+Creatures only have instinctual abilities. Use these conversions:
+
+| Creature Ability                               | WEG Source                                                                                                                                           |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Athletics**                                  | Move stat ÷ 5, rounded down. Covers running, flying, swimming, burrowing.                                                                            |
+| **Brawl**                                      | 1D per attack type (claw, bite, tail, etc.).                                                                                                         |
+| **Alertness, Stealth, Intimidation, Survival** | Match to any skills listed in the WEG stat block. If the WEG stat block gives a skill bonus, subtract the parent attribute to find the ability dice. |
+
+Cap all abilities at **5D**. If a value would exceed 5 dice and the creature's scale won't compensate, assign an appropriate Merit instead.
+
+### Step 6: Combat
+
+**Armor.** Some creatures have tough hides or scaly plates. Record the WEG Armor stat directly, capping at 5.
+
+**Attacks.** For each attack type (claw, bite, constrict, etc.), list the name and damage. Damage is almost always based on Strength. Copy the WEG damage, ignoring pluses after the dice.
+
+| WEG Entry        | Converted           |
+| ---------------- | ------------------- |
+| `Claw: STR+2D+2` | **Claw** (L) STR+2D |
+| `Bite: STR+1D`   | **Bite** (L) STR+1D |
+| `Ram: STR+2D`    | **Ram** (B) STR+2D  |
+
+Use judgment for damage type:
+
+- Claws, teeth, stingers → **Lethal**
+- Rams, slams, tail swipes → **Bashing**
+
+### Step 7: Merits & Flaws
+
+Carry over any relevant Merits or Flaws from the WEG description. Common creature merits:
+
+- **Powerful** (+X dice to Strength-related rolls)
+- **Thick Skinned** (+X dice to soak)
+- **Environment Adaptation** (cold, heat, aquatic, etc.)
+- **Extra Appendage** (tail, tentacles — counts as additional limbs)
+- **Natural Weapons** (claws, fangs — existing attack, but formalizes the trait)
+- **Non-verbal Language** (howls, chirps — limited communication)
+- **Camouflage** (bonus to Stealth in specific environments)
+
+### Step 8: Health
+
+Creatures use the standard 7-level health track. For packs or herds, track multiple identical creatures on a single sheet — no need for a separate sheet per individual.
+
+A creature at Incapacitated can be evaded or finished at the Storyteller's discretion; most predators flee once wounded (Mauled or worse). Cornered creatures fight desperately — the Storyteller may apply no wound penalty to a creature's last stand.
+
+---
+
+## Creature Example: Wampa
+
+| Field            | Value                                                            |
+| ---------------- | ---------------------------------------------------------------- |
+| **Species**      | Wampa                                                            |
+| **Type**         | Snow predator                                                    |
+| **Scale**        | Speeder                                                          |
+| **Size**         | 3m tall                                                          |
+| **Strength**     | 5D                                                               |
+| **Dexterity**    | 3D                                                               |
+| **Stamina**      | 5D                                                               |
+| **Perception**   | 2D                                                               |
+| **Intelligence** | 2D                                                               |
+| **Wits**         | 3D                                                               |
+| **Willpower**    | 6D                                                               |
+| **Abilities**    | Athletics 3D, Brawl 2D, Stealth 3D, Survival 3D, Intimidation 3D |
+| **Armor**        | Tough hide, AR +1D                                               |
+| **Attacks**      | Claw (L) STR+1D, Teeth (L) STR+2D                                |
+| **Merits**       | Powerful +3, Non-verbal Language (howl), Camouflage (snow)       |
+| **Notes**        | Hunts by tracking; buries prey in snow for later.                |
+
+---
+
+## NPCs
+
+Non-player characters use the **full character sheet** with one distinction: whether they are **Named** or **Unnamed**.
+
+### Named NPCs
+
+Named NPCs are built exactly like player characters — the same attribute/ability/virtue allocation, background dots, and freebie points. They:
+
+- Use the **full character sheet**
+- **Can soak Lethal damage** (heroic rule applies — minimum 1 wound)
+- Have a **name and personality**
+- Advance via XP (at the Storyteller's discretion)
+
+Use the character creation rules from Phase 2 to build named NPCs. For quick generation, assign:
+
+- **Attributes:** Primary 4, Secondary 3, Tertiary 2 (or 3/2/1 for minor named NPCs)
+- **Abilities:** 13/9/5 as normal, favoring skills appropriate to their role
+- **Backgrounds:** 5 dots
+- **Virtues:** 7 dots
+- **Freebie Points:** 15
+
+### Unnamed NPCs (Fodder)
+
+Unnamed NPCs — stormtroopers, pirates, bar thugs — are simplified:
+
+- **Attributes:** 2 or 3 in relevant stats, 1 in everything else
+- **Abilities:** 2 or 3 in job-relevant skills, 0 in everything else
+- **Virtues:** Conscience 2, Passion 2, Self-Control 2
+- **Willpower:** 4
+- **No freebie points**
+- **Cannot soak Lethal damage** — any hit that lands deals full damage
+- **One health level = disabled** (optional: 3-box health track instead of 7)
+
+#### Fodder Stat Block Example: Stormtrooper
+
+| Attribute    | Dice | Ability   | Dice |
+| ------------ | ---- | --------- | ---- |
+| Strength     | 3    | Blaster   | 3    |
+| Dexterity    | 3    | Dodge     | 2    |
+| Stamina      | 3    | Melee     | 2    |
+| Perception   | 2    | Brawl     | 2    |
+| Intelligence | 2    | Athletics | 2    |
+| Wits         | 2    | Alertness | 2    |
+
+Armor: Stormtrooper (AR +3D, Dex −2D). Weapon: Blaster Rifle (9D dmg, range 200, ammo 50). Willpower: 4. Soak: Stamina 3 + armor 3D = 6D.
+
+### Quick NPC Rolls
+
+For minor NPCs where you don't need full stats, assign a **dice pool** for their specialty:
+
+| NPC Importance                                         | Specialty Pool | Secondary Pool |
+| ------------------------------------------------------ | -------------- | -------------- |
+| **Mook** (bartender, random guard)                     | 4D             | 2D             |
+| **Competent** (veteran trooper, bounty hunter)         | 6D             | 4D             |
+| **Elite** (Imperial Royal Guard, bounty hunter leader) | 8D             | 6D             |
+
+Roll the specialty pool at difficulty 6 for any task within their area of expertise. Use the secondary pool for everything else.
+
+---
+
+## Next Steps
+
+- [Beastiary](./beastiary.mdx) — Example creature stat blocks
+- [Combat Scales](../combat/combat-scales.mdx) — Scale ladder, cross-scale combat modifiers
+- [Difficulty & Success Reference](../gm/difficulty-reference.mdx) — Scale-based difficulty probabilities
+- [Combat Flow](../combat/combat-flow.mdx) — Turn structure, attack resolution, damage

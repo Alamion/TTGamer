@@ -1,0 +1,305 @@
+---
+sidebar_position: 3.2
+title: Health, Damage & Healing
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { CharRoll } from '/src/shared/components/DocCharData';
+import { HealthViewer } from '/src/sheet_manager/components/CharacterViewer';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
+import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
+
+# Health, Damage & Healing
+
+Every character has a 7-level health track. As damage accumulates, wound penalties apply to all dice pools — and at the far end, Incapacitation takes you out of the fight.
+
+---
+
+## The Health Track
+
+The health track has seven levels, each with an associated wound penalty:
+
+| Level             | Penalty | Description                                   |
+| ----------------- | ------- | --------------------------------------------- |
+| **Bruised**       | —       | Minor bumps and scuffs. No mechanical effect. |
+| **Hurt**          | −1      | A solid hit. You're feeling it.               |
+| **Injured**       | −2      | Bleeding, bruised, but still fighting.        |
+| **Wounded**       | −3      | Serious trauma. Every action costs you.       |
+| **Mauled**        | −4      | Barely standing. Adrenaline and instinct.     |
+| **Crippled**      | −5      | One more hit and you're down.                 |
+| **Incapacitated** | —       | Cannot act. Unconscious or system shutdown.   |
+
+<TWWrapper>
+    <HealthViewer levels={['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty']} />
+</TWWrapper>
+
+A healthy character — all seven levels clear.
+
+---
+
+## Damage Types
+
+There are three damage types, each marked differently on the health track.
+
+### Bashing Damage (`/`)
+
+Blunt trauma, fists, falls, collisions. Soaked normally.
+
+<TWWrapper>
+    <HealthViewer levels={['slash', 'slash', 'slash', 'empty', 'empty', 'empty', 'empty']} />
+</TWWrapper>
+
+Three levels of Bashing damage — Bruised, Hurt, and Injured marked with slashes.
+
+- **Can soak:** Everyone
+- **Minimum wound:** None
+- **Recovery:** 1 level per hour
+
+### Lethal Damage (`X`)
+
+Blaster bolts, lightsabers, explosives, vibro-blades. The real danger.
+
+<TWWrapper>
+    <HealthViewer levels={['cross', 'cross', 'cross', 'empty', 'empty', 'empty', 'empty']} />
+</TWWrapper>
+
+Three levels of Lethal damage — Bruised, Hurt, and Injured marked with crosses.
+
+- **Can soak:** PCs and named NPCs only (Heroic Rule)
+- **Minimum wound:** **1** — even a perfect soak leaves at least one wound
+- **Recovery:** Days to months
+
+### Stun Damage (`•`)
+
+Stun settings on blasters, ion weapons (vs. droids), electrical bursts.
+
+<TWWrapper>
+    <HealthViewer levels={['slash', 'slash', 'empty', 'empty', 'empty', 'empty', 'empty']} />
+</TWWrapper>
+
+Two levels of Stun damage — marked with slashes, same visual as Bashing.
+
+- **Can soak:** Everyone (like Bashing)
+- **Minimum wound:** None
+- **Recovery:** 1 level per turn
+- **If Incapacitated:** Unconscious for **1d10 minutes**
+
+Stun damage replaces V:TM's Aggravated damage. It is marked and tracked like Bashing, but recovers much faster.
+
+### Mixed Damage
+
+Multiple damage types can stack on the same track. The penalty is always from the first non-empty level.
+
+<TWWrapper>
+    <HealthViewer levels={['cross', 'slash', 'empty', 'empty', 'empty', 'empty', 'empty']} />
+</TWWrapper>
+
+Lethal at Bruised, Bashing at Hurt — penalty is 0 (Bruised is the first marked level).
+
+---
+
+## Taking Damage
+
+### Step 1: The Attack Lands
+
+After an attack hits and the damage is rolled (see [Combat Flow](./combat-flow.mdx)), the number of successes on the damage roll equals the number of health levels lost.
+
+### Step 2: Soak
+
+Roll **Stamina** at difficulty **6**. Each success cancels one health level of damage.
+
+<TWWrapper>
+    <InlineRoll notation={'3d10\u003e=6'} variant="details" preroll />
+</TWWrapper>
+
+| Damage Type | Who Can Soak     | Minimum |
+| ----------- | ---------------- | ------- |
+| **Bashing** | Everyone         | 0       |
+| **Lethal**  | PCs + named NPCs | **1**   |
+| **Stun**    | Everyone         | 0       |
+
+:::caution[Heroic Rule Barrier]
+PCs and named NPCs can soak Lethal damage, but **always suffer a minimum of 1 wound level** — no matter how many soak successes they roll. This preserves the danger of blaster fire while keeping heroes in the fight.
+
+Unnamed NPCs (fodder stormtroopers, random thugs) **cannot soak Lethal damage at all**.
+:::
+
+### Step 3: Apply Wound Penalties
+
+The penalty from the first non-empty health level applies to all dice pools. A character with Bashing at Bruised (penalty 0) fights at full capacity. A character with Lethal at Wounded (penalty -3) loses 3 dice from every roll.
+
+### Step 4: Check for Incapacitation
+
+If damage fills the track to Incapacitated, the character collapses. Additional Lethal damage to an Incapacitated character can be fatal — see [Stabilization](#stabilization).
+
+### Botching on Soak
+
+Overrides the standard WoD exception: Soak rolls **can** botch. If you botch a Soak roll, you fall unconscious (or reboot, if a Droid) for **1d10 minutes** from systemic shock, regardless of the damage value.
+
+---
+
+## Wound Penalties in Play
+
+Wound penalties apply to **every action** — attacking, dodging, slicing, piloting, everything.
+
+<TWWrapper>
+    <CharRoll attr="Dexterity" skill="Blaster" />
+</TWWrapper>
+
+If the character above is Wounded (-3), their effective pool drops by 3 dice. The roll button reflects the full pool — the player subtracts the penalty manually.
+
+:::tip[Tracking Penalties]
+The health bar on your character sheet at `/universal_sheet` updates the penalty automatically. Hover over any marked level to see the current penalty.
+:::
+
+---
+
+## Stun Damage in Detail
+
+Stun works differently from Bashing and Lethal:
+
+1. **Recovers fast** — 1 level per turn. A character stunned at Injured recovers to full in 3 turns.
+2. **Halts on new damage** — If a character takes Bashing or Lethal while recovering from Stun, quick recovery stops and the Stun becomes regular damage.
+3. **Incapacitation** — If Stun fills the track to Incapacitated, the character falls unconscious for **1d10 minutes**. They wake at Bruised with all Stun cleared.
+4. **Ion vs. Droids** — Blasters set to stun have no effect on droids. Ion weapons deal Stun damage to droids (and do nothing to living beings).
+
+---
+
+## Healing & Recovery
+
+Natural healing times depend on damage type and medical care.
+
+### Recovery Times
+
+| Level         | Diff | Stun      | Bashing  | Lethal\*   |
+| ------------- | ---- | --------- | -------- | ---------- |
+| Bruised       | 4    | 1 turn    | 1 hour   | 1 day      |
+| Hurt          | 5    | 1 turn    | 1 hour   | 3 days     |
+| Injured       | 6    | 1 turn    | 1 hour   | 1 week     |
+| Wounded       | 7    | 1 turn    | 1 hour   | 1 month\*  |
+| Mauled        | 8    | 1 turn    | 3 hours  | 2 months\* |
+| Crippled      | 9    | 1 turn    | 6 hours  | 3 months\* |
+| Incapacitated | 10   | 1d10 mins | 12 hours | 5 months\* |
+
+\* Requires stabilization or the character loses 1 Lethal health level per hour.
+
+### Medical Attention
+
+A character with **Intelligence + Medicine** can accelerate recovery. Roll with difficulty based on the patient's current health level. **Divide the recovery time by the number of successes** (minimum divisor of 1.5 for a single success).
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6f=1'} variant="details" preroll />
+</TWWrapper>
+
+**Equipment Bonuses:**
+
+| Equipment        | Effect                                        |
+| ---------------- | --------------------------------------------- |
+| First Aid Medpac | Reduces difficulty by **1**                   |
+| Infirmary        | Reduces difficulty by **2**                   |
+| Hospital         | Reduces difficulty by **3**                   |
+| Bacta Tank       | Converts recovery time from **days to hours** |
+
+**Botch on Medicine:** The patient immediately loses **1 health level**. This can kill an Incapacitated character.
+
+### Stabilization
+
+Characters at **Wounded or below** from Lethal damage require stabilization or they lose **1 additional health level per hour**.
+
+Roll **Intelligence + Medicine** or **Wits + Survival** at difficulty equal to the patient's current health level from the recovery table (modified by equipment) to stabilize. On success, the patient stops bleeding out and natural recovery can begin.
+
+---
+
+## Bacta Tanks
+
+A bacta tank converts recovery from days to hours. A character with Lethal damage placed in a bacta tank under medical supervision can recover from Mauled to full in under 24 hours.
+
+Bacta tanks require:
+
+- A functioning medical facility (ship's medbay, Rebel base hospital)
+- A character with Medicine to monitor the treatment
+- 24 hours of uninterrupted immersion for full recovery from severe wounds
+
+---
+
+## Amputations
+
+Amputations are a real threat in the Star Wars galaxy — lightsabers, explosions, and even blaster shots can sever limbs.
+
+### Causing an Amputation
+
+**Attacker's choice:** The attacker must target a specific limb (use the Targeting rules — +2 difficulty to hit). If the attack deals **3+ Lethal damage after soak**, the attacker may choose to amputate instead of dealing regular damage.
+
+**Victim's choice:** If a character suffers Lethal damage after soaking, they may instead choose to **lose a body part** — the damage is avoided but the character immediately drops to **Incapacitated** (Bashing) from shock and gains an appropriate Flaw:
+
+<TWWrapper>
+    <DataCatalog
+        data={MERITS_FLAWS.filter((m) =>
+            [
+                'hard-of-hearing',
+                'missing-eye',
+                'deaf',
+                'blind',
+                'disfigured',
+                'deformity',
+                'lame',
+                'missing-arm',
+                'paraplegic',
+            ].includes(m.id)
+        )}
+        columns={MF_COLUMNS}
+        renderDetail={renderMeritFlawDetail}
+        filters={[{ columnId: 'cost', label: 'Severity' }]}
+        searchPlaceholder="Search amputation flaws..."
+        id="amputation-flaws"
+    />
+</TWWrapper>
+
+The lost limb can later be replaced with a cybernetic prosthesis (see [Droids & Cyborgs](../character/droids-cyborgs.mdx)).
+
+---
+
+## Droid Damage & Recovery
+
+<TWWrapper>
+    <HealthViewer levels={['slash', 'slash', 'slash', 'empty', 'empty', 'empty', 'empty']} />
+</TWWrapper>
+
+Droid damage shown: three levels of ion/stun damage (Bruised, Hurt, Injured).
+
+| Aspect                     | Droid Rule                                                                          |
+| -------------------------- | ----------------------------------------------------------------------------------- |
+| **Natural healing**        | None. Droids do not heal Bashing or Lethal naturally.                               |
+| **De-ionization**          | Stun/ion damage recovers at the same rate as Stun for living beings (1 level/turn). |
+| **Stabilization**          | Not needed. Droids never continue losing health levels.                             |
+| **Environmental immunity** | Heat, cold, poison — no effect.                                                     |
+| **Repair**                 | Uses vehicle repair rules (Permanent Repairs).                                      |
+
+See [Droids & Cyborgs](../character/droids-cyborgs.mdx) for full droid repair rules.
+
+---
+
+## Quick Reference
+
+| Topic                | Rule                                                     |
+| -------------------- | -------------------------------------------------------- |
+| **Base soak**        | Stamina at difficulty 6                                  |
+| **Heroic rule**      | PCs always take min 1 Lethal                             |
+| **Soak botch**       | Unconscious for 1d10 minutes                             |
+| **Stun recovery**    | 1 level per turn                                         |
+| **Bashing recovery** | 1 level per hour                                         |
+| **Lethal recovery**  | 1 day to 5 months (reduced by medical care)              |
+| **Bacta tank**       | Days → hours                                             |
+| **Stabilization**    | Needed at Wounded+ from Lethal or lose 1 level/hour      |
+| **Amputation**       | 3+ Lethal after soak, or victim's choice to avoid damage |
+
+---
+
+## Next Steps
+
+- [Combat Flow](./combat-flow.mdx) — Turn structure, attack resolution, and reactions
+- [Combat Scales](./combat-scales.mdx) — Size scaling for creatures, vehicles, and capital ships
+- [Difficulty & Success Reference](../gm/difficulty-reference.mdx) — Healing difficulty probabilities, calibration guide
+- [Droids & Cyborgs](../character/droids-cyborgs.mdx) — Droid damage and repair rules

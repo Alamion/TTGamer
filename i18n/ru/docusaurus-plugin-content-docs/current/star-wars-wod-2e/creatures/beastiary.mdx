@@ -1,0 +1,32 @@
+---
+sidebar_position: 5.2
+title: Бестиарий
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+import { CREATURES } from '/src/data/creatureData';
+import { CREATURE_COLUMNS, renderCreatureDetail } from '/src/data/creatureConfig';
+
+# Бестиарий
+
+Блоки статистики существ, конвертированные из исходных книг WEG. Каждая запись следует правилам конвертации из [Механики существ и НИП](./mechanics.mdx).
+
+---
+
+<TWWrapper>
+    <DataCatalog
+        data={CREATURES}
+        columns={CREATURE_COLUMNS}
+        renderDetail={renderCreatureDetail}
+        searchPlaceholder="Поиск существ..."
+        id="beastiary"
+    />
+</TWWrapper>
+
+---
+
+## Дальнейшие шаги
+
+- [Механика существ и НИП](./mechanics.mdx) — Правила конвертации и создания НИП
+- [Масштабы боя](../combat/combat-scales.mdx) — Лестница масштабов для существ и транспортных средств

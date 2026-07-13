@@ -1,0 +1,253 @@
+---
+sidebar_position: 7.1
+title: Building Encounters
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+
+# Building Encounters
+
+Every encounter is an obstacle between the characters and their goal. This chapter covers how to build encounters — from mook-filled firefights to tense social negotiations — using the tools from both the Storyteller system and this conversion.
+
+---
+
+## NPC Tiers
+
+Not all NPCs are created equal. The system uses three tiers to keep combat fast and dramatic.
+
+### Named NPCs (Antagonists)
+
+Named NPCs use the **full character creation rules**. They have Attributes, Abilities, Virtues, Willpower, Force Points, and a full 7-level Health track. They can soak Lethal damage, just like PCs.
+
+Use named NPCs for:
+
+- **Recurring villains** (a rival bounty hunter, an Imperial officer, a Dark Jedi)
+- **Boss encounters** (a Hutt crime lord, a witch-hunter, a Sith acolyte)
+- **Allies and rivals** who matter to the story
+
+### Unnamed NPCs (Fodder)
+
+Unnamed NPCs use a simplified stat block — a few key Traits and a shared health pool. They **cannot soak Lethal damage**. Every successful hit takes them down a health level. This keeps fights fast and lets heroes feel powerful.
+
+| Trait             | Typical Fodder                   | Tough Fodder              |
+| ----------------- | -------------------------------- | ------------------------- |
+| **Dice pools**    | 3–5D                             | 5–7D                      |
+| **Health levels** | 3 (Hurt, Injured, Incapacitated) | 5 (full track to Wounded) |
+| **Soak Lethal**   | No                               | No                        |
+| **Willpower**     | 3                                | 4                         |
+
+Use fodder for:
+
+- **Stormtroopers** (surprisingly inaccurate, but dangerous in numbers)
+- **Street thugs, pirates, mercenaries**
+- **TIE fighter pilots** — inconsequential vehicles don't get soak rolls either
+
+### Creatures
+
+Creatures follow the [Creature mechanics](../creatures/mechanics.mdx) chapter. They have simplified stats with scale modifiers and special abilities. Some are fodder (rat, mynock), some are named-tier threats (rancor, krayt dragon).
+
+---
+
+## Action Types
+
+Every encounter resolves through dice rolls. The Storyteller chooses which action type fits the situation.
+
+### Simple Actions
+
+A **simple action** needs only one success to succeed. Most combat attacks, routine skill checks, and quick tasks use simple actions.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6'} variant="details" preroll />
+</TWWrapper>
+
+_Roll once. One success is enough._
+
+**Automatic success:** If the dice pool equals or exceeds the difficulty, the character succeeds automatically without rolling. This is for actions the character could perform in their sleep.
+
+A player can spend a **Willpower point** to claim one automatic success on any single roll.
+
+### Extended Actions
+
+An **extended action** requires accumulating multiple successes over several rolls. Use extended actions for tasks where time pressure or botch risk creates drama.
+
+| Task                                       | Required Successes |
+| ------------------------------------------ | ------------------ |
+| Climbing a tree                            | 7                  |
+| Repairing Light vehicle damage (permanent) | 5 × scale          |
+| Reprogramming a droid                      | 3–5                |
+| Researching a data archive                 | 5–15               |
+
+The character rolls each turn (or hour, for downtime tasks) until they accumulate the required successes. A **botch** resets progress to zero, and the Storyteller may rule the task cannot be retried.
+
+### Resisted Actions
+
+In a **resisted action**, two characters roll against each other. The one with more successes wins. The opponent's successes cancel the winner's excess — so outstanding successes are rare.
+
+**Examples:** Shadowing a target, arm wrestling, a debate, a chase.
+
+### Extended & Resisted Actions
+
+Both characters accumulate successes over time. The first to reach a target number wins. Each turn, only net successes (yours minus theirs) count toward the total.
+
+**Example:** A cinematic duel, a hacking race, a pursuit through the Coruscant underworld.
+
+---
+
+## Setting Difficulty
+
+### Standard Difficulty
+
+The baseline difficulty for most rolls is **6**. See the **[Difficulty & Success Reference](./difficulty-reference.mdx)** for the full ladder (Diff 3–10) and interactive probability calculator.
+
+### Modifying Difficulty
+
+Apply modifiers based on the situation:
+
+| Circumstance                    | Modifier                |
+| ------------------------------- | ----------------------- |
+| Ideal conditions                | −1 to −2                |
+| Good tools available            | −1 to −2                |
+| Adverse conditions              | +1 to +2                |
+| Poor or no tools                | +1 to +3                |
+| Opponent has relevant Specialty | +1                      |
+| Scale difference (per step)     | ±1 to hit, ∓1 to damage |
+
+### Setting Difficulty for Dramatic Effect
+
+Not all encounters should be evenly balanced. The difficulty does not need to be the same for everyone. A Royal Guard with a force pike has an advantage over a smuggler with a vibro-knife. The Moff in his fortified keep knows the terrain better than the invading Rebels.
+
+When setting difficulty, consider:
+
+1. **Terrain and environment** — does one side have home turf advantage?
+2. **Equipment disparity** — military-grade vs. civilian gear
+3. **Preparation** — ambushes vs. reacting
+4. **Morale and motivation** — a desperate defender fights harder
+
+---
+
+## Balancing Encounters
+
+### The 80/20 Rule
+
+About 80% of gameplay is handled by 20% of the rules. Most encounters don't need stat blocks — a difficulty number and a description are enough. Reserve full stats for **boss fights** and **pivotal scenes**.
+
+### Numbers Advantage
+
+In the WoD system, numbers matter. A group of 4–6 fodder NPCs can threaten a PC because the dice will eventually favor the attackers. Use the **rule of 1** (botch chance) to let PCs feel heroic even when outnumbered.
+
+### Scale and Power
+
+Use [Combat Scales](../combat/combat-scales.mdx) when mixing creatures, vehicles, and characters. A single step of scale represents a massive power difference — a rancor (Scale 2) against a character (Scale 0) is nearly invulnerable to small arms.
+
+### Threat Level Guide
+
+| Encounter       | Fodder | Named NPCs   | Difficulty |
+| --------------- | ------ | ------------ | ---------- |
+| **Easy**        | 2–3    | 0            | 5–6        |
+| **Standard**    | 4–6    | 0–1          | 6          |
+| **Challenging** | 6–10   | 1–2          | 6–7        |
+| **Hard**        | 8–12   | 2–3          | 7–8        |
+| **Boss**        | 0–4    | 1 (powerful) | 8–9        |
+
+These are loose guidelines. Let the story dictate the encounter, not the math.
+
+### The Heroic Soak Rule
+
+PCs and named NPCs always lose at least **1 Health level** from any attack that deals Lethal damage, regardless of soak. This prevents any character from becoming invincible. Fodder NPCs cannot soak Lethal damage at all.
+
+---
+
+## Social Encounters
+
+Social encounters follow the same action system. Use **Charisma + appropriate Ability** for persuasion, **Manipulation + Intimidation** for threats, **Appearance + Expression** for performance.
+
+| Goal                             | Dice Pool                 | Difficulty                                  |
+| -------------------------------- | ------------------------- | ------------------------------------------- |
+| Convince a guard to let you pass | Manipulation + Subterfuge | 6 (guard is loyal) to 8 (Imperial garrison) |
+| Haggle for a lower price         | Charisma + Streetwise     | +1 per 10% discount                         |
+| Intimidate for information       | Strength + Intimidation   | Opponent's Willpower                        |
+| Impress at a social function     | Appearance + Etiquette    | 6 (casual) to 8 (Imperial gala)             |
+
+### Social Combat
+
+For extended social conflicts (debates, interrogations, courtroom dramas), use the **Extended & Resisted** action model. Each side accumulates successes. The first to reach the opponent's Willpower wins the argument.
+
+---
+
+## Vehicle Encounters
+
+Refer to the [Space & Vehicle Combat](../vehicles-mechanisms/space-combat.mdx) chapter for full rules. Quick guidelines:
+
+- **Inconsequential vehicles** (unnamed TIE fighters, speeder bikes) do not get soak rolls
+- **Scale difference** affects to-hit and damage difficulty by ±1 per step
+- **Capital ships** use Wits + Command to determine actions per turn
+- **Chases** use range bands — the prey escapes by accumulating enough Maneuver successes
+
+---
+
+## The 80/20 Principle in Practice
+
+The most important tool in your kit is knowing when **not** to roll. If the outcome is certain and failure isn't interesting, just describe it and move on.
+
+| Situation                                                           | Roll?                                          |
+| ------------------------------------------------------------------- | ---------------------------------------------- |
+| A skilled pilot flying through an open hangar bay                   | No — automatic success                         |
+| The same pilot dodging debris in a collapsing space station         | Yes — difficulty 7                             |
+| A PC tries to recall basic Imperial procedure                       | No — they know it                              |
+| A PC tries to recall the access codes for a specific Star Destroyer | Yes — Intelligence + Bureaucracy, difficulty 8 |
+
+---
+
+## Complications and Botches
+
+A **botch** (zero successes + at least one 1 rolled) should never just mean "you fail." It should introduce a **complication** that makes the scene more interesting.
+
+### Combat Botches
+
+| Roll   | Complication                                  |
+| ------ | --------------------------------------------- |
+| Attack | Weapon jam, dropped weapon, hit an ally       |
+| Dodge  | Stumble, fall prone, drop guard               |
+| Pilot  | Collision risk, system flicker, lose position |
+
+### Social Botches
+
+| Roll         | Complication                             |
+| ------------ | ---------------------------------------- |
+| Persuasion   | Offend the target, reveal too much       |
+| Intimidation | Target calls your bluff, security called |
+| Stealth      | Knock something over, alarm triggered    |
+
+### Extended Action Botches
+
+On a botch during an extended action, the character **loses all accumulated successes**. The Storyteller may rule that:
+
+- The task cannot be attempted again without new tools or information
+- A complication makes the situation worse (e.g., the engine now has additional damage)
+- Time runs out (the door opens, the Imperials arrive)
+
+---
+
+## Teamwork
+
+Two or more characters can work together on the same task. Each rolls separately and **adds their successes together**. They never add dice pools together into one roll.
+
+Teamwork works well for:
+
+- Lifting heavy objects (Strength + Athletics)
+- Repairing a vehicle (Intelligence + Tech)
+- Researching a topic (Intelligence + Investigation)
+- Covering fire (the shooter gets bonus dice from the covering character's successes)
+
+Teamwork hinders in some contexts. Multiple people trying to convince the same target may confuse them. Use judgment.
+
+---
+
+## Next Steps
+
+- [Difficulty & Success Reference](./difficulty-reference.mdx) — Interactive probability calculator, calibration guide, success thresholds
+- [Rewards & Advancement](./rewards-advancement.mdx) — XP costs, training time, bonus XP
+- [Adventure Design](./adventure-design.mdx) — Story structure, hooks, pacing
+- [Running the Game](./running-the-game.mdx) — The 80/20 principle, making rulings, difficulty calibration
+- [Creature Mechanics](../creatures/mechanics.mdx) — NPC and creature stat blocks

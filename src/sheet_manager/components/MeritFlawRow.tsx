@@ -1,4 +1,6 @@
 import { Plus, X } from 'lucide-react';
+import { CatalogSuggest } from './CatalogSuggest.tsx';
+import type { CatalogEntry } from './CatalogSuggest.tsx';
 import { SectionCard } from './SectionCard.tsx';
 
 interface MeritFlawItem {
@@ -16,6 +18,8 @@ interface MeritFlawListProps {
     isMerit?: boolean;
     disabled?: boolean;
     docsPath?: string;
+    catalog?: CatalogEntry[];
+    onCatalogSelect?: (id: string, entry: CatalogEntry) => void;
 }
 
 export function MeritFlawList({
@@ -27,6 +31,8 @@ export function MeritFlawList({
     isMerit = true,
     disabled = false,
     docsPath,
+    catalog,
+    onCatalogSelect,
 }: MeritFlawListProps) {
     return (
         <SectionCard title={title} docsPath={docsPath}>
@@ -47,14 +53,26 @@ export function MeritFlawList({
                             min={1}
                             max={5}
                         />
-                        <input
-                            type="text"
-                            value={item.label}
-                            onChange={(e) => onChange(item.id, item.points, e.target.value)}
-                            disabled={disabled}
-                            className="flex-1 bg-bgSurface border rounded px-3 py-1 text-sm text-textPrimary"
-                            placeholder={isMerit ? 'Merit name...' : 'Flaw name...'}
-                        />
+                        {catalog && onCatalogSelect ? (
+                            <CatalogSuggest
+                                catalog={catalog}
+                                value={item.label}
+                                onChange={(label) => onChange(item.id, item.points, label)}
+                                onSelect={(entry) => onCatalogSelect(item.id, entry)}
+                                placeholder={isMerit ? 'Merit name...' : 'Flaw name...'}
+                                disabled={disabled}
+                                className="flex-1 bg-bgSurface border rounded px-3 py-1 text-sm text-textPrimary"
+                            />
+                        ) : (
+                            <input
+                                type="text"
+                                value={item.label}
+                                onChange={(e) => onChange(item.id, item.points, e.target.value)}
+                                disabled={disabled}
+                                className="flex-1 bg-bgSurface border rounded px-3 py-1 text-sm text-textPrimary"
+                                placeholder={isMerit ? 'Merit name...' : 'Flaw name...'}
+                            />
+                        )}
                         <button
                             type="button"
                             onClick={() => onRemove(item.id)}

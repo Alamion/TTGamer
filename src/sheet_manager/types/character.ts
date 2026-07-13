@@ -73,6 +73,13 @@ export const WeaponItemSchema = z.object({
     ammo: z.string(),
 });
 
+export const ImplantItemSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    type: z.string(),
+    effect: z.string(),
+});
+
 export const CustomSkillSchema = z.object({
     id: z.string(),
     label: z.string(),
@@ -86,19 +93,36 @@ export const BackgroundSchema = z.object({
     id: z.string(),
     label: z.string(),
     value: z.number().min(0).max(5),
+    catalogId: z.string().optional(),
 });
 
 export const MeritFlawSchema = z.object({
     id: z.string(),
     points: z.number(),
     label: z.string(),
+    catalogId: z.string().optional(),
+});
+
+export const CustomForcePowerSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+});
+
+export const ForcePowerItemSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    value: z.number().min(0).max(5).default(0),
+    catalogId: z.string().optional(),
 });
 
 export type ArmorItem = z.infer<typeof ArmorItemSchema>;
 export type WeaponItem = z.infer<typeof WeaponItemSchema>;
+export type ImplantItem = z.infer<typeof ImplantItemSchema>;
 export type CustomSkill = z.infer<typeof CustomSkillSchema>;
 export type Background = z.infer<typeof BackgroundSchema>;
 export type MeritFlawItem = z.infer<typeof MeritFlawSchema>;
+export type CustomForcePower = z.infer<typeof CustomForcePowerSchema>;
+export type ForcePowerItem = z.infer<typeof ForcePowerItemSchema>;
 
 export const TraitModifierSchema = z.object({
     specialization: z.boolean().optional(),
@@ -128,10 +152,14 @@ export const BaseCharacterSchema = z.object({
     willpower: z.object({ current: z.number(), max: z.number() }).optional(),
     forcePoints: z.object({ current: z.number(), max: z.number() }).optional(),
     darkSideResistance: z.number().optional(),
+    forcePowers: z.array(z.string()).optional(),
+    customForcePowers: z.array(CustomForcePowerSchema).optional(),
+    forcePowerItems: z.array(ForcePowerItemSchema).optional(),
     health: HealthSchema,
     inventory: z.array(ItemSchema),
     armor: z.array(ArmorItemSchema),
     weapons: z.array(WeaponItemSchema),
+    implants: z.array(ImplantItemSchema),
     experience: z
         .object({
             total: z.number().default(0),
@@ -204,14 +232,17 @@ export function createDefaultCharacter(): BaseCharacter {
         merits: [],
         flaws: [],
         willpower: { current: 5, max: 5 },
-        forcePoints: { current: 0, max: 10 },
+        forcePoints: { current: 1, max: 1 },
         darkSideResistance: 5,
+        forcePowers: [],
+        customForcePowers: [],
         health: {
             levels: ['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'],
         },
         inventory: [],
         armor: [],
         weapons: [],
+        implants: [],
         experience: { total: 0, spent: 0 },
         customTalents: [],
         customSkills: [],

@@ -48,6 +48,7 @@ Search by species name, era, or category. Click a row to see full details includ
             { columnId: 'eras', label: 'Era', mode: 'multi' },
         ]}
         searchPlaceholder="Search species, era, or type..."
+        id="species"
     />
 </TWWrapper>
 
@@ -89,5 +90,6 @@ The following merits and flaws are available **only** to non-human species and r
         renderDetail={renderMeritFlawDetail}
         filters={[{ columnId: 'type', label: 'Type' }]}
         searchPlaceholder="Search merits & flaws..."
+        id="alien-physiology"
     />
 </TWWrapper>

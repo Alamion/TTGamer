@@ -105,7 +105,7 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
             title="Attributes"
             accentColor={accentColor}
             storageKey="attributeBlock"
-            docsPath="/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities"
+            docsPath="/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes"
         >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {renderAttributeColumn('Physical', ATTRIBUTES.physical)}

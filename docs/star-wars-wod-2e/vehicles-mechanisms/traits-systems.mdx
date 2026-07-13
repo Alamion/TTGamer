@@ -1,0 +1,303 @@
+---
+sidebar_position: 6.1
+title: Vehicle Traits & Systems
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { ScaleChart } from '/src/shared/components/ScaleChart';
+
+# Vehicle Traits & Systems
+
+From speeder bikes threading through Coruscant traffic to Star Destroyers exchanging turbolaser broadsides, vehicles in Star Wars follow a different set of rules than characters. This chapter covers how vehicles are built, what their attributes mean, and how to convert WEG stats into this system.
+
+---
+
+## Vehicles vs. Characters
+
+Vehicles are **not characters**. They don't have Attributes (Strength, Dexterity, etc.) or Abilities (Blaster, Pilot, etc.). Instead, they have a set of **vehicle attributes** that describe their performance characteristics.
+
+| Aspect              | Character                                           | Vehicle                                                             |
+| ------------------- | --------------------------------------------------- | ------------------------------------------------------------------- |
+| **Core stats**      | 9 Attributes (Str/Dex/Sta/Cha/Man/App/Per/Int/Wits) | 4+ vehicle attributes (Durability, Maneuverability, Speed, etc.)    |
+| **Abilities**       | 30 Talents/Skills/Knowledges                        | None — the pilot's skill matters, not the vehicle's                 |
+| **Scale**           | Character (typically)                               | Speeder through Death Star                                          |
+| **Creation budget** | Freebie points                                      | None — vehicles are bought with the Vehicle background or Resources |
+| **Improvement**     | Experience points                                   | Credits + Tech rolls + Customization background                     |
+
+A vehicle is only as good as its pilot. The vehicle's **Maneuverability** adds dice to the pilot's Pilot roll. Its **Durability** replaces Stamina for soak rolls. All other tasks depend on the crew's Attributes and Abilities.
+
+---
+
+## Scale
+
+Every vehicle has a **Scale** that determines how it interacts with other scales in combat. This uses the same system described in [Combat Scales](../combat/combat-scales.mdx).
+
+<TWWrapper>
+    <ScaleChart />
+</TWWrapper>
+
+### Vehicle Scale Categories
+
+| Scale           | Examples                                       | How to Tell                                                     |
+| --------------- | ---------------------------------------------- | --------------------------------------------------------------- |
+| **Speeder**     | Landspeeder, speeder bike, MTT, sail barge     | Flies or hovers, cannot go to space                             |
+| **Walker**      | AT-AT, AT-ST, ground vehicles                  | Walking, treaded, wheeled or tracked; cannot fly or hover       |
+| **Starfighter** | X-wing, TIE Fighter, A-wing, N-1 starfighter   | Goes to space, &lt;1 ton cargo, no passengers                   |
+| **Transport**   | Millennium Falcon, Ghost, lambda shuttle       | Goes to space, carries passengers or cargo in tons, crew &lt;10 |
+| **Capital**     | Star Destroyer, Mon Calamari cruiser, Home One | Goes to space, crew of 10+                                      |
+| **Death Star**  | Death Star, Starkiller Base                    | Can dock a Capital ship                                         |
+
+### Determining Scale from WEG Stats
+
+Use the vehicle's WEG **Skill** stat as a guide:
+
+- If the skill is **Space Transports**, set Scale to **Transport** regardless of the listed Scale.
+- If the skill is **Starfighter Piloting**, set Scale to **Starfighter**.
+- If the skill is **Repulsorlift Operation**, set Scale to **Speeder**.
+
+For non-WEG sources, use the "How to Tell" column above.
+
+---
+
+## Vehicle Attributes
+
+A vehicle's attributes describe its tactical performance. Each is rated on a **1–5 dot scale** (like character attributes), with some exceptions noted below.
+
+### Maneuverability
+
+The vehicle's agility — its ability to turn, dodge, and perform stunts. This adds dice to the pilot's **Pilot** roll in combat or chase situations.
+
+A light, fast starfighter has high Maneuverability. A bulk freighter or walker has low Maneuverability.
+
+**Conversion from WEG:** Use the dice value from the WEG **Maneuverability** stat directly, ignoring pluses. If the value is 6+, cap at 5 and note that the vehicle can **reroll 10s** on Maneuver rolls.
+
+**Opposed to:** Durability. A vehicle can't be both highly maneuverable and heavily armored.
+
+### Durability
+
+The vehicle's structural integrity and ability to absorb damage. This replaces **Stamina** for soak rolls — when a vehicle is hit, the pilot rolls the vehicle's **Durability** at difficulty 6 to soak.
+
+**Conversion from WEG:** Use the dice value from the WEG **Hull** or **Body Strength** stat directly, ignoring pluses. If the value is 6+, cap at 5 and note that the vehicle can **reroll 10s** on Durability rolls.
+
+### Speed
+
+The vehicle's maximum safe operating speed in kmh, converted to an abstract value for quick math:
+
+> **Speed = round(kmh ÷ 100)**
+
+| Vehicle                        | kmh   | Speed |
+| ------------------------------ | ----- | ----- |
+| AT-AT                          | 60    | 1     |
+| X-wing (atmosphere)            | 1,050 | 11    |
+| Millennium Falcon (atmosphere) | 1,200 | 12    |
+| Speeder bike                   | 400   | 4     |
+
+The Speed value represents the vehicle's safe, no-roll-needed speed. A skilled pilot can push the vehicle faster — each additional increment of Speed beyond the vehicle's rating adds +1 difficulty to the Pilot roll.
+
+**Push example:** <TWWrapper><InlineRoll notation={'7d10\u003e=8'} variant="details" preroll /></TWWrapper> Pushing a speeder bike (Speed 4) to Speed 6 — +2 difficulty for a Pilot roll at difficulty 8.
+
+### Altitude
+
+For vehicles that fly or hover, this describes their maximum operational altitude.
+
+- **Speeders and walkers** — use the WEG **Altitude Range** value directly (e.g., "50m").
+- **Starships** — list Altitude as "space". A starship cannot take off or land without functioning repulsorlifts.
+- **Ground vehicles** — leave blank (they operate at ground level).
+
+### Comm/Sensors
+
+A merged stat representing the vehicle's communication and sensor capabilities.
+
+**Conversion from WEG:** Use the dice value from the WEG **Scan** sensor mode, ignoring pluses. Cap at 5 if needed.
+
+**Without WEG stats:**
+
+| Vehicle Type           | Sensors |
+| ---------------------- | ------- |
+| Basic civilian vehicle | 1–2     |
+| Scout/exploration ship | 3–4     |
+| Military vessel        | 3–5     |
+
+### Sensor Range
+
+The maximum effective range of the vehicle's sensors, in the same abstract units used for Speed and Weapon Ranges.
+
+**Conversion from WEG:** Use the range for the **Scan** mode.
+
+**Without WEG stats:**
+
+| Vehicle Type                  | Sensor Range |
+| ----------------------------- | ------------ |
+| Speeder / Walker              | 15           |
+| Starfighter / light Transport | 25           |
+| Transport / Capital ship      | 40+          |
+
+### Hyperdrive
+
+Rates how fast a starship travels in hyperspace. Rated 1–5 dots.
+
+| Dots | WEG Multiplier | Example                                     |
+| ---- | -------------- | ------------------------------------------- |
+| 1    | ×2             | Imperial shuttles, bulk freighters          |
+| 2    | ×1.5           | Most transports                             |
+| 3    | ×1             | Standard military and civilian              |
+| 4    | ×0.75          | Fast couriers, highly modified ships        |
+| 5    | ×0.5           | Millennium Falcon, exceptionally fast ships |
+
+A ship with no hyperdrive has 0 dots (cannot enter hyperspace).
+
+### Nav Computer
+
+Describes the ship's navigation capability:
+
+| Type                     | Capability                                                                                               |
+| ------------------------ | -------------------------------------------------------------------------------------------------------- |
+| **Full nav computer**    | Capital ships, transports — can calculate any hyperspace route                                           |
+| **Astromech droid**      | Starfighters with a droid socket — stores 2 pre-programmed jumps per dot of the droid's **Intelligence** |
+| **Limited nav computer** | Starfighters without a droid — stores 2 pre-programmed jumps only                                        |
+| **None**                 | Ships without hyperdrive                                                                                 |
+
+### Shields
+
+Deflector shields that absorb incoming fire before it hits the hull. Only starships and some military vehicles have shields.
+
+**Conversion from WEG:** Use the dice value from WEG **Shields** stat, ignoring pluses. Cap at 5.
+
+**Without WEG stats:**
+
+| Vehicle Type              | Shields |
+| ------------------------- | ------- |
+| Starfighter               | 1D      |
+| Transport / small Capital | 2D      |
+| Large Capital ship        | 3D      |
+
+Shields can be reduced during combat. Each dot of Shields grants one soak box per shield facing (front/rear).
+
+---
+
+## Weapon Systems
+
+Vehicle weapons are simplified into a few key stats:
+
+| Stat       | Description                                                                                        |
+| ---------- | -------------------------------------------------------------------------------------------------- |
+| **Name**   | "Laser Cannons", "Proton Torpedoes", "Turbolaser Batteries"                                        |
+| **Arc**    | **Fixed** (fires forward — pilot aims the whole ship) or **Turret** (fires into a 180° hemisphere) |
+| **Range**  | Abstract range value — can be doubled with +1 difficulty                                           |
+| **Damage** | Dice pool for damage (e.g., 8D) at difficulty 6                                                    |
+
+---
+
+## Vehicle Sheet
+
+A vehicle uses a simplified sheet with these sections:
+
+1. **Identification** — Name, Model, Owner, Scale
+2. **Crew & Capacity** — Crew, Passengers, Cargo, Consumables
+3. **Configuration** — Durability, Maneuverability, Speed, Altitude, Comm/Sensors, Hyperdrive, Nav Comp, Shields
+4. **Weapons** — Name, Arc, Range, Damage
+5. **Damage Track** — 7-level track (Cosmetic → Light → Moderate → Heavy → Severe → Crippled → Wrecked)
+6. **Notes** — Customizations, quirks, source reference
+
+### Example: X-wing Starfighter
+
+| Field               | Value                                                                                   |
+| ------------------- | --------------------------------------------------------------------------------------- |
+| **Name**            | Red Five                                                                                |
+| **Model**           | Incom T-65 X-wing                                                                       |
+| **Scale**           | Starfighter                                                                             |
+| **Crew**            | 1 + astromech droid                                                                     |
+| **Length**          | 12.5m                                                                                   |
+| **Cargo**           | 110kg                                                                                   |
+| **Passengers**      | 0                                                                                       |
+| **Consumables**     | 1 week                                                                                  |
+| **Durability**      | 4D                                                                                      |
+| **Maneuverability** | 3D                                                                                      |
+| **Speed**           | 11 (1,050 kmh)                                                                          |
+| **Altitude**        | space                                                                                   |
+| **Comm/Sensors**    | 2D (range 25)                                                                           |
+| **Hyperdrive**      | 3 (×1) / astromech nav comp                                                             |
+| **Shields**         | 2D                                                                                      |
+| **Weapons**         | 4 laser cannons (front, range 12, 8D); 2 proton torpedo launchers (front, range 3, 11D) |
+
+### Example: Luke's Landspeeder
+
+| Field               | Value              |
+| ------------------- | ------------------ |
+| **Name**            | Luke's Landspeeder |
+| **Model**           | SoroSuub X-34      |
+| **Scale**           | Speeder            |
+| **Crew**            | 1                  |
+| **Length**          | 3.4m               |
+| **Cargo**           | 100kg              |
+| **Passengers**      | 1                  |
+| **Consumables**     | 1 day              |
+| **Durability**      | 2D                 |
+| **Maneuverability** | 3D                 |
+| **Speed**           | 4 (400 kmh)        |
+| **Altitude**        | 1m                 |
+| **Comm/Sensors**    | —                  |
+| **Hyperdrive**      | —                  |
+| **Shields**         | —                  |
+| **Weapons**         | None               |
+
+### Example: Millennium Falcon
+
+| Field               | Value                                                                                                                                                    |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Name**            | Millennium Falcon                                                                                                                                        |
+| **Model**           | Corellian YT-1300                                                                                                                                        |
+| **Scale**           | Transport                                                                                                                                                |
+| **Crew**            | 2 (+ 2 gunners; skeleton 1)                                                                                                                              |
+| **Length**          | 26.7m                                                                                                                                                    |
+| **Cargo**           | 100 metric tons (10% in hidden compartments)                                                                                                             |
+| **Passengers**      | 6                                                                                                                                                        |
+| **Consumables**     | 2 months                                                                                                                                                 |
+| **Durability**      | 4D (reroll 10s)                                                                                                                                          |
+| **Maneuverability** | 4D                                                                                                                                                       |
+| **Speed**           | 12 (1,200 kmh)                                                                                                                                           |
+| **Altitude**        | space                                                                                                                                                    |
+| **Comm/Sensors**    | 4D (range 60)                                                                                                                                            |
+| **Hyperdrive**      | 5 (×0.5) / full nav comp                                                                                                                                 |
+| **Shields**         | 3D                                                                                                                                                       |
+| **Weapons**         | 2 quad laser cannons (turret, range 12, 8D); 2 concussion missile launchers (front, range 3, 11D); 1 blaster cannon (turret, range 1, 5D, Speeder scale) |
+
+---
+
+## Customizing Vehicles
+
+The **Customization** background (see [Backgrounds](../character/backgrounds.mdx)) allows one-for-one attribute trade-offs for free with Storyteller permission — such as trading 1D of Durability for 1D of Maneuverability.
+
+Spending Customization dots:
+
+| Dots      | Improvement                                        |
+| --------- | -------------------------------------------------- |
+| **•**     | Cosmetic/convenience; +1D or +20% to one attribute |
+| **••**    | Easy improvement; +2D or +40%                      |
+| **•••**   | Average improvement; +3D or +60%                   |
+| **••••**  | Difficult improvement; +4D or +80%                 |
+| **•••••** | Extraordinary improvement; +5D or +100%            |
+
+These upgrades can also be performed during gameplay with a **Tech roll** (Propulsion specialty for Speed/Maneuverability/Hyperdrive, Energy Field for Shields/Repulsors, Structural for Durability) and sufficient credits.
+
+---
+
+## Crew Penalties
+
+A vehicle operating without a full crew suffers penalties:
+
+| Crew Level                            | Penalty                         |
+| ------------------------------------- | ------------------------------- |
+| **Full crew**                         | No penalty                      |
+| **Less than full, at least skeleton** | −1D to all dice pools in combat |
+| **Less than skeleton**                | −3D to all dice pools in combat |
+
+---
+
+## Next Steps
+
+- [Durability, Damage & Repair](./durability-damage-repare.mdx) — Vehicle damage track, soak rules, repair mechanics
+- [Space Combat](./space-combat.mdx) — Dogfighting, Gunnery vs. Pilot, capital ship battles
+- [Modifications](./modifications.mdx) — Customization background, attribute trade-offs, upgrade costs
+- [Combat Scales](../combat/combat-scales.mdx) — Scale ladder and cross-scale combat modifiers

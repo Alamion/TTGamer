@@ -1,0 +1,242 @@
+---
+sidebar_position: 2.7
+title: Reading Your Sheet
+---
+
+# Reading Your Sheet
+
+Every character is stored in your browser and displayed on the [Universal Sheet](/universal_sheet) page. Each section is collapsible — click the header to expand or collapse it, and your preference is saved for next time.
+
+---
+
+## Sheet Layout Map
+
+| #   | Section        | Key Content                                                                                |
+| --- | -------------- | ------------------------------------------------------------------------------------------ |
+| 1   | **Base**       | Name, species, concept, nature, demeanor, portrait, appearance, biography                  |
+| 2   | **Attributes** | Physical (3), Social (3), Mental (3) — rated 1–5                                           |
+| 3   | **Skills**     | Talents (10), Skills (10), Knowledges (10) + custom per column — rated 0–3                 |
+| 4   | **Advantages** | Backgrounds (dot-rated), Merits (point-rated), Flaws (point-rated)                         |
+| 5   | **Force**      | Force Skills (5), Virtues (3), Willpower, Force Points, Dark Side Resistance, Force Powers |
+| 6   | **Body**       | Inventory, Armor, Weapons, Implants & Cyberware, Health (7-level track)                    |
+| 7   | **Other**      | Derived Stats (read-only), Experience (total/spent/available), Notes                       |
+
+The character sheet header also contains global controls: **Export**, **Import**, **Manage Characters**, **Reset**, and **New Character**.
+
+---
+
+## Base Block
+
+The top section holds everything that identifies who your character is.
+
+| Field          | Description                                                                                                                            |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Name**       | Your character's name.                                                                                                                 |
+| **Concept**    | A one-line summary — "Corellian Smuggler", "Jedi Padawan", "Former Imperial Officer".                                                  |
+| **Species**    | Chosen from the [species catalog](./species.mdx). Determines attribute adjustments and starting freebie points.                        |
+| **Player**     | Your name (the person at the table).                                                                                                   |
+| **Nature**     | Your character's deep personality archetype. Determines how you regain Force Points. See [Creation Steps](./creation-steps/index.mdx). |
+| **Demeanor**   | The face your character shows the world — may differ from Nature.                                                                      |
+| **Home World** | Your character's planet of origin.                                                                                                     |
+| **Adventure**  | The name of the current story or campaign.                                                                                             |
+| **Age**        | Your character's age in standard years.                                                                                                |
+
+### Portrait
+
+Click the portrait area to enter an image URL. The preview updates as you type. Characters without a portrait show a silhouette placeholder.
+
+### Appearance
+
+Optional: height, build, hair, eyes, gender, and distinguishing features.
+
+### Biography
+
+A free-text area for backstory, personality notes, and anything else that doesn't fit elsewhere.
+
+---
+
+## Attributes Block
+
+Nine attributes grouped into three categories, rated **1–5** (starting minimum 1 in each).
+
+| Category     | Attributes                         | Used For                           |
+| ------------ | ---------------------------------- | ---------------------------------- |
+| **Physical** | Strength, Dexterity, Stamina       | Lifting, dodging, soaking damage   |
+| **Social**   | Charisma, Manipulation, Appearance | Talking, lying, making impressions |
+| **Mental**   | Perception, Intelligence, Wits     | Noticing, knowing, reacting        |
+
+Each attribute has:
+
+- **Dot rating** — click a dot to set the value (1–5). The minimum is always 1.
+- **Specialization** — an optional specialty (e.g., "Strength: Intimidation").
+- **Flags** — `Specialization`, `Experienced`, `Practiced` — used to track in-play advancements.
+- **Roll button** — builds a dice notation string using the attribute's value. Click to roll.
+
+For attribute descriptions and dot-rank tables, see [Attributes & Abilities](../core-rules/attributes-abilities.mdx).
+
+---
+
+## Skills Block
+
+Thirty abilities grouped into three columns, rated **0–3** at character creation (0 means untrained).
+
+| Column         | Abilities                                                                                                 |
+| -------------- | --------------------------------------------------------------------------------------------------------- |
+| **Talents**    | Alertness, Athletics, Brawl, Command, Diplomacy, Dodge, Empathy, Intimidation, Streetwise, Subterfuge     |
+| **Skills**     | Blaster, Gunnery, Melee, Pilot, Programming, Repair, Ride, Security, Stealth, Survival                    |
+| **Knowledges** | Astrogation, Bureaucracy, Cultures, Interfaces, Investigation, Languages, Medicine, Politics, Tech, Trade |
+
+Each ability has:
+
+- **Dot rating** — click a dot to set the value (0–3+). There is no minimum.
+- **Specialization** text input.
+- **Flags** — same as attributes.
+- **Roll button** — builds `Attribute + Ability` notation.
+
+### Custom Abilities
+
+At the bottom of each column, click **Add Custom** to create a new ability. Custom abilities work identically to preset ones. Use these for unusual skills not covered by the standard 30.
+
+For full ability descriptions, see [Attributes & Abilities](../core-rules/attributes-abilities.mdx).
+
+---
+
+## Advantages Block
+
+Three columns for long-term character resources.
+
+| Column          | Format                | Example                                 |
+| --------------- | --------------------- | --------------------------------------- |
+| **Backgrounds** | Dot-rated (0–5)       | Allies ••, Resources ••, Ship •         |
+| **Merits**      | Point cost (positive) | Iron Will (3 pts), Ambidextrous (2 pts) |
+| **Flaws**       | Point cost (negative) | Enemy (-3 pts), Phobia (-2 pts)         |
+
+Click **Add** in any column to create a new entry. Merits increase your available freebie points; flaws decrease the cost of other traits. See [Merits & Flaws](./merits-flaws.mdx) for the full catalog.
+
+---
+
+## Force Block
+
+The Force block is split into three columns.
+
+### Left Column — Force Skills
+
+Five Force skills rated **0–5**: Control, Dynamism, Rapport, Sense, Telekinesis. These work like regular abilities but are only available to Force-sensitive characters.
+
+### Center Column — Virtues & Pools
+
+**Virtues** (rated 1–5): Conscience, Passion, Self-Control. See [Virtues & Willpower](./virtues-willpower.mdx).
+
+**Pool Trackers:**
+
+- **Willpower** (max = Passion + Self-Control) — static defense against mental intrusion and Force powers.
+- **Max Force Points** (min = Self-Control) — your maximum pool.
+- **Force Points** (current) — spend to gain automatic successes or bonus dice. Regained through roleplaying your Nature.
+- **Dark Side Resistance** (max = 5 + Conscience – Passion) — resistance to falling to the dark side. Color-coded: blue (strong), grey (moderate), red (weak).
+
+### Right Column — Force Powers
+
+A scrollable checklist of known Force powers. Check a power to mark it as learned. Filter by skill or Force Point cost using the controls at the top.
+
+See [Force](./force.mdx) for full power descriptions, activation rules, and Force-related merits & flaws.
+
+---
+
+## Body Block
+
+### Inventory
+
+A list of carried items. Click **Add Item** to add a row, type a description, and click the `×` to remove. Use for credits, tools, datapads, and miscellaneous equipment.
+
+### Armor
+
+A table with columns: **Armor Type**, **Class**, **A.R.** (Armor Rating, subtracts from incoming damage), **Dex penalty** (reduces Dexterity dice pools). Click **Add Armor** to add a row.
+
+### Weapons
+
+A table with columns: **Weapon**, **Dmg** (damage dice notation), **Rng** (range), **Ammo** (shots per magazine). Click **Add Weapon** to add a row. See [Equipment](../equipment.mdx) for the weapons and armor catalog.
+
+### Implants & Cyberware
+
+A table for cybernetic enhancements (living characters) and built-in instruments/weapons (droids). Columns:
+
+| Column     | Description                                                                             |
+| ---------- | --------------------------------------------------------------------------------------- |
+| **Name**   | The implant or built-in component (e.g., "Cybernetic Left Arm", "Built-in Sensor Pack") |
+| **Type**   | Category — Limb, Sensory, Uplink, Life Support, Weapon, Tool, etc.                      |
+| **Effect** | Mechanical benefit or description of what it does                                       |
+
+Click **Add Implant** to add a row. Use this section to track prosthetics, neural implants, droid-mounted equipment, and any other permanent or semi-permanent body modifications.
+
+See [Droids & Cyborgs](./droids-cyborgs.mdx) for cybernetic enhancement rules and droid built-in equipment rules.
+
+### Health
+
+A 7-level damage track. Each level is a clickable button that cycles through three states:
+
+| State      | Meaning                 |
+| ---------- | ----------------------- |
+| Empty (⬜) | No damage at this level |
+| Slash (/)  | Bashing/Stun damage     |
+| Cross (✕)  | Lethal damage           |
+
+| Level             | Penalty        |
+| ----------------- | -------------- |
+| **Bruised**       | 0              |
+| **Hurt**          | −1             |
+| **Injured**       | −2             |
+| **Wounded**       | −3             |
+| **Mauled**        | −4             |
+| **Crippled**      | −5             |
+| **Incapacitated** | — (cannot act) |
+
+The penalty from the first marked level applies to all dice pools. See [Health, Damage & Healing](../combat/health-damage-heal.mdx).
+
+---
+
+## Other Block
+
+### Derived Stats
+
+These are computed automatically and are read-only:
+
+| Stat                     | Formula                     |
+| ------------------------ | --------------------------- |
+| **Willpower** (max)      | Passion + Self-Control      |
+| **Dark Side Resistance** | 5 + Conscience – Passion    |
+| **Initiative**           | Wits + Alertness            |
+| **Initiative (Saber)**   | Wits + Alertness + Control  |
+| **Jumping Distance**     | × min(Control, Telekinesis) |
+| **Running Speed**        | × min(Control, Telekinesis) |
+
+### Experience
+
+| Field         | Description                           |
+| ------------- | ------------------------------------- |
+| **Total**     | Experience points earned through play |
+| **Spent**     | Experience points you've spent        |
+| **Available** | Total − Spent (computed)              |
+
+Spend experience to raise attributes, abilities, virtues, Force skills, and other traits. See [Rewards & Advancement](../gm/rewards-advancement.mdx).
+
+### Notes
+
+A free-form textarea for anything that doesn't fit elsewhere — plot threads, NPC contacts, campaign notes, to-do items.
+
+---
+
+## Quick Tips
+
+- All sections remember their collapsed/expanded state between visits.
+- The **Roll button** on any trait opens the dice roller with the correct pool already built.
+- Export your character regularly as a JSON backup. Use **Import** to restore.
+- Use **Manage Characters** to switch between or delete saved characters.
+
+---
+
+## Next Steps
+
+- [Creation Steps](./creation-steps/index.mdx) — Build a character from scratch
+- [Dice Pools](../core-rules/dice-pools.mdx) — The core resolution mechanic
+- [Force](./force.mdx) — Force Skills, Powers, and Force Points
+- [Droids & Cyborgs](./droids-cyborgs.mdx) — Special rules for droid characters

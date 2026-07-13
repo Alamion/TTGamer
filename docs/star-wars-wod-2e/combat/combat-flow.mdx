@@ -1,0 +1,265 @@
+---
+sidebar_position: 3.1
+title: Combat Flow
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { CharRoll } from '/src/shared/components/DocCharData';
+
+# Combat Flow
+
+When blasters start firing and lightsabers ignite, the game shifts into structured rounds. Here is how combat unfolds.
+
+---
+
+## 1. Initiative
+
+At the start of combat, each character rolls **Wits + Alertness** at difficulty **6**. Characters act in descending order of successes. Ties are resolved simultaneously — both declare actions and resolve together.
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6f=1'} variant="details" preroll /> — a Wits 3 + Alertness 1
+    initiative roll
+</TWWrapper>
+
+Initiative is rolled **once** at the top of combat, not every turn. The order remains fixed for the duration of the scene unless a character deliberately holds or delays their action.
+
+:::note[Surprise & Ambush]
+If one side catches the other unaware, the ambushing characters get a **free turn** before initiative is rolled. After the surprise round, roll initiative normally.
+:::
+
+---
+
+## 2. Turn Structure
+
+Each turn, a character may take **one movement** and **one action**.
+
+### Movement
+
+Move a reasonable distance — duck behind cover, close to melee range, reposition for a better angle. In tactical terms, this is roughly **3‑5 meters per turn** for most characters. Faster species or open terrain may allow more.
+
+### Actions
+
+The primary action covers anything that requires a roll:
+
+| Action Type              | Examples                                              |
+| ------------------------ | ----------------------------------------------------- |
+| **Attack**               | Fire a blaster, swing a vibro-blade, throw a punch    |
+| **Active Defense**       | Declare a Dodge reaction                              |
+| **Use Skill**            | Repair a panel, slice a terminal, administer medicine |
+| **Activate Force Power** | Concentrate on a Force ability                        |
+| **Miscellaneous**        | Draw a weapon, throw a switch, shout an order         |
+
+### Splitting Your Pool
+
+To do more than one thing in a turn, split your smallest relevant pool evenly. Each action gets its own roll. Movement costs **1 die per 3 yards** from whichever pool you choose.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6f=1'} variant="details" preroll /> — a split pool example
+</TWWrapper>
+
+See [Dice Pools — Splitting Pools](../core-rules/dice-pools.mdx#splitting-pools-for-multiple-actions) for the full rules.
+
+---
+
+## 3. Ranged Attack Resolution
+
+### Step 1: Declare and Roll
+
+Roll **Dexterity + Blaster** at difficulty **6**. Each success is a potential hit.
+
+<TWWrapper>
+    <CharRoll attr="Dexterity" skill="Blaster" variant="details" />
+</TWWrapper>
+
+### Step 2: Active Defense (Dodge)
+
+If the target has not yet acted this turn, they may declare a **Dodge reaction** — rolling **Dexterity + Dodge** at difficulty **6**. Each success on the Dodge roll subtracts **one success** from the attacker's roll, just like the Rule of One.
+
+<TWWrapper>
+    <CharRoll attr="Dexterity" skill="Dodge" variant="details" />
+</TWWrapper>
+
+If the target has already acted this turn, they cannot declare a Dodge but may still use **passive defense** — the GM may increase the attack difficulty based on cover, distance, or movement (typically +1 to +3).
+
+Once a character declares a Dodge, they cannot take any other action that turn — all their focus is on avoiding the attack.
+
+### Step 3: Determine Hit
+
+If the attacker has **at least 1 success** remaining after the Dodge subtraction, the attack hits. Extra successes beyond the first do not increase damage directly (unless using called shots or special ammunition) — they simply mean a cleaner hit.
+
+### Step 4: Roll Damage
+
+Roll the weapon's damage dice at difficulty **6**. Each success inflicts **one health level** of damage.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6'} variant="details" preroll /> — a standard blaster pistol
+    (5D damage)
+</TWWrapper>
+
+### Step 5: Soak
+
+The target rolls **Stamina** at difficulty **6**. Each success cancels one health level of damage.
+
+<TWWrapper>
+    <CharRoll attr="Stamina" variant="details" />
+</TWWrapper>
+
+:::caution[The Heroic Rule Barrier]
+PCs and named NPCs can soak Lethal damage, but they **always suffer a minimum of 1 wound level** regardless of soak successes. Unnamed NPCs (fodder) **cannot soak Lethal damage at all** — they take full damage from every hit.
+:::
+
+### Step 6: Apply Damage
+
+Mark damage on the health track. Apply wound penalties to future rolls.
+
+| Damage Type | Mark | Can Soak?               | Min Wound |
+| ----------- | ---- | ----------------------- | --------- |
+| **Bashing** | `/`  | Everyone                | None      |
+| **Lethal**  | `X`  | PCs + named NPCs only   | **1**     |
+| **Stun**    | `•`  | Everyone (like Bashing) | None      |
+
+---
+
+## 4. Melee Attack Resolution
+
+Melee uses the same structure as ranged, with two differences:
+
+1. **Pool:** Roll **Dexterity + Melee** (or **Strength + Brawl** for unarmed).
+2. **No Dodge penalty:** A character who declares a Dodge against melee still loses their action — but they may also attempt to parry (see [Dueling](#6-dueling-rules-optional)) instead of dodging.
+
+If the target is within arm's reach, there is no range consideration. Closing to melee requires movement.
+
+<TWWrapper>
+    <CharRoll attr="Dexterity" skill="Melee" variant="details" />
+</TWWrapper>
+
+### Unarmed Combat
+
+Brawling uses **Strength + Brawl** and deals **Bashing** damage equal to **Strength + 1**. Characters with the **Natural Weapons** merit deal Lethal damage instead.
+
+---
+
+## 5. Reactions
+
+Characters have one **reaction** per turn — a reflexive response to an immediate threat.
+
+| Reaction      | Trigger                          | Effect                                                         |
+| ------------- | -------------------------------- | -------------------------------------------------------------- |
+| **Dodge**     | Being attacked (ranged or melee) | Roll Dexterity + Dodge; successes subtract from attacker's hit |
+| **Parry**     | Being attacked (melee only)      | Roll Dexterity + Melee; successes subtract from attacker's hit |
+| **Intercept** | An opponent moving past you      | Roll to stop them; counts as your action next turn             |
+
+Declaring a reaction uses your action for the turn. You cannot Dodge or Parry if you have already acted.
+
+---
+
+## 6. Dueling Rules (Optional)
+
+For climactic one-on-one melee battles — lightsaber duels, vibro-blade showdowns, dramatic fistfights — the standard "roll until someone hits" approach can feel flat. For those scenes, use the **Extended + Resisted** framework below.
+
+For most melee attacks, the standard combat rules work fine.
+
+### Setup
+
+1. Roll **Initiative** (Wits + Alertness). The winner becomes the **Attacker**; the loser becomes the **Defender**.
+2. These roles persist until the Defender seizes the initiative.
+3. Both duelists begin an **Extended Action**, accumulating successes turn by turn toward their goal.
+
+### Goal
+
+| Role         | Needs                                           | Result on reaching goal                                                   |
+| ------------ | ----------------------------------------------- | ------------------------------------------------------------------------- |
+| **Attacker** | Successes equal to the **Defender's Willpower** | Roll a standard Melee attack — damage, soak, and penalties apply normally |
+| **Defender** | Successes equal to the **Attacker's Willpower** | Seize initiative — roles reverse, successes reset                         |
+
+### Pacing & Duration
+
+A typical duel lasts **3–5 turns per phase** — comparable to a few rounds of standard combat.
+
+- If both duelists are evenly matched (similar Willpower, similar Melee), expect ~3 turns to reach the goal at ~2 successes per turn.
+- Smart duelists exploit the opponent's **weakest Attribute group**. If you duel using an Attribute from the opponent's **tertiary** group (the one they spent the fewest dots on), reduce the target by 3. If you use their **primary** group, increase it by 3. This rewards creative Attribute+Ability pairings:
+    - **Perception + Melee** to study patterns (Mental vs. a brute)
+    - **Strength + Melee** to overpower (Physical vs. a scholar)
+    - **Wits + Melee** to outthink (Mental vs. a brawler)
+
+### Rolling
+
+Each turn, both combatants roll an appropriate Attribute + Melee. The Storyteller encourages creative pairings — **Perception + Melee** to study an opponent's patterns, **Strength + Melee** to overpower, **Wits + Melee** to outthink.
+
+<TWWrapper>
+    <CharRoll attr="Dexterity" skill="Melee" variant="details" />
+</TWWrapper>
+
+### Resolving the Duel
+
+When the **Attacker** reaches their goal, they immediately roll a standard Melee attack — on a hit, proceed to damage and soak as normal. The Attacker can continue making standard attacks each subsequent turn as long as they maintain initiative.
+
+When the **Defender** reaches their goal, they seize the initiative. Roles reverse. Accumulated successes reset to zero. Combat continues with the new Attacker pressing their advantage.
+
+### Breaking the Rhythm
+
+Either duelist may, on their turn, forego the Melee roll and take a different action — kick a piece of furniture, throw sand, activate a piece of equipment. This forfeits progress on the extended action but can create tactical openings.
+
+---
+
+## 7. Cover & Positioning
+
+| Situation                          | Effect                                      |
+| ---------------------------------- | ------------------------------------------- |
+| **Light cover** (crate, table)     | +1 difficulty to hit                        |
+| **Heavy cover** (wall, blast door) | +2 difficulty to hit                        |
+| **Prone / ducking**                | +1 difficulty to hit; -1 die on own attacks |
+| **Target running**                 | +1 difficulty to hit                        |
+| **Point blank** (within 2m)        | -1 difficulty to hit                        |
+
+Cover is the difference between life and death in a blaster fight. Smart positioning keeps you alive.
+
+For a full breakdown of success probabilities, botch rates, and how to calibrate difficulty for your table, see the **[Difficulty & Success Reference](/docs/star-wars-wod-2e/gm/difficulty-reference)**.
+
+---
+
+## 8. Wound Penalties
+
+As damage accumulates, every action suffers:
+
+| Health Level  | Penalty    |
+| ------------- | ---------- |
+| Bruised       | —          |
+| Hurt          | **-1**     |
+| Injured       | **-2**     |
+| Wounded       | **-3**     |
+| Mauled        | **-4**     |
+| Crippled      | **-5**     |
+| Incapacitated | Cannot act |
+
+These dice are subtracted directly from every dice pool. A character at Wounded (-3) with Dexterity 5 + Blaster 3 = 8 dice rolls only **5 dice**.
+
+---
+
+## Summary: Combat Round Flowchart
+
+```
+1. Roll Initiative (Wits + Alertness)
+         ↓
+2. Highest success acts first
+         ↓
+3. On your turn:
+   ├─ Move (3-5m, or split pool for more)
+   └─ Action:
+       ├─ Attack → Roll pool → Target may Dodge → Damage → Soak
+       ├─ Use skill → Roll as normal
+       ├─ Activate power → Follow power rules
+       └─ Hold action → Act later in turn order
+         ↓
+4. Repeat until combat ends
+```
+
+---
+
+## Next Steps
+
+- [Health, Damage & Healing](./health-damage-heal.mdx) — Wound penalties, recovery times, Bacta tanks, amputations
+- [Combat Scales](./combat-scales.mdx) — Size scaling for Rancors, starfighters, and capital ships
+- [Difficulty & Success Reference](../gm/difficulty-reference.mdx) — Combat difficulty probabilities and calibration
+- [Equipment](../equipment.mdx) — Weapons, armor, and gear stats

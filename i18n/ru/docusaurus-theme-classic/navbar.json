@@ -8,11 +8,11 @@
         "description": "The alt text of navbar logo"
     },
     "item.label.Sheet Manager": {
-        "message": "Sheet Manager",
+        "message": "Лист персонажа",
         "description": "Navbar item with label Sheet Manager"
     },
     "item.label.Core Books": {
-        "message": "Core Books",
+        "message": "Доки",
         "description": "Navbar item with label Core Books"
     }
 }

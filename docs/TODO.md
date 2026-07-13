@@ -37,16 +37,18 @@ Each task includes: name, description, priority, effort, impact, and dependencie
 
 All planned files exist on disk. Status below reflects **content completeness**:
 
-| Phase                             | Status                                  |
-| --------------------------------- | --------------------------------------- |
-| Phase 1 — Core Mechanics          | ✅ **DONE** (both files fully written)  |
-| Phase 2 — Character Creation      | 🟡 **IN PROGRESS** (8 of 10 files done) |
-| Phase 3 — Combat                  | ⬜ NOT DONE (3 files, 0-line stubs)     |
-| Phase 4 — Equipment & Gear        | ⬜ NOT DONE (1 file, 0-line stub)       |
-| Phase 5 — Creatures & Adversaries | ⬜ NOT DONE (2 files, 0-line stubs)     |
-| Phase 6 — Vehicles                | ⬜ NOT DONE (4 files, 0-line stubs)     |
-| Phase 7 — GM Section              | ⬜ NOT DONE (4 files, 0-line stubs)     |
-| Phase 8 — Polish                  | ⬜ NOT DONE (3 files, 0-line stubs)     |
+| Phase                             | Status                                                  |
+| --------------------------------- | ------------------------------------------------------- |
+| Phase 1 — Core Mechanics          | ✅ **DONE** (both files fully written)                  |
+| Phase 2 — Character Creation      | ✅ **DONE** (10 of 10 files done)                       |
+| Phase 3 — Combat                  | ✅ **DONE** (3 of 3 files done)                         |
+| Phase 4 — Equipment & Gear        | ✅ **DONE** (1 file, fully written)                     |
+| Phase 5 — Creatures & Adversaries | ✅ **DONE** (2 files, both written)                     |
+| Phase 6 — Vehicles                | ✅ **DONE** (4 files, all written)                      |
+| Phase 7 — GM Section              | ✅ **DONE** (5 of 5 files written)                      |
+| Phase 8 — Polish                  | ✅ **DONE** (3 files, all written)                      |
+| Phase 9 — WEG SWRPG Book Fill     | ⬜ NOT DONE (6 areas, not started)                      |
+| Phase 10 — Translation            | 🟡 IN PROGRESS (1/4 done — docs i18n, glossary partial) |
 
 `quick-start.mdx` (241 lines) — not in the build sequence table but fully written and serves as the foundation for Phase 1.
 
@@ -84,7 +86,7 @@ Each file builds on concepts + component patterns established in prior files. **
 
 These two establish `InlineRoll` patterns (simple, details, multiline) with hardcoded notations like `5d10>=6f=1`, `3d10>=6f=1`, etc.
 
-### Phase 2 — Character Creation (sequenced by creation order) 🟡
+### Phase 2 — Character Creation (sequenced by creation order) ✅
 
 | #   | File                                 | Builds on | Key content                                                                                                                                                                                                                                                | Status                                 |
 | --- | ------------------------------------ | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
@@ -96,54 +98,77 @@ These two establish `InlineRoll` patterns (simple, details, multiline) with hard
 | 8   | `character/dark_side_resistance.mdx` | #7        | DSR formula (5 + Conscience - Passion), humanity-like degeneration, optional social ostracism rule, recovery costs                                                                                                                                         | ✅ **DONE** (143 lines)                |
 | 9   | `character/force.mdx`                | #7, #8    | Force Skills, Force Points for Force users, 35-power Force Powers catalog (DataCatalog with skill + FP filters), Light Side/Dark Side temp increases, common Force rules, Force-related Merits & Flaws catalog (DataCatalog filtered by Force Connections) | ✅ **DONE** (227 lines + 2 data files) |
 | 10  | `character/droids-cyborgs.mdx`       | #9        | Droid creation differences (upgrade vs XP, reprogramming rules with table, memory types by column), NPC droid degree table, cybernetic enhancements (limbs, sensory, uplink, life support, clunky)                                                         | ✅ **DONE** (200 lines)                |
-| 11  | `character/reading-sheet.mdx`        | #3–10     | Reference guide to every section of the character sheet with field descriptions, derived stat callouts, sheet layout map                                                                                                                                   | ⬜ stub (0 lines)                      |
+| 11  | `character/reading-sheet.mdx`        | #3–10     | Reference guide to every section of the character sheet with field descriptions, derived stat callouts, sheet layout map                                                                                                                                   | ✅ **DONE** (184 lines)                |
 
 ### Phase 3 — Combat (builds on core mechanics + characters) ⬜
 
-| #   | File                            | Builds on | Key content                                                                                                                                                                          | Status  |
-| --- | ------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
-| 12  | `combat/combat-flow.mdx`        | #1, #2    | Initiative (Wits + Alertness), turn structure (move + one action), attack resolution (Dex + Blaster vs difficulty 6, opposed Dodge), damage rolls, soak rules, reactions             | ⬜ stub |
-| 13  | `combat/health-damage-heal.mdx` | #12       | 7-level track, damage types (Bashing/Lethal/Stun) with mechanics, wound penalties table (-1 to -5), healing rates, Bacta Tank, amputation rules, **heroic soak rule** (min 1 lethal) | ⬜ stub |
-| 14  | `combat/combat-scales.mdx`      | #12, #13  | Scale ladder (Vermin to Death Star), cross-scale damage multipliers/divisions, vehicle vs character combat                                                                           | ⬜ stub |
+| #   | File                            | Builds on | Key content                                                                                                                                                                          | Status                  |
+| --- | ------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
+| 12  | `combat/combat-flow.mdx`        | #1, #2    | Initiative (Wits + Alertness), turn structure (move + one action), attack resolution (Dex + Blaster vs difficulty 6, opposed Dodge), damage rolls, soak rules, reactions             | ✅ **DONE** (199 lines) |
+| 13  | `combat/health-damage-heal.mdx` | #12       | 7-level track, damage types (Bashing/Lethal/Stun) with mechanics, wound penalties table (-1 to -5), healing rates, Bacta Tank, amputation rules, **heroic soak rule** (min 1 lethal) | ✅ **DONE** (207 lines) |
+| 14  | `combat/combat-scales.mdx`      | #12, #13  | Scale ladder (Vermin to Death Star), cross-scale damage multipliers/divisions, vehicle vs character combat                                                                           | ✅ **DONE** (129 lines) |
 
-### Phase 4 — Equipment & Gear ⬜
+### Phase 4 — Equipment & Gear ✅
 
-| #   | File            | Builds on | Key content                                                                                    | Status  |
-| --- | --------------- | --------- | ---------------------------------------------------------------------------------------------- | ------- |
-| 15  | `equipment.mdx` | #12, #13  | Weapons table (damage dice, range, ammo), armor types and AR, gear and tools, price references | ⬜ stub |
+| #   | File            | Builds on | Key content                                                                                    | Status                  |
+| --- | --------------- | --------- | ---------------------------------------------------------------------------------------------- | ----------------------- |
+| 15  | `equipment.mdx` | #12, #13  | Weapons table (damage dice, range, ammo), armor types and AR, gear and tools, price references | ✅ **DONE** (251 lines) |
 
-### Phase 5 — Creatures & Adversaries ⬜
+### Phase 5 — Creatures & Adversaries ✅
 
-| #   | File                      | Builds on | Key content                                                       | Status  |
-| --- | ------------------------- | --------- | ----------------------------------------------------------------- | ------- |
-| 16  | `creatures/mechanics.mdx` | #12–14    | Creature/NPC stat blocks, scale classification, special abilities | ⬜ stub |
-| 17  | `creatures/beastiary.mdx` | #16       | Example creature stat blocks (Rancor, Nexu, etc.)                 | ⬜ stub |
+| #   | File                      | Builds on | Key content                                                       | Status                                |
+| --- | ------------------------- | --------- | ----------------------------------------------------------------- | ------------------------------------- |
+| 16  | `creatures/mechanics.mdx` | #12–14    | Creature/NPC stat blocks, scale classification, special abilities | ✅ **DONE** (230 lines)               |
+| 17  | `creatures/beastiary.mdx` | #16       | Example creature stat blocks (Rancor, Nexu, etc.)                 | ✅ **DONE** (30 lines + 2 data files) |
 
-### Phase 6 — Vehicles ⬜
+### Phase 6 — Vehicles ✅
 
-| #   | File                                               | Builds on     | Key content                                                                | Status  |
-| --- | -------------------------------------------------- | ------------- | -------------------------------------------------------------------------- | ------- |
-| 18  | `vehicles-mechanisms/traits-systems.mdx`           | #14           | Vehicle attributes (Maneuverability, Durability, Speed, etc.), scale types | ⬜ stub |
-| 19  | `vehicles-mechanisms/durability-damage-repare.mdx` | #18           | Vehicle damage track, repair rules, droid repair parallel                  | ⬜ stub |
-| 20  | `vehicles-mechanisms/space-combat.mdx`             | #12, #18, #19 | Dogfighting, Gunnery vs Pilot opposed rolls, capital ship combat           | ⬜ stub |
-| 21  | `vehicles-mechanisms/modifications.mdx`            | #18           | Customization background examples, attribute trade-offs, upgrade costs     | ⬜ stub |
+| #   | File                                               | Builds on     | Key content                                                                | Status                  |
+| --- | -------------------------------------------------- | ------------- | -------------------------------------------------------------------------- | ----------------------- |
+| 18  | `vehicles-mechanisms/traits-systems.mdx`           | #14           | Vehicle attributes (Maneuverability, Durability, Speed, etc.), scale types | ✅ **DONE** (303 lines) |
+| 19  | `vehicles-mechanisms/durability-damage-repare.mdx` | #18           | Vehicle damage track, repair rules, droid repair parallel                  | ✅ **DONE** (213 lines) |
+| 20  | `vehicles-mechanisms/space-combat.mdx`             | #12, #18, #19 | Dogfighting, Gunnery vs Pilot opposed rolls, capital ship combat           | ✅ **DONE** (212 lines) |
+| 21  | `vehicles-mechanisms/modifications.mdx`            | #18           | Customization background examples, attribute trade-offs, upgrade costs     | ✅ **DONE** (175 lines) |
 
-### Phase 7 — GM Section (depends on everything) ⬜
+### Phase 7 — GM Section (depends on everything) 🟡
 
-| #   | File                         | Builds on  | Key content                                                                         | Status  |
-| --- | ---------------------------- | ---------- | ----------------------------------------------------------------------------------- | ------- |
-| 22  | `gm/building-encounters.mdx` | #12–21     | Encounter balance guidelines, NPC creation, threat rating                           | ⬜ stub |
-| 23  | `gm/rewards-advancement.mdx` | #4, #7, #8 | XP costs for attributes/abilities/virtues/force, training time, bonus XP guidelines | ⬜ stub |
-| 24  | `gm/adventure-design.mdx`    | #22, #23   | Story structure, pacing, session zero tips                                          | ⬜ stub |
-| 25  | `gm/running-the-game.mdx`    | #22–24     | The 80/20 principle, making rulings, difficulty calibration, tone and genre         | ⬜ stub |
+| #   | File                          | Builds on  | Key content                                                                         | Status                  |
+| --- | ----------------------------- | ---------- | ----------------------------------------------------------------------------------- | ----------------------- |
+| 22  | `gm/building-encounters.mdx`  | #12–21     | Encounter balance guidelines, NPC creation, threat rating                           | ✅ **DONE** (226 lines) |
+| 23  | `gm/difficulty-reference.mdx` | #22        | Interactive probability calculator, difficulty calibration, success thresholds      | ✅ **DONE** (340 lines) |
+| 24  | `gm/rewards-advancement.mdx`  | #4, #7, #8 | XP costs for attributes/abilities/virtues/force, training time, bonus XP guidelines | ✅ **DONE** (160 lines) |
+| 25  | `gm/adventure-design.mdx`     | #22–24     | Story structure, pacing, session zero tips                                          | ✅ **DONE** (170 lines) |
+| 26  | `gm/running-the-game.mdx`     | #22–25     | The 80/20 principle, making rulings, difficulty calibration, tone and genre         | ✅ **DONE** (205 lines) |
 
-### Phase 8 — Polish ⬜
+### Phase 8 — Polish ✅
 
-| #   | File                  | Builds on | Key content                                                                                                            | Status  |
-| --- | --------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------- | ------- |
-| 26  | `example-of-play.mdx` | #1–25     | Full narrative example showing dice pool formation → roll → success evaluation → damage, using `InlineRoll` throughout | ⬜ stub |
-| 27  | `en-ru-termins.mdx`   | #1–26     | Bilingual terminology glossary (en/ru) for all system terms                                                            | ⬜ stub |
-| 28  | `index.mdx`           | #1–27     | Expand from 4-line stub to a proper landing page with module overview                                                  | ⬜ stub |
+| #   | File                  | Builds on | Key content                                                                                                            | Status                  |
+| --- | --------------------- | --------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| 27  | `example-of-play.mdx` | #1–26     | Full narrative example showing dice pool formation → roll → success evaluation → damage, using `InlineRoll` throughout | ✅ **DONE** (203 lines) |
+| 28  | `en-ru-termins.mdx`   | #1–27     | Bilingual terminology glossary (en/ru) for all system terms                                                            | ✅ **DONE** (214 lines) |
+| 29  | `index.mdx`           | #1–28     | Expand from 4-line stub to a proper landing page with module overview                                                  | ✅ **DONE** (57 lines)  |
+
+### Phase 9 — Fill from WEG SWRPG Source Book ⬜
+
+| #   | Area             | What to add                                                                                                                                       | Status |
+| --- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 30  | **Species**      | Expand species catalog with EU species (Bothans, Nautolans, Togruta, Chiss, Mandalorians, etc.) using era-variant entries from WEG source books   | ✅     |
+| 31  | **Bestiary**     | Populate `creatureData.ts` with 20+ creature stat blocks from WEG (nexu, acklay, reek, mynock, dianoga, sarlacc, krayt dragon, etc.)              | ✅     |
+| 32  | **Equipment**    | Expand `rangedWeaponsData.ts` with additional blasters, slugthrowers, sporting weapons from WEG source books; add grenade types and heavy weapons | ✅     |
+| 33  | **Armor**        | Expand `armorData.ts` with additional armor types (flight suit, armored flightsuit, combat jumpsuit, etc.) from WEG                               | ✅     |
+| 34  | **Vehicles**     | Populate vehicle data files with stats from WEG (speeder bikes, landspeeders, starfighters, freighters, capital ships)                            | ⬜     |
+| 35  | **Items & Gear** | Expand equipment.mdx misc gear with full WEG item catalog (sensors, survival gear, security devices, medical upgrades, etc.)                      | ✅     |
+
+### Phase 10 — Translation 🟡
+
+| #   | Focus          | What to do                                                                                                                                                           | Status |
+| --- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 35  | **Docs i18n**  | Translate all MDX docs under `docs/star-wars-wod-2e/` into Russian using Docusaurus i18n (ru locale).                                                                | ✅     |
+| 36  | **UI i18n**    | Translate all UI strings in `src/` (dice_roller, sheet_manager, shared components) — extract English strings into i18n JSON files.                                   | ⬜     |
+| 37  | **Glossary**   | Update `docs/star-wars-wod-2e/en-ru-termins.mdx` with any new terms introduced during translation; ensure it stays the single source of truth for terminology pairs. | 🟡     |
+| 38  | **Data files** | Translate user-facing strings in `src/data/` (species, abilities, equipment, etc.) — add `ru` fields to data entries.                                                | ⬜     |
+
+> **Note:** The `en-ru-termins.mdx` bilingual glossary must be updated throughout this phase whenever new terminology is introduced. Keep it in sync as the single source of truth for all en↔ru term pairs.
 
 ---
 

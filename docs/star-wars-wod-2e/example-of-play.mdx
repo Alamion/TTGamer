@@ -1,0 +1,260 @@
+---
+sidebar_position: 3
+title: Example of Play
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { CharacterViewer } from '/src/sheet_manager/components/CharacterViewer';
+import { JAX_VORN_PRESET } from '/src/sheet_manager/data/presets';
+
+# Example of Play
+
+This walkthrough follows **Jax Vorn**, a Corellian smuggler, through a cantina confrontation that goes sideways. Every numbered step shows the dice in action — refer to the character sheet below to see his full stats.
+
+## Jax Vorn
+
+<CharacterViewer character={JAX_VORN_PRESET} />
+
+Key stats used in this example:
+
+| Attribute | Value | Key Ability | Value |
+| --------- | ----- | ----------- | ----- |
+| Dexterity | 5     | Blaster     | 4     |
+| Stamina   | 3     | Security    | 2     |
+| Wits      | 3     | Streetwise  | 2     |
+| Charisma  | 2     | Alertness   | 2     |
+| Strength  | 2     | Stealth     | 2     |
+
+---
+
+## The Setup
+
+Jax is lying low on Ord Mantell when an old debt catches up with him. A Trandoshan bounty hunter named **Korrsk** slides into the booth across from him.
+
+> **Korrsk:** "Jabba sent me. You know why."
+
+Jax's player decides to talk their way out. Time to roll.
+
+---
+
+## Scene 1: The Negotiation
+
+### Step 1 — Form the Dice Pool
+
+Jax tries to convince Korrsk that Jabba's bounty isn't worth the trouble. Jax is a smuggler, not a diplomat — he relies on underworld savvy, not charm. The GM calls for a **Charisma + Streetwise** roll at difficulty **6**.
+
+Jax has **Charisma 2** and **Streetwise 2**, giving him a pool of **4 dice**.
+
+### Step 2 — Roll and Evaluate
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6f=1@7,9,3,6'} variant="details" preroll />
+</TWWrapper>
+
+**Evaluation:** The `7`, `9`, and `6` are successes (3 total). No ones. Net result: **3 successes** — a strong success.
+
+### Step 3 — The GM Narrates
+
+> Jax leans forward, voice low. "You think Jabba remembers my name? He's got a hundred pilots. Tell him I'm dead. Tell him I'm not worth the fuel."
+>
+> Korrsk's jaw clicks. He doesn't draw — yet. "You've got until I finish my drink."
+
+**3 successes** at difficulty 6 is a clear win. Korrsk isn't convinced, but he's hesitating. The GM awards a temporary reprieve — long enough for Jax to make a break for it.
+
+---
+
+## Scene 2: The Blasterfight
+
+Jax bolts for the door. Korrsk draws. Combat begins.
+
+### Step 4 — Initiative
+
+The GM calls for initiative. Everyone rolls **Wits + Alertness** at difficulty 6.
+
+Jax has **Wits 3 + Alertness 2 = 5 dice**.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6f=1@8,3,6,9,2'} variant="details" preroll />
+</TWWrapper>
+
+**3 successes.** Korrsk rolls and gets 1 success. Jax acts first.
+
+### Step 5 — Attack Roll
+
+Jax spins and fires his hold-out blaster. The GM sets difficulty **6** (standard range, no cover).
+
+Jax has **Dexterity 5 + Blaster 4 = 9 dice**. Korrsk declares a dodge: **Dexterity 3 + Dodge 1 = 4 dice**, difficulty 6.
+
+Jax rolls first:
+
+<TWWrapper>
+    <InlineRoll notation={'9d10\u003e=6f=1@6,4,8,2,7,1,9,3,5'} variant="details" preroll />
+</TWWrapper>
+
+**Net: 4 successes** (five successes, one canceled by the `1`). Korrsk rolls to dodge:
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6f=1@3,7,2,1'} variant="details" preroll />
+</TWWrapper>
+
+**Net: 0 successes** (the `7` succeeds, the `1` cancels it). Jax's 4 successes easily beat the difficulty — **the bolt hits**.
+
+### Step 6 — Damage Roll
+
+A hold-out blaster deals **5 dice** of damage at difficulty 6.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6@8,4,6,9,2'} variant="details" preroll />
+</TWWrapper>
+
+**3 successes.** Korrsk takes **3 levels of Lethal damage**.
+
+### Step 7 — Soak Roll
+
+As a named NPC, Korrsk gets a soak roll. He has **Stamina 4**.
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6@7,5,3,8'} variant="details" preroll />
+</TWWrapper>
+
+**2 successes.** Soak reduces the damage from 3 to **1 level** (the heroic soak rule: PCs and named NPCs always take at least 1 Lethal damage).
+
+> Korrsk roars as the bolt catches him in the shoulder. He staggers but doesn't go down — and now he's angry.
+
+### Step 8 — Wound Penalties
+
+Korrsk has taken 1 Lethal wound (Hurt). He takes a **-1 dice penalty** on all future actions.
+
+---
+
+## Scene 3: The Escape
+
+Jax dives behind the bar. There's a service door in the back — but it's locked with a security panel.
+
+### Step 9 — Extended Action: Slicing the Panel
+
+The GM calls for an **extended action**. Jax needs to accumulate **5 successes** on **Dexterity + Security** rolls (difficulty 6). Each roll represents one turn. A botch resets progress to zero.
+
+Jax has **Dexterity 5 + Security 2 = 7 dice**.
+
+**Turn 1:**
+
+<TWWrapper>
+    <InlineRoll notation={'7d10\u003e=6f=1@5,8,2,7,1,4,9'} variant="details" preroll />
+</TWWrapper>
+
+**Net: 2 successes** (three successes, one canceled by the `1`). Total: **2 / 5**.
+
+**Turn 2:**
+
+<TWWrapper>
+    <InlineRoll notation={'7d10\u003e=6f=1@9,4,6,3,8,2,5'} variant="details" preroll />
+</TWWrapper>
+
+**3 successes.** Total: **5 / 5** — the door clicks open in just two turns. Jax's high Dexterity makes short work of the lock.
+
+> Jax rips the panel cover off and shorts the lock. The door hisses open a crack. He's through it before Korrsk can get off another shot.
+
+---
+
+## Scene 4: The Chase
+
+Jax runs through the back alleys of Ord Mantell. Korrsk follows, bleeding but relentless.
+
+### Step 10 — Resisted Action: The Chase
+
+The GM frames this as a **resisted extended action**. Both characters roll **Stamina** each turn (Jax has no Athletics dots, so he rolls raw Stamina). First to accumulate **10 net successes** wins.
+
+Jax has **Stamina 3 = 3 dice**. Korrsk, wounded (-1 penalty), has **Stamina 4 + Athletics 1 - 1 = 4 dice**.
+
+**Round 1 — Jax:**
+
+<TWWrapper>
+    <InlineRoll notation={'3d10\u003e=6f=1@8,3,6'} variant="details" preroll />
+</TWWrapper>
+
+**2 successes.** Korrsk:
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6f=1@7,2,4,6'} variant="details" preroll />
+</TWWrapper>
+
+**2 successes.** They cancel. No progress.
+
+**Round 2 — Jax:**
+
+<TWWrapper>
+    <InlineRoll notation={'3d10\u003e=6f=1@10,7,5'} variant="details" preroll />
+</TWWrapper>
+
+**2 successes (10 explodes — roll again: `3`, no extra).** Korrsk:
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6f=1@2,5,9,1'} variant="details" preroll />
+</TWWrapper>
+
+**Net: 0 successes** (the `1` cancels the `9`). Jax gains **+2 net**. Running total: **2 / 10**.
+
+> Jax vaults a stack of crates and doubles back toward the spaceport. Korrsk's wound is slowing him down.
+
+**Round 3 — Jax:**
+
+<TWWrapper>
+    <InlineRoll notation={'3d10\u003e=6f=1@4,8,6'} variant="details" preroll />
+</TWWrapper>
+
+**2 successes.** Korrsk:
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6f=1@3,2,1,1'} variant="details" preroll />
+</TWWrapper>
+
+**Botch!** Two ones and no successes. Korrsk trips, losing ground. The GM rules this grants Jax an automatic **+5 successes** to his total. Running total: **9 / 10**.
+
+**Round 4 — Jax:**
+
+<TWWrapper>
+    <InlineRoll notation={'3d10\u003e=6f=1@5,7,9'} variant="details" preroll />
+</TWWrapper>
+
+**2 successes.** Running total: **11 / 10**.
+
+> Jax hears a crash behind him. He doesn't look back. He's at the docking bay. His ship, the _Stardust Drifter_, is right where he left it.
+
+---
+
+## Step 11 — Resolution
+
+Jax fires up the engines and lifts off. Korrsk limps to the bay doors, firing blaster bolts at the ship's underside — but he's too late.
+
+The GM awards **2 XP** for the session: 1 for survival, 1 for clever roleplaying (the failed negotiation that escalated into a fight, the creative escape route).
+
+---
+
+## What This Demonstrated
+
+| Mechanic                            | Where                                           |
+| ----------------------------------- | ----------------------------------------------- |
+| **Dice pool formation**             | Step 1, 5, 6, 7, 9, 10                          |
+| **Success evaluation**              | Step 2                                          |
+| **Rule of One**                     | Step 2, 5, 9, 10                                |
+| **Botch**                           | Step 10 (Korrsk's chase roll)                   |
+| **Exploding 10s**                   | Step 10 (Jax's Round 2)                         |
+| **Opposed (resisted) rolls**        | Step 5 (attack vs dodge), Step 10 (chase)       |
+| **Damage and soak**                 | Steps 6–7                                       |
+| **Heroic soak rule**                | Step 7                                          |
+| **Wound penalties**                 | Step 8                                          |
+| **Extended actions**                | Step 9                                          |
+| **Untrained roll (Attribute only)** | Step 10 (Stamina 3, Athletics 0)                |
+| **Automatic success via Willpower** | (Not used — but could have been in Step 5 or 9) |
+| **Narrative consequences**          | Steps 3, 9, 11                                  |
+
+---
+
+## Next Steps
+
+- [Worked Example](./character/creation-steps/worked-example.mdx) — See Jax Vorn's full character sheet
+- [Dice Pools](./core-rules/dice-pools.mdx) — Full dice mechanics reference
+- [Combat Flow](./combat/combat-flow.mdx) — Turn structure, attack resolution
+- [Running the Game](./gm/running-the-game.mdx) — GM advice, making rulings

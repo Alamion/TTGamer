@@ -1,6 +1,22 @@
 import { type ColumnDef, type Row } from '@tanstack/react-table';
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import type { SpeciesEntry } from './speciesData';
+import { MERITS_FLAWS } from './meritsFlawsData';
+
+function getMeritFlaw(id: string) {
+    const item = MERITS_FLAWS.find((mf) => mf.id === id);
+    if (!item) {
+        console.warn(`Merit/Flaw not found: ${id}`);
+        return { name: id, cost: 0 };
+    }
+    return item;
+}
+
+function calcFreebieAdjustment(species: SpeciesEntry): number {
+    const meritCost = species.merits.reduce((sum, id) => sum + getMeritFlaw(id).cost, 0);
+    const flawCost = species.flaws.reduce((sum, id) => sum + getMeritFlaw(id).cost, 0);
+    return flawCost - meritCost;
+}
 
 function arrayIncludesAnyFilterFn<T>(row: Row<T>, columnId: string, filterValue: string): boolean {
     if (!filterValue) return true;
@@ -21,7 +37,7 @@ export const SPECIES_COLUMNS: ColumnDef<SpeciesEntry>[] = [
     {
         id: 'freebieAdjustment',
         header: 'Freebie Adj.',
-        accessorKey: 'freebieAdjustment',
+        accessorFn: (row) => calcFreebieAdjustment(row),
         enableSorting: true,
         cell: ({ getValue }) => {
             const val = getValue<number>();
@@ -115,6 +131,16 @@ function MeritFlawList({
 }
 
 export function renderSpeciesDetail(species: SpeciesEntry): ReactNode {
+    const adjustment = calcFreebieAdjustment(species);
+    const meritItems = species.merits.map((id) => ({
+        name: getMeritFlaw(id).name,
+        cost: getMeritFlaw(id).cost,
+    }));
+    const flawItems = species.flaws.map((id) => ({
+        name: getMeritFlaw(id).name,
+        cost: getMeritFlaw(id).cost,
+    }));
+
     return (
         <>
             <p className="text-sm text-textSecondary leading-relaxed mb-4">{species.description}</p>
@@ -124,9 +150,7 @@ export function renderSpeciesDetail(species: SpeciesEntry): ReactNode {
                     Freebie Adjustment
                 </h5>
                 <p className="text-sm text-textSecondary">
-                    {species.freebieAdjustment > 0
-                        ? `+${species.freebieAdjustment}`
-                        : species.freebieAdjustment}
+                    {adjustment > 0 ? `+${adjustment}` : adjustment}
                 </p>
             </div>
 
@@ -141,14 +165,14 @@ export function renderSpeciesDetail(species: SpeciesEntry): ReactNode {
                 <h5 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-1.5">
                     Merits
                 </h5>
-                <MeritFlawList items={species.merits} type="merit" />
+                <MeritFlawList items={meritItems} type="merit" />
             </div>
 
             <div>
                 <h5 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-1.5">
                     Flaws
                 </h5>
-                <MeritFlawList items={species.flaws} type="flaw" />
+                <MeritFlawList items={flawItems} type="flaw" />
             </div>
         </>
     );

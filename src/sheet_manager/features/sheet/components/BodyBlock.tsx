@@ -6,13 +6,14 @@ import { useCharacterStore } from '../../../store/characterStore.ts';
 import { useCharacterContext } from '../../../context/CharacterContext.tsx';
 import { Plus, X } from 'lucide-react';
 import { HealthBlock } from './HealthBlock.tsx';
-import type { ArmorItem, WeaponItem, Item } from '../../../types/character.ts';
+import type { ArmorItem, WeaponItem, ImplantItem, Item } from '../../../types/character.ts';
 import { generateId } from '@site/src/shared/utils/random';
 
 interface SectionState {
     inventory: boolean;
     armor: boolean;
     weapons: boolean;
+    implants: boolean;
 }
 
 interface BodyBlockProps {
@@ -29,6 +30,7 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     const inventory = character.inventory || [];
     const armor = character.armor || [];
     const weapons = character.weapons || [];
+    const implants = character.implants || [];
 
     const addInventoryItem = () => {
         if (readOnly) return;
@@ -101,6 +103,28 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
         });
     };
 
+    const addImplantItem = () => {
+        if (readOnly) return;
+        updateCharacter(character.id, {
+            implants: [
+                ...implants,
+                { id: generateId(), name: '', type: '', effect: '' } as ImplantItem,
+            ],
+        });
+    };
+
+    const removeImplantItem = (id: string) => {
+        if (readOnly) return;
+        updateCharacter(character.id, { implants: implants.filter((item) => item.id !== id) });
+    };
+
+    const updateImplantItem = (id: string, field: keyof ImplantItem, value: string) => {
+        if (readOnly) return;
+        updateCharacter(character.id, {
+            implants: implants.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
+        });
+    };
+
     const armorColumns: DataTableColumn<ArmorItem>[] = [
         {
             header: 'Armor Type',
@@ -151,6 +175,48 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
                     className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
                     placeholder="Dex..."
                     aria-label="Dexterity penalty"
+                />
+            ),
+        },
+    ];
+
+    const implantColumns: DataTableColumn<ImplantItem>[] = [
+        {
+            header: 'Name',
+            render: (item) => (
+                <input
+                    type="text"
+                    value={item.name}
+                    onChange={(e) => updateImplantItem(item.id, 'name', e.target.value)}
+                    className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
+                    placeholder="Implant name..."
+                    aria-label="Implant name"
+                />
+            ),
+        },
+        {
+            header: 'Type',
+            render: (item) => (
+                <input
+                    type="text"
+                    value={item.type}
+                    onChange={(e) => updateImplantItem(item.id, 'type', e.target.value)}
+                    className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
+                    placeholder="Limb, Sensory, Uplink..."
+                    aria-label="Implant type"
+                />
+            ),
+        },
+        {
+            header: 'Effect',
+            render: (item) => (
+                <input
+                    type="text"
+                    value={item.effect}
+                    onChange={(e) => updateImplantItem(item.id, 'effect', e.target.value)}
+                    className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
+                    placeholder="Mechanical effect..."
+                    aria-label="Implant effect"
                 />
             ),
         },
@@ -226,7 +292,12 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     const HEALTH_DOCS = '/docs/star-wars-wod-2e/combat/health-damage-heal';
 
     return (
-        <CollapsibleBlock title="Body" accentColor={accentColor} storageKey="bodyBlock">
+        <CollapsibleBlock
+            title="Body"
+            accentColor={accentColor}
+            storageKey="bodyBlock"
+            docsPath="/docs/star-wars-wod-2e/equipment"
+        >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="col-span-2 space-y-4">
                     {renderCollapsibleSection(
@@ -303,6 +374,21 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
                             onRemove={readOnly ? undefined : removeWeaponItem}
                             addLabel="Add Weapon"
                             emptyMessage="No weapons yet..."
+                        />,
+                        EQUIPMENT_DOCS
+                    )}
+
+                    {renderCollapsibleSection(
+                        'implants',
+                        'Implants & Cyberware',
+                        <DataTable
+                            columns={implantColumns}
+                            items={implants}
+                            idKey="id"
+                            onAdd={readOnly ? undefined : addImplantItem}
+                            onRemove={readOnly ? undefined : removeImplantItem}
+                            addLabel="Add Implant"
+                            emptyMessage="No implants yet..."
                         />,
                         EQUIPMENT_DOCS
                     )}

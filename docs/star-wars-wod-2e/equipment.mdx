@@ -1,0 +1,258 @@
+---
+sidebar_position: 4
+title: Equipment
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { CharRoll } from '/src/shared/components/DocCharData';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+import { RANGED_WEAPONS } from '/src/data/rangedWeaponsData';
+import { RANGED_WEAPONS_COLUMNS, renderRangedWeaponDetail } from '/src/data/rangedWeaponsConfig';
+import { MELEE_WEAPONS } from '/src/data/meleeWeaponsData';
+import { MELEE_WEAPONS_COLUMNS, renderMeleeWeaponDetail } from '/src/data/meleeWeaponsConfig';
+import { ARMOR } from '/src/data/armorData';
+import { ARMOR_COLUMNS, renderArmorDetail } from '/src/data/armorConfig';
+import { CONSUMABLE_WEAPONS } from '/src/data/consumableWeaponsData';
+import {
+    CONSUMABLE_WEAPONS_COLUMNS,
+    renderConsumableWeaponDetail,
+} from '/src/data/consumableWeaponsConfig';
+import { TOOLS_GEAR } from '/src/data/toolsGearData';
+import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '/src/data/toolsGearConfig';
+
+# Equipment
+
+The Star Wars galaxy is filled with weapons, armor, tools, and gear. This chapter catalogs the equipment that has mechanical impact in play, using a **class-based approach** — all weapons in the same class share identical stats.
+
+---
+
+## Weapons
+
+WEG and WoD both take the view that any weapon in a particular class (heavy pistols, rifles, knives, etc.) is similar enough to every other weapon of the same class that differences in accuracy or stopping power are minor. All knives have the same stats, all blaster rifles have the same stats, and so on.
+
+### Ranged Weapons
+
+Roll **Dexterity + Blaster** at the listed difficulty to hit. On a hit, roll the weapon's damage dice at difficulty 6 — each success inflicts one health level.
+
+A weapon can fire at up to **double** its listed range, but at **+1 difficulty**. The listed Ammo value is per power pack — a blaster's energy cell is compact enough to carry several spares. Unless ammunition is a critical plot point, don't track individual shots; blasters are designed to sustain extended engagements. Swapping a pack (or reloading a slugthrower) takes a full action.
+
+<TWWrapper>
+    <InlineRoll notation={'5d10\u003e=6'} variant="details" preroll /> — Hold-out Blaster damage
+    (5D)
+</TWWrapper>
+
+<TWWrapper>
+    <InlineRoll notation={'9d10\u003e=6'} variant="details" preroll /> — Blaster Rifle damage (9D)
+</TWWrapper>
+
+<TWWrapper>
+    <DataCatalog
+        data={RANGED_WEAPONS}
+        columns={RANGED_WEAPONS_COLUMNS}
+        renderDetail={renderRangedWeaponDetail}
+        searchPlaceholder="Search ranged weapons..."
+        id="ranged-weapons"
+    />
+</TWWrapper>
+
+**Full-Auto** (Light Repeating Blaster): Gain **+10 dice** to the attack pool but difficulty increases by **+2**. The entire power pack is consumed in a single burst — reloading takes a full action. The shooter may also **Spray** across an area: base difficulty 5, increased by +1 per yard covered; successes are divided evenly among all targets in the area. If only one target is in the sprayed area, only half the successes affect them. A weapon can only fire on full-auto once per turn.
+
+### Melee Weapons
+
+Roll **Dexterity + Melee** (or **Strength + Brawl** for unarmed) at the listed difficulty. Damage adds Strength to the weapon's base. For a character with Strength 3, a knife deals <InlineRoll notation={'4d10\u003e=6'} preroll /> (Str 3 + 1) while a lightsaber deals <InlineRoll notation={'8d10\u003e=6'} preroll /> (Str 3 + 5).
+
+<TWWrapper>
+    <DataCatalog
+        data={MELEE_WEAPONS}
+        columns={MELEE_WEAPONS_COLUMNS}
+        renderDetail={renderMeleeWeaponDetail}
+        searchPlaceholder="Search melee weapons..."
+        id="melee-weapons"
+    />
+</TWWrapper>
+
+:::note[Unarmed Combat]
+Brawling uses **Strength + Brawl** and deals **Bashing** damage equal to **Strength + 1**. Characters with the **Natural Weapons** merit deal Lethal damage instead.
+:::
+
+### Special Weapons
+
+**Bowcaster.** The Wookiee bowcaster fires explosive quarrels wrapped in an energy cocoon. The quarrel deals **4D Lethal** to the primary target, then explodes like a concussion grenade dealing **4D Bashing** at ground zero, reduced by **1 die per yard** from the blast center (including the target — they take both the direct hit and blast damage). Uses the Blaster skill. After each shot it must be manually cocked — a Feat of Strength (roll 4 dice, difficulty 9), counting as an action. Each success on the Feat of Strength roll effectively adds one step to the character's effective Strength for cocking purposes.
+
+**Lightsaber.** Base difficulty **8** (reduced by Force training). Lightsabers ignore all armor soak — only exotic materials (Storyteller's discretion) can resist them. Some powered melee weapons may parry a lightsaber attack.
+
+**Slugthrowers.** Treat any WoD firearm as a slugthrower. Reduce damage by **1D** compared to an equivalent blaster. Slugthrowers are less effective than blasters and carry far less ammunition per magazine — a slugthrower magazine empties in seconds of sustained fire, while a blaster power pack lasts through a full day's combat. They are, however, cheaper and more common on primitive worlds where power packs are hard to find.
+
+**Explosives.** Explosives deal damage in a radius. At ground zero, the full damage pool applies; for every yard from the blast center, reduce the pool by the listed falloff.
+
+<TWWrapper>
+    <DataCatalog
+        data={CONSUMABLE_WEAPONS}
+        columns={CONSUMABLE_WEAPONS_COLUMNS}
+        renderDetail={renderConsumableWeaponDetail}
+        searchPlaceholder="Search consumable weapons..."
+        filters={[{ columnId: 'type', label: 'Type' }]}
+        id="consumable-weapons"
+    />
+</TWWrapper>
+
+Damage is Bashing unless otherwise noted. Thermal Detonators deal Lethal (the fire element can ignite flammable materials). Smoke grenades have no blast — they emit a dense obscuring cloud. Ion grenades deal no damage to organic targets — they affect only droids and electronics.
+
+### GM Reference: Weapon Conversion Formulas
+
+To convert any weapon from WEG source books to this system:
+
+| Weapon Type            | Conversion                                                                          |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| **Melee**              | Keep damage as listed, ignore pluses. Powered versions (vibroblades, etc.) add +1D. |
+| **Pistols**            | Add +1D to listed WEG damage, keep other stats.                                     |
+| **Long Arms**          | Add +2D to listed WEG damage, keep other stats.                                     |
+| **Repeating Blasters** | Keep WEG damage as listed. Use Full-Auto rules (see above).                         |
+| **Artillery**          | Treat as vehicle-mounted (see Vehicles chapter).                                    |
+
+Base difficulty for all weapons is **6** (except lightsaber). The Storyteller may temporarily increase difficulty for unfamiliar weapons until the character adjusts.
+
+---
+
+## Armor
+
+Armor adds dice to your **Stamina soak** roll when resisting Bashing or Lethal damage. The bonus applies to every soak roll while worn. However, heavier armor comes with a **Dexterity penalty** that reduces all Dexterity-based dice pools.
+
+Armor is **useless against lightsabers** — only exotic materials from the Expanded Universe can resist a lightsaber's blade.
+
+Roll Stamina at difficulty 6 to soak. With armor, roll **Stamina + AR dice** instead.
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6'} variant="details" preroll /> — Stamina 3 + Blast Vest
+    (+1D) = 4D soak
+</TWWrapper>
+
+<TWWrapper>
+    <DataCatalog
+        data={ARMOR}
+        columns={ARMOR_COLUMNS}
+        renderDetail={renderArmorDetail}
+        searchPlaceholder="Search armor..."
+        id="armor"
+    />
+</TWWrapper>
+
+---
+
+## Medical Equipment
+
+Having proper medical equipment reduces the difficulty of **Intelligence + Medicine** rolls (see [Health, Damage & Healing](./combat/health-damage-heal.mdx) for full healing rules).
+
+**Bacta Tank** requires Medicine Knowledge of at least 3D to operate. Only one patient at a time. Once installed, it cannot be transported without complete disassembly.
+
+<TWWrapper>
+    <DataCatalog
+        data={TOOLS_GEAR.filter((x) => x.category === 'Medical')}
+        columns={TOOLS_GEAR_COLUMNS}
+        renderDetail={renderToolGearDetail}
+        searchPlaceholder="Search medical equipment..."
+        id="medical-equipment"
+    />
+</TWWrapper>
+
+---
+
+## Tools & Gear
+
+Tool sets reduce the difficulty of **Repair** and **Tech** rolls. Without tools, the Storyteller may impose penalties.
+
+<TWWrapper>
+    <DataCatalog
+        data={TOOLS_GEAR.filter((x) => x.category !== 'Medical')}
+        columns={TOOLS_GEAR_COLUMNS}
+        renderDetail={renderToolGearDetail}
+        searchPlaceholder="Search tools and gear..."
+        filters={[{ columnId: 'category', label: 'Category' }]}
+        id="tools-gear"
+    />
+</TWWrapper>
+
+---
+
+## Equipment Upgrades
+
+### Customization Background
+
+The **Customization** background (see [Backgrounds](./character/backgrounds.mdx)) allows starting with improved equipment. Each dot corresponds to an improvement of **+1D** or **+20%** to one attribute of a weapon, vehicle, or piece of armor.
+
+| Rating    | Improvement                                                    |
+| --------- | -------------------------------------------------------------- |
+| **•**     | Cosmetic — paint, body work, integrated comlink                |
+| **••**    | +1D or +20% — hidden vibro-knife in cybernetic arm             |
+| **•••**   | +2D or +40% — hidden hold-out blaster in cybernetic arm        |
+| **••••**  | +3D or +60% — hidden heavy blaster pistol in cybernetic arm    |
+| **•••••** | +4D or +80% — hidden light repeating blaster in cybernetic arm |
+
+One-for-one attribute trade-offs (e.g., +20% Range for −1D Damage) may be allowed for free with Storyteller approval.
+
+### Upgrade Difficulty (In-Play)
+
+During play, characters can pay to upgrade equipment. Use the table below for the Storyteller to set difficulty:
+
+| Improvement | Difficulty |
+| ----------- | ---------- |
+| Cosmetic    | 6          |
+| +1D / +20%  | 7          |
+| +2D / +40%  | 8          |
+| +3D / +60%  | 9          |
+| +4D / +80%  | 10         |
+
+### Cybernetics
+
+Cybernetic prosthetics cost approximately **500c** each (depending on availability). They must be custom-crafted by a character with both Tech and Medicine Knowledge. For full cybernetic rules, see [Droids & Cyborgs](./character/droids-cyborgs.mdx).
+
+---
+
+## Prices & Resources
+
+Your **Resources** background determines your starting wealth and monthly income.
+
+| Resource Dot | Wealth Level | Monthly Income    | Liquid Assets  |
+| ------------ | ------------ | ----------------- | -------------- |
+| **•**        | Poor         | 500cr/month       | ~1,000cr       |
+| **••**       | Adequate     | 2,000cr/month     | ~8,000cr       |
+| **•••**      | Comfortable  | 10,000cr/month    | ~50,000cr      |
+| **••••**     | Wealthy      | 50,000cr/month    | ~500,000cr     |
+| **•••••**    | Rich         | 250,000+ cr/month | ~5,000,000+ cr |
+
+Characters with **Resources 0** live hand-to-mouth, barely scraping by. At character creation, the **Resources** background is purchased with your 5 background dots (or Freebie Points at 1 point per dot).
+
+Equipment prices in this chapter assume purchase during play. At character creation, the Storyteller may allow starting equipment appropriate to your concept without deducting credits — within reason.
+
+---
+
+## How to Fill Equipment on Your Sheet
+
+The **Body** section of the [Universal Sheet](/universal_sheet) contains three equipment-related tables:
+
+**Weapons table** — columns: Weapon, Dmg (e.g. `5D`), Rng, Ammo. Enter the weapon name, damage notation, range value, and magazine capacity from the tables above.
+
+**Armor table** — columns: Armor Type, Class, A.R., Dex penalty. The A.R. column takes the dice bonus (e.g. `+1D`). The Dex penalty applies automatically — remember to subtract it from Dexterity pools while armored.
+
+**Inventory** — a simple list of carried items. Use for tools, medpacs, credits, datapads, and anything else not covered by weapons or armor.
+
+For the damage notation on weapons, use the format `ND` where N is the dice pool (e.g., `5D` for a Hold-out Blaster). The sheet converts this automatically for roll buttons.
+
+For example, a character with Dexterity 4 and Blaster 2 shooting a Blaster Rifle (fixed example — no character loaded):
+
+<TWWrapper>
+    <CharRoll attr="Dexterity" skill="Blaster" variant="details" />
+</TWWrapper>
+
+The sheet's embedded roll buttons combine the character's Dexterity + Blaster with the weapon's damage notation for one-click attack and damage rolls.
+
+---
+
+## Next Steps
+
+- [Combat Flow](./combat/combat-flow.mdx) — Turn structure, attack resolution, and reactions
+- [Health, Damage & Healing](./combat/health-damage-heal.mdx) — Wound penalties, recovery times, Bacta tanks
+- [Difficulty & Success Reference](./gm/difficulty-reference.mdx) — Success probabilities, calibration guide
+- [Droids & Cyborgs](./character/droids-cyborgs.mdx) — Droid built-in equipment and cybernetic enhancements
+- [Backgrounds](./character/backgrounds.mdx) — Resources, Customization, and Vehicle backgrounds

@@ -19,7 +19,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 1,
         shortDescription: 'Driven by a guiding goal or ideal',
         description:
-            'You have a purpose that drives you — a goal, ideal, or cause that shapes your actions. When acting directly in service of this purpose, you gain a bonus die to your dice pools. The Storyteller must approve your Higher Purpose and may call on you to uphold it even when inconvenient.',
+            'You have a goal that drives and directs you in everything. When acting directly in service of this higher purpose, you gain two extra dice to your dice pools. The Storyteller must approve your Higher Purpose and may call on you to uphold it even when inconvenient.',
         category: 'Psychological',
         tags: ['Motivation', 'Roleplay'],
     },
@@ -39,9 +39,9 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         name: 'Dual Nature',
         type: 'Merit',
         cost: 2,
-        shortDescription: 'Two distinct personas with separate Nature/Demeanor',
+        shortDescription: 'Two distinct Natures — regain Force Points from both',
         description:
-            "You have two distinct sets of Nature and Demeanor that you can switch between. This may represent a deeply suppressed alternate personality, a character with strict compartmentalization, or a being struggling between light and dark. The switch typically happens under stress or at the Storyteller's discretion.",
+            'You have two distinct Natures, both of which influence your personality and behavior. When you pick these Natures, choose Archetypes that are somewhat compatible. This Merit allows you to regain Force Points using both Natures. You may still choose a Demeanor, and it can be as different from your Natures as you desire.',
         category: 'Psychological',
         tags: ['Roleplay', 'Unique'],
     },
@@ -52,7 +52,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 1,
         shortDescription: 'An uncontrollable habitual behavior',
         description:
-            'You have a compulsive behavior you cannot easily resist — counting objects, checking locks repeatedly, hoarding trivial items, or similar. When you are prevented from or fail to perform your compulsion, you lose one die from all dice pools until you can satisfy it. The Storyteller determines when your compulsion is triggered.',
+            'You have a compulsive behavior you cannot easily resist — counting objects, checking locks repeatedly, hoarding trivial items, or similar. Your compulsion can be temporarily avoided at the cost of a Force Point, but is in effect at all other times. The Storyteller determines when your compulsion is triggered.',
         category: 'Psychological',
         tags: ['Roleplay', 'Behavioral'],
     },
@@ -74,7 +74,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 1,
         shortDescription: 'Strong prejudice against a group',
         description:
-            'You hold an unreasoning prejudice against a specific group — droids, aliens, Imperials, Jedi, Hutts, etc. You suffer a two-dice penalty on all Social rolls when dealing with members of that group unless you make a conscious effort (and a Self-Control roll) to hide your bias.',
+            'You have an unreasoning dislike of a certain thing — a species, a type of being, a situation, or just about anything. The difficulties of all dice rolls involving the subject of your intolerance are increased by two. The Storyteller is the final arbiter on what qualifies.',
         category: 'Psychological',
         tags: ['Roleplay', 'Social'],
     },
@@ -96,7 +96,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 1,
         shortDescription: 'Uncomfortable in social situations',
         description:
-            'You are shy and uncomfortable in social situations, especially with strangers or large groups. All Social rolls in such situations suffer a one-die penalty. This flaw is more than just being quiet — it is a genuine difficulty engaging with others.',
+            'You are distinctly ill at ease when dealing with people and try to avoid social situations whenever possible. The difficulties of all Social rolls are increased by one; the difficulties of any rolls made while you are the center of attention are increased by two.',
         category: 'Psychological',
         tags: ['Roleplay', 'Social'],
     },
@@ -107,7 +107,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 1,
         shortDescription: 'Cannot turn away those in need',
         description:
-            'You have a soft spot for those in trouble and find it nearly impossible to refuse a plea for help, even when it is inconvenient or dangerous. To ignore someone in genuine need, you must make a Self-Control roll (difficulty 6). Failure means you must help — or at least try.',
+            'You cannot stand to watch others suffer — not necessarily because you care about what happens to them, but simply because you dislike the intensity of emotion. If you witness suffering, difficulties of all rolls are increased by two for the next hour. You avoid situations where you might witness suffering and will do anything you can to protect others from it.',
         category: 'Psychological',
         tags: ['Roleplay', 'Compassion'],
     },
@@ -129,7 +129,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 2,
         shortDescription: 'Chronically undervalues own abilities',
         description:
-            'You have a poor opinion of yourself and your abilities. Whenever you succeed at an important roll, you must make a Self-Control roll (difficulty 4) to accept that you actually succeeded. If you fail, you assume your success was luck or that you misread the situation.',
+            'You lack self-confidence and do not believe in yourself. You have two fewer dice in situations where you do not expect to succeed (at the Storyteller\u2019s discretion). At the Storyteller\u2019s option, you may be required to make Willpower rolls to do things that require self-confidence.',
         category: 'Psychological',
         tags: ['Roleplay', 'Social'],
     },
@@ -140,7 +140,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 3,
         shortDescription: 'A single goal dominates your life',
         description:
-            'You have a single overriding goal that dominates your thoughts and actions — finding your lost family, avenging a betrayal, proving yourself to someone. You must make a Self-Control roll (difficulty 6) to set aside this goal when a clear opportunity to pursue it presents itself.',
+            'You have a personal goal that sometimes compels and directs you in startling ways. The goal is always limitless in depth, and you can never truly achieve it. Because you must work toward your goal throughout the chronicle (though you can avoid it for short periods by spending a Force Point), it will get you into trouble and may jeopardize other actions.',
         category: 'Psychological',
         tags: ['Motivation', 'Roleplay'],
     },
@@ -172,7 +172,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'concentration',
         name: 'Concentration',
         type: 'Merit',
-        cost: 2,
+        cost: 1,
         shortDescription: 'Exceptional ability to focus',
         description:
             'You can shut out distractions and focus on the task at hand. Any penalty to your dice pools from a distracting environment (noise, chaos, pain) is limited to a maximum of two dice. This applies to Force Power concentration as well.',
@@ -208,7 +208,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 2,
         shortDescription: 'Perfect recall of everything you experience',
         description:
-            'You have a photographic memory. You remember everything you have ever seen, heard, or read with perfect clarity. The Storyteller should provide you with details and information that other characters would need to write down or research.',
+            'You can remember things seen and heard with perfect detail. By gaining at least one success on an Intelligence + Alertness roll (difficulty determined by the Storyteller), you can recall any desired sight or sound accurately, even if you experienced it only once.',
         category: 'Mental',
         tags: ['Intelligence', 'Memory'],
     },
@@ -263,7 +263,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 2,
         shortDescription: 'Easily disoriented and muddled',
         description:
-            'You are easily confused and disoriented, especially in new or rapidly changing situations. When something unexpected happens, you must make a Wits roll (difficulty 6) to avoid being stunned for one turn — unable to act except to defend yourself.',
+            'You are often confused, and the world seems to be a very distorted and twisted place. Sometimes you are simply unable to make sense of things. You need to roleplay this behavior at all times to a small degree, but your confusion becomes especially strong whenever stimuli surround you. You may spend a Force Point to override the effects of your confusion, but only temporarily.',
         category: 'Mental',
         tags: ['Perception', 'Combat'],
     },
@@ -274,7 +274,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 3,
         shortDescription: 'Distracted and forgetful',
         description:
-            'You are chronically absent-minded and forgetful. You frequently lose track of what you are doing, forget names, misplace items, and zone out during important briefings. When the Storyteller decides you have forgotten something important, you may make an Intelligence roll (difficulty 7) to remember.',
+            'Though you do not forget Abilities or Knowledges, you do forget names, addresses, and when you last ate. In order to remember anything more than your own name and the location of your ship or home, you need to make a Wits roll or, as a last resort, spend a Force Point.',
         category: 'Mental',
         tags: ['Roleplay', 'Memory'],
     },
@@ -320,7 +320,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 1,
         shortDescription: 'Supernaturally sharp eyesight',
         description:
-            'Your eyesight is exceptionally sharp. You can see details at greater distances and in lower light than normal humans. This grants a two-dice bonus to any Perception-based roll that involves sight.',
+            'Your eyesight is exceptionally sharp. The difficulties of all Perception rolls that relate to vision are reduced by one.',
         category: 'Awareness',
         tags: ['Senses', 'Perception'],
     },
@@ -351,9 +351,9 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         name: 'Bad Sight',
         type: 'Flaw',
         cost: 2,
-        shortDescription: 'Poor eyesight even with correction',
+        shortDescription: 'Defective, non-correctable eyesight',
         description:
-            'Your eyesight is poor. Without corrective lenses (glasses, contacts, or cybernetic implants), you suffer a two-dice penalty on any roll that depends on sight. Even with correction, the penalty is only reduced to one die.',
+            'Your sight is defective. The difficulties of all dice rolls related to vision are increased by two. This Flaw is neither nearsightedness nor farsightedness — it is not correctable by lenses or implants.',
         category: 'Awareness',
         tags: ['Senses', 'Perception'],
     },
@@ -421,7 +421,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 2,
         shortDescription: 'Gift for learning languages',
         description:
-            'You have a natural gift for languages. You learn new languages twice as fast as normal. When encountering an unfamiliar language, you can make an Intelligence roll (difficulty 7) to grasp the general meaning after hearing a few sentences.',
+            'You have a flair for languages. You add three dice to any dice pool involving languages, both written and spoken.',
         category: 'Aptitudes',
         tags: ['Communication', 'Intelligence'],
     },
@@ -432,7 +432,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 3,
         shortDescription: 'Thrive on risk and danger',
         description:
-            'You live for the thrill of danger. When you attempt a risky, dramatic, or foolhardy action, you gain a bonus die to your dice pool. The action must be genuinely dangerous — the Storyteller decides if the bonus applies.',
+            'You are good at taking risks, and are even better at surviving them. All difficulties are one less whenever you try something particularly dangerous, and you can ignore a single botch result when you roll ones on such actions (one die showing 1 is set aside, as if you had an extra success).',
         category: 'Aptitudes',
         tags: ['Combat', 'Roleplay'],
     },
@@ -440,10 +440,10 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'fast-learner',
         name: 'Fast Learner',
         type: 'Merit',
-        cost: 1,
+        cost: 3,
         shortDescription: 'Acquire new skills more quickly',
         description:
-            'You learn new abilities faster than most. You gain one extra Experience Point at the end of each story to spend on Abilities.',
+            'You learn very quickly, and pick up on new things faster than most do. You gain one extra experience point at the conclusion of each story (not each game session).',
         category: 'Aptitudes',
         tags: ['Experience', 'Utility'],
     },
@@ -596,7 +596,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'ward',
         name: 'Ward',
         type: 'Flaw',
-        cost: 2,
+        cost: 3,
         shortDescription: 'Responsible for someone who cannot care for themselves',
         description:
             'You are responsible for the care and safety of someone — a child, an elderly relative, a damaged droid with a preserved personality, or a fragile individual who depends on you. This person requires regular attention and cannot be left alone for long. They may accompany you or require you to check in regularly.',
@@ -618,7 +618,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'slave-race',
         name: 'Slave Race',
         type: 'Flaw',
-        cost: 4,
+        cost: 3,
         shortDescription: 'Your species is systemically enslaved',
         description:
             'Your people are enslaved by the Empire or another civilization. While you personally may not be a slave, there are always those willing to change that. Slavers are a constant threat, and trusted friends may be tempted by a reward. You live with the knowledge that there is an open market for your freedom, and always a buyer.',
@@ -653,7 +653,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'disfigured',
         name: 'Disfigured',
         type: 'Flaw',
-        cost: 1,
+        cost: 2,
         shortDescription: 'A visible disfigurement',
         description:
             'You have a visible disfigurement — scarring, a missing feature, a birthmark, or other noticeable physical abnormality. Your Appearance is considered one dot lower for purposes of first impressions and social interactions. Some may react with fear, disgust, or pity.',
@@ -730,12 +730,23 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'two-left-feet',
         name: 'Two Left Feet',
         type: 'Flaw',
-        cost: 3,
+        cost: 2,
         shortDescription: 'Clumsy and ungraceful',
         description:
             'No one would ever call you graceful. You step on things, trip over your own feet, and stub your toes. The difficulty for any roll made while walking, running, or otherwise in motion is increased by two. The Storyteller may ask for Dexterity rolls on rough terrain.',
         category: 'Physical',
         tags: ['Dexterity', 'Movement'],
+    },
+    {
+        id: 'paraplegic',
+        name: 'Paraplegic',
+        type: 'Flaw',
+        cost: 6,
+        shortDescription: 'Paralyzed from the waist down',
+        description:
+            'You are paralyzed from the waist down. You cannot walk or stand without assistance. You require a hoverchair, repulsor sled, or similar mobility aid to move. Climbing, running, and any action requiring leg use is impossible. Your movement speed is effectively zero without your mobility aid. You may be able to acquire a cybernetic exoskeleton or advanced prosthetics through gameplay.',
+        category: 'Physical',
+        tags: ['Mobility', 'Physical', 'Injury'],
     },
 
     // ── Cybernetic ─────────────────────────────────────────────
@@ -811,7 +822,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'force-sensitive',
         name: 'Force Sensitive',
         type: 'Merit',
-        cost: 3,
+        cost: 1,
         shortDescription: 'Potential to learn Force Skills and Powers',
         description:
             'You have the potential to learn Force Skills and Powers. Add the higher of your Passion or Conscience to your total Force Points. The Force may occasionally reach out with relevant information — foreshadowing, warnings, clues, or directions. These visions come unbidden and can range from a vague sense of disturbance to vivid visions difficult to distinguish from reality.',
@@ -825,7 +836,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         cost: 5,
         shortDescription: 'The Force is exceptionally strong in you',
         description:
-            'You are exceptionally strong in the Force. You gain the benefits of the Force Sensitive merit and the Luck merit. Additionally, once per session, you may reroll a failed Force Power roll and keep the better result. You are a beacon in the Force — other Force users can sense your presence from afar.',
+            'You are exceptionally strong in the Force. You gain the benefits of the Force Sensitive merit. In addition, you may ignore a single natural 1 on every roll you make — one die showing 1 is set aside and does not trigger the Rule of One. You are a beacon in the Force — other Force users can sense your presence from afar.',
         category: 'Force Connections',
         tags: ['Force', 'Powerful'],
     },
@@ -844,7 +855,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'natural-force-power',
         name: 'Natural Force Power',
         type: 'Merit',
-        cost: 5,
+        cost: 3,
         shortDescription: 'Born with a natural Force talent',
         description:
             'You have a natural aptitude for using the Force. Upon character creation, you gain one dot in one Force Skill and one Force Power of your choosing (Storyteller must approve). You also gain the benefits of the Force Sensitive merit.',
@@ -877,10 +888,10 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'force-negator',
         name: 'Force Negator',
         type: 'Merit',
-        cost: 7,
+        cost: 5,
         shortDescription: 'A bubble where the Force cannot reach',
         description:
-            'There is a void around you where the Force cannot reach. You may use Force Points normally yourself, but Force powers cannot penetrate a bubble roughly your own height in radius. Physical objects already in motion (e.g., something hurled via Telekinesis) are unaffected — they have momentum. This merit is incompatible with any Force Sensitive merit.',
+            'There is a void around you where the Force cannot reach. You may use Force Points normally, but you may never learn Force Skills. Force powers cannot penetrate or be used within a bubble roughly your own height in radius — though effects with momentum (e.g., an object hurled via Telekinesis) are unaffected. This merit is incompatible with any Force Sensitive merit.',
         category: 'Force Connections',
         tags: ['Force', 'Unique'],
     },
@@ -910,7 +921,7 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         id: 'desired-by-dark-side',
         name: 'Desired by the Dark Side',
         type: 'Flaw',
-        cost: 3,
+        cost: 2,
         shortDescription: 'The dark side actively tempts you',
         description:
             'The dark side of the Force sees in you the potential for great evil. It actively works to seduce you and erode your Dark Side Resistance. The Storyteller will employ their own methods to tempt you down the path of evil.',
@@ -1195,6 +1206,18 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
         restriction: 'Species-specific — non-human only',
     },
     {
+        id: 'ap-huge-size',
+        name: 'Huge Size',
+        type: 'Merit',
+        cost: 4,
+        shortDescription: 'Abnormally large — extra Health Level',
+        description:
+            'You are abnormally large in size, possibly over seven feet tall and 400 pounds in weight. You have one additional Health Level — an extra Hurt Level with no wound penalty — allowing you to suffer more harm before being incapacitated.',
+        category: 'Alien Physiology',
+        tags: ['Size', 'Durability'],
+        restriction: 'Species-specific — non-human only',
+    },
+    {
         id: 'ap-sixth-sense',
         name: 'Sixth Sense',
         type: 'Merit',
@@ -1264,6 +1287,66 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
             'The gas mixtures found in most natural atmospheres are harmful to you. You must carry a supply of your native air and wear a breathing apparatus at all times away from home. Without it, you can hold your breath for one turn per Stamina point, then lose one Lethal Health level per turn from asphyxiation.',
         category: 'Alien Physiology',
         tags: ['Survival', 'Physiology'],
+        restriction: 'Species-specific — non-human only',
+    },
+    {
+        id: 'ap-hardy',
+        name: 'Hardy',
+        type: 'Merit',
+        cost: 2,
+        shortDescription: 'Exceptionally resilient physiology',
+        description:
+            'Your physiology is exceptionally resilient against poison, disease, torture, and environmental extremes. You gain two additional dice to resist such effects. Zabraks and many rugged species have this merit.',
+        category: 'Alien Physiology',
+        tags: ['Durability', 'Survival'],
+        restriction: 'Species-specific — non-human only',
+    },
+    {
+        id: 'ap-heightened-awareness',
+        name: 'Heightened Awareness',
+        type: 'Merit',
+        cost: 1,
+        shortDescription: 'Passive echolocation or ambient sense',
+        description:
+            'Your species possesses a passive sensory ability — echolocation, air-current sensitivity, or similar — that grants awareness of your surroundings beyond normal sight. You gain a two-dice bonus to Perception checks involving ambient awareness, such as sensing hidden threats or noticing subtle changes in your environment. Togruta have this adaptation.',
+        category: 'Alien Physiology',
+        tags: ['Senses', 'Perception'],
+        restriction: 'Species-specific — non-human only',
+    },
+    {
+        id: 'ap-binary-mind',
+        name: 'Binary Mind',
+        type: 'Merit',
+        cost: 1,
+        shortDescription: 'Process two independent streams of thought',
+        description:
+            'Your brain can process two independent streams of thought simultaneously, allowing true multitasking. You gain a two-dice bonus to mental tasks such as Analysis, Investigation, or multitasking under pressure. Cereans have this adaptation.',
+        category: 'Alien Physiology',
+        tags: ['Mental', 'Cognition'],
+        restriction: 'Species-specific — non-human only',
+    },
+    {
+        id: 'ap-four-arms',
+        name: 'Extra Arms (four)',
+        type: 'Merit',
+        cost: 3,
+        shortDescription: 'Four fully functional arms',
+        description:
+            'You have four fully functional arms, allowing you to wield multiple weapons, perform complex tasks simultaneously, and gain a two-dice bonus to grappling or tasks requiring extra limbs. Besalisks have this adaptation.',
+        category: 'Alien Physiology',
+        tags: ['Combat', 'Utility'],
+        restriction: 'Species-specific — non-human only',
+    },
+    {
+        id: 'ap-flight-wings',
+        name: 'Flight (wings)',
+        type: 'Merit',
+        cost: 2,
+        shortDescription: 'Natural wings capable of sustained flight',
+        description:
+            'You possess natural wings capable of sustained flight, allowing an altitude of up to 30 meters. Flight-related rolls have a difficulty of 6, and you take only quarter damage from falls. Toydarians have this adaptation.',
+        category: 'Alien Physiology',
+        tags: ['Movement', 'Flight'],
         restriction: 'Species-specific — non-human only',
     },
 ];

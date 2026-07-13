@@ -1,0 +1,292 @@
+---
+sidebar_position: 6.3
+title: Space & Vehicle Combat
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { ScaleChart } from '/src/shared/components/ScaleChart';
+
+# Space & Vehicle Combat
+
+Vehicle encounters in Star Wars fall into three broad categories: **Combat** (dogfighting and broadsides), **Races** (contested travel), and **Chases** (pursuit and evasion). This chapter covers all three, using a unified system that works for both atmosphere and space.
+
+---
+
+## The Maneuver Roll
+
+In vehicle combat, each vehicle gets one roll per turn that serves as its **initiative, movement, and defense** — called the **Maneuver roll**.
+
+<TWWrapper>
+    <ScaleChart />
+</TWWrapper>
+
+### Difficulty
+
+The Storyteller sets the Maneuver difficulty based on terrain. The smallest scale vehicle in the encounter sets the base difficulty:
+
+| Scale Involved     | Base Difficulty                  |
+| ------------------ | -------------------------------- |
+| Smallest in fight  | 6 (or as set by Storyteller)     |
+| +1 per step larger | +1 per scale step above smallest |
+
+_Example: A Star Destroyer (Capital) fighting speeder bikes (Speeder) would Maneuver at difficulty 6 + 3 = 9._
+
+### Dice Pool by Crew Role
+
+| Vehicle Type                            | Maneuver Dice Pool                                                                                                             |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Single pilot** (speeder, starfighter) | Dexterity + Pilot + Maneuverability                                                                                            |
+| **Pilot + co-pilot**                    | Co-pilot: Dexterity + Pilot (successes add to pilot's pool). Pilot: Dexterity + Pilot + Maneuverability + co-pilot successes.  |
+| **Capital ship** (captain + helmsman)   | Captain: Wits + Command (successes add to helmsman's pool). Helmsman: Dexterity + Pilot + Maneuverability + captain successes. |
+
+<TWWrapper>
+    <InlineRoll notation={'8d10\u003e=6'} variant="details" preroll />
+</TWWrapper>
+
+_An X-wing pilot with Dexterity 4 + Pilot 3 + Maneuverability 3D = 10D, rolling at difficulty 6._
+
+### Results
+
+The number of successes serves as both **Initiative order** and **Defense** for the next turn. Higher is better — you act first and are harder to hit.
+
+A **botch** puts the vehicle at the end of the order and may add a complication (collision risk, system flicker, etc.) at the Storyteller's discretion.
+
+---
+
+## Attacking
+
+### Maneuver and Positioning
+
+The Maneuver roll abstracts each vehicle's position relative to everyone else. A higher Maneuver means you're in a **better position** — you've outmaneuvered your opponents. A lower roll means they've gotten the drop on you.
+
+What you can target depends on your **weapon's arc type**, not just your Maneuver number:
+
+| Arc Type        | Can Target                                                                                                         | Examples                                                              |
+| --------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| **Front-fixed** | Vehicles with **same or lower** Maneuver — you've outmaneuvered them and have your nose on them                    | X-wing laser cannons, TIE laser cannons                               |
+| **Rear**        | Vehicles with **higher** Maneuver — they're on your tail                                                           | Y-wing rear gun, Millennium Falcon dorsal cannon (designated as rear) |
+| **Turret**      | Half the combatants — the gun covers a 180° hemisphere regardless of ship facing. Use even/odd on Maneuver values. | Millennium Falcon quad laser cannons                                  |
+| **All**         | Any target — covers the full sphere. This is two turrets covering both hemispheres.                                | Star Destroyer turbolaser batteries                                   |
+
+**Turret tracking:** Designate each turret-mounted weapon as "even" or "odd" on the vehicle sheet. "Even" turrets can target any vehicle with an even-numbered Maneuver roll; "odd" turrets target odd-numbered rolls. If both hemispheres are covered (like a Star Destroyer's 60 turbolaser batteries split across even and odd), the ship can effectively target anyone.
+
+**The Star Destroyer example:** An Imperial-class Star Destroyer has 60 Turbolaser Batteries with "All" arc. These aren't forward-facing cannons — they're turrets covering every angle. The Destroyer isn't limited by facing. Its limitation is the **Command roll** (Wits + Command) determining how many actions it gets per turn. With 4 successes, it fires 4 of those 60 batteries. The fighters' high Maneuver makes them harder to **hit** (scale modifiers to attack difficulty), not harder to **target**.
+
+**Range** is irrelevant in combat — both sides are assumed to be jockeying for position within weapons range. Range becomes a factor only in Chases.
+
+### Attack Roll
+
+The gunner rolls **Dexterity + Gunnery** (or the pilot splits their dice pool to both Maneuver and Attack).
+
+Splitting the dice pool: The player declares how many dice to allocate to each action before rolling. Each action gets at least 1 die.
+
+**Difficulty:** Standard 6, modified by scale:
+
+| Relationship         | To Hit      | To Damage   |
+| -------------------- | ----------- | ----------- |
+| Same scale           | 6           | 6           |
+| Attacker **larger**  | +1 per step | −1 per step |
+| Attacker **smaller** | −1 per step | +1 per step |
+
+_Example: A Star Destroyer (Capital) shoots at an X-wing (Starfighter): difficulty to hit = 6 + 2 = 8; difficulty to damage = 6 − 2 = 4._
+
+### Damage Roll
+
+If the attack hits, roll the weapon's **Damage** dice at the modified difficulty. Each success is one damage level.
+
+The target vehicle then rolls **Durability + Shields** (if applicable) to soak (see [Durability, Damage & Repair](./durability-damage-repare.mdx)).
+
+---
+
+## Capital Ship Actions
+
+A capital ship does not get one attack per gun battery. Instead, the commanding officer rolls **Wits + Command** each turn to determine how many **actions** the ship can take:
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6'} variant="details" preroll />
+</TWWrapper>
+
+_Star Destroyer captain with Wits 3 + Command 2 = 5D, rolling to determine actions._
+
+Each success is one action the captain can allocate — Maneuver, attack with one weapon system, sensor sweep, etc.
+
+For inconsequential capital ships (NPC-only), roll once at the start of the encounter and use the same number each turn to save time.
+
+**Larger ships** get bonus dice to the Command roll:
+
+| Ship Size Comparison     | Bonus Dice |
+| ------------------------ | ---------- |
+| Small capital (corvette) | +1D        |
+| Medium (frigate)         | +2D        |
+| Large (Star Destroyer)   | +5D        |
+
+Player characters aboard a capital ship **always get their own actions** regardless of the Command roll — the NPC crew handles the rest.
+
+---
+
+## Formations
+
+Flying in formation lets multiple vehicles act as one, reducing the need for dice pool splitting.
+
+### Requirements
+
+- Each pilot needs at least **2 ranks in Pilot**
+- Vehicles must be able to communicate
+- A lead pilot is designated
+- Lead pilot's **Command** rating determines formation size (3 ranks = 3 wingmates)
+
+### Joining Formation
+
+Outside combat: automatic. During combat: a full turn spent rolling **Intelligence + Pilot** at difficulty 6.
+
+### Benefits
+
+- Lead pilot makes the Maneuver roll for the entire formation
+- Add **+1 die per wingmate** to the lead pilot's Maneuver pool
+- Wingmates can focus on attacking, sensors, or other tasks
+- Shared sensor and navigation data (open comms required)
+
+### Drawbacks
+
+- Lead pilot uses the **lowest Maneuverability** in the formation
+- The **highest damage penalty** in the formation applies to the lead pilot's roll
+- Collision risk on a botch
+
+---
+
+## Other Actions
+
+Aboard a vehicle, characters can take several non-pilot actions:
+
+### Sensors
+
+A sensor operator can assist gunners by rolling **Perception + Interfaces + Comm/Sensors** at difficulty 6. Each success adds one bonus die to a gunner's attack roll that turn.
+
+A sensor roll is also required before **targeting a specific system** (see Specific Damage rules).
+
+### Communications
+
+- **Tactical comms** between allied craft are assumed active.
+- Sending a distress call, hailing, jamming, or transmitting intel requires a comm operator and an **Interfaces** roll. Add Comm/Sensors rating to the pool if signal strength matters.
+
+### Navigation (Hyperspace)
+
+Default time to plot a hyperspace jump: **10 turns**.
+
+To plot faster, the navigator rolls **Wits + Astrogation** at difficulty 6. Each success subtracts 1 turn (minimum 1 turn). A botch triggers the **Astrogation Mishap Table** (see SWRPG).
+
+### Jury-Rigged Repairs
+
+During combat, a technician can attempt temporary repairs to a specific damaged system. See [Durability, Damage & Repair](./durability-damage-repare.mdx) for the full rules.
+
+### Escape Pods / Ejection
+
+Any starship of similar size to the Millennium Falcon or larger can be assumed to have escape pods. Starfighters and speeders have ejection seats.
+
+A character can launch/eject at any time before the vehicle is destroyed — even **between the attack and damage rolls** of a successful hit.
+
+---
+
+## Races
+
+A Race occurs when two or more vehicles compete to reach a destination first. This covers everything from podracing to fleeing through a labyrinth of asteroids.
+
+### Race Mechanics
+
+Each participant makes a **Maneuver roll** each turn (same dice pool as Combat). The difference is the objective: instead of positioning for attacks, the pilot tries to cover distance.
+
+The Storyteller sets a **target number of successes** to reach the destination. The first to accumulate that many wins.
+
+### Complications
+
+On each turn, the Storyteller may introduce a complication — debris field, sharp turn, enemy fire, mechanical failure. The pilot must succeed on a Maneuver roll at +2 difficulty to avoid; failure means lost progress or damage.
+
+### Hyperspace Races
+
+For starships racing through hyperspace, the navigator rolls **Intelligence + Astrogation** at difficulty 6 to plot the **fastest** route. The base time is determined by the **Hyperdrive** rating:
+
+| Hyperdrive | Time Multiplier |
+| ---------- | --------------- |
+| 1 (×2)     | 2 × base        |
+| 2 (×1.5)   | 1.5 × base      |
+| 3 (×1)     | 1 × base        |
+| 4 (×0.75)  | 0.75 × base     |
+| 5 (×0.5)   | 0.5 × base      |
+
+Each success on the Astrogation roll **reduces time by 10%**. A botch means a **misjump** — the ship arrives off-course or at the wrong time.
+
+---
+
+## Chases
+
+A Chase occurs when one vehicle pursues another. It uses Combat rules with these modifications:
+
+### Roles
+
+| Role        | Objective                                                       |
+| ----------- | --------------------------------------------------------------- |
+| **Prey**    | Accumulate a target number of Maneuver successes to escape      |
+| **Pursuer** | Match or exceed the prey's successes each turn to stay in range |
+
+### Range Bands
+
+Weapon and sensor ranges matter in a Chase. Vehicles fall into range bands:
+
+| Band             | Effect                                   |
+| ---------------- | ---------------------------------------- |
+| **Close**        | Can attack, board, or ram                |
+| **Medium**       | Can attack (difficulty +1)               |
+| **Long**         | Can attack (difficulty +2); sensors only |
+| **Out of range** | Chase ends — prey escaped                |
+
+The prey increases range by 1 band per turn they have more Maneuver successes than the pursuer. The pursuer closes by 1 band per turn they match or exceed the prey.
+
+### Crashing
+
+If a Maneuver roll botches during a Chase (or Combat), the vehicle may crash. The obstacle's **sturdiness** determines damage:
+
+| Sturdiness | Examples                           | Damage |
+| ---------- | ---------------------------------- | ------ |
+| **•**      | Stacked goods, water, lifeforms    | 2D     |
+| **••**     | Woodwork, loose soil, glass        | 4D     |
+| **•••**    | Stonework, packed dirt, solid wood | 6D     |
+| **••••**   | Metalwork, solid stone             | 8D     |
+| **•••••**  | Reinforced concrete, solid metal   | 10D    |
+
+If the obstacle is another vehicle, use its **Durability** in dice for collision damage instead. Both vehicles take damage.
+
+---
+
+## Atmosphere vs. Space
+
+These rules work identically in atmosphere and in space. The narrative details are left to the Storyteller — the only mechanical difference is:
+
+- **Atmosphere**: Altitude matters. A grounded vehicle cannot be targeted by a starship that needs space to maneuver. Speeders have an Altitude ceiling.
+- **Space**: Three-dimensional movement is abstracted through the Maneuver roll. No special rules needed.
+
+---
+
+## Encounter Examples
+
+### Dogfight: X-wings vs. TIE Fighters
+
+Four starfighters enter combat. X-wings have Maneuverability 3D and co-pilot astromechs. TIE Fighters have Maneuverability 4D but no shields and no co-pilot. The X-wings are tougher but less agile — the TIEs rely on numbers and maneuverability.
+
+### Chase: Millennium Falcon vs. Star Destroyer
+
+The Falcon (Transport scale, Maneuver 4D, Speed 12) tries to escape a Star Destroyer (Capital scale, Maneuver 2D). The Falcon gets a scale advantage on its Maneuver roll (−2 difficulty to hit the Star Destroyer) but the Star Destroyer outranges it. The Falcon needs to accumulate enough successes to move from Close to Out of Range before the Destroyer's tractor beams lock on.
+
+### Capital Battle: Star Destroyer vs. Cruiser
+
+Both ships are Capital scale. The commanding officers roll Wits + Command each turn to determine actions. Smaller support ships (Transports, Starfighters) operate at their own scale difficulties. The battle becomes a resource management game — how to allocate limited actions across maneuvering, firing, and damage control.
+
+---
+
+## Next Steps
+
+- [Durability, Damage & Repair](./durability-damage-repare.mdx) — Soak, damage track, repairs
+- [Vehicle Traits & Systems](./traits-systems.mdx) — Vehicle attributes, weapon systems, scale
+- [Modifications](./modifications.mdx) — Customizing and upgrading vehicles
+- [Combat Scales](../combat/combat-scales.mdx) — Full scale ladder reference
+- [Difficulty & Success Reference](../gm/difficulty-reference.mdx) — Scale-based difficulty probabilities

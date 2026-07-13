@@ -1,8 +1,11 @@
 export { StatDot } from './StatDot.tsx';
 export { StatLabel } from './StatLabel.tsx';
 export { TraitRow, TraitRowWithInput, CustomTraitList } from './TraitRow.tsx';
+export { ForcePowerRow, ForcePowerRowCustom } from './ForcePowerRow.tsx';
 export type { ConditionMark } from '../types/character.ts';
 export { MeritFlawList } from './MeritFlawRow.tsx';
+export { CatalogSuggest } from './CatalogSuggest.tsx';
+export type { CatalogEntry } from './CatalogSuggest.tsx';
 export { CollapsibleBlock } from './CollapsibleBlock.tsx';
 export type { AccentColor } from './CollapsibleBlock.tsx';
 export { DataTable } from './DataTable.tsx';

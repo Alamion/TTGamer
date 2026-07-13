@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { clsx } from 'clsx';
+import { CatalogSuggest } from './CatalogSuggest.tsx';
+import type { CatalogEntry } from './CatalogSuggest.tsx';
 import { StatLabel } from './StatLabel.tsx';
 import { StatDot } from './StatDot.tsx';
 import { Plus } from 'lucide-react';
@@ -197,6 +199,8 @@ interface CustomTraitListProps {
         experienced: boolean | null,
         practiced: boolean | null
     ) => string | undefined;
+    catalog?: CatalogEntry[];
+    onCatalogSelect?: (id: string, entry: CatalogEntry) => void;
 }
 
 export function CustomTraitList({
@@ -211,19 +215,33 @@ export function CustomTraitList({
     size = 'md',
     showFlags = false,
     onDiceRoll,
+    catalog,
+    onCatalogSelect,
 }: CustomTraitListProps) {
     return (
         <div className="space-y-1">
             {items.map((item) => (
                 <div key={item.id} className="flex items-end gap-2 py-1">
-                    <input
-                        type="text"
-                        value={item.label}
-                        onChange={(e) => onLabelChange(item.id, e.target.value)}
-                        disabled={disabled}
-                        className="flex-1 bg-transparent border-b px-2 py-0.5 text-sm text-textPrimary transition-colors"
-                        placeholder={placeholder}
-                    />
+                    {catalog && onCatalogSelect ? (
+                        <CatalogSuggest
+                            catalog={catalog}
+                            value={item.label}
+                            onChange={(label) => onLabelChange(item.id, label)}
+                            onSelect={(entry) => onCatalogSelect(item.id, entry)}
+                            placeholder={placeholder}
+                            disabled={disabled}
+                            className="flex-1 bg-transparent border-b px-2 py-0.5 text-sm text-textPrimary transition-colors"
+                        />
+                    ) : (
+                        <input
+                            type="text"
+                            value={item.label}
+                            onChange={(e) => onLabelChange(item.id, e.target.value)}
+                            disabled={disabled}
+                            className="flex-1 bg-transparent border-b px-2 py-0.5 text-sm text-textPrimary transition-colors"
+                            placeholder={placeholder}
+                        />
+                    )}
                     <StatDot
                         value={item.value}
                         maxValue={maxValue}

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { Pen, User } from 'lucide-react';
+import { ChevronDown, ChevronUp, Pen, User } from 'lucide-react';
 import { CollapsibleBlock, SectionCard } from '../../../components';
 import type { AccentColor } from '../../../components';
+import { useExpandedState } from '../../../hooks';
 import { useCharacterStore } from '../../../store/characterStore';
 import { useCharacterContext } from '../../../context/CharacterContext';
 import type { CharacterMetadata } from '../../../types/character';
@@ -36,6 +37,8 @@ const APPEARANCE_FIELDS: Array<{ key: MetadataKey; label: string }> = [
 export function BaseBlock({ accentColor = 'primary' }: BaseBlockProps) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
     const { character: contextChar, readOnly } = useCharacterContext();
+
+    const [portraitExpanded, togglePortraitExpanded] = useExpandedState('basePortrait', true);
 
     const character = contextChar ?? currentCharacter;
     if (!character) return null;
@@ -73,15 +76,31 @@ export function BaseBlock({ accentColor = 'primary' }: BaseBlockProps) {
             storageKey="baseBlock"
             docsPath="/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics"
         >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <ImagePortrait
-                    key={character.id}
-                    imageUrl={metadata.imageUrl}
-                    onImageUrlChange={(url) => handleFieldChange('imageUrl', url)}
-                    readOnly={readOnly}
-                />
+            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4">
+                {portraitExpanded ? (
+                    <ImagePortrait
+                        key={character.id}
+                        imageUrl={metadata.imageUrl}
+                        onImageUrlChange={(url) => handleFieldChange('imageUrl', url)}
+                        readOnly={readOnly}
+                        onToggleCollapse={togglePortraitExpanded}
+                    />
+                ) : (
+                    <button
+                        type="button"
+                        onClick={togglePortraitExpanded}
+                        className="absolute top-0 left-0 p-1 rounded hover:bg-bgSurface text-textSecondary hover:text-textPrimary transition-colors z-10"
+                        aria-label="Expand portrait"
+                    >
+                        <ChevronDown size={16} />
+                    </button>
+                )}
 
-                <div className="md:col-span-2 space-y-4">
+                <div
+                    className={
+                        portraitExpanded ? 'md:col-span-2 space-y-4' : 'md:col-span-3 space-y-4'
+                    }
+                >
                     <SectionCard>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {renderField(FIELD_CONFIGS[0])}
@@ -161,10 +180,12 @@ function ImagePortrait({
     imageUrl,
     onImageUrlChange,
     readOnly,
+    onToggleCollapse,
 }: {
     imageUrl?: string;
     onImageUrlChange: (url: string) => void;
     readOnly: boolean;
+    onToggleCollapse: () => void;
 }) {
     const [showUrlInput, setShowUrlInput] = useState(false);
     const [inputValue, setInputValue] = useState(imageUrl ?? '');
@@ -192,7 +213,37 @@ function ImagePortrait({
     const hasImage = !!imageUrl && !imgError;
 
     return (
-        <div className="flex flex-col items-center gap-2">
+        <div>
+            <div className="flex items-center justify-between gap-2 mb-2">
+                <button
+                    type="button"
+                    onClick={onToggleCollapse}
+                    className="p-1 rounded hover:bg-bgSurface text-textSecondary hover:text-textPrimary transition-colors"
+                    aria-label="Collapse portrait"
+                >
+                    <ChevronUp size={16} />
+                </button>
+                {showUrlInput && (
+                    <input
+                        type="text"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                        placeholder="Paste image URL..."
+                        className="flex-1 bg-bgSurface border rounded px-2 py-1 text-xs text-textPrimary"
+                        aria-label="Portrait image URL"
+                    />
+                )}
+                {!readOnly && (
+                    <button
+                        type="button"
+                        onClick={() => setShowUrlInput(!showUrlInput)}
+                        aria-label={showUrlInput ? 'Hide portrait URL input' : 'Edit portrait URL'}
+                        className="p-1 rounded hover:bg-bgSurface text-textSecondary hover:text-textPrimary transition-colors"
+                    >
+                        <Pen size={16} />
+                    </button>
+                )}
+            </div>
             <div className="relative w-full aspect-[2/3] bg-bgSurface border rounded overflow-hidden">
                 {hasImage ? (
                     <img
@@ -207,28 +258,6 @@ function ImagePortrait({
                     </div>
                 )}
             </div>
-            {!readOnly && (
-                <>
-                    <button
-                        type="button"
-                        onClick={() => setShowUrlInput(!showUrlInput)}
-                        aria-label={showUrlInput ? 'Hide portrait URL input' : 'Edit portrait URL'}
-                        className="p-1 rounded hover:bg-bgSurface text-textSecondary hover:text-textPrimary transition-colors"
-                    >
-                        <Pen size={16} />
-                    </button>
-                    {showUrlInput && (
-                        <input
-                            type="text"
-                            value={inputValue}
-                            onChange={handleInputChange}
-                            placeholder="Paste image URL..."
-                            className="w-full bg-bgSurface border rounded px-2 py-1 text-xs text-textPrimary"
-                            aria-label="Portrait image URL"
-                        />
-                    )}
-                </>
-            )}
         </div>
     );
 }

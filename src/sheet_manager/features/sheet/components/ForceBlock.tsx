@@ -1,11 +1,14 @@
 import { CollapsibleBlock, SectionCard } from '../../../components';
 import type { AccentColor } from '../../../components';
-import { TraitRowWithInput } from '../../../components';
-import { StatDot } from '../../../components';
+import { CustomTraitList, TraitRowWithInput, StatDot } from '../../../components';
+import type { CatalogEntry } from '../../../components';
 import { useCharacterStore } from '../../../store/characterStore.ts';
 import { useCharacterContext } from '../../../context/CharacterContext.tsx';
 import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
 import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
+import { FORCE_POWERS } from '@site/src/data/forcePowersData';
+import type { ForcePowerEntry } from '@site/src/data/forcePowersData';
+import { generateId } from '@site/src/shared/utils/random';
 
 interface ForceBlockProps {
     accentColor?: AccentColor;
@@ -36,7 +39,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     const selfControl = character.virtues?.['Self Control']?.value ?? 1;
 
     const willpowerMinimal = Math.min(passion + selfControl, 10);
-    const forcePointsMax = selfControl;
 
     const handleForceSkillChange = (
         key: string,
@@ -114,7 +116,15 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     const handleForcePointsChange = (value: number) => {
         if (readOnly) return;
         updateCharacter(character.id, {
-            forcePoints: { current: value, max: forcePointsMax },
+            forcePoints: { ...forcePoints, current: value },
+        });
+    };
+
+    const handleMaxForcePointsChange = (value: number) => {
+        if (readOnly) return;
+        const current = Math.min(forcePoints.current, value);
+        updateCharacter(character.id, {
+            forcePoints: { current, max: value },
         });
     };
 
@@ -122,6 +132,60 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
         if (readOnly) return;
         updateCharacter(character.id, {
             darkSideResistance: value,
+        });
+    };
+
+    const forcePowerItems = (character.forcePowerItems ?? []).map((fp) => ({
+        id: fp.id,
+        label: fp.name,
+        value: fp.value,
+    }));
+
+    const forcePowersCatalog: CatalogEntry[] = FORCE_POWERS.map((e: ForcePowerEntry) => ({
+        id: e.id,
+        name: e.name,
+        subtitle: e.shortDescription,
+    }));
+
+    const addForcePower = () => {
+        if (readOnly) return;
+        const current = character.forcePowerItems ?? [];
+        updateCharacter(character.id, {
+            forcePowerItems: [...current, { id: generateId(), name: '', value: 0 }],
+        });
+    };
+
+    const removeForcePower = (id: string) => {
+        if (readOnly) return;
+        const current = character.forcePowerItems ?? [];
+        updateCharacter(character.id, {
+            forcePowerItems: current.filter((fp) => fp.id !== id),
+        });
+    };
+
+    const handleForcePowerValueChange = (id: string, value: number) => {
+        if (readOnly) return;
+        const current = character.forcePowerItems ?? [];
+        updateCharacter(character.id, {
+            forcePowerItems: current.map((fp) => (fp.id === id ? { ...fp, value } : fp)),
+        });
+    };
+
+    const handleForcePowerLabelChange = (id: string, label: string) => {
+        if (readOnly) return;
+        const current = character.forcePowerItems ?? [];
+        updateCharacter(character.id, {
+            forcePowerItems: current.map((fp) => (fp.id === id ? { ...fp, name: label } : fp)),
+        });
+    };
+
+    const handleForcePowerCatalogSelect = (id: string, entry: CatalogEntry) => {
+        if (readOnly) return;
+        const current = character.forcePowerItems ?? [];
+        updateCharacter(character.id, {
+            forcePowerItems: current.map((fp) =>
+                fp.id === id ? { ...fp, name: entry.name, catalogId: entry.id } : fp
+            ),
         });
     };
 
@@ -133,7 +197,10 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
             docsPath="/docs/star-wars-wod-2e/character/force"
         >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <SectionCard title="Force Skills">
+                <SectionCard
+                    title="Force Skills"
+                    docsPath="/docs/star-wars-wod-2e/character/force#force-skills"
+                >
                     {FORCE_SKILLS.map((skill) => {
                         const trait = character.forceSkills?.[skill] || {
                             ...DEFAULT_TRAIT_VALUE,
@@ -157,67 +224,104 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                         );
                     })}
                 </SectionCard>
-                <SectionCard title="Virtues">
-                    {VIRTUES.map((virtue) => {
-                        const trait = character.virtues?.[virtue] || {
-                            ...DEFAULT_TRAIT_VALUE,
-                        };
-                        return (
-                            <TraitRowWithInput
-                                key={virtue}
-                                name={virtue}
+
+                <div className="space-y-4">
+                    <SectionCard
+                        title="Virtues"
+                        docsPath="/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues"
+                    >
+                        {VIRTUES.map((virtue) => {
+                            const trait = character.virtues?.[virtue] || {
+                                ...DEFAULT_TRAIT_VALUE,
+                            };
+                            return (
+                                <TraitRowWithInput
+                                    key={virtue}
+                                    name={virtue}
+                                    disabled={readOnly}
+                                    specializationText={trait.specializationText}
+                                    value={trait.value}
+                                    onChange={(val, spec, exp, prc) =>
+                                        handleVirtueChange(virtue, val, spec, exp, prc)
+                                    }
+                                    onSpecializationTextChange={(text) =>
+                                        handleVirtueSpecializationChange(virtue, text)
+                                    }
+                                    size="md"
+                                    minimal={1}
+                                    onDiceRoll={buildDiceNotation}
+                                />
+                            );
+                        })}
+                    </SectionCard>
+                    <SectionCard>
+                        <div className="flex items-center justify-between py-1.5">
+                            <span className="text-sm text-textPrimary">Willpower</span>
+                            <StatDot
+                                value={willpower.current}
+                                maxValue={10}
                                 disabled={readOnly}
-                                specializationText={trait.specializationText}
-                                value={trait.value}
-                                onChange={(val, spec, exp, prc) =>
-                                    handleVirtueChange(virtue, val, spec, exp, prc)
-                                }
-                                onSpecializationTextChange={(text) =>
-                                    handleVirtueSpecializationChange(virtue, text)
-                                }
+                                onChange={(val) => handleWillpowerChange(val)}
                                 size="md"
-                                minimal={1}
+                                minimal={willpowerMinimal}
                                 onDiceRoll={buildDiceNotation}
                             />
-                        );
-                    })}
-                </SectionCard>
-                <SectionCard title="Resolve">
-                    <div className="flex items-center justify-between py-1.5">
-                        <span className="text-sm text-textPrimary">Willpower</span>
-                        <StatDot
-                            value={willpower.current}
-                            maxValue={10}
-                            disabled={readOnly}
-                            onChange={(val) => handleWillpowerChange(val)}
-                            size="md"
-                            minimal={willpowerMinimal}
-                            onDiceRoll={buildDiceNotation}
-                        />
-                    </div>
-                    <div className="flex items-center justify-between py-1.5">
-                        <span className="text-sm text-textPrimary">Force Points</span>
-                        <StatDot
-                            value={forcePoints.current}
-                            maxValue={Math.max(1, forcePointsMax)}
-                            disabled={readOnly}
-                            onChange={(val) => handleForcePointsChange(val)}
-                            size="md"
-                            onDiceRoll={buildDiceNotation}
-                        />
-                    </div>
-                    <div className="flex items-center justify-between py-1.5">
-                        <span className="text-sm text-textPrimary">Dark Side Resistance</span>
-                        <StatDot
-                            value={darkSide}
-                            maxValue={10}
-                            disabled={readOnly}
-                            onChange={(val) => handleDarkSideChange(val)}
-                            size="md"
-                            activeColor={getDarkSideColor((darkSide / 10) * 100)}
-                            onDiceRoll={buildDiceNotation}
-                        />
-                    </div>
+                        </div>
+                        <div className="flex items-center justify-between py-1.5">
+                            <span className="text-sm text-textPrimary">Max Force Points</span>
+                            <StatDot
+                                value={forcePoints.max}
+                                maxValue={10}
+                                disabled={readOnly}
+                                onChange={(val) => handleMaxForcePointsChange(val)}
+                                size="md"
+                                minimal={selfControl}
+                                onDiceRoll={buildDiceNotation}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between py-1.5">
+                            <span className="text-sm text-textPrimary">Force Points</span>
+                            <StatDot
+                                value={forcePoints.current}
+                                maxValue={Math.max(1, forcePoints.max)}
+                                disabled={readOnly}
+                                onChange={(val) => handleForcePointsChange(val)}
+                                size="md"
+                                onDiceRoll={buildDiceNotation}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between py-1.5">
+                            <span className="text-sm text-textPrimary">Dark Side Resistance</span>
+                            <StatDot
+                                value={darkSide}
+                                maxValue={10}
+                                disabled={readOnly}
+                                onChange={(val) => handleDarkSideChange(val)}
+                                size="md"
+                                activeColor={getDarkSideColor((darkSide / 10) * 100)}
+                                onDiceRoll={buildDiceNotation}
+                            />
+                        </div>
+                    </SectionCard>
+                </div>
+
+                <SectionCard
+                    title="Force Powers"
+                    docsPath="/docs/star-wars-wod-2e/character/force#force-powers"
+                >
+                    <CustomTraitList
+                        items={forcePowerItems}
+                        disabled={readOnly}
+                        onAdd={addForcePower}
+                        onRemove={removeForcePower}
+                        onChange={(id, val) => handleForcePowerValueChange(id, val)}
+                        onLabelChange={(id, label) => handleForcePowerLabelChange(id, label)}
+                        maxValue={1}
+                        placeholder="Force power name..."
+                        size="sm"
+                        catalog={forcePowersCatalog}
+                        onCatalogSelect={handleForcePowerCatalogSelect}
+                    />
                 </SectionCard>
             </div>
         </CollapsibleBlock>

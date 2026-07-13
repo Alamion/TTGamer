@@ -4,63 +4,87 @@
         "description": "The label for version current"
     },
     "sidebar.docsSidebar.category.star-wars-wod-2e": {
-        "message": "star-wars-wod-2e",
+        "message": "Star Wars WoD 2e",
         "description": "The label for category 'star-wars-wod-2e' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.combat": {
-        "message": "combat",
+        "message": "Бой",
         "description": "The label for category 'combat' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.creatures": {
-        "message": "creatures",
+        "message": "Существа",
         "description": "The label for category 'creatures' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.gm": {
-        "message": "gm",
+        "message": "Ведущий игры",
         "description": "The label for category 'gm' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.vehicles-mechanisms": {
-        "message": "vehicles-mechanisms",
+        "message": "Транспорт и механизмы",
         "description": "The label for category 'vehicles-mechanisms' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.wod": {
-        "message": "wod",
+        "message": "Мир Тьмы",
         "description": "The label for category 'wod' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.wod-core-rules": {
-        "message": "Core Rules",
+        "message": "Основные правила",
         "description": "The label for category 'Core Rules' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.vtm-2e": {
-        "message": "vtm-2e",
+        "message": "VtM 2e",
         "description": "The label for category 'vtm-2e' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.vtm-character": {
-        "message": "Character",
+        "message": "Персонаж",
         "description": "The label for category 'Character' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.sw-wod-character": {
-        "message": "Character",
+        "message": "Персонаж",
         "description": "The label for category 'Character' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.sw-wod-core-rules": {
-        "message": "Core Rules",
+        "message": "Основные правила",
         "description": "The label for category 'Core Rules' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.sw-wod-2e": {
-        "message": "index",
+        "message": "Старт",
         "description": "The label for category 'index' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.index": {
-        "message": "index",
+        "message": "Обзор",
         "description": "The label for category 'index' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.Star Wars WoD 2e": {
-        "message": "Star Wars WoD 2e",
+        "message": "Звёздные Войны WoD 2e",
         "description": "The label for category 'Star Wars WoD 2e' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.World of Darkness": {
-        "message": "World of Darkness",
+        "message": "Мир Тьмы",
         "description": "The label for category 'World of Darkness' in sidebar 'docsSidebar'"
+    },
+    "sidebar.docsSidebar.category.Персонаж": {
+        "message": "Персонаж",
+        "description": "The label for category 'Персонаж' in sidebar 'docsSidebar'"
+    },
+    "sidebar.docsSidebar.category.Этапы создания": {
+        "message": "Этапы создания",
+        "description": "The label for category 'Этапы создания' in sidebar 'docsSidebar'"
+    },
+    "sidebar.docsSidebar.category.Бой": {
+        "message": "Бой",
+        "description": "The label for category 'Бой' in sidebar 'docsSidebar'"
+    },
+    "sidebar.docsSidebar.category.Существа": {
+        "message": "Существа",
+        "description": "The label for category 'Существа' in sidebar 'docsSidebar'"
+    },
+    "sidebar.docsSidebar.category.Транспорт и механизмы": {
+        "message": "Транспорт и механизмы",
+        "description": "The label for category 'Транспорт и механизмы' in sidebar 'docsSidebar'"
+    },
+    "sidebar.docsSidebar.category.Ведущий игры": {
+        "message": "Ведущий игры",
+        "description": "The label for category 'Ведущий игры' in sidebar 'docsSidebar'"
     }
 }

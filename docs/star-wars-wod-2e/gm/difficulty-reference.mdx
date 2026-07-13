@@ -1,0 +1,89 @@
+---
+sidebar_position: 7.2
+title: Difficulty & Success Reference
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { DifficultyTable } from '/src/shared/components/DifficultyTable';
+
+# Difficulty & Success Reference
+
+## The Difficulty Ladder
+
+| Diff   | Label               | When to Use                         |
+| ------ | ------------------- | ----------------------------------- |
+| **3**  | Easy                | Perfect conditions, no pressure     |
+| **4**  | Routine             | Muscle memory carries you through   |
+| **5**  | Straightforward     | Clear procedure, requires focus     |
+| **6**  | Standard            | Default for everything that matters |
+| **7**  | Challenging         | Bad lighting, active resistance     |
+| **8**  | Difficult           | Environment works against you       |
+| **9**  | Extremely Difficult | Foolhardy — needs the Force or luck |
+| **10** | Nearly Impossible   | Epic songs are written about this   |
+
+---
+
+## Interactive Calculator
+
+<TWWrapper>
+    <DifficultyTable />
+</TWWrapper>
+
+---
+
+## Redefining Success
+
+The game wants _difficulty_ and _number of successes needed_ to work together. A single knob is not enough.
+
+With the default "1 net success = marginal success" and difficulty 10, a starting specialist (5 dice) succeeds 28% of the time. That does not feel "nearly impossible." But if you raise the bar — "a true success needs 3 net successes" — that same roll drops to 0.69%. _That_ feels impossible.
+
+The problem is that requiring 3+ successes means a 2-die pool can never succeed at all. So you calibrate both knobs together:
+
+| Tone                     | Typical Diff | Success Threshold | Feel                                                                        |
+| ------------------------ | ------------ | ----------------- | --------------------------------------------------------------------------- |
+| **Cinematic heroes**     | 4–6          | 1 net success     | PCs mostly succeed; drama comes from the story                              |
+| **Balanced**             | 6–7          | 1–2 net successes | Skill matters; PCs sweat the hard rolls                                     |
+| **Brutal / Unforgiving** | 7–10         | 3+ net successes  | Only specialists can achieve true success; most tasks are desperate gambles |
+
+### Knob 1: Difficulty
+
+Difficulty controls how many dice even _become_ successes. Raise it (7–10) when the environment, equipment, or opposition actively works against the character — shooting in the dark, hacking an Imperial core, negotiating with a Moff. Lower it (3–5) when conditions favor them — point-blank shot, well-understood system, friendly audience.
+
+### Knob 2: Success Threshold
+
+The threshold says how many net successes you need to call it a win. A low threshold (1) rewards luck — anyone can get lucky once. A high threshold (3+) rewards sustained skill — small pools cannot reliably reach it.
+
+---
+
+### Four Combinations
+
+**High difficulty + low threshold** — The task itself is punishing, but you only need to get lucky once. A single blaster bolt hitting a thermal exhaust port at extreme range: difficulty 9, 1 net success needed. Hard to roll, but one lucky die is enough.
+
+**Low difficulty + high threshold** — The basics are easy, but you need flawless execution under scrutiny. A protocol droid serving drinks at an Imperial gala without a single mistake: difficulty 4, 3 net successes needed. Each individual roll is easy, but the total demand is high — one botch and you've spilled on an Admiral.
+
+**High difficulty + high threshold** — You need both luck and skill. Convincing a Jedi Master you're worthy of training while he's actively probing your mind: difficulty 9, 4 net successes needed. Only the best combination of pool size and luck will do.
+
+**Low difficulty + low threshold** — Routine task. Walking across a room: difficulty 3, 1 net success.
+
+### Reference Table
+
+| Tone                        | Diff | Threshold | Example situation                                                                                                                  |
+| --------------------------- | ---- | --------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Cinematic**               | 4–6  | 1         | Convincing a guard with a good story (diff 5, threshold 1) — even a smooth talker with 3 dice succeeds 70% of the time             |
+| **Cinematic, harder task**  | 7–8  | 1         | Hacking a military terminal (diff 7, threshold 1) — hard roll but one success is enough; a specialist has 54%                      |
+| **Balanced**                | 5–6  | 2         | Impressing a Hutt with a clever negotiation (diff 5, threshold 2) — a specialist (7 dice) has 78%, an amateur (4 dice) has 45%     |
+| **Balanced, harder task**   | 7–8  | 2         | Repairing a hyperdrive under fire (diff 7, threshold 2) — a specialist has 32%, a 10-die expert has 57%                            |
+| **Brutal**                  | 5–6  | 3         | Performing a surgical strike on a vital console (diff 6, threshold 3) — a specialist (7 dice) has 38%, an amateur (4 dice) has 11% |
+| **Brutal, impossible task** | 8–10 | 3+        | Convincing a Sith Lord to spare you (diff 9, threshold 4) — a 10-die specialist has 3%, and even 15 dice only reach 17%            |
+
+Use the calculator above to find the sweet spot for your table.
+
+---
+
+## Cross-References
+
+- [Building Encounters](./building-encounters.mdx) — NPC tiers, encounter balance
+- [Dice Pools](../core-rules/dice-pools.mdx) — How dice pools work, the Rule of One
+- [Combat Flow](../combat/combat-flow.mdx) — Attack resolution, cover modifiers
+- [Combat Scales](../combat/combat-scales.mdx) — Scale-based difficulty modifiers
+- [Health, Damage & Healing](../combat/health-damage-heal.mdx) — Healing difficulty table

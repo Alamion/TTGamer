@@ -1,0 +1,32 @@
+---
+sidebar_position: 5.2
+title: Beastiary
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+import { CREATURES } from '/src/data/creatureData';
+import { CREATURE_COLUMNS, renderCreatureDetail } from '/src/data/creatureConfig';
+
+# Beastiary
+
+Creatures stat blocks converted from WEG source books. Each entry follows the conversion guidelines from [Creature & NPC Mechanics](./mechanics.mdx).
+
+---
+
+<TWWrapper>
+    <DataCatalog
+        data={CREATURES}
+        columns={CREATURE_COLUMNS}
+        renderDetail={renderCreatureDetail}
+        searchPlaceholder="Search creatures..."
+        id="beastiary"
+    />
+</TWWrapper>
+
+---
+
+## Next Steps
+
+- [Creature & NPC Mechanics](./mechanics.mdx) — Conversion guidelines and NPC rules
+- [Combat Scales](../combat/combat-scales.mdx) — Scale ladder for creatures and vehicles

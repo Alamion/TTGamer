@@ -1,0 +1,208 @@
+---
+sidebar_position: 6.2
+title: Durability, Damage & Repair
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+
+# Durability, Damage & Repair
+
+Vehicles don't heal. They get repaired. When a vehicle takes a hit, its **Durability** replaces Stamina for soak rolls. If the damage gets through, the vehicle's damage track determines how badly it's impaired — and how hard it will be to fix.
+
+---
+
+## Vehicle Damage Track
+
+Like characters, vehicles have a **7-level damage track**. Each level applies a penalty to all the vehicle's dice pools:
+
+| Damage Level | Penalty | Description                                          |
+| ------------ | ------- | ---------------------------------------------------- |
+| **Cosmetic** | —       | Scorch marks, scratched paint. No mechanical effect. |
+| **Light**    | −1D     | Fittings vibrate loose, minor leaks.                 |
+| **Moderate** | −2D     | Circuits short out, welds crack.                     |
+| **Heavy**    | −3D     | Structural damage, systems failing.                  |
+| **Severe**   | −4D     | Major systems offline, hull integrity compromised.   |
+| **Crippled** | −5D     | Barely functional. One more hit from wrecked.        |
+| **Wrecked**  | —       | Reactor shutdown. Cannot function.                   |
+
+When a vehicle reaches **Wrecked**, the reactor shuts down. It cannot move, fire weapons, or use shields. Any vehicle that sustains damage beyond Wrecked is **destroyed** — exploded, split in half, or otherwise unrecoverable.
+
+### Damage Type
+
+Unlike characters, vehicles do not take Bashing damage. All damage to a vehicle is effectively **Lethal**. The equivalent of Stun damage comes from **ion weapons** (see below).
+
+---
+
+## Soaking Damage
+
+When a vehicle is hit, the pilot (or the highest-ranking crew member) rolls the vehicle's **Durability** at difficulty 6 to soak.
+
+> **Vehicle Soak:** Roll the vehicle's **Durability** dice at difficulty 6. Each success cancels one damage level.
+
+<TWWrapper>
+    <InlineRoll notation={'4d10\u003e=6'} variant="details" preroll />
+</TWWrapper>
+
+_A Durability 4D vehicle rolling to soak. Each success reduces incoming damage by one level._
+
+### Shields
+
+Shields add their rating to the Durability soak roll — but only if the damage exceeds the shield arc's rating.
+
+For each shield arc (Front/Rear):
+
+1. **If damage ≤ shield rating** — no soak needed. The shields absorb the hit entirely.
+2. **If damage > shield rating** — add the shield rating to Durability and roll to soak.
+3. **After soaking** — if the damage that got through exceeds the shield rating, the shield arc is **overwhelmed**. Reduce that arc's rating by 1.
+
+Shields recharge to full at the start of each new scene, unless the shield generator itself is damaged.
+
+<TWWrapper>
+    <InlineRoll notation={'6d10\u003e=6'} variant="details" preroll />
+</TWWrapper>
+
+_Shields 2D + Durability 4D = 6D soak roll._
+
+### Inconsequential Vehicles
+
+Named vehicles (those carrying PCs or important NPCs) get soak rolls. Inconsequential vehicles — TIE fighters, speeder bikes, random civilian craft — **do not soak**. They take the full damage from every hit. This keeps combat fast and lets heroes feel powerful against mooks.
+
+---
+
+## General Damage vs. Specific Damage
+
+### General Damage
+
+When a vehicle takes **General Damage**, all systems are compromised equally. The penalty applies to every dice pool the vehicle has — Maneuverability, Sensors, Weapon damage, etc.
+
+General Damage is the default. It's fast and easy, suitable for most combat encounters.
+
+### Specific Damage
+
+Instead of taking a penalty across all systems, a vehicle can opt to take damage to a **single specific system**. This works like amputation for characters — the vehicle avoids the broad penalty but loses a critical function.
+
+The pilot or captain chooses which system is affected. Alternatively, an attacker can **target a specific system** by making a **Wits + Interfaces + Sensors** roll immediately before the attack.
+
+Common systems that can be targeted:
+
+| System                      | Effect When Damaged                                            |
+| --------------------------- | -------------------------------------------------------------- |
+| **Durability**              | Hull breach; cannot soak as well                               |
+| **Maneuverability**         | Engines, controls, or repulsors damaged; −Maneuverability dice |
+| **Comm/Sensors**            | Flying blind; no communications or targeting data              |
+| **Hyperdrive/Nav Computer** | Cannot jump to hyperspace                                      |
+| **Shields**                 | Shield generator damaged; shields collapse                     |
+| **Weapons**                 | Specific weapon system disabled                                |
+
+The Storyteller determines the exact nature of the failure based on damage severity and the dramatic needs of the scene.
+
+### Ion Damage
+
+Ion weapons (such as those used by the Empire on Hoth) deal the vehicle equivalent of Stun damage. An ion hit does not cause lasting structural damage — instead, it temporarily disables systems.
+
+- Ion damage uses the same soak rules but **does not increase the vehicle's damage level**.
+- Instead, each success on the ion attack temporarily disables one randomly determined system from the vehicle's Configuration list.
+- Disabled systems return after `1d10` turns.
+- If an ion hit would have reduced a vehicle to **Wrecked**, the reactor shuts down for `1d10` minutes instead of being destroyed.
+
+---
+
+## Crew Damage
+
+When a vehicle takes damage after soak, the crew may be injured as well. The number of damage levels the vehicle **actually suffered** (after soak) becomes **Bashing damage** to each crew member aboard.
+
+Each crew member rolls Stamina at difficulty 6 to soak the Bashing damage. Anyone who fails marks off health levels normally.
+
+Inconsequential vehicles skip this rule — tracking NPC health on top of vehicle health slows combat down.
+
+---
+
+## Repairing Vehicle Damage
+
+Unlike characters, vehicles cannot heal naturally. The only way to fix a vehicle is through **Repair rolls**. There are two types of repairs: **jury-rigged** (temporary, in-combat fixes) and **permanent** (down-time repairs).
+
+### Repair Table
+
+| Damage Level | Difficulty | Jury-Rig (successes) | Permanent (successes) |
+| ------------ | ---------- | -------------------- | --------------------- |
+| **Cosmetic** | 7          | —                    | 2 × scale             |
+| **Light**    | 8          | 3                    | 5 × scale             |
+| **Moderate** | 8          | 6                    | 10 × scale            |
+| **Heavy**    | 9          | 9                    | 15 × scale            |
+| **Severe**   | 9          | 12                   | 25 × scale            |
+| **Crippled** | 10         | 15                   | 50 × scale            |
+| **Wrecked**  | 10         | 18                   | 100 × scale           |
+
+### Scale Multipliers
+
+Multiply the required successes by the vehicle's scale:
+
+| Scale                | Multiplier |
+| -------------------- | ---------- |
+| Speeder              | ×1         |
+| Walker / Starfighter | ×2         |
+| Transport            | ×3         |
+| Capital              | ×5         |
+| Death Star           | ×10        |
+
+### Equipment Bonuses
+
+Having the right tools makes repairs easier:
+
+| Equipment                            | Bonus         |
+| ------------------------------------ | ------------- |
+| Basic Tool Set                       | −1 difficulty |
+| Advanced Tool Set (proper specialty) | −2 difficulty |
+| Complete Workshop                    | −3 difficulty |
+
+A Repair specialty (Structural, Propulsion, Energy Field, Computer, Weapons) can be applied to specific vehicle systems.
+
+### Jury-Rigged Repairs
+
+Jury-rigging gets a specific system working again **during combat**. It does not improve the vehicle's overall damage level.
+
+- Roll **Wits + Repair** each turn against the difficulty on the table.
+- Accumulate the required successes. Once reached, the damaged system functions normally.
+- The vehicle's damage level **does not improve**. The next hit still increases damage as normal.
+- Cosmetic damage cannot be jury-rigged (there's nothing to bodge).
+
+<TWWrapper>
+    <InlineRoll notation={'7d10\u003e=8'} variant="details" preroll />
+</TWWrapper>
+
+_Wits 4 + Repair 3 = 7D at difficulty 8 to jury-rig Moderate damage._
+
+### Permanent Repairs
+
+Permanent repairs happen during downtime. Repairing a vehicle occurs **one damage level at a time** — fix Heavy first, then Moderate, then Light, and so on.
+
+- Roll **Intelligence + Repair** each hour against the difficulty on the table.
+- Multiply required successes by the vehicle's Scale Multiplier.
+- Multiple technicians can work simultaneously, each making their own roll each hour.
+- Failed rolls mean no progress that hour — try again next hour.
+- A **botch** means the technician is stuck. They cannot make further repairs until the situation changes (better tools, skill increase, or another character improves the vehicle's condition).
+
+#### Coordinating NPC Technicians
+
+A PC can coordinate NPC technicians with a **Wits + Command** roll at difficulty 6. Multiply the successes by the vehicle's Scale Multiplier to determine how many NPCs can be utilized. Each NPC contributes 1 automatic success per hour, provided the PC in charge makes their Repair roll.
+
+---
+
+## Droid Repair Parallel
+
+Droids recover from damage the same way vehicles are repaired. A damaged droid requires:
+
+- **Jury-rigged repairs** — a **Wits + Repair** roll during combat, with the same difficulty and success thresholds.
+- **Permanent repairs** — an **Intelligence + Repair** roll during downtime.
+
+Droids do not heal naturally. A droid at Incapacitated must be repaired before it can function again. However, droids do not need to be stabilized to prevent additional health loss (unlike living characters).
+
+---
+
+## Next Steps
+
+- [Space Combat](./space-combat.mdx) — Dogfighting, Maneuver rolls, capital ship battles
+- [Vehicle Traits & Systems](./traits-systems.mdx) — Vehicle attributes, scale, vehicle sheets
+- [Combat Scales](../combat/combat-scales.mdx) — Scale ladder and cross-scale combat modifiers
+- [Difficulty & Success Reference](../gm/difficulty-reference.mdx) — Repair difficulty probabilities

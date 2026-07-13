@@ -44,7 +44,7 @@
         "description": "The label of the link targeting the tag list page"
     },
     "theme.colorToggle.ariaLabel.mode.system": {
-        "message": "system mode",
+        "message": "системный режим",
         "description": "The name for the system color mode"
     },
     "theme.colorToggle.ariaLabel.mode.light": {
@@ -155,7 +155,7 @@
         "description": "The default label used for the Tip admonition (:::tip)"
     },
     "theme.admonition.warning": {
-        "message": "warning",
+        "message": "внимание",
         "description": "The default label used for the Warning admonition (:::warning)"
     },
     "theme.AnnouncementBar.closeButtonAriaLabel": {
@@ -179,7 +179,7 @@
         "description": "The ARIA label for the external link icon"
     },
     "theme.NavBar.navAriaLabel": {
-        "message": "Main",
+        "message": "Главная",
         "description": "The ARIA label for the main navigation"
     },
     "theme.navbar.mobileLanguageDropdown.label": {
@@ -239,7 +239,7 @@
         "description": "The title attribute for collapse button of doc sidebar"
     },
     "theme.docs.sidebar.navAriaLabel": {
-        "message": "Docs sidebar",
+        "message": "Боковое меню документации",
         "description": "The ARIA label for the sidebar navigation"
     },
     "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
@@ -255,11 +255,11 @@
         "description": "The ARIA label for hamburger menu button of mobile navigation"
     },
     "theme.navbar.mobileDropdown.collapseButton.expandAriaLabel": {
-        "message": "Expand the dropdown",
+        "message": "Развернуть выпадающее меню",
         "description": "The ARIA label of the button to expand the mobile dropdown navbar item"
     },
     "theme.navbar.mobileDropdown.collapseButton.collapseAriaLabel": {
-        "message": "Collapse the dropdown",
+        "message": "Свернуть выпадающее меню",
         "description": "The ARIA label of the button to collapse the mobile dropdown navbar item"
     },
     "theme.docs.sidebar.expandButtonTitle": {
@@ -283,31 +283,31 @@
         "description": "The title of the page for a blog author"
     },
     "theme.blog.authorsList.pageTitle": {
-        "message": "Authors",
+        "message": "Авторы",
         "description": "The title of the authors page"
     },
     "theme.blog.authorsList.viewAll": {
-        "message": "View All Authors",
+        "message": "Посмотреть всех авторов",
         "description": "The label of the link targeting the blog authors page"
     },
     "theme.blog.author.noPosts": {
-        "message": "This author has not written any posts yet.",
+        "message": "Этот автор ещё не написал ни одного поста.",
         "description": "The text for authors with 0 blog post"
     },
     "theme.contentVisibility.unlistedBanner.title": {
-        "message": "Unlisted page",
+        "message": "Скрытая страница",
         "description": "The unlisted content banner title"
     },
     "theme.contentVisibility.unlistedBanner.message": {
-        "message": "This page is unlisted. Search engines will not index it, and only users having a direct link can access it.",
+        "message": "Эта страница скрыта. Поисковые системы не будут её индексировать, и доступ к ней возможен только по прямой ссылке.",
         "description": "The unlisted content banner message"
     },
     "theme.contentVisibility.draftBanner.title": {
-        "message": "Draft page",
+        "message": "Черновик",
         "description": "The draft content banner title"
     },
     "theme.contentVisibility.draftBanner.message": {
-        "message": "This page is a draft. It will only be visible in dev and be excluded from the production build.",
+        "message": "Эта страница — черновик. Она будет видна только в режиме разработки и исключена из сборки.",
         "description": "The draft content banner message"
     },
     "theme.docs.DocCard.categoryDescription.plurals": {

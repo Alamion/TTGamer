@@ -1,76 +1,79 @@
-import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { forwardRef, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 import type { ReactNode } from 'react';
-import * as Popover from '@radix-ui/react-popover';
+import clsx from 'clsx';
 
 export interface EntityCardProps {
     name: string;
     description: string;
     tags: string[];
+    expanded: boolean;
+    onToggle: () => void;
     renderDetail: () => ReactNode;
-    open?: boolean;
-    onOpenChange?: (open: boolean) => void;
 }
 
-export function EntityCard({
-    name,
-    description,
-    tags,
-    renderDetail,
-    open,
-    onOpenChange,
-}: EntityCardProps) {
-    const triggerRef = useRef<HTMLButtonElement>(null);
-    const descId = useId();
-    const [triggerWidth, setTriggerWidth] = useState(0);
-
-    useEffect(() => {
-        const el = triggerRef.current;
-        if (!el) return;
-        const updateWidth = () => setTriggerWidth(el.offsetWidth * 1.02);
-        updateWidth();
-        const observer = new ResizeObserver(updateWidth);
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, []);
+export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(function EntityCard(
+    { name, description, tags, expanded, onToggle, renderDetail },
+    ref
+) {
+    const contentId = useId();
 
     return (
-        <Popover.Root open={open} onOpenChange={onOpenChange}>
-            <Popover.Trigger asChild>
-                <button
-                    ref={triggerRef}
-                    className="w-full text-left p-3 rounded-lg border border-border bg-bgSurface hover:scale-[1.02] hover:shadow-md hover:bg-bgBase/50 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                >
-                    <div className="text-sm font-semibold text-textPrimary">{name}</div>
-                    <div className="text-xs text-textSecondary mt-0.5">{description}</div>
-                    {tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                            {tags.slice(0, 3).map((tag) => (
-                                <span
-                                    key={tag}
-                                    className="px-1.5 py-0.5 text-[10px] rounded-full bg-bgBase text-textSecondary border border-border whitespace-nowrap"
-                                >
-                                    {tag}
-                                </span>
-                            ))}
-                        </div>
+        <div
+            ref={ref}
+            role="button"
+            tabIndex={0}
+            aria-expanded={expanded}
+            aria-controls={contentId}
+            onClick={onToggle}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onToggle();
+                }
+            }}
+            className={clsx(
+                'rounded-lg border border-border bg-bgSurface p-3 cursor-pointer transition-all duration-200',
+                'sm:hover:scale-[1.02] sm:hover:shadow-md sm:hover:bg-bgBase/50',
+                expanded && 'sm:scale-[1.02] sm:shadow-md',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30'
+            )}
+        >
+            <div className="text-sm font-semibold text-textPrimary">{name}</div>
+            <div className={clsx('text-xs text-textSecondary mt-0.5', !expanded && 'line-clamp-2')}>
+                {description}
+            </div>
+            {tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                    {(expanded ? tags : tags.slice(0, 3)).map((tag) => (
+                        <span
+                            key={tag}
+                            className="px-1.5 py-0.5 text-[10px] rounded-full bg-bgBase text-textSecondary border border-border whitespace-nowrap"
+                        >
+                            {tag}
+                        </span>
+                    ))}
+                    {!expanded && tags.length > 3 && (
+                        <span className="px-1.5 py-0.5 text-[10px] rounded-full bg-bgBase text-textSecondary border border-border">
+                            +{tags.length - 3}
+                        </span>
                     )}
-                </button>
-            </Popover.Trigger>
-            <Popover.Content
-                aria-describedby={descId}
-                className="z-50 bg-bgSurface border border-border rounded-lg shadow-xl p-5 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 focus:outline-none"
-                style={{ width: triggerWidth > 0 ? triggerWidth : undefined }}
-                sideOffset={8}
-                align="start"
+                </div>
+            )}
+
+            <div
+                id={contentId}
+                className={clsx(
+                    'grid transition-[grid-template-rows,opacity] duration-300 ease-in-out overflow-hidden',
+                    expanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                )}
             >
-                <p id={descId} className="sr-only">
-                    {description}
-                </p>
-                {renderDetail()}
-            </Popover.Content>
-        </Popover.Root>
+                <div className="min-h-0">
+                    <div className="pt-3 border-t border-border mt-3">{renderDetail()}</div>
+                </div>
+            </div>
+        </div>
     );
-}
+});
 
 export interface EntityGridProps<T> {
     entities: T[];
@@ -91,7 +94,9 @@ export function EntityGrid<T>({
     getKey,
     cols = 3,
 }: EntityGridProps<T>) {
-    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [expandedKey, setExpandedKey] = useState<string | null>(null);
+    const gridRef = useRef<HTMLDivElement>(null);
+    const cardRefs = useRef(new Map<string, HTMLDivElement | null>());
     const isSmallScreen = useSyncExternalStore(
         (callback) => {
             const mql = window.matchMedia('(max-width: 640px)');
@@ -104,31 +109,52 @@ export function EntityGrid<T>({
 
     const effectiveCols = isSmallScreen ? 1 : cols;
 
-    const rows = useMemo(
-        () => Math.max(1, Math.ceil(entities.length / effectiveCols)),
-        [entities, effectiveCols]
-    );
+    useEffect(() => {
+        if (!expandedKey) return;
+
+        const handler = (e: MouseEvent) => {
+            const cardEl = cardRefs.current.get(expandedKey);
+            if (cardEl && !cardEl.contains(e.target as Node)) {
+                setExpandedKey(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [expandedKey]);
+
+    useEffect(() => {
+        if (!expandedKey || !isSmallScreen) return;
+        const cardEl = cardRefs.current.get(expandedKey);
+        if (cardEl) {
+            cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }, [expandedKey, isSmallScreen]);
 
     return (
         <div
+            ref={gridRef}
             className="grid gap-3"
             style={{
                 gridTemplateColumns: `repeat(${effectiveCols}, minmax(0, 1fr))`,
-                gridTemplateRows: `repeat(${rows}, auto)`,
-                gridAutoFlow: 'column',
             }}
         >
             {entities.map((entity) => {
                 const key = getKey(entity);
+                const isExpanded = expandedKey === key;
+
                 return (
                     <EntityCard
                         key={key}
+                        ref={(el) => {
+                            cardRefs.current.set(key, el);
+                        }}
                         name={getName(entity)}
                         description={getDescription(entity)}
                         tags={getTags(entity)}
+                        expanded={isExpanded}
+                        onToggle={() => setExpandedKey(isExpanded ? null : key)}
                         renderDetail={() => renderDetail(entity)}
-                        open={selectedId === key}
-                        onOpenChange={(open) => setSelectedId(open ? key : null)}
                     />
                 );
             })}

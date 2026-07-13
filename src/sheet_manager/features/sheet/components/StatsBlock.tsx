@@ -25,7 +25,10 @@ export function DerivedStatsBlock() {
     const runningSpeedMultiplier = Math.min(controlDots, telekinesisDots) || 1;
 
     return (
-        <SectionCard title="Derived Stats">
+        <SectionCard
+            title="Derived Stats"
+            docsPath="/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats"
+        >
             <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex justify-between">
                     <span className="text-textSecondary">Willpower</span>

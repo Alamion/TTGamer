@@ -27,6 +27,9 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useHistory, useLocation } from '@docusaurus/router';
+import { BottomSheet } from './BottomSheet';
+import { SlidePanel } from './SlidePanel';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 type FilterMode = 'single' | 'multi';
 
@@ -45,6 +48,7 @@ export interface DataCatalogProps<T> {
     searchPlaceholder?: string;
     filters?: FilterConfig[];
     pageSize?: number;
+    id?: string;
 }
 
 function MultiSelectDropdown({
@@ -129,12 +133,15 @@ export function DataCatalog<T extends { id: string }>({
     searchPlaceholder = 'Search...',
     filters,
     pageSize = 15,
+    id,
 }: DataCatalogProps<T>) {
     const location = useLocation();
     const history = useHistory();
     const firstRender = useRef(true);
     const prevSearchRef = useRef('');
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+    const pfx = id ? `${id}-` : '';
+    const p = (key: string) => `${pfx}${key}`;
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -145,6 +152,20 @@ export function DataCatalog<T extends { id: string }>({
         pageSize,
     });
 
+    const isMobile = useMediaQuery('(max-width: 1023px)');
+
+    const [panelWidth, setPanelWidth] = useState(380);
+
+    useEffect(() => {
+        if (!selectedId) return;
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setSelectedId(null);
+        };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, [selectedId]);
+
+    // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         data,
         columns,
@@ -244,30 +265,30 @@ export function DataCatalog<T extends { id: string }>({
     function buildSearchString() {
         const params = new URLSearchParams(location.search);
         for (const fc of filterConfigs) {
-            params.delete(fc.columnId);
+            params.delete(p(fc.columnId));
             const val = columnFilters.find((f) => f.id === fc.columnId)?.value;
-            if (val) params.set(fc.columnId, String(val));
+            if (val) params.set(p(fc.columnId), String(val));
         }
         if (globalFilter) {
-            params.set('search', globalFilter);
+            params.set(p('search'), globalFilter);
         } else {
-            params.delete('search');
+            params.delete(p('search'));
         }
         if (sorting.length > 0) {
-            const { id, desc } = sorting[0];
-            params.set('sort', `${id}:${desc ? 'desc' : 'asc'}`);
+            const { id: sortId, desc } = sorting[0];
+            params.set(p('sort'), `${sortId}:${desc ? 'desc' : 'asc'}`);
         } else {
-            params.delete('sort');
+            params.delete(p('sort'));
         }
         if (selectedId) {
-            params.set('selected', selectedId);
+            params.set(p('selected'), selectedId);
         } else {
-            params.delete('selected');
+            params.delete(p('selected'));
         }
         if (pagination.pageIndex > 0) {
-            params.set('page', String(pagination.pageIndex + 1));
+            params.set(p('page'), String(pagination.pageIndex + 1));
         } else {
-            params.delete('page');
+            params.delete(p('page'));
         }
         const sorted = new URLSearchParams();
         Array.from(params.entries())
@@ -276,29 +297,39 @@ export function DataCatalog<T extends { id: string }>({
         return sorted.toString();
     }
 
+    function extractOurParams(search: string): string {
+        if (!id) return search.replace(/^\?/, '');
+        const allParams = new URLSearchParams(search);
+        const ours = new URLSearchParams();
+        for (const [key, value] of allParams) {
+            if (key.startsWith(pfx)) ours.set(key, value);
+        }
+        return ours.toString();
+    }
+
     function applyUrlParams(search: string) {
         const params = new URLSearchParams(search);
-        setGlobalFilter(params.get('search') ?? '');
+        setGlobalFilter(params.get(p('search')) ?? '');
         const filters: ColumnFiltersState = [];
         for (const fc of filterConfigs) {
-            const val = params.get(fc.columnId);
+            const val = params.get(p(fc.columnId));
             if (val) filters.push({ id: fc.columnId, value: val });
         }
         setColumnFilters(filters);
-        const sortParam = params.get('sort');
+        const sortParam = params.get(p('sort'));
         if (sortParam) {
-            const [id, dir] = sortParam.split(':');
-            setSorting([{ id, desc: dir === 'desc' }]);
+            const [sortId, dir] = sortParam.split(':');
+            setSorting([{ id: sortId, desc: dir === 'desc' }]);
         } else {
             setSorting([]);
         }
-        setSelectedId(params.get('selected') ?? null);
-        const pageStr = params.get('page');
+        setSelectedId(params.get(p('selected')) ?? null);
+        const pageStr = params.get(p('page'));
         setPagination((prev) => ({
             ...prev,
             pageIndex: pageStr ? Math.max(0, parseInt(pageStr) - 1) : 0,
         }));
-        prevSearchRef.current = params.toString();
+        prevSearchRef.current = extractOurParams(search);
     }
 
     useEffect(() => {
@@ -307,8 +338,8 @@ export function DataCatalog<T extends { id: string }>({
             firstRender.current = false;
             return;
         }
-        const raw = location.search.replace(/^\?/, '');
-        if (raw === prevSearchRef.current) return;
+        const relevant = extractOurParams(location.search);
+        if (relevant === prevSearchRef.current) return;
         applyUrlParams(location.search);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search]);
@@ -317,9 +348,10 @@ export function DataCatalog<T extends { id: string }>({
         if (firstRender.current) return;
         if (debounceRef.current) clearTimeout(debounceRef.current);
         const search = buildSearchString();
-        if (search === prevSearchRef.current) return;
+        const ourParams = extractOurParams(search ? `?${search}` : '');
+        if (ourParams === prevSearchRef.current) return;
         debounceRef.current = setTimeout(() => {
-            prevSearchRef.current = search;
+            prevSearchRef.current = ourParams;
             history.replace({ search: search ? `?${search}` : '' });
         }, 300);
         return () => {
@@ -399,8 +431,8 @@ export function DataCatalog<T extends { id: string }>({
                 </span>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-4">
-                <div className="lg:flex-1 min-w-0">
+            <div className="relative">
+                <div style={{ paddingBottom: isMobile && selectedId ? '36dvh' : undefined }}>
                     <div className="border border-border rounded-lg overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm table">
@@ -508,9 +540,18 @@ export function DataCatalog<T extends { id: string }>({
                     </div>
                 </div>
 
-                {selectedItem && (
-                    <div className="flex-1 min-w-[300px] max-w-[600px]">
-                        <div className="sticky top-4 rounded-lg border border-border bg-bgSurface p-5">
+                {selectedItem && !isMobile && (
+                    <SlidePanel
+                        open={true}
+                        onClose={() => setSelectedId(null)}
+                        width={panelWidth}
+                        onWidthChange={setPanelWidth}
+                        minWidth={280}
+                        maxWidth={800}
+                        showBackdrop={false}
+                        style={{ top: 'var(--ifm-navbar-height, 4rem)' }}
+                    >
+                        <div className="pl-3 pr-5 py-5">
                             <div className="flex items-start justify-between mb-2">
                                 <h2 className="text-lg font-bold text-textPrimary">
                                     {'name' in selectedItem
@@ -527,9 +568,22 @@ export function DataCatalog<T extends { id: string }>({
                             </div>
                             {renderDetail(selectedItem)}
                         </div>
-                    </div>
+                    </SlidePanel>
                 )}
             </div>
+
+            {isMobile && selectedItem && (
+                <BottomSheet onClose={() => setSelectedId(null)}>
+                    <div className="flex items-start justify-between mb-2">
+                        <h2 className="text-lg font-bold text-textPrimary">
+                            {'name' in selectedItem
+                                ? (selectedItem as { name: string }).name
+                                : selectedItem.id}
+                        </h2>
+                    </div>
+                    {renderDetail(selectedItem)}
+                </BottomSheet>
+            )}
         </div>
     );
 }

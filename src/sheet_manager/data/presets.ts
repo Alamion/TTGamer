@@ -99,6 +99,14 @@ export const JAX_VORN_PRESET: BaseCharacter = {
     },
     inventory: [],
     armor: [],
+    implants: [
+        {
+            id: 'impl-subdermal',
+            name: 'Subdermal Armor Mesh',
+            type: 'Cybernetic',
+            effect: '+1 soak vs physical damage',
+        },
+    ],
     weapons: [
         { id: 'wpn-blaster', name: 'Blaster Pistol', damage: '4', range: 'Medium', ammo: '50' },
     ],

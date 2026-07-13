@@ -1,0 +1,160 @@
+---
+sidebar_position: 6.4
+title: Vehicle & Equipment Modifications
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+
+# Vehicle & Equipment Modifications
+
+The galaxy is full of scroungers, mechanics, and tinkerers upgrading their gear beyond stock specifications. This chapter covers two paths to better equipment: the **Customization background** (character creation) and **in-game upgrades** (Tech rolls).
+
+---
+
+## Customization Background
+
+During character creation, the **Customization** background represents equipment that has been improved beyond its stock attributes. You can split Customization dots across multiple items — one point to a blaster, two points to a vehicle, one point to armor.
+
+### Improvement Table
+
+| Dots      | Improvement Level                                                                    |
+| --------- | ------------------------------------------------------------------------------------ |
+| **•**     | Cosmetic/convenience. Paint or body work. Adding a comlink into a cybernetic arm.    |
+| **••**    | Easy. +1D or +20% to one attribute. Adding a hidden vibro-knife to a cybernetic arm. |
+| **•••**   | Average. +2D or +40%. Adding a hidden hold-out blaster to a cybernetic arm.          |
+| **••••**  | Difficult. +3D or +60%. Adding a heavy blaster pistol to a cybernetic arm.           |
+| **•••••** | Extraordinary. +4D or +80%. Adding a light repeating blaster to a cybernetic arm.    |
+
+### Free Trade-Offs
+
+With the Storyteller's permission, you can make **one-for-one attribute trade-offs** for free — no Customization dots required:
+
+- A weapon with +20% Range but −1D Damage
+- A vehicle with +1D Durability but −1D Maneuverability
+- Armor with +1D rating but −1D Dexterity penalty
+
+These are re-configurations rather than true upgrades. The total capability remains roughly the same.
+
+---
+
+## In-Game Upgrades
+
+During play, a character with the **Tech** knowledge can upgrade vehicles and equipment using **Intelligence + Tech** rolls. Upgrades require:
+
+1. **Time** — determined by the Storyteller (usually downtime between chapters)
+2. **Credits** — parts and materials (Storyteller sets cost based on upgrade scope)
+3. **Tools** — appropriate tool set reduces difficulty (see below)
+4. **A Tech specialty** — can be applied to specific vehicle systems
+
+### Tech Specialties
+
+| Specialty        | Applies To                                              |
+| ---------------- | ------------------------------------------------------- |
+| **Structural**   | Durability, hull modifications                          |
+| **Propulsion**   | Speed, Maneuverability, Hyperdrive, repulsorlifts       |
+| **Energy Field** | Shields, Sensors, repulsorlift maintenance, comm arrays |
+| **Computer**     | Nav computer, sensor data processing, droid programming |
+| **Weapons**      | Adding, repairing, or upgrading weapon systems          |
+
+### Upgrade Difficulty Table
+
+Upgrades are made **one step at a time**, and each increase is above the vehicle's **stock or original value**, not the improved value. It is easier and cheaper to upgrade from 1D to 2D than from 4D to 5D.
+
+| Upgrade To                                 | Difficulty |
+| ------------------------------------------ | ---------- |
+| **1D, 20%, or very minor modification**    | 6          |
+| **2D, 40%, or average modification**       | 7          |
+| **3D, 60%, or tricky modification**        | 8          |
+| **4D, 80%, or difficult modification**     | 9          |
+| **5D, 100%, or "impossible" modification** | 10         |
+
+| Equipment Bonus                      | Effect        |
+| ------------------------------------ | ------------- |
+| Basic Tool Set                       | −1 difficulty |
+| Advanced Tool Set (proper specialty) | −2 difficulty |
+| Complete Workshop                    | −3 difficulty |
+
+Upgrading systems with a dice pool (Maneuverability, Sensors, Shields, etc.) beyond 5D is at the Storyteller's discretion.
+
+<TWWrapper>
+    <InlineRoll notation={'7d10\u003e=6'} variant="details" preroll />
+</TWWrapper>
+
+_Intelligence 4 + Tech 3 = 7D at difficulty 7 to upgrade a system to 2D._
+
+### Quirks
+
+The Storyteller may add **quirks** to upgraded equipment — especially on marginal successes (1 success). A quirk is a downside that makes the upgrade interesting rather than purely numerical:
+
+- Souped-up engines that stall for one turn when pushed too hard
+- A weapon upgrade that overheats after three shots
+- Shield capacitors that take an extra turn to recharge
+- A sensor booster that picks up false echoes in debris fields
+
+### Example: Upgrading a Freighter's Speed
+
+Rax wants to upgrade his Ghtroc freighter "The Goose" during downtime. Its stock Speed is 8, already upgraded once to 10. Increasing it another 20% to 12 is an "average modification" — difficulty 7.
+
+Rax invests in an Advanced Propulsion Tool Set, reducing the difficulty to 5. He rolls Intelligence + Tech:
+
+<TWWrapper>
+    <InlineRoll notation={'7d10\u003e=5'} variant="details" preroll />
+</TWWrapper>
+
+He gets only **1 success** — a marginal success. The Goose will start the next chapter with Speed 12, but the Storyteller secretly decides the engines stall for one turn any time a Pilot roll results in 5+ successes.
+
+---
+
+## Droid Upgrades
+
+Droids use the same rules as vehicles for upgrades. Rather than spending experience to improve Attributes (like living characters), a droid's Attributes are upgraded using the Tech roll and upgrade table above.
+
+This reflects the fact that droids are machines — you can't train a droid to be stronger, you install stronger servos.
+
+A droid's **programming** (skills and knowledge) can be upgraded via experience normally, or re-programmed with a Tech (Computers) roll during downtime (see the Repair table in [Durability, Damage & Repair](./durability-damage-repare.mdx) for time requirements).
+
+---
+
+## Weapon Modifications
+
+The same upgrade rules apply to personal weapons:
+
+| Modification                                        | Difficulty |
+| --------------------------------------------------- | ---------- |
+| Increase Damage by 1D                               | 7          |
+| Increase Range by 20%                               | 6          |
+| Add a targeting scope (−1 difficulty at long range) | 7          |
+| Reduce weight by 20%                                | 8          |
+| Add hidden compartment                              | 6          |
+
+Weapon upgrades are capped at +3D or +60% for hand-held weapons (beyond that, the weapon frame can't handle the stress).
+
+---
+
+## Tool Sets
+
+| Tool Set              | Cost        | Effect                             | Portability                             |
+| --------------------- | ----------- | ---------------------------------- | --------------------------------------- |
+| **Basic Tool Set**    | 100c        | −1 difficulty to Repair/Tech rolls | Fits in a satchel                       |
+| **Advanced Tool Set** | 1,000c each | −2 difficulty to Repair/Tech rolls | Requires a cabinet; needs power         |
+| **Complete Workshop** | 10,000c     | −3 difficulty to Repair/Tech rolls | Requires a room; needs own power supply |
+
+Advanced Tool Sets are specialized by category. The six standard types:
+
+- Structural construction and repair
+- Propulsion maintenance and repair
+- Droid and cybernetic tools
+- Computer assembly and repair
+- Energy field projector maintenance
+- Weapons maintenance and repair
+
+The Storyteller may allow overlap between categories and offer discounts for purchasing multiple sets together.
+
+---
+
+## Next Steps
+
+- [Vehicle Traits & Systems](./traits-systems.mdx) — Vehicle attributes, weapon systems
+- [Space Combat](./space-combat.mdx) — Dogfighting, capital ship battles
+- [Durability, Damage & Repair](./durability-damage-repare.mdx) — Soak, damage track, repair rules
