@@ -1,5 +1,5 @@
-import { useCharacterStore } from '../../../store/characterStore.ts';
-import { SectionCard } from '@site/src/sheet_manager/components';
+import { SectionCard } from '../../../components';
+import { useCharacterStore } from '../../../store/characterStore';
 
 export function DerivedStatsBlock() {
     const { currentCharacter } = useCharacterStore();

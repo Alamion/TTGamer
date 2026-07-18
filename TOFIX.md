@@ -1,19 +1,6 @@
 # Code Review: `src/data/` & `src/shared/components/`
 
-## ✅ Fixed (2026-06-12)
-
-| ID  | File(s)                       | What was done                                                                                                                                                   |
-| --- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| H1  | `DataCatalog/types.ts`        | Deleted orphaned file (type was duplicated in `DataCatalog.tsx`, barrel already re-exported from there)                                                         |
-| H2  | `DataCatalog/DataCatalog.tsx` | Relaxed generic from `T extends { id: string; name: string }` to `T extends { id: string }`; detail panel falls back to `selectedItem.id` when `name` is absent |
-| H3  | `TWWrapper.tsx`               | Changed `import React` → `import type { ReactNode }`; `React.ReactNode` → `ReactNode`                                                                           |
-| M1  | `EntityCard.tsx`              | Replaced `aria-describedby={undefined}` with a proper `useId()`-generated reference pointing to a visually-hidden description inside the popover                |
-| M2  | `attributeConfig.tsx`         | Added `enableSorting: true` to category column (was missing vs `ABILITY_COLUMNS`)                                                                               |
-| M3  | `DataCatalog/DataCatalog.tsx` | Removed unnecessary `defaultGetRowId` wrapper + cast; inlined `(item: T) => item.id`                                                                            |
-| M5  | `DocCharData.tsx`             | Added `: ReactNode` return type                                                                                                                                 |
-| —   | `EntityCard.tsx` (EntityGrid) | Replaced `useState`/`useEffect` media query with `useSyncExternalStore` to fix pre-existing `react-hooks/set-state-in-effect` lint error                        |
-
-## 🟢 Remaining (Low Priority)
+## 🟢 (Low Priority)
 
 ### L1 — `DataCatalog` debounce only applies to URL sync, not filtering
 
@@ -49,3 +36,7 @@ ESLint warns `react-hooks/incompatible-library` about `useReactTable()`. This is
 **File:** `EntityCard.tsx` _(confirmed correct — see review discussion)_
 
 The column-first layout is intentional to support attribute categories (Physical → Social → Mental) maintaining their grouping across responsive breakpoints. Not a bug.
+
+### 3D dices somewhat disappear before all stop (165hz monitor?)
+
+_Partially mitigated in v3.3.0 — CCD threshold/radius commented out in `shapes.ts`. Still observable on high-refresh-rate displays._

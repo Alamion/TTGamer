@@ -30,7 +30,7 @@ export function CharRoll({
     params?: string[];
     variant?: 'simple' | 'details' | 'formatted' | 'full';
     multiline?: boolean;
-    hideForced?: boolean;
+    showForced?: boolean;
     preroll?: boolean;
     animationTime?: number;
 }): ReactNode {

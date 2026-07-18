@@ -49,6 +49,7 @@ export interface DataCatalogProps<T> {
     filters?: FilterConfig[];
     pageSize?: number;
     id?: string;
+    defaultHiddenColumnIds?: string[];
 }
 
 function MultiSelectDropdown({
@@ -134,6 +135,7 @@ export function DataCatalog<T extends { id: string }>({
     filters,
     pageSize = 15,
     id,
+    defaultHiddenColumnIds,
 }: DataCatalogProps<T>) {
     const location = useLocation();
     const history = useHistory();
@@ -143,37 +145,46 @@ export function DataCatalog<T extends { id: string }>({
     const pfx = id ? `${id}-` : '';
     const p = (key: string) => `${pfx}${key}`;
 
+    const isMobile = useMediaQuery('(max-width: 1023px)');
+    const isSmallScreen = useMediaQuery('(max-width: 639px)');
+
+    const effectivePageSize = useMemo(
+        () => (isSmallScreen ? Math.min(pageSize, 10) : pageSize),
+        [isSmallScreen, pageSize]
+    );
+
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize,
+        pageSize: effectivePageSize,
     });
 
-    const isMobile = useMediaQuery('(max-width: 1023px)');
+    const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>(() =>
+        Object.fromEntries((defaultHiddenColumnIds ?? []).map((id) => [id, false]))
+    );
 
-    const [panelWidth, setPanelWidth] = useState(380);
-
-    useEffect(() => {
-        if (!selectedId) return;
-        const handler = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setSelectedId(null);
-        };
-        document.addEventListener('keydown', handler);
-        return () => document.removeEventListener('keydown', handler);
-    }, [selectedId]);
+    const filterConfigs: FilterConfig[] = useMemo(
+        () =>
+            (filters ?? []).map((f) => ({
+                mode: 'single' as FilterMode,
+                ...f,
+            })),
+        [filters]
+    );
 
     // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         data,
         columns,
-        state: { sorting, columnFilters, globalFilter, pagination },
+        state: { sorting, columnFilters, globalFilter, pagination, columnVisibility },
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         onGlobalFilterChange: setGlobalFilter,
         onPaginationChange: setPagination,
+        onColumnVisibilityChange: setColumnVisibility,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -189,14 +200,16 @@ export function DataCatalog<T extends { id: string }>({
         return data.find((item) => getRowId(item) === selectedId) ?? null;
     }, [data, selectedId, getRowId]);
 
-    const filterConfigs: FilterConfig[] = useMemo(
-        () =>
-            (filters ?? []).map((f) => ({
-                mode: 'single' as FilterMode,
-                ...f,
-            })),
-        [filters]
-    );
+    const [panelWidth, setPanelWidth] = useState(380);
+
+    useEffect(() => {
+        if (!selectedId) return;
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setSelectedId(null);
+        };
+        document.addEventListener('keydown', handler);
+        return () => document.removeEventListener('keydown', handler);
+    }, [selectedId]);
 
     const filterValues = useMemo(() => {
         const result: Record<string, string[]> = {};
@@ -343,6 +356,14 @@ export function DataCatalog<T extends { id: string }>({
         applyUrlParams(location.search);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search]);
+
+    useEffect(() => {
+        if (firstRender.current) return;
+        setPagination({
+            pageIndex: 0,
+            pageSize: effectivePageSize,
+        });
+    }, [effectivePageSize]);
 
     useEffect(() => {
         if (firstRender.current) return;

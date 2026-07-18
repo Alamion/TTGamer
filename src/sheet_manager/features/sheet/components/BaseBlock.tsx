@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, Pen, User } from 'lucide-react';
-import { CollapsibleBlock, SectionCard } from '../../../components';
-import type { AccentColor } from '../../../components';
-import { useExpandedState } from '../../../hooks';
-import { useCharacterStore } from '../../../store/characterStore';
-import { useCharacterContext } from '../../../context/CharacterContext';
+import { CollapsibleBlock, SectionCard, CatalogSuggest } from '../../../components';
+import type { AccentColor, CatalogEntry } from '../../../components';
+import { useExpandedState, useCharacter } from '../../../hooks';
 import type { CharacterMetadata } from '../../../types/character';
+import { SPECIES } from '@site/src/data/speciesData';
+import type { SpeciesEntry } from '@site/src/data/speciesData';
 
 type MetadataKey = keyof CharacterMetadata;
 
@@ -35,21 +35,27 @@ const APPEARANCE_FIELDS: Array<{ key: MetadataKey; label: string }> = [
 ];
 
 export function BaseBlock({ accentColor = 'primary' }: BaseBlockProps) {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
-    const { character: contextChar, readOnly } = useCharacterContext();
-
+    const { character, readOnly, updateCharacter } = useCharacter();
     const [portraitExpanded, togglePortraitExpanded] = useExpandedState('basePortrait', true);
 
-    const character = contextChar ?? currentCharacter;
     if (!character) return null;
 
     const metadata = character.metadata;
 
     const handleFieldChange = (field: MetadataKey, value: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             metadata: { ...metadata, [field]: value },
         });
+    };
+
+    const speciesCatalog: CatalogEntry[] = SPECIES.map((s: SpeciesEntry) => ({
+        id: s.id,
+        name: s.name,
+        subtitle: s.shortDescription,
+    }));
+
+    const handleSpeciesCatalogSelect = (entry: CatalogEntry) => {
+        handleFieldChange('species', entry.name);
     };
 
     const renderField = (config: (typeof FIELD_CONFIGS)[number], className: string = '') => (
@@ -105,7 +111,20 @@ export function BaseBlock({ accentColor = 'primary' }: BaseBlockProps) {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {renderField(FIELD_CONFIGS[0])}
                             {renderField(FIELD_CONFIGS[1])}
-                            {renderField(FIELD_CONFIGS[2])}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-xs text-textSecondary uppercase tracking-wider">
+                                    Species
+                                </label>
+                                <CatalogSuggest
+                                    catalog={speciesCatalog}
+                                    value={(metadata.species as string) ?? ''}
+                                    onChange={(val) => handleFieldChange('species', val)}
+                                    onSelect={handleSpeciesCatalogSelect}
+                                    placeholder="Human, Twi'lek..."
+                                    disabled={readOnly}
+                                    className="w-full bg-bgSurface border rounded px-3 py-2 text-sm text-textPrimary disabled:opacity-60 disabled:cursor-default"
+                                />
+                            </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                             {renderField(FIELD_CONFIGS[3])}

@@ -5,38 +5,45 @@
 ```
 src/sheet_manager/
 ├── components/
-│   ├── shared/               # Reusable atomic/molecular components
-│   │   ├── CharacterManagerModal.tsx  # Character list modal (load/delete)
-│   │   ├── CollapsibleBlock.tsx       # Collapsible section wrapper
-│   │   ├── ConfirmDialog.tsx          # Radix UI confirmation dialog
-│   │   ├── DataTable.tsx              # Reusable CRUD table
-│   │   ├── MeritFlawRow.tsx           # Merit/Flaw list editor
-│   │   ├── SectionCard.tsx            # Collapsible card with header
-│   │   ├── StatDot.tsx                # WoD-style dot selector (1-5)
-│   │   ├── StatLabel.tsx              # Label with optional tooltip
-│   │   └── TraitRow.tsx               # Label + StatDot (3 variants)
-│   ├── ui/
-│   │   └── TWWrapper.tsx   # Wrapper for docs integration
+│   ├── CatalogSuggest.tsx             # Autocomplete from catalog data
+│   ├── CharacterManagerModal.tsx      # Character list modal (load/delete)
+│   ├── CharacterViewer.tsx            # Read-only character viewer
+│   ├── CollapsibleBlock.tsx           # Collapsible section wrapper
+│   ├── ConfirmDialog.tsx              # Confirmation modal dialog
+│   ├── DataTable.tsx                  # Reusable CRUD table
+│   ├── ForcePowerRow.tsx              # Force power row editor
+│   ├── index.ts                       # Barrel exports
+│   ├── MeritFlawRow.tsx               # Merit/Flaw list editor
+│   ├── NewCharacterButton.tsx         # Quick create button
+│   ├── SectionCard.tsx                # Collapsible card with header
+│   ├── StatDot.tsx                    # WoD-style dot selector (1-5)
+│   ├── StatLabel.tsx                  # Label with optional tooltip
+│   └── TraitRow.tsx                   # Label + StatDot (3 variants)
+├── context/
+│   └── CharacterContext.tsx           # React context for read-only mode
+├── data/
+│   └── presets.ts                     # Character presets (Jax Vorn)
 ├── features/
-│   └── sheet/                # Character sheet feature module
+│   └── sheet/
 │       ├── index.ts
 │       └── components/
-│           ├── CharacterSheet.tsx     # Sheet orchestrator
-│           ├── SheetLayout.tsx        # Layout + universal buttons
-│           ├── BaseBlock.tsx          # Character metadata
-│           ├── AttributeBlock.tsx     # 9 attributes (Phys/Soc/Mental)
-│           ├── SkillBlock.tsx         # Skills (Talents/Skills/Knowledge)
 │           ├── AdvantagesBlock.tsx    # Backgrounds, Merits, Flaws
+│           ├── AttributeBlock.tsx     # 9 attributes (Phys/Soc/Mental)
+│           ├── BaseBlock.tsx          # Character metadata
 │           ├── BodyBlock.tsx          # Inventory, Armor, Weapons, Health
-│           ├── HealthBlock.tsx        # Bashing/Lethal damage tracker
+│           ├── CharacterSheet.tsx     # Sheet orchestrator
 │           ├── ForceBlock.tsx         # Force Skills, Virtues, Willpower, FP
-│           ├── OtherBlock.tsx         # Misc fields
+│           ├── HealthBlock.tsx        # 7-level damage tracker
+│           ├── OtherBlock.tsx         # Notes
+│           ├── SheetLayout.tsx        # Layout + universal buttons
 │           └── StatsBlock.tsx         # Derived stats + Experience
 ├── hooks/
+│   ├── index.ts                       # Barrel exports
+│   ├── useCharacter.ts               # Combined store + context hook
 │   ├── useLocalStorageState.ts        # Expanded state persistence
-│   └── useTraitUpdater.ts             # Generic trait (attr/skill) update hook
+│   └── useTraitUpdater.ts            # Generic trait (attr/skill) update hook
 ├── store/
-│   └── characterStore.ts              # Zustand store (CRUD, import, persist)
+│   └── characterStore.ts             # Zustand store (CRUD, import, persist)
 └── types/
     └── character.ts                   # Zod schemas + TS types + default factory
 ```
@@ -123,6 +130,7 @@ All types/schemas in `types/character.ts`. Use `DEFAULT_TRAIT_VALUE` for default
 ## Key Patterns
 
 - **Import paths:** `@site/src/sheet_manager/...` (resolved via tsconfig `paths`)
+- **Character access:** use `useCharacter()` hook — combines Zustand store + Context, wraps `updateCharacter` with readOnly guard
 - **Trait updates:** use `useTraitUpdater(path)` hook — `getTrait(key)`, `updateTrait(key, partial)`
 - **Collapsible persistence:** `SectionCard`/`CollapsibleBlock` persist expanded state via `useLocalStorageState`
 - **Import/Export:** `JSON.stringify` → Blob download; FileReader → `BaseCharacterSchema.parse()` → `importCharacter()`

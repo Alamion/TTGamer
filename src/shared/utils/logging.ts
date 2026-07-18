@@ -1,15 +1,7 @@
 import toast from 'react-hot-toast';
-import { isDevelopment } from '@site/src/shared/utils/env';
-import { onRollResult } from '@site/src/dice_roller/dice-logic';
+import { isDevelopment } from './env';
 
 const MODULE_NAME = 'TTGamer';
-
-/** Subscribes to all successful rolls and logs them via `info()` in chat format. Returns an unsubscribe function. */
-export function setupRollLogging(): () => void {
-    return onRollResult((result) => {
-        info(`\nRolls: ${result.details}\nFormatted: ${result.formatted}`, 'Dice Roll');
-    });
-}
 
 export function debug(...args: unknown[]): void {
     if (isDevelopment()) {

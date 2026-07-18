@@ -1,18 +1,8 @@
 import { HelpCircle } from 'lucide-react';
-import { useCharacterStore } from '../../../store/characterStore.ts';
-import { useCharacterContext } from '../../../context/CharacterContext.tsx';
-import type { ConditionMark } from '../../../types/character.ts';
+import { useCharacter } from '../../../hooks';
+import { HEALTH_LEVELS } from '../../../types/character';
+import type { ConditionMark } from '../../../types/character';
 import { clsx } from 'clsx';
-
-const HEALTH_LEVELS = [
-    { name: 'Bruised', penalty: 0 },
-    { name: 'Hurt', penalty: -1 },
-    { name: 'Injured', penalty: -2 },
-    { name: 'Wounded', penalty: -3 },
-    { name: 'Mauled', penalty: -4 },
-    { name: 'Crippled', penalty: -5 },
-    { name: 'Incapacitated', penalty: 0 },
-] as const;
 
 const NEXT_MARK: Record<ConditionMark, ConditionMark> = {
     empty: 'slash',
@@ -31,14 +21,10 @@ interface HealthBlockProps {
 }
 
 export function HealthBlock({ docsPath }: HealthBlockProps) {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
-    const { character: contextChar, readOnly } = useCharacterContext();
-
-    const character = contextChar ?? currentCharacter;
+    const { character, readOnly, updateCharacter } = useCharacter();
     if (!character) return null;
 
     const handleHealthChange = (index: number, mark: ConditionMark) => {
-        if (readOnly) return;
         const newLevels = [...character.health.levels];
         newLevels[index] = NEXT_MARK[mark];
         updateCharacter(character.id, {

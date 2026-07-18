@@ -345,8 +345,8 @@ export abstract class DiceShape {
             this.vector.velocity.y,
             this.vector.velocity.z
         );
-        this.body.ccdSpeedThreshold = 5;
-        this.body.ccdRadius = 0.5;
+        // this.body.ccdSpeedThreshold = 5;
+        // this.body.ccdRadius = 0.5;
         this.body.linearDamping = 0.1;
         this.body.angularDamping = 0.1;
         this.body.wakeUp();

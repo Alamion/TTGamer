@@ -4,7 +4,7 @@ title: Merits & Flaws
 ---
 
 import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
-import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
+import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 import { DataCatalog } from '/src/shared/components/DataCatalog';
 
@@ -28,7 +28,7 @@ Search by name or description. Use the **Type** filter to show only Merits or on
 <TWWrapper>
     <DataCatalog
         data={MERITS_FLAWS}
-        columns={MF_COLUMNS}
+        columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
         filters={[
             { columnId: 'type', label: 'Type' },

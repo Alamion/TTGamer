@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
-import { useCharacterStore } from '../../../store/characterStore.ts';
+import { useCharacterStore } from '../../../store/characterStore';
 import { Download, Upload, RotateCcw, Users, Plus } from 'lucide-react';
-import { BaseCharacterSchema, createDefaultCharacter } from '../../../types/character.ts';
+import { BaseCharacterSchema, createDefaultCharacter } from '../../../types/character';
 import { ConfirmDialog, CharacterManagerModal } from '../../../components';
 
 type SheetLayoutProps = {
@@ -106,9 +106,7 @@ export function SheetLayout({ children }: SheetLayoutProps) {
         <>
             <div className="bg-bgSurface p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 pb-4 sm:pb-0">
-                    {/* Левая часть: Основные действия с персонажами */}
                     <div className="flex flex-wrap items-center gap-2.5 justify-around">
-                        {/* Группа: Файловые операции */}
                         <div className="flex items-center gap-1.5 bg-bgSurface/50 p-1 rounded-lg border border-border/20">
                             <button
                                 onClick={handleExport}
@@ -130,7 +128,6 @@ export function SheetLayout({ children }: SheetLayoutProps) {
                             </button>
                         </div>
 
-                        {/* Группа: Управление */}
                         <div className="flex items-center gap-1.5 bg-bgSurface/50 p-1 rounded-lg border border-border/20">
                             <button
                                 onClick={() => setManagerModalOpen(true)}
@@ -153,11 +150,10 @@ export function SheetLayout({ children }: SheetLayoutProps) {
                         </div>
                     </div>
 
-                    {/* Правая часть: Главное целевое действие (CTA) */}
                     <div className="flex items-center">
                         <button
                             onClick={createNewCharacter}
-                            className={`${btnPrimary} w-full sm:w-auto px-4 py-2 text-sm`} // Чуть крупнее, так как это главное действие
+                            className={`${btnPrimary} w-full sm:w-auto px-4 py-2 text-sm`}
                             title="Create new character"
                         >
                             <Plus className="w-4 h-4" aria-hidden="true" />
@@ -165,7 +161,6 @@ export function SheetLayout({ children }: SheetLayoutProps) {
                         </button>
                     </div>
 
-                    {/* Скрытый инпут */}
                     <input
                         ref={fileInputRef}
                         type="file"

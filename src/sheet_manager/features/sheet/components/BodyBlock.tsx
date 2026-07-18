@@ -1,13 +1,22 @@
-import { CollapsibleBlock, SectionCard } from '../../../components';
-import type { AccentColor } from '../../../components';
-import { DataTable } from '../../../components';
-import type { DataTableColumn } from '../../../components';
-import { useCharacterStore } from '../../../store/characterStore.ts';
-import { useCharacterContext } from '../../../context/CharacterContext.tsx';
+import { CollapsibleBlock, SectionCard, DataTable, CatalogSuggest } from '../../../components';
+import type { AccentColor, DataTableColumn, CatalogEntry } from '../../../components';
+import { useCharacter } from '../../../hooks';
 import { Plus, X } from 'lucide-react';
 import { HealthBlock } from './HealthBlock.tsx';
 import type { ArmorItem, WeaponItem, ImplantItem, Item } from '../../../types/character.ts';
 import { generateId } from '@site/src/shared/utils/random';
+import { RANGED_WEAPONS } from '@site/src/data/rangedWeaponsData';
+import type { RangedWeaponEntry } from '@site/src/data/rangedWeaponsData';
+import { MELEE_WEAPONS } from '@site/src/data/meleeWeaponsData';
+import type { MeleeWeaponEntry } from '@site/src/data/meleeWeaponsData';
+import { ARMOR } from '@site/src/data/armorData';
+import type { ArmorEntry } from '@site/src/data/armorData';
+import { TOOLS_GEAR } from '@site/src/data/toolsGearData';
+import type { ToolGearEntry } from '@site/src/data/toolsGearData';
+import { CONSUMABLE_WEAPONS } from '@site/src/data/consumableWeaponsData';
+import type { ConsumableWeaponEntry } from '@site/src/data/consumableWeaponsData';
+import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
+import type { MeritFlawEntry } from '@site/src/data/meritsFlawsData';
 
 interface SectionState {
     inventory: boolean;
@@ -21,10 +30,7 @@ interface BodyBlockProps {
 }
 
 export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
-    const { character: contextChar, readOnly } = useCharacterContext();
-
-    const character = contextChar ?? currentCharacter;
+    const { character, readOnly, updateCharacter } = useCharacter();
     if (!character) return null;
 
     const inventory = character.inventory || [];
@@ -33,28 +39,24 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     const implants = character.implants || [];
 
     const addInventoryItem = () => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             inventory: [...inventory, { id: generateId(), text: '' } as Item],
         });
     };
 
     const removeInventoryItem = (id: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             inventory: inventory.filter((item) => item.id !== id),
         });
     };
 
     const updateInventoryItem = (id: string, text: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             inventory: inventory.map((item) => (item.id === id ? { ...item, text } : item)),
         });
     };
 
     const addArmorItem = () => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             armor: [
                 ...armor,
@@ -64,19 +66,16 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     };
 
     const removeArmorItem = (id: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, { armor: armor.filter((item) => item.id !== id) });
     };
 
     const updateArmorItem = (id: string, field: keyof ArmorItem, value: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             armor: armor.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
         });
     };
 
     const addWeaponItem = () => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             weapons: [
                 ...weapons,
@@ -92,19 +91,16 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     };
 
     const removeWeaponItem = (id: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, { weapons: weapons.filter((item) => item.id !== id) });
     };
 
     const updateWeaponItem = (id: string, field: keyof WeaponItem, value: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             weapons: weapons.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
         });
     };
 
     const addImplantItem = () => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             implants: [
                 ...implants,
@@ -114,28 +110,157 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
     };
 
     const removeImplantItem = (id: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, { implants: implants.filter((item) => item.id !== id) });
     };
 
     const updateImplantItem = (id: string, field: keyof ImplantItem, value: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             implants: implants.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
         });
+    };
+
+    const weaponsCatalog: CatalogEntry[] = [
+        ...RANGED_WEAPONS.map((w: RangedWeaponEntry) => ({
+            id: w.id,
+            name: w.name,
+            subtitle: `${w.damage} | ${w.range}m | ${w.ammo} shots`,
+        })),
+        ...MELEE_WEAPONS.map((w: MeleeWeaponEntry) => ({
+            id: w.id,
+            name: w.name,
+            subtitle: w.damage,
+        })),
+    ];
+
+    const armorCatalog: CatalogEntry[] = ARMOR.map((a: ArmorEntry) => ({
+        id: a.id,
+        name: a.name,
+        subtitle: `Class ${a.classVal} | AR ${a.ar} | Dex ${a.dexPenalty}`,
+    }));
+
+    const handleWeaponCatalogSelect = (id: string, entry: CatalogEntry) => {
+        const ranged = RANGED_WEAPONS.find((w) => w.id === entry.id);
+        if (ranged) {
+            updateCharacter(character.id, {
+                weapons: weapons.map((w) =>
+                    w.id === id
+                        ? {
+                              ...w,
+                              name: entry.name,
+                              damage: ranged.damage,
+                              range: String(ranged.range),
+                              ammo: String(ranged.ammo),
+                          }
+                        : w
+                ),
+            });
+            return;
+        }
+        const melee = MELEE_WEAPONS.find((w) => w.id === entry.id);
+        if (melee) {
+            updateCharacter(character.id, {
+                weapons: weapons.map((w) =>
+                    w.id === id
+                        ? { ...w, name: entry.name, damage: melee.damage, range: '', ammo: '' }
+                        : w
+                ),
+            });
+        }
+    };
+
+    const handleArmorCatalogSelect = (id: string, entry: CatalogEntry) => {
+        const armorEntry = ARMOR.find((a) => a.id === entry.id);
+        if (armorEntry) {
+            updateCharacter(character.id, {
+                armor: armor.map((a) =>
+                    a.id === id
+                        ? {
+                              ...a,
+                              type: entry.name,
+                              classVal: String(armorEntry.classVal),
+                              ar: armorEntry.ar,
+                              dex: armorEntry.dexPenalty,
+                          }
+                        : a
+                ),
+            });
+        }
+    };
+
+    const inventoryCatalog: CatalogEntry[] = [
+        ...TOOLS_GEAR.map((g: ToolGearEntry) => ({
+            id: g.id,
+            name: g.name,
+            subtitle: g.effect,
+        })),
+        ...CONSUMABLE_WEAPONS.map((w: ConsumableWeaponEntry) => ({
+            id: w.id,
+            name: w.name,
+            subtitle: `[${w.type}] ${w.damage} ${w.damageType}`,
+        })),
+        ...ARMOR.map((a: ArmorEntry) => ({
+            id: a.id,
+            name: a.name,
+            subtitle: `Class ${a.classVal} | AR ${a.ar}`,
+        })),
+        ...RANGED_WEAPONS.map((w: RangedWeaponEntry) => ({
+            id: w.id,
+            name: w.name,
+            subtitle: `${w.damage} | ${w.range}m`,
+        })),
+        ...MELEE_WEAPONS.map((w: MeleeWeaponEntry) => ({
+            id: w.id,
+            name: w.name,
+            subtitle: w.damage,
+        })),
+    ];
+
+    const implantsCatalog: CatalogEntry[] = MERITS_FLAWS.filter(
+        (e) => e.implantType !== undefined
+    ).map((e: MeritFlawEntry) => ({
+        id: e.id,
+        name: e.name,
+        subtitle: `[${e.implantType}] ${e.implantEffect}`,
+    }));
+
+    const handleInventoryCatalogSelect = (id: string, entry: CatalogEntry) => {
+        updateCharacter(character.id, {
+            inventory: inventory.map((item) =>
+                item.id === id ? { ...item, text: entry.name } : item
+            ),
+        });
+    };
+
+    const handleImplantCatalogSelect = (id: string, entry: CatalogEntry) => {
+        const implantEntry = MERITS_FLAWS.find((e) => e.id === entry.id);
+        if (implantEntry?.implantType) {
+            updateCharacter(character.id, {
+                implants: implants.map((i) =>
+                    i.id === id
+                        ? {
+                              ...i,
+                              name: entry.name,
+                              type: implantEntry.implantType!,
+                              effect: implantEntry.implantEffect ?? '',
+                          }
+                        : i
+                ),
+            });
+        }
     };
 
     const armorColumns: DataTableColumn<ArmorItem>[] = [
         {
             header: 'Armor Type',
             render: (item) => (
-                <input
-                    type="text"
+                <CatalogSuggest
+                    catalog={armorCatalog}
                     value={item.type}
-                    onChange={(e) => updateArmorItem(item.id, 'type', e.target.value)}
-                    className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
+                    onChange={(val) => updateArmorItem(item.id, 'type', val)}
+                    onSelect={(entry) => handleArmorCatalogSelect(item.id, entry)}
                     placeholder="Type..."
-                    aria-label="Armor type"
+                    disabled={readOnly}
+                    className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
                 />
             ),
         },
@@ -184,13 +309,14 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
         {
             header: 'Name',
             render: (item) => (
-                <input
-                    type="text"
+                <CatalogSuggest
+                    catalog={implantsCatalog}
                     value={item.name}
-                    onChange={(e) => updateImplantItem(item.id, 'name', e.target.value)}
-                    className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
+                    onChange={(val) => updateImplantItem(item.id, 'name', val)}
+                    onSelect={(entry) => handleImplantCatalogSelect(item.id, entry)}
                     placeholder="Implant name..."
-                    aria-label="Implant name"
+                    disabled={readOnly}
+                    className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
                 />
             ),
         },
@@ -226,13 +352,14 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
         {
             header: 'Weapon',
             render: (item) => (
-                <input
-                    type="text"
+                <CatalogSuggest
+                    catalog={weaponsCatalog}
                     value={item.name}
-                    onChange={(e) => updateWeaponItem(item.id, 'name', e.target.value)}
-                    className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
+                    onChange={(val) => updateWeaponItem(item.id, 'name', val)}
+                    onSelect={(entry) => handleWeaponCatalogSelect(item.id, entry)}
                     placeholder="Weapon..."
-                    aria-label="Weapon name"
+                    disabled={readOnly}
+                    className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
                 />
             ),
         },
@@ -311,16 +438,16 @@ export function BodyBlock({ accentColor = 'primary' }: BodyBlockProps) {
                             ) : (
                                 inventory.map((item) => (
                                     <div key={item.id} className="flex items-center gap-2">
-                                        <textarea
+                                        <CatalogSuggest
+                                            catalog={inventoryCatalog}
                                             value={item.text}
-                                            onChange={(e) =>
-                                                updateInventoryItem(item.id, e.target.value)
+                                            onChange={(val) => updateInventoryItem(item.id, val)}
+                                            onSelect={(entry) =>
+                                                handleInventoryCatalogSelect(item.id, entry)
                                             }
+                                            placeholder="Item name..."
                                             disabled={readOnly}
-                                            className="flex-1 bg-bgSurface border rounded px-3 py-2 text-sm text-textPrimary resize-none disabled:opacity-60 disabled:cursor-default"
-                                            rows={2}
-                                            placeholder="Item description..."
-                                            aria-label="Item description"
+                                            className="flex-1 bg-bgSurface border rounded px-3 py-2 text-sm text-textPrimary disabled:opacity-60 disabled:cursor-default"
                                         />
                                         {!readOnly && (
                                             <button

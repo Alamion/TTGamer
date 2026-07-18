@@ -6,7 +6,7 @@ title: Species
 import { SPECIES } from '/src/data/speciesData';
 import { SPECIES_COLUMNS, renderSpeciesDetail } from '/src/data/speciesConfig';
 import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
-import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
+import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
 import { DataCatalog } from '/src/shared/components/DataCatalog';
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 
@@ -86,7 +86,7 @@ The following merits and flaws are available **only** to non-human species and r
 <TWWrapper>
     <DataCatalog
         data={MERITS_FLAWS.filter((m) => m.category === 'Alien Physiology')}
-        columns={MF_COLUMNS}
+        columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
         filters={[{ columnId: 'type', label: 'Type' }]}
         searchPlaceholder="Search merits & flaws..."

@@ -8,7 +8,7 @@ import { ForceBlock } from '/src/sheet_manager/features/sheet/components/ForceBl
 import { FORCE_POWERS } from '/src/data/forcePowersData';
 import { FORCE_POWER_COLUMNS, renderForcePowerDetail } from '/src/data/forcePowersConfig';
 import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
-import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
+import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
 import { DataCatalog } from '/src/shared/components/DataCatalog';
 
 # Сила
@@ -157,7 +157,7 @@ import { DataCatalog } from '/src/shared/components/DataCatalog';
 <TWWrapper>
     <DataCatalog
         data={MERITS_FLAWS.filter((m) => m.category === 'Force Connections')}
-        columns={MF_COLUMNS}
+        columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
         filters={[{ columnId: 'type', label: 'Type' }]}
         searchPlaceholder="Поиск достоинств и недостатков Силы..."

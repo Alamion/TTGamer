@@ -1,4 +1,4 @@
-import { SlidePanel } from '../../shared/components/SlidePanel';
+import { SlidePanel } from '@site/src/shared/components/SlidePanel';
 import { useDiceRollerStore } from '../store/diceRollerStore';
 import DicePool from './dice_pool/DicePool';
 import RollHistory from './RollHistory';

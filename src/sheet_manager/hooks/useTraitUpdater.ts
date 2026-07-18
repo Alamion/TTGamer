@@ -1,6 +1,6 @@
-import { useCharacterStore } from '../store/characterStore.ts';
-import { DEFAULT_TRAIT_VALUE } from '../types/character.ts';
-import type { TraitValue } from '../types/character.ts';
+import { useCharacterStore } from '../store/characterStore';
+import { DEFAULT_TRAIT_VALUE } from '../types/character';
+import type { TraitValue } from '../types/character';
 
 type TraitPath = 'attributes' | 'skills' | 'forceSkills' | 'virtues';
 

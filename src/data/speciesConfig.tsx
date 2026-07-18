@@ -1,7 +1,9 @@
-import { type ColumnDef, type Row } from '@tanstack/react-table';
-import { type ReactNode } from 'react';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { ReactNode } from 'react';
 import type { SpeciesEntry } from './speciesData';
 import { MERITS_FLAWS } from './meritsFlawsData';
+import { arrayIncludesAnyFilterFn } from './dataFilters';
+import { EraTags } from '@site/src/shared/components/EraTags';
 
 function getMeritFlaw(id: string) {
     const item = MERITS_FLAWS.find((mf) => mf.id === id);
@@ -16,15 +18,6 @@ function calcFreebieAdjustment(species: SpeciesEntry): number {
     const meritCost = species.merits.reduce((sum, id) => sum + getMeritFlaw(id).cost, 0);
     const flawCost = species.flaws.reduce((sum, id) => sum + getMeritFlaw(id).cost, 0);
     return flawCost - meritCost;
-}
-
-function arrayIncludesAnyFilterFn<T>(row: Row<T>, columnId: string, filterValue: string): boolean {
-    if (!filterValue) return true;
-    const value = row.getValue<unknown>(columnId);
-    if (!Array.isArray(value)) return false;
-    const selected = filterValue.split(',').filter(Boolean);
-    if (selected.length === 0) return true;
-    return selected.some((s) => value.includes(s));
 }
 
 export const SPECIES_COLUMNS: ColumnDef<SpeciesEntry>[] = [
@@ -64,42 +57,26 @@ export const SPECIES_COLUMNS: ColumnDef<SpeciesEntry>[] = [
     },
     {
         id: 'eras',
-        header: 'Eras',
+        header: 'Era',
         accessorKey: 'eras',
         enableSorting: false,
         filterFn: arrayIncludesAnyFilterFn,
         cell: ({ getValue }) => {
             const eras = getValue<string[]>();
+            if (!eras || eras.length === 0) return <span className="text-textSecondary">—</span>;
             return (
-                <div className="flex flex-wrap gap-1 max-w-[240px]">
-                    {eras.map((era) => (
-                        <span
-                            key={era}
-                            className="px-1.5 py-0.5 text-[10px] rounded-full bg-bgBase text-textSecondary border border-border whitespace-nowrap"
-                        >
-                            {era}
+                <span className="text-xs text-textSecondary whitespace-nowrap">
+                    {eras[0]}
+                    {eras.length > 1 && (
+                        <span className="ml-1 px-1 py-0.5 rounded bg-bgSurface text-textTertiary text-[10px]">
+                            +{eras.length - 1}
                         </span>
-                    ))}
-                </div>
+                    )}
+                </span>
             );
         },
     },
 ];
-
-function EraTags({ eras }: { eras: string[] }) {
-    return (
-        <div className="flex flex-wrap gap-1">
-            {eras.map((era) => (
-                <span
-                    key={era}
-                    className="px-1.5 py-0.5 text-[10px] rounded-full bg-bgBase text-textSecondary border border-border whitespace-nowrap"
-                >
-                    {era}
-                </span>
-            ))}
-        </div>
-    );
-}
 
 function MeritFlawList({
     items,

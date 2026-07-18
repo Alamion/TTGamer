@@ -20,9 +20,9 @@ function HomepageHeader() {
             </div>
             <div className="relative container mx-auto px-4 py-16 md:py-24">
                 <div className="flex flex-col items-center text-center">
-                    <div className="mb-4 inline-flex items-center gap-2 rounded border border-droid-gold/40 bg-droid-gold/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-droid-gold">
-                        <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-droid-gold" />
-                        Work in Progress
+                    <div className="mb-4 inline-flex items-center gap-2 rounded border border-jedi-green/40 bg-jedi-green/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-jedi-green">
+                        <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-jedi-green" />
+                        Active Development — v3.3.0
                     </div>
                     <Heading
                         as="h1"
@@ -132,7 +132,7 @@ export default function Home(): ReactNode {
                             as="h2"
                             className="mb-2 text-2xl font-bold uppercase tracking-wide text-textPrimary"
                         >
-                            System Overview
+                            What's Available
                         </Heading>
                         <div className="mx-auto h-1 w-16 bg-primary" />
                     </div>
@@ -156,9 +156,8 @@ export default function Home(): ReactNode {
                                 </svg>
                             }
                             title="Character Sheet"
-                            description="Full-featured manager with attributes, skills, Force powers, inventory, health tracking, and more. Sentient characters fully supported."
+                            description="Full-featured manager with 9 attributes, 30 abilities, Force powers, inventory, health tracking, and more. Supports sentient, droid, and vehicle characters."
                             href="/universal_sheet"
-                            badge="LIVE"
                         />
                         <FeatureCard
                             icon={
@@ -172,13 +171,13 @@ export default function Home(): ReactNode {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                 >
-                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+                                    <path d="M12 20h9" />
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                                 </svg>
                             }
-                            title="Quick Start Guide"
-                            description="Get playing in 15 minutes. Interactive documentation covering dice pools, attributes, skills, and character creation."
-                            href="/docs/star-wars-wod-2e/quick-start"
-                            badge="NEW"
+                            title="3D Dice Roller"
+                            description="Real-time 3D dice physics with WebGL, sound effects, surface physics, roll history, and support for any dice notation. 2D fallback included."
+                            href="/docs/star-wars-wod-2e/core-rules/dice-pools"
                         />
                         <FeatureCard
                             icon={
@@ -192,14 +191,14 @@ export default function Home(): ReactNode {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                 >
-                                    <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
-                                    <path d="m9 12 2 2 4-4" />
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                    <path d="M2 12h20" />
                                 </svg>
                             }
                             title="Full Documentation"
-                            description="Combat, creatures, GM tools, vehicles, and equipment — comprehensive docs for the Star Wars WEG/WoD hybrid system."
-                            href="/docs/star-wars-wod-2e/quick-start"
-                            badge="WIP"
+                            description="29 complete docs: core rules, character creation, combat, vehicles, GM tools, bestiary, equipment, and a full worked example."
+                            href="/docs/star-wars-wod-2e/"
                         />
                     </div>
 
@@ -217,17 +216,11 @@ export default function Home(): ReactNode {
                                     <strong className="text-textPrimary">Star Wars WEG</strong> with
                                     the mechanical depth of the{' '}
                                     <strong className="text-textPrimary">World of Darkness</strong>{' '}
-                                    d6 dice pool system. Create characters with 9 core attributes,
-                                    skill specializations, Force powers, and track bashing/lethal
-                                    damage on a dual health system.
+                                    d10 dice pool system. Create characters with 9 core attributes,
+                                    30 abilities, skill specializations, Force powers, and track
+                                    bashing/lethal damage on a dual health system.
                                 </p>
                             </div>
-                            <Link
-                                className="shrink-0 rounded border-2 border-jedi-blue bg-jedi-blue/10 px-6 py-3 font-bold uppercase tracking-wider text-jedi-blue transition-all duration-200 hover:bg-jedi-blue/20"
-                                to="/docs/star-wars-wod-2e/quick-start"
-                            >
-                                Learn More
-                            </Link>
                         </div>
                     </div>
 
@@ -235,7 +228,11 @@ export default function Home(): ReactNode {
                         <p className="text-sm font-mono text-textSecondary">
                             <span className="text-droid-gold">LIVE:</span> ttgamer.vercel.app{' '}
                             <span className="mx-2 text-border-more-contrast">|</span>{' '}
-                            <span className="text-primary">STATUS:</span> Active Development
+                            <span className="text-primary">v3.3.0</span>{' '}
+                            <span className="mx-2 text-border-more-contrast">|</span>{' '}
+                            <span className="text-jedi-green">29 docs complete</span>{' '}
+                            <span className="mx-2 text-border-more-contrast">|</span>{' '}
+                            <span className="text-hologram-blue">React 19 + Docusaurus 3.10</span>
                         </p>
                     </div>
                 </main>

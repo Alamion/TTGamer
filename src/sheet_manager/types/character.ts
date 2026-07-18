@@ -189,7 +189,7 @@ export function createDefaultCharacter(): BaseCharacter {
     return {
         id: generateId(),
         metadata: {
-            name: 'New Character',
+            name: '',
             type: 'sentient',
             template: 'standard',
             player: '',

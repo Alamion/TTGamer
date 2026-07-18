@@ -150,7 +150,6 @@ export function TraitRowWithInput({
                     'flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors min-w-5',
                     disabled && 'opacity-50 cursor-not-allowed'
                 )}
-                // placeholder="Specialization"
             />
             <StatDot
                 value={value}

@@ -145,7 +145,7 @@ export function CharacterManagerModal({ open, onOpenChange }: CharacterManagerMo
                                                 onClick={() => handleSelectCharacter(character)}
                                                 className="text-textPrimary hover:text-primary hover:underline transition-colors text-left"
                                             >
-                                                {character.metadata.name}
+                                                {character.metadata.name || 'New Character'}
                                                 {currentCharacter?.id === character.id && (
                                                     <span className="ml-2 text-xs text-primary">
                                                         (current)

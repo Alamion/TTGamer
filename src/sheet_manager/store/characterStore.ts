@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { BaseCharacter } from '../types/character.ts';
-import { createDefaultCharacter } from '../types/character.ts';
-import { isPresetId } from '../data/presets.ts';
+import type { BaseCharacter } from '../types/character';
+import { createDefaultCharacter } from '../types/character';
+import { isPresetId } from '../data/presets';
 import type { StateCreator } from 'zustand';
 
 interface CharacterState {

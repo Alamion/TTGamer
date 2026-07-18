@@ -1,18 +1,14 @@
 import { CollapsibleBlock, SectionCard } from '../../../components';
 import type { AccentColor } from '../../../components';
-import { DerivedStatsBlock, ExperienceBlock } from './StatsBlock.tsx';
-import { useCharacterStore } from '../../../store/characterStore.ts';
-import { useCharacterContext } from '../../../context/CharacterContext.tsx';
+import { DerivedStatsBlock, ExperienceBlock } from './StatsBlock';
+import { useCharacter } from '../../../hooks';
 
 interface OtherBlockProps {
     accentColor?: AccentColor;
 }
 
 export function OtherBlock({ accentColor = 'secondary' }: OtherBlockProps) {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
-    const { character: contextChar, readOnly } = useCharacterContext();
-
-    const character = contextChar ?? currentCharacter;
+    const { character, readOnly, updateCharacter } = useCharacter();
     if (!character) return null;
 
     return (
@@ -28,7 +24,6 @@ export function OtherBlock({ accentColor = 'secondary' }: OtherBlockProps) {
                         placeholder="Character notes, background, equipment..."
                         value={character.notes}
                         onChange={(e) => {
-                            if (readOnly) return;
                             updateCharacter(character.id, { notes: e.target.value });
                         }}
                     />

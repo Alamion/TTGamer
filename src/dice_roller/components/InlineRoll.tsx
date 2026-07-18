@@ -11,7 +11,7 @@ interface InlineRollProps {
     notation: string;
     variant?: 'simple' | 'details' | 'formatted' | 'full';
     multiline?: boolean;
-    hideForced?: boolean;
+    showForced?: boolean;
     preroll?: boolean;
     animationTime?: number;
 }
@@ -52,12 +52,12 @@ export function InlineRoll({
     notation: rawNotation,
     variant: rawVariant,
     multiline = false,
-    hideForced = false,
+    showForced = false,
     preroll = false,
     animationTime = 400,
 }: InlineRollProps) {
     const variant = rawVariant ?? (multiline ? 'full' : 'simple');
-    const displayNotation = hideForced ? stripForcedValues(rawNotation) : rawNotation;
+    const displayNotation = showForced ? rawNotation : stripForcedValues(rawNotation);
 
     const [result, setResult] = useState<RollResult | null>(() =>
         isBrowser && preroll ? rollDices(rawNotation) : null

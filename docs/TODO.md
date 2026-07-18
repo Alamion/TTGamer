@@ -156,7 +156,7 @@ These two establish `InlineRoll` patterns (simple, details, multiline) with hard
 | 31  | **Bestiary**     | Populate `creatureData.ts` with 20+ creature stat blocks from WEG (nexu, acklay, reek, mynock, dianoga, sarlacc, krayt dragon, etc.)              | ✅     |
 | 32  | **Equipment**    | Expand `rangedWeaponsData.ts` with additional blasters, slugthrowers, sporting weapons from WEG source books; add grenade types and heavy weapons | ✅     |
 | 33  | **Armor**        | Expand `armorData.ts` with additional armor types (flight suit, armored flightsuit, combat jumpsuit, etc.) from WEG                               | ✅     |
-| 34  | **Vehicles**     | Populate vehicle data files with stats from WEG (speeder bikes, landspeeders, starfighters, freighters, capital ships)                            | ⬜     |
+| 34  | **Vehicles**     | Populate vehicle data files with stats from WEG (speeder bikes, landspeeders, starfighters, freighters, capital ships)                            | ✅     |
 | 35  | **Items & Gear** | Expand equipment.mdx misc gear with full WEG item catalog (sensors, survival gear, security devices, medical upgrades, etc.)                      | ✅     |
 
 ### Phase 10 — Translation 🟡

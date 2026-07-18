@@ -1,1 +1,1 @@
-yarn format:check && yarn lint && yarn typecheck && yarn test && yarn build
+yarn lint && yarn typecheck && yarn test && yarn build

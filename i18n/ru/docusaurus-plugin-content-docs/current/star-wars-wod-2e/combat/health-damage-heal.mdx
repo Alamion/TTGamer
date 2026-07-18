@@ -9,7 +9,7 @@ import { CharRoll } from '/src/shared/components/DocCharData';
 import { HealthViewer } from '/src/sheet_manager/components/CharacterViewer';
 import { DataCatalog } from '/src/shared/components/DataCatalog';
 import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
-import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
+import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
 
 # Здоровье, урон и исцеление
 
@@ -111,7 +111,7 @@ import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
 Совершите бросок **Выносливости** со сложностью **6**. Каждый успех отменяет один уровень здоровья урона.
 
 <TWWrapper>
-    <InlineRoll notation={'3d10>=6'} variant="details" preroll />
+    <InlineRoll notation={'3d10\u003e=6'} variant="details" preroll />
 </TWWrapper>
 
 | Тип урона      | Кто может сопротивляться | Минимум |
@@ -190,7 +190,7 @@ import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
 Персонаж с **Интеллектом + Медицина** может ускорить восстановление. Совершите бросок со сложностью, зависящей от текущего уровня здоровья пациента. **Разделите время восстановления на количество успехов** (минимальный делитель 1.5 для одного успеха).
 
 <TWWrapper>
-    <InlineRoll notation={'5d10>=6f=1'} variant="details" preroll />
+    <InlineRoll notation={'5d10\u003e=6f=1'} variant="details" preroll />
 </TWWrapper>
 
 **Бонусы снаряжения:**
@@ -249,7 +249,7 @@ import { MF_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
                 'paraplegic',
             ].includes(m.id)
         )}
-        columns={MF_COLUMNS}
+        columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
         filters={[{ columnId: 'cost', label: 'Серьёзность' }]}
         searchPlaceholder="Поиск недостатков ампутации..."

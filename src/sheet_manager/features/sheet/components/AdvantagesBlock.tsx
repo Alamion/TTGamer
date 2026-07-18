@@ -1,10 +1,7 @@
-import { CollapsibleBlock, SectionCard } from '../../../components';
-import type { AccentColor } from '../../../components';
-import { CustomTraitList, MeritFlawList } from '../../../components';
-import type { CatalogEntry } from '../../../components';
-import { useCharacterStore } from '../../../store/characterStore.ts';
-import { useCharacterContext } from '../../../context/CharacterContext.tsx';
-import type { Background, MeritFlawItem } from '../../../types/character.ts';
+import { CollapsibleBlock, SectionCard, CustomTraitList, MeritFlawList } from '../../../components';
+import type { AccentColor, CatalogEntry } from '../../../components';
+import { useCharacter } from '../../../hooks';
+import type { Background, MeritFlawItem } from '../../../types/character';
 import { generateId } from '@site/src/shared/utils/random';
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
 import type { MeritFlawEntry } from '@site/src/data/meritsFlawsData';
@@ -16,10 +13,7 @@ interface AdvantagesBlockProps {
 }
 
 export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProps) {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
-    const { character: contextChar, readOnly } = useCharacterContext();
-
-    const character = contextChar ?? currentCharacter;
+    const { character, readOnly, updateCharacter } = useCharacter();
     if (!character) return null;
 
     const backgrounds = character.backgrounds ?? [];
@@ -39,7 +33,6 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     }));
 
     const addBackground = () => {
-        if (readOnly) return;
         const newBackground: Background = { id: generateId(), label: '', value: 0 };
         updateCharacter(character.id, {
             backgrounds: [...backgrounds, newBackground],
@@ -47,14 +40,12 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     };
 
     const removeBackground = (id: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             backgrounds: backgrounds.filter((b) => b.id !== id),
         });
     };
 
     const updateBackground = (id: string, value: number, label?: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             backgrounds: backgrounds.map((b) =>
                 b.id === id ? { ...b, value: value, label: label ?? b.label } : b
@@ -63,7 +54,6 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     };
 
     const addMerit = () => {
-        if (readOnly) return;
         const newMerit: MeritFlawItem = { id: generateId(), points: 1, label: '' };
         updateCharacter(character.id, {
             merits: [...merits, newMerit],
@@ -71,21 +61,18 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     };
 
     const removeMerit = (id: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             merits: merits.filter((m) => m.id !== id),
         });
     };
 
     const updateMerit = (id: string, points: number, label: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             merits: merits.map((m) => (m.id === id ? { ...m, points, label } : m)),
         });
     };
 
     const addFlaw = () => {
-        if (readOnly) return;
         const newFlaw: MeritFlawItem = { id: generateId(), points: 1, label: '' };
         updateCharacter(character.id, {
             flaws: [...flaws, newFlaw],
@@ -93,21 +80,18 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     };
 
     const removeFlaw = (id: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             flaws: flaws.filter((f) => f.id !== id),
         });
     };
 
     const updateFlaw = (id: string, points: number, label: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             flaws: flaws.map((f) => (f.id === id ? { ...f, points, label } : f)),
         });
     };
 
     const handleMeritCatalogSelect = (id: string, entry: CatalogEntry) => {
-        if (readOnly) return;
         const catalogEntry = MERITS_FLAWS.find((e) => e.id === entry.id);
         updateCharacter(character.id, {
             merits: merits.map((m) =>
@@ -124,7 +108,6 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     };
 
     const handleFlawCatalogSelect = (id: string, entry: CatalogEntry) => {
-        if (readOnly) return;
         const catalogEntry = MERITS_FLAWS.find((e) => e.id === entry.id);
         updateCharacter(character.id, {
             flaws: flaws.map((f) =>
@@ -141,7 +124,6 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
     };
 
     const handleBackgroundCatalogSelect = (id: string, entry: CatalogEntry) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             backgrounds: backgrounds.map((b) =>
                 b.id === id ? { ...b, catalogId: entry.id, label: entry.name } : b

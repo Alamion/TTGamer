@@ -1,13 +1,15 @@
 export interface MeritFlawEntry {
     id: string;
     name: string;
-    type: 'Merit' | 'Flaw';
+    type: 'Merit' | 'Flaw' | 'Implant';
     cost: number;
     shortDescription: string;
     description: string;
     category: string;
     tags: string[];
     restriction?: string;
+    implantType?: string;
+    implantEffect?: string;
 }
 
 export const MERITS_FLAWS: MeritFlawEntry[] = [
@@ -760,6 +762,8 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
             "One of your limbs has been replaced with a cybernetic prosthesis. A partial limb (hand or foot) costs 1 point; a whole limb costs 2 points. Without additional customization, it functions exactly as your natural limb. Damage to the limb is tracked separately from your regular Health. Assign each prosthesis a number from 1 to 10. When you take untargeted damage, roll a d10 — on the limb's number, it takes the damage instead. You can take this merit multiple times for multiple limbs.",
         category: 'Cybernetic',
         tags: ['Cybernetics', 'Physical'],
+        implantType: 'Limb',
+        implantEffect: 'Replaced limb with standard functionality',
     },
     {
         id: 'cybernetic-sensory-organ',
@@ -771,6 +775,8 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
             'One of your primary sensory organs (an eye or ear) has been replaced with a cybernetic. Without additional customization, it functions exactly as your natural organ. With the proper equipment, you can connect recorders or transmitters to its external mount. You can take this merit multiple times for multiple organs.',
         category: 'Cybernetic',
         tags: ['Cybernetics', 'Senses'],
+        implantType: 'Sensory',
+        implantEffect: 'Replaced sensory organ with standard functionality',
     },
     {
         id: 'cybernetic-uplink',
@@ -782,6 +788,8 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
             'You have an implant in your brain that allows you to mentally interface with computer networks. The difficulty for any Interface roll using computers on the network is reduced by two, as you process data at the speed of thought. With a Programming roll, you can query any information available on the system. However, while connected, others on the network have access to your thoughts and memories as well.',
         category: 'Cybernetic',
         tags: ['Cybernetics', 'Technology'],
+        implantType: 'Neural',
+        implantEffect: 'Direct mental interface with computer networks',
     },
     {
         id: 'cybernetic-life-support',
@@ -793,6 +801,8 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
             'One or more vital organs have been replaced with a cybernetic implant keeping you alive. If you ever botch a Soak roll, your cybernetic organs malfunction — you immediately suffer Lethal damage equal to the flaw points. If this reduces you to Wounded or below, you require medical attention or you will lose additional Health every hour. You cannot recover until the damaged cybernetics are repaired.',
         category: 'Cybernetic',
         tags: ['Cybernetics', 'Physiology'],
+        implantType: 'Life Support',
+        implantEffect: 'Vital organs replaced with cybernetic systems',
     },
     {
         id: 'clunky-cybernetics',
@@ -804,6 +814,216 @@ export const MERITS_FLAWS: MeritFlawEntry[] = [
             'One or more of your cybernetics are of poor quality or do not integrate well with your body. This reduces appropriate attributes by the flaw points: a clunky limb reduces Dexterity, a clunky sensory organ reduces Perception, a clunky uplink reduces Wits, clunky life support reduces Stamina. You can apportion this flaw across multiple cybernetics. No attribute can be reduced below 1.',
         category: 'Cybernetic',
         tags: ['Cybernetics', 'Physical'],
+        implantType: 'Limb',
+        implantEffect: 'Poor-quality cybernetics reduce attributes',
+    },
+    {
+        id: 'cybernetic-arm',
+        name: 'Cybernetic Arm',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Full arm replacement with standard functionality',
+        description:
+            'A full arm replacement from shoulder to hand. Standard models match natural limb functionality. Can be upgraded with concealed weapons, tools, or enhanced strength servos.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physical'],
+        implantType: 'Limb',
+        implantEffect: 'Full arm replacement with standard functionality',
+    },
+    {
+        id: 'cybernetic-leg',
+        name: 'Cybernetic Leg',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Full leg replacement with standard functionality',
+        description:
+            'A full leg replacement from hip to foot. Standard models match natural limb functionality. Upgrades include enhanced running speed, jump assists, and concealed storage compartments.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physical'],
+        implantType: 'Limb',
+        implantEffect: 'Full leg replacement with standard functionality',
+    },
+    {
+        id: 'cybernetic-hand',
+        name: 'Cybernetic Hand',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Hand replacement with standard grip and manipulation',
+        description:
+            'A partial limb replacement from wrist down. Offers standard grip strength and fine manipulation. Can be upgraded with finger tools, concealed lockpicks, or data-spike interfaces.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physical'],
+        implantType: 'Limb',
+        implantEffect: 'Hand replacement with standard grip and manipulation',
+    },
+    {
+        id: 'cybernetic-eye',
+        name: 'Cybernetic Eye',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Replaces natural eye with multi-spectrum optics',
+        description:
+            'A prosthetic eye with multi-spectrum vision modes: low-light, thermal, and electromagnetic. Can zoom up to 10x magnification. Higher-end models include targeting reticles and recording capabilities.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Senses'],
+        implantType: 'Sensory',
+        implantEffect: 'Multi-spectrum optics with 10x zoom',
+    },
+    {
+        id: 'cybernetic-ear',
+        name: 'Cybernetic Ear',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Enhanced hearing with frequency range extension',
+        description:
+            'An auditory implant that extends hearing range beyond natural limitations. Includes volume dampening to protect against sonic attacks, selective filtering to isolate specific sounds, and a recording buffer.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Senses'],
+        implantType: 'Sensory',
+        implantEffect: 'Enhanced hearing with frequency range extension',
+    },
+    {
+        id: 'neural-uplink-implant',
+        name: 'Neural Uplink',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Direct mental interface with computer networks',
+        description:
+            'A brain-computer interface implant that allows direct mental connection to computer networks and datapads. Reduces Interface difficulty by 2 when connected. Can query databases at the speed of thought.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Technology'],
+        implantType: 'Neural',
+        implantEffect: 'Direct mental interface with computer networks',
+    },
+    {
+        id: 'subdermal-armor',
+        name: 'Subdermal Armor',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Armor mesh implanted beneath the skin',
+        description:
+            'Flexible armor mesh implanted beneath the skin. Provides +1D Soak against physical attacks without impeding movement. Usually undetectable without a medical scanner.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physical'],
+        implantType: 'Dermal',
+        implantEffect: '+1D Soak bonus against physical damage',
+    },
+    {
+        id: 'respiratory-implant',
+        name: 'Respiratory Implant',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Filters toxins and provides emergency oxygen',
+        description:
+            'An implant that filters airborne toxins, smoke, and chemical agents from inhaled air. Includes emergency oxygen reserves for 4 hours in vacuum or thin atmospheres. Replaces the need for external breath masks.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physiology'],
+        implantType: 'Respiratory',
+        implantEffect: 'Filters toxins and provides 4 hours of emergency oxygen',
+    },
+    {
+        id: 'targeting-computer',
+        name: 'Targeting Computer',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Neural-linked targeting system',
+        description:
+            'A neural-linked targeting system that provides real-time trajectory calculations and aiming assistance. Reduces the difficulty of all ranged combat attacks by 1. Does not stack with other targeting aids.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Technology'],
+        implantType: 'Combat',
+        implantEffect: '-1 difficulty to ranged combat attacks',
+    },
+    {
+        id: 'combat-reflex-enhancer',
+        name: 'Combat Reflex Enhancer',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Spinal implant that improves reaction time',
+        description:
+            'A spinal implant that accelerates neural signal transmission, improving reaction time. Adds 1D to Initiative rolls in combat situations. May cause jitteriness as a side effect.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physical'],
+        implantType: 'Combat',
+        implantEffect: '+1D to Initiative',
+    },
+    {
+        id: 'comlink-implant',
+        name: 'Comlink Implant',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Built-in subdermal comlink',
+        description:
+            'A subdermal communication implant with a bone-conduction speaker and throat microphone. Provides hands-free communication on a dedicated encrypted channel. Range limited to 50 km planetary.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Technology'],
+        implantType: 'Communication',
+        implantEffect: 'Built-in subdermal comlink with encrypted channel',
+    },
+    {
+        id: 'recording-implant',
+        name: 'Recording Implant',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Records audio and visual data to internal storage',
+        description:
+            'An implant connected to optic and auditory nerves that records everything the user sees and hears. Stores up to 48 hours of high-definition footage. Data can be wirelessly downloaded or extracted via physical port.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Senses'],
+        implantType: 'Sensory',
+        implantEffect: 'Records audio and visual data to internal storage',
+    },
+    {
+        id: 'adrenal-booster',
+        name: 'Adrenal Booster',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Synthetic adrenaline release implant',
+        description:
+            'An implant that releases synthetic adrenaline into the bloodstream on command. Can be activated 3 times per day. Each activation grants +1D to Strength and Stamina pools for 1 round, followed by fatigue.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physiology'],
+        implantType: 'Neural',
+        implantEffect: 'Temporary +1D to Strength and Stamina (3x/day)',
+    },
+    {
+        id: 'dart-launcher',
+        name: 'Wrist Dart Launcher',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Concealed dart launcher in forearm',
+        description:
+            'A concealed single-shot projectile launcher built into the forearm. Can fire tranquilizer darts, tracking beacons, or micro-explosives. Reloading requires a full action. Usually undetectable without a weapons scanner.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physical'],
+        implantType: 'Limb',
+        implantEffect: 'Concealed dart launcher in forearm',
+    },
+    {
+        id: 'cardio-enhancer',
+        name: 'Cardio Enhancement',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Cybernetic heart and lung enhancement',
+        description:
+            'A cybernetic heart and lung enhancement that improves cardiovascular performance. Adds 1D to Stamina for endurance-based tests such as running, swimming, and holding breath.',
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physiology'],
+        implantType: 'Life Support',
+        implantEffect: '+1D to Stamina for endurance tests',
+    },
+    {
+        id: 'bio-monitor',
+        name: 'Bio-Monitor',
+        type: 'Implant',
+        cost: 0,
+        shortDescription: 'Real-time health monitoring implant',
+        description:
+            "An internal sensor suite that monitors vital signs, toxin levels, and overall health status. Can transmit data to a medic's datapad and automatically alerts preset contacts when the user is incapacitated.",
+        category: 'Cybernetic',
+        tags: ['Cybernetics', 'Physiology'],
+        implantType: 'Life Support',
+        implantEffect: 'Real-time health monitoring with emergency alert',
     },
 
     // ── Force Connections ──────────────────────────────────────

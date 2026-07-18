@@ -1,9 +1,7 @@
-import { CollapsibleBlock, SectionCard } from '../../../components';
+import { CollapsibleBlock, SectionCard, TraitRowWithInput } from '../../../components';
 import type { AccentColor } from '../../../components';
-import { TraitRowWithInput } from '../../../components';
-import { useCharacterStore } from '../../../store/characterStore.ts';
-import { useCharacterContext } from '../../../context/CharacterContext.tsx';
-import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
+import { useCharacter } from '../../../hooks';
+import { DEFAULT_TRAIT_VALUE } from '../../../types/character';
 import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 
 const ATTRIBUTES = {
@@ -29,10 +27,7 @@ interface AttributeBlockProps {
 }
 
 export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps) {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
-    const { character: contextChar, readOnly } = useCharacterContext();
-
-    const character = contextChar ?? currentCharacter;
+    const { character, readOnly, updateCharacter } = useCharacter();
     if (!character) return null;
 
     const handleAttributeChange = (
@@ -42,7 +37,6 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        if (readOnly) return;
         const currentAttr = character.attributes[key] || { ...DEFAULT_TRAIT_VALUE };
         updateCharacter(character.id, {
             attributes: {
@@ -58,7 +52,6 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
     };
 
     const handleAttributeSpecializationChange = (key: string, specializationText: string) => {
-        if (readOnly) return;
         const currentAttr = character.attributes[key] || { ...DEFAULT_TRAIT_VALUE };
         updateCharacter(character.id, {
             attributes: {

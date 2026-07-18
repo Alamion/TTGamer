@@ -2,7 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 import type { MeritFlawEntry } from './meritsFlawsData';
 
-export const MF_COLUMNS: ColumnDef<MeritFlawEntry>[] = [
+export const MERITS_FLAWS_COLUMNS: ColumnDef<MeritFlawEntry>[] = [
     {
         id: 'name',
         header: 'Merit / Flaw',

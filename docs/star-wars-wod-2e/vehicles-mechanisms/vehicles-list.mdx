@@ -1,0 +1,40 @@
+---
+sidebar_position: 6.5
+title: Vehicle Catalog
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+import { VEHICLES } from '/src/data/vehicleData';
+import { VEHICLE_COLUMNS, renderVehicleDetail } from '/src/data/vehicleConfig';
+
+# Vehicle Catalog
+
+Vehicles stat blocks converted from WEG source books. Each entry follows the conversion guidelines from [Vehicle Traits & Systems](./traits-systems.mdx).
+
+The catalog covers ground vehicles, walkers, speeders, starfighters, space transports, and capital ships from the WEG core rulebook.
+
+---
+
+<TWWrapper>
+    <DataCatalog
+        data={VEHICLES}
+        columns={VEHICLE_COLUMNS}
+        renderDetail={renderVehicleDetail}
+        searchPlaceholder="Search vehicles..."
+        filters={[
+            { columnId: 'scale', label: 'Scale' },
+            { columnId: 'eras', label: 'Era', mode: 'multi' },
+        ]}
+        id="vehicle-catalog"
+    />
+</TWWrapper>
+
+---
+
+## Next Steps
+
+- [Vehicle Traits & Systems](./traits-systems.mdx) — Full vehicle attribute conversion guide
+- [Durability, Damage & Repair](./durability-damage-repare.mdx) — Vehicle damage track, soak rules, repair
+- [Space Combat](./space-combat.mdx) — Dogfighting, gunnery, and capital ship battles
+- [Modifications](./modifications.mdx) — Customization background, attribute trade-offs

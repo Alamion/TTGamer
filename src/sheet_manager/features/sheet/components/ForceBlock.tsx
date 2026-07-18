@@ -1,10 +1,13 @@
-import { CollapsibleBlock, SectionCard } from '../../../components';
-import type { AccentColor } from '../../../components';
-import { CustomTraitList, TraitRowWithInput, StatDot } from '../../../components';
-import type { CatalogEntry } from '../../../components';
-import { useCharacterStore } from '../../../store/characterStore.ts';
-import { useCharacterContext } from '../../../context/CharacterContext.tsx';
-import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
+import {
+    CollapsibleBlock,
+    SectionCard,
+    CustomTraitList,
+    TraitRowWithInput,
+    StatDot,
+} from '../../../components';
+import type { AccentColor, CatalogEntry } from '../../../components';
+import { useCharacter } from '../../../hooks';
+import { DEFAULT_TRAIT_VALUE } from '../../../types/character';
 import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 import { FORCE_POWERS } from '@site/src/data/forcePowersData';
 import type { ForcePowerEntry } from '@site/src/data/forcePowersData';
@@ -25,10 +28,7 @@ function getDarkSideColor(percentage: number): { bg: string; border: string } {
 }
 
 export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
-    const { character: contextChar, readOnly } = useCharacterContext();
-
-    const character = contextChar ?? currentCharacter;
+    const { character, readOnly, updateCharacter } = useCharacter();
     if (!character) return null;
 
     const forcePoints = character.forcePoints ?? { current: 0, max: 10 };
@@ -47,7 +47,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        if (readOnly) return;
         const currentSkill = character.forceSkills?.[key] || { ...DEFAULT_TRAIT_VALUE };
         updateCharacter(character.id, {
             forceSkills: {
@@ -63,7 +62,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleForceSkillSpecializationChange = (key: string, specializationText: string) => {
-        if (readOnly) return;
         const currentSkill = character.forceSkills?.[key] || { ...DEFAULT_TRAIT_VALUE };
         updateCharacter(character.id, {
             forceSkills: {
@@ -80,7 +78,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        if (readOnly) return;
         const currentVirtue = character.virtues?.[key] || { ...DEFAULT_TRAIT_VALUE };
         updateCharacter(character.id, {
             virtues: {
@@ -96,7 +93,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleVirtueSpecializationChange = (key: string, specializationText: string) => {
-        if (readOnly) return;
         const currentVirtue = character.virtues?.[key] || { ...DEFAULT_TRAIT_VALUE };
         updateCharacter(character.id, {
             virtues: {
@@ -107,21 +103,18 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleWillpowerChange = (value: number) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             willpower: { ...willpower, current: value },
         });
     };
 
     const handleForcePointsChange = (value: number) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             forcePoints: { ...forcePoints, current: value },
         });
     };
 
     const handleMaxForcePointsChange = (value: number) => {
-        if (readOnly) return;
         const current = Math.min(forcePoints.current, value);
         updateCharacter(character.id, {
             forcePoints: { current, max: value },
@@ -129,7 +122,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleDarkSideChange = (value: number) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             darkSideResistance: value,
         });
@@ -148,7 +140,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     }));
 
     const addForcePower = () => {
-        if (readOnly) return;
         const current = character.forcePowerItems ?? [];
         updateCharacter(character.id, {
             forcePowerItems: [...current, { id: generateId(), name: '', value: 0 }],
@@ -156,7 +147,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const removeForcePower = (id: string) => {
-        if (readOnly) return;
         const current = character.forcePowerItems ?? [];
         updateCharacter(character.id, {
             forcePowerItems: current.filter((fp) => fp.id !== id),
@@ -164,7 +154,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleForcePowerValueChange = (id: string, value: number) => {
-        if (readOnly) return;
         const current = character.forcePowerItems ?? [];
         updateCharacter(character.id, {
             forcePowerItems: current.map((fp) => (fp.id === id ? { ...fp, value } : fp)),
@@ -172,7 +161,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleForcePowerLabelChange = (id: string, label: string) => {
-        if (readOnly) return;
         const current = character.forcePowerItems ?? [];
         updateCharacter(character.id, {
             forcePowerItems: current.map((fp) => (fp.id === id ? { ...fp, name: label } : fp)),
@@ -180,7 +168,6 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleForcePowerCatalogSelect = (id: string, entry: CatalogEntry) => {
-        if (readOnly) return;
         const current = character.forcePowerItems ?? [];
         updateCharacter(character.id, {
             forcePowerItems: current.map((fp) =>

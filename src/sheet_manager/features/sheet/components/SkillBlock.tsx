@@ -1,10 +1,13 @@
-import { CollapsibleBlock, SectionCard } from '../../../components';
+import {
+    CollapsibleBlock,
+    SectionCard,
+    CustomTraitList,
+    TraitRowWithInput,
+} from '../../../components';
 import type { AccentColor } from '../../../components';
-import { CustomTraitList, TraitRowWithInput } from '../../../components';
-import { useCharacterStore } from '../../../store/characterStore.ts';
-import { useCharacterContext } from '../../../context/CharacterContext.tsx';
-import { DEFAULT_TRAIT_VALUE } from '../../../types/character.ts';
-import type { CustomSkill } from '../../../types/character.ts';
+import { useCharacter } from '../../../hooks';
+import { DEFAULT_TRAIT_VALUE } from '../../../types/character';
+import type { CustomSkill } from '../../../types/character';
 import { generateId } from '@site/src/shared/utils/random';
 import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 
@@ -60,10 +63,7 @@ interface SkillBlockProps {
 }
 
 export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
-    const { character: contextChar, readOnly } = useCharacterContext();
-
-    const character = contextChar ?? currentCharacter;
+    const { character, readOnly, updateCharacter } = useCharacter();
     if (!character) return null;
 
     const customTalents = character.customTalents || [];
@@ -88,7 +88,6 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        if (readOnly) return;
         const currentSkill = character.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
         updateCharacter(character.id, {
             skills: {
@@ -104,7 +103,6 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     };
 
     const handleSkillSpecializationChange = (key: string, specializationText: string) => {
-        if (readOnly) return;
         const currentSkill = character.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
         updateCharacter(character.id, {
             skills: {
@@ -115,7 +113,6 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     };
 
     const addCustomSkill = (category: SkillCategory) => {
-        if (readOnly) return;
         const newSkill: CustomSkill = {
             id: generateId(),
             label: '',
@@ -133,7 +130,6 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     };
 
     const removeCustomSkill = (category: SkillCategory, id: string) => {
-        if (readOnly) return;
         updateCharacter(character.id, {
             customTalents:
                 category === 'talents' ? customTalents.filter((s) => s.id !== id) : customTalents,
@@ -155,7 +151,6 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
         experienced?: boolean,
         practiced?: boolean
     ) => {
-        if (readOnly) return;
         const updateList = (list: CustomSkill[]) =>
             list.map((s) =>
                 s.id === id

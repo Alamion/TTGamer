@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Toaster } from 'react-hot-toast';
-import DiceRollerPanel from '../dice_roller/components/DiceRollerPanel';
-import { setupRollLogging } from '../shared/utils/logging';
+import { onRollResult } from '@site/src/dice_roller/dice-logic';
+import DiceRollerPanel from '@site/src/dice_roller/components/DiceRollerPanel';
+import { info } from '@site/src/shared/utils/logging';
 
 interface RootProps {
     children: ReactNode;
@@ -11,7 +12,13 @@ interface RootProps {
 const isBrowser = typeof window !== 'undefined';
 
 export default function Root({ children }: RootProps): ReactNode {
-    useEffect(() => setupRollLogging(), []);
+    useEffect(
+        () =>
+            onRollResult((result) => {
+                info(`\nRolls: ${result.details}\nFormatted: ${result.formatted}`, 'Dice Roll');
+            }),
+        []
+    );
     return (
         <>
             {children}

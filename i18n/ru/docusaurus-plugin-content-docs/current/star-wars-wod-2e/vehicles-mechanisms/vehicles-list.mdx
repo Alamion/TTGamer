@@ -1,0 +1,40 @@
+---
+sidebar_position: 6.5
+title: Каталог транспорта
+---
+
+import { TWWrapper } from '/src/shared/components/TWWrapper';
+import { DataCatalog } from '/src/shared/components/DataCatalog';
+import { VEHICLES } from '/src/data/vehicleData';
+import { VEHICLE_COLUMNS, renderVehicleDetail } from '/src/data/vehicleConfig';
+
+# Каталог транспорта
+
+Блоки характеристик транспорта, конвертированные из исходных книг WEG. Каждая запись следует правилам конвертации из раздела [Характеристики и системы транспорта](./traits-systems.mdx).
+
+Каталог охватывает наземный транспорт, шагоходы, спидеры, звездолёты, космические транспорты и капитальные корабли из основной книги правил WEG.
+
+---
+
+<TWWrapper>
+    <DataCatalog
+        data={VEHICLES}
+        columns={VEHICLE_COLUMNS}
+        renderDetail={renderVehicleDetail}
+        searchPlaceholder="Поиск транспорта..."
+        filters={[
+            { columnId: 'scale', label: 'Масштаб' },
+            { columnId: 'eras', label: 'Эра', mode: 'multi' },
+        ]}
+        id="vehicle-catalog"
+    />
+</TWWrapper>
+
+---
+
+## Далее
+
+- [Характеристики и системы транспорта](./traits-systems.mdx) — Полное руководство по конвертации характеристик
+- [Прочность, повреждения и ремонт](./durability-damage-repare.mdx) — Шкала повреждений, правила поглощения, ремонт
+- [Космический бой](./space-combat.mdx) — Воздушный бой, стрельба и сражения капитальных кораблей
+- [Модификации](./modifications.mdx) — Предыстория «Модификация», обмен характеристик
