@@ -144,7 +144,7 @@ export function AdvantagesBlock({ accentColor = 'primary' }: AdvantagesBlockProp
                         onAdd={addBackground}
                         onRemove={removeBackground}
                         onChange={(id, val) => updateBackground(id, val)}
-                        onLabelChange={(id, label) => updateBackground(id, 0, label)}
+                        onLabelChange={(id, value, label) => updateBackground(id, value, label)}
                         size="md"
                         placeholder="Background name..."
                         catalog={backgroundsCatalog}

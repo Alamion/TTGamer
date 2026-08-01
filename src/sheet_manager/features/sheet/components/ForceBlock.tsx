@@ -7,7 +7,7 @@ import {
 } from '../../../components';
 import type { AccentColor, CatalogEntry } from '../../../components';
 import { useCharacter } from '../../../hooks';
-import { DEFAULT_TRAIT_VALUE } from '../../../types/character';
+import { DEFAULT_ATTRIBUTE_VALUE, DEFAULT_SKILL_VALUE } from '../../../types/character';
 import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 import { FORCE_POWERS } from '@site/src/data/forcePowersData';
 import type { ForcePowerEntry } from '@site/src/data/forcePowersData';
@@ -47,7 +47,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        const currentSkill = character.forceSkills?.[key] || { ...DEFAULT_TRAIT_VALUE };
+        const currentSkill = character.forceSkills?.[key] || { ...DEFAULT_ATTRIBUTE_VALUE };
         updateCharacter(character.id, {
             forceSkills: {
                 ...character.forceSkills,
@@ -62,7 +62,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleForceSkillSpecializationChange = (key: string, specializationText: string) => {
-        const currentSkill = character.forceSkills?.[key] || { ...DEFAULT_TRAIT_VALUE };
+        const currentSkill = character.forceSkills?.[key] || { ...DEFAULT_ATTRIBUTE_VALUE };
         updateCharacter(character.id, {
             forceSkills: {
                 ...character.forceSkills,
@@ -78,7 +78,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        const currentVirtue = character.virtues?.[key] || { ...DEFAULT_TRAIT_VALUE };
+        const currentVirtue = character.virtues?.[key] || { ...DEFAULT_ATTRIBUTE_VALUE };
         updateCharacter(character.id, {
             virtues: {
                 ...character.virtues,
@@ -93,7 +93,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleVirtueSpecializationChange = (key: string, specializationText: string) => {
-        const currentVirtue = character.virtues?.[key] || { ...DEFAULT_TRAIT_VALUE };
+        const currentVirtue = character.virtues?.[key] || { ...DEFAULT_ATTRIBUTE_VALUE };
         updateCharacter(character.id, {
             virtues: {
                 ...character.virtues,
@@ -104,13 +104,16 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
 
     const handleWillpowerChange = (value: number) => {
         updateCharacter(character.id, {
-            willpower: { ...willpower, current: value },
+            willpower: { ...willpower, current: Math.min(Math.max(0, value), 10) },
         });
     };
 
     const handleForcePointsChange = (value: number) => {
         updateCharacter(character.id, {
-            forcePoints: { ...forcePoints, current: value },
+            forcePoints: {
+                ...forcePoints,
+                current: Math.min(Math.max(0, value), forcePoints.max),
+            },
         });
     };
 
@@ -190,7 +193,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                 >
                     {FORCE_SKILLS.map((skill) => {
                         const trait = character.forceSkills?.[skill] || {
-                            ...DEFAULT_TRAIT_VALUE,
+                            ...DEFAULT_SKILL_VALUE,
                         };
                         return (
                             <TraitRowWithInput
@@ -207,6 +210,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                                 }
                                 size="md"
                                 onDiceRoll={buildDiceNotation}
+                                characterName={character.metadata.name}
                             />
                         );
                     })}
@@ -219,7 +223,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                     >
                         {VIRTUES.map((virtue) => {
                             const trait = character.virtues?.[virtue] || {
-                                ...DEFAULT_TRAIT_VALUE,
+                                ...DEFAULT_ATTRIBUTE_VALUE,
                             };
                             return (
                                 <TraitRowWithInput
@@ -237,6 +241,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                                     size="md"
                                     minimal={1}
                                     onDiceRoll={buildDiceNotation}
+                                    characterName={character.metadata.name}
                                 />
                             );
                         })}
@@ -252,6 +257,8 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                                 size="md"
                                 minimal={willpowerMinimal}
                                 onDiceRoll={buildDiceNotation}
+                                statLabel="Willpower"
+                                characterName={character.metadata.name}
                             />
                         </div>
                         <div className="flex items-center justify-between py-1.5">
@@ -264,6 +271,8 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                                 size="md"
                                 minimal={selfControl}
                                 onDiceRoll={buildDiceNotation}
+                                statLabel="Max Force Points"
+                                characterName={character.metadata.name}
                             />
                         </div>
                         <div className="flex items-center justify-between py-1.5">
@@ -275,6 +284,8 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                                 onChange={(val) => handleForcePointsChange(val)}
                                 size="md"
                                 onDiceRoll={buildDiceNotation}
+                                statLabel="Force Points"
+                                characterName={character.metadata.name}
                             />
                         </div>
                         <div className="flex items-center justify-between py-1.5">
@@ -287,6 +298,8 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                                 size="md"
                                 activeColor={getDarkSideColor((darkSide / 10) * 100)}
                                 onDiceRoll={buildDiceNotation}
+                                statLabel="Dark Side Resistance"
+                                characterName={character.metadata.name}
                             />
                         </div>
                     </SectionCard>
@@ -302,12 +315,13 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                         onAdd={addForcePower}
                         onRemove={removeForcePower}
                         onChange={(id, val) => handleForcePowerValueChange(id, val)}
-                        onLabelChange={(id, label) => handleForcePowerLabelChange(id, label)}
+                        onLabelChange={(id, _, label) => handleForcePowerLabelChange(id, label)}
                         maxValue={1}
                         placeholder="Force power name..."
                         size="sm"
                         catalog={forcePowersCatalog}
                         onCatalogSelect={handleForcePowerCatalogSelect}
+                        characterName={character.metadata.name}
                     />
                 </SectionCard>
             </div>

@@ -1,5 +1,5 @@
 import { useCharacterStore } from '../store/characterStore';
-import { DEFAULT_TRAIT_VALUE } from '../types/character';
+import { DEFAULT_ATTRIBUTE_VALUE } from '../types/character';
 import type { TraitValue } from '../types/character';
 
 type TraitPath = 'attributes' | 'skills' | 'forceSkills' | 'virtues';
@@ -8,9 +8,9 @@ export function useTraitUpdater(path: TraitPath) {
     const { currentCharacter, updateCharacter } = useCharacterStore();
 
     const getTrait = (key: string): TraitValue => {
-        if (!currentCharacter) return { ...DEFAULT_TRAIT_VALUE, value: 0 };
+        if (!currentCharacter) return { ...DEFAULT_ATTRIBUTE_VALUE, value: 0 };
         const record = currentCharacter[path] as Record<string, TraitValue> | undefined;
-        return record?.[key] ?? { ...DEFAULT_TRAIT_VALUE, value: 0 };
+        return record?.[key] ?? { ...DEFAULT_ATTRIBUTE_VALUE, value: 0 };
     };
 
     const updateTrait = (key: string, updates: Partial<TraitValue>) => {

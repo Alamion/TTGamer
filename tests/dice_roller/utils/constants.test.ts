@@ -42,6 +42,10 @@ describe('DEFAULT_SETTINGS', () => {
             'soundVolume',
             'timeToReact',
             'timeToReactSeconds',
+            'enableDiscordWebhook',
+            'includeCharacterName',
+            'includeCharacterStats',
+            'includeRollContext',
         ]);
     });
 
@@ -71,6 +75,22 @@ describe('DEFAULT_SETTINGS', () => {
 
     it('timeToReactSeconds is 5', () => {
         expect(DEFAULT_SETTINGS.timeToReactSeconds).toBe(5);
+    });
+
+    it('enableDiscordWebhook is true', () => {
+        expect(DEFAULT_SETTINGS.enableDiscordWebhook).toBe(true);
+    });
+
+    it('includeCharacterName is true', () => {
+        expect(DEFAULT_SETTINGS.includeCharacterName).toBe(true);
+    });
+
+    it('includeCharacterStats is true', () => {
+        expect(DEFAULT_SETTINGS.includeCharacterStats).toBe(true);
+    });
+
+    it('includeRollContext is true', () => {
+        expect(DEFAULT_SETTINGS.includeRollContext).toBe(true);
     });
 });
 

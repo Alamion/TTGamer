@@ -13,15 +13,19 @@ yarn test --run    # Single run (no watch)
 tests/dice_roller/
 ├── setup.ts                              # Vitest setup (mocks, global config)
 ├── parser/
-│   └── basic.test.ts                     # Lexer/parser tokenization + AST
+│   ├── basic.test.ts                     # Lexer/parser tokenization + AST
+│   └── group-modifiers.test.ts           # Group notation (3d10+1d10)>=6
 ├── evaluator/
 │   ├── basic-rolls.test.ts               # Simple rolls (2d6, 1d20+5)
 │   ├── modifiers.test.ts                 # Keep/drop, target, crit, sort
 │   ├── explosion.test.ts                 # Explode (!, !!, !p, !!p)
 │   ├── reroll.test.ts                    # Reroll (r, ro, r<condition>)
-│   └── combined.test.ts                  # Multiple modifiers together
-└── integration/
-    └── full-pipeline.test.ts             # Tokenize → Parse → Evaluate → Format
+│   ├── combined.test.ts                  # Multiple modifiers together
+│   └── group-modifiers.test.ts           # Group notation evaluation
+├── integration/
+│   └── full-pipeline.test.ts             # Tokenize → Parse → Evaluate → Format
+└── utils/
+    └── constants.test.ts                 # Module constants (incl. Discord webhook settings)
 ```
 
 ## Key Testing Patterns

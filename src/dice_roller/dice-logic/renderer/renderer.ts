@@ -64,6 +64,16 @@ export class DiceRenderer {
     private animationId: number | null = null;
     private isRunning = false;
 
+    private _manuallyRerolled = false;
+
+    get wasManuallyRerolled(): boolean {
+        return this._manuallyRerolled;
+    }
+
+    resetManualRerollFlag(): void {
+        this._manuallyRerolled = false;
+    }
+
     private width: number;
     private height: number;
 
@@ -295,6 +305,7 @@ export class DiceRenderer {
     startRoll(diceData: DiceGeometryData[], groupSizes: number[]): Promise<number[]> {
         debug('DiceRenderer: Starting new roll session with', diceData.length, 'dice');
 
+        this.resetManualRerollFlag();
         this.showLoading();
 
         const sessionId = this.nextSessionId++;
@@ -846,6 +857,7 @@ export class DiceRenderer {
 
     private rerollDieInSession(session: RollSession, flatIndex: number): void {
         this.clearHover();
+        this._manuallyRerolled = true;
 
         session.lockedIndices.delete(flatIndex);
         const die = session.dice[flatIndex];

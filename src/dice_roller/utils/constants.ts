@@ -13,6 +13,10 @@ export const DEFAULT_SETTINGS = {
     soundVolume: 80,
     timeToReact: false,
     timeToReactSeconds: 5,
+    enableDiscordWebhook: true,
+    includeCharacterName: true,
+    includeCharacterStats: true,
+    includeRollContext: true,
 };
 
 export type SettingType = 'boolean' | 'string' | 'number' | 'color';
@@ -59,4 +63,8 @@ export const SETTINGS_METADATA: Record<keyof typeof DEFAULT_SETTINGS, SettingMet
         },
     },
     timeToReactSeconds: { type: 'number', name: 'Time to react seconds' },
+    enableDiscordWebhook: { type: 'boolean', name: 'Enable Discord webhook' },
+    includeCharacterName: { type: 'boolean', name: 'Include character name' },
+    includeCharacterStats: { type: 'boolean', name: 'Include character stats' },
+    includeRollContext: { type: 'boolean', name: 'Include roll context' },
 };

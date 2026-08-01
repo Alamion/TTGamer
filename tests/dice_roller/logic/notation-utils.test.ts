@@ -7,6 +7,8 @@ import {
     applyDisadvantage,
     splitD100Value,
     handleDiceNotation,
+    splitTopLevel,
+    mergeDiceNotation,
 } from '@site/src/dice_roller/dice-logic/notation-utils';
 
 describe('parseParts', () => {
@@ -324,5 +326,119 @@ describe('handleDiceNotation', () => {
 
     it('preserves modifier on existing die when decrementing', () => {
         expect(handleDiceNotation('4d6kh3', 'd6', false)).toBe('3d6kh3');
+    });
+});
+
+describe('splitTopLevel', () => {
+    it('splits simple notation at +', () => {
+        expect(splitTopLevel('2d6 + 3d8')).toEqual(['2d6', '3d8']);
+    });
+
+    it('does not split inside parentheses', () => {
+        expect(splitTopLevel('(3d10+1d10)')).toEqual(['(3d10+1d10)']);
+    });
+
+    it('splits groups with parens correctly', () => {
+        expect(splitTopLevel('(3d10+1d10) + 2d20')).toEqual(['(3d10+1d10)', '2d20']);
+    });
+
+    it('returns single part for no +', () => {
+        expect(splitTopLevel('4d6kh3')).toEqual(['4d6kh3']);
+    });
+
+    it('handles empty string', () => {
+        expect(splitTopLevel('')).toEqual([]);
+    });
+
+    it('handles nested parentheses', () => {
+        expect(splitTopLevel('((3d10+1d10)>=6) + 1d20')).toEqual(['((3d10+1d10)>=6)', '1d20']);
+    });
+
+    it('handles trailing modifier on parenthesized group', () => {
+        expect(splitTopLevel('(3d10+1d10)>=6 + 2d8')).toEqual(['(3d10+1d10)>=6', '2d8']);
+    });
+});
+
+describe('mergeDiceNotation', () => {
+    it('returns added when existing is empty', () => {
+        expect(mergeDiceNotation('', '2d6')).toBe('2d6');
+    });
+
+    it('appends when no matching die face found', () => {
+        expect(mergeDiceNotation('2d6', '1d8')).toBe('2d6 + 1d8');
+    });
+
+    it('merges matching faces in simple notation', () => {
+        expect(mergeDiceNotation('2d6', '1d6')).toBe('(2d6+1d6)');
+    });
+
+    it('merges matching faces in notation with modifiers', () => {
+        expect(mergeDiceNotation('3d10>=6', '1d10>=6')).toBe('(3d10+1d10)>=6');
+    });
+
+    it('merges matching face in multi-group notation', () => {
+        expect(mergeDiceNotation('2d6 + 3d8', '1d6')).toBe('(2d6+1d6) + 3d8');
+    });
+
+    it('merges only the first matching group', () => {
+        expect(mergeDiceNotation('1d6 + 2d8 + 1d6', '1d6')).toBe('(1d6+1d6) + 2d8');
+    });
+
+    it('appends when added has no dice group (bare modifier)', () => {
+        expect(mergeDiceNotation('2d6', '+5')).toBe('2d6 + +5');
+    });
+
+    it('handles parenthesized existing group', () => {
+        expect(mergeDiceNotation('(3d6+2d6)', '1d6')).toBe('(3d6+2d6+1d6)');
+    });
+
+    it('handles parenthesized existing group with modifiers', () => {
+        expect(mergeDiceNotation('(3d10+1d10)>=6', '1d10>=6')).toBe('(3d10+1d10+1d10)>=6');
+    });
+
+    it('skips duplicate groups after first merge', () => {
+        expect(mergeDiceNotation('1d6 + 2d6', '1d6')).toBe('(1d6+1d6)');
+    });
+});
+
+describe('mergeDiceNotation edge cases', () => {
+    it('appends fudge dice added because dF is not a numeric die', () => {
+        expect(mergeDiceNotation('2d6', '1dF')).toBe('2d6 + 1dF');
+    });
+
+    it('appends when existing part is fudge dice', () => {
+        expect(mergeDiceNotation('2dF', '1d6')).toBe('2dF + 1d6');
+    });
+
+    it('appends percentile d% added because it is not a numeric die', () => {
+        expect(mergeDiceNotation('2d6', 'd%')).toBe('2d6 + d%');
+    });
+
+    it('appends custom-face dice added', () => {
+        expect(mergeDiceNotation('2d6', 'd[1-5]')).toBe('2d6 + d[1-5]');
+    });
+
+    it('takes the added die modifiers when merging a simple group', () => {
+        expect(mergeDiceNotation('3d10>=6f=1', '2d10>=6!')).toBe('(3d10+2d10)>=6!');
+    });
+
+    it('takes the added die modifiers when merging a parenthesized group', () => {
+        expect(mergeDiceNotation('(3d10+1d10)>=6f=1', '2d10>=6!')).toBe('(3d10+1d10+2d10)>=6!');
+    });
+
+    it('drops the existing group modifiers when the added die has none', () => {
+        expect(mergeDiceNotation('2d6r1kh3', '1d6')).toBe('(2d6+1d6)');
+    });
+
+    it('applies the added die modifiers when the existing group has none', () => {
+        expect(mergeDiceNotation('2d6', '1d6kh2')).toBe('(2d6+1d6)kh2');
+    });
+
+    it('keeps bare-number parts when merging', () => {
+        expect(mergeDiceNotation('2d6 + 5', '1d6')).toBe('(2d6+1d6) + 5');
+    });
+
+    it('appends when existing is a bare number and added is a die', () => {
+        expect(mergeDiceNotation('5', '1d6')).toBe('5 + 1d6');
     });
 });

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useCharacterStore } from '../store/characterStore';
 import { useCharacterContext } from '../context/CharacterContext';
 import type { BaseCharacter } from '../types/character';
@@ -9,12 +9,20 @@ export function useCharacter() {
 
     const character = contextChar ?? currentCharacter;
 
+    const characterRef = useRef(character);
+    const readOnlyRef = useRef(readOnly);
+
+    useEffect(() => {
+        characterRef.current = character;
+        readOnlyRef.current = readOnly;
+    }, [character, readOnly]);
+
     const updateCharacter = useCallback(
         (id: string, updates: Partial<BaseCharacter>) => {
-            if (readOnly || !character) return;
+            if (readOnlyRef.current || !characterRef.current) return;
             rawUpdate(id, updates);
         },
-        [readOnly, character, rawUpdate]
+        [rawUpdate]
     );
 
     return { character, readOnly, updateCharacter };

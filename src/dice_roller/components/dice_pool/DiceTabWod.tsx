@@ -3,7 +3,7 @@ import { useDiceRollerStore } from '../../store/diceRollerStore';
 import { handleDiceNotation } from '../../dice-logic';
 import { blendColors } from '../../utils/recolor_svg';
 import DiceButton from './DiceButton';
-import { DiceD10 } from '../2d_dices';
+import { DiceD10, DiceD6 } from '../2d_dices';
 import type { DiceConfig } from '../dice-config';
 
 const CRIMSON = '#DC143C';
@@ -118,6 +118,14 @@ const WodTab = memo(function WodTab() {
                     secondaryColor={settings.secondaryDiceColor}
                     onAdd={onAddBotch}
                     onRemove={onRemoveBotch}
+                />
+                <DiceButton
+                    key="d6"
+                    config={{ notation: 'd6', Component: DiceD6, label: 'd6' }}
+                    primaryColor={settings.primaryDiceColor}
+                    secondaryColor={settings.secondaryDiceColor}
+                    onAdd={onAdd}
+                    onRemove={onRemove}
                 />
             </div>
         </div>

@@ -2,12 +2,10 @@
 draft: true
 ---
 
-# TOFIX
+# TOFIX — Documentation
 
 **Version:** 3.0.0
 **Last updated:** June 2026
-
----
 
 ## Legend
 
@@ -20,3 +18,5 @@ draft: true
 | ✅ DONE     | fully implemented                           |
 
 ---
+
+_(No open issues yet.)_

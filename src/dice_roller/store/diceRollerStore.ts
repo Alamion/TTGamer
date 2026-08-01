@@ -1,10 +1,12 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { handleRollEvent } from '../utils/events';
+import type { RollOptions } from '../utils/events';
 import { DEFAULT_SETTINGS } from '../utils/constants';
 import type { HistoryEntry, FavoriteNotation, MixedRollConfig } from '../utils/types-ext';
 import type { StateCreator } from 'zustand';
 import { onRollResult } from '../dice-logic';
+import { takeStatLabels, clearStatLabels, getCharacterName } from '../utils/sessionStorage';
 
 function newId(): string {
     try {
@@ -25,6 +27,10 @@ export interface DiceRollerSettings {
     soundVolume: number;
     timeToReact: boolean;
     timeToReactSeconds: number;
+    enableDiscordWebhook: boolean;
+    includeCharacterName: boolean;
+    includeCharacterStats: boolean;
+    includeRollContext: boolean;
 }
 
 interface DiceRollerState {
@@ -35,7 +41,7 @@ interface DiceRollerState {
     panelOpen: boolean;
     notationInput: string;
 
-    roll: (notation: string) => Promise<void>;
+    roll: (notation: string, rollOptions?: RollOptions) => Promise<void>;
     clearHistory: () => void;
     clearFavorites: () => void;
     clearRecentNotations: () => void;
@@ -47,7 +53,15 @@ interface DiceRollerState {
 
 const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
     onRollResult((result) => {
-        const { history, recentNotations } = get();
+        const { settings, history, recentNotations } = get();
+
+        if (settings.includeCharacterName) {
+            const name = getCharacterName();
+            if (name && !result.characterName) {
+                result.characterName = name;
+            }
+        }
+
         const entry: HistoryEntry = {
             id: newId(),
             timestamp: Date.now(),
@@ -70,9 +84,22 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
         panelOpen: false,
         notationInput: '',
 
-        roll: async (notation: string) => {
+        roll: async (notation: string, rollOptions?: RollOptions) => {
             if (!notation.trim()) return;
             const s = get().settings;
+
+            let statLabels = rollOptions?.statLabels;
+            if (statLabels !== undefined) {
+                clearStatLabels();
+            } else if (s.includeCharacterStats) {
+                statLabels = takeStatLabels();
+            }
+
+            let characterName = rollOptions?.characterName;
+            if (!characterName && s.includeCharacterName) {
+                characterName = getCharacterName();
+            }
+
             const config: MixedRollConfig = {
                 diceColor: s.primaryDiceColor,
                 textColor: s.secondaryDiceColor,
@@ -82,7 +109,11 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
                 timeToReact: s.timeToReact,
                 timeToReactSeconds: s.timeToReactSeconds,
             };
-            await handleRollEvent(notation, config);
+            await handleRollEvent(
+                notation,
+                config,
+                statLabels || characterName ? { statLabels, characterName } : undefined
+            );
         },
 
         clearHistory: () => {

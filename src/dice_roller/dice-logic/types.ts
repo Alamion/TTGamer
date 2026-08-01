@@ -193,6 +193,7 @@ export interface FullRollResult {
     total: number;
     details: string;
     formatted: string;
+    manuallyRerolled?: boolean;
 }
 
 export interface RollResult {
@@ -201,4 +202,7 @@ export interface RollResult {
     total: number;
     details: string;
     formatted: string;
+    manuallyRerolled?: boolean;
+    characterName?: string;
+    statLabels?: string[];
 }

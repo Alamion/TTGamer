@@ -1,10 +1,19 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { X, Settings as SettingsIcon } from 'lucide-react';
 import { useDiceRollerStore } from '../store/diceRollerStore';
+import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
+import { SecretField } from '@site/src/shared/components/SecretField';
+import {
+    isValidDiscordWebhook,
+    SESSION_STORAGE_KEY,
+} from '@site/src/external_apis/discord/sendToDiscord';
 
 export default function DiceRollerSettingsModal() {
     const settings = useDiceRollerStore((s) => s.settings);
     const updateSettings = useDiceRollerStore((s) => s.updateSettings);
+
+    const [webhookUrl, setWebhookUrl] = useSessionStorageState(SESSION_STORAGE_KEY, '');
+    const isWebhookValid = webhookUrl.length > 0 && isValidDiscordWebhook(webhookUrl);
 
     return (
         <Dialog.Root>
@@ -142,6 +151,71 @@ export default function DiceRollerSettingsModal() {
                             </span>
                         </div>
                     )}
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={settings.includeRollContext}
+                            onChange={(e) =>
+                                updateSettings({ includeRollContext: e.target.checked })
+                            }
+                            className="w-4 h-4 accent-primary"
+                        />
+                        <span className="text-sm text-textPrimary">Include roll context</span>
+                    </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={settings.includeCharacterName}
+                            onChange={(e) =>
+                                updateSettings({ includeCharacterName: e.target.checked })
+                            }
+                            className="w-4 h-4 accent-primary"
+                        />
+                        <span className="text-sm text-textPrimary">Include character name</span>
+                    </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={settings.includeCharacterStats}
+                            onChange={(e) =>
+                                updateSettings({ includeCharacterStats: e.target.checked })
+                            }
+                            className="w-4 h-4 accent-primary"
+                        />
+                        <span className="text-sm text-textPrimary">Include character stats</span>
+                    </label>
+
+                    <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={settings.enableDiscordWebhook}
+                            onChange={(e) =>
+                                updateSettings({ enableDiscordWebhook: e.target.checked })
+                            }
+                            className="w-4 h-4 accent-primary"
+                        />
+                        <span className="text-sm text-textPrimary">Enable Discord webhook</span>
+                    </label>
+
+                    <div className="border-t border-border pt-4">
+                        <SecretField
+                            value={webhookUrl}
+                            onChange={setWebhookUrl}
+                            placeholder="https://discord.com/api/webhooks/..."
+                            label="Discord Webhook URL"
+                            validationMessage={
+                                webhookUrl.length > 0
+                                    ? isWebhookValid
+                                        ? 'Valid Discord webhook'
+                                        : 'Invalid Discord webhook URL format'
+                                    : undefined
+                            }
+                            isValid={isWebhookValid}
+                        />
+                    </div>
                 </div>
             </Dialog.Content>
         </Dialog.Root>

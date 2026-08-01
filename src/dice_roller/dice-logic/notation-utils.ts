@@ -138,6 +138,78 @@ export function splitD100Value(value: number): { tens: string; ones: string } {
     return { tens, ones };
 }
 
+export function splitTopLevel(notation: string): string[] {
+    const parts: string[] = [];
+    let depth = 0;
+    let current = '';
+    for (const c of notation) {
+        if (c === '(') depth++;
+        else if (c === ')') depth--;
+        if (c === '+' && depth === 0) {
+            parts.push(current.trim());
+            current = '';
+            continue;
+        }
+        current += c;
+    }
+    if (current.trim()) parts.push(current.trim());
+    return parts;
+}
+
+export function mergeDiceNotation(existing: string, added: string): string {
+    if (!existing) return added;
+
+    const addedMatch = added.match(/^(\d+)?(d\d+)([\s\S]*)$/);
+    if (!addedMatch) return `${existing} + ${added}`;
+
+    const addedCount = parseInt(addedMatch[1] || '1', 10);
+    const addedFace = addedMatch[2];
+    const addedModifiers = addedMatch[3];
+
+    const parts = splitTopLevel(existing);
+    let foundMatch = false;
+    const newParts: string[] = [];
+
+    for (const part of parts) {
+        if (foundMatch) {
+            const pMatch = part.match(/^\(?(\d+)?(d\d+)/);
+            if (pMatch && pMatch[2] === addedFace) continue;
+            newParts.push(part);
+            continue;
+        }
+
+        const parenMatch = part.match(/^\(([^)]+)\)([\s\S]*)$/);
+        if (parenMatch) {
+            const inner = parenMatch[1];
+            const innerParts = inner.split('+');
+            const hasMatchingFace = innerParts.some((ip) => {
+                const m = ip.match(/^(\d+)(d\d+)$/);
+                return m && m[2] === addedFace;
+            });
+            if (hasMatchingFace) {
+                foundMatch = true;
+                newParts.push(`(${inner}+${addedCount}${addedFace})${addedModifiers}`);
+            } else {
+                newParts.push(part);
+            }
+            continue;
+        }
+
+        const simpleMatch = part.match(/^(\d+)?(d\d+)([\s\S]*)$/);
+        if (simpleMatch && simpleMatch[2] === addedFace) {
+            foundMatch = true;
+            const count = parseInt(simpleMatch[1] || '1', 10);
+            newParts.push(`(${count}${addedFace}+${addedCount}${addedFace})${addedModifiers}`);
+        } else {
+            newParts.push(part);
+        }
+    }
+
+    if (!foundMatch) return `${existing} + ${added}`;
+
+    return newParts.join(' + ');
+}
+
 export function handleDiceNotation(
     prev: string,
     btnNotation: string,

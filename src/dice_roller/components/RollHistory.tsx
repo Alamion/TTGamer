@@ -2,6 +2,8 @@ import { memo, useRef, useEffect, useState } from 'react';
 import { Star, RotateCw, Trash2 } from 'lucide-react';
 import { useDiceRollerStore } from '../store/diceRollerStore';
 import type { HistoryTabType } from '../utils/types-ext';
+import { clsx } from 'clsx';
+import { pushStatLabel, clearStatLabels, setCharacterName } from '../utils/sessionStorage';
 
 const TABS: { id: HistoryTabType; label: string }[] = [
     { id: 'chat', label: 'History' },
@@ -19,6 +21,9 @@ interface ListItem {
     isExpanded?: boolean;
     details?: string;
     formatted?: string;
+    manuallyRerolled?: boolean;
+    characterName?: string;
+    statLabels?: string[];
 }
 
 function RollHistory() {
@@ -36,12 +41,23 @@ function RollHistory() {
     const [expandedIds, setExpandedIds] = useState<string[]>([]);
 
     const contentRef = useRef<HTMLDivElement | null>(null);
+    const prevHistoryLenRef = useRef(history.length);
+
+    useEffect(() => {
+        if (history.length > prevHistoryLenRef.current && history.length > 0) {
+            setExpandedIds([history[0].id]);
+        }
+        prevHistoryLenRef.current = history.length;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [history.length]);
 
     useEffect(() => {
         if (contentRef.current && activeTab === 'chat') {
-            contentRef.current.scrollTop = contentRef.current.scrollHeight;
+            contentRef.current.scrollTop = 0;
         }
     }, [history, activeTab]);
+
+    const includeRollContext = useDiceRollerStore((s) => s.settings.includeRollContext);
 
     const toggleExpand = (id: string) => {
         setExpandedIds((prev) =>
@@ -79,7 +95,7 @@ function RollHistory() {
                     type="button"
                     onClick={item.onBodyClick}
                     className="flex-1 flex items-baseline gap-1.5 min-w-0 text-left
-                        cursor-pointer bg-transparent border-none p-0"
+                        cursor-pointer bg-transparent border-none p-0 select-text"
                 >
                     <span className="font-bold text-sm text-textSecondary truncate">
                         {item.notation}
@@ -95,25 +111,65 @@ function RollHistory() {
                     onClick={(e) => {
                         e.stopPropagation();
                         setNotationInput(item.notation);
+                        if (item.characterName) {
+                            setCharacterName(item.characterName);
+                        }
+                        if (item.statLabels && item.statLabels.length > 0) {
+                            clearStatLabels();
+                            item.statLabels.forEach((l) => pushStatLabel(l));
+                        }
                     }}
                     onContextMenu={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        if (item.characterName) {
+                            setCharacterName(item.characterName);
+                        }
+                        if (item.statLabels && item.statLabels.length > 0) {
+                            clearStatLabels();
+                            item.statLabels.forEach((l) => pushStatLabel(l));
+                        }
                         roll(item.notation);
                     }}
-                    className="flex-shrink-0 w-6 h-6 flex items-center justify-center
-                        border border-transparent rounded cursor-pointer
-                        opacity-60 hover:opacity-100 hover:bg-bgBase/50 transition-all"
+                    className={clsx(
+                        'flex-shrink-0 w-6 h-6 flex items-center justify-center',
+                        'border border-transparent rounded cursor-pointer',
+                        'opacity-60 hover:opacity-100 hover:bg-bgBase/50 transition-all'
+                    )}
                     title="Set notation | Right-click to roll"
                 >
                     <RotateCw size={12} />
                 </button>
             </div>
-            {item.isExpanded && item.details != null && (
+            {item.isExpanded && (
                 <div className="mt-2 pt-2 border-t border-border text-xs opacity-90 leading-relaxed">
-                    Rolls: {item.details}
-                    <br />
-                    Formatted: {item.formatted}
+                    {item.characterName && (
+                        <>
+                            <span className="font-semibold">{item.characterName}</span>
+                            <br />
+                        </>
+                    )}
+                    {item.statLabels && item.statLabels.length > 0 && (
+                        <>
+                            <span>Stats: {item.statLabels.join(', ')}</span>
+                            <br />
+                        </>
+                    )}
+                    {includeRollContext && item.details != null && (
+                        <>
+                            Rolls: {item.details}
+                            <br />
+                        </>
+                    )}
+                    {includeRollContext && item.formatted != null && (
+                        <>
+                            Formatted: {item.formatted}
+                            <br />
+                        </>
+                    )}
+                    {item.manuallyRerolled && (
+                        <span className="text-yellow-500 font-semibold">Manually Rerolled</span>
+                    )}
                 </div>
             )}
         </div>
@@ -146,17 +202,22 @@ function RollHistory() {
 
         const items: ListItem[] =
             activeTab === 'chat'
-                ? history.map((entry) => ({
-                      key: entry.id,
-                      notation: entry.result.notation,
-                      total: entry.result.total,
-                      isStarred: isFav(entry.result.notation),
-                      onToggleStar: () => toggleFavorite(entry.result.notation),
-                      onBodyClick: () => toggleExpand(entry.id),
-                      isExpanded: expandedIds.includes(entry.id),
-                      details: entry.result.details,
-                      formatted: entry.result.formatted,
-                  }))
+                ? history
+                      .map((entry) => ({
+                          key: entry.id,
+                          notation: entry.result.notation,
+                          total: entry.result.total,
+                          isStarred: isFav(entry.result.notation),
+                          onToggleStar: () => toggleFavorite(entry.result.notation),
+                          onBodyClick: () => toggleExpand(entry.id),
+                          isExpanded: expandedIds.includes(entry.id),
+                          details: entry.result.details,
+                          formatted: entry.result.formatted,
+                          manuallyRerolled: entry.result.manuallyRerolled,
+                          characterName: entry.result.characterName,
+                          statLabels: entry.result.statLabels,
+                      }))
+                      .reverse()
                 : activeTab === 'favorites'
                   ? favorites.map((fav) => ({
                         key: fav.id,
@@ -187,13 +248,13 @@ function RollHistory() {
                             onClick={() => {
                                 setActiveTab(activeTab !== tab.id ? tab.id : '');
                             }}
-                            className={`flex-1 py-0.5 px-2 text-xs font-semibold tracking-wide
-                                border-b-2 transition-opacity cursor-pointer bg-transparent
-                                ${
-                                    activeTab === tab.id
-                                        ? 'opacity-100 border-b-primary'
-                                        : 'opacity-60 border-b-transparent hover:opacity-85'
-                                }`}
+                            className={clsx(
+                                'flex-1 py-0.5 px-2 text-xs font-semibold tracking-wide',
+                                'border-b-2 transition-opacity cursor-pointer bg-transparent',
+                                activeTab === tab.id
+                                    ? 'opacity-100 border-b-primary'
+                                    : 'opacity-60 border-b-transparent hover:opacity-85'
+                            )}
                         >
                             {tab.label}
                         </button>

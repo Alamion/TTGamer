@@ -108,7 +108,14 @@ export const JAX_VORN_PRESET: BaseCharacter = {
         },
     ],
     weapons: [
-        { id: 'wpn-blaster', name: 'Blaster Pistol', damage: '4', range: 'Medium', ammo: '50' },
+        {
+            id: 'wpn-blaster',
+            name: 'Blaster Pistol',
+            damage: '4',
+            range: 'Medium',
+            ammo: 50,
+            maxAmmo: 50,
+        },
     ],
     experience: { total: 0, spent: 0 },
     customTalents: [],

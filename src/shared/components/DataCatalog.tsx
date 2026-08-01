@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
     flexRender,
@@ -244,6 +244,13 @@ export function DataCatalog<T extends { id: string }>({
     const getFilterValue = (id: string): string =>
         (columnFilters.find((f) => f.id === id)?.value as string) ?? '';
 
+    const getFilterDisplayValue = (fc: FilterConfig): string => {
+        const raw = getFilterValue(fc.columnId);
+        if (!raw) return '';
+        if (fc.optionsMap) return fc.optionsMap[raw] ?? raw;
+        return raw;
+    };
+
     const getSelectedValues = (id: string): string[] => {
         const raw = getFilterValue(id);
         return raw ? raw.split(',').filter(Boolean) : [];
@@ -345,12 +352,14 @@ export function DataCatalog<T extends { id: string }>({
         prevSearchRef.current = extractOurParams(search);
     }
 
+    useLayoutEffect(() => {
+        applyUrlParams(location.search);
+        firstRender.current = false;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     useEffect(() => {
-        if (firstRender.current) {
-            applyUrlParams(location.search);
-            firstRender.current = false;
-            return;
-        }
+        if (firstRender.current) return;
         const relevant = extractOurParams(location.search);
         if (relevant === prevSearchRef.current) return;
         applyUrlParams(location.search);
@@ -373,7 +382,7 @@ export function DataCatalog<T extends { id: string }>({
         if (ourParams === prevSearchRef.current) return;
         debounceRef.current = setTimeout(() => {
             prevSearchRef.current = ourParams;
-            history.replace({ search: search ? `?${search}` : '' });
+            history.replace({ search: search ? `?${search}` : '', hash: location.hash });
         }, 300);
         return () => {
             if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -429,7 +438,7 @@ export function DataCatalog<T extends { id: string }>({
                     return (
                         <select
                             key={fc.columnId}
-                            value={getFilterValue(fc.columnId)}
+                            value={getFilterDisplayValue(fc)}
                             onChange={(e) => {
                                 const raw = reverseMap(fc, e.target.value);
                                 handleSingleFilterChange(fc.columnId, raw);

@@ -10,6 +10,9 @@ import { FORCE_POWER_COLUMNS, renderForcePowerDetail } from '/src/data/forcePowe
 import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
 import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
 import { DataCatalog } from '/src/shared/components/DataCatalog';
+import { EntityGrid } from '/src/shared/components/EntityCard';
+import { FORCE_SKILLS } from '/src/data/forceSkills';
+import { renderForceSkillDetail } from '/src/data/forceSkillsConfig';
 
 # The Force
 
@@ -25,18 +28,20 @@ To learn Force Skills and Powers, a character must first possess the **Force Sen
 
 Force Skills are not used directly — they are applied through Force Powers. Each Force Power pairs one or more Force Skills with an Attribute, Ability, or Virtue to determine its outcome. All five Force Skills start at **0** for a new Force-sensitive character and can be raised with **Freebie Points** (3 per dot) or **Experience Points** (same cost as Abilities).
 
+Click any Force Skill to see its full description and what each rating means.
+
 <TWWrapper>
+    <EntityGrid
+        entities={FORCE_SKILLS}
+        renderDetail={renderForceSkillDetail}
+        getName={(e) => e.name}
+        getDescription={(e) => e.shortDescription}
+        getTags={(e) => e.specialties}
+        getKey={(e) => e.id}
+    />
+    <br />
     <ForceBlock accentColor="primary" />
 </TWWrapper>
-<br />
-
-| Skill           | Description                                                                                                                                                                                                                                         |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Control**     | The skill of allowing the Force to guide your actions, surrendering your own instincts and reflexes to the Force. Deals with powers affecting the Force user's own physical body — healing, ignoring pain, physical prowess, and lightsaber combat. |
-| **Dynamism**    | The skill of manipulating intangible energy — electricity, electromagnetic waves, heat, plasma, and even the Force itself. Deals with powers affecting energy: containing blaster bolts, Sith lightning, concealment, and meditation.               |
-| **Rapport**     | The skill of interacting with other living beings through the Force. Deals with powers affecting minds and physiology: suggestion (Jedi mind tricks), calming beasts, reading thoughts, probing memories, and transferring life.                    |
-| **Sense**       | The skill of observing the universe through the Force rather than your five senses. Deals with powers of perception: awareness, clairvoyance, reading surface thoughts, and lightsaber combat.                                                      |
-| **Telekinesis** | The skill of moving objects with your mind. Deals with powers that manipulate objects from afar: crushing, heaving, summoning, and manipulating with precision or lethal force.                                                                     |
 
 ### Raising Force Skills
 

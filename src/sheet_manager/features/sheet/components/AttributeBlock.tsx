@@ -1,7 +1,7 @@
 import { CollapsibleBlock, SectionCard, TraitRowWithInput } from '../../../components';
 import type { AccentColor } from '../../../components';
 import { useCharacter } from '../../../hooks';
-import { DEFAULT_TRAIT_VALUE } from '../../../types/character';
+import { DEFAULT_ATTRIBUTE_VALUE } from '../../../types/character';
 import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 
 const ATTRIBUTES = {
@@ -37,7 +37,7 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        const currentAttr = character.attributes[key] || { ...DEFAULT_TRAIT_VALUE };
+        const currentAttr = character.attributes[key] || { ...DEFAULT_ATTRIBUTE_VALUE };
         updateCharacter(character.id, {
             attributes: {
                 ...character.attributes,
@@ -52,7 +52,7 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
     };
 
     const handleAttributeSpecializationChange = (key: string, specializationText: string) => {
-        const currentAttr = character.attributes[key] || { ...DEFAULT_TRAIT_VALUE };
+        const currentAttr = character.attributes[key] || { ...DEFAULT_ATTRIBUTE_VALUE };
         updateCharacter(character.id, {
             attributes: {
                 ...character.attributes,
@@ -65,7 +65,7 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
         <SectionCard title={title}>
             {attrs.map((attr) => {
                 const trait = character.attributes[attr.key] || {
-                    ...DEFAULT_TRAIT_VALUE,
+                    ...DEFAULT_ATTRIBUTE_VALUE,
                 };
                 return (
                     <TraitRowWithInput
@@ -87,6 +87,7 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
                         experienced={trait.experienced}
                         practiced={trait.practiced}
                         onDiceRoll={buildDiceNotation}
+                        characterName={character.metadata.name}
                     />
                 );
             })}

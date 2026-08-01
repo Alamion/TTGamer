@@ -130,6 +130,11 @@ function parsePrimary(stream: TokenStream): ASTNode {
         if (stream.peek() && stream.peek()!.type === 'RPAREN') {
             stream.consume();
         }
+        // Parse and distribute group-level modifiers to all dice inside the parens
+        const groupMods = parseGroupModifiers(stream);
+        if (groupMods) {
+            distributeModifiersToDiceGroups(expr, groupMods);
+        }
         return { type: 'Parenthesized', expression: expr };
     }
 
@@ -207,6 +212,157 @@ function parseComparePoint(stream: TokenStream): ComparePoint | undefined {
     return undefined;
 }
 
+function tryParseOneModifier(stream: TokenStream, modifiers: DiceModifiers): boolean {
+    const peekToken = stream.peek();
+    if (!peekToken) return false;
+
+    switch (peekToken.type) {
+        case 'MOD_EXPLODE': {
+            const tok = stream.consume()!;
+            const exp: DiceModifiers['explode'] = {};
+            exp.compounding = tok.text.startsWith('!!') || undefined;
+            exp.penetrating = tok.text.endsWith('p') || undefined;
+            const cp = parseComparePoint(stream);
+            if (cp) exp.comparePoint = cp;
+            modifiers.explode = exp;
+            return true;
+        }
+
+        case 'MOD_REROLL': {
+            const tok = stream.consume()!;
+            const text = tok.text;
+            const once = text.startsWith('ro');
+            if (hasEmbeddedNumber(tok)) {
+                const val = parseModifierValue(tok);
+                modifiers.reroll = { once, comparePoint: { operator: '<=', value: val } };
+            } else if (stream.peek() && isCompareType(stream.peek()?.type)) {
+                const cp = parseComparePoint(stream);
+                modifiers.reroll = { once, comparePoint: cp };
+            } else {
+                const val =
+                    stream.peek()?.type === 'NUMBER' ? parseModifierValue(stream.consume()!) : 1;
+                modifiers.reroll = { once, comparePoint: { operator: '<=', value: val } };
+            }
+            return true;
+        }
+
+        case 'MOD_UNIQUE': {
+            const tok = stream.consume()!;
+            const once = tok.text.startsWith('uo');
+            if (stream.peek() && isCompareType(stream.peek()?.type)) {
+                const cp = parseComparePoint(stream);
+                modifiers.unique = { once, comparePoint: cp };
+            } else {
+                modifiers.unique = { once };
+            }
+            return true;
+        }
+
+        case 'MOD_KEEP': {
+            const tok = stream.consume()!;
+            const text = tok.text;
+            if (text.startsWith('kl')) {
+                modifiers.keepLowest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
+            } else if (text.startsWith('kh') || text === 'k') {
+                modifiers.keepHighest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
+            } else {
+                modifiers.keepHighest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
+            }
+            return true;
+        }
+
+        case 'MOD_DROP': {
+            const tok = stream.consume()!;
+            const text = tok.text;
+            if (text.startsWith('dh')) {
+                modifiers.dropHighest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
+            } else if (text.startsWith('dl')) {
+                modifiers.dropLowest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
+            } else {
+                modifiers.dropLowest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
+            }
+            return true;
+        }
+
+        case 'MOD_SORT': {
+            const tok = stream.consume()!;
+            modifiers.sort = tok.text === 'sd' ? 'desc' : 'asc';
+            return true;
+        }
+
+        case 'MOD_MIN': {
+            const tok = stream.consume()!;
+            modifiers.min = hasEmbeddedNumber(tok)
+                ? parseModifierValue(tok)
+                : stream.peek()?.type === 'NUMBER'
+                  ? parseModifierValue(stream.consume()!)
+                  : 1;
+            return true;
+        }
+
+        case 'MOD_MAX': {
+            const tok = stream.consume()!;
+            modifiers.max = hasEmbeddedNumber(tok)
+                ? parseModifierValue(tok)
+                : stream.peek()?.type === 'NUMBER'
+                  ? parseModifierValue(stream.consume()!)
+                  : 1;
+            return true;
+        }
+
+        case 'MOD_CSB': {
+            stream.consume();
+            const cp = parseComparePoint(stream);
+            modifiers.criticalSuccess = cp || true;
+            modifiers.criticalSuccessBotch = true;
+            return true;
+        }
+
+        case 'MOD_CFB': {
+            stream.consume();
+            const cp = parseComparePoint(stream);
+            modifiers.criticalFailure = cp || true;
+            modifiers.criticalFailureBotch = true;
+            return true;
+        }
+
+        case 'MOD_CS': {
+            stream.consume();
+            const cp = parseComparePoint(stream);
+            modifiers.criticalSuccess = cp || true;
+            return true;
+        }
+
+        case 'MOD_CF': {
+            stream.consume();
+            const cp = parseComparePoint(stream);
+            modifiers.criticalFailure = cp || true;
+            return true;
+        }
+
+        case 'MOD_FAILURE': {
+            stream.consume();
+            const cp = parseComparePoint(stream);
+            if (cp) modifiers.targetFailure = cp;
+            return true;
+        }
+
+        case 'GT':
+        case 'GTE':
+        case 'LT':
+        case 'LTE':
+        case 'EQ':
+        case 'NEQ': {
+            const cp = parseComparePoint(stream);
+            if (cp) modifiers.targetSuccess = cp;
+            return true;
+        }
+
+        default:
+            return false;
+    }
+}
+
 function parseDiceGroup(stream: TokenStream): ASTNode {
     const token = stream.consume();
     if (!token) {
@@ -228,66 +384,8 @@ function parseDiceGroup(stream: TokenStream): ASTNode {
     const modifiers: DiceModifiers = {};
     let forcedValues: number[] | undefined;
 
-    const parseExplode = (tok: LexerToken) => {
-        const text = tok.text;
-        modifiers.explode = {};
-        modifiers.explode.compounding = text.startsWith('!!') || undefined;
-        modifiers.explode.penetrating = text.endsWith('p') || undefined;
-        const cp = parseComparePoint(stream);
-        if (cp) modifiers.explode.comparePoint = cp;
-    };
-
-    const parseReroll = (tok: LexerToken) => {
-        const text = tok.text;
-        const once = text.startsWith('ro');
-        if (hasEmbeddedNumber(tok)) {
-            const val = parseModifierValue(tok);
-            modifiers.reroll = { once, comparePoint: { operator: '<=', value: val } };
-        } else if (stream.peek() && isCompareType(stream.peek()?.type)) {
-            const cp = parseComparePoint(stream);
-            modifiers.reroll = { once, comparePoint: cp };
-        } else {
-            const val =
-                stream.peek()?.type === 'NUMBER' ? parseModifierValue(stream.consume()!) : 1;
-            modifiers.reroll = { once, comparePoint: { operator: '<=', value: val } };
-        }
-    };
-
-    const parseUnique = (tok: LexerToken) => {
-        const once = tok.text.startsWith('uo');
-        if (stream.peek() && isCompareType(stream.peek()?.type)) {
-            const cp = parseComparePoint(stream);
-            modifiers.unique = { once, comparePoint: cp };
-        } else {
-            modifiers.unique = { once };
-        }
-    };
-
-    const parseKeep = (tok: LexerToken) => {
-        const text = tok.text;
-        if (text.startsWith('kl')) {
-            modifiers.keepLowest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
-        } else if (text.startsWith('kh') || text === 'k') {
-            modifiers.keepHighest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
-        } else {
-            modifiers.keepHighest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
-        }
-    };
-
-    const parseDrop = (tok: LexerToken) => {
-        const text = tok.text;
-        if (text.startsWith('dh')) {
-            modifiers.dropHighest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
-        } else if (text.startsWith('dl')) {
-            modifiers.dropLowest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
-        } else {
-            modifiers.dropLowest = hasEmbeddedNumber(tok) ? parseModifierValue(tok) : 1;
-        }
-    };
-
     while (stream.peek() && !stream.isEnd()) {
         const peekToken = stream.peek()!;
-        let parsed = true;
 
         // DICE tokens starting with bare "d" followed by digits are drop modifiers
         if (peekToken.type === 'DICE' && /^d\d+$/.test(peekToken.text)) {
@@ -318,107 +416,7 @@ function parseDiceGroup(stream: TokenStream): ASTNode {
             continue;
         }
 
-        switch (peekToken.type) {
-            case 'MOD_EXPLODE':
-                parseExplode(stream.consume()!);
-                break;
-
-            case 'MOD_REROLL':
-                parseReroll(stream.consume()!);
-                break;
-
-            case 'MOD_UNIQUE':
-                parseUnique(stream.consume()!);
-                break;
-
-            case 'MOD_KEEP':
-                parseKeep(stream.consume()!);
-                break;
-
-            case 'MOD_DROP':
-                parseDrop(stream.consume()!);
-                break;
-
-            case 'MOD_SORT': {
-                const tok = stream.consume()!;
-                modifiers.sort = tok.text === 'sd' ? 'desc' : 'asc';
-                break;
-            }
-
-            case 'MOD_MIN': {
-                const tok = stream.consume()!;
-                modifiers.min = hasEmbeddedNumber(tok)
-                    ? parseModifierValue(tok)
-                    : stream.peek()?.type === 'NUMBER'
-                      ? parseModifierValue(stream.consume()!)
-                      : 1;
-                break;
-            }
-
-            case 'MOD_MAX': {
-                const tok = stream.consume()!;
-                modifiers.max = hasEmbeddedNumber(tok)
-                    ? parseModifierValue(tok)
-                    : stream.peek()?.type === 'NUMBER'
-                      ? parseModifierValue(stream.consume()!)
-                      : 1;
-                break;
-            }
-
-            case 'MOD_CSB': {
-                stream.consume();
-                const cp = parseComparePoint(stream);
-                modifiers.criticalSuccess = cp || true;
-                modifiers.criticalSuccessBotch = true;
-                break;
-            }
-
-            case 'MOD_CFB': {
-                stream.consume();
-                const cp = parseComparePoint(stream);
-                modifiers.criticalFailure = cp || true;
-                modifiers.criticalFailureBotch = true;
-                break;
-            }
-
-            case 'MOD_CS': {
-                stream.consume();
-                const cp = parseComparePoint(stream);
-                modifiers.criticalSuccess = cp || true;
-                break;
-            }
-
-            case 'MOD_CF': {
-                stream.consume();
-                const cp = parseComparePoint(stream);
-                modifiers.criticalFailure = cp || true;
-                break;
-            }
-
-            case 'MOD_FAILURE': {
-                stream.consume();
-                const cp = parseComparePoint(stream);
-                if (cp) modifiers.targetFailure = cp;
-                break;
-            }
-
-            // Target success (order 8) — bare compare point
-            case 'GT':
-            case 'GTE':
-            case 'LT':
-            case 'LTE':
-            case 'EQ':
-            case 'NEQ': {
-                const cp = parseComparePoint(stream);
-                if (cp) modifiers.targetSuccess = cp;
-                break;
-            }
-
-            default:
-                parsed = false;
-        }
-
-        if (!parsed) break;
+        if (!tryParseOneModifier(stream, modifiers)) break;
     }
 
     return {
@@ -430,6 +428,65 @@ function parseDiceGroup(stream: TokenStream): ASTNode {
         fudge,
         forcedValues: forcedValues && forcedValues.length > 0 ? forcedValues : undefined,
     };
+}
+
+function parseGroupModifiers(stream: TokenStream): DiceModifiers | undefined {
+    const modifiers: DiceModifiers = {};
+    let foundAny = false;
+
+    while (stream.peek() && !stream.isEnd()) {
+        const peekToken = stream.peek()!;
+
+        // DICE-to-DROP fallback (bare "dN" token after RPAREN)
+        if (peekToken.type === 'DICE' && /^d\d+$/.test(peekToken.text)) {
+            stream.consume();
+            modifiers.dropLowest = hasEmbeddedNumber(peekToken) ? parseModifierValue(peekToken) : 1;
+            foundAny = true;
+            break;
+        }
+
+        if (tryParseOneModifier(stream, modifiers)) {
+            foundAny = true;
+        } else {
+            break;
+        }
+    }
+
+    return foundAny ? modifiers : undefined;
+}
+
+function mergeModifiers(target: DiceModifiers, source: DiceModifiers): void {
+    if (source.min !== undefined) target.min = source.min;
+    if (source.max !== undefined) target.max = source.max;
+    if (source.explode !== undefined) target.explode = source.explode;
+    if (source.reroll !== undefined) target.reroll = source.reroll;
+    if (source.unique !== undefined) target.unique = source.unique;
+    if (source.keepHighest !== undefined) target.keepHighest = source.keepHighest;
+    if (source.keepLowest !== undefined) target.keepLowest = source.keepLowest;
+    if (source.dropHighest !== undefined) target.dropHighest = source.dropHighest;
+    if (source.dropLowest !== undefined) target.dropLowest = source.dropLowest;
+    if (source.targetSuccess !== undefined) target.targetSuccess = source.targetSuccess;
+    if (source.targetFailure !== undefined) target.targetFailure = source.targetFailure;
+    if (source.criticalSuccess !== undefined) target.criticalSuccess = source.criticalSuccess;
+    if (source.criticalFailure !== undefined) target.criticalFailure = source.criticalFailure;
+    if (source.criticalSuccessBotch !== undefined)
+        target.criticalSuccessBotch = source.criticalSuccessBotch;
+    if (source.criticalFailureBotch !== undefined)
+        target.criticalFailureBotch = source.criticalFailureBotch;
+    if (source.sort !== undefined) target.sort = source.sort;
+}
+
+function distributeModifiersToDiceGroups(node: ASTNode, mods: DiceModifiers): void {
+    if (node.type === 'DiceGroup') {
+        mergeModifiers(node.modifiers, mods);
+    } else if (node.type === 'BinaryOp') {
+        distributeModifiersToDiceGroups(node.left, mods);
+        distributeModifiersToDiceGroups(node.right, mods);
+    } else if (node.type === 'UnaryOp') {
+        distributeModifiersToDiceGroups(node.operand, mods);
+    } else if (node.type === 'Parenthesized') {
+        distributeModifiersToDiceGroups(node.expression, mods);
+    }
 }
 
 export function parseToAST(input: string): ASTNode {

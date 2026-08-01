@@ -6,7 +6,7 @@ import {
 } from '../../../components';
 import type { AccentColor } from '../../../components';
 import { useCharacter } from '../../../hooks';
-import { DEFAULT_TRAIT_VALUE } from '../../../types/character';
+import { DEFAULT_SKILL_VALUE } from '../../../types/character';
 import type { CustomSkill } from '../../../types/character';
 import { generateId } from '@site/src/shared/utils/random';
 import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
@@ -88,7 +88,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
         experienced: boolean | null,
         practiced: boolean | null
     ) => {
-        const currentSkill = character.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
+        const currentSkill = character.skills[key] || { ...DEFAULT_SKILL_VALUE };
         updateCharacter(character.id, {
             skills: {
                 ...character.skills,
@@ -103,7 +103,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
     };
 
     const handleSkillSpecializationChange = (key: string, specializationText: string) => {
-        const currentSkill = character.skills[key] || { ...DEFAULT_TRAIT_VALUE, value: 0 };
+        const currentSkill = character.skills[key] || { ...DEFAULT_SKILL_VALUE };
         updateCharacter(character.id, {
             skills: {
                 ...character.skills,
@@ -177,10 +177,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
         return (
             <SectionCard title={SKILL_CATEGORIES.find((c) => c.key === category)?.label}>
                 {skillsList.map((skill) => {
-                    const trait = character.skills[skill] || {
-                        ...DEFAULT_TRAIT_VALUE,
-                        value: 0,
-                    };
+                    const trait = character.skills[skill] || { ...DEFAULT_SKILL_VALUE };
                     return (
                         <TraitRowWithInput
                             key={skill}
@@ -200,6 +197,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
                             experienced={trait.experienced}
                             practiced={trait.practiced}
                             onDiceRoll={buildDiceNotation}
+                            characterName={character.metadata.name}
                         />
                     );
                 })}
@@ -219,10 +217,13 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
                             prc ?? undefined
                         )
                     }
-                    onLabelChange={(id, label) => updateCustomSkill(category, id, 0, label)}
+                    onLabelChange={(id, value, label) =>
+                        updateCustomSkill(category, id, value, label)
+                    }
                     size="md"
                     showFlags={true}
                     onDiceRoll={buildDiceNotation}
+                    characterName={character.metadata.name}
                 />
             </SectionCard>
         );

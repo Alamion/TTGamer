@@ -1,3 +1,4 @@
+export { Checkbox } from './Checkbox.tsx';
 export { StatDot } from './StatDot.tsx';
 export { StatLabel } from './StatLabel.tsx';
 export { TraitRow, TraitRowWithInput, CustomTraitList } from './TraitRow.tsx';
@@ -15,5 +16,6 @@ export type { ConfirmDialogProps } from './ConfirmDialog.tsx';
 export { CharacterManagerModal } from './CharacterManagerModal.tsx';
 export type { CharacterManagerModalProps } from './CharacterManagerModal.tsx';
 export { SectionCard } from './SectionCard.tsx';
+export { CollapsibleItem } from './CollapsibleItem.tsx';
 export { NewCharacterButton } from './NewCharacterButton.tsx';
 export { CharacterViewer } from './CharacterViewer.tsx';

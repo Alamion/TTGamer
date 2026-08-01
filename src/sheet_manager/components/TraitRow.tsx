@@ -31,6 +31,7 @@ interface TraitRowProps {
         experienced: boolean | null,
         practiced: boolean | null
     ) => string | undefined;
+    characterName?: string;
 }
 
 export function TraitRow({
@@ -48,6 +49,7 @@ export function TraitRow({
     experienced = null,
     practiced = null,
     onDiceRoll,
+    characterName,
 }: TraitRowProps) {
     return (
         <div className={clsx('flex items-end justify-between py-1', className)}>
@@ -64,6 +66,8 @@ export function TraitRow({
                 experienced={experienced}
                 practiced={practiced}
                 onDiceRoll={onDiceRoll}
+                statLabel={label}
+                characterName={characterName}
             />
         </div>
     );
@@ -96,6 +100,7 @@ interface TraitRowWithInputProps {
         experienced: boolean | null,
         practiced: boolean | null
     ) => string | undefined;
+    characterName?: string;
 }
 
 export function TraitRowWithInput({
@@ -115,6 +120,7 @@ export function TraitRowWithInput({
     experienced = null,
     practiced = null,
     onDiceRoll,
+    characterName,
 }: TraitRowWithInputProps) {
     const [inputValue, setInputValue] = useState(specializationText);
 
@@ -163,6 +169,8 @@ export function TraitRowWithInput({
                 experienced={experienced}
                 practiced={practiced}
                 onDiceRoll={onDiceRoll}
+                statLabel={name}
+                characterName={characterName}
             />
         </div>
     );
@@ -186,7 +194,7 @@ interface CustomTraitListProps {
         experienced: boolean | null,
         practiced: boolean | null
     ) => void;
-    onLabelChange: (id: string, label: string) => void;
+    onLabelChange: (id: string, value: number, label: string) => void;
     maxValue?: number;
     placeholder?: string;
     disabled?: boolean;
@@ -200,6 +208,7 @@ interface CustomTraitListProps {
     ) => string | undefined;
     catalog?: CatalogEntry[];
     onCatalogSelect?: (id: string, entry: CatalogEntry) => void;
+    characterName?: string;
 }
 
 export function CustomTraitList({
@@ -216,6 +225,7 @@ export function CustomTraitList({
     onDiceRoll,
     catalog,
     onCatalogSelect,
+    characterName,
 }: CustomTraitListProps) {
     return (
         <div className="space-y-1">
@@ -225,7 +235,7 @@ export function CustomTraitList({
                         <CatalogSuggest
                             catalog={catalog}
                             value={item.label}
-                            onChange={(label) => onLabelChange(item.id, label)}
+                            onChange={(label) => onLabelChange(item.id, item.value, label)}
                             onSelect={(entry) => onCatalogSelect(item.id, entry)}
                             placeholder={placeholder}
                             disabled={disabled}
@@ -235,7 +245,7 @@ export function CustomTraitList({
                         <input
                             type="text"
                             value={item.label}
-                            onChange={(e) => onLabelChange(item.id, e.target.value)}
+                            onChange={(e) => onLabelChange(item.id, item.value, e.target.value)}
                             disabled={disabled}
                             className="flex-1 bg-transparent border-b px-2 py-0.5 text-sm text-textPrimary transition-colors"
                             placeholder={placeholder}
@@ -257,6 +267,8 @@ export function CustomTraitList({
                                 ? (val, spec, exp, prc) => onDiceRoll(val, spec, exp, prc)
                                 : undefined
                         }
+                        statLabel={item.label}
+                        characterName={characterName}
                     />
                 </div>
             ))}

@@ -32,6 +32,7 @@ Each task includes: name, description, priority, effort, impact, and dependencie
 - [ ] **Lazy load 3D packages:** three.js, cannon-es lazy loading for perf
 - [x] **Inline dice rolls** in documentation
 - [ ] **Multi-system dice pool tabs:** Show tabs for D&D, Pathfinder, etc. with favorites
-- [ ] **Discord webhooks:** Dice roll output to Discord (backend required)
+- [/] **Discord webhooks:** Dice roll output to Discord (frontend done — settings modal, subscription, sendToDiscord; backend proxy pending for webhook URL security)
 - [x] **Character context & presets** (CharacterContext, presets.ts)
 - [x] **Empty character name placeholder** (default name is `''` instead of `'New Character'`)
+- [x] Add `(3d10+1d10)>=6f=1` syntax support (first separate roll groups, then modifiers)

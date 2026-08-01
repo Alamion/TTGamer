@@ -25,4 +25,6 @@ export {
     applyAdvantage,
     applyDisadvantage,
     handleDiceNotation,
+    splitTopLevel,
+    mergeDiceNotation,
 } from './notation-utils';

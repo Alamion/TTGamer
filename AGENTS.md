@@ -80,6 +80,7 @@ Docusaurus site hosting docs and modular React modules (character sheet manager,
 - [ ] UI i18n (extract English strings to JSON files)
 - [ ] WoD (VtM 2e) system docs — structure started (clans, disciplines, Blood Points, Humanity)
 - [ ] Data file i18n (add `ru` fields to data entries)
+- [ ] Discord webhooks — frontend done (settings modal, subscription, sender); backend proxy pending (security)
 
 ### Planned
 
@@ -87,7 +88,6 @@ Docusaurus site hosting docs and modular React modules (character sheet manager,
 - [ ] Other systems sheets (D&D, Pathfinder)
 - [ ] Database + authentication layer
 - [ ] Lazy loading for Three.js / cannon-es
-- [ ] Discord webhooks for dices (backend required)
 - [ ] Dice pool tabs for Pathfinder/Cthulhu
 
 ## 7. Project Structure
@@ -97,15 +97,22 @@ Docusaurus site hosting docs and modular React modules (character sheet manager,
 │   ├── dice_roller/           # Dice roller module (logic, UI, 3D renderer)
 │   │   ├── dice-logic/        #   Lexer (moo), parser (nearley), evaluator, renderer
 │   │   ├── components/        #   Dice pool, history, 2D/3D dice, InlineRoll
-│   │   └── store/             #   Zustand store
+│   │   ├── store/             #   Zustand store
+│   │   └── utils/             #   Constants, events, types-ext
 │   ├── sheet_manager/         # Character sheet manager
 │   │   ├── components/        #   Modal, viewer, StatDot, TraitRow, collapsibles
 │   │   ├── features/sheet/    #   Sheet blocks (Attribute, Skill, Health, Force, etc.)
 │   │   ├── store/             #   Zustand + IndexedDB persistence
 │   │   ├── types/             #   Zod schemas + TS types
 │   │   └── context/           #   CharacterContext (multi-character)
+│   ├── external_apis/         # External API integrations
+│   │   └── discord/           #   Discord webhook sender (sendToDiscord.ts, barrel)
+│   ├── discord/               # Discord integration (legacy re-exports)
 │   ├── data/                  # Data layer (29 files) — all catalogs
 │   ├── shared/                # DataCatalog, EntityCard, TWWrapper, hooks, utils
+│   │   ├── components/        #   Reusable UI components (SecretField, DataCatalog, EntityCard, etc.)
+│   │   ├── hooks/             #   useLocalStorageState, useSessionStorageState, etc.
+│   │   └── utils/             #   logging, diceNotation, env
 │   ├── pages/                 # Docusaurus pages
 │   ├── theme/                 # Theme swizzles (Root, NavbarItem)
 │   └── css/                   # Global CSS + Tailwind

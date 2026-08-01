@@ -55,11 +55,18 @@ export function calculateHealthPenalty(levels: ConditionMark[]): number {
 export const ItemSchema = z.object({
     id: z.string(),
     text: z.string(),
+    description: z.string().default(''),
+    effects: z.string().default(''),
+    weight: z.string().default(''),
+    price: z.string().default(''),
+    quantity: z.number().default(1),
+    maxQuantity: z.number().default(1),
+    equipped: z.boolean().default(false),
 });
 
 export const ArmorItemSchema = z.object({
     id: z.string(),
-    type: z.string(),
+    name: z.string(),
     classVal: z.string(),
     ar: z.string(),
     dex: z.string(),
@@ -70,7 +77,8 @@ export const WeaponItemSchema = z.object({
     name: z.string(),
     damage: z.string(),
     range: z.string(),
-    ammo: z.string(),
+    ammo: z.coerce.number().default(0),
+    maxAmmo: z.coerce.number().default(0),
 });
 
 export const ImplantItemSchema = z.object({
@@ -146,29 +154,29 @@ export const BaseCharacterSchema = z.object({
     skills: z.record(TraitValueSchema),
     forceSkills: z.record(TraitValueSchema).optional(),
     virtues: z.record(TraitValueSchema).optional(),
-    backgrounds: z.array(BackgroundSchema).optional(),
-    merits: z.array(MeritFlawSchema).optional(),
-    flaws: z.array(MeritFlawSchema).optional(),
+    backgrounds: z.array(BackgroundSchema).default([]),
+    merits: z.array(MeritFlawSchema).default([]),
+    flaws: z.array(MeritFlawSchema).default([]),
     willpower: z.object({ current: z.number(), max: z.number() }).optional(),
     forcePoints: z.object({ current: z.number(), max: z.number() }).optional(),
     darkSideResistance: z.number().optional(),
     forcePowers: z.array(z.string()).optional(),
-    customForcePowers: z.array(CustomForcePowerSchema).optional(),
-    forcePowerItems: z.array(ForcePowerItemSchema).optional(),
+    customForcePowers: z.array(CustomForcePowerSchema).default([]),
+    forcePowerItems: z.array(ForcePowerItemSchema).default([]),
     health: HealthSchema,
-    inventory: z.array(ItemSchema),
-    armor: z.array(ArmorItemSchema),
-    weapons: z.array(WeaponItemSchema),
-    implants: z.array(ImplantItemSchema),
+    inventory: z.array(ItemSchema).default([]),
+    armor: z.array(ArmorItemSchema).default([]),
+    weapons: z.array(WeaponItemSchema).default([]),
+    implants: z.array(ImplantItemSchema).default([]),
     experience: z
         .object({
             total: z.number().default(0),
             spent: z.number().default(0),
         })
         .optional(),
-    customTalents: z.array(CustomSkillSchema),
-    customSkills: z.array(CustomSkillSchema),
-    customKnowledges: z.array(CustomSkillSchema),
+    customTalents: z.array(CustomSkillSchema).default([]),
+    customSkills: z.array(CustomSkillSchema).default([]),
+    customKnowledges: z.array(CustomSkillSchema).default([]),
     notes: z.string(),
 });
 
@@ -178,11 +186,16 @@ export type Health = z.infer<typeof HealthSchema>;
 export type Item = z.infer<typeof ItemSchema>;
 export type BaseCharacter = z.infer<typeof BaseCharacterSchema>;
 
-export const DEFAULT_TRAIT_VALUE: TraitValue = {
+export const DEFAULT_ATTRIBUTE_VALUE: TraitValue = {
     value: 1,
     specialization: false,
     experienced: false,
     practiced: false,
+};
+
+export const DEFAULT_SKILL_VALUE: TraitValue = {
+    ...DEFAULT_ATTRIBUTE_VALUE,
+    value: 0,
 };
 
 export function createDefaultCharacter(): BaseCharacter {
@@ -211,31 +224,32 @@ export function createDefaultCharacter(): BaseCharacter {
             imageUrl: '',
         },
         attributes: {
-            Strength: { ...DEFAULT_TRAIT_VALUE },
-            Dexterity: { ...DEFAULT_TRAIT_VALUE },
-            Stamina: { ...DEFAULT_TRAIT_VALUE },
-            Charisma: { ...DEFAULT_TRAIT_VALUE },
-            Manipulation: { ...DEFAULT_TRAIT_VALUE },
-            Appearance: { ...DEFAULT_TRAIT_VALUE },
-            Perception: { ...DEFAULT_TRAIT_VALUE },
-            Intelligence: { ...DEFAULT_TRAIT_VALUE },
-            Wits: { ...DEFAULT_TRAIT_VALUE },
+            Strength: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Dexterity: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Stamina: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Charisma: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Manipulation: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Appearance: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Perception: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Intelligence: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Wits: { ...DEFAULT_ATTRIBUTE_VALUE },
         },
         skills: {},
         forceSkills: {},
         virtues: {
-            Conscience: { ...DEFAULT_TRAIT_VALUE },
-            Passion: { ...DEFAULT_TRAIT_VALUE },
-            'Self Control': { ...DEFAULT_TRAIT_VALUE },
+            Conscience: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Passion: { ...DEFAULT_ATTRIBUTE_VALUE },
+            'Self Control': { ...DEFAULT_ATTRIBUTE_VALUE },
         },
         backgrounds: [],
         merits: [],
         flaws: [],
         willpower: { current: 5, max: 5 },
-        forcePoints: { current: 1, max: 1 },
+        forcePoints: { current: 0, max: 0 },
         darkSideResistance: 5,
         forcePowers: [],
         customForcePowers: [],
+        forcePowerItems: [],
         health: {
             levels: ['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'],
         },

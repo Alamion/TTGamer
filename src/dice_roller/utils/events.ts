@@ -8,6 +8,11 @@ export interface DiceRollEventPayload {
     quiet?: boolean;
 }
 
+export interface RollOptions {
+    statLabels?: string[];
+    characterName?: string;
+}
+
 export async function handleRollEvent(
     notation: string,
     config?: {
@@ -18,7 +23,8 @@ export async function handleRollEvent(
         soundVolume?: number;
         timeToReact?: boolean;
         timeToReactSeconds?: number;
-    }
+    },
+    rollOptions?: RollOptions
 ): Promise<RollResult | null> {
     if (!notation) {
         warn('Roll event received without notation', 'Event Handler');
@@ -34,6 +40,12 @@ export async function handleRollEvent(
                 : execute2DRoll(notation);
 
         if (result) {
+            if (rollOptions?.statLabels && rollOptions.statLabels.length > 0) {
+                result.statLabels = rollOptions.statLabels;
+            }
+            if (rollOptions?.characterName) {
+                result.characterName = rollOptions.characterName;
+            }
             notifyRollResult(result);
         }
         return result;

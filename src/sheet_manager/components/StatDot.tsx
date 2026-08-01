@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import { clsx } from 'clsx';
 import { Dices, X } from 'lucide-react';
 import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';
+import { pushStatLabel, setCharacterName } from '@site/src/dice_roller/utils/sessionStorage';
+import { mergeDiceNotation } from '@site/src/dice_roller/dice-logic/notation-utils';
 
 interface StatDotProps {
     value: number;
@@ -27,6 +29,8 @@ interface StatDotProps {
         experienced: boolean | null,
         practiced: boolean | null
     ) => string | undefined;
+    statLabel?: string;
+    characterName?: string;
 }
 
 export function StatDot({
@@ -43,17 +47,26 @@ export function StatDot({
     activeColor,
     onRemove,
     onDiceRoll,
+    statLabel,
+    characterName,
 }: StatDotProps) {
     const setNotationInput = useDiceRollerStore((s) => s.setNotationInput);
     const notationInput = useDiceRollerStore((s) => s.notationInput);
     const roll = useDiceRollerStore((s) => s.roll);
+    const includeCharacterStats = useDiceRollerStore((s) => s.settings.includeCharacterStats);
 
     const handleDiceLeftClick = useCallback(() => {
         if (disabled || !onDiceRoll) return;
         const added_notation = onDiceRoll(value, specialization, experienced, practiced);
         if (added_notation) {
+            if (includeCharacterStats && statLabel) {
+                pushStatLabel(statLabel);
+            }
+            if (characterName) {
+                setCharacterName(characterName);
+            }
             if (notationInput) {
-                setNotationInput(`${notationInput} + ${added_notation}`);
+                setNotationInput(mergeDiceNotation(notationInput, added_notation));
             } else {
                 setNotationInput(added_notation);
             }
@@ -67,6 +80,9 @@ export function StatDot({
         practiced,
         setNotationInput,
         notationInput,
+        includeCharacterStats,
+        statLabel,
+        characterName,
     ]);
 
     const handleDiceRightClick = useCallback(
@@ -75,10 +91,24 @@ export function StatDot({
             if (disabled || !onDiceRoll) return;
             const notation = onDiceRoll(value, specialization, experienced, practiced);
             if (notation) {
-                roll(notation);
+                roll(notation, {
+                    statLabels: includeCharacterStats && statLabel ? [statLabel] : undefined,
+                    characterName: characterName || undefined,
+                });
             }
         },
-        [disabled, onDiceRoll, value, specialization, experienced, practiced, roll]
+        [
+            disabled,
+            onDiceRoll,
+            value,
+            specialization,
+            experienced,
+            practiced,
+            roll,
+            includeCharacterStats,
+            statLabel,
+            characterName,
+        ]
     );
     const handleClick = useCallback(
         (index: number) => {
@@ -143,7 +173,7 @@ export function StatDot({
                                 'text-textSecondary opacity-40 hover:opacity-70',
                                 disabled && 'cursor-not-allowed'
                             )}
-                            title="Roll (left click: set notation, right click: roll)"
+                            title="Left-click: set notation | Right-click: roll)"
                         >
                             <Dices size={dotPixel - 2} />
                         </button>

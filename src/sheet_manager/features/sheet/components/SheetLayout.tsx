@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useCharacterStore } from '../../../store/characterStore';
 import { Download, Upload, RotateCcw, Users, Plus } from 'lucide-react';
 import { BaseCharacterSchema, createDefaultCharacter } from '../../../types/character';
@@ -24,7 +25,6 @@ export function SheetLayout({ children }: SheetLayoutProps) {
     } = useCharacterStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
-    const [importError, setImportError] = useState<string | null>(null);
     const [managerModalOpen, setManagerModalOpen] = useState(false);
 
     const handleExport = () => {
@@ -39,6 +39,7 @@ export function SheetLayout({ children }: SheetLayoutProps) {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+        toast.success(`Exported "${currentCharacter.metadata.name}"`);
     };
 
     const handleResetConfirm = () => {
@@ -56,12 +57,7 @@ export function SheetLayout({ children }: SheetLayoutProps) {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
-        setImportError(null);
-
         if (files.length > 1) {
-            let successCount = 0;
-            let errorCount = 0;
-
             Array.from(files).forEach((file) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -69,32 +65,26 @@ export function SheetLayout({ children }: SheetLayoutProps) {
                         const json = JSON.parse(e.target?.result as string);
                         const parsed = BaseCharacterSchema.parse(json);
                         importCharacter(parsed);
-                        successCount++;
-                    } catch {
-                        errorCount++;
+                        toast.success(`Imported "${parsed.metadata.name}"`);
+                    } catch (err) {
+                        console.error('Import failed for file:', file.name, err);
+                        toast.error(`Failed to import "${file.name}"`);
                     }
                 };
                 reader.readAsText(file);
             });
-
-            if (errorCount > 0) {
-                setImportError(
-                    `Imported ${successCount} character(s), ${errorCount} file(s) failed to parse.`
-                );
-            }
         } else {
             const file = files[0];
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
-                    setImportError(null);
                     const json = JSON.parse(e.target?.result as string);
                     const parsed = BaseCharacterSchema.parse(json);
                     importCharacter(parsed);
-                } catch {
-                    setImportError(
-                        'Invalid character file. Please select a valid JSON character export.'
-                    );
+                    toast.success(`Imported "${parsed.metadata.name}"`);
+                } catch (err) {
+                    console.error('Import failed:', err);
+                    toast.error('Invalid character file. Please select a valid JSON export.');
                 }
             };
             reader.readAsText(file);
@@ -171,15 +161,6 @@ export function SheetLayout({ children }: SheetLayoutProps) {
                         multiple
                     />
                 </div>
-
-                {importError && (
-                    <div
-                        className="mb-4 p-3 bg-error/10 border border-error rounded-lg text-sm text-error"
-                        role="alert"
-                    >
-                        {importError}
-                    </div>
-                )}
 
                 {!currentCharacter && (
                     <div className="text-center py-6">

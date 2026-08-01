@@ -20,29 +20,32 @@ src/dice_roller/
 │   │   └── renderer-pool.ts
 │   └── index.ts              # Public API exports
 ├── components/
-│   ├── DiceRollerContext.tsx  # Provider (settings, history, roll fn)
-│   ├── DicePanel.tsx          # Main panel entry point
-│   ├── SettingsPanel.tsx      # Settings UI
-│   ├── RollHistory.tsx        # History (All/Favorites/Recent tabs)
-│   ├── dice-config.ts         # Die face config
-│   ├── dice_pool/            # Tabbed dice UI
-│   │   ├── DicePool.tsx       # Tab switcher + editor + Roll/Clear
-│   │   ├── DiceButton.tsx     # Single die button
-│   │   ├── DiceTabStandard.tsx # Standard dice grid
-│   │   ├── DiceTabDnd.tsx     # D&D dice grid + ADV/DIS
-│   │   └── DiceTabWod.tsx     # WoD difficulty slider + d10
-│   ├── 2d_dices/             # 2D dice SVG rendering
+│   ├── DiceRollerContext.tsx       # Provider (settings, history, roll fn)
+│   ├── DicePanel.tsx               # Main panel entry point
+│   ├── SettingsPanel.tsx           # Settings UI
+│   ├── RollHistory.tsx             # History (All/Favorites/Recent tabs)
+│   ├── DiceRollerSettingsModal.tsx # Full settings modal (Discord, colors, sound)
+│   ├── DiscordWebhookSubscription.tsx # Auto-subscribes onRollResult → Discord
+│   ├── dice-config.ts              # Die face config
+│   ├── dice_pool/                  # Tabbed dice UI
+│   │   ├── DicePool.tsx            # Tab switcher + editor + Roll/Clear
+│   │   ├── DiceButton.tsx          # Single die button
+│   │   ├── DiceTabStandard.tsx     # Standard dice grid
+│   │   ├── DiceTabDnd.tsx          # D&D dice grid + ADV/DIS
+│   │   └── DiceTabWod.tsx          # WoD difficulty slider + d10
+│   ├── 2d_dices/                   # 2D dice SVG rendering
 │   │   ├── DiceSvg.tsx, index.ts, utils.tsx
 ├── utils/
-│   ├── settings.ts            # Settings CRUD + subscriptions
-│   ├── events.ts              # Event system (roll trigger)
-│   ├── commands.ts            # Slash commands (/roll, /r)
-│   ├── macros.ts              # {{ddroll::}} macro
-│   ├── function-tools.ts      # AI function tools
-│   ├── constants.ts           # Module constants
-│   ├── types-ext.ts           # Extended types (HistoryEntry, etc.)
-│   ├── body-injection.tsx     # React root injection
-│   └── recolor_svg.ts         # SVG recoloring utility
+│   ├── settings.ts                 # Settings CRUD + subscriptions
+│   ├── events.ts                   # Event system (roll trigger)
+│   ├── commands.ts                 # Slash commands (/roll, /r)
+│   ├── macros.ts                   # {{ddroll::}} macro
+│   ├── function-tools.ts           # AI function tools
+│   ├── constants.ts                # Module constants
+│   ├── types-ext.ts                # Extended types (HistoryEntry, etc.)
+│   ├── sessionStorage.ts           # Discord webhook URL persistence
+│   ├── body-injection.tsx          # React root injection
+│   └── recolor_svg.ts              # SVG recoloring utility
 ├── styles/                    # SCSS modules
 ├── global.d.ts                # SillyTavern API types (legacy)
 ├── styles.d.ts                # SCSS module declarations
@@ -86,6 +89,10 @@ interface DiceRollerSettings {
     soundVolume: number; // 0-100
     timeToReact: boolean;
     timeToReactSeconds: number; // 1-60
+    enableDiscordWebhook: boolean;
+    includeCharacterName: boolean;
+    includeCharacterStats: boolean;
+    includeRollContext: boolean;
 }
 ```
 
@@ -112,3 +119,6 @@ For deep reference (modifier evaluation order, lexer/parser rules, MockRandom co
 - **External roll trigger:** `triggerRoll(notation)` from `utils/events`
 - **Logging:** `debug/info/warn/error` from `utils/logging`
 - **Settings access:** `getSettings()` returns copy; `getRollConfig()` returns roll-relevant subset
+- **Roll result toast:** `onRollResult((result) => toast(...))` in `Root.tsx` — subscribes to global roll events
+- **Discord webhook:** `sendToDiscord(result, settings)` from `external_apis/discord/` — triggered by `DiscordWebhookSubscription` component mounted in `Root.tsx`
+- **Secret storage:** `SecretField` component + `useSessionStorageState` hook for Discord webhook URL (session-only, not persisted to disk)

@@ -31,6 +31,7 @@ export function startPhysicsRoll(
     rethrow: (indices: number[]) => Promise<number[]>;
     addDice: (extraDiceData: DiceGeometryData[]) => Promise<number[]>;
     arrangeAndDismiss: () => void;
+    wasManuallyRerolled: () => boolean;
 } {
     if (!sharedRenderer) {
         sharedRenderer = createRenderer(config);
@@ -56,6 +57,7 @@ export function startPhysicsRoll(
         rethrow: (indices: number[]) => sharedRenderer!.rethrowDice(indices),
         addDice: (extraDiceData: DiceGeometryData[]) => sharedRenderer!.addDice(extraDiceData),
         arrangeAndDismiss: () => sharedRenderer!.arrangeAndDismiss(),
+        wasManuallyRerolled: () => sharedRenderer!.wasManuallyRerolled,
     };
 }
 

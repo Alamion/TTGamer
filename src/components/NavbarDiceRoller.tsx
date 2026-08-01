@@ -44,7 +44,7 @@ export default function NavbarDiceRoller() {
                         onClick={handleClick}
                         onContextMenu={handleContextMenu}
                         className="bg-transparent border-none cursor-pointer p-2 font-mono text-sm truncate max-w-[120px] text-textPrimary hover:text-primary transition-colors"
-                        title="Left click to roll, right click to clear"
+                        title="Left-click: roll | Right-click: clear"
                     >
                         {notationInput}
                     </button>

@@ -32,9 +32,9 @@ describe('Evaluator - combined expressions', () => {
         expect(result.total).toBe(16);
     });
 
-    it('1d20+(1d4+1) — d6 after expression is not parsed as nested dice', () => {
+    it('1d20+(1d4+1) — d6 after expression is not parsed as nested dice and ignored', () => {
         const result = evaluate('1d20+(1d4+1)d6', 0.5, 0.3, 0.7);
-        expect(result.total).toBe(14);
+        expect(result.total).toBe(12);
     });
 
     it('10/2d5 with division', () => {

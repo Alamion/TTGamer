@@ -212,14 +212,17 @@ Test files are in `tests/dice_roller/` covering:
 - [/] WoD/VtM 2e system documentation
 - [/] Data file i18n (add `ru` fields to data entries)
 
+### In Progress
+
+- [/] Discord webhook integration (frontend done — settings modal, subscription, webhook sender; backend proxy pending)
+- [/] UI i18n for data files and UI strings
+
 ### Planned
 
 - [ ] Vehicle sheet
 - [ ] Other systems sheets (D&D, Pathfinder)
 - [ ] Database + authentication layer
 - [ ] Lazy loading for 3D packages (three.js, cannon-es)
-- [ ] Discord webhook integration (backend required)
-- [ ] UI i18n for data files and UI strings
 - [ ] Dice pool tabs for other systems (D&D, Pathfinder)
 
 ---

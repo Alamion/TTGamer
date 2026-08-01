@@ -374,7 +374,8 @@ export async function executeUnifiedRoll(
 
         handle.arrangeAndDismiss();
 
-        return evaluateDiceAST(ast, notation, preGeneratedValues);
+        const result = evaluateDiceAST(ast, notation, preGeneratedValues);
+        return { ...result, manuallyRerolled: handle.wasManuallyRerolled() || undefined };
     } catch (err) {
         if (err instanceof RollCancelledError) {
             throw err;

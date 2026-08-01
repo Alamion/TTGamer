@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, Pen, User } from 'lucide-react';
-import { CollapsibleBlock, SectionCard, CatalogSuggest } from '../../../components';
 import type { AccentColor, CatalogEntry } from '../../../components';
-import { useExpandedState, useCharacter } from '../../../hooks';
+import { CatalogSuggest, CollapsibleBlock, SectionCard } from '../../../components';
+import { useCharacter, useExpandedState } from '../../../hooks';
 import type { CharacterMetadata } from '../../../types/character';
-import { SPECIES } from '@site/src/data/speciesData';
 import type { SpeciesEntry } from '@site/src/data/speciesData';
+import { SPECIES } from '@site/src/data/speciesData';
+import { AutoResizeTextarea } from '@site/src/sheet_manager/components/AutoResizeTextarea';
 
 type MetadataKey = keyof CharacterMetadata;
 
@@ -278,39 +279,5 @@ function ImagePortrait({
                 )}
             </div>
         </div>
-    );
-}
-
-function AutoResizeTextarea({
-    value,
-    onChange,
-    readOnly,
-    placeholder,
-}: {
-    value: string;
-    onChange: (value: string) => void;
-    readOnly: boolean;
-    placeholder?: string;
-}) {
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-    useEffect(() => {
-        const el = textareaRef.current;
-        if (el) {
-            el.style.height = 'auto';
-            el.style.height = Math.max(el.scrollHeight, 80) + 'px';
-        }
-    }, [value]);
-
-    return (
-        <textarea
-            ref={textareaRef}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={readOnly}
-            className="w-full bg-bgSurface border rounded px-3 py-2 text-sm text-textPrimary disabled:opacity-60 disabled:cursor-default resize-none overflow-hidden min-h-[80px]"
-            placeholder={placeholder}
-            aria-label="Biography"
-        />
     );
 }
