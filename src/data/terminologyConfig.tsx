@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
+
 import type { TerminologyEntry } from './terminologyData';
 
 export const TERMINOLOGY_COLUMNS: ColumnDef<TerminologyEntry>[] = [

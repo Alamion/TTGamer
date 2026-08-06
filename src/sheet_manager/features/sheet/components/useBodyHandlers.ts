@@ -1,8 +1,9 @@
-import { useCharacter } from '../../../hooks';
 import { generateId } from '@site/src/shared/utils/random';
-import type { ArmorItem, WeaponItem, ImplantItem, Item } from '../../../types/character';
+
 import type { CatalogEntry } from '../../../components';
-import { findWeaponEntry, findArmorEntry, findInventorySource, findImplantEntry } from './catalogs';
+import { useCharacter } from '../../../hooks';
+import type { ArmorItem, ImplantItem, Item, WeaponItem } from '../../../types/character';
+import { findArmorEntry, findImplantEntry, findInventorySource, findWeaponEntry } from './catalogs';
 
 export function useBodyHandlers() {
     const { character, readOnly, updateCharacter } = useCharacter();
@@ -55,8 +56,30 @@ export function useBodyHandlers() {
 
     const removeInventoryItem = (id: string) => removeItem<Item>('inventory', id);
 
-    const updateInventoryItem = (id: string, field: keyof Item, value: string | number | boolean) =>
-        updateItem<Item>('inventory', id, field, value);
+    const updateInventoryItem = (
+        id: string,
+        field: keyof Item,
+        value: string | number | boolean
+    ) => {
+        if (field !== 'quantity' && field !== 'maxQuantity') {
+            updateItem<Item>('inventory', id, field, value);
+            return;
+        }
+        const numericValue = Math.max(0, Math.trunc(Number(value) || 0));
+        updateCharacter(character.id, {
+            inventory: inventory.map((item) => {
+                if (item.id !== id) return item;
+                if (field === 'maxQuantity') {
+                    return {
+                        ...item,
+                        maxQuantity: numericValue,
+                        quantity: Math.min(item.quantity, numericValue),
+                    };
+                }
+                return { ...item, quantity: Math.min(numericValue, item.maxQuantity) };
+            }),
+        });
+    };
 
     const addArmorItem = () =>
         addItem<ArmorItem>('armor', {
@@ -84,8 +107,26 @@ export function useBodyHandlers() {
 
     const removeWeaponItem = (id: string) => removeItem<WeaponItem>('weapons', id);
 
-    const updateWeaponItem = (id: string, field: keyof WeaponItem, value: string | number) =>
-        updateItem<WeaponItem>('weapons', id, field, value);
+    const updateWeaponItem = (id: string, field: keyof WeaponItem, value: string | number) => {
+        if (field !== 'ammo' && field !== 'maxAmmo') {
+            updateItem<WeaponItem>('weapons', id, field, value);
+            return;
+        }
+        const numericValue = Math.max(0, Math.trunc(Number(value) || 0));
+        updateCharacter(character.id, {
+            weapons: weapons.map((item) => {
+                if (item.id !== id) return item;
+                if (field === 'maxAmmo') {
+                    return {
+                        ...item,
+                        maxAmmo: numericValue,
+                        ammo: Math.min(item.ammo, numericValue),
+                    };
+                }
+                return { ...item, ammo: Math.min(numericValue, item.maxAmmo) };
+            }),
+        });
+    };
 
     const addImplantItem = () =>
         addItem<ImplantItem>('implants', {

@@ -1,6 +1,6 @@
 import { useCharacterStore } from '../store/characterStore';
-import { DEFAULT_ATTRIBUTE_VALUE } from '../types/character';
 import type { TraitValue } from '../types/character';
+import { DEFAULT_ATTRIBUTE_VALUE } from '../types/character';
 
 type TraitPath = 'attributes' | 'skills' | 'forceSkills' | 'virtues';
 

@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+
 import { StatDot } from './StatDot.tsx';
 
 interface ForcePowerRowProps {

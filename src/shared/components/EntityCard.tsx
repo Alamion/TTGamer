@@ -1,6 +1,6 @@
-import { forwardRef, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
-import type { ReactNode } from 'react';
 import clsx from 'clsx';
+import type { ReactNode } from 'react';
+import { forwardRef, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
 export interface EntityCardProps {
     name: string;

@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
+
 import type { RangedWeaponEntry } from './rangedWeaponsData';
 
 export const RANGED_WEAPONS_COLUMNS: ColumnDef<RangedWeaponEntry>[] = [

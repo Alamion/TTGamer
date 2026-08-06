@@ -1,10 +1,21 @@
-import { DiceRenderer, type DiceRendererConfig } from './renderer';
-import type { DiceGeometryData } from './geometries';
 import { debug } from '@site/src/shared/utils/logging';
+
+import type { DiceGeometryData } from './geometries';
+import { DiceRenderer, type DiceRendererConfig } from './renderer';
 
 let sharedRenderer: DiceRenderer | null = null;
 let disposeTimeoutId: ReturnType<typeof setTimeout> | null = null;
 const DISPOSE_DEBOUNCE_MS = 5 * 60 * 1000;
+
+export interface PhysicsRollHandle {
+    sessionId: number;
+    settle: Promise<number[]>;
+    lockDice: (indices: number[]) => void;
+    rethrow: (indices: number[]) => Promise<number[]>;
+    addDice: (extraDiceData: DiceGeometryData[]) => Promise<number[]>;
+    arrangeAndDismiss: () => void;
+    wasManuallyRerolled: () => boolean;
+}
 
 function createRenderer(config: DiceRendererConfig): DiceRenderer {
     debug('RendererPool: Creating shared renderer');
@@ -25,14 +36,7 @@ export function startPhysicsRoll(
     config: DiceRendererConfig,
     diceData: DiceGeometryData[],
     groupSizes: number[]
-): {
-    renderer: DiceRenderer;
-    settle: Promise<number[]>;
-    rethrow: (indices: number[]) => Promise<number[]>;
-    addDice: (extraDiceData: DiceGeometryData[]) => Promise<number[]>;
-    arrangeAndDismiss: () => void;
-    wasManuallyRerolled: () => boolean;
-} {
+): PhysicsRollHandle {
     if (!sharedRenderer) {
         sharedRenderer = createRenderer(config);
     } else {
@@ -49,15 +53,17 @@ export function startPhysicsRoll(
 
     scheduleDispose();
 
-    const settle = sharedRenderer.startRoll(diceData, groupSizes);
+    const { sessionId, settle } = sharedRenderer.startRoll(diceData, groupSizes);
 
     return {
-        renderer: sharedRenderer,
+        sessionId,
         settle,
-        rethrow: (indices: number[]) => sharedRenderer!.rethrowDice(indices),
-        addDice: (extraDiceData: DiceGeometryData[]) => sharedRenderer!.addDice(extraDiceData),
-        arrangeAndDismiss: () => sharedRenderer!.arrangeAndDismiss(),
-        wasManuallyRerolled: () => sharedRenderer!.wasManuallyRerolled,
+        lockDice: (indices: number[]) => sharedRenderer!.lockDice(sessionId, indices),
+        rethrow: (indices: number[]) => sharedRenderer!.rethrowDice(sessionId, indices),
+        addDice: (extraDiceData: DiceGeometryData[]) =>
+            sharedRenderer!.addDice(sessionId, extraDiceData),
+        arrangeAndDismiss: () => sharedRenderer!.arrangeAndDismiss(sessionId),
+        wasManuallyRerolled: () => sharedRenderer!.wasSessionManuallyRerolled(sessionId),
     };
 }
 

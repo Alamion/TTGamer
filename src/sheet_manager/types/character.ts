@@ -1,5 +1,15 @@
-import { z } from 'zod';
 import { generateId } from '@site/src/shared/utils/random';
+import { z } from 'zod';
+
+const dotValueSchema = z.number().finite().int().min(0).max(5);
+const resourceValueSchema = z.number().finite().int().min(0).max(10);
+const nonNegativeIntegerSchema = z.number().finite().int().nonnegative();
+const resourcePairSchema = z
+    .object({ current: resourceValueSchema, max: resourceValueSchema })
+    .refine(({ current, max }) => current <= max, {
+        message: 'Current value cannot exceed maximum value',
+        path: ['current'],
+    });
 
 export const CharacterTypeSchema = z.enum(['sentient', 'droid', 'vehicle']);
 
@@ -7,7 +17,7 @@ export const ConditionMarkSchema = z.enum(['empty', 'slash', 'cross']);
 export type ConditionMark = z.infer<typeof ConditionMarkSchema>;
 
 export const CharacterMetadataSchema = z.object({
-    name: z.string().min(1),
+    name: z.string().default(''),
     type: CharacterTypeSchema,
     template: z.string().min(1),
     player: z.string().optional(),
@@ -27,6 +37,8 @@ export const CharacterMetadataSchema = z.object({
     features: z.string().optional(),
     biography: z.string().optional(),
     imageUrl: z.string().optional(),
+    /** Device-local IndexedDB key. Exported character JSON intentionally omits it. */
+    portraitId: z.string().optional(),
 });
 
 export const HEALTH_LEVELS = [
@@ -44,7 +56,7 @@ export const HealthSchema = z.object({
 });
 
 export function calculateHealthPenalty(levels: ConditionMark[]): number {
-    for (let i = 0; i < 6; i++) {
+    for (let i = HEALTH_LEVELS.length - 1; i >= 0; i--) {
         if (levels[i] !== 'empty') {
             return HEALTH_LEVELS[i].penalty;
         }
@@ -52,17 +64,22 @@ export function calculateHealthPenalty(levels: ConditionMark[]): number {
     return 0;
 }
 
-export const ItemSchema = z.object({
-    id: z.string(),
-    text: z.string(),
-    description: z.string().default(''),
-    effects: z.string().default(''),
-    weight: z.string().default(''),
-    price: z.string().default(''),
-    quantity: z.number().default(1),
-    maxQuantity: z.number().default(1),
-    equipped: z.boolean().default(false),
-});
+export const ItemSchema = z
+    .object({
+        id: z.string(),
+        text: z.string(),
+        description: z.string().default(''),
+        effects: z.string().default(''),
+        weight: z.string().default(''),
+        price: z.string().default(''),
+        quantity: nonNegativeIntegerSchema.default(1),
+        maxQuantity: nonNegativeIntegerSchema.default(1),
+        equipped: z.boolean().default(false),
+    })
+    .refine(({ maxQuantity, quantity }) => quantity <= maxQuantity, {
+        message: 'Quantity cannot exceed maximum quantity',
+        path: ['quantity'],
+    });
 
 export const ArmorItemSchema = z.object({
     id: z.string(),
@@ -72,14 +89,19 @@ export const ArmorItemSchema = z.object({
     dex: z.string(),
 });
 
-export const WeaponItemSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    damage: z.string(),
-    range: z.string(),
-    ammo: z.coerce.number().default(0),
-    maxAmmo: z.coerce.number().default(0),
-});
+export const WeaponItemSchema = z
+    .object({
+        id: z.string(),
+        name: z.string(),
+        damage: z.string(),
+        range: z.string(),
+        ammo: z.coerce.number().finite().int().nonnegative().default(0),
+        maxAmmo: z.coerce.number().finite().int().nonnegative().default(0),
+    })
+    .refine(({ ammo, maxAmmo }) => ammo <= maxAmmo, {
+        message: 'Ammo cannot exceed maximum ammo',
+        path: ['ammo'],
+    });
 
 export const ImplantItemSchema = z.object({
     id: z.string(),
@@ -91,7 +113,7 @@ export const ImplantItemSchema = z.object({
 export const CustomSkillSchema = z.object({
     id: z.string(),
     label: z.string(),
-    value: z.number().min(0).max(5),
+    value: dotValueSchema,
     specialization: z.boolean().optional(),
     experienced: z.boolean().optional(),
     practiced: z.boolean().optional(),
@@ -100,26 +122,21 @@ export const CustomSkillSchema = z.object({
 export const BackgroundSchema = z.object({
     id: z.string(),
     label: z.string(),
-    value: z.number().min(0).max(5),
+    value: dotValueSchema,
     catalogId: z.string().optional(),
 });
 
 export const MeritFlawSchema = z.object({
     id: z.string(),
-    points: z.number(),
+    points: z.number().finite().int().min(1).max(5),
     label: z.string(),
     catalogId: z.string().optional(),
-});
-
-export const CustomForcePowerSchema = z.object({
-    id: z.string(),
-    name: z.string(),
 });
 
 export const ForcePowerItemSchema = z.object({
     id: z.string(),
     name: z.string(),
-    value: z.number().min(0).max(5).default(0),
+    value: dotValueSchema.default(0),
     catalogId: z.string().optional(),
 });
 
@@ -129,7 +146,6 @@ export type ImplantItem = z.infer<typeof ImplantItemSchema>;
 export type CustomSkill = z.infer<typeof CustomSkillSchema>;
 export type Background = z.infer<typeof BackgroundSchema>;
 export type MeritFlawItem = z.infer<typeof MeritFlawSchema>;
-export type CustomForcePower = z.infer<typeof CustomForcePowerSchema>;
 export type ForcePowerItem = z.infer<typeof ForcePowerItemSchema>;
 
 export const TraitModifierSchema = z.object({
@@ -139,7 +155,7 @@ export const TraitModifierSchema = z.object({
 });
 
 export const TraitValueSchema = z.object({
-    value: z.number().min(0).max(5),
+    value: dotValueSchema,
     specializationText: z.string().optional(),
     ...TraitModifierSchema.shape,
 });
@@ -157,11 +173,9 @@ export const BaseCharacterSchema = z.object({
     backgrounds: z.array(BackgroundSchema).default([]),
     merits: z.array(MeritFlawSchema).default([]),
     flaws: z.array(MeritFlawSchema).default([]),
-    willpower: z.object({ current: z.number(), max: z.number() }).optional(),
-    forcePoints: z.object({ current: z.number(), max: z.number() }).optional(),
-    darkSideResistance: z.number().optional(),
-    forcePowers: z.array(z.string()).optional(),
-    customForcePowers: z.array(CustomForcePowerSchema).default([]),
+    willpower: resourcePairSchema.optional(),
+    forcePoints: resourcePairSchema.optional(),
+    darkSideResistance: resourceValueSchema.optional(),
     forcePowerItems: z.array(ForcePowerItemSchema).default([]),
     health: HealthSchema,
     inventory: z.array(ItemSchema).default([]),
@@ -170,8 +184,12 @@ export const BaseCharacterSchema = z.object({
     implants: z.array(ImplantItemSchema).default([]),
     experience: z
         .object({
-            total: z.number().default(0),
-            spent: z.number().default(0),
+            total: nonNegativeIntegerSchema.default(0),
+            spent: nonNegativeIntegerSchema.default(0),
+        })
+        .refine(({ spent, total }) => spent <= total, {
+            message: 'Spent experience cannot exceed total experience',
+            path: ['spent'],
         })
         .optional(),
     customTalents: z.array(CustomSkillSchema).default([]),
@@ -247,8 +265,6 @@ export function createDefaultCharacter(): BaseCharacter {
         willpower: { current: 5, max: 5 },
         forcePoints: { current: 0, max: 0 },
         darkSideResistance: 5,
-        forcePowers: [],
-        customForcePowers: [],
         forcePowerItems: [],
         health: {
             levels: ['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'],

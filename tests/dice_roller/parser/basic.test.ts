@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest';
-import { parseToAST, validateNotation } from '@site/src/dice_roller/dice-logic';
+import { parseToAST, validateNotation } from '@site/src/dice_roller/dice-logic/dice-parser';
 import type {
-    DiceGroupNode,
     BinaryOpNode,
+    DiceGroupNode,
     NumericLiteralNode,
-} from '@site/src/dice_roller/dice-logic';
+} from '@site/src/dice_roller/dice-logic/types';
+import { describe, expect, it } from 'vitest';
 
 function asDice(node: unknown): DiceGroupNode {
     if (
@@ -80,6 +80,19 @@ describe('Parser - basic dice', () => {
         const ast = parseToAST('2d6*3');
         const binop = asBinop(ast);
         expect(binop.operator).toBe('*');
+    });
+});
+
+describe('Parser - strict validation and limits', () => {
+    it.each(['2d6 garbage', '2d6+', '(2d6', '2d6>=', '0d6', '201d6', '1d0'])(
+        'rejects %s',
+        (notation) => {
+            expect(validateNotation(notation)).toBe(false);
+        }
+    );
+
+    it('reports the source location for an invalid token', () => {
+        expect(() => parseToAST('2d6 & 1')).toThrow(/line 1, column 5/);
     });
 });
 

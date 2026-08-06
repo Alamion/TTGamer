@@ -1,5 +1,5 @@
-import { Plus, X } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Plus, X } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 export interface DataTableColumn<T> {

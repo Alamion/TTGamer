@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
+
 import type { ToolGearEntry } from './toolsGearData';
 
 export const TOOLS_GEAR_COLUMNS: ColumnDef<ToolGearEntry>[] = [

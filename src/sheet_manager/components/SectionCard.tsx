@@ -1,6 +1,7 @@
-import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
-import { useLocalStorageState } from '../hooks';
 import { clsx } from 'clsx';
+import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+
+import { useLocalStorageState } from '../hooks';
 
 interface SectionCardProps {
     title?: string;

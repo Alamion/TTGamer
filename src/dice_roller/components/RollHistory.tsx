@@ -1,9 +1,15 @@
-import { memo, useRef, useEffect, useState } from 'react';
-import { Star, RotateCw, Trash2 } from 'lucide-react';
-import { useDiceRollerStore } from '../store/diceRollerStore';
-import type { HistoryTabType } from '../utils/types-ext';
 import { clsx } from 'clsx';
-import { pushStatLabel, clearStatLabels, setCharacterName } from '../utils/sessionStorage';
+import { RotateCw, Star, Trash2 } from 'lucide-react';
+import { memo, useEffect, useRef, useState } from 'react';
+
+import { useDiceRollerStore } from '../store/diceRollerStore';
+import {
+    clearCharacterName,
+    clearStatLabels,
+    pushStatLabel,
+    setCharacterName,
+} from '../utils/sessionStorage';
+import type { HistoryTabType } from '../utils/types-ext';
 
 const TABS: { id: HistoryTabType; label: string }[] = [
     { id: 'chat', label: 'History' },
@@ -111,22 +117,24 @@ function RollHistory() {
                     onClick={(e) => {
                         e.stopPropagation();
                         setNotationInput(item.notation);
+                        clearCharacterName();
+                        clearStatLabels();
                         if (item.characterName) {
                             setCharacterName(item.characterName);
                         }
                         if (item.statLabels && item.statLabels.length > 0) {
-                            clearStatLabels();
                             item.statLabels.forEach((l) => pushStatLabel(l));
                         }
                     }}
                     onContextMenu={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
+                        clearCharacterName();
+                        clearStatLabels();
                         if (item.characterName) {
                             setCharacterName(item.characterName);
                         }
                         if (item.statLabels && item.statLabels.length > 0) {
-                            clearStatLabels();
                             item.statLabels.forEach((l) => pushStatLabel(l));
                         }
                         roll(item.notation);

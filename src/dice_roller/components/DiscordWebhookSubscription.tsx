@@ -1,14 +1,16 @@
-import { useEffect } from 'react';
-import { useDiceRollerStore } from '../store/diceRollerStore';
-import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
 import {
-    isValidDiscordWebhook,
-    SESSION_STORAGE_KEY,
-    sendToDiscord,
     buildDiscordHistoryMessage,
-} from '@site/src/external_apis/discord/sendToDiscord';
-import { onRollResult } from '../dice-logic';
-import type { RollResult } from '../dice-logic';
+    isValidDiscordWebhook,
+    queueDiscordMessage,
+    SESSION_STORAGE_KEY,
+} from '@site/src/integrations/discord';
+import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+
+import { onRollResult } from '../dice-logic/dice-roller';
+import type { RollResult } from '../dice-logic/types';
+import { useDiceRollerStore } from '../store/diceRollerStore';
 
 export default function DiscordWebhookSubscription() {
     const settings = useDiceRollerStore((s) => s.settings);
@@ -26,12 +28,20 @@ export default function DiscordWebhookSubscription() {
             const message = includeRollContext
                 ? buildDiscordHistoryMessage(result)
                 : buildDiscordHistoryMessage({ ...result, details: '', formatted: '' });
-            sendToDiscord(message, webhookUrl).then((ok) => {
-                if (!ok) {
-                    console.error('[Discord Webhook] Failed to send roll result', {
-                        notation: result.notation,
-                    });
+            queueDiscordMessage(message, webhookUrl).then((delivery) => {
+                if (delivery.ok) return;
+                if (delivery.reason === 'rate-limited') {
+                    const wait = delivery.retryAfterMs
+                        ? ` Try again in about ${Math.ceil(delivery.retryAfterMs / 1_000)} seconds.`
+                        : ' Try again in a moment.';
+                    toast.error(`Discord is rate-limiting rolls.${wait}`);
+                    return;
                 }
+                toast.error(
+                    delivery.reason === 'network'
+                        ? 'Discord could not be reached. Check your connection.'
+                        : 'Discord rejected this roll. Check the webhook settings.'
+                );
             });
         });
 

@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
 import { clsx } from 'clsx';
+import { useCallback } from 'react';
 
 interface CheckboxProps {
     checked: boolean;
@@ -38,8 +38,7 @@ export function Checkbox({
     }, [disabled, onChange, checked]);
 
     return (
-        <label
-            htmlFor={id}
+        <div
             className={clsx(
                 'flex items-center gap-2 cursor-pointer select-none',
                 disabled && 'opacity-50 cursor-not-allowed w-fit'
@@ -48,7 +47,9 @@ export function Checkbox({
             <button
                 key={id}
                 type="button"
-                role="radio"
+                role="checkbox"
+                aria-checked={checked}
+                aria-label={label}
                 disabled={disabled}
                 onClick={() => handleToggle()}
                 className={clsx(
@@ -63,6 +64,6 @@ export function Checkbox({
                 )}
             />
             <span className={clsx('text-textPrimary', labelSizeClasses[size])}>{label}</span>
-        </label>
+        </div>
     );
 }

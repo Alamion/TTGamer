@@ -6,6 +6,7 @@ dist-ssr
 
 # Production
 /build
+/coverage
 
 # Generated files
 .docusaurus
@@ -39,3 +40,4 @@ lerna-debug.log*
 context/*
 *~
 nul
+tmp/

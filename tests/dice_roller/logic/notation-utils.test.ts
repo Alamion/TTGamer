@@ -1,15 +1,16 @@
-import { describe, it, expect } from 'vitest';
 import {
-    parseParts,
-    makePartRaw,
-    findLastMatch,
     applyAdvantage,
     applyDisadvantage,
-    splitD100Value,
+    findLastMatch,
     handleDiceNotation,
-    splitTopLevel,
+    makePartRaw,
     mergeDiceNotation,
+    parseParts,
+    rewriteWodDifficulty,
+    splitD100Value,
+    splitTopLevel,
 } from '@site/src/dice_roller/dice-logic/notation-utils';
+import { describe, expect, it } from 'vitest';
 
 describe('parseParts', () => {
     it('returns empty array for empty string', () => {
@@ -326,6 +327,16 @@ describe('handleDiceNotation', () => {
 
     it('preserves modifier on existing die when decrementing', () => {
         expect(handleDiceNotation('4d6kh3', 'd6', false)).toBe('3d6kh3');
+    });
+});
+
+describe('rewriteWodDifficulty', () => {
+    it('rewrites each directly modified d10 group', () => {
+        expect(rewriteWodDifficulty('2d10>=6f=1+3d10>=6!', 7)).toBe('2d10>=7f=1+3d10>=7!');
+    });
+
+    it('rewrites a parenthesized group modifier', () => {
+        expect(rewriteWodDifficulty('(2d10+3d10)>=6f=1', 7)).toBe('(2d10+3d10)>=7f=1');
     });
 });
 

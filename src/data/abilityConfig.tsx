@@ -1,7 +1,8 @@
+import { ScaleList, SpecialtiesList } from '@site/src/shared/components/DetailSections';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
+
 import type { AbilityEntry } from './abilities';
-import { SpecialtiesList, ScaleList } from '@site/src/shared/components/DetailSections';
 
 export const ABILITY_COLUMNS: ColumnDef<AbilityEntry>[] = [
     {

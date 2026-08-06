@@ -1,21 +1,26 @@
-import { describe, it, expect } from 'vitest';
 import {
-    MODULE_NAME,
-    MAX_EXPLOSIONS,
-    MAX_ROLL_SECONDS,
-    VELOCITY_THRESHOLD,
-    FRAME_RATE,
     DEFAULT_SETTINGS,
+    FRAME_RATE,
+    MAX_EXPLOSIONS,
+    MAX_NUMERIC_LITERAL,
+    MAX_ROLL_SECONDS,
+    MODULE_NAME,
     SETTINGS_METADATA,
+    VELOCITY_THRESHOLD,
 } from '@site/src/dice_roller/utils/constants';
+import { describe, expect, it } from 'vitest';
 
 describe('constants', () => {
     it('MODULE_NAME is 3DDiceRolls', () => {
         expect(MODULE_NAME).toBe('3DDiceRolls');
     });
 
-    it('MAX_EXPLOSIONS is 1000', () => {
-        expect(MAX_EXPLOSIONS).toBe(1000);
+    it('caps recursive modifier work', () => {
+        expect(MAX_EXPLOSIONS).toBe(100);
+    });
+
+    it('caps numeric literal magnitude', () => {
+        expect(MAX_NUMERIC_LITERAL).toBe(1_000_000_000);
     });
 
     it('MAX_ROLL_SECONDS is 10', () => {

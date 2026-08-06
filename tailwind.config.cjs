@@ -3,11 +3,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     important: '.tailwind-root',
-    content: [
-        './src/**/*.{js,ts,jsx,tsx,mdx}',
-        './sheet_manager/**/*.{js,ts,jsx,tsx}',
-        './docs/**/*.{tsx,mdx}',
-    ],
+    content: ['./src/**/*.{js,ts,jsx,tsx,mdx}', './docs/**/*.{tsx,mdx}'],
     theme: {
         extend: {
             colors: {

@@ -5,11 +5,13 @@ export function AutoResizeTextarea({
     onChange,
     readOnly,
     placeholder,
+    ariaLabel,
 }: {
     value: string;
     onChange: (value: string) => void;
     readOnly: boolean;
     placeholder?: string;
+    ariaLabel?: string;
 }) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -29,7 +31,7 @@ export function AutoResizeTextarea({
             disabled={readOnly}
             className="w-full bg-bgSurface border rounded px-3 py-2 text-sm text-textPrimary disabled:opacity-60 disabled:cursor-default resize-none overflow-hidden min-h-[80px]"
             placeholder={placeholder}
-            aria-label="Biography"
+            aria-label={ariaLabel ?? placeholder ?? 'Text'}
         />
     );
 }

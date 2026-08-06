@@ -64,15 +64,13 @@ const THRESHOLDS = [1, 2, 3, 4, 5];
 export function DifficultyTable() {
     const [cancelOnes, setCancelOnes] = useState(true);
     const [currentPool, setCurrentPool] = useState(7);
-    const [_key, setKey] = useState(0);
 
     const rows = useMemo(() => {
         return THRESHOLDS.map((minNet) => ({
             threshold: minNet,
             cells: DIFFICULTIES.map((d) => computeProb(currentPool, d, minNet, cancelOnes)),
         }));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [cancelOnes, currentPool, _key]);
+    }, [cancelOnes, currentPool]);
 
     return (
         <div className="tailwind-root overflow-x-auto">
@@ -99,23 +97,21 @@ export function DifficultyTable() {
                     />
                     1s cancel successes
                 </label>
-                <button
-                    onClick={() => setKey((k) => k + 1)}
-                    className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                >
-                    Recalculate
-                </button>
             </div>
 
             <table className="min-w-full text-sm border-collapse">
                 <thead>
                     <tr>
-                        <th className="sticky left-0 bg-white dark:bg-gray-900 border px-2 py-1.5 text-left z-10">
+                        <th
+                            scope="col"
+                            className="sticky left-0 bg-white dark:bg-gray-900 border px-2 py-1.5 text-left z-10"
+                        >
                             Net Suc. \ Diff
                         </th>
                         {DIFFICULTIES.map((d) => (
                             <th
                                 key={d}
+                                scope="col"
                                 className={`border px-2 py-1.5 text-center ${DIFF_BG[d]}`}
                                 title={DIFF_LABELS[d]}
                             >
@@ -133,9 +129,12 @@ export function DifficultyTable() {
                             key={row.threshold}
                             className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
                         >
-                            <td className="sticky left-0 bg-white dark:bg-gray-900 border px-2 py-1 font-bold z-10">
+                            <th
+                                scope="row"
+                                className="sticky left-0 bg-white dark:bg-gray-900 border px-2 py-1 font-bold z-10"
+                            >
                                 {row.threshold}+
-                            </td>
+                            </th>
                             {row.cells.map((v, i) => (
                                 <td
                                     key={DIFFICULTIES[i]}
@@ -153,7 +152,7 @@ export function DifficultyTable() {
                 Rows show the chance of rolling at least N net successes with {currentPool}{' '}
                 dice.&nbsp;
                 {cancelOnes ? 'Each 1 cancels one success.' : 'Ones are ignored (no cancelation).'}
-                &nbsp;Click <strong>Recalculate</strong> to refresh after changing inputs.
+                Values update immediately when inputs change.
             </p>
         </div>
     );

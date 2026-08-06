@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState } from 'react';
 import * as Popover from '@radix-ui/react-popover';
 import { Command } from 'cmdk';
+import { useMemo, useRef, useState } from 'react';
 
 export interface CatalogEntry {
     id: string;
@@ -16,6 +16,7 @@ interface CatalogSuggestProps {
     placeholder?: string;
     disabled?: boolean;
     className?: string;
+    ariaLabel?: string;
 }
 
 export function CatalogSuggest({
@@ -26,6 +27,7 @@ export function CatalogSuggest({
     placeholder,
     disabled,
     className,
+    ariaLabel,
 }: CatalogSuggestProps) {
     const [open, setOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -64,6 +66,7 @@ export function CatalogSuggest({
                     disabled={disabled}
                     placeholder={placeholder}
                     className={className}
+                    aria-label={ariaLabel ?? placeholder}
                 />
             </Popover.Trigger>
             <Popover.Content

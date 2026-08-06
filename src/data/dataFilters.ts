@@ -1,3 +1,4 @@
+import { deserializeStringList } from '@site/src/shared/utils/stringList';
 import type { Row } from '@tanstack/react-table';
 
 export function arrayIncludesAnyFilterFn<T>(
@@ -8,7 +9,7 @@ export function arrayIncludesAnyFilterFn<T>(
     if (!filterValue) return true;
     const value = row.getValue<unknown>(columnId);
     if (!Array.isArray(value)) return false;
-    const selected = filterValue.split(',').filter(Boolean);
+    const selected = deserializeStringList(filterValue);
     if (selected.length === 0) return true;
     return selected.some((s) => value.includes(s));
 }

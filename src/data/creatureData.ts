@@ -392,7 +392,7 @@ export const CREATURES: CreatureEntry[] = [
         id: 'sarlacc',
         name: 'Sarlacc',
         type: 'Subterranean pit dweller',
-        scale: 'Capitol',
+        scale: 'Capital',
         size: '100m+ deep',
         strength: '5D',
         dexterity: '1D',

@@ -1,14 +1,15 @@
+import { isDevelopment } from '@site/src/shared/utils/env';
+import { debug } from '@site/src/shared/utils/logging';
+import { BoxGeometry, type Material, Mesh, MeshBasicMaterial, Raycaster, Vector2 } from 'three';
+
+import { FRAME_RATE, MAX_ROLL_SECONDS, VELOCITY_THRESHOLD } from '../../utils/constants';
+import { RollCancelledError } from '../errors';
+import type { DiceGeometryData } from './geometries';
+import { PhysicsWorld } from './physics';
 import { ResourceTracker } from './resource';
 import { SceneManager } from './scene';
-import { PhysicsWorld } from './physics';
-import { DiceShape, createDiceShape } from './shapes';
-import type { DiceGeometryData } from './geometries';
+import { createDiceShape, DiceShape } from './shapes';
 import { SoundManager } from './sound-manager';
-import { debug } from '@site/src/shared/utils/logging';
-import { isDevelopment } from '@site/src/shared/utils/env';
-import { MAX_ROLL_SECONDS, VELOCITY_THRESHOLD, FRAME_RATE } from '../../utils/constants';
-import { RollCancelledError } from '../errors';
-import { BoxGeometry, Mesh, MeshBasicMaterial, Raycaster, Vector2, type Material } from 'three';
 
 export interface DiceRendererConfig {
     diceColor: string;
@@ -47,6 +48,12 @@ interface RollSession {
     startTime: number;
     cancelled: boolean;
     accepted: boolean;
+    manuallyRerolled: boolean;
+}
+
+export interface StartedRollSession {
+    sessionId: number;
+    settle: Promise<number[]>;
 }
 
 export class DiceRenderer {
@@ -63,16 +70,6 @@ export class DiceRenderer {
     private container: HTMLDivElement;
     private animationId: number | null = null;
     private isRunning = false;
-
-    private _manuallyRerolled = false;
-
-    get wasManuallyRerolled(): boolean {
-        return this._manuallyRerolled;
-    }
-
-    resetManualRerollFlag(): void {
-        this._manuallyRerolled = false;
-    }
 
     private width: number;
     private height: number;
@@ -302,11 +299,8 @@ export class DiceRenderer {
         this.cancelBtn = null;
     }
 
-    startRoll(diceData: DiceGeometryData[], groupSizes: number[]): Promise<number[]> {
+    startRoll(diceData: DiceGeometryData[], groupSizes: number[]): StartedRollSession {
         debug('DiceRenderer: Starting new roll session with', diceData.length, 'dice');
-
-        this.resetManualRerollFlag();
-        this.showLoading();
 
         const sessionId = this.nextSessionId++;
         const vector = this.getRandomVector();
@@ -365,20 +359,26 @@ export class DiceRenderer {
             startTime: performance.now(),
             cancelled: false,
             accepted: false,
+            manuallyRerolled: false,
         };
 
         this.sessions.push(session);
+        this.showLoading();
 
         if (!this.isRunning) {
             this.isRunning = true;
             this.animate();
         }
 
-        return settlePromise;
+        return { sessionId, settle: settlePromise };
     }
 
-    lockDice(flatIndices: number[]): void {
-        const activeSession = this.sessions[this.sessions.length - 1];
+    private getSession(sessionId: number): RollSession | undefined {
+        return this.sessions.find((session) => session.id === sessionId);
+    }
+
+    lockDice(sessionId: number, flatIndices: number[]): void {
+        const activeSession = this.getSession(sessionId);
         if (!activeSession) return;
         for (const idx of flatIndices) {
             activeSession.lockedIndices.add(idx);
@@ -391,8 +391,8 @@ export class DiceRenderer {
         }
     }
 
-    rethrowDice(flatIndices: number[]): Promise<number[]> {
-        const activeSession = this.sessions[this.sessions.length - 1];
+    rethrowDice(sessionId: number, flatIndices: number[]): Promise<number[]> {
+        const activeSession = this.getSession(sessionId);
         if (!activeSession) {
             return Promise.reject(new Error('No active session'));
         }
@@ -428,12 +428,13 @@ export class DiceRenderer {
         activeSession.phase = 'waiting_reroll';
         activeSession.allStopped = false;
         activeSession.currentIterations = 0;
+        activeSession.startTime = performance.now();
 
         return settlePromise;
     }
 
-    addDice(extraDiceData: DiceGeometryData[]): Promise<number[]> {
-        const activeSession = this.sessions[this.sessions.length - 1];
+    addDice(sessionId: number, extraDiceData: DiceGeometryData[]): Promise<number[]> {
+        const activeSession = this.getSession(sessionId);
         if (!activeSession) {
             return Promise.reject(new Error('No active session'));
         }
@@ -473,68 +474,86 @@ export class DiceRenderer {
         activeSession.phase = 'exploding';
         activeSession.allStopped = false;
         activeSession.currentIterations = 0;
+        activeSession.startTime = performance.now();
 
         return settlePromise;
     }
 
-    readFlatValues(): number[] {
-        const activeSession = this.sessions[this.sessions.length - 1];
+    readFlatValues(sessionId: number): number[] {
+        const activeSession = this.getSession(sessionId);
         if (!activeSession) return [];
         return activeSession.dice.map((d) => d.result);
     }
 
-    arrangeAndDismiss(): void {
-        const activeSession = this.sessions[this.sessions.length - 1];
+    arrangeAndDismiss(sessionId: number): void {
+        const activeSession = this.getSession(sessionId);
         if (!activeSession) return;
 
         activeSession.phase = 'arranging';
     }
 
-    acceptRoll(): void {
-        const sessions = this.sessions.filter((s) => s.phase === 'physics' && !s.cancelled);
-        for (const session of sessions) {
-            if (!session) continue;
-
-            session.accepted = true;
-            this.hideLoading();
-
-            for (const die of session.dice) {
-                die.body.velocity.set(0, 0, 0);
-                die.body.angularVelocity.set(0, 0, 0);
-                die.body.updateMassProperties();
-                die.stopped = true;
-                die.staleIterations = 999;
-            }
-            session.allStopped = true;
-            session.currentIterations = 0;
-
-            const values = session.dice.map((d) => d.result);
-            if (session.settleResolve) {
-                session.settleResolve(values);
-                session.settleResolve = null;
-                session.settleReject = null;
-            }
-
-            session.phase = 'showing';
-            session.showFrames = 30;
-        }
+    wasSessionManuallyRerolled(sessionId: number): boolean {
+        return this.getSession(sessionId)?.manuallyRerolled ?? false;
     }
 
-    cancelRoll(): void {
-        const sessions = this.sessions.filter((s) => s.phase === 'physics' && !s.cancelled);
-        for (const session of sessions) {
-            if (!session) continue;
+    private getLatestPhysicsSession(): RollSession | undefined {
+        for (let index = this.sessions.length - 1; index >= 0; index--) {
+            const session = this.sessions[index];
+            if (session.phase === 'physics' && !session.cancelled) return session;
+        }
+        return undefined;
+    }
 
-            session.cancelled = true;
+    acceptRoll(sessionId?: number): void {
+        const session =
+            sessionId === undefined ? this.getLatestPhysicsSession() : this.getSession(sessionId);
+        if (!session || session.phase !== 'physics' || session.cancelled) return;
+
+        session.accepted = true;
+
+        for (const die of session.dice) {
+            die.body.velocity.set(0, 0, 0);
+            die.body.angularVelocity.set(0, 0, 0);
+            die.body.updateMassProperties();
+            die.stopped = true;
+            die.staleIterations = 999;
+        }
+        session.allStopped = true;
+        session.currentIterations = 0;
+
+        const values = session.dice.map((d) => d.result);
+        if (session.settleResolve) {
+            session.settleResolve(values);
+            session.settleResolve = null;
+            session.settleReject = null;
+        }
+
+        session.phase = 'showing';
+        session.showFrames = 30;
+        this.syncLoading();
+    }
+
+    cancelRoll(sessionId?: number): void {
+        const session =
+            sessionId === undefined ? this.getLatestPhysicsSession() : this.getSession(sessionId);
+        if (!session || session.phase !== 'physics' || session.cancelled) return;
+
+        session.cancelled = true;
+
+        if (session.settleReject) {
+            session.settleReject(new RollCancelledError());
+            session.settleResolve = null;
+            session.settleReject = null;
+        }
+
+        this.completeSession(session);
+    }
+
+    private syncLoading(): void {
+        if (this.getLatestPhysicsSession()) {
+            this.showLoading();
+        } else {
             this.hideLoading();
-
-            if (session.settleReject) {
-                session.settleReject(new RollCancelledError());
-                session.settleResolve = null;
-                session.settleReject = null;
-            }
-
-            this.completeSession(session);
         }
     }
 
@@ -552,8 +571,6 @@ export class DiceRenderer {
             `DiceRenderer: Completing session ${session.id} after ${session.iterations} iterations`
         );
 
-        this.hideLoading();
-
         session.isAnimating = false;
 
         const results = session.dice.map((d) => d.result);
@@ -569,6 +586,7 @@ export class DiceRenderer {
         this.sceneManager.render();
 
         this.sessions = this.sessions.filter((s) => s.id !== session.id);
+        this.syncLoading();
 
         if (this.sessions.length === 0) {
             this.stopAnimationLoop();
@@ -857,7 +875,7 @@ export class DiceRenderer {
 
     private rerollDieInSession(session: RollSession, flatIndex: number): void {
         this.clearHover();
-        this._manuallyRerolled = true;
+        session.manuallyRerolled = true;
 
         session.lockedIndices.delete(flatIndex);
         const die = session.dice[flatIndex];

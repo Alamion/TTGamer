@@ -1,8 +1,9 @@
 import { memo, useCallback } from 'react';
+
+import { applyAdvantage, applyDisadvantage } from '../../dice-logic/notation-utils';
 import { useDiceRollerStore } from '../../store/diceRollerStore';
-import { applyAdvantage, applyDisadvantage } from '../../dice-logic';
-import DiceGrid from './DiceGrid';
 import { dndDice } from '../dice-config';
+import DiceGrid from './DiceGrid';
 
 const DndTab = memo(function DndTab() {
     const notationInput = useDiceRollerStore((s) => s.notationInput);

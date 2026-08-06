@@ -1,13 +1,13 @@
-import type { BaseCharacter, ConditionMark } from '../types/character';
 import { CharacterContext } from '../context/CharacterContext';
-import { BaseBlock } from '../features/sheet/components/BaseBlock';
-import { AttributeBlock } from '../features/sheet/components/AttributeBlock';
-import { SkillBlock } from '../features/sheet/components/SkillBlock';
 import { AdvantagesBlock } from '../features/sheet/components/AdvantagesBlock';
-import { ForceBlock } from '../features/sheet/components/ForceBlock';
+import { AttributeBlock } from '../features/sheet/components/AttributeBlock';
+import { BaseBlock } from '../features/sheet/components/BaseBlock';
 import { BodyBlock } from '../features/sheet/components/BodyBlock';
+import { ForceBlock } from '../features/sheet/components/ForceBlock';
 import { HealthBlock } from '../features/sheet/components/HealthBlock';
 import { OtherBlock } from '../features/sheet/components/OtherBlock';
+import { SkillBlock } from '../features/sheet/components/SkillBlock';
+import type { BaseCharacter, ConditionMark } from '../types/character';
 
 interface CharacterViewerProps {
     character: BaseCharacter;

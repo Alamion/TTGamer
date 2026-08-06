@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import { SvgImage, useDiceColors } from './utils';
 
 interface DiceSvgProps {

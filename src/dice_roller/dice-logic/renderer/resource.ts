@@ -1,4 +1,4 @@
-import { BufferGeometry, Material, Mesh, Object3D, Texture, type Object3DEventMap } from 'three';
+import { BufferGeometry, Material, Mesh, Object3D, type Object3DEventMap, Texture } from 'three';
 
 type Disposable = { dispose: () => void };
 type Trackable =

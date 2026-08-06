@@ -1,8 +1,9 @@
-import { AutoResizeTextarea } from '../../../components/AutoResizeTextarea';
-import { Checkbox, CatalogSuggest, CollapsibleItem } from '../../../components';
-import type { CatalogEntry } from '../../../components';
-import type { Item } from '../../../types/character';
 import { Plus } from 'lucide-react';
+
+import type { CatalogEntry } from '../../../components';
+import { CatalogSuggest, Checkbox, CollapsibleItem } from '../../../components';
+import { AutoResizeTextarea } from '../../../components/AutoResizeTextarea';
+import type { Item } from '../../../types/character';
 import { buildInventoryCatalog } from './catalogs';
 
 interface InventorySectionProps {
@@ -47,9 +48,9 @@ export function InventorySection({
                     >
                         <div className="space-y-2">
                             <div>
-                                <label className="block text-xs text-textSecondary mb-0.5">
+                                <span className="block text-xs text-textSecondary mb-0.5">
                                     Name
-                                </label>
+                                </span>
                                 <CatalogSuggest
                                     catalog={inventoryCatalog}
                                     value={item.text}
@@ -58,28 +59,31 @@ export function InventorySection({
                                     placeholder="Item name..."
                                     disabled={readOnly}
                                     className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
+                                    ariaLabel="Item name"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs text-textSecondary mb-0.5">
+                                <span className="block text-xs text-textSecondary mb-0.5">
                                     Description
-                                </label>
+                                </span>
                                 <AutoResizeTextarea
                                     value={item.description}
                                     onChange={(value) => onUpdate(item.id, 'description', value)}
                                     placeholder="Description..."
                                     readOnly={readOnly}
+                                    ariaLabel="Item description"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs text-textSecondary mb-0.5">
+                                <span className="block text-xs text-textSecondary mb-0.5">
                                     Effects
-                                </label>
+                                </span>
                                 <AutoResizeTextarea
                                     value={item.effects}
                                     onChange={(value) => onUpdate(item.id, 'effects', value)}
                                     placeholder="Effects..."
                                     readOnly={readOnly}
+                                    ariaLabel="Item effects"
                                 />
                             </div>
                             <div className="flex flex-col sm:grid sm:grid-cols-4 gap-2">
@@ -89,9 +93,9 @@ export function InventorySection({
                                             key={field}
                                             className="flex items-center sm:flex-col gap-2 sm:gap-0.5"
                                         >
-                                            <label className="text-xs text-textSecondary w-16 sm:w-auto shrink-0 capitalize">
+                                            <span className="text-xs text-textSecondary w-16 sm:w-auto shrink-0 capitalize">
                                                 {field === 'maxQuantity' ? 'Max qty' : field}
-                                            </label>
+                                            </span>
                                             <input
                                                 type={
                                                     field === 'quantity' || field === 'maxQuantity'
@@ -112,6 +116,16 @@ export function InventorySection({
                                                 className="flex-1 w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
                                                 placeholder={`${field === 'maxQuantity' ? 'Max qty...' : `${field.charAt(0).toUpperCase() + field.slice(1)}...`}`}
                                                 min={0}
+                                                max={
+                                                    field === 'quantity'
+                                                        ? item.maxQuantity
+                                                        : undefined
+                                                }
+                                                step={
+                                                    field === 'quantity' || field === 'maxQuantity'
+                                                        ? 1
+                                                        : undefined
+                                                }
                                                 aria-label={
                                                     field === 'maxQuantity'
                                                         ? 'Maximum quantity'

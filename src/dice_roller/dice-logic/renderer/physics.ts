@@ -1,4 +1,5 @@
 import { Body, ContactMaterial, Material, NaiveBroadphase, Plane, Vec3, World } from 'cannon-es';
+
 import type { DiceShape } from './shapes';
 
 export class PhysicsWorld {

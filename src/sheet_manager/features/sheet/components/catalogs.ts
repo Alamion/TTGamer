@@ -1,16 +1,17 @@
-import type { CatalogEntry } from '../../../components';
-import { RANGED_WEAPONS } from '@site/src/data/rangedWeaponsData';
-import type { RangedWeaponEntry } from '@site/src/data/rangedWeaponsData';
-import { MELEE_WEAPONS } from '@site/src/data/meleeWeaponsData';
-import type { MeleeWeaponEntry } from '@site/src/data/meleeWeaponsData';
-import { ARMOR } from '@site/src/data/armorData';
 import type { ArmorEntry } from '@site/src/data/armorData';
-import { TOOLS_GEAR } from '@site/src/data/toolsGearData';
-import type { ToolGearEntry } from '@site/src/data/toolsGearData';
-import { CONSUMABLE_WEAPONS } from '@site/src/data/consumableWeaponsData';
+import { ARMOR } from '@site/src/data/armorData';
 import type { ConsumableWeaponEntry } from '@site/src/data/consumableWeaponsData';
-import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
+import { CONSUMABLE_WEAPONS } from '@site/src/data/consumableWeaponsData';
+import type { MeleeWeaponEntry } from '@site/src/data/meleeWeaponsData';
+import { MELEE_WEAPONS } from '@site/src/data/meleeWeaponsData';
 import type { MeritFlawEntry } from '@site/src/data/meritsFlawsData';
+import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
+import type { RangedWeaponEntry } from '@site/src/data/rangedWeaponsData';
+import { RANGED_WEAPONS } from '@site/src/data/rangedWeaponsData';
+import type { ToolGearEntry } from '@site/src/data/toolsGearData';
+import { TOOLS_GEAR } from '@site/src/data/toolsGearData';
+
+import type { CatalogEntry } from '../../../components';
 
 export function buildWeaponsCatalog(): CatalogEntry[] {
     return [

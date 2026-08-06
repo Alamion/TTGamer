@@ -1,7 +1,8 @@
-import { CatalogSuggest, CollapsibleItem } from '../../../components';
-import type { CatalogEntry } from '../../../components';
-import type { ArmorItem } from '../../../types/character';
 import { Plus } from 'lucide-react';
+
+import type { CatalogEntry } from '../../../components';
+import { CatalogSuggest, CollapsibleItem } from '../../../components';
+import type { ArmorItem } from '../../../types/character';
 import { buildArmorCatalog } from './catalogs';
 
 interface ArmorSectionProps {
@@ -41,9 +42,9 @@ export function ArmorSection({
                     >
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs text-textSecondary mb-0.5">
+                                <span className="block text-xs text-textSecondary mb-0.5">
                                     Name
-                                </label>
+                                </span>
                                 <CatalogSuggest
                                     catalog={armorCatalog}
                                     value={item.name}
@@ -52,17 +53,18 @@ export function ArmorSection({
                                     placeholder="Armor name..."
                                     disabled={readOnly}
                                     className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
+                                    ariaLabel="Armor name"
                                 />
                             </div>
                             {(['classVal', 'ar', 'dex'] as const).map((field) => (
                                 <div key={field}>
-                                    <label className="block text-xs text-textSecondary mb-0.5 capitalize">
+                                    <span className="block text-xs text-textSecondary mb-0.5 capitalize">
                                         {field === 'classVal'
                                             ? 'Class'
                                             : field === 'ar'
                                               ? 'AR'
                                               : 'Dex pen'}
-                                    </label>
+                                    </span>
                                     <input
                                         type="text"
                                         value={item[field]}

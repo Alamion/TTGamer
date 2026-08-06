@@ -1,7 +1,8 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
-import type { ForcePowerEntry } from './forcePowersData';
+
 import { arrayIncludesAnyFilterFn, booleanFilterFn } from './dataFilters';
+import type { ForcePowerEntry } from './forcePowersData';
 
 const ALL_SKILLS = ['Control', 'Dynamism', 'Rapport', 'Sense', 'Telekinesis'];
 

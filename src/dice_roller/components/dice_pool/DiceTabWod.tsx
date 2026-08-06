@@ -1,10 +1,11 @@
-import { memo, useState, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
+
+import { handleDiceNotation, rewriteWodDifficulty } from '../../dice-logic/notation-utils';
 import { useDiceRollerStore } from '../../store/diceRollerStore';
-import { handleDiceNotation } from '../../dice-logic';
 import { blendColors } from '../../utils/recolor_svg';
-import DiceButton from './DiceButton';
-import { DiceD10, DiceD6 } from '../2d_dices';
+import { DiceD6, DiceD10 } from '../2d_dices';
 import type { DiceConfig } from '../dice-config';
+import DiceButton from './DiceButton';
 
 const CRIMSON = '#DC143C';
 
@@ -18,7 +19,7 @@ const WodTab = memo(function WodTab() {
         () => ({
             notation: `d10>=${wodDifficulty}`,
             Component: DiceD10,
-            label: 'd10',
+            faceLabel: 'd10',
         }),
         [wodDifficulty]
     );
@@ -27,7 +28,7 @@ const WodTab = memo(function WodTab() {
         () => ({
             notation: `d10>=${wodDifficulty}f=1`,
             Component: DiceD10,
-            label: 'd10',
+            faceLabel: 'd10',
         }),
         [wodDifficulty]
     );
@@ -69,8 +70,37 @@ const WodTab = memo(function WodTab() {
         [notationInput, wodDifficulty, setNotationInput]
     );
 
-    const decrement = useCallback(() => setWodDifficulty((d) => Math.max(1, d - 1)), []);
-    const increment = useCallback(() => setWodDifficulty((d) => Math.min(10, d + 1)), []);
+    const setDifficulty = useCallback(
+        (difficulty: number) => {
+            const next = Math.max(1, Math.min(10, difficulty));
+            setWodDifficulty(next);
+            setNotationInput(rewriteWodDifficulty(notationInput, next));
+        },
+        [notationInput, setNotationInput]
+    );
+    const decrement = useCallback(
+        () => setDifficulty(wodDifficulty - 1),
+        [setDifficulty, wodDifficulty]
+    );
+    const increment = useCallback(
+        () => setDifficulty(wodDifficulty + 1),
+        [setDifficulty, wodDifficulty]
+    );
+
+    const d6Config: DiceConfig = useMemo(
+        () => ({ notation: 'd6', Component: DiceD6, faceLabel: 'd6' }),
+        []
+    );
+    const onAddD6 = useCallback(() => {
+        setNotationInput(handleDiceNotation(notationInput, 'd6', true));
+    }, [notationInput, setNotationInput]);
+    const onRemoveD6 = useCallback(
+        (_config: DiceConfig, e: React.MouseEvent) => {
+            e.preventDefault();
+            setNotationInput(handleDiceNotation(notationInput, 'd6', false));
+        },
+        [notationInput, setNotationInput]
+    );
 
     return (
         <div className="flex flex-col gap-3">
@@ -121,11 +151,11 @@ const WodTab = memo(function WodTab() {
                 />
                 <DiceButton
                     key="d6"
-                    config={{ notation: 'd6', Component: DiceD6, label: 'd6' }}
+                    config={d6Config}
                     primaryColor={settings.primaryDiceColor}
                     secondaryColor={settings.secondaryDiceColor}
-                    onAdd={onAdd}
-                    onRemove={onRemove}
+                    onAdd={onAddD6}
+                    onRemove={onRemoveD6}
                 />
             </div>
         </div>

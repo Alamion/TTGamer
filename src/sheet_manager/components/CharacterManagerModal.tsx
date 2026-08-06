@@ -1,9 +1,10 @@
-import { useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Trash2, Users } from 'lucide-react';
+import { Trash2, Users, X } from 'lucide-react';
+import { useState } from 'react';
+
 import { useCharacterStore } from '../store/characterStore.ts';
-import { ConfirmDialog } from './ConfirmDialog.tsx';
 import type { BaseCharacter } from '../types/character.ts';
+import { ConfirmDialog } from './ConfirmDialog.tsx';
 
 export interface CharacterManagerModalProps {
     open: boolean;

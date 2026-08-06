@@ -1,6 +1,14 @@
+import { debug } from '@site/src/shared/utils/logging';
+
+import {
+    MAX_AST_NODES,
+    MAX_DICE_COUNT,
+    MAX_DICE_SIDES,
+    MAX_NOTATION_LENGTH,
+    MAX_NUMERIC_LITERAL,
+} from '../utils/constants';
 import { type LexerToken, tokenize } from './dice-lexer';
 import type { ASTNode, ComparePoint, DiceModifiers, TokenType } from './types';
-import { debug, warn } from '@site/src/shared/utils/logging';
 
 const PRECEDENCE: Record<string, number> = {
     '^': 4,
@@ -12,12 +20,17 @@ const PRECEDENCE: Record<string, number> = {
 };
 
 function parseModifierValue(token: LexerToken): number {
+    let value: number;
     if (token.type === 'NUMBER') {
-        return typeof token.value === 'number' ? token.value : parseInt(token.value as string, 10);
+        value = typeof token.value === 'number' ? token.value : parseInt(token.value as string, 10);
+    } else {
+        const match = token.text.match(/\d+/);
+        value = match ? parseInt(match[0], 10) : 1;
     }
-    const text = token.text;
-    const match = text.match(/\d+/);
-    return match ? parseInt(match[0], 10) : 1;
+    if (!Number.isFinite(value) || value > MAX_NUMERIC_LITERAL) {
+        throw new RangeError(`Numeric values may not exceed ${MAX_NUMERIC_LITERAL}`);
+    }
+    return value;
 }
 
 function hasEmbeddedNumber(token: LexerToken): boolean {
@@ -40,12 +53,12 @@ class TokenStream {
         return this.tokens[this.position++];
     }
 
-    expect(type: TokenType): LexerToken | undefined {
+    expect(type: TokenType): LexerToken {
         const token = this.peek();
         if (token && token.type === type) {
-            return this.consume();
+            return this.consume()!;
         }
-        return undefined;
+        throw this.error(`Expected ${type}`);
     }
 
     has(type: TokenType): boolean {
@@ -56,6 +69,11 @@ class TokenStream {
     isEnd(): boolean {
         const token = this.peek();
         return token ? token.type === 'END' : true;
+    }
+
+    error(message: string, token = this.peek()): SyntaxError {
+        const location = token ? ` at line ${token.line || 1}, column ${token.col || 1}` : '';
+        return new SyntaxError(`${message}${location}`);
     }
 }
 
@@ -120,16 +138,13 @@ function parsePrimary(stream: TokenStream): ASTNode {
     const token = stream.peek();
 
     if (!token) {
-        warn('Unexpected end of input', 'Parser');
-        return { type: 'NumericLiteral', value: 0 };
+        throw stream.error('Unexpected end of input');
     }
 
     if (token.type === 'LPAREN') {
         stream.consume();
         const expr = parseExpression(stream);
-        if (stream.peek() && stream.peek()!.type === 'RPAREN') {
-            stream.consume();
-        }
+        stream.expect('RPAREN');
         // Parse and distribute group-level modifiers to all dice inside the parens
         const groupMods = parseGroupModifiers(stream);
         if (groupMods) {
@@ -158,13 +173,10 @@ function parsePrimary(stream: TokenStream): ASTNode {
     }
 
     if (token.type === 'END') {
-        stream.consume();
-        return { type: 'NumericLiteral', value: 0 };
+        throw stream.error('Expected a number, dice group, or parenthesized expression', token);
     }
 
-    warn(`Unexpected token: ${token.type} (${token.text})`, 'Parser');
-    stream.consume();
-    return { type: 'NumericLiteral', value: 0 };
+    throw stream.error(`Unexpected token ${token.type} (${token.text})`, token);
 }
 
 function isCompareType(type?: TokenType): boolean {
@@ -195,15 +207,14 @@ function parseComparePoint(stream: TokenStream): ComparePoint | undefined {
     if (next && isCompareType(next.type)) {
         const opToken = stream.consume()!;
         const valueToken = stream.peek();
-        const value =
-            valueToken && valueToken.type === 'NUMBER'
-                ? typeof valueToken.value === 'number'
-                    ? valueToken.value
-                    : parseInt(valueToken.value as string, 10)
-                : 0;
-        if (valueToken && valueToken.type === 'NUMBER') {
-            stream.consume();
+        if (!valueToken || valueToken.type !== 'NUMBER') {
+            throw stream.error('Comparison operator must be followed by a number', valueToken);
         }
+        const value =
+            typeof valueToken.value === 'number'
+                ? valueToken.value
+                : parseInt(valueToken.value as string, 10);
+        stream.consume();
         return {
             operator: mapCompareOperator(opToken),
             value,
@@ -376,10 +387,17 @@ function parseDiceGroup(stream: TokenStream): ASTNode {
         customFaces?: number[];
     };
 
-    const count = diceValue.count || 1;
-    const sides = diceValue.sides || 6;
+    const count = diceValue.count;
+    const sides = diceValue.sides;
     const fudge = diceValue.fudge || false;
     const customFaces: number[] | undefined = diceValue.customFaces;
+
+    if (!Number.isInteger(count) || count < 1 || count > MAX_DICE_COUNT) {
+        throw stream.error(`Dice count must be between 1 and ${MAX_DICE_COUNT}`, token);
+    }
+    if (!Number.isInteger(sides) || sides < 1 || sides > MAX_DICE_SIDES) {
+        throw stream.error(`Dice sides must be between 1 and ${MAX_DICE_SIDES}`, token);
+    }
 
     const modifiers: DiceModifiers = {};
     let forcedValues: number[] | undefined;
@@ -490,13 +508,62 @@ function distributeModifiersToDiceGroups(node: ASTNode, mods: DiceModifiers): vo
 }
 
 export function parseToAST(input: string): ASTNode {
+    if (input.length > MAX_NOTATION_LENGTH) {
+        throw new SyntaxError(`Notation may contain at most ${MAX_NOTATION_LENGTH} characters`);
+    }
     const tokens = tokenize(input);
+    const invalidToken = tokens.find((token) => token.type === 'ERROR');
+    if (invalidToken) {
+        throw new SyntaxError(
+            `Unexpected token ${invalidToken.text} at line ${invalidToken.line}, column ${invalidToken.col}`
+        );
+    }
+    const excessiveNumber = tokens.find(
+        (token) =>
+            token.type === 'NUMBER' &&
+            (typeof token.value !== 'number' ||
+                !Number.isFinite(token.value) ||
+                token.value > MAX_NUMERIC_LITERAL)
+    );
+    if (excessiveNumber) {
+        throw new RangeError(
+            `Numeric values may not exceed ${MAX_NUMERIC_LITERAL} at line ${excessiveNumber.line}, column ${excessiveNumber.col}`
+        );
+    }
     debug(
         'Tokens:',
         tokens.map((t) => ({ type: t.type, text: t.text }))
     );
     const stream = new TokenStream(tokens);
-    return parseExpression(stream);
+    const ast = parseExpression(stream);
+    if (!stream.isEnd()) {
+        const token = stream.peek();
+        throw stream.error(`Unexpected trailing token ${token?.text || token?.type}`, token);
+    }
+
+    let nodeCount = 0;
+    let diceCount = 0;
+    const visit = (node: ASTNode): void => {
+        nodeCount++;
+        if (nodeCount > MAX_AST_NODES) {
+            throw new SyntaxError(`Notation may contain at most ${MAX_AST_NODES} expressions`);
+        }
+        if (node.type === 'DiceGroup') {
+            diceCount += node.count;
+            if (diceCount > MAX_DICE_COUNT) {
+                throw new SyntaxError(`A roll may contain at most ${MAX_DICE_COUNT} dice`);
+            }
+        } else if (node.type === 'BinaryOp') {
+            visit(node.left);
+            visit(node.right);
+        } else if (node.type === 'UnaryOp') {
+            visit(node.operand);
+        } else if (node.type === 'Parenthesized') {
+            visit(node.expression);
+        }
+    };
+    visit(ast);
+    return ast;
 }
 
 export function parseDiceNotation(notation: string): {

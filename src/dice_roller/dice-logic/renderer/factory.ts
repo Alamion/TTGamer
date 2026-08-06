@@ -1,5 +1,8 @@
+import { warn } from '@site/src/shared/utils/logging';
+
 import type { DiceGroup } from '../types';
 import {
+    D2DiceGeometry,
     D4DiceGeometry,
     D6DiceGeometry,
     D8DiceGeometry,
@@ -7,11 +10,9 @@ import {
     D12DiceGeometry,
     D20DiceGeometry,
     D100DiceGeometry,
-    D2DiceGeometry,
     type DiceGeometryData,
 } from './geometries';
 import { type DiceRendererConfig } from './renderer';
-import { warn } from '@site/src/shared/utils/logging';
 
 interface DiceGeometryInstance {
     create(): { clone(): DiceGeometryData };

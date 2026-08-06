@@ -1,8 +1,9 @@
-import { AutoResizeTextarea } from '../../../components/AutoResizeTextarea';
-import { CatalogSuggest, CollapsibleItem } from '../../../components';
-import type { CatalogEntry } from '../../../components';
-import type { ImplantItem } from '../../../types/character';
 import { Plus } from 'lucide-react';
+
+import type { CatalogEntry } from '../../../components';
+import { CatalogSuggest, CollapsibleItem } from '../../../components';
+import { AutoResizeTextarea } from '../../../components/AutoResizeTextarea';
+import type { ImplantItem } from '../../../types/character';
 import { buildImplantsCatalog } from './catalogs';
 
 interface ImplantsSectionProps {
@@ -42,9 +43,9 @@ export function ImplantsSection({
                     >
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs text-textSecondary mb-0.5">
+                                <span className="block text-xs text-textSecondary mb-0.5">
                                     Name
-                                </label>
+                                </span>
                                 <CatalogSuggest
                                     catalog={implantsCatalog}
                                     value={item.name}
@@ -53,12 +54,13 @@ export function ImplantsSection({
                                     placeholder="Implant name..."
                                     disabled={readOnly}
                                     className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
+                                    ariaLabel="Implant name"
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs text-textSecondary mb-0.5">
+                                <span className="block text-xs text-textSecondary mb-0.5">
                                     Type
-                                </label>
+                                </span>
                                 <input
                                     type="text"
                                     value={item.type}
@@ -69,14 +71,15 @@ export function ImplantsSection({
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs text-textSecondary mb-0.5">
+                                <span className="block text-xs text-textSecondary mb-0.5">
                                     Effect
-                                </label>
+                                </span>
                                 <AutoResizeTextarea
                                     value={item.effect}
                                     onChange={(value) => onUpdate(item.id, 'effect', value)}
                                     placeholder="Mechanical effect..."
                                     readOnly={readOnly}
+                                    ariaLabel="Implant effect"
                                 />
                             </div>
                         </div>

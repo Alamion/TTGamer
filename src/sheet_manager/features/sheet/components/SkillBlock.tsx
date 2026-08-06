@@ -1,15 +1,16 @@
+import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
+import { generateId } from '@site/src/shared/utils/random';
+
+import type { AccentColor } from '../../../components';
 import {
     CollapsibleBlock,
-    SectionCard,
     CustomTraitList,
+    SectionCard,
     TraitRowWithInput,
 } from '../../../components';
-import type { AccentColor } from '../../../components';
 import { useCharacter } from '../../../hooks';
-import { DEFAULT_SKILL_VALUE } from '../../../types/character';
 import type { CustomSkill } from '../../../types/character';
-import { generateId } from '@site/src/shared/utils/random';
-import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
+import { DEFAULT_SKILL_VALUE } from '../../../types/character';
 
 const SKILLS = {
     talents: [

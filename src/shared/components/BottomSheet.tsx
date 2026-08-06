@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import type { ReactNode, TouchEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface BottomSheetProps {
     onClose: () => void;
@@ -62,36 +63,40 @@ export function BottomSheet({ onClose, children }: BottomSheetProps) {
     const contentMaxHeight = Math.max(0, 100 - translateY - 3);
 
     return (
-        <>
-            <div
-                className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-300"
+        <section
+            role="complementary"
+            aria-label="Catalog item details"
+            className="fixed left-0 right-0 bottom-0 z-50 bg-bgSurface rounded-t-xl border-t border-border shadow-xl will-change-transform"
+            style={{
+                transform: `translateY(${translateY}%)`,
+                transition: isDragging ? 'none' : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+                height: '100dvh',
+            }}
+        >
+            <button
+                type="button"
+                aria-label="Close details"
                 onClick={onClose}
-            />
-            <div
-                className="fixed left-0 right-0 bottom-0 z-50 bg-bgSurface rounded-t-xl shadow-xl will-change-transform"
-                style={{
-                    transform: `translateY(${translateY}%)`,
-                    transition: isDragging
-                        ? 'none'
-                        : 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
-                    height: '100dvh',
-                }}
+                className="absolute right-3 top-2 z-10 rounded p-1 text-textSecondary hover:bg-bgBase hover:text-textPrimary"
             >
-                <div
-                    className="pt-2 pb-1 flex justify-center cursor-grab active:cursor-grabbing touch-none"
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    onTouchEnd={handleTouchEnd}
-                >
-                    <div className="w-10 h-1 rounded-full bg-textSecondary/40" />
-                </div>
-                <div
-                    className="overflow-y-auto px-5 pb-6"
-                    style={{ maxHeight: `${contentMaxHeight}dvh` }}
-                >
-                    {children}
-                </div>
+                <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+            <button
+                type="button"
+                aria-label="Resize details sheet"
+                className="pt-2 pb-1 flex justify-center cursor-grab active:cursor-grabbing touch-none"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+            >
+                <div className="w-10 h-1 rounded-full bg-textSecondary/40" />
+            </button>
+            <div
+                className="overflow-y-auto px-5 pb-6"
+                style={{ maxHeight: `${contentMaxHeight}dvh` }}
+            >
+                {children}
             </div>
-        </>
+        </section>
     );
 }

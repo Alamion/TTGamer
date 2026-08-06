@@ -1,12 +1,10 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Settings as SettingsIcon } from 'lucide-react';
-import { useDiceRollerStore } from '../store/diceRollerStore';
-import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
+import { isValidDiscordWebhook, SESSION_STORAGE_KEY } from '@site/src/integrations/discord';
 import { SecretField } from '@site/src/shared/components/SecretField';
-import {
-    isValidDiscordWebhook,
-    SESSION_STORAGE_KEY,
-} from '@site/src/external_apis/discord/sendToDiscord';
+import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
+import { Settings as SettingsIcon, X } from 'lucide-react';
+
+import { useDiceRollerStore } from '../store/diceRollerStore';
 
 export default function DiceRollerSettingsModal() {
     const settings = useDiceRollerStore((s) => s.settings);

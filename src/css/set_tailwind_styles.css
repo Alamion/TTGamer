@@ -196,7 +196,7 @@
 }
 
 .tailwind-root {
-    @apply bg-[var(--bg-base)] text-[var(--text-primary)];
+    @apply bg-bgBase text-textPrimary;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -239,5 +239,3 @@
 .tailwind-root th {
     @apply border-borderMoreContrast;
 }
-
-/*# sourceMappingURL=set_tailwind_styles.css.map */

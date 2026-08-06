@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { clsx } from 'clsx';
 import { HelpCircle } from 'lucide-react';
+import { useState } from 'react';
 
 interface StatLabelProps {
     label: string;

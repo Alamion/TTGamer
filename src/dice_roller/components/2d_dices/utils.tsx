@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+
 import { blendColors } from '../../utils/recolor_svg';
 
 type SvgAssetProps = {
@@ -66,17 +67,17 @@ export function SvgImage({
                 />
             );
         default:
-            return (
-                <img
-                    src={uri}
-                    alt={alt}
-                    className={className}
-                    style={style}
+            return onClick ? (
+                <button
+                    type="button"
                     onClick={onClick}
                     onKeyDown={handleKeyDown}
-                    tabIndex={onClick ? 0 : undefined}
-                    role={onClick ? 'button' : undefined}
-                />
+                    className="border-0 bg-transparent p-0"
+                >
+                    <img src={uri} alt={alt} className={className} style={style} />
+                </button>
+            ) : (
+                <img src={uri} alt={alt} className={className} style={style} />
             );
     }
 }

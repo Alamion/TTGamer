@@ -15,15 +15,15 @@
 
 ---
 
-## 🟠 Critical
+## 🟡 High
 
-### Replace client-side Discord webhook with backend proxy
+### Replace client-side Discord webhook with backend proxy when the backend exists
 
-The Discord webhook URL is stored in `sessionStorage` and sent directly from the client via `fetch()`. This exposes the webhook URL to browser DevTools. Must be replaced with a backend proxy endpoint once a proper server is available.
+The Discord webhook URL is stored in `sessionStorage` and sent directly from the client via `fetch()`. This exposes the webhook URL to browser DevTools. It is an important security improvement, but not a release blocker for the current offline-first product. Implement it with authenticated server-side secret storage once the backend exists; do not add an anonymous proxy.
 
 **Files involved:**
 
-- `src/external_apis/discord/sendToDiscord.ts`
+- `src/integrations/discord/webhook.ts`
 - `src/dice_roller/store/diceRollerStore.ts`
 - `src/dice_roller/components/DiceRollerSettingsModal.tsx`
 - `src/dice_roller/components/DiscordWebhookSubscription.tsx`
@@ -32,27 +32,13 @@ The Discord webhook URL is stored in `sessionStorage` and sent directly from the
 
 ---
 
-## 🟡 High
-
-### DataCatalog URL parameter init race condition
-
-`DataCatalog.tsx` splits URL param initialisation across `useLayoutEffect` (first render) and `useEffect` (subsequent navigations) using a `firstRender` ref. This is fragile under React 19 concurrent features. Needs careful rework as it interacts with Docusaurus's own navigation/routing lifecycle.
-
-**Files:** `src/shared/components/DataCatalog.tsx:355-368`
-
----
-
 ## 🟢 Medium
 
-### Multi-file import toasts may fire out of order
+### DataCatalog URL parameter initialization race condition
 
-`SheetLayout.tsx` uses `Array.from(files).forEach()` with async `FileReader` callbacks. When importing multiple files, the toast notifications may not appear in file order.
+`DataCatalog.tsx` splits URL parameter initialization across `useLayoutEffect` (first render) and `useEffect` (subsequent navigations) using a `firstRender` ref. This is potentially fragile under React 19 concurrent features, but no user-visible failure has been reproduced. Revisit it if concurrent navigation demonstrates a breakage; use one reducer/external-store boundary rather than adding more refs.
 
-**File:** `src/sheet_manager/features/sheet/components/SheetLayout.tsx:60-78`
-
-### `'Implant'` type added to `MeritFlawEntry.type` union
-
-`src/data/meritsFlawsData.ts:13` — `type: 'Merit' | 'Flaw' | 'Implant'`. Existing code filtering by `type === 'Merit'` or `type === 'Flaw'` still works, but exhaustive-type-check consumers may miss the new variant.
+**Files:** `src/shared/components/DataCatalog.tsx:355-368`
 
 ---
 
@@ -80,3 +66,5 @@ The Discord webhook URL is stored in `sessionStorage` and sent directly from the
 - RollHistory expand/collapse for favorites/recent — MOVED to `src/dice_roller/TODO.md` (design decision, not a bug)
 - BaseBlock `.tsx` extension import — DONE: extension removed for consistency
 - Discord button not re-rendering when webhook URL changes — DONE: `useSessionStorageState` now syncs across component instances in the same tab (module-level pub/sub), so `RollControls`/`DiscordWebhookSubscription` update immediately when the URL is set/cleared in the settings modal
+- Multi-file import ordering and ID collisions — DONE: files are parsed sequentially and collisions offer Replace, Duplicate, or Cancel
+- Implant catalog rendering — DONE: `Implant` is handled as an explicit neutral, no-point-cost variant instead of being styled and signed as a flaw

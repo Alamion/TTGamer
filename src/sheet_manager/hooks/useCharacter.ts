@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { useCharacterStore } from '../store/characterStore';
+
 import { useCharacterContext } from '../context/CharacterContext';
+import { useCharacterStore } from '../store/characterStore';
 import type { BaseCharacter } from '../types/character';
 
 export function useCharacter() {

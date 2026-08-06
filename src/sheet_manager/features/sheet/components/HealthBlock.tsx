@@ -1,8 +1,9 @@
-import { HelpCircle } from 'lucide-react';
-import { useCharacter } from '../../../hooks';
-import { HEALTH_LEVELS } from '../../../types/character';
-import type { ConditionMark } from '../../../types/character';
 import { clsx } from 'clsx';
+import { HelpCircle } from 'lucide-react';
+
+import { useCharacter } from '../../../hooks';
+import type { ConditionMark } from '../../../types/character';
+import { HEALTH_LEVELS } from '../../../types/character';
 
 const NEXT_MARK: Record<ConditionMark, ConditionMark> = {
     empty: 'slash',
@@ -33,7 +34,6 @@ export function HealthBlock({ docsPath }: HealthBlockProps) {
     };
 
     return (
-        // can't use <SectionCard> because I need header on right side and overall div flex-start
         <div className="bg-bgSurface border rounded-lg p-4 self-start">
             <h3 className="text-sm text-textSecondary font-semibold uppercase tracking-wider text-right mb-4 pr-3 flex items-center justify-end gap-2">
                 Health

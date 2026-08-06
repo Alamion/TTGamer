@@ -1,0 +1,8 @@
+{
+    "extends": "./tsconfig.app.json",
+    "compilerOptions": {
+        "composite": false,
+        "types": ["@docusaurus/module-type-aliases", "node", "vitest/globals"]
+    },
+    "include": ["scripts", "tests", "vitest.config.ts"]
+}

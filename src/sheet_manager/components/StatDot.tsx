@@ -1,9 +1,7 @@
-import { useCallback } from 'react';
+import { useSheetDiceActions } from '@site/src/integrations/sheet-dice/useSheetDiceActions';
 import { clsx } from 'clsx';
 import { Dices, X } from 'lucide-react';
-import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';
-import { pushStatLabel, setCharacterName } from '@site/src/dice_roller/utils/sessionStorage';
-import { mergeDiceNotation } from '@site/src/dice_roller/dice-logic/notation-utils';
+import { useCallback } from 'react';
 
 interface StatDotProps {
     value: number;
@@ -50,40 +48,13 @@ export function StatDot({
     statLabel,
     characterName,
 }: StatDotProps) {
-    const setNotationInput = useDiceRollerStore((s) => s.setNotationInput);
-    const notationInput = useDiceRollerStore((s) => s.notationInput);
-    const roll = useDiceRollerStore((s) => s.roll);
-    const includeCharacterStats = useDiceRollerStore((s) => s.settings.includeCharacterStats);
+    const { queueNotation, rollImmediately } = useSheetDiceActions({ characterName, statLabel });
 
     const handleDiceLeftClick = useCallback(() => {
         if (disabled || !onDiceRoll) return;
-        const added_notation = onDiceRoll(value, specialization, experienced, practiced);
-        if (added_notation) {
-            if (includeCharacterStats && statLabel) {
-                pushStatLabel(statLabel);
-            }
-            if (characterName) {
-                setCharacterName(characterName);
-            }
-            if (notationInput) {
-                setNotationInput(mergeDiceNotation(notationInput, added_notation));
-            } else {
-                setNotationInput(added_notation);
-            }
-        }
-    }, [
-        disabled,
-        onDiceRoll,
-        value,
-        specialization,
-        experienced,
-        practiced,
-        setNotationInput,
-        notationInput,
-        includeCharacterStats,
-        statLabel,
-        characterName,
-    ]);
+        const notation = onDiceRoll(value, specialization, experienced, practiced);
+        if (notation) queueNotation(notation);
+    }, [disabled, onDiceRoll, value, specialization, experienced, practiced, queueNotation]);
 
     const handleDiceRightClick = useCallback(
         (e: React.MouseEvent) => {
@@ -91,24 +62,10 @@ export function StatDot({
             if (disabled || !onDiceRoll) return;
             const notation = onDiceRoll(value, specialization, experienced, practiced);
             if (notation) {
-                roll(notation, {
-                    statLabels: includeCharacterStats && statLabel ? [statLabel] : undefined,
-                    characterName: characterName || undefined,
-                });
+                void rollImmediately(notation);
             }
         },
-        [
-            disabled,
-            onDiceRoll,
-            value,
-            specialization,
-            experienced,
-            practiced,
-            roll,
-            includeCharacterStats,
-            statLabel,
-            characterName,
-        ]
+        [disabled, onDiceRoll, value, specialization, experienced, practiced, rollImmediately]
     );
     const handleClick = useCallback(
         (index: number) => {

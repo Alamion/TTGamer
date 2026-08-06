@@ -1,12 +1,13 @@
-import { CollapsibleBlock, SectionCard, CustomTraitList, MeritFlawList } from '../../../components';
+import type { BackgroundEntry } from '@site/src/data/backgroundsData';
+import { BACKGROUNDS } from '@site/src/data/backgroundsData';
+import type { MeritFlawEntry } from '@site/src/data/meritsFlawsData';
+import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
+import { generateId } from '@site/src/shared/utils/random';
+
 import type { AccentColor, CatalogEntry } from '../../../components';
+import { CollapsibleBlock, CustomTraitList, MeritFlawList, SectionCard } from '../../../components';
 import { useCharacter } from '../../../hooks';
 import type { Background, MeritFlawItem } from '../../../types/character';
-import { generateId } from '@site/src/shared/utils/random';
-import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
-import type { MeritFlawEntry } from '@site/src/data/meritsFlawsData';
-import { BACKGROUNDS } from '@site/src/data/backgroundsData';
-import type { BackgroundEntry } from '@site/src/data/backgroundsData';
 
 interface AdvantagesBlockProps {
     accentColor?: AccentColor;

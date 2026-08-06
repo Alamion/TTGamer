@@ -1,6 +1,14 @@
 export const MODULE_NAME = '3DDiceRolls';
 
-export const MAX_EXPLOSIONS = 1000;
+// Kept below MAX_NOTATION_LENGTH so this independent structural guard is reachable.
+export const MAX_AST_NODES = 200;
+export const MAX_CUSTOM_FACE_COUNT = 1_000;
+export const MAX_DICE_COUNT = 200;
+export const MAX_DICE_SIDES = 100_000;
+export const MAX_EXPLOSIONS = 100;
+export const MAX_NOTATION_LENGTH = 500;
+export const MAX_NUMERIC_LITERAL = 1_000_000_000;
+export const MAX_PHYSICAL_3D_DICE = 100;
 export const MAX_ROLL_SECONDS = 10;
 export const VELOCITY_THRESHOLD = 5;
 export const FRAME_RATE = 1 / 60;

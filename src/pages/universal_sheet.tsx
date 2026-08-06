@@ -1,6 +1,7 @@
-import Layout from '@theme/Layout';
-import { CharacterSheet } from '@site/src/sheet_manager/features/sheet';
 import '../css/set_tailwind_styles.css';
+
+import { CharacterSheet } from '@site/src/sheet_manager/features/sheet';
+import Layout from '@theme/Layout';
 
 function App() {
     return (

@@ -1,12 +1,11 @@
-import { useCallback } from 'react';
-import { useDiceRollerStore } from '../../store/diceRollerStore';
-import DiceRollerSettingsModal from '../DiceRollerSettingsModal';
-import { clearStatLabels } from '../../utils/sessionStorage';
+import { isValidDiscordWebhook, SESSION_STORAGE_KEY } from '@site/src/integrations/discord';
 import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
-import {
-    isValidDiscordWebhook,
-    SESSION_STORAGE_KEY,
-} from '@site/src/external_apis/discord/sendToDiscord';
+import { useCallback } from 'react';
+
+import { validateNotation } from '../../dice-logic/dice-parser';
+import { useDiceRollerStore } from '../../store/diceRollerStore';
+import { clearCharacterName, clearStatLabels } from '../../utils/sessionStorage';
+import DiceRollerSettingsModal from '../DiceRollerSettingsModal';
 
 export default function RollControls() {
     const notationInput = useDiceRollerStore((s) => s.notationInput);
@@ -19,16 +18,17 @@ export default function RollControls() {
     const isWebhookValid = webhookUrl.length > 0 && isValidDiscordWebhook(webhookUrl);
 
     const canClear = notationInput.trim().length > 0;
-    const canRoll = notationInput.trim().length > 0;
+    const canRoll = notationInput.trim().length > 0 && validateNotation(notationInput);
 
     const clearNotation = useCallback(() => {
         setNotationInput('');
         clearStatLabels();
+        clearCharacterName();
     }, [setNotationInput]);
 
     const rollNotation = useCallback(() => {
         const toRoll = notationInput.trim();
-        if (!toRoll) return;
+        if (!toRoll || !validateNotation(toRoll)) return;
         roll(toRoll);
         setNotationInput('');
     }, [notationInput, roll, setNotationInput]);

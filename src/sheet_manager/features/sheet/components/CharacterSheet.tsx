@@ -1,11 +1,11 @@
-import { SheetLayout } from './SheetLayout';
-import { BaseBlock } from './BaseBlock';
-import { AttributeBlock } from './AttributeBlock';
-import { SkillBlock } from './SkillBlock';
 import { AdvantagesBlock } from './AdvantagesBlock';
-import { ForceBlock } from './ForceBlock';
+import { AttributeBlock } from './AttributeBlock';
+import { BaseBlock } from './BaseBlock';
 import { BodyBlock } from './BodyBlock';
+import { ForceBlock } from './ForceBlock';
 import { OtherBlock } from './OtherBlock';
+import { SheetLayout } from './SheetLayout';
+import { SkillBlock } from './SkillBlock';
 
 export function CharacterSheet() {
     return (

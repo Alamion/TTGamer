@@ -1,11 +1,12 @@
-import type { ReactNode } from 'react';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
+import Layout from '@theme/Layout';
+import type { ReactNode } from 'react';
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
+    const version = String(siteConfig.customFields?.version);
     return (
         <header className="relative overflow-hidden border-b-2 border-primary/40 bg-gradient-to-b from-bgSurface to-bgBase">
             <div className="absolute inset-0 opacity-5">
@@ -22,7 +23,7 @@ function HomepageHeader() {
                 <div className="flex flex-col items-center text-center">
                     <div className="mb-4 inline-flex items-center gap-2 rounded border border-jedi-green/40 bg-jedi-green/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-jedi-green">
                         <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-jedi-green" />
-                        Active Development — v3.3.0
+                        Active Development — v{version}
                     </div>
                     <Heading
                         as="h1"
@@ -119,6 +120,9 @@ function FeatureCard({
 }
 
 export default function Home(): ReactNode {
+    const { siteConfig } = useDocusaurusContext();
+    const version = String(siteConfig.customFields?.version);
+
     return (
         <Layout
             title="Home"
@@ -156,7 +160,7 @@ export default function Home(): ReactNode {
                                 </svg>
                             }
                             title="Character Sheet"
-                            description="Full-featured manager with 9 attributes, 30 abilities, Force powers, inventory, health tracking, and more. Supports sentient, droid, and vehicle characters."
+                            description="Full-featured manager with 9 attributes, 30 abilities, Force powers, inventory, health tracking, and more. Supports sentient and droid characters; vehicle sheets are planned."
                             href="/universal_sheet"
                         />
                         <FeatureCard
@@ -197,7 +201,7 @@ export default function Home(): ReactNode {
                                 </svg>
                             }
                             title="Full Documentation"
-                            description="29 complete docs: core rules, character creation, combat, vehicles, GM tools, bestiary, equipment, and a full worked example."
+                            description="Complete rules documentation covering character creation, combat, vehicles, GM tools, bestiary, equipment, and a full worked example."
                             href="/docs/star-wars-wod-2e/"
                         />
                     </div>
@@ -228,7 +232,7 @@ export default function Home(): ReactNode {
                         <p className="text-sm font-mono text-textSecondary">
                             <span className="text-droid-gold">LIVE:</span> ttgamer.vercel.app{' '}
                             <span className="mx-2 text-border-more-contrast">|</span>{' '}
-                            <span className="text-primary">v3.3.0</span>{' '}
+                            <span className="text-primary">v{version}</span>{' '}
                             <span className="mx-2 text-border-more-contrast">|</span>{' '}
                             <span className="text-jedi-green">29 docs complete</span>{' '}
                             <span className="mx-2 text-border-more-contrast">|</span>{' '}

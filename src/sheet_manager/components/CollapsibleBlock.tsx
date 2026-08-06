@@ -1,4 +1,5 @@
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+
 import { useExpandedState } from '../hooks';
 
 export type AccentColor = 'primary' | 'secondary';

@@ -1,17 +1,18 @@
+import type { ForcePowerEntry } from '@site/src/data/forcePowersData';
+import { FORCE_POWERS } from '@site/src/data/forcePowersData';
+import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
+import { generateId } from '@site/src/shared/utils/random';
+
+import type { AccentColor, CatalogEntry } from '../../../components';
 import {
     CollapsibleBlock,
-    SectionCard,
     CustomTraitList,
-    TraitRowWithInput,
+    SectionCard,
     StatDot,
+    TraitRowWithInput,
 } from '../../../components';
-import type { AccentColor, CatalogEntry } from '../../../components';
 import { useCharacter } from '../../../hooks';
 import { DEFAULT_ATTRIBUTE_VALUE, DEFAULT_SKILL_VALUE } from '../../../types/character';
-import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
-import { FORCE_POWERS } from '@site/src/data/forcePowersData';
-import type { ForcePowerEntry } from '@site/src/data/forcePowersData';
-import { generateId } from '@site/src/shared/utils/random';
 
 interface ForceBlockProps {
     accentColor?: AccentColor;
@@ -36,9 +37,11 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     const willpower = character.willpower ?? { current: 5, max: 5 };
 
     const passion = character.virtues?.Passion?.value ?? 1;
+    const conscience = character.virtues?.Conscience?.value ?? 1;
     const selfControl = character.virtues?.['Self Control']?.value ?? 1;
 
     const willpowerMinimal = Math.min(passion + selfControl, 10);
+    const darkSideMinimal = Math.max(0, Math.min(5 + conscience - passion, 10));
 
     const handleForceSkillChange = (
         key: string,
@@ -103,8 +106,9 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
     };
 
     const handleWillpowerChange = (value: number) => {
+        const current = Math.min(Math.max(0, value), 10);
         updateCharacter(character.id, {
-            willpower: { ...willpower, current: Math.min(Math.max(0, value), 10) },
+            willpower: { current, max: Math.max(willpower.max, current) },
         });
     };
 
@@ -296,6 +300,7 @@ export function ForceBlock({ accentColor = 'secondary' }: ForceBlockProps) {
                                 disabled={readOnly}
                                 onChange={(val) => handleDarkSideChange(val)}
                                 size="md"
+                                minimal={darkSideMinimal}
                                 activeColor={getDarkSideColor((darkSide / 10) * 100)}
                                 onDiceRoll={buildDiceNotation}
                                 statLabel="Dark Side Resistance"

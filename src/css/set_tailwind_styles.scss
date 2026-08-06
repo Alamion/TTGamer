@@ -1,7 +1,7 @@
-@import 'tailwind-base-reset';
+@use 'tailwind-base-reset';
 
 .tailwind-root {
-    @apply bg-[var(--bg-base)] text-[var(--text-primary)];
+    @apply bg-bgBase text-textPrimary;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;

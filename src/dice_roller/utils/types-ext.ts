@@ -1,4 +1,4 @@
-import type { RollResult } from '../dice-logic';
+import type { RollResult } from '../dice-logic/types';
 
 export interface HistoryEntry {
     id: string;

@@ -1,1 +1,7 @@
-yarn lint && yarn typecheck && yarn test && yarn build
+branch_name="$(git branch --show-current)"
+
+if [ "$branch_name" = "master" ] || [ "$branch_name" = "main" ]; then
+    yarn verify:full
+else
+    yarn verify:fast
+fi

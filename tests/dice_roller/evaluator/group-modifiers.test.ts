@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import { parseToAST, evaluateDiceAST, rollDices } from '@site/src/dice_roller/dice-logic';
-import type { DiceRoll } from '@site/src/dice_roller/dice-logic';
+import { evaluateDiceAST } from '@site/src/dice_roller/dice-logic/dice-evaluator';
+import { parseToAST } from '@site/src/dice_roller/dice-logic/dice-parser';
+import { rollDices } from '@site/src/dice_roller/dice-logic/dice-roller';
+import type { DiceRoll } from '@site/src/dice_roller/dice-logic/types';
+import { describe, expect, it } from 'vitest';
 
 function mockRandom(...values: number[]): () => number {
     let i = 0;
@@ -82,7 +84,7 @@ describe('Evaluator - group modifiers (syntactic sugar)', () => {
 
     it('(3d10+1d10)! explodes both groups', () => {
         // With mockRandom: roll dice, then check explosion flag is present
-        const result = evaluate('(3d10+1d10)!', 0.0, 0.5, 0.9, 0.3);
+        const result = evaluate('(3d10+1d10)!', 0.0, 0.5, 0.9, 0.3, 0.3);
         // Explosion happens on max value (10), which 0.9→10 triggers
         expect(result.diceGroups).toHaveLength(2);
         expect(result.diceGroups[0].rolls.length).toBeGreaterThanOrEqual(3);

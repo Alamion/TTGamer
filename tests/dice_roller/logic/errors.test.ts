@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { RollCancelledError } from '@site/src/dice_roller/dice-logic';
+import { RollCancelledError } from '@site/src/dice_roller/dice-logic/errors';
+import { describe, expect, it } from 'vitest';
 
 describe('RollCancelledError', () => {
     it('is an instance of Error', () => {

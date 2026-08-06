@@ -1,4 +1,4 @@
-import { tokenize, type LexerToken } from './dice-lexer';
+import { type LexerToken, tokenize } from './dice-lexer';
 
 export interface NotationPart {
     raw: string;
@@ -208,6 +208,13 @@ export function mergeDiceNotation(existing: string, added: string): string {
     if (!foundMatch) return `${existing} + ${added}`;
 
     return newParts.join(' + ');
+}
+
+export function rewriteWodDifficulty(notation: string, difficulty: number): string {
+    const boundedDifficulty = Math.max(1, Math.min(10, difficulty));
+    return notation
+        .replace(/((?:\d+)?d10)>=\d+/gi, `$1>=${boundedDifficulty}`)
+        .replace(/(\([^()]*(?:\d+)?d10[^()]*\))>=\d+/gi, `$1>=${boundedDifficulty}`);
 }
 
 export function handleDiceNotation(

@@ -1,0 +1,18 @@
+strength:
+    name: Strength
+dexterity:
+    name: Dexterity
+stamina:
+    name: Stamina
+charisma:
+    name: Charisma
+manipulation:
+    name: Manipulation
+appearance:
+    name: Appearance
+perception:
+    name: Perception
+intelligence:
+    name: Intelligence
+wits:
+    name: Wits

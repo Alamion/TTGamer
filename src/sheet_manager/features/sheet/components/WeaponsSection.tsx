@@ -1,7 +1,8 @@
-import { CatalogSuggest, CollapsibleItem } from '../../../components';
-import type { CatalogEntry } from '../../../components';
-import type { WeaponItem } from '../../../types/character';
 import { Plus } from 'lucide-react';
+
+import type { CatalogEntry } from '../../../components';
+import { CatalogSuggest, CollapsibleItem } from '../../../components';
+import type { WeaponItem } from '../../../types/character';
 import { buildWeaponsCatalog } from './catalogs';
 
 interface WeaponsSectionProps {
@@ -42,9 +43,9 @@ export function WeaponsSection({
                     >
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs text-textSecondary mb-0.5">
+                                <span className="block text-xs text-textSecondary mb-0.5">
                                     Name
-                                </label>
+                                </span>
                                 <CatalogSuggest
                                     catalog={weaponsCatalog}
                                     value={item.name}
@@ -53,13 +54,14 @@ export function WeaponsSection({
                                     placeholder="Weapon name..."
                                     disabled={readOnly}
                                     className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
+                                    ariaLabel="Weapon name"
                                 />
                             </div>
                             {(['damage', 'range', 'ammo', 'maxAmmo'] as const).map((field) => {
                                 const isAmmo = field === 'ammo' || field === 'maxAmmo';
                                 return (
                                     <div key={field}>
-                                        <label className="block text-xs text-textSecondary mb-0.5 capitalize">
+                                        <span className="block text-xs text-textSecondary mb-0.5 capitalize">
                                             {field === 'ammo'
                                                 ? 'Ammo'
                                                 : field === 'maxAmmo'
@@ -67,7 +69,7 @@ export function WeaponsSection({
                                                   : field === 'range'
                                                     ? 'Range'
                                                     : 'Damage'}
-                                        </label>
+                                        </span>
                                         <input
                                             type={isAmmo ? 'number' : 'text'}
                                             value={item[field]}
@@ -98,6 +100,8 @@ export function WeaponsSection({
                                                         : 'Damage'
                                             }
                                             min={0}
+                                            max={field === 'ammo' ? item.maxAmmo : undefined}
+                                            step={isAmmo ? 1 : undefined}
                                         />
                                     </div>
                                 );

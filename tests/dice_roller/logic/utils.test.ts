@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import type { DiceModifiers, DiceRoll } from '@site/src/dice_roller/dice-logic/types';
 import {
+    applyKeepDrop,
     buildGroupKey,
     formatModifiers,
-    applyKeepDrop,
     formatRollValues,
 } from '@site/src/dice_roller/dice-logic/utils';
-import type { DiceModifiers, DiceRoll } from '@site/src/dice_roller/dice-logic';
+import { describe, expect, it } from 'vitest';
 
 describe('buildGroupKey', () => {
     it('builds a key for a basic dice group', () => {

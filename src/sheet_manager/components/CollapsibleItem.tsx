@@ -1,6 +1,6 @@
+import { clsx } from 'clsx';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useState } from 'react';
-import { clsx } from 'clsx';
 
 interface CollapsibleItemProps {
     title: React.ReactNode;
@@ -49,10 +49,7 @@ export function CollapsibleItem({
                 )}
             </button>
             {isExpanded && (
-                <div
-                    className="px-3 pb-3 space-y-2 border-t border-border pt-2 bg-bgBase"
-                    onClick={(e) => e.stopPropagation()}
-                >
+                <div className="px-3 pb-3 space-y-2 border-t border-border pt-2 bg-bgBase">
                     {children}
                     {!readOnly && onRemove && (
                         <div className="flex justify-end pt-1">

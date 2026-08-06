@@ -1,11 +1,10 @@
-import { useState, useCallback } from 'react';
-import { Dices, ChevronDown, ChevronUp } from 'lucide-react';
-import { rollDices } from '../dice-logic';
-import { stripForcedValues } from '../utils/notation-clean';
-import type { RollResult } from '../dice-logic';
 import { clsx } from 'clsx';
+import { ChevronDown, ChevronUp, Dices } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-const isBrowser = typeof window !== 'undefined';
+import { rollDices } from '../dice-logic/dice-roller';
+import type { RollResult } from '../dice-logic/types';
+import { stripForcedValues } from '../utils/notation-clean';
 
 interface InlineRollProps {
     notation: string;
@@ -48,7 +47,18 @@ function resultTitle(
     }
 }
 
-export function InlineRoll({
+export function InlineRoll({ notation, preroll = false, ...props }: InlineRollProps) {
+    return (
+        <InlineRollState
+            key={`${notation}\u0000${preroll ? 'preroll' : 'idle'}`}
+            notation={notation}
+            preroll={preroll}
+            {...props}
+        />
+    );
+}
+
+function InlineRollState({
     notation: rawNotation,
     variant: rawVariant,
     multiline = false,
@@ -60,10 +70,26 @@ export function InlineRoll({
     const displayNotation = showForced ? rawNotation : stripForcedValues(rawNotation);
 
     const [result, setResult] = useState<RollResult | null>(() =>
-        isBrowser && preroll ? rollDices(rawNotation) : null
+        preroll ? rollDices(rawNotation) : null
     );
     const [expanded, setExpanded] = useState(false);
     const [rolling, setRolling] = useState<'idle' | 'out' | 'in'>('idle');
+    const timersRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
+
+    const clearTimers = useCallback(() => {
+        timersRef.current.forEach(clearTimeout);
+        timersRef.current = [];
+    }, []);
+
+    const schedule = useCallback((callback: () => void, delay: number) => {
+        const timer = setTimeout(() => {
+            timersRef.current = timersRef.current.filter((entry) => entry !== timer);
+            callback();
+        }, delay);
+        timersRef.current.push(timer);
+    }, []);
+
+    useEffect(() => clearTimers, [clearTimers]);
 
     const doRoll = useCallback(() => {
         setResult(rollDices(rawNotation));
@@ -75,16 +101,16 @@ export function InlineRoll({
         if (result === null) {
             doRoll();
             setRolling('in');
-            setTimeout(() => setRolling('idle'), animationTime);
+            schedule(() => setRolling('idle'), animationTime);
         } else {
             setRolling('out');
-            setTimeout(() => {
+            schedule(() => {
                 doRoll();
                 setRolling('in');
-                setTimeout(() => setRolling('idle'), animationTime);
+                schedule(() => setRolling('idle'), animationTime);
             }, animationTime);
         }
-    }, [doRoll, rolling, result, animationTime]);
+    }, [doRoll, rolling, result, animationTime, schedule]);
 
     const toggleExpand = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
@@ -103,10 +129,11 @@ export function InlineRoll({
     const resultEl = (
         <span
             style={{
-                transition: 'opacity 0.4s ease-in-out',
+                transition: `opacity ${animationTime}ms ease-in-out`,
                 opacity: result ? (rolling === 'out' ? 0 : 1) : 0,
             }}
             className="font-semibold"
+            aria-live="polite"
             title={result && !isCollapsible ? resultTitle(result, variant) : undefined}
         >
             {displayText}
@@ -138,16 +165,19 @@ export function InlineRoll({
         ) : null;
 
     const rowContent = (
-        <span
-            onClick={handleRoll}
-            className={clsx(
-                'inline-flex items-baseline gap-1 cursor-pointer',
-                /*!isExpanded &&  */ 'border-b border-dashed border-current/30 hover:border-current/60 '
-            )}
-        >
-            <Dices size={14} className="inline opacity-40 flex-shrink-0 self-center" />
-            <span>{displayNotation}</span>
-            {resultEl}
+        <span className="inline-flex items-baseline gap-1">
+            <button
+                type="button"
+                onClick={handleRoll}
+                className={clsx(
+                    'inline-flex items-baseline gap-1 cursor-pointer bg-transparent p-0 text-inherit',
+                    'border-0 border-b border-dashed border-current/30 hover:border-current/60'
+                )}
+            >
+                <Dices size={14} className="inline opacity-40 flex-shrink-0 self-center" />
+                <span>{displayNotation}</span>
+                {resultEl}
+            </button>
             {chevronEl}
         </span>
     );

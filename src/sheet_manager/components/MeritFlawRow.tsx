@@ -1,6 +1,7 @@
 import { Plus, X } from 'lucide-react';
-import { CatalogSuggest } from './CatalogSuggest.tsx';
+
 import type { CatalogEntry } from './CatalogSuggest.tsx';
+import { CatalogSuggest } from './CatalogSuggest.tsx';
 import { SectionCard } from './SectionCard.tsx';
 
 interface MeritFlawItem {

@@ -1,24 +1,27 @@
-import { CollapsibleBlock, SectionCard, TraitRowWithInput } from '../../../components';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { localizeCatalogEntry } from '@site/src/data/localizeCatalogEntry';
+import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
+
 import type { AccentColor } from '../../../components';
+import { CollapsibleBlock, SectionCard, TraitRowWithInput } from '../../../components';
 import { useCharacter } from '../../../hooks';
 import { DEFAULT_ATTRIBUTE_VALUE } from '../../../types/character';
-import { buildDiceNotation } from '@site/src/shared/utils/diceNotation';
 
 const ATTRIBUTES = {
     physical: [
-        { key: 'Strength', label: 'Strength' },
-        { key: 'Dexterity', label: 'Dexterity' },
-        { key: 'Stamina', label: 'Stamina' },
+        { id: 'strength', key: 'Strength', label: 'Strength' },
+        { id: 'dexterity', key: 'Dexterity', label: 'Dexterity' },
+        { id: 'stamina', key: 'Stamina', label: 'Stamina' },
     ],
     social: [
-        { key: 'Charisma', label: 'Charisma' },
-        { key: 'Manipulation', label: 'Manipulation' },
-        { key: 'Appearance', label: 'Appearance' },
+        { id: 'charisma', key: 'Charisma', label: 'Charisma' },
+        { id: 'manipulation', key: 'Manipulation', label: 'Manipulation' },
+        { id: 'appearance', key: 'Appearance', label: 'Appearance' },
     ],
     mental: [
-        { key: 'Perception', label: 'Perception' },
-        { key: 'Intelligence', label: 'Intelligence' },
-        { key: 'Wits', label: 'Wits' },
+        { id: 'perception', key: 'Perception', label: 'Perception' },
+        { id: 'intelligence', key: 'Intelligence', label: 'Intelligence' },
+        { id: 'wits', key: 'Wits', label: 'Wits' },
     ],
 };
 
@@ -27,6 +30,7 @@ interface AttributeBlockProps {
 }
 
 export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps) {
+    const { i18n } = useDocusaurusContext();
     const { character, readOnly, updateCharacter } = useCharacter();
     if (!character) return null;
 
@@ -70,7 +74,11 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
                 return (
                     <TraitRowWithInput
                         key={attr.key}
-                        name={attr.label}
+                        name={
+                            localizeCatalogEntry('attributes', attr.id, i18n.currentLocale, {
+                                name: attr.label,
+                            }).name
+                        }
                         specializationText={trait.specializationText}
                         value={trait.value}
                         disabled={readOnly}

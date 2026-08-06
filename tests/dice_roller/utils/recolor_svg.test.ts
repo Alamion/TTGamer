@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { blendColors, fixBrightness } from '@site/src/dice_roller/utils/recolor_svg';
+import { describe, expect, it } from 'vitest';
 
 describe('blendColors', () => {
     it('returns color1 when ratio is 0', () => {

@@ -1,0 +1,105 @@
+title:
+    message: Base
+appearance:
+    message: Appearance
+biography:
+    message: Biography
+fields:
+    name:
+        label:
+            message: Name
+        placeholder:
+            message: Character name...
+    concept:
+        label:
+            message: Concept
+        placeholder:
+            message: Character concept...
+    species:
+        label:
+            message: Species
+        placeholder:
+            message: Human, Twi'lek...
+    player:
+        label:
+            message: Player
+        placeholder:
+            message: Player name...
+    nature:
+        label:
+            message: Nature
+        placeholder:
+            message: Nature...
+    homeWorld:
+        label:
+            message: Home World
+        placeholder:
+            message: Coruscant, Tatooine...
+    adventure:
+        label:
+            message: Adventure
+        placeholder:
+            message: Adventure/campaign...
+    demeanor:
+        label:
+            message: Demeanor
+        placeholder:
+            message: Demeanor...
+    age:
+        label:
+            message: Age
+        placeholder:
+            message: Age...
+    gender:
+        label:
+            message: Gender
+    height:
+        label:
+            message: Height
+    build:
+        label:
+            message: Build
+    hair:
+        label:
+            message: Hair
+    eyes:
+        label:
+            message: Eyes
+    features:
+        label:
+            message: Features
+portrait:
+    expand:
+        message: Expand portrait
+    collapse:
+        message: Collapse portrait
+    invalidUrl:
+        message: Use an HTTPS URL or a site-relative path.
+    urlPlaceholder:
+        message: https://example.com/portrait.webp
+    urlAriaLabel:
+        message: Portrait image URL
+    remoteHostNote:
+        message: Remote image hosts receive your IP address. HTTPS only.
+    hideUrlInput:
+        message: Hide portrait URL input
+    editUrl:
+        message: Edit portrait URL
+    pasteAriaLabel:
+        message: Character portrait; paste an image here
+    alt:
+        message: Character portrait
+    uploadTitle:
+        message: Choose an image, or focus this area and paste one
+    processing:
+        message: Processing…
+    upload:
+        message: Upload / paste
+    remove:
+        message: Remove local portrait
+    saved:
+        message: Portrait saved on this device.
+    saveFailed:
+        message: Could not save portrait.
+biographyPlaceholder:
+    message: Character biography...

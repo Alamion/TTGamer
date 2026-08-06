@@ -1,12 +1,15 @@
-﻿import { parseToAST } from './dice-parser';
+﻿import { debug, warn } from '@site/src/shared/utils/logging';
+
+import { MAX_EXPLOSIONS, MAX_PHYSICAL_3D_DICE } from '../utils/constants';
+import type { MixedRollConfig } from '../utils/types-ext';
 import { detectExplosion, detectRerolls, detectUnique, evaluateDiceAST } from './dice-evaluator';
-import { prepareDiceGeometries, startPhysicsRoll } from './renderer';
+import { parseToAST } from './dice-parser';
+import { RollCancelledError } from './errors';
 import type { DiceGeometryData } from './renderer';
+import { prepareDiceGeometries, startPhysicsRoll } from './renderer';
+import type { PhysicsRollHandle } from './renderer/renderer-pool';
 import type { ASTNode, DiceGroupNode, DiceRoll, RollResult } from './types';
 import { buildGroupKey } from './utils';
-import { debug, warn } from '@site/src/shared/utils/logging';
-import type { MixedRollConfig } from '../utils/types-ext';
-import { RollCancelledError } from './errors';
 
 const SUPPORTED_3D_SIDES = new Set([2, 4, 6, 8, 10, 12, 20, 100]);
 const FUDGE_LABEL_MAP: Record<number, string> = { [-1]: '-', [0]: ' ', [1]: '+' };
@@ -98,14 +101,14 @@ function convertFlatToGroupRolls(
     return rolls;
 }
 
-async function processRethrowLoop(
+export async function processRethrowLoop(
     group: DiceGroupNode,
     allGroupRolls: DiceRoll[],
     flatValues: number[],
     flatOffset: number,
     multiplier: number,
     handle: {
-        renderer: { lockDice: (indices: number[]) => void };
+        lockDice: (indices: number[]) => void;
         rethrow: (indices: number[]) => Promise<number[]>;
     },
     detectFn: (g: DiceGroupNode, rolls: DiceRoll[]) => number[],
@@ -114,7 +117,7 @@ async function processRethrowLoop(
 ): Promise<number[]> {
     const isD100 = group.sides === 100;
     let current = flatValues;
-    for (let iter = 0; iter < 10; iter++) {
+    for (let iter = 0; iter < MAX_EXPLOSIONS; iter++) {
         const localIndices = detectFn(group, allGroupRolls);
         if (localIndices.length === 0) break;
 
@@ -134,7 +137,7 @@ async function processRethrowLoop(
             if (!flatIndices.includes(i)) allLockIndices.push(i);
         }
 
-        handle.renderer.lockDice(allLockIndices);
+        handle.lockDice(allLockIndices);
         current = await handle.rethrow(flatIndices);
 
         for (const ri of localIndices) {
@@ -159,21 +162,40 @@ async function processRethrowLoop(
     return current;
 }
 
-async function processExplosionLoop(
+export async function processExplosionLoop(
     group: DiceGroupNode,
     allGroupRolls: DiceRoll[],
     multiplier: number,
     handle: { addDice: (extraDiceData: DiceGeometryData[]) => Promise<number[]> },
-    config: { diceColor: string; textColor: string }
+    config: { diceColor: string; textColor: string },
+    prepareGeometries: typeof prepareDiceGeometries = prepareDiceGeometries,
+    physicalCapacity = { remaining: MAX_PHYSICAL_3D_DICE }
 ): Promise<void> {
     const isD100 = group.sides === 100;
-    let safetyCounter = 0;
-    while (safetyCounter < 100) {
-        const explodeIndices = detectExplosion(group, allGroupRolls);
-        if (explodeIndices.length === 0) break;
+    const isCompounding = group.modifiers.explode?.compounding ?? false;
+    const isPenetrating = group.modifiers.explode?.penetrating ?? false;
+    let explosionCount = 0;
+    let compoundPending: number[] | undefined;
 
-        const isCompounding = group.modifiers.explode?.compounding ?? false;
-        const isPenetrating = group.modifiers.explode?.penetrating ?? false;
+    while (explosionCount < MAX_EXPLOSIONS) {
+        const detectedIndices = isCompounding
+            ? (compoundPending ?? detectExplosion(group, allGroupRolls))
+            : detectExplosion(group, allGroupRolls);
+        const logicalCapacity = Math.floor(physicalCapacity.remaining / multiplier);
+        const boundedDetectionCount = Math.min(
+            detectedIndices.length,
+            MAX_EXPLOSIONS - explosionCount
+        );
+        if (boundedDetectionCount > logicalCapacity) {
+            throw new RangeError(
+                `3D roll exceeded the ${MAX_PHYSICAL_3D_DICE}-die physical-session limit during explosions`
+            );
+        }
+        const explodeIndices = detectedIndices.slice(
+            0,
+            Math.min(MAX_EXPLOSIONS - explosionCount, logicalCapacity)
+        );
+        if (explodeIndices.length === 0) break;
 
         for (const idx of explodeIndices) {
             allGroupRolls[idx] = {
@@ -184,7 +206,7 @@ async function processExplosionLoop(
             };
         }
 
-        const extraData = prepareDiceGeometries(
+        const extraData = prepareGeometries(
             [
                 {
                     sides: isD100 ? 10 : group.sides,
@@ -197,43 +219,63 @@ async function processExplosionLoop(
         );
 
         const explosionValues = await handle.addDice(extraData.geometries);
+        physicalCapacity.remaining -= extraData.geometries.length;
 
         let evIdx = 0;
-        for (let ei = 0; ei < explodeIndices.length; ei++) {
-            const explodeIdx = explodeIndices[ei];
+        const nextCompoundPending: number[] = [];
+        for (const explodeIdx of explodeIndices) {
+            let rawVal: number;
+            if (isD100) {
+                const tens = explosionValues[evIdx++] % 10;
+                const ones = explosionValues[evIdx++] % 10;
+                rawVal = tens * 10 + ones === 0 ? 100 : tens * 10 + ones;
+            } else {
+                rawVal = explosionValues[evIdx++];
+            }
 
-            for (let p = 0; p < multiplier; p++) {
-                let rawVal = explosionValues[evIdx++];
+            const explosionVal = isPenetrating ? Math.max(0, rawVal - 1) : rawVal;
 
-                if (isD100) {
-                    const tens = rawVal % 10;
-                    const ones = p + 1 < multiplier ? explosionValues[evIdx++] % 10 : 0;
-                    rawVal = tens * 10 + ones === 0 ? 100 : tens * 10 + ones;
+            if (isCompounding) {
+                const existing = allGroupRolls[explodeIdx];
+                allGroupRolls[explodeIdx] = {
+                    ...existing,
+                    value: existing.value + explosionVal,
+                    compounded: true,
+                };
+                const rawRoll: DiceRoll = {
+                    sides: group.sides,
+                    value: rawVal,
+                    dropped: false,
+                };
+                if (detectExplosion(group, [rawRoll]).length > 0) {
+                    nextCompoundPending.push(explodeIdx);
                 }
-
-                const explosionVal = isPenetrating ? Math.max(0, rawVal - 1) : rawVal;
-
-                if (isCompounding) {
-                    const existing = allGroupRolls[explodeIdx];
-                    allGroupRolls[explodeIdx] = {
-                        ...existing,
-                        value: existing.value + explosionVal,
-                        compounded: true,
-                    };
-                } else {
-                    allGroupRolls.push({
-                        sides: isD100 ? 100 : group.sides,
-                        value: explosionVal,
-                        dropped: false,
-                        penetrating: isPenetrating || undefined,
-                    });
-                }
-
-                if (!isD100) break;
+            } else {
+                allGroupRolls.push({
+                    sides: isD100 ? 100 : group.sides,
+                    value: explosionVal,
+                    dropped: false,
+                    penetrating: isPenetrating || undefined,
+                });
             }
         }
 
-        safetyCounter++;
+        explosionCount += explodeIndices.length;
+        if (isCompounding) compoundPending = nextCompoundPending;
+    }
+
+    if (explosionCount >= MAX_EXPLOSIONS || physicalCapacity.remaining < multiplier) {
+        const unprocessedIndices = isCompounding
+            ? (compoundPending ?? detectExplosion(group, allGroupRolls))
+            : detectExplosion(group, allGroupRolls);
+        for (const index of unprocessedIndices) {
+            allGroupRolls[index] = {
+                ...allGroupRolls[index],
+                exploded: true,
+                compounded: isCompounding || undefined,
+                penetrating: isPenetrating || undefined,
+            };
+        }
     }
 }
 
@@ -254,6 +296,7 @@ export async function executeUnifiedRoll(
     };
 
     let ast: ASTNode | null = null;
+    let activeHandle: PhysicsRollHandle | undefined;
 
     try {
         ast = parseToAST(notation);
@@ -279,6 +322,17 @@ export async function executeUnifiedRoll(
             customFaces: g.customFaces,
             fudge: g.fudge,
         }));
+        const physicalDiceCount = flatGroups.reduce(
+            (total, group) => total + group.count * (group.sides === 100 ? 2 : 1),
+            0
+        );
+        if (physicalDiceCount > MAX_PHYSICAL_3D_DICE) {
+            warn(
+                `3D rolls are limited to ${MAX_PHYSICAL_3D_DICE} physical dice — falling back to 2D`,
+                '3DDiceRolls'
+            );
+            return evaluateDiceAST(ast, notation);
+        }
 
         const { geometries, groupSizes } = prepareDiceGeometries(flatGroups, {
             diceColor: defaultConfig.diceColor,
@@ -304,23 +358,20 @@ export async function executeUnifiedRoll(
             geometries,
             groupSizes
         );
+        activeHandle = handle;
 
         let flatValues = await handle.settle;
 
-        // Sanitize flatValues: replace undefined/NaN with a random fallback
-        flatValues = flatValues.map((v, i) => {
-            if (typeof v !== 'number' || !Number.isFinite(v)) {
-                warn(
-                    `Physics returned invalid value for die ${i}, using random fallback`,
-                    '3DDiceRolls'
-                );
-                return Math.floor(Math.random() * 20) + 1;
-            }
-            return v;
-        });
+        if (flatValues.some((value) => typeof value !== 'number' || !Number.isFinite(value))) {
+            warn('Physics returned an invalid die value — falling back to 2D', '3DDiceRolls');
+            handle.arrangeAndDismiss();
+            activeHandle = undefined;
+            return evaluateDiceAST(ast, notation);
+        }
 
         const preGeneratedValues = new Map<string, DiceRoll[]>();
         let flatOffset = 0;
+        const physicalCapacity = { remaining: MAX_PHYSICAL_3D_DICE - physicalDiceCount };
 
         for (let g = 0; g < diceGroupNodes.length; g++) {
             const group = diceGroupNodes[g];
@@ -365,7 +416,15 @@ export async function executeUnifiedRoll(
                 group.modifiers.unique?.once || undefined
             );
 
-            await processExplosionLoop(group, allGroupRolls, multiplier, handle, defaultConfig);
+            await processExplosionLoop(
+                group,
+                allGroupRolls,
+                multiplier,
+                handle,
+                defaultConfig,
+                prepareDiceGeometries,
+                physicalCapacity
+            );
 
             groupSizes[g] = allGroupRolls.length;
             preGeneratedValues.set(key, allGroupRolls);
@@ -373,10 +432,12 @@ export async function executeUnifiedRoll(
         }
 
         handle.arrangeAndDismiss();
+        activeHandle = undefined;
 
         const result = evaluateDiceAST(ast, notation, preGeneratedValues);
         return { ...result, manuallyRerolled: handle.wasManuallyRerolled() || undefined };
     } catch (err) {
+        activeHandle?.arrangeAndDismiss();
         if (err instanceof RollCancelledError) {
             throw err;
         }

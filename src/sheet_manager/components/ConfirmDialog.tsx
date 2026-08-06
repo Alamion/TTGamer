@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { X, AlertTriangle } from 'lucide-react';
 import { clsx } from 'clsx';
+import { AlertTriangle, X } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 export interface ConfirmDialogProps {
     open: boolean;

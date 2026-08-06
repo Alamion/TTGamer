@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { parseToAST, evaluateDiceAST, detectExplosion } from '@site/src/dice_roller/dice-logic';
+import { detectExplosion, evaluateDiceAST } from '@site/src/dice_roller/dice-logic/dice-evaluator';
+import { parseToAST } from '@site/src/dice_roller/dice-logic/dice-parser';
+import { describe, expect, it } from 'vitest';
 
 function mockRandom(...values: number[]): () => number {
     let i = 0;
@@ -133,7 +134,7 @@ describe('Evaluator - explosion', () => {
     it('capped by MAX_EXPLOSIONS for infinite chain (1d1!)', () => {
         const vals = new Array(1002).fill(0.5);
         const result = evaluate('1d1!', ...vals);
-        expect(result.diceGroups[0].rolls).toHaveLength(1001);
-        expect(result.total).toBe(1001);
+        expect(result.diceGroups[0].rolls).toHaveLength(101);
+        expect(result.total).toBe(101);
     });
 });

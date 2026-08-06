@@ -1,7 +1,7 @@
-import { CollapsibleBlock, SectionCard } from '../../../components';
 import type { AccentColor } from '../../../components';
-import { DerivedStatsBlock, ExperienceBlock } from './StatsBlock';
+import { CollapsibleBlock, SectionCard } from '../../../components';
 import { useCharacter } from '../../../hooks';
+import { DerivedStatsBlock, ExperienceBlock } from './StatsBlock';
 
 interface OtherBlockProps {
     accentColor?: AccentColor;

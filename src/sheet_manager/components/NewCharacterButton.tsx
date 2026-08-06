@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+
 import { useCharacterStore } from '../store/characterStore.ts';
 
 export function NewCharacterButton() {

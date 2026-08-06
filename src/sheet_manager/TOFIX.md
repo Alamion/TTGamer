@@ -15,17 +15,8 @@
 
 ---
 
-## 🟢 Medium
-
-### Multi-file import toast order
-
-`SheetLayout.tsx` uses `Array.from(files).forEach()` with async `FileReader` callbacks. When importing multiple files simultaneously, toast notifications may not appear in file-visit order.
-
-**File:** `src/sheet_manager/features/sheet/components/SheetLayout.tsx:60-78`
-
----
-
 ## ✅ Done
 
 - `mergeDiceNotation`/`splitTopLevel` moved from `StatDot.tsx` to `src/dice_roller/dice-logic/notation-utils.ts`
 - `DEFAULT_TRAIT_VALUE` renamed to `DEFAULT_ATTRIBUTE_VALUE` (M5)
+- Multi-file import order — DONE: files are awaited sequentially with `File.text()`, and ID collisions use an explicit Replace/Duplicate/Cancel flow

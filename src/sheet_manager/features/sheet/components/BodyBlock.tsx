@@ -1,11 +1,11 @@
-import { CollapsibleBlock, SectionCard } from '../../../components';
 import type { AccentColor } from '../../../components';
-import { HealthBlock } from './HealthBlock.tsx';
-import { useBodyHandlers } from './useBodyHandlers';
-import { InventorySection } from './InventorySection';
+import { CollapsibleBlock, SectionCard } from '../../../components';
 import { ArmorSection } from './ArmorSection';
-import { WeaponsSection } from './WeaponsSection';
+import { HealthBlock } from './HealthBlock.tsx';
 import { ImplantsSection } from './ImplantsSection';
+import { InventorySection } from './InventorySection';
+import { useBodyHandlers } from './useBodyHandlers';
+import { WeaponsSection } from './WeaponsSection';
 
 interface SectionState {
     inventory: boolean;

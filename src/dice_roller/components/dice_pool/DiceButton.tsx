@@ -1,4 +1,5 @@
 import { memo } from 'react';
+
 import type { DiceConfig } from '../dice-config';
 
 interface DiceButtonProps {
@@ -29,7 +30,7 @@ const DiceButton = memo(function DiceButton({
             <config.Component
                 primaryColor={primaryColor}
                 secondaryColor={secondaryColor}
-                value={config.label}
+                value={config.faceLabel}
                 style={{ width: '60px', height: '60px', pointerEvents: 'none' }}
             />
         </button>

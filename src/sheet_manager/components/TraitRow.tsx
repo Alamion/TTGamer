@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { clsx } from 'clsx';
-import { CatalogSuggest } from './CatalogSuggest.tsx';
-import type { CatalogEntry } from './CatalogSuggest.tsx';
-import { StatLabel } from './StatLabel.tsx';
-import { StatDot } from './StatDot.tsx';
 import { Plus } from 'lucide-react';
+
+import type { CatalogEntry } from './CatalogSuggest.tsx';
+import { CatalogSuggest } from './CatalogSuggest.tsx';
+import { StatDot } from './StatDot.tsx';
+import { StatLabel } from './StatLabel.tsx';
 
 interface TraitRowProps {
     label: string;
@@ -122,18 +122,8 @@ export function TraitRowWithInput({
     onDiceRoll,
     characterName,
 }: TraitRowWithInputProps) {
-    const [inputValue, setInputValue] = useState(specializationText);
-
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
-        setInputValue(newValue);
-        onSpecializationTextChange?.(newValue);
-    };
-
-    const handleBlur = () => {
-        if (!inputValue.trim()) {
-            setInputValue(specializationText);
-        }
+        onSpecializationTextChange?.(e.target.value);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -147,9 +137,8 @@ export function TraitRowWithInput({
             <StatLabel label={name} tooltip={tooltip} />
             <input
                 type="text"
-                value={inputValue}
+                value={specializationText}
                 onChange={handleInputChange}
-                onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
                 className={clsx(
