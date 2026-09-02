@@ -27,10 +27,11 @@
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
         "validate:data": "node --import tsx scripts/validate-data.ts",
+        "validate:backlog": "node --import tsx scripts/validate-backlog.ts",
         "validate:i18n": "node --import tsx scripts/validate-i18n.ts && node --import tsx scripts/validate-translations.ts",
         "i18n:status": "node --import tsx scripts/translation-status.ts",
         "check:version": "node --import tsx scripts/check-version.ts",
-        "verify:fast": "yarn lint && yarn typecheck",
+        "verify:fast": "yarn lint && yarn typecheck && yarn validate:backlog",
         "verify": "yarn verify:fast && yarn test",
         "verify:full": "yarn verify && yarn build"
     },

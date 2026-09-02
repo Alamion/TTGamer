@@ -1,70 +1,39 @@
-# TOFIX — Cross-Cutting Issues
+# TOFIX
 
-**Version:** 3.0.0
-**Last updated:** June 2026
+The queue of open defects found outside feature cycles. Fixed entries are removed in
+the same review that ships the fix — the durable record lives in the commit and the
+release summary. Defects discovered while implementing a feature belong to that
+feature's task list, not here.
+
+Severity is carried exclusively by the section an entry sits in; entries carry no
+lifecycle status. Every entry has a stable `F-###` identifier — assigned once, never
+reused for a different entry, never renumbered (gaps after removals are permanent).
 
 ## Legend
 
-| Icon        | Meaning                                     |
+| Section     | Severity                                    |
 | ----------- | ------------------------------------------- |
 | 🟠 Critical | Data corruption, crash, or major UX failure |
 | 🟡 High     | Significant code smell, refactor needed     |
 | 🟢 Medium   | Minor code quality issue                    |
 | ⬜ Low      | Nitpick / nice-to-have                      |
-| ✅ DONE     | fully implemented                           |
-
----
 
 ## 🟡 High
 
-### Replace client-side Discord webhook with backend proxy when the backend exists
+### F-001 — Discord webhook secret exposed to the client
 
-The Discord webhook URL is stored in `sessionStorage` and sent directly from the client via `fetch()`. This exposes the webhook URL to browser DevTools. It is an important security improvement, but not a release blocker for the current offline-first product. Implement it with authenticated server-side secret storage once the backend exists; do not add an anonymous proxy.
+**Area:** dice roller sharing (Discord delivery integration)
 
-**Files involved:**
+**Evidence:** The webhook URL is stored in `sessionStorage` and sent directly from the client via `fetch()`, so it is visible to browser DevTools. Affected surfaces: `src/integrations/discord/webhook.ts`, `src/dice_roller/store/diceRollerStore.ts`, `src/dice_roller/components/DiceRollerSettingsModal.tsx`, `src/dice_roller/components/DiscordWebhookSubscription.tsx`.
 
-- `src/integrations/discord/webhook.ts`
-- `src/dice_roller/store/diceRollerStore.ts`
-- `src/dice_roller/components/DiceRollerSettingsModal.tsx`
-- `src/dice_roller/components/DiscordWebhookSubscription.tsx`
-
-**Fix:** Remove `sendToDiscordWebhook` client call. POST to own backend (e.g. `/api/discord/roll`) which proxies the message to Discord, keeping webhook token server-side.
-
----
+**Recommendation:** Remove the client-side `sendToDiscordWebhook` call and POST to an authenticated backend endpoint that proxies the message to Discord with server-side secret storage; no anonymous proxy. Important but not a release blocker for the offline-first product.
 
 ## 🟢 Medium
 
-### DataCatalog URL parameter initialization race condition
+### F-002 — DataCatalog URL parameter initialization race
 
-`DataCatalog.tsx` splits URL parameter initialization across `useLayoutEffect` (first render) and `useEffect` (subsequent navigations) using a `firstRender` ref. This is potentially fragile under React 19 concurrent features, but no user-visible failure has been reproduced. Revisit it if concurrent navigation demonstrates a breakage; use one reducer/external-store boundary rather than adding more refs.
+**Area:** shared catalog components
 
-**Files:** `src/shared/components/DataCatalog.tsx:355-368`
+**Evidence:** `DataCatalog.tsx` splits URL parameter initialization across `useLayoutEffect` (first render) and `useEffect` (subsequent navigations) using a `firstRender` ref (`src/shared/components/DataCatalog.tsx:355-368`). Potentially fragile under concurrent rendering; no user-visible failure has been reproduced.
 
----
-
-## ✅ Done (previously tracked, now resolved)
-
-- Close button on roll log — DONE
-- Flip roll history order, auto-expand latest, add `Result: ` line — DONE
-- Add d6 to WoD tab — DONE
-- Fix export/import — DONE
-- Force skills default to 0 — DONE
-- Backgrounds and custom items resetting value on label change — DONE
-- DataCatalog filter select losing tag — DONE
-- Force point cost filters incorrect — DONE
-- Document Passion consuming dark side resistance — DONE
-- Document Force skills as attribute cards — DONE
-- Merits & Flaws not automatic at character creation — DONE
-- DiscordWebhookSubscription `includeRollContext` ternary dead branch — DONE
-- sessionStorage stat label race condition — DONE: atomic `takeStatLabels()` (read+clear in one operation) + explicit clear when `rollOptions.statLabels` provided
-- RollControls `toggleCharacterStats` both-toggles-same-value — DONE: reframed as explicit "anonymize rolls" toggle (turns both `includeCharacterName` + `includeCharacterStats` off/on together, indicator reflects anonymized state)
-- RollControls right-click title mismatch — DONE: title now reads "anonymize rolls"
-- DiscordWebhookSubscription stale `includeRollContext` closure — DONE: reads closure value, added to effect deps
-- `useCharacter` recreating `updateCharacter` per character change — DONE: stable callback via refs, guards read fresh values at call time
-- CharacterManagerModal blank name for unnamed characters — DONE: verified `|| 'New Character'` already works (no code change needed)
-- ForceBlock no clamping on willpower/forcePoints — DONE: clamped to `[0, 10]` / `[0, forcePoints.max]`
-- RollHistory expand/collapse for favorites/recent — MOVED to `src/dice_roller/TODO.md` (design decision, not a bug)
-- BaseBlock `.tsx` extension import — DONE: extension removed for consistency
-- Discord button not re-rendering when webhook URL changes — DONE: `useSessionStorageState` now syncs across component instances in the same tab (module-level pub/sub), so `RollControls`/`DiscordWebhookSubscription` update immediately when the URL is set/cleared in the settings modal
-- Multi-file import ordering and ID collisions — DONE: files are parsed sequentially and collisions offer Replace, Duplicate, or Cancel
-- Implant catalog rendering — DONE: `Implant` is handled as an explicit neutral, no-point-cost variant instead of being styled and signed as a flaw
+**Recommendation:** Revisit if concurrent navigation demonstrates a breakage; converge on one reducer/external-store boundary rather than adding more refs.
