@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { TraitRowWithInput } from '@site/src/sheet_manager/components/TraitRow';
+import { TraitRowWithInput } from '@site/src/sheet_manager/components/stat-fields/TraitRow';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';

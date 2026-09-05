@@ -1,0 +1,96 @@
+library:
+    button: Templates
+    buttonTitle: Manage character page templates
+    title: Page templates
+    empty: No templates yet. Create one to get started.
+    new: New template
+    edit: Edit
+    duplicate: Duplicate
+    delete: Delete
+    export: Export
+    kind: Kind
+    unnamedKind: Other
+editor:
+    untitledName: Untitled template
+    name: Name
+    namePlaceholder: Template name
+    descriptionLabel: Description
+    descriptionPlaceholder: What is this page for?
+    sections: Sections
+    addSection: Add section
+    addFieldsBlock: Add field group
+    addTableBlock: Add table
+    addField: Add field
+    addOption: Add option
+    addRow: Add row
+    sectionTitle: Section title
+    blockTitle: Block title (optional)
+    fieldLabel: Field label
+    valueKeyLabel: Shared value key (fields with the same key share one value)
+
+    fieldDescription: Help text (optional)
+    fieldType: Field type
+    fieldRequired: Required (advisory marker)
+    columns: Columns
+    minRows: Min rows
+    maxRows: Max rows
+    options: Options
+    optionLabel: Option label
+    numberMin: Min
+    numberMax: Max
+    numberStep: Step
+    multiline: Multiline
+    presentation: Presentation
+    ratingDots: Dots
+    ratingBoxes: Boxes
+    ratingNumber: Number
+    referenceKinds: Allowed document kinds
+    multiple: Allow multiple values
+    moveUp: Move up
+    moveDown: Move down
+    remove: Remove
+    removeConfirmTitle: Discard changes?
+    removeConfirmDescription: You have unsaved edits. Discard them?
+    discard: Discard
+    save: Save
+    cancel: Cancel
+    duplicateId: Duplicate identifier "{id}" — identifiers must be unique within their scope.
+    invalidKey: Invalid key "{id}" — use lowercase letters, digits, and dashes.
+    limitReached: Limit reached — {limit} {subject} maximum.
+    invalidBounds: Minimum cannot exceed maximum.
+    emptyName: Template name is required.
+    emptyLabel: Every section and field needs a non-empty label.
+fieldTypes:
+    text: Text
+    number: Number
+    toggle: Toggle
+    select: Choice
+    rating: Rating
+    resource: Resource
+    reference: Document reference
+    table: Table
+    fields: Field group
+page:
+    fallbackTitle: Template page unavailable
+    fallbackDescription: The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.
+    requiredUnfilled: '{count} required field(s) are still empty.'
+binding:
+    attach: Attach catalog
+    catalog: Catalog
+    fills: Auto-fill mapping
+    fillTarget: Fill into
+    disabled: Off
+    degraded: Catalog "{catalog}" is unavailable on this device — this field now uses a manual list.
+transfer:
+    exportSuccess: Exported template "{title}"
+    import: Import template
+    importTitle: Import a page template from JSON
+    importLabel: Import template file
+    importSuccess: Imported template "{title}"
+    importError: Failed to import "{filename}"
+    importErrorFormat: Failed to import "{filename}" — not a TTGamer template file.
+    importErrorVersion: Failed to import "{filename}" — the file was made by a different template format version.
+    importErrorSchema: Failed to import "{filename}" — the template structure is invalid.
+    conflictTitle: Template already exists
+    conflictPrompt: Replace it, import a duplicate with a new ID, or cancel this file.
+    degradedReport: Some catalogs are unavailable here — these fields fell back to manual lists - {fields}

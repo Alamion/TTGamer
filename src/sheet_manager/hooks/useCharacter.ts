@@ -1,14 +1,25 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useCharacterContext } from '../context/CharacterContext';
-import { useCharacterStore } from '../store/characterStore';
+import { useDocumentStore } from '../store/documentStore';
+import { systemRegistry } from '../systems';
 import type { BaseCharacter } from '../types/character';
 
 export function useCharacter() {
-    const { currentCharacter, updateCharacter: rawUpdate } = useCharacterStore();
+    const { currentDocumentId, documents, updateDocumentData, updateDocumentMetadata } =
+        useDocumentStore();
     const { character: contextChar, readOnly } = useCharacterContext();
 
-    const character = contextChar ?? currentCharacter;
+    const storedCharacter = useMemo(() => {
+        const document = documents.find(({ id }) => id === currentDocumentId);
+        if (!document) return null;
+        const definition = systemRegistry.getDocumentDefinition(
+            document.systemId,
+            document.definitionId
+        );
+        return definition?.capabilities?.character?.read(document.id, document.data) ?? null;
+    }, [currentDocumentId, documents]);
+    const character = contextChar ?? storedCharacter;
 
     const characterRef = useRef(character);
     const readOnlyRef = useRef(readOnly);
@@ -21,9 +32,19 @@ export function useCharacter() {
     const updateCharacter = useCallback(
         (id: string, updates: Partial<BaseCharacter>) => {
             if (readOnlyRef.current || !characterRef.current) return;
-            rawUpdate(id, updates);
+            const document = documents.find((candidate) => candidate.id === id);
+            if (!document) return;
+            const capability = systemRegistry.getDocumentDefinition(
+                document.systemId,
+                document.definitionId
+            )?.capabilities?.character;
+            if (!capability) return;
+            updateDocumentData(id, (data) => capability.applyUpdates(data, updates));
+            if (updates.metadata?.name !== undefined) {
+                updateDocumentMetadata(id, { title: updates.metadata.name });
+            }
         },
-        [rawUpdate]
+        [documents, updateDocumentData, updateDocumentMetadata]
     );
 
     return { character, readOnly, updateCharacter };

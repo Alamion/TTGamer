@@ -4,12 +4,12 @@ title: Быстрый старт
 ---
 
 import { TWWrapper } from '/src/shared/components/TWWrapper';
-import { NewCharacterButton } from '/src/sheet_manager/components/NewCharacterButton';
-import { BaseBlock } from '/src/sheet_manager/features/sheet/components/BaseBlock';
-import { AttributeBlock } from '/src/sheet_manager/features/sheet/components/AttributeBlock';
-import { SkillBlock } from '/src/sheet_manager/features/sheet/components/SkillBlock';
-import { AdvantagesBlock } from '/src/sheet_manager/features/sheet/components/AdvantagesBlock';
-import { ForceBlock } from '/src/sheet_manager/features/sheet/components/ForceBlock';
+import { CreateCharacterButton } from '/src/sheet_manager/features/sheet/shell/CreateCharacterButton';
+import { BaseBlock } from '/src/sheet_manager/features/sheet/blocks/BaseBlock';
+import { AttributeBlock } from '/src/sheet_manager/features/sheet/blocks/AttributeBlock';
+import { SkillBlock } from '/src/sheet_manager/features/sheet/blocks/SkillBlock';
+import { AdvantagesBlock } from '/src/sheet_manager/features/sheet/blocks/AdvantagesBlock';
+import { ForceBlock } from '/src/sheet_manager/features/sheet/blocks/ForceBlock';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
 import { CharRoll } from '/src/integrations/docs-character-rolls/CharRoll';
 
@@ -75,7 +75,7 @@ _Оценка:_ `6` и `9` — успехи (всего 2), но `1` отмен�
 Просто нажмите кнопку здесь:
 
 <TWWrapper>
-    <NewCharacterButton />
+    <CreateCharacterButton />
 </TWWrapper>
 
 Или перейдите в цифровой менеджер листов на `/universal_sheet` и сделайте то же самое там.

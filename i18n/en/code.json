@@ -457,5 +457,719 @@
     },
     "ttgamer.ui.sheet.base.title": {
         "message": "Base"
+    },
+    "ttgamer.ui.sheet.documents.conflict.duplicate": {
+        "message": "Duplicate"
+    },
+    "ttgamer.ui.sheet.documents.conflict.prompt": {
+        "message": "Replace it, import a duplicate with a new ID, or cancel this file."
+    },
+    "ttgamer.ui.sheet.documents.conflict.replace": {
+        "message": "Replace"
+    },
+    "ttgamer.ui.sheet.documents.conflict.title": {
+        "message": "Document already exists"
+    },
+    "ttgamer.ui.sheet.documents.create.cancel": {
+        "message": "Cancel"
+    },
+    "ttgamer.ui.sheet.documents.create.confirm": {
+        "message": "Create"
+    },
+    "ttgamer.ui.sheet.documents.create.prompt": {
+        "message": "Choose the Star Wars document format to create."
+    },
+    "ttgamer.ui.sheet.documents.create.title": {
+        "message": "Create document"
+    },
+    "ttgamer.ui.sheet.documents.fields.abilities": {
+        "message": "Abilities"
+    },
+    "ttgamer.ui.sheet.documents.fields.addArmor": {
+        "message": "Add armor"
+    },
+    "ttgamer.ui.sheet.documents.fields.addAttack": {
+        "message": "Add attack"
+    },
+    "ttgamer.ui.sheet.documents.fields.additionalKnowledges": {
+        "message": "Additional knowledges"
+    },
+    "ttgamer.ui.sheet.documents.fields.additionalSkills": {
+        "message": "Additional skills"
+    },
+    "ttgamer.ui.sheet.documents.fields.additionalTalents": {
+        "message": "Additional talents"
+    },
+    "ttgamer.ui.sheet.documents.fields.addMember": {
+        "message": "Add member"
+    },
+    "ttgamer.ui.sheet.documents.fields.addRow": {
+        "message": "Add row"
+    },
+    "ttgamer.ui.sheet.documents.fields.addWeapon": {
+        "message": "Add weapon"
+    },
+    "ttgamer.ui.sheet.documents.fields.adventure": {
+        "message": "Adventure"
+    },
+    "ttgamer.ui.sheet.documents.fields.age": {
+        "message": "Age"
+    },
+    "ttgamer.ui.sheet.documents.fields.altitude": {
+        "message": "Altitude"
+    },
+    "ttgamer.ui.sheet.documents.fields.ammunition": {
+        "message": "Ammo"
+    },
+    "ttgamer.ui.sheet.documents.fields.arc": {
+        "message": "Arc"
+    },
+    "ttgamer.ui.sheet.documents.fields.armor": {
+        "message": "Armor"
+    },
+    "ttgamer.ui.sheet.documents.fields.armorClass": {
+        "message": "Class"
+    },
+    "ttgamer.ui.sheet.documents.fields.armorRating": {
+        "message": "Armor rating"
+    },
+    "ttgamer.ui.sheet.documents.fields.armorType": {
+        "message": "Armor type"
+    },
+    "ttgamer.ui.sheet.documents.fields.attacks": {
+        "message": "Attacks"
+    },
+    "ttgamer.ui.sheet.documents.fields.attackType": {
+        "message": "Attack type"
+    },
+    "ttgamer.ui.sheet.documents.fields.attributes": {
+        "message": "Attributes"
+    },
+    "ttgamer.ui.sheet.documents.fields.backgrounds": {
+        "message": "Backgrounds"
+    },
+    "ttgamer.ui.sheet.documents.fields.builtInEquipment": {
+        "message": "Built-in equipment"
+    },
+    "ttgamer.ui.sheet.documents.fields.cargoCapacity": {
+        "message": "Cargo capacity"
+    },
+    "ttgamer.ui.sheet.documents.fields.combat": {
+        "message": "Combat"
+    },
+    "ttgamer.ui.sheet.documents.fields.communicationsSensors": {
+        "message": "Communications / Sensors"
+    },
+    "ttgamer.ui.sheet.documents.fields.concept": {
+        "message": "Concept"
+    },
+    "ttgamer.ui.sheet.documents.fields.configuration": {
+        "message": "Configuration"
+    },
+    "ttgamer.ui.sheet.documents.fields.consumables": {
+        "message": "Consumables"
+    },
+    "ttgamer.ui.sheet.documents.fields.crew": {
+        "message": "Crew"
+    },
+    "ttgamer.ui.sheet.documents.fields.current": {
+        "message": "Current"
+    },
+    "ttgamer.ui.sheet.documents.fields.damage": {
+        "message": "Damage"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.cosmetic": {
+        "message": "Cosmetic"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.crippled": {
+        "message": "Crippled"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.heavy": {
+        "message": "Heavy"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.light": {
+        "message": "Light"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.moderate": {
+        "message": "Moderate"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.severe": {
+        "message": "Severe"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.wrecked": {
+        "message": "Wrecked"
+    },
+    "ttgamer.ui.sheet.documents.fields.darkSideResistance": {
+        "message": "Dark Side resistance"
+    },
+    "ttgamer.ui.sheet.documents.fields.demeanor": {
+        "message": "Demeanor"
+    },
+    "ttgamer.ui.sheet.documents.fields.dexterity": {
+        "message": "Dexterity"
+    },
+    "ttgamer.ui.sheet.documents.fields.dexterityModifier": {
+        "message": "Dexterity modifier"
+    },
+    "ttgamer.ui.sheet.documents.fields.durability": {
+        "message": "Durability"
+    },
+    "ttgamer.ui.sheet.documents.fields.flaws": {
+        "message": "Flaws"
+    },
+    "ttgamer.ui.sheet.documents.fields.forceAndResolve": {
+        "message": "Force and resolve"
+    },
+    "ttgamer.ui.sheet.documents.fields.forcePoints": {
+        "message": "Force points"
+    },
+    "ttgamer.ui.sheet.documents.fields.frontShields": {
+        "message": "Front shields"
+    },
+    "ttgamer.ui.sheet.documents.fields.health": {
+        "message": "Health"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.bruised": {
+        "message": "Bruised"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.crippled": {
+        "message": "Crippled"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.hurt": {
+        "message": "Hurt"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.incapacitated": {
+        "message": "Incapacitated"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.injured": {
+        "message": "Injured"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.mauled": {
+        "message": "Mauled"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.wounded": {
+        "message": "Wounded"
+    },
+    "ttgamer.ui.sheet.documents.fields.hyperdrive": {
+        "message": "Hyperdrive"
+    },
+    "ttgamer.ui.sheet.documents.fields.identity": {
+        "message": "Identity"
+    },
+    "ttgamer.ui.sheet.documents.fields.label": {
+        "message": "Label"
+    },
+    "ttgamer.ui.sheet.documents.fields.length": {
+        "message": "Length"
+    },
+    "ttgamer.ui.sheet.documents.fields.maneuverability": {
+        "message": "Maneuverability"
+    },
+    "ttgamer.ui.sheet.documents.fields.maximum": {
+        "message": "Maximum"
+    },
+    "ttgamer.ui.sheet.documents.fields.member": {
+        "message": "Member"
+    },
+    "ttgamer.ui.sheet.documents.fields.members": {
+        "message": "Members"
+    },
+    "ttgamer.ui.sheet.documents.fields.merits": {
+        "message": "Merits"
+    },
+    "ttgamer.ui.sheet.documents.fields.meritsAndFlaws": {
+        "message": "Merits and flaws"
+    },
+    "ttgamer.ui.sheet.documents.fields.model": {
+        "message": "Model"
+    },
+    "ttgamer.ui.sheet.documents.fields.movementAndNavigation": {
+        "message": "Movement and navigation"
+    },
+    "ttgamer.ui.sheet.documents.fields.name": {
+        "message": "Name"
+    },
+    "ttgamer.ui.sheet.documents.fields.nature": {
+        "message": "Nature"
+    },
+    "ttgamer.ui.sheet.documents.fields.navigationComputer": {
+        "message": "Navigation computer"
+    },
+    "ttgamer.ui.sheet.documents.fields.none": {
+        "message": "None yet"
+    },
+    "ttgamer.ui.sheet.documents.fields.notes": {
+        "message": "Notes"
+    },
+    "ttgamer.ui.sheet.documents.fields.owner": {
+        "message": "Owner"
+    },
+    "ttgamer.ui.sheet.documents.fields.passengers": {
+        "message": "Passengers"
+    },
+    "ttgamer.ui.sheet.documents.fields.player": {
+        "message": "Player"
+    },
+    "ttgamer.ui.sheet.documents.fields.range": {
+        "message": "Range"
+    },
+    "ttgamer.ui.sheet.documents.fields.rearShields": {
+        "message": "Rear shields"
+    },
+    "ttgamer.ui.sheet.documents.fields.removeMember": {
+        "message": "Remove member"
+    },
+    "ttgamer.ui.sheet.documents.fields.removeRow": {
+        "message": "Remove row"
+    },
+    "ttgamer.ui.sheet.documents.fields.resources": {
+        "message": "Resources"
+    },
+    "ttgamer.ui.sheet.documents.fields.scale": {
+        "message": "Scale"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.capital": {
+        "message": "Capital ship"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.character": {
+        "message": "Character"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.deathStar": {
+        "message": "Death Star"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.speeder": {
+        "message": "Speeder"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.starfighter": {
+        "message": "Starfighter"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.transport": {
+        "message": "Transport"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.vermin": {
+        "message": "Vermin"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.walker": {
+        "message": "Walker"
+    },
+    "ttgamer.ui.sheet.documents.fields.sensorRange": {
+        "message": "Sensor range"
+    },
+    "ttgamer.ui.sheet.documents.fields.shields": {
+        "message": "Shields"
+    },
+    "ttgamer.ui.sheet.documents.fields.size": {
+        "message": "Size"
+    },
+    "ttgamer.ui.sheet.documents.fields.species": {
+        "message": "Species"
+    },
+    "ttgamer.ui.sheet.documents.fields.speed": {
+        "message": "Speed"
+    },
+    "ttgamer.ui.sheet.documents.fields.systems": {
+        "message": "Systems"
+    },
+    "ttgamer.ui.sheet.documents.fields.type": {
+        "message": "Type"
+    },
+    "ttgamer.ui.sheet.documents.fields.virtues": {
+        "message": "Virtues"
+    },
+    "ttgamer.ui.sheet.documents.fields.weapon": {
+        "message": "Weapon"
+    },
+    "ttgamer.ui.sheet.documents.fields.weapons": {
+        "message": "Weapons"
+    },
+    "ttgamer.ui.sheet.documents.fields.willpower": {
+        "message": "Willpower"
+    },
+    "ttgamer.ui.sheet.documents.manager.close": {
+        "message": "Close"
+    },
+    "ttgamer.ui.sheet.documents.manager.current": {
+        "message": "current"
+    },
+    "ttgamer.ui.sheet.documents.manager.deleteDescription": {
+        "message": "Are you sure you want to delete {count} document(s)? This cannot be undone."
+    },
+    "ttgamer.ui.sheet.documents.manager.deleteSelected": {
+        "message": "Delete selected"
+    },
+    "ttgamer.ui.sheet.documents.manager.deleteTitle": {
+        "message": "Delete documents"
+    },
+    "ttgamer.ui.sheet.documents.manager.empty": {
+        "message": "No documents yet. Create one to get started."
+    },
+    "ttgamer.ui.sheet.documents.manager.name": {
+        "message": "Name"
+    },
+    "ttgamer.ui.sheet.documents.manager.selectAll": {
+        "message": "Select all documents"
+    },
+    "ttgamer.ui.sheet.documents.manager.selectDocument": {
+        "message": "Select {title}"
+    },
+    "ttgamer.ui.sheet.documents.manager.title": {
+        "message": "Manage documents"
+    },
+    "ttgamer.ui.sheet.documents.manager.type": {
+        "message": "Type"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.export": {
+        "message": "Export"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.exportSuccess": {
+        "message": "Exported \"{title}\""
+    },
+    "ttgamer.ui.sheet.documents.toolbar.exportTitle": {
+        "message": "Export document as JSON"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.import": {
+        "message": "Import"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importError": {
+        "message": "Failed to import \"{filename}\""
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importLabel": {
+        "message": "Import document file"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importSuccess": {
+        "message": "Imported \"{title}\""
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importTitle": {
+        "message": "Import documents from JSON"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.manage": {
+        "message": "Manage"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.manageTitle": {
+        "message": "Manage documents"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.new": {
+        "message": "New"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.newTitle": {
+        "message": "Create a new document"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.noDocumentDescription": {
+        "message": "Create a new document or load one from the manager."
+    },
+    "ttgamer.ui.sheet.documents.toolbar.noDocumentTitle": {
+        "message": "No document loaded"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.reset": {
+        "message": "Reset"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.resetDescription": {
+        "message": "Are you sure you want to reset all document data? This cannot be undone."
+    },
+    "ttgamer.ui.sheet.documents.toolbar.resetTitle": {
+        "message": "Reset all document data"
+    },
+    "ttgamer.ui.sheet.documents.types.character": {
+        "message": "Character"
+    },
+    "ttgamer.ui.sheet.documents.types.creature": {
+        "message": "Creature"
+    },
+    "ttgamer.ui.sheet.documents.types.droid": {
+        "message": "Droid"
+    },
+    "ttgamer.ui.sheet.documents.types.fodderGroup": {
+        "message": "Fodder group"
+    },
+    "ttgamer.ui.sheet.documents.types.vehicle": {
+        "message": "Vehicle"
+    },
+    "ttgamer.ui.sheet.documents.views.brief": {
+        "message": "Brief"
+    },
+    "ttgamer.ui.sheet.documents.views.creatureSheet": {
+        "message": "Creature sheet"
+    },
+    "ttgamer.ui.sheet.documents.views.droidSheet": {
+        "message": "Droid sheet"
+    },
+    "ttgamer.ui.sheet.documents.views.fodderSheet": {
+        "message": "Fodder group"
+    },
+    "ttgamer.ui.sheet.documents.views.fullSheet": {
+        "message": "Full sheet"
+    },
+    "ttgamer.ui.sheet.documents.views.label": {
+        "message": "View mode"
+    },
+    "ttgamer.ui.sheet.documents.views.vehicleSheet": {
+        "message": "Vehicle sheet"
+    },
+    "ttgamer.ui.sheet.templates.binding.attach": {
+        "message": "Attach catalog"
+    },
+    "ttgamer.ui.sheet.templates.binding.catalog": {
+        "message": "Catalog"
+    },
+    "ttgamer.ui.sheet.templates.binding.degraded": {
+        "message": "Catalog \"{catalog}\" is unavailable on this device — this field now uses a manual list."
+    },
+    "ttgamer.ui.sheet.templates.binding.disabled": {
+        "message": "Off"
+    },
+    "ttgamer.ui.sheet.templates.binding.fills": {
+        "message": "Auto-fill mapping"
+    },
+    "ttgamer.ui.sheet.templates.binding.fillTarget": {
+        "message": "Fill into"
+    },
+    "ttgamer.ui.sheet.templates.editor.addField": {
+        "message": "Add field"
+    },
+    "ttgamer.ui.sheet.templates.editor.addFieldsBlock": {
+        "message": "Add field group"
+    },
+    "ttgamer.ui.sheet.templates.editor.addOption": {
+        "message": "Add option"
+    },
+    "ttgamer.ui.sheet.templates.editor.addRow": {
+        "message": "Add row"
+    },
+    "ttgamer.ui.sheet.templates.editor.addSection": {
+        "message": "Add section"
+    },
+    "ttgamer.ui.sheet.templates.editor.addTableBlock": {
+        "message": "Add table"
+    },
+    "ttgamer.ui.sheet.templates.editor.blockTitle": {
+        "message": "Block title (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.cancel": {
+        "message": "Cancel"
+    },
+    "ttgamer.ui.sheet.templates.editor.columns": {
+        "message": "Columns"
+    },
+    "ttgamer.ui.sheet.templates.editor.descriptionLabel": {
+        "message": "Description"
+    },
+    "ttgamer.ui.sheet.templates.editor.descriptionPlaceholder": {
+        "message": "What is this page for?"
+    },
+    "ttgamer.ui.sheet.templates.editor.discard": {
+        "message": "Discard"
+    },
+    "ttgamer.ui.sheet.templates.editor.duplicateId": {
+        "message": "Duplicate identifier \"{id}\" — identifiers must be unique within their scope."
+    },
+    "ttgamer.ui.sheet.templates.editor.emptyLabel": {
+        "message": "Every section and field needs a non-empty label."
+    },
+    "ttgamer.ui.sheet.templates.editor.emptyName": {
+        "message": "Template name is required."
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldDescription": {
+        "message": "Help text (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldLabel": {
+        "message": "Field label"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldRequired": {
+        "message": "Required (advisory marker)"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldType": {
+        "message": "Field type"
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidBounds": {
+        "message": "Minimum cannot exceed maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidKey": {
+        "message": "Invalid key \"{id}\" — use lowercase letters, digits, and dashes."
+    },
+    "ttgamer.ui.sheet.templates.editor.limitReached": {
+        "message": "Limit reached — {limit} {subject} maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.maxRows": {
+        "message": "Max rows"
+    },
+    "ttgamer.ui.sheet.templates.editor.minRows": {
+        "message": "Min rows"
+    },
+    "ttgamer.ui.sheet.templates.editor.moveDown": {
+        "message": "Move down"
+    },
+    "ttgamer.ui.sheet.templates.editor.moveUp": {
+        "message": "Move up"
+    },
+    "ttgamer.ui.sheet.templates.editor.multiline": {
+        "message": "Multiline"
+    },
+    "ttgamer.ui.sheet.templates.editor.multiple": {
+        "message": "Allow multiple values"
+    },
+    "ttgamer.ui.sheet.templates.editor.name": {
+        "message": "Name"
+    },
+    "ttgamer.ui.sheet.templates.editor.namePlaceholder": {
+        "message": "Template name"
+    },
+    "ttgamer.ui.sheet.templates.editor.numberMax": {
+        "message": "Max"
+    },
+    "ttgamer.ui.sheet.templates.editor.numberMin": {
+        "message": "Min"
+    },
+    "ttgamer.ui.sheet.templates.editor.numberStep": {
+        "message": "Step"
+    },
+    "ttgamer.ui.sheet.templates.editor.optionLabel": {
+        "message": "Option label"
+    },
+    "ttgamer.ui.sheet.templates.editor.options": {
+        "message": "Options"
+    },
+    "ttgamer.ui.sheet.templates.editor.presentation": {
+        "message": "Presentation"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingBoxes": {
+        "message": "Boxes"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingDots": {
+        "message": "Dots"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingNumber": {
+        "message": "Number"
+    },
+    "ttgamer.ui.sheet.templates.editor.referenceKinds": {
+        "message": "Allowed document kinds"
+    },
+    "ttgamer.ui.sheet.templates.editor.remove": {
+        "message": "Remove"
+    },
+    "ttgamer.ui.sheet.templates.editor.removeConfirmDescription": {
+        "message": "You have unsaved edits. Discard them?"
+    },
+    "ttgamer.ui.sheet.templates.editor.removeConfirmTitle": {
+        "message": "Discard changes?"
+    },
+    "ttgamer.ui.sheet.templates.editor.save": {
+        "message": "Save"
+    },
+    "ttgamer.ui.sheet.templates.editor.sections": {
+        "message": "Sections"
+    },
+    "ttgamer.ui.sheet.templates.editor.sectionTitle": {
+        "message": "Section title"
+    },
+    "ttgamer.ui.sheet.templates.editor.untitledName": {
+        "message": "Untitled template"
+    },
+    "ttgamer.ui.sheet.templates.editor.valueKeyLabel": {
+        "message": "Shared value key (fields with the same key share one value)"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.fields": {
+        "message": "Field group"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.number": {
+        "message": "Number"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.rating": {
+        "message": "Rating"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.reference": {
+        "message": "Document reference"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.resource": {
+        "message": "Resource"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.select": {
+        "message": "Choice"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.table": {
+        "message": "Table"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.text": {
+        "message": "Text"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.toggle": {
+        "message": "Toggle"
+    },
+    "ttgamer.ui.sheet.templates.library.button": {
+        "message": "Templates"
+    },
+    "ttgamer.ui.sheet.templates.library.buttonTitle": {
+        "message": "Manage character page templates"
+    },
+    "ttgamer.ui.sheet.templates.library.delete": {
+        "message": "Delete"
+    },
+    "ttgamer.ui.sheet.templates.library.duplicate": {
+        "message": "Duplicate"
+    },
+    "ttgamer.ui.sheet.templates.library.edit": {
+        "message": "Edit"
+    },
+    "ttgamer.ui.sheet.templates.library.empty": {
+        "message": "No templates yet. Create one to get started."
+    },
+    "ttgamer.ui.sheet.templates.library.export": {
+        "message": "Export"
+    },
+    "ttgamer.ui.sheet.templates.library.kind": {
+        "message": "Kind"
+    },
+    "ttgamer.ui.sheet.templates.library.new": {
+        "message": "New template"
+    },
+    "ttgamer.ui.sheet.templates.library.title": {
+        "message": "Page templates"
+    },
+    "ttgamer.ui.sheet.templates.library.unnamedKind": {
+        "message": "Other"
+    },
+    "ttgamer.ui.sheet.templates.page.fallbackDescription": {
+        "message": "The template assigned to this page is missing. Showing the standard page instead — you can pick another page below."
+    },
+    "ttgamer.ui.sheet.templates.page.fallbackTitle": {
+        "message": "Template page unavailable"
+    },
+    "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
+        "message": "{count} required field(s) are still empty."
+    },
+    "ttgamer.ui.sheet.templates.transfer.conflictPrompt": {
+        "message": "Replace it, import a duplicate with a new ID, or cancel this file."
+    },
+    "ttgamer.ui.sheet.templates.transfer.conflictTitle": {
+        "message": "Template already exists"
+    },
+    "ttgamer.ui.sheet.templates.transfer.degradedReport": {
+        "message": "Some catalogs are unavailable here — these fields fell back to manual lists - {fields}"
+    },
+    "ttgamer.ui.sheet.templates.transfer.exportSuccess": {
+        "message": "Exported template \"{title}\""
+    },
+    "ttgamer.ui.sheet.templates.transfer.import": {
+        "message": "Import template"
+    },
+    "ttgamer.ui.sheet.templates.transfer.importError": {
+        "message": "Failed to import \"{filename}\""
+    },
+    "ttgamer.ui.sheet.templates.transfer.importErrorFormat": {
+        "message": "Failed to import \"{filename}\" — not a TTGamer template file."
+    },
+    "ttgamer.ui.sheet.templates.transfer.importErrorSchema": {
+        "message": "Failed to import \"{filename}\" — the template structure is invalid."
+    },
+    "ttgamer.ui.sheet.templates.transfer.importErrorVersion": {
+        "message": "Failed to import \"{filename}\" — the file was made by a different template format version."
+    },
+    "ttgamer.ui.sheet.templates.transfer.importLabel": {
+        "message": "Import template file"
+    },
+    "ttgamer.ui.sheet.templates.transfer.importSuccess": {
+        "message": "Imported template \"{title}\""
+    },
+    "ttgamer.ui.sheet.templates.transfer.importTitle": {
+        "message": "Import a page template from JSON"
     }
 }

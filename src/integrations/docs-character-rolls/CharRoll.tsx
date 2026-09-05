@@ -1,5 +1,5 @@
 import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
-import { useCharacterStore } from '@site/src/sheet_manager/store/characterStore';
+import { useCharacter } from '@site/src/sheet_manager/hooks';
 import type { BaseCharacter } from '@site/src/sheet_manager/types/character';
 import type { ReactNode } from 'react';
 
@@ -30,7 +30,7 @@ export function CharRoll({
     preroll?: boolean;
     animationTime?: number;
 }): ReactNode {
-    const character = useCharacterStore((state) => state.currentCharacter);
+    const { character } = useCharacter();
     if (!character) return null;
 
     const attributeValue = attr ? (character.attributes[attr]?.value ?? 1) : 0;

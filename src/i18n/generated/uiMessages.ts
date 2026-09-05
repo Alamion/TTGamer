@@ -224,5 +224,1000 @@ export const uiMessages = {
                 message: 'Character biography...',
             },
         },
+        documents: {
+            toolbar: {
+                export: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.export',
+                    message: 'Export',
+                },
+                exportTitle: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.exportTitle',
+                    message: 'Export document as JSON',
+                },
+                import: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.import',
+                    message: 'Import',
+                },
+                importTitle: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.importTitle',
+                    message: 'Import documents from JSON',
+                },
+                manage: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.manage',
+                    message: 'Manage',
+                },
+                manageTitle: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.manageTitle',
+                    message: 'Manage documents',
+                },
+                reset: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.reset',
+                    message: 'Reset',
+                },
+                resetTitle: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.resetTitle',
+                    message: 'Reset all document data',
+                },
+                new: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.new',
+                    message: 'New',
+                },
+                newTitle: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.newTitle',
+                    message: 'Create a new document',
+                },
+                importLabel: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.importLabel',
+                    message: 'Import document file',
+                },
+                noDocumentTitle: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.noDocumentTitle',
+                    message: 'No document loaded',
+                },
+                noDocumentDescription: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.noDocumentDescription',
+                    message: 'Create a new document or load one from the manager.',
+                },
+                resetDescription: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.resetDescription',
+                    message:
+                        'Are you sure you want to reset all document data? This cannot be undone.',
+                },
+                exportSuccess: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.exportSuccess',
+                    message: 'Exported "{title}"',
+                },
+                importSuccess: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.importSuccess',
+                    message: 'Imported "{title}"',
+                },
+                importError: {
+                    id: 'ttgamer.ui.sheet.documents.toolbar.importError',
+                    message: 'Failed to import "{filename}"',
+                },
+            },
+            conflict: {
+                title: {
+                    id: 'ttgamer.ui.sheet.documents.conflict.title',
+                    message: 'Document already exists',
+                },
+                prompt: {
+                    id: 'ttgamer.ui.sheet.documents.conflict.prompt',
+                    message: 'Replace it, import a duplicate with a new ID, or cancel this file.',
+                },
+                duplicate: {
+                    id: 'ttgamer.ui.sheet.documents.conflict.duplicate',
+                    message: 'Duplicate',
+                },
+                replace: {
+                    id: 'ttgamer.ui.sheet.documents.conflict.replace',
+                    message: 'Replace',
+                },
+            },
+            manager: {
+                title: {
+                    id: 'ttgamer.ui.sheet.documents.manager.title',
+                    message: 'Manage documents',
+                },
+                empty: {
+                    id: 'ttgamer.ui.sheet.documents.manager.empty',
+                    message: 'No documents yet. Create one to get started.',
+                },
+                name: {
+                    id: 'ttgamer.ui.sheet.documents.manager.name',
+                    message: 'Name',
+                },
+                type: {
+                    id: 'ttgamer.ui.sheet.documents.manager.type',
+                    message: 'Type',
+                },
+                current: {
+                    id: 'ttgamer.ui.sheet.documents.manager.current',
+                    message: 'current',
+                },
+                selectAll: {
+                    id: 'ttgamer.ui.sheet.documents.manager.selectAll',
+                    message: 'Select all documents',
+                },
+                selectDocument: {
+                    id: 'ttgamer.ui.sheet.documents.manager.selectDocument',
+                    message: 'Select {title}',
+                },
+                deleteSelected: {
+                    id: 'ttgamer.ui.sheet.documents.manager.deleteSelected',
+                    message: 'Delete selected',
+                },
+                deleteTitle: {
+                    id: 'ttgamer.ui.sheet.documents.manager.deleteTitle',
+                    message: 'Delete documents',
+                },
+                deleteDescription: {
+                    id: 'ttgamer.ui.sheet.documents.manager.deleteDescription',
+                    message:
+                        'Are you sure you want to delete {count} document(s)? This cannot be undone.',
+                },
+                close: {
+                    id: 'ttgamer.ui.sheet.documents.manager.close',
+                    message: 'Close',
+                },
+            },
+            create: {
+                title: {
+                    id: 'ttgamer.ui.sheet.documents.create.title',
+                    message: 'Create document',
+                },
+                prompt: {
+                    id: 'ttgamer.ui.sheet.documents.create.prompt',
+                    message: 'Choose the Star Wars document format to create.',
+                },
+                confirm: {
+                    id: 'ttgamer.ui.sheet.documents.create.confirm',
+                    message: 'Create',
+                },
+                cancel: {
+                    id: 'ttgamer.ui.sheet.documents.create.cancel',
+                    message: 'Cancel',
+                },
+            },
+            types: {
+                character: {
+                    id: 'ttgamer.ui.sheet.documents.types.character',
+                    message: 'Character',
+                },
+                droid: {
+                    id: 'ttgamer.ui.sheet.documents.types.droid',
+                    message: 'Droid',
+                },
+                creature: {
+                    id: 'ttgamer.ui.sheet.documents.types.creature',
+                    message: 'Creature',
+                },
+                vehicle: {
+                    id: 'ttgamer.ui.sheet.documents.types.vehicle',
+                    message: 'Vehicle',
+                },
+                fodderGroup: {
+                    id: 'ttgamer.ui.sheet.documents.types.fodderGroup',
+                    message: 'Fodder group',
+                },
+            },
+            views: {
+                label: {
+                    id: 'ttgamer.ui.sheet.documents.views.label',
+                    message: 'View mode',
+                },
+                fullSheet: {
+                    id: 'ttgamer.ui.sheet.documents.views.fullSheet',
+                    message: 'Full sheet',
+                },
+                brief: {
+                    id: 'ttgamer.ui.sheet.documents.views.brief',
+                    message: 'Brief',
+                },
+                droidSheet: {
+                    id: 'ttgamer.ui.sheet.documents.views.droidSheet',
+                    message: 'Droid sheet',
+                },
+                creatureSheet: {
+                    id: 'ttgamer.ui.sheet.documents.views.creatureSheet',
+                    message: 'Creature sheet',
+                },
+                vehicleSheet: {
+                    id: 'ttgamer.ui.sheet.documents.views.vehicleSheet',
+                    message: 'Vehicle sheet',
+                },
+                fodderSheet: {
+                    id: 'ttgamer.ui.sheet.documents.views.fodderSheet',
+                    message: 'Fodder group',
+                },
+            },
+            fields: {
+                identity: {
+                    id: 'ttgamer.ui.sheet.documents.fields.identity',
+                    message: 'Identity',
+                },
+                name: {
+                    id: 'ttgamer.ui.sheet.documents.fields.name',
+                    message: 'Name',
+                },
+                concept: {
+                    id: 'ttgamer.ui.sheet.documents.fields.concept',
+                    message: 'Concept',
+                },
+                type: {
+                    id: 'ttgamer.ui.sheet.documents.fields.type',
+                    message: 'Type',
+                },
+                player: {
+                    id: 'ttgamer.ui.sheet.documents.fields.player',
+                    message: 'Player',
+                },
+                nature: {
+                    id: 'ttgamer.ui.sheet.documents.fields.nature',
+                    message: 'Nature',
+                },
+                adventure: {
+                    id: 'ttgamer.ui.sheet.documents.fields.adventure',
+                    message: 'Adventure',
+                },
+                demeanor: {
+                    id: 'ttgamer.ui.sheet.documents.fields.demeanor',
+                    message: 'Demeanor',
+                },
+                age: {
+                    id: 'ttgamer.ui.sheet.documents.fields.age',
+                    message: 'Age',
+                },
+                owner: {
+                    id: 'ttgamer.ui.sheet.documents.fields.owner',
+                    message: 'Owner',
+                },
+                species: {
+                    id: 'ttgamer.ui.sheet.documents.fields.species',
+                    message: 'Species',
+                },
+                scale: {
+                    id: 'ttgamer.ui.sheet.documents.fields.scale',
+                    message: 'Scale',
+                },
+                size: {
+                    id: 'ttgamer.ui.sheet.documents.fields.size',
+                    message: 'Size',
+                },
+                model: {
+                    id: 'ttgamer.ui.sheet.documents.fields.model',
+                    message: 'Model',
+                },
+                crew: {
+                    id: 'ttgamer.ui.sheet.documents.fields.crew',
+                    message: 'Crew',
+                },
+                length: {
+                    id: 'ttgamer.ui.sheet.documents.fields.length',
+                    message: 'Length',
+                },
+                cargoCapacity: {
+                    id: 'ttgamer.ui.sheet.documents.fields.cargoCapacity',
+                    message: 'Cargo capacity',
+                },
+                passengers: {
+                    id: 'ttgamer.ui.sheet.documents.fields.passengers',
+                    message: 'Passengers',
+                },
+                consumables: {
+                    id: 'ttgamer.ui.sheet.documents.fields.consumables',
+                    message: 'Consumables',
+                },
+                speed: {
+                    id: 'ttgamer.ui.sheet.documents.fields.speed',
+                    message: 'Speed',
+                },
+                altitude: {
+                    id: 'ttgamer.ui.sheet.documents.fields.altitude',
+                    message: 'Altitude',
+                },
+                sensorRange: {
+                    id: 'ttgamer.ui.sheet.documents.fields.sensorRange',
+                    message: 'Sensor range',
+                },
+                navigationComputer: {
+                    id: 'ttgamer.ui.sheet.documents.fields.navigationComputer',
+                    message: 'Navigation computer',
+                },
+                notes: {
+                    id: 'ttgamer.ui.sheet.documents.fields.notes',
+                    message: 'Notes',
+                },
+                attributes: {
+                    id: 'ttgamer.ui.sheet.documents.fields.attributes',
+                    message: 'Attributes',
+                },
+                abilities: {
+                    id: 'ttgamer.ui.sheet.documents.fields.abilities',
+                    message: 'Abilities',
+                },
+                additionalTalents: {
+                    id: 'ttgamer.ui.sheet.documents.fields.additionalTalents',
+                    message: 'Additional talents',
+                },
+                additionalSkills: {
+                    id: 'ttgamer.ui.sheet.documents.fields.additionalSkills',
+                    message: 'Additional skills',
+                },
+                additionalKnowledges: {
+                    id: 'ttgamer.ui.sheet.documents.fields.additionalKnowledges',
+                    message: 'Additional knowledges',
+                },
+                durability: {
+                    id: 'ttgamer.ui.sheet.documents.fields.durability',
+                    message: 'Durability',
+                },
+                maneuverability: {
+                    id: 'ttgamer.ui.sheet.documents.fields.maneuverability',
+                    message: 'Maneuverability',
+                },
+                communicationsSensors: {
+                    id: 'ttgamer.ui.sheet.documents.fields.communicationsSensors',
+                    message: 'Communications / Sensors',
+                },
+                hyperdrive: {
+                    id: 'ttgamer.ui.sheet.documents.fields.hyperdrive',
+                    message: 'Hyperdrive',
+                },
+                shields: {
+                    id: 'ttgamer.ui.sheet.documents.fields.shields',
+                    message: 'Shields',
+                },
+                frontShields: {
+                    id: 'ttgamer.ui.sheet.documents.fields.frontShields',
+                    message: 'Front shields',
+                },
+                rearShields: {
+                    id: 'ttgamer.ui.sheet.documents.fields.rearShields',
+                    message: 'Rear shields',
+                },
+                willpower: {
+                    id: 'ttgamer.ui.sheet.documents.fields.willpower',
+                    message: 'Willpower',
+                },
+                virtues: {
+                    id: 'ttgamer.ui.sheet.documents.fields.virtues',
+                    message: 'Virtues',
+                },
+                forcePoints: {
+                    id: 'ttgamer.ui.sheet.documents.fields.forcePoints',
+                    message: 'Force points',
+                },
+                darkSideResistance: {
+                    id: 'ttgamer.ui.sheet.documents.fields.darkSideResistance',
+                    message: 'Dark Side resistance',
+                },
+                forceAndResolve: {
+                    id: 'ttgamer.ui.sheet.documents.fields.forceAndResolve',
+                    message: 'Force and resolve',
+                },
+                resources: {
+                    id: 'ttgamer.ui.sheet.documents.fields.resources',
+                    message: 'Resources',
+                },
+                backgrounds: {
+                    id: 'ttgamer.ui.sheet.documents.fields.backgrounds',
+                    message: 'Backgrounds',
+                },
+                meritsAndFlaws: {
+                    id: 'ttgamer.ui.sheet.documents.fields.meritsAndFlaws',
+                    message: 'Merits and flaws',
+                },
+                merits: {
+                    id: 'ttgamer.ui.sheet.documents.fields.merits',
+                    message: 'Merits',
+                },
+                flaws: {
+                    id: 'ttgamer.ui.sheet.documents.fields.flaws',
+                    message: 'Flaws',
+                },
+                combat: {
+                    id: 'ttgamer.ui.sheet.documents.fields.combat',
+                    message: 'Combat',
+                },
+                current: {
+                    id: 'ttgamer.ui.sheet.documents.fields.current',
+                    message: 'Current',
+                },
+                maximum: {
+                    id: 'ttgamer.ui.sheet.documents.fields.maximum',
+                    message: 'Maximum',
+                },
+                health: {
+                    id: 'ttgamer.ui.sheet.documents.fields.health',
+                    message: 'Health',
+                },
+                damage: {
+                    id: 'ttgamer.ui.sheet.documents.fields.damage',
+                    message: 'Damage',
+                },
+                members: {
+                    id: 'ttgamer.ui.sheet.documents.fields.members',
+                    message: 'Members',
+                },
+                addMember: {
+                    id: 'ttgamer.ui.sheet.documents.fields.addMember',
+                    message: 'Add member',
+                },
+                removeMember: {
+                    id: 'ttgamer.ui.sheet.documents.fields.removeMember',
+                    message: 'Remove member',
+                },
+                member: {
+                    id: 'ttgamer.ui.sheet.documents.fields.member',
+                    message: 'Member',
+                },
+                armor: {
+                    id: 'ttgamer.ui.sheet.documents.fields.armor',
+                    message: 'Armor',
+                },
+                armorType: {
+                    id: 'ttgamer.ui.sheet.documents.fields.armorType',
+                    message: 'Armor type',
+                },
+                armorClass: {
+                    id: 'ttgamer.ui.sheet.documents.fields.armorClass',
+                    message: 'Class',
+                },
+                dexterity: {
+                    id: 'ttgamer.ui.sheet.documents.fields.dexterity',
+                    message: 'Dexterity',
+                },
+                addArmor: {
+                    id: 'ttgamer.ui.sheet.documents.fields.addArmor',
+                    message: 'Add armor',
+                },
+                attacks: {
+                    id: 'ttgamer.ui.sheet.documents.fields.attacks',
+                    message: 'Attacks',
+                },
+                addAttack: {
+                    id: 'ttgamer.ui.sheet.documents.fields.addAttack',
+                    message: 'Add attack',
+                },
+                weapons: {
+                    id: 'ttgamer.ui.sheet.documents.fields.weapons',
+                    message: 'Weapons',
+                },
+                weapon: {
+                    id: 'ttgamer.ui.sheet.documents.fields.weapon',
+                    message: 'Weapon',
+                },
+                ammunition: {
+                    id: 'ttgamer.ui.sheet.documents.fields.ammunition',
+                    message: 'Ammo',
+                },
+                addWeapon: {
+                    id: 'ttgamer.ui.sheet.documents.fields.addWeapon',
+                    message: 'Add weapon',
+                },
+                configuration: {
+                    id: 'ttgamer.ui.sheet.documents.fields.configuration',
+                    message: 'Configuration',
+                },
+                systems: {
+                    id: 'ttgamer.ui.sheet.documents.fields.systems',
+                    message: 'Systems',
+                },
+                movementAndNavigation: {
+                    id: 'ttgamer.ui.sheet.documents.fields.movementAndNavigation',
+                    message: 'Movement and navigation',
+                },
+                builtInEquipment: {
+                    id: 'ttgamer.ui.sheet.documents.fields.builtInEquipment',
+                    message: 'Built-in equipment',
+                },
+                addRow: {
+                    id: 'ttgamer.ui.sheet.documents.fields.addRow',
+                    message: 'Add row',
+                },
+                removeRow: {
+                    id: 'ttgamer.ui.sheet.documents.fields.removeRow',
+                    message: 'Remove row',
+                },
+                label: {
+                    id: 'ttgamer.ui.sheet.documents.fields.label',
+                    message: 'Label',
+                },
+                armorRating: {
+                    id: 'ttgamer.ui.sheet.documents.fields.armorRating',
+                    message: 'Armor rating',
+                },
+                dexterityModifier: {
+                    id: 'ttgamer.ui.sheet.documents.fields.dexterityModifier',
+                    message: 'Dexterity modifier',
+                },
+                attackType: {
+                    id: 'ttgamer.ui.sheet.documents.fields.attackType',
+                    message: 'Attack type',
+                },
+                range: {
+                    id: 'ttgamer.ui.sheet.documents.fields.range',
+                    message: 'Range',
+                },
+                arc: {
+                    id: 'ttgamer.ui.sheet.documents.fields.arc',
+                    message: 'Arc',
+                },
+                none: {
+                    id: 'ttgamer.ui.sheet.documents.fields.none',
+                    message: 'None yet',
+                },
+                healthLevels: {
+                    bruised: {
+                        id: 'ttgamer.ui.sheet.documents.fields.healthLevels.bruised',
+                        message: 'Bruised',
+                    },
+                    hurt: {
+                        id: 'ttgamer.ui.sheet.documents.fields.healthLevels.hurt',
+                        message: 'Hurt',
+                    },
+                    injured: {
+                        id: 'ttgamer.ui.sheet.documents.fields.healthLevels.injured',
+                        message: 'Injured',
+                    },
+                    wounded: {
+                        id: 'ttgamer.ui.sheet.documents.fields.healthLevels.wounded',
+                        message: 'Wounded',
+                    },
+                    mauled: {
+                        id: 'ttgamer.ui.sheet.documents.fields.healthLevels.mauled',
+                        message: 'Mauled',
+                    },
+                    crippled: {
+                        id: 'ttgamer.ui.sheet.documents.fields.healthLevels.crippled',
+                        message: 'Crippled',
+                    },
+                    incapacitated: {
+                        id: 'ttgamer.ui.sheet.documents.fields.healthLevels.incapacitated',
+                        message: 'Incapacitated',
+                    },
+                },
+                damageLevels: {
+                    cosmetic: {
+                        id: 'ttgamer.ui.sheet.documents.fields.damageLevels.cosmetic',
+                        message: 'Cosmetic',
+                    },
+                    light: {
+                        id: 'ttgamer.ui.sheet.documents.fields.damageLevels.light',
+                        message: 'Light',
+                    },
+                    moderate: {
+                        id: 'ttgamer.ui.sheet.documents.fields.damageLevels.moderate',
+                        message: 'Moderate',
+                    },
+                    heavy: {
+                        id: 'ttgamer.ui.sheet.documents.fields.damageLevels.heavy',
+                        message: 'Heavy',
+                    },
+                    severe: {
+                        id: 'ttgamer.ui.sheet.documents.fields.damageLevels.severe',
+                        message: 'Severe',
+                    },
+                    crippled: {
+                        id: 'ttgamer.ui.sheet.documents.fields.damageLevels.crippled',
+                        message: 'Crippled',
+                    },
+                    wrecked: {
+                        id: 'ttgamer.ui.sheet.documents.fields.damageLevels.wrecked',
+                        message: 'Wrecked',
+                    },
+                },
+                scaleOptions: {
+                    deathStar: {
+                        id: 'ttgamer.ui.sheet.documents.fields.scaleOptions.deathStar',
+                        message: 'Death Star',
+                    },
+                    capital: {
+                        id: 'ttgamer.ui.sheet.documents.fields.scaleOptions.capital',
+                        message: 'Capital ship',
+                    },
+                    transport: {
+                        id: 'ttgamer.ui.sheet.documents.fields.scaleOptions.transport',
+                        message: 'Transport',
+                    },
+                    starfighter: {
+                        id: 'ttgamer.ui.sheet.documents.fields.scaleOptions.starfighter',
+                        message: 'Starfighter',
+                    },
+                    walker: {
+                        id: 'ttgamer.ui.sheet.documents.fields.scaleOptions.walker',
+                        message: 'Walker',
+                    },
+                    speeder: {
+                        id: 'ttgamer.ui.sheet.documents.fields.scaleOptions.speeder',
+                        message: 'Speeder',
+                    },
+                    character: {
+                        id: 'ttgamer.ui.sheet.documents.fields.scaleOptions.character',
+                        message: 'Character',
+                    },
+                    vermin: {
+                        id: 'ttgamer.ui.sheet.documents.fields.scaleOptions.vermin',
+                        message: 'Vermin',
+                    },
+                },
+            },
+        },
+        templates: {
+            library: {
+                button: {
+                    id: 'ttgamer.ui.sheet.templates.library.button',
+                    message: 'Templates',
+                },
+                buttonTitle: {
+                    id: 'ttgamer.ui.sheet.templates.library.buttonTitle',
+                    message: 'Manage character page templates',
+                },
+                title: {
+                    id: 'ttgamer.ui.sheet.templates.library.title',
+                    message: 'Page templates',
+                },
+                empty: {
+                    id: 'ttgamer.ui.sheet.templates.library.empty',
+                    message: 'No templates yet. Create one to get started.',
+                },
+                new: {
+                    id: 'ttgamer.ui.sheet.templates.library.new',
+                    message: 'New template',
+                },
+                edit: {
+                    id: 'ttgamer.ui.sheet.templates.library.edit',
+                    message: 'Edit',
+                },
+                duplicate: {
+                    id: 'ttgamer.ui.sheet.templates.library.duplicate',
+                    message: 'Duplicate',
+                },
+                delete: {
+                    id: 'ttgamer.ui.sheet.templates.library.delete',
+                    message: 'Delete',
+                },
+                export: {
+                    id: 'ttgamer.ui.sheet.templates.library.export',
+                    message: 'Export',
+                },
+                kind: {
+                    id: 'ttgamer.ui.sheet.templates.library.kind',
+                    message: 'Kind',
+                },
+                unnamedKind: {
+                    id: 'ttgamer.ui.sheet.templates.library.unnamedKind',
+                    message: 'Other',
+                },
+            },
+            editor: {
+                untitledName: {
+                    id: 'ttgamer.ui.sheet.templates.editor.untitledName',
+                    message: 'Untitled template',
+                },
+                name: {
+                    id: 'ttgamer.ui.sheet.templates.editor.name',
+                    message: 'Name',
+                },
+                namePlaceholder: {
+                    id: 'ttgamer.ui.sheet.templates.editor.namePlaceholder',
+                    message: 'Template name',
+                },
+                descriptionLabel: {
+                    id: 'ttgamer.ui.sheet.templates.editor.descriptionLabel',
+                    message: 'Description',
+                },
+                descriptionPlaceholder: {
+                    id: 'ttgamer.ui.sheet.templates.editor.descriptionPlaceholder',
+                    message: 'What is this page for?',
+                },
+                sections: {
+                    id: 'ttgamer.ui.sheet.templates.editor.sections',
+                    message: 'Sections',
+                },
+                addSection: {
+                    id: 'ttgamer.ui.sheet.templates.editor.addSection',
+                    message: 'Add section',
+                },
+                addFieldsBlock: {
+                    id: 'ttgamer.ui.sheet.templates.editor.addFieldsBlock',
+                    message: 'Add field group',
+                },
+                addTableBlock: {
+                    id: 'ttgamer.ui.sheet.templates.editor.addTableBlock',
+                    message: 'Add table',
+                },
+                addField: {
+                    id: 'ttgamer.ui.sheet.templates.editor.addField',
+                    message: 'Add field',
+                },
+                addOption: {
+                    id: 'ttgamer.ui.sheet.templates.editor.addOption',
+                    message: 'Add option',
+                },
+                addRow: {
+                    id: 'ttgamer.ui.sheet.templates.editor.addRow',
+                    message: 'Add row',
+                },
+                sectionTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.sectionTitle',
+                    message: 'Section title',
+                },
+                blockTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.blockTitle',
+                    message: 'Block title (optional)',
+                },
+                fieldLabel: {
+                    id: 'ttgamer.ui.sheet.templates.editor.fieldLabel',
+                    message: 'Field label',
+                },
+                valueKeyLabel: {
+                    id: 'ttgamer.ui.sheet.templates.editor.valueKeyLabel',
+                    message: 'Shared value key (fields with the same key share one value)',
+                },
+                fieldDescription: {
+                    id: 'ttgamer.ui.sheet.templates.editor.fieldDescription',
+                    message: 'Help text (optional)',
+                },
+                fieldType: {
+                    id: 'ttgamer.ui.sheet.templates.editor.fieldType',
+                    message: 'Field type',
+                },
+                fieldRequired: {
+                    id: 'ttgamer.ui.sheet.templates.editor.fieldRequired',
+                    message: 'Required (advisory marker)',
+                },
+                columns: {
+                    id: 'ttgamer.ui.sheet.templates.editor.columns',
+                    message: 'Columns',
+                },
+                minRows: {
+                    id: 'ttgamer.ui.sheet.templates.editor.minRows',
+                    message: 'Min rows',
+                },
+                maxRows: {
+                    id: 'ttgamer.ui.sheet.templates.editor.maxRows',
+                    message: 'Max rows',
+                },
+                options: {
+                    id: 'ttgamer.ui.sheet.templates.editor.options',
+                    message: 'Options',
+                },
+                optionLabel: {
+                    id: 'ttgamer.ui.sheet.templates.editor.optionLabel',
+                    message: 'Option label',
+                },
+                numberMin: {
+                    id: 'ttgamer.ui.sheet.templates.editor.numberMin',
+                    message: 'Min',
+                },
+                numberMax: {
+                    id: 'ttgamer.ui.sheet.templates.editor.numberMax',
+                    message: 'Max',
+                },
+                numberStep: {
+                    id: 'ttgamer.ui.sheet.templates.editor.numberStep',
+                    message: 'Step',
+                },
+                multiline: {
+                    id: 'ttgamer.ui.sheet.templates.editor.multiline',
+                    message: 'Multiline',
+                },
+                presentation: {
+                    id: 'ttgamer.ui.sheet.templates.editor.presentation',
+                    message: 'Presentation',
+                },
+                ratingDots: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingDots',
+                    message: 'Dots',
+                },
+                ratingBoxes: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingBoxes',
+                    message: 'Boxes',
+                },
+                ratingNumber: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingNumber',
+                    message: 'Number',
+                },
+                referenceKinds: {
+                    id: 'ttgamer.ui.sheet.templates.editor.referenceKinds',
+                    message: 'Allowed document kinds',
+                },
+                multiple: {
+                    id: 'ttgamer.ui.sheet.templates.editor.multiple',
+                    message: 'Allow multiple values',
+                },
+                moveUp: {
+                    id: 'ttgamer.ui.sheet.templates.editor.moveUp',
+                    message: 'Move up',
+                },
+                moveDown: {
+                    id: 'ttgamer.ui.sheet.templates.editor.moveDown',
+                    message: 'Move down',
+                },
+                remove: {
+                    id: 'ttgamer.ui.sheet.templates.editor.remove',
+                    message: 'Remove',
+                },
+                removeConfirmTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.removeConfirmTitle',
+                    message: 'Discard changes?',
+                },
+                removeConfirmDescription: {
+                    id: 'ttgamer.ui.sheet.templates.editor.removeConfirmDescription',
+                    message: 'You have unsaved edits. Discard them?',
+                },
+                discard: {
+                    id: 'ttgamer.ui.sheet.templates.editor.discard',
+                    message: 'Discard',
+                },
+                save: {
+                    id: 'ttgamer.ui.sheet.templates.editor.save',
+                    message: 'Save',
+                },
+                cancel: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cancel',
+                    message: 'Cancel',
+                },
+                duplicateId: {
+                    id: 'ttgamer.ui.sheet.templates.editor.duplicateId',
+                    message:
+                        'Duplicate identifier "{id}" — identifiers must be unique within their scope.',
+                },
+                invalidKey: {
+                    id: 'ttgamer.ui.sheet.templates.editor.invalidKey',
+                    message: 'Invalid key "{id}" — use lowercase letters, digits, and dashes.',
+                },
+                limitReached: {
+                    id: 'ttgamer.ui.sheet.templates.editor.limitReached',
+                    message: 'Limit reached — {limit} {subject} maximum.',
+                },
+                invalidBounds: {
+                    id: 'ttgamer.ui.sheet.templates.editor.invalidBounds',
+                    message: 'Minimum cannot exceed maximum.',
+                },
+                emptyName: {
+                    id: 'ttgamer.ui.sheet.templates.editor.emptyName',
+                    message: 'Template name is required.',
+                },
+                emptyLabel: {
+                    id: 'ttgamer.ui.sheet.templates.editor.emptyLabel',
+                    message: 'Every section and field needs a non-empty label.',
+                },
+            },
+            fieldTypes: {
+                text: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.text',
+                    message: 'Text',
+                },
+                number: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.number',
+                    message: 'Number',
+                },
+                toggle: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.toggle',
+                    message: 'Toggle',
+                },
+                select: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.select',
+                    message: 'Choice',
+                },
+                rating: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.rating',
+                    message: 'Rating',
+                },
+                resource: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.resource',
+                    message: 'Resource',
+                },
+                reference: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.reference',
+                    message: 'Document reference',
+                },
+                table: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.table',
+                    message: 'Table',
+                },
+                fields: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.fields',
+                    message: 'Field group',
+                },
+            },
+            page: {
+                fallbackTitle: {
+                    id: 'ttgamer.ui.sheet.templates.page.fallbackTitle',
+                    message: 'Template page unavailable',
+                },
+                fallbackDescription: {
+                    id: 'ttgamer.ui.sheet.templates.page.fallbackDescription',
+                    message:
+                        'The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.',
+                },
+                requiredUnfilled: {
+                    id: 'ttgamer.ui.sheet.templates.page.requiredUnfilled',
+                    message: '{count} required field(s) are still empty.',
+                },
+            },
+            binding: {
+                attach: {
+                    id: 'ttgamer.ui.sheet.templates.binding.attach',
+                    message: 'Attach catalog',
+                },
+                catalog: {
+                    id: 'ttgamer.ui.sheet.templates.binding.catalog',
+                    message: 'Catalog',
+                },
+                fills: {
+                    id: 'ttgamer.ui.sheet.templates.binding.fills',
+                    message: 'Auto-fill mapping',
+                },
+                fillTarget: {
+                    id: 'ttgamer.ui.sheet.templates.binding.fillTarget',
+                    message: 'Fill into',
+                },
+                disabled: {
+                    id: 'ttgamer.ui.sheet.templates.binding.disabled',
+                    message: 'Off',
+                },
+                degraded: {
+                    id: 'ttgamer.ui.sheet.templates.binding.degraded',
+                    message:
+                        'Catalog "{catalog}" is unavailable on this device — this field now uses a manual list.',
+                },
+            },
+            transfer: {
+                exportSuccess: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.exportSuccess',
+                    message: 'Exported template "{title}"',
+                },
+                import: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.import',
+                    message: 'Import template',
+                },
+                importTitle: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.importTitle',
+                    message: 'Import a page template from JSON',
+                },
+                importLabel: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.importLabel',
+                    message: 'Import template file',
+                },
+                importSuccess: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.importSuccess',
+                    message: 'Imported template "{title}"',
+                },
+                importError: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.importError',
+                    message: 'Failed to import "{filename}"',
+                },
+                importErrorFormat: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.importErrorFormat',
+                    message: 'Failed to import "{filename}" — not a TTGamer template file.',
+                },
+                importErrorVersion: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.importErrorVersion',
+                    message:
+                        'Failed to import "{filename}" — the file was made by a different template format version.',
+                },
+                importErrorSchema: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.importErrorSchema',
+                    message: 'Failed to import "{filename}" — the template structure is invalid.',
+                },
+                conflictTitle: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.conflictTitle',
+                    message: 'Template already exists',
+                },
+                conflictPrompt: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.conflictPrompt',
+                    message: 'Replace it, import a duplicate with a new ID, or cancel this file.',
+                },
+                degradedReport: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.degradedReport',
+                    message:
+                        'Some catalogs are unavailable here — these fields fell back to manual lists - {fields}',
+                },
+            },
+        },
     },
 } as const satisfies UiMessageTree;

@@ -1,11 +1,11 @@
-import { useCharacterStore } from '../store/characterStore';
 import type { TraitValue } from '../types/character';
 import { DEFAULT_ATTRIBUTE_VALUE } from '../types/character';
+import { useCharacter } from './useCharacter';
 
 type TraitPath = 'attributes' | 'skills' | 'forceSkills' | 'virtues';
 
 export function useTraitUpdater(path: TraitPath) {
-    const { currentCharacter, updateCharacter } = useCharacterStore();
+    const { character: currentCharacter, updateCharacter } = useCharacter();
 
     const getTrait = (key: string): TraitValue => {
         if (!currentCharacter) return { ...DEFAULT_ATTRIBUTE_VALUE, value: 0 };

@@ -13,8 +13,8 @@ Defined in `src/css/custom.css`:
 | ------------------ | ------------- | ----------------------- |
 | `--primary`        | `220 38 38`   | Accent / rebel red      |
 | `--secondary`      | `202 138 4`   | Secondary / droid gold  |
-| `--bg-base`        | `24 245 249`  | Page background         |
-| `--bg-surface`     | `255 255 255` | Card/surface background |
+| `--bg-base`        | `245 245 249` | Page background         |
+| `--bg-surface`     | `249 249 255` | Card/surface background |
 | `--text-primary`   | `15 23 42`    | Primary text            |
 | `--text-secondary` | `71 85 105`   | Secondary text          |
 | `--border`         | `226 232 240` | Borders                 |
@@ -29,29 +29,28 @@ Dark mode overrides `--bg-base`, `--bg-surface`, `--text-primary`, `--text-secon
 
 ## Star Wars Palette
 
-| Variable            | Value | Usage        |
-| ------------------- | ----- | ------------ |
-| `--sw-jedi-blue`    | —     | Jedi blue    |
-| `--sw-jedi-green`   | —     | Jedi green   |
-| `--sw-jedi-violet`  | —     | Jedi violet  |
-| `--sw-jedi-red`     | —     | Jedi red     |
-| `--sw-empire-grey`  | —     | Empire grey  |
-| `--sw-empire-black` | —     | Empire black |
-| `--sw-empire-white` | —     | Empire white |
-| `--sw-droid-gold`   | —     | Droid gold   |
-| `--sw-droid-orange` | —     | Droid orange |
-| `--sw-droid-rust`   | —     | Droid rust   |
-| `--sw-mandalorian`  | —     | Mandalorian  |
-| `--sw-hyperjump`    | —     | Hyperjump    |
+Values live in `src/css/custom.css`; current RGB triplets:
+
+| Variable            | Value         |
+| ------------------- | ------------- |
+| `--sw-jedi-blue`    | `0 153 255`   |
+| `--sw-jedi-green`   | `0 255 64`    |
+| `--sw-jedi-violet`  | `150 0 255`   |
+| `--sw-jedi-red`     | `255 0 0`     |
+| `--sw-empire-grey`  | `170 175 180` |
+| `--sw-empire-black` | `20 20 20`    |
+| `--sw-empire-white` | `240 240 245` |
+| `--sw-droid-gold`   | `212 175 55`  |
+| `--sw-droid-orange` | `255 127 0`   |
+| `--sw-droid-rust`   | `210 180 140` |
+| `--sw-mandalorian`  | `0 153 255`   |
+| `--sw-hyperjump`    | `220 240 255` |
 
 ## Block Colors (Sheet Manager)
 
-| Section         | Color  | Tailwind class                              |
-| --------------- | ------ | ------------------------------------------- |
-| Attributes      | Blue   | `text-hologram-blue`                        |
-| Skills          | Yellow | `text-cyber-yellow`                         |
-| Advantages      | Red    | `text-rebel-red`                            |
-| Force/Willpower | Blue   | `text-hologram-blue` / `text-imperial-blue` |
+Sheet blocks use the shared `AccentColor` prop (`'primary' | 'secondary'`), mapped in
+`CollapsibleBlock.tsx` to `bg-primary` / `bg-secondary` markers. There are no
+`hologram-blue`/`cyber-yellow`-style utility classes; use the theme tokens above.
 
 ## Tailwind Classes
 

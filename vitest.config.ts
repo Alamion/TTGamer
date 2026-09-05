@@ -5,6 +5,11 @@ export default defineConfig({
     resolve: {
         alias: {
             '@site': path.resolve(__dirname),
+            '@docusaurus/Translate': path.resolve(__dirname, 'tests/stubs/docusaurus.ts'),
+            '@docusaurus/useDocusaurusContext': path.resolve(
+                __dirname,
+                'tests/stubs/docusaurusContext.ts'
+            ),
         },
     },
     test: {

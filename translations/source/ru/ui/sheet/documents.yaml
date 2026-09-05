@@ -1,0 +1,159 @@
+toolbar:
+    export: Экспорт
+    exportTitle: Экспортировать документ в JSON
+    import: Импорт
+    importTitle: Импортировать документы из JSON
+    manage: Управление
+    manageTitle: Управление документами
+    reset: Сбросить
+    resetTitle: Сбросить все данные документа
+    new: Новый
+    newTitle: Создать новый документ
+    importLabel: Импортировать файл документа
+    noDocumentTitle: Документ не загружен
+    noDocumentDescription: Создайте новый документ или загрузите его через управление.
+    resetDescription: Сбросить все данные документа? Это действие нельзя отменить.
+    exportSuccess: Документ «{title}» экспортирован
+    importSuccess: Документ «{title}» импортирован
+    importError: Не удалось импортировать «{filename}»
+conflict:
+    title: Документ уже существует
+    prompt: Замените его, импортируйте копию с новым ID или отмените импорт файла.
+    duplicate: Копировать
+    replace: Заменить
+manager:
+    title: Управление документами
+    empty: Документов пока нет. Создайте первый документ.
+    name: Название
+    type: Тип
+    current: текущий
+    selectAll: Выбрать все документы
+    selectDocument: Выбрать {title}
+    deleteSelected: Удалить выбранные
+    deleteTitle: Удалить документы
+    deleteDescription: Удалить документов — {count}? Это действие нельзя отменить.
+    close: Закрыть
+create:
+    title: Создать документ
+    prompt: Выберите формат документа Star Wars.
+    confirm: Создать
+    cancel: Отмена
+types:
+    character: Персонаж
+    droid: Дроид
+    creature: Существо
+    vehicle: Транспорт
+    fodderGroup: Группа статистов
+views:
+    label: Режим отображения
+    fullSheet: Полный лист
+    brief: Краткий
+    droidSheet: Лист дроида
+    creatureSheet: Лист существа
+    vehicleSheet: Лист транспорта
+    fodderSheet: Группа статистов
+fields:
+    identity: Основные сведения
+    name: Имя
+    concept: Концепция
+    type: Тип
+    player: Игрок
+    nature: Натура
+    adventure: Приключение
+    demeanor: Маска
+    age: Возраст
+    owner: Владелец
+    species: Вид
+    scale: Масштаб
+    size: Размер
+    model: Модель
+    crew: Экипаж
+    length: Длина
+    cargoCapacity: Грузоподъёмность
+    passengers: Пассажиры
+    consumables: Запасы
+    speed: Скорость
+    altitude: Высота
+    sensorRange: Дальность сенсоров
+    navigationComputer: Навигационный компьютер
+    notes: Заметки
+    attributes: Атрибуты
+    abilities: Способности
+    additionalTalents: Дополнительные таланты
+    additionalSkills: Дополнительные навыки
+    additionalKnowledges: Дополнительные знания
+    durability: Прочность
+    maneuverability: Манёвренность
+    communicationsSensors: Связь / Сенсоры
+    hyperdrive: Гипердвигатель
+    shields: Щиты
+    frontShields: Передние щиты
+    rearShields: Задние щиты
+    willpower: Сила воли
+    virtues: Добродетели
+    forcePoints: Очки Силы
+    darkSideResistance: Сопротивление Тёмной стороне
+    forceAndResolve: Сила и стойкость
+    resources: Ресурсы
+    backgrounds: Дополнения
+    meritsAndFlaws: Достоинства и недостатки
+    merits: Достоинства
+    flaws: Недостатки
+    combat: Бой
+    current: Текущее
+    maximum: Максимум
+    health: Здоровье
+    damage: Повреждения
+    members: Участники
+    addMember: Добавить участника
+    removeMember: Удалить участника
+    member: Участник
+    armor: Броня
+    armorType: Тип брони
+    armorClass: Класс
+    dexterity: Ловкость
+    addArmor: Добавить броню
+    attacks: Атаки
+    addAttack: Добавить атаку
+    weapons: Оружие
+    weapon: Оружие
+    ammunition: Боезапас
+    addWeapon: Добавить оружие
+    configuration: Конфигурация
+    systems: Системы
+    movementAndNavigation: Движение и навигация
+    builtInEquipment: Встроенное оборудование
+    addRow: Добавить строку
+    removeRow: Удалить строку
+    label: Название
+    armorRating: Рейтинг брони
+    dexterityModifier: Модификатор ловкости
+    attackType: Тип атаки
+    range: Дальность
+    arc: Сектор обстрела
+    none: Пока пусто
+    healthLevels:
+        bruised: Ушибы
+        hurt: Лёгкие ранения
+        injured: Ранения
+        wounded: Тяжёлые ранения
+        mauled: Искалечен
+        crippled: Обездвижен
+        incapacitated: Недееспособен
+    damageLevels:
+        cosmetic: Косметические
+        light: Лёгкие
+        moderate: Средние
+        heavy: Тяжёлые
+        severe: Критические
+        crippled: Обездвижен
+        wrecked: Уничтожен
+    scaleOptions:
+        deathStar: Звезда Смерти
+        capital: Крупный корабль
+        transport: Транспорт
+        starfighter: Истребитель
+        walker: Шагоход
+        speeder: Спидер
+        character: Персонаж
+        vermin: Мелкое существо

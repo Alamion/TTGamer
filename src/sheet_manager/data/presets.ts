@@ -94,6 +94,7 @@ export const JAX_VORN_PRESET: BaseCharacter = {
     willpower: { current: 5, max: 5 },
     forcePoints: { current: 0, max: 3 },
     darkSideResistance: 6,
+    forcePowerItems: [],
     health: {
         levels: ['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'],
     },

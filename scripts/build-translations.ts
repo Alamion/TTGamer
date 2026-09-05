@@ -70,6 +70,9 @@ async function buildUiDescriptorModule(englishUi: Record<string, unknown>): Prom
 }
 
 function createUiDescriptors(value: unknown, prefix: string[] = []): unknown {
+    if (typeof value === 'string') {
+        return { id: ['ttgamer', 'ui', ...prefix].join('.'), message: value };
+    }
     if (typeof value !== 'object' || value === null || Array.isArray(value)) {
         throw new Error('UI source contains an invalid descriptor at ' + prefix.join('.'));
     }
