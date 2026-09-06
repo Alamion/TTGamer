@@ -10,6 +10,32 @@ library:
     export: Export
     kind: Kind
     unnamedKind: Other
+    defaultBadge: Default
+    modifiedBadge: Modified
+    reset: Reset to original
+    resetConfirmTitle: Reset this default template?
+    resetConfirmDescription: '"{name}" will be restored to its original structure. Assigned documents keep all their data.'
+    deleteRefused: '"{name}" is a default page — it cannot be deleted. Duplicate it instead.'
+    duplicateId: '"{id}" is a built-in page — templates need their own identifier.'
+primitives:
+    groupIdentity: Identity fields
+    groupTrait: Traits
+    groupList: Custom lists
+    groupResource: Resources
+    groupTrack: Condition tracks
+    binding: Data binding
+    boundTo: 'Bound to: {binding}'
+    labelOverride: Label override
+    labelOverridePlaceholder: Same as binding label
+    compact: Compact (brief format)
+    trackLevels: Levels
+    trackLevelName: 'Level {index} name'
+    presets: Preset entries
+    presetLabel: Entry label
+    presetValue: Default value
+    addPreset: Add preset
+    removePreset: Remove preset
+    degraded: 'Data binding "{binding}" is unavailable on this device.'
 editor:
     untitledName: Untitled template
     name: Name
@@ -41,6 +67,9 @@ editor:
     numberStep: Step
     multiline: Multiline
     presentation: Presentation
+    accentColor: Accent color
+    accentPrimary: Primary accent
+    accentSecondary: Secondary accent
     ratingDots: Dots
     ratingBoxes: Boxes
     ratingNumber: Number
@@ -55,12 +84,15 @@ editor:
     save: Save
     cancel: Cancel
     duplicateId: Duplicate identifier "{id}" — identifiers must be unique within their scope.
+    collapse: Collapse section
+    expand: Expand section
     invalidKey: Invalid key "{id}" — use lowercase letters, digits, and dashes.
     limitReached: Limit reached — {limit} {subject} maximum.
     invalidBounds: Minimum cannot exceed maximum.
     emptyName: Template name is required.
     emptyLabel: Every section and field needs a non-empty label.
 fieldTypes:
+    builtIn: Built-in page part
     text: Text
     number: Number
     toggle: Toggle
@@ -70,10 +102,24 @@ fieldTypes:
     reference: Document reference
     table: Table
     fields: Field group
+builtInBlocks:
+    base: Character header
+    attributes: Attributes
+    skills: Skills
+    advantages: Advantages
+    force: Force abilities
+    body: Body & health
+    other: Other
+    brief-document: Brief card
+    star-wars-creature-sheet: Creature page
+    star-wars-vehicle-sheet: Vehicle page
+    star-wars-fodder-sheet: Fodder group page
 page:
     fallbackTitle: Template page unavailable
     fallbackDescription: The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.
     requiredUnfilled: '{count} required field(s) are still empty.'
+    builtInPlaceholder: Page part "{block}" is unavailable on this device.
+    primitiveDegraded: 'Data binding "{binding}" is unavailable on this device.'
 binding:
     attach: Attach catalog
     catalog: Catalog

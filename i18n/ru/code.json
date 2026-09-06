@@ -923,6 +923,48 @@
     "ttgamer.ui.sheet.templates.binding.fillTarget": {
         "message": "Записывать в"
     },
+    "ttgamer.ui.sheet.templates.builtInBlocks.advantages": {
+        "message": "Достоинства"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.attributes": {
+        "message": "Атрибуты"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.base": {
+        "message": "Шапка персонажа"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.body": {
+        "message": "Тело и здоровье"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.brief-document": {
+        "message": "Краткая карточка"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.force": {
+        "message": "Сила"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.other": {
+        "message": "Прочее"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.skills": {
+        "message": "Навыки"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-creature-sheet": {
+        "message": "Страница существа"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-fodder-sheet": {
+        "message": "Страница группы"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-vehicle-sheet": {
+        "message": "Страница техники"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentColor": {
+        "message": "Цвет акцента"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentPrimary": {
+        "message": "Основной акцент"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentSecondary": {
+        "message": "Дополнительный акцент"
+    },
     "ttgamer.ui.sheet.templates.editor.addField": {
         "message": "Добавить поле"
     },
@@ -947,6 +989,9 @@
     "ttgamer.ui.sheet.templates.editor.cancel": {
         "message": "Отмена"
     },
+    "ttgamer.ui.sheet.templates.editor.collapse": {
+        "message": "Свернуть секцию"
+    },
     "ttgamer.ui.sheet.templates.editor.columns": {
         "message": "Колонки"
     },
@@ -967,6 +1012,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.emptyName": {
         "message": "Требуется название шаблона."
+    },
+    "ttgamer.ui.sheet.templates.editor.expand": {
+        "message": "Развернуть секцию"
     },
     "ttgamer.ui.sheet.templates.editor.fieldDescription": {
         "message": "Подсказка (необязательно)"
@@ -1067,6 +1115,9 @@
     "ttgamer.ui.sheet.templates.editor.valueKeyLabel": {
         "message": "Общий ключ значения (одинаковый ключ = одно значение между шаблонами)"
     },
+    "ttgamer.ui.sheet.templates.fieldTypes.builtIn": {
+        "message": "Встроенная часть страницы"
+    },
     "ttgamer.ui.sheet.templates.fieldTypes.fields": {
         "message": "Группа полей"
     },
@@ -1100,11 +1151,20 @@
     "ttgamer.ui.sheet.templates.library.buttonTitle": {
         "message": "Управление шаблонами страниц персонажа"
     },
+    "ttgamer.ui.sheet.templates.library.defaultBadge": {
+        "message": "Стандартный"
+    },
     "ttgamer.ui.sheet.templates.library.delete": {
         "message": "Удалить"
     },
+    "ttgamer.ui.sheet.templates.library.deleteRefused": {
+        "message": "«{name}» — стандартная страница, её нельзя удалить. Вместо этого сделайте копию."
+    },
     "ttgamer.ui.sheet.templates.library.duplicate": {
         "message": "Дублировать"
+    },
+    "ttgamer.ui.sheet.templates.library.duplicateId": {
+        "message": "«{id}» — встроенная страница; шаблонам нужен собственный идентификатор."
     },
     "ttgamer.ui.sheet.templates.library.edit": {
         "message": "Изменить"
@@ -1118,8 +1178,20 @@
     "ttgamer.ui.sheet.templates.library.kind": {
         "message": "Тип"
     },
+    "ttgamer.ui.sheet.templates.library.modifiedBadge": {
+        "message": "Изменён"
+    },
     "ttgamer.ui.sheet.templates.library.new": {
         "message": "Новый шаблон"
+    },
+    "ttgamer.ui.sheet.templates.library.reset": {
+        "message": "Вернуть оригинал"
+    },
+    "ttgamer.ui.sheet.templates.library.resetConfirmDescription": {
+        "message": "«{name}» будет восстановлен в исходном виде. Данные документов сохранятся."
+    },
+    "ttgamer.ui.sheet.templates.library.resetConfirmTitle": {
+        "message": "Вернуть стандартный шаблон к оригиналу?"
     },
     "ttgamer.ui.sheet.templates.library.title": {
         "message": "Шаблоны страниц"
@@ -1127,14 +1199,74 @@
     "ttgamer.ui.sheet.templates.library.unnamedKind": {
         "message": "Другое"
     },
+    "ttgamer.ui.sheet.templates.page.builtInPlaceholder": {
+        "message": "Часть страницы «{block}» недоступна на этом устройстве."
+    },
     "ttgamer.ui.sheet.templates.page.fallbackDescription": {
         "message": "Назначенный шаблон отсутствует. Показана стандартная страница — можно выбрать другую ниже."
     },
     "ttgamer.ui.sheet.templates.page.fallbackTitle": {
         "message": "Страница шаблона недоступна"
     },
+    "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
+        "message": "Привязка «{binding}» недоступна на этом устройстве."
+    },
     "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
         "message": "Не заполнено обязательных полей: {count}."
+    },
+    "ttgamer.ui.sheet.templates.primitives.addPreset": {
+        "message": "Добавить пресет"
+    },
+    "ttgamer.ui.sheet.templates.primitives.binding": {
+        "message": "Привязка к данным"
+    },
+    "ttgamer.ui.sheet.templates.primitives.boundTo": {
+        "message": "Привязано: {binding}"
+    },
+    "ttgamer.ui.sheet.templates.primitives.compact": {
+        "message": "Компактно (формат brief)"
+    },
+    "ttgamer.ui.sheet.templates.primitives.degraded": {
+        "message": "Привязка «{binding}» недоступна на этом устройстве."
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupIdentity": {
+        "message": "Поля личности"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupList": {
+        "message": "Кастомные списки"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupResource": {
+        "message": "Ресурсы"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupTrack": {
+        "message": "Треки состояний"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupTrait": {
+        "message": "Трейты"
+    },
+    "ttgamer.ui.sheet.templates.primitives.labelOverride": {
+        "message": "Своё название"
+    },
+    "ttgamer.ui.sheet.templates.primitives.labelOverridePlaceholder": {
+        "message": "Как у привязки"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presetLabel": {
+        "message": "Название записи"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presets": {
+        "message": "Предустановленные записи"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presetValue": {
+        "message": "Значение по умолчанию"
+    },
+    "ttgamer.ui.sheet.templates.primitives.removePreset": {
+        "message": "Удалить пресет"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLevelName": {
+        "message": "Название уровня {index}"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLevels": {
+        "message": "Уровни"
     },
     "ttgamer.ui.sheet.templates.transfer.conflictPrompt": {
         "message": "Заменить, импортировать копию с новым ID или отменить."

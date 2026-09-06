@@ -890,6 +890,110 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.library.unnamedKind',
                     message: 'Other',
                 },
+                defaultBadge: {
+                    id: 'ttgamer.ui.sheet.templates.library.defaultBadge',
+                    message: 'Default',
+                },
+                modifiedBadge: {
+                    id: 'ttgamer.ui.sheet.templates.library.modifiedBadge',
+                    message: 'Modified',
+                },
+                reset: {
+                    id: 'ttgamer.ui.sheet.templates.library.reset',
+                    message: 'Reset to original',
+                },
+                resetConfirmTitle: {
+                    id: 'ttgamer.ui.sheet.templates.library.resetConfirmTitle',
+                    message: 'Reset this default template?',
+                },
+                resetConfirmDescription: {
+                    id: 'ttgamer.ui.sheet.templates.library.resetConfirmDescription',
+                    message:
+                        '"{name}" will be restored to its original structure. Assigned documents keep all their data.',
+                },
+                deleteRefused: {
+                    id: 'ttgamer.ui.sheet.templates.library.deleteRefused',
+                    message:
+                        '"{name}" is a default page — it cannot be deleted. Duplicate it instead.',
+                },
+                duplicateId: {
+                    id: 'ttgamer.ui.sheet.templates.library.duplicateId',
+                    message: '"{id}" is a built-in page — templates need their own identifier.',
+                },
+            },
+            primitives: {
+                groupIdentity: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.groupIdentity',
+                    message: 'Identity fields',
+                },
+                groupTrait: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.groupTrait',
+                    message: 'Traits',
+                },
+                groupList: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.groupList',
+                    message: 'Custom lists',
+                },
+                groupResource: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.groupResource',
+                    message: 'Resources',
+                },
+                groupTrack: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.groupTrack',
+                    message: 'Condition tracks',
+                },
+                binding: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.binding',
+                    message: 'Data binding',
+                },
+                boundTo: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.boundTo',
+                    message: 'Bound to: {binding}',
+                },
+                labelOverride: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.labelOverride',
+                    message: 'Label override',
+                },
+                labelOverridePlaceholder: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.labelOverridePlaceholder',
+                    message: 'Same as binding label',
+                },
+                compact: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.compact',
+                    message: 'Compact (brief format)',
+                },
+                trackLevels: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.trackLevels',
+                    message: 'Levels',
+                },
+                trackLevelName: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.trackLevelName',
+                    message: 'Level {index} name',
+                },
+                presets: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.presets',
+                    message: 'Preset entries',
+                },
+                presetLabel: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.presetLabel',
+                    message: 'Entry label',
+                },
+                presetValue: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.presetValue',
+                    message: 'Default value',
+                },
+                addPreset: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.addPreset',
+                    message: 'Add preset',
+                },
+                removePreset: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.removePreset',
+                    message: 'Remove preset',
+                },
+                degraded: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.degraded',
+                    message: 'Data binding "{binding}" is unavailable on this device.',
+                },
             },
             editor: {
                 untitledName: {
@@ -1008,6 +1112,18 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.presentation',
                     message: 'Presentation',
                 },
+                accentColor: {
+                    id: 'ttgamer.ui.sheet.templates.editor.accentColor',
+                    message: 'Accent color',
+                },
+                accentPrimary: {
+                    id: 'ttgamer.ui.sheet.templates.editor.accentPrimary',
+                    message: 'Primary accent',
+                },
+                accentSecondary: {
+                    id: 'ttgamer.ui.sheet.templates.editor.accentSecondary',
+                    message: 'Secondary accent',
+                },
                 ratingDots: {
                     id: 'ttgamer.ui.sheet.templates.editor.ratingDots',
                     message: 'Dots',
@@ -1065,6 +1181,14 @@ export const uiMessages = {
                     message:
                         'Duplicate identifier "{id}" — identifiers must be unique within their scope.',
                 },
+                collapse: {
+                    id: 'ttgamer.ui.sheet.templates.editor.collapse',
+                    message: 'Collapse section',
+                },
+                expand: {
+                    id: 'ttgamer.ui.sheet.templates.editor.expand',
+                    message: 'Expand section',
+                },
                 invalidKey: {
                     id: 'ttgamer.ui.sheet.templates.editor.invalidKey',
                     message: 'Invalid key "{id}" — use lowercase letters, digits, and dashes.',
@@ -1087,6 +1211,10 @@ export const uiMessages = {
                 },
             },
             fieldTypes: {
+                builtIn: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.builtIn',
+                    message: 'Built-in page part',
+                },
                 text: {
                     id: 'ttgamer.ui.sheet.templates.fieldTypes.text',
                     message: 'Text',
@@ -1124,6 +1252,52 @@ export const uiMessages = {
                     message: 'Field group',
                 },
             },
+            builtInBlocks: {
+                base: {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.base',
+                    message: 'Character header',
+                },
+                attributes: {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.attributes',
+                    message: 'Attributes',
+                },
+                skills: {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.skills',
+                    message: 'Skills',
+                },
+                advantages: {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.advantages',
+                    message: 'Advantages',
+                },
+                force: {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.force',
+                    message: 'Force abilities',
+                },
+                body: {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.body',
+                    message: 'Body & health',
+                },
+                other: {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.other',
+                    message: 'Other',
+                },
+                'brief-document': {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.brief-document',
+                    message: 'Brief card',
+                },
+                'star-wars-creature-sheet': {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.star-wars-creature-sheet',
+                    message: 'Creature page',
+                },
+                'star-wars-vehicle-sheet': {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.star-wars-vehicle-sheet',
+                    message: 'Vehicle page',
+                },
+                'star-wars-fodder-sheet': {
+                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.star-wars-fodder-sheet',
+                    message: 'Fodder group page',
+                },
+            },
             page: {
                 fallbackTitle: {
                     id: 'ttgamer.ui.sheet.templates.page.fallbackTitle',
@@ -1137,6 +1311,14 @@ export const uiMessages = {
                 requiredUnfilled: {
                     id: 'ttgamer.ui.sheet.templates.page.requiredUnfilled',
                     message: '{count} required field(s) are still empty.',
+                },
+                builtInPlaceholder: {
+                    id: 'ttgamer.ui.sheet.templates.page.builtInPlaceholder',
+                    message: 'Page part "{block}" is unavailable on this device.',
+                },
+                primitiveDegraded: {
+                    id: 'ttgamer.ui.sheet.templates.page.primitiveDegraded',
+                    message: 'Data binding "{binding}" is unavailable on this device.',
                 },
             },
             binding: {

@@ -49,7 +49,7 @@ export function AttributeBlock({ accentColor = 'primary' }: AttributeBlockProps)
     };
 
     const renderAttributeColumn = (group: (typeof starWarsAttributeGroups)[number]) => (
-        <SectionCard title={group.label}>
+        <SectionCard key={group.id} title={group.label}>
             {group.traits.map((attr) => {
                 const trait = character.attributes[attr.key] || {
                     ...DEFAULT_ATTRIBUTE_VALUE,

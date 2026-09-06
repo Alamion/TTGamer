@@ -10,6 +10,32 @@ library:
     export: Экспорт
     kind: Тип
     unnamedKind: Другое
+    defaultBadge: Стандартный
+    modifiedBadge: Изменён
+    reset: Вернуть оригинал
+    resetConfirmTitle: Вернуть стандартный шаблон к оригиналу?
+    resetConfirmDescription: '«{name}» будет восстановлен в исходном виде. Данные документов сохранятся.'
+    deleteRefused: '«{name}» — стандартная страница, её нельзя удалить. Вместо этого сделайте копию.'
+    duplicateId: '«{id}» — встроенная страница; шаблонам нужен собственный идентификатор.'
+primitives:
+    groupIdentity: Поля личности
+    groupTrait: Трейты
+    groupList: Кастомные списки
+    groupResource: Ресурсы
+    groupTrack: Треки состояний
+    binding: Привязка к данным
+    boundTo: 'Привязано: {binding}'
+    labelOverride: Своё название
+    labelOverridePlaceholder: Как у привязки
+    compact: Компактно (формат brief)
+    trackLevels: Уровни
+    trackLevelName: 'Название уровня {index}'
+    presets: Предустановленные записи
+    presetLabel: Название записи
+    presetValue: Значение по умолчанию
+    addPreset: Добавить пресет
+    removePreset: Удалить пресет
+    degraded: 'Привязка «{binding}» недоступна на этом устройстве.'
 editor:
     untitledName: Шаблон без названия
     name: Название
@@ -41,6 +67,9 @@ editor:
     numberStep: Шаг
     multiline: Многострочное
     presentation: Отображение
+    accentColor: Цвет акцента
+    accentPrimary: Основной акцент
+    accentSecondary: Дополнительный акцент
     ratingDots: Точки
     ratingBoxes: Клетки
     ratingNumber: Число
@@ -55,12 +84,15 @@ editor:
     save: Сохранить
     cancel: Отмена
     duplicateId: Дубликат идентификатора «{id}» — идентификаторы должны быть уникальны в своей области.
+    collapse: Свернуть секцию
+    expand: Развернуть секцию
     invalidKey: Неверный ключ «{id}» — используйте строчные буквы, цифры и дефисы.
     limitReached: Достигнут лимит — максимум {limit} ({subject}).
     invalidBounds: Минимум не может превышать максимум.
     emptyName: Требуется название шаблона.
     emptyLabel: Секции и поля требуют непустого названия.
 fieldTypes:
+    builtIn: Встроенная часть страницы
     text: Текст
     number: Число
     toggle: Переключатель
@@ -70,10 +102,24 @@ fieldTypes:
     reference: Ссылка на документ
     table: Таблица
     fields: Группа полей
+builtInBlocks:
+    base: Шапка персонажа
+    attributes: Атрибуты
+    skills: Навыки
+    advantages: Достоинства
+    force: Сила
+    body: Тело и здоровье
+    other: Прочее
+    brief-document: Краткая карточка
+    star-wars-creature-sheet: Страница существа
+    star-wars-vehicle-sheet: Страница техники
+    star-wars-fodder-sheet: Страница группы
 page:
     fallbackTitle: Страница шаблона недоступна
     fallbackDescription: Назначенный шаблон отсутствует. Показана стандартная страница — можно выбрать другую ниже.
     requiredUnfilled: 'Не заполнено обязательных полей: {count}.'
+    builtInPlaceholder: Часть страницы «{block}» недоступна на этом устройстве.
+    primitiveDegraded: 'Привязка «{binding}» недоступна на этом устройстве.'
 binding:
     attach: Привязать каталог
     catalog: Каталог

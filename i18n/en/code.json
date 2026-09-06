@@ -923,6 +923,48 @@
     "ttgamer.ui.sheet.templates.binding.fillTarget": {
         "message": "Fill into"
     },
+    "ttgamer.ui.sheet.templates.builtInBlocks.advantages": {
+        "message": "Advantages"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.attributes": {
+        "message": "Attributes"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.base": {
+        "message": "Character header"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.body": {
+        "message": "Body & health"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.brief-document": {
+        "message": "Brief card"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.force": {
+        "message": "Force abilities"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.other": {
+        "message": "Other"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.skills": {
+        "message": "Skills"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-creature-sheet": {
+        "message": "Creature page"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-fodder-sheet": {
+        "message": "Fodder group page"
+    },
+    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-vehicle-sheet": {
+        "message": "Vehicle page"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentColor": {
+        "message": "Accent color"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentPrimary": {
+        "message": "Primary accent"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentSecondary": {
+        "message": "Secondary accent"
+    },
     "ttgamer.ui.sheet.templates.editor.addField": {
         "message": "Add field"
     },
@@ -947,6 +989,9 @@
     "ttgamer.ui.sheet.templates.editor.cancel": {
         "message": "Cancel"
     },
+    "ttgamer.ui.sheet.templates.editor.collapse": {
+        "message": "Collapse section"
+    },
     "ttgamer.ui.sheet.templates.editor.columns": {
         "message": "Columns"
     },
@@ -967,6 +1012,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.emptyName": {
         "message": "Template name is required."
+    },
+    "ttgamer.ui.sheet.templates.editor.expand": {
+        "message": "Expand section"
     },
     "ttgamer.ui.sheet.templates.editor.fieldDescription": {
         "message": "Help text (optional)"
@@ -1067,6 +1115,9 @@
     "ttgamer.ui.sheet.templates.editor.valueKeyLabel": {
         "message": "Shared value key (fields with the same key share one value)"
     },
+    "ttgamer.ui.sheet.templates.fieldTypes.builtIn": {
+        "message": "Built-in page part"
+    },
     "ttgamer.ui.sheet.templates.fieldTypes.fields": {
         "message": "Field group"
     },
@@ -1100,11 +1151,20 @@
     "ttgamer.ui.sheet.templates.library.buttonTitle": {
         "message": "Manage character page templates"
     },
+    "ttgamer.ui.sheet.templates.library.defaultBadge": {
+        "message": "Default"
+    },
     "ttgamer.ui.sheet.templates.library.delete": {
         "message": "Delete"
     },
+    "ttgamer.ui.sheet.templates.library.deleteRefused": {
+        "message": "\"{name}\" is a default page — it cannot be deleted. Duplicate it instead."
+    },
     "ttgamer.ui.sheet.templates.library.duplicate": {
         "message": "Duplicate"
+    },
+    "ttgamer.ui.sheet.templates.library.duplicateId": {
+        "message": "\"{id}\" is a built-in page — templates need their own identifier."
     },
     "ttgamer.ui.sheet.templates.library.edit": {
         "message": "Edit"
@@ -1118,8 +1178,20 @@
     "ttgamer.ui.sheet.templates.library.kind": {
         "message": "Kind"
     },
+    "ttgamer.ui.sheet.templates.library.modifiedBadge": {
+        "message": "Modified"
+    },
     "ttgamer.ui.sheet.templates.library.new": {
         "message": "New template"
+    },
+    "ttgamer.ui.sheet.templates.library.reset": {
+        "message": "Reset to original"
+    },
+    "ttgamer.ui.sheet.templates.library.resetConfirmDescription": {
+        "message": "\"{name}\" will be restored to its original structure. Assigned documents keep all their data."
+    },
+    "ttgamer.ui.sheet.templates.library.resetConfirmTitle": {
+        "message": "Reset this default template?"
     },
     "ttgamer.ui.sheet.templates.library.title": {
         "message": "Page templates"
@@ -1127,14 +1199,74 @@
     "ttgamer.ui.sheet.templates.library.unnamedKind": {
         "message": "Other"
     },
+    "ttgamer.ui.sheet.templates.page.builtInPlaceholder": {
+        "message": "Page part \"{block}\" is unavailable on this device."
+    },
     "ttgamer.ui.sheet.templates.page.fallbackDescription": {
         "message": "The template assigned to this page is missing. Showing the standard page instead — you can pick another page below."
     },
     "ttgamer.ui.sheet.templates.page.fallbackTitle": {
         "message": "Template page unavailable"
     },
+    "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
+        "message": "Data binding \"{binding}\" is unavailable on this device."
+    },
     "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
         "message": "{count} required field(s) are still empty."
+    },
+    "ttgamer.ui.sheet.templates.primitives.addPreset": {
+        "message": "Add preset"
+    },
+    "ttgamer.ui.sheet.templates.primitives.binding": {
+        "message": "Data binding"
+    },
+    "ttgamer.ui.sheet.templates.primitives.boundTo": {
+        "message": "Bound to: {binding}"
+    },
+    "ttgamer.ui.sheet.templates.primitives.compact": {
+        "message": "Compact (brief format)"
+    },
+    "ttgamer.ui.sheet.templates.primitives.degraded": {
+        "message": "Data binding \"{binding}\" is unavailable on this device."
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupIdentity": {
+        "message": "Identity fields"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupList": {
+        "message": "Custom lists"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupResource": {
+        "message": "Resources"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupTrack": {
+        "message": "Condition tracks"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupTrait": {
+        "message": "Traits"
+    },
+    "ttgamer.ui.sheet.templates.primitives.labelOverride": {
+        "message": "Label override"
+    },
+    "ttgamer.ui.sheet.templates.primitives.labelOverridePlaceholder": {
+        "message": "Same as binding label"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presetLabel": {
+        "message": "Entry label"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presets": {
+        "message": "Preset entries"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presetValue": {
+        "message": "Default value"
+    },
+    "ttgamer.ui.sheet.templates.primitives.removePreset": {
+        "message": "Remove preset"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLevelName": {
+        "message": "Level {index} name"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLevels": {
+        "message": "Levels"
     },
     "ttgamer.ui.sheet.templates.transfer.conflictPrompt": {
         "message": "Replace it, import a duplicate with a new ID, or cancel this file."

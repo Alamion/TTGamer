@@ -26,7 +26,7 @@ export function HealthBlock({ conditionKind = 'health', docsPath }: HealthBlockP
     }));
 
     return (
-        <section className="self-start rounded-lg border bg-bgSurface p-4">
+        <section className="self-start rounded-lg border border-border bg-bgSurface p-4">
             <h3 className="mb-4 flex items-center justify-end gap-2 pr-3 text-right text-sm font-semibold uppercase tracking-wider text-textSecondary">
                 {title}
                 {docsPath && (

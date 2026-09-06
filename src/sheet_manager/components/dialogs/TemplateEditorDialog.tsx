@@ -10,6 +10,7 @@ import {
     addBlock,
     addField,
     addOption,
+    addPrimitive,
     addSection,
     attachCatalog,
     changeFieldType,
@@ -37,6 +38,7 @@ import {
 } from './template-editor/draft';
 import type { FieldEditorCallbacks } from './template-editor/FieldEditor';
 import { SectionEditor } from './template-editor/SectionEditor';
+import { isDefaultTemplateId } from './TemplateLibraryDialog';
 
 const editor = uiMessages.sheet.templates.editor;
 const library = uiMessages.sheet.templates.library;
@@ -55,10 +57,13 @@ export interface TemplateEditorDialogProps {
 }
 
 export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProps) {
-    const { saveTemplate } = useTemplateStore();
+    const { saveTemplate, setDefaultOverride } = useTemplateStore();
     const t = useCallback((descriptor: { message: string }) => translate(descriptor), []);
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
+
+    // Feature 004: editing a default template targets its override, never the custom library.
+    const editingDefault = base.kind === 'edit' && isDefaultTemplateId(base.template.id);
 
     const [draft, setDraft] = useState<EditorDraft>(() => {
         if (base.kind === 'empty') return createEmptyDraft('character');
@@ -89,7 +94,13 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
     const handleSave = () => {
         try {
             const parsed = CustomTemplateSchema.parse(draft);
-            saveTemplate(parsed);
+            if (editingDefault) {
+                // Draft-until-save (FR-9): the override lands only on explicit save; assigned
+                // documents then render the saved version (live propagation, clarification Q2).
+                setDefaultOverride(parsed.id, parsed);
+            } else {
+                saveTemplate(parsed);
+            }
             onClose();
         } catch (error) {
             const fallback =
@@ -133,7 +144,7 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
         >
             <Dialog.Portal container={modalRoot ?? undefined}>
                 <Dialog.Overlay className="fixed inset-0 z-[9998] bg-black/50" />
-                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] flex max-h-[90vh] w-[min(52rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-border bg-bgSurface shadow-xl focus:outline-none">
+                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] flex h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[110rem] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-border bg-bgSurface shadow-xl focus:outline-none">
                     <Dialog.Title className="border-b border-border p-4 text-lg font-semibold text-textPrimary">
                         {draft.name.trim().length > 0 ? draft.name : t(editor.untitledName)}
                     </Dialog.Title>
@@ -195,6 +206,10 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
                                         setDraft((current) => removeSection(current, section.id)),
                                     onAddBlock: (type) =>
                                         setDraft((current) => addBlock(current, section.id, type)),
+                                    onAddPrimitive: (bindingKey) =>
+                                        setDraft((current) =>
+                                            addPrimitive(current, section.id, bindingKey)
+                                        ),
                                     blockCallbacks: (blockId) => ({
                                         onUpdate: (updates) =>
                                             setDraft((current) =>

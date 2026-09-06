@@ -7,6 +7,8 @@ import type { DocumentViewId } from '../../../types/document';
 export interface TemplatePageOption {
     id: string;
     name: string;
+    /** Feature 004: subtle "default" badge for default templates (clarification Q5). */
+    isDefault?: boolean;
 }
 
 export interface ViewModeSelectProps {
@@ -37,6 +39,11 @@ export function ViewModeSelect({
     const hasChoices = definition.views.length > 1 || templateOptions.length > 0;
     if (!hasChoices) return null;
 
+    // FR-13: exactly one entry per page — view ids are default templates; skip custom-template
+    // options whose id collides with a registered view id (they resolve through the same page).
+    const viewIds = new Set(definition.views.map(({ id }) => id));
+    const extraTemplates = templateOptions.filter((option) => !viewIds.has(option.id));
+
     return (
         <label className="flex items-center gap-2 text-sm text-textSecondary">
             {translate(uiMessages.sheet.documents.views.label)}
@@ -58,7 +65,7 @@ export function ViewModeSelect({
                         {translate(candidate.label)}
                     </option>
                 ))}
-                {templateOptions.map((template) => (
+                {extraTemplates.map((template) => (
                     <option key={template.id} value={`${TEMPLATE_PREFIX}${template.id}`}>
                         {template.name}
                     </option>

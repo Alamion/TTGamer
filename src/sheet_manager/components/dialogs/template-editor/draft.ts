@@ -1,7 +1,12 @@
 import { generateId } from '../../../../shared/utils/random';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
-import type { CustomTemplate } from '../../../types/template';
-import type { TemplateBlock, TemplateField } from '../../../types/template';
+import type {
+    CustomTemplate,
+    PrimitivePreset,
+    PrimitiveTrackOverride,
+    TemplateBlock,
+    TemplateField,
+} from '../../../types/template';
 import { TEMPLATE_LIMITS, TemplateFieldSchema } from '../../../types/template';
 
 /** Type-safe structural updates for a block (type/id/fields are managed separately). */
@@ -10,6 +15,12 @@ export type BlockUpdates = {
     columns?: number;
     minRows?: number;
     maxRows?: number;
+    accentColor?: 'primary' | 'secondary';
+    bindingKey?: string;
+    label?: string;
+    compact?: boolean;
+    track?: PrimitiveTrackOverride;
+    presets?: PrimitivePreset[];
 };
 
 /** Kebab-safe identifier for a new draft node; the prefix guarantees a letter start. */
@@ -57,6 +68,7 @@ export function createEmptyDraft(documentKind: string): EditorDraft {
             {
                 id: newId('sec'),
                 title: 'New section',
+                presentation: 'card',
                 blocks: [newFieldsBlock()],
             },
         ],
@@ -139,7 +151,11 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
             }
 
             const items: readonly TemplateField[] =
-                block.type === 'fields' ? block.fields : block.columns;
+                block.type === 'fields'
+                    ? block.fields
+                    : block.type === 'table'
+                      ? block.columns
+                      : [];
             const seenFieldIds = new Set<string>();
             for (const field of items) {
                 if (seenFieldIds.has(field.id)) {
@@ -205,7 +221,11 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
                 issues.push({ message: messages.invalidBounds });
             }
             const items: readonly TemplateField[] =
-                block.type === 'fields' ? block.fields : block.columns;
+                block.type === 'fields'
+                    ? block.fields
+                    : block.type === 'table'
+                      ? block.columns
+                      : [];
             for (const field of items) {
                 if (
                     (field.type === 'number' ||
@@ -240,6 +260,7 @@ export function addSection(draft: EditorDraft): EditorDraft {
             {
                 id: newId('sec'),
                 title: 'New section',
+                presentation: 'card',
                 blocks: [newFieldsBlock()],
             },
         ],
@@ -271,22 +292,96 @@ export function renameSection(draft: EditorDraft, sectionId: string, title: stri
 export function addBlock(
     draft: EditorDraft,
     sectionId: string,
-    type: 'fields' | 'table'
+    type: 'fields' | 'table' | { type: 'built-in'; blockId: string; label: string }
 ): EditorDraft {
     const block: TemplateBlock =
         type === 'fields'
             ? newFieldsBlock()
-            : {
-                  id: newId('blk'),
-                  type: 'table',
-                  minRows: 0,
-                  maxRows: 100,
-                  columns: [newTextField()],
-              };
+            : type === 'table'
+              ? {
+                    id: newId('blk'),
+                    type: 'table',
+                    minRows: 0,
+                    maxRows: 100,
+                    columns: [newTextField()],
+                }
+              : {
+                    id: newId('blk'),
+                    type: 'built-in',
+                    blockId: type.blockId,
+                };
     return {
         ...draft,
         sections: draft.sections.map((section) =>
             section.id === sectionId ? { ...section, blocks: [...section.blocks, block] } : section
+        ),
+    };
+}
+
+/** Adds a document-bound primitive placement for the given binding key (feature 005). */
+export function addPrimitive(
+    draft: EditorDraft,
+    sectionId: string,
+    bindingKey: string,
+    defaults?: { label?: string; compact?: boolean }
+): EditorDraft {
+    const block: TemplateBlock = {
+        id: newId('blk'),
+        type: 'primitive',
+        bindingKey,
+        compact: defaults?.compact ?? false,
+        ...(defaults?.label ? { label: defaults.label } : {}),
+    };
+    return {
+        ...draft,
+        sections: draft.sections.map((section) =>
+            section.id === sectionId ? { ...section, blocks: [...section.blocks, block] } : section
+        ),
+    };
+}
+
+export function setPrimitivePresets(
+    draft: EditorDraft,
+    sectionId: string,
+    blockId: string,
+    presets: PrimitivePreset[]
+): EditorDraft {
+    return {
+        ...draft,
+        sections: draft.sections.map((section) =>
+            section.id === sectionId
+                ? {
+                      ...section,
+                      blocks: section.blocks.map((block) =>
+                          block.id === blockId && block.type === 'primitive'
+                              ? { ...block, presets }
+                              : block
+                      ),
+                  }
+                : section
+        ),
+    };
+}
+
+export function setPrimitiveTrack(
+    draft: EditorDraft,
+    sectionId: string,
+    blockId: string,
+    track: PrimitiveTrackOverride | undefined
+): EditorDraft {
+    return {
+        ...draft,
+        sections: draft.sections.map((section) =>
+            section.id === sectionId
+                ? {
+                      ...section,
+                      blocks: section.blocks.map((block) =>
+                          block.id === blockId && block.type === 'primitive'
+                              ? { ...block, track }
+                              : block
+                      ),
+                  }
+                : section
         ),
     };
 }
@@ -351,7 +446,8 @@ function mapBlockItems(
             blocks: section.blocks.map((block) => {
                 if (block.id !== blockId) return block;
                 if (block.type === 'fields') return { ...block, fields: map([...block.fields]) };
-                return { ...block, columns: map([...block.columns]) };
+                if (block.type === 'table') return { ...block, columns: map([...block.columns]) };
+                return block;
             }),
         })),
     };
@@ -407,6 +503,7 @@ function retypeField(field: TemplateField, type: TemplateField['type']): Templat
         id: field.id,
         label: field.label,
         required: field.required,
+        compact: false,
         ...(field.description !== undefined ? { description: field.description } : {}),
         ...(field.valueKey !== undefined ? { valueKey: field.valueKey } : {}),
     };

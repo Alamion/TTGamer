@@ -14,6 +14,7 @@ import type {
     SheetBlockPlacement,
     SystemPlugin,
 } from '../types';
+import { starWarsWodDefaultTemplates } from './defaultTemplates';
 import {
     createDefaultCreatureData,
     createDefaultDroidData,
@@ -181,6 +182,7 @@ export const starWarsWodSystem: SystemPlugin = {
         starWarsVehicleDefinition,
         starWarsFodderDefinition,
     ],
+    defaultTemplates: starWarsWodDefaultTemplates,
 };
 
 export * from './profile';

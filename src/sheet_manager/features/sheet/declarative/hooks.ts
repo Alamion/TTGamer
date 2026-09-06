@@ -1,8 +1,9 @@
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { useCharacterContext } from '../../../context/CharacterContext';
 import { useDocumentStore } from '../../../store/documentStore';
+import { resolveDocumentBinding } from '../../../systems/star-wars-wod/documentBindings';
 import type { CustomTemplate, TemplateField } from '../../../types/template';
 import { fieldValueKey } from '../../../types/template';
 import { collectTemplateFields } from '../../../types/template';
@@ -69,7 +70,13 @@ function readRows(value: unknown): Record<string, Record<string, unknown>> {
 }
 
 export function useTemplatePage(template: CustomTemplate | undefined): UseTemplatePageResult {
-    const { currentDocumentId, documents, updateTemplateValues } = useDocumentStore();
+    const {
+        currentDocumentId,
+        documents,
+        updateTemplateValues,
+        updateDocumentData,
+        updateDocumentMetadata,
+    } = useDocumentStore();
     const { readOnly } = useCharacterContext();
     const locale = useDocusaurusContext().i18n.currentLocale;
 
@@ -157,6 +164,75 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
                 })),
         [documents, document?.id]
     );
+
+    // Preset seeding (feature 005, FR-16): copy-on-assign, once per document×template.
+    // Presets land as ordinary custom-list entries; removal is final (marker prevents re-seed);
+    // later author edits to presets never propagate to already-seeded documents.
+    useEffect(() => {
+        if (!template || !currentDocumentId || readOnly) return;
+        if (document?.metadata.seededPresets?.includes(template.id)) return;
+
+        const pending: Array<{
+            listId: 'customTalents' | 'customSkills' | 'customKnowledges';
+            presets: NonNullable<
+                CustomTemplate['sections'][number]['blocks'][number] extends never
+                    ? never
+                    : Array<{ key: string; label: string; value?: number }>
+            >;
+        }> = [];
+        for (const section of template.sections) {
+            for (const block of section.blocks) {
+                if (block.type !== 'primitive' || !block.presets?.length) continue;
+                const descriptor = resolveDocumentBinding(
+                    template.systemId,
+                    template.documentKind,
+                    block.bindingKey
+                );
+                if (descriptor?.kind !== 'list') continue;
+                pending.push({ listId: descriptor.listId, presets: block.presets });
+            }
+        }
+        if (pending.length === 0) {
+            // Nothing to seed, but still record the marker so future preset edits don't
+            // retroactively apply to this document (copy-on-assign semantics).
+            updateDocumentMetadata(currentDocumentId, {
+                seededPresets: [...(document?.metadata.seededPresets ?? []), template.id],
+            });
+            return;
+        }
+
+        const existing = new Map(pending.map(({ listId }) => [listId, false]));
+        void existing;
+        updateDocumentData(currentDocumentId, (raw) => {
+            const next = { ...(raw as Record<string, unknown>) };
+            for (const { listId, presets } of pending) {
+                const list = Array.isArray(next[listId])
+                    ? (next[listId] as Array<Record<string, unknown>>)
+                    : [];
+                const known = new Set(list.map((item) => String(item.id ?? '')));
+                const seeded = presets
+                    .filter((preset) => !known.has(`preset-${template.id}-${preset.key}`))
+                    .map((preset) => ({
+                        id: `preset-${template.id}-${preset.key}`,
+                        label: preset.label,
+                        value: preset.value ?? 0,
+                    }));
+                next[listId] = [...list, ...seeded];
+            }
+            return next;
+        });
+        updateDocumentMetadata(currentDocumentId, {
+            seededPresets: [...(document?.metadata.seededPresets ?? []), template.id],
+        });
+    }, [
+        template,
+        currentDocumentId,
+        readOnly,
+        document?.metadata.seededPresets,
+        updateDocumentData,
+        updateDocumentMetadata,
+        document,
+    ]);
 
     const resolveCatalogField = useCallback(
         (field: TemplateField): CatalogFieldRuntime | undefined => {

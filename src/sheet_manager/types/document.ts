@@ -18,6 +18,8 @@ export const DocumentMetadataSchema = z.object({
     templateId: identifierSchema.optional(),
     preferredViewId: DocumentViewIdSchema.optional(),
     tags: z.array(z.string().min(1).max(64)).max(50).default([]),
+    /** Feature 005: template ids whose preset entries were seeded into this document (FR-16). */
+    seededPresets: z.array(z.string()).optional(),
 });
 
 const DocumentEnvelopeBaseSchema = z.object({

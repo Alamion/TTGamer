@@ -4,7 +4,12 @@ import { AlertTriangle } from 'lucide-react';
 
 import { useDocumentStore } from '../../store/documentStore';
 import { useTemplateStore } from '../../store/templateStore';
-import { resolveCustomTemplate, resolveDocumentView, systemRegistry } from '../../systems';
+import {
+    resolveCustomTemplate,
+    resolveDocumentView,
+    resolveEffectiveTemplate,
+    systemRegistry,
+} from '../../systems';
 import { DeclarativeSheetView } from './declarative/DeclarativeSheetView';
 import { getBuiltInSheetBlock } from './registry/builtInBlockRegistry';
 import { SheetWorkspace } from './shell/SheetWorkspace';
@@ -32,7 +37,7 @@ function FallbackNotice() {
 
 function CurrentDocumentSheet() {
     const { currentDocumentId, documents } = useDocumentStore();
-    const { templates } = useTemplateStore();
+    const { templates, defaultOverrides } = useTemplateStore();
     const document = documents.find(({ id }) => id === currentDocumentId);
     if (!document) return null;
     const definition = systemRegistry.getDocumentDefinition(
@@ -45,6 +50,28 @@ function CurrentDocumentSheet() {
 
     if (resolved && !('reason' in resolved)) {
         return <DeclarativeSheetView template={resolved} />;
+    }
+
+    // Feature 004: the selected view IS a default template — render it declaratively with its
+    // persisted override applied (no migration, no special-case mapping).
+    const viewId =
+        document.metadata.preferredViewId ??
+        resolveDocumentView(definition, document.metadata.preferredViewId)?.id;
+    if (viewId) {
+        const effective = resolveEffectiveTemplate(
+            viewId,
+            { templates, defaultOverrides },
+            document.systemId,
+            document.kind
+        );
+        if (effective) {
+            return (
+                <>
+                    {resolved && 'reason' in resolved && <FallbackNotice />}
+                    <DeclarativeSheetView template={effective.template} />
+                </>
+            );
+        }
     }
 
     const view = resolveDocumentView(definition, document.metadata.preferredViewId);

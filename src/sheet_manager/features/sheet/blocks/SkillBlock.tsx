@@ -133,7 +133,7 @@ export function SkillBlock({ accentColor = 'secondary' }: SkillBlockProps) {
         const category = group.id as SkillCategory;
         const customList = getCustomList(category);
         return (
-            <SectionCard title={group.label}>
+            <SectionCard key={group.id} title={group.label}>
                 {group.traits.map((skill) => {
                     const trait = character.skills[skill.key] || { ...DEFAULT_SKILL_VALUE };
                     return (

@@ -138,3 +138,47 @@ JSON import/export. Spec: `specs/003-custom-sheet-templates/spec.md`.
 | T-3  | ✅     | **Declarative page rendering (US2)** | Field controls, `DeclarativeSheetView` (fields/table blocks), page routing with stale-template fallback, merged page selector.                               | High     | L      | High   | T-1, T-2     |
 | T-4  | ✅     | **Catalog bindings (US3)**           | Registry of bindable catalogs with closed fillable-detail sets; binding editor; copy-on-select runtime; unavailable-catalog degradation.                     | High     | L      | High   | T-2, T-3     |
 | T-05 | ✅     | **Template import/export (US4)**     | `ttgamer-template` v1 file wrapper, export naming, validation-first import with Replace/Duplicate/Cancel and degradation report.                             | Medium   | M      | Medium | T-2, T-4     |
+
+---
+
+### Epic: Built-in Views as Default Templates (feature 004)
+
+Every registered view is a default template (identity = view id, no migration); templates can
+embed ready-made interactive blocks; defaults are editable via persisted overrides, resettable to
+the registry-defined pristine original, undeletable, badged "default" + "modified".
+Spec: `specs/004-default-view-templates/spec.md`.
+
+| #   | Status | Task                              | Description                                                                                                             | Priority | Effort | Impact | Dependencies |
+| --- | ------ | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------ | ------------ |
+| D-1 | ✅     | **Built-in block placements**     | `built-in` TemplateBlock variant; per-system availability API; renderer parity + unknown-block placeholder degradation. | High     | M      | High   | T-3          |
+| D-2 | ✅     | **Default templates + overrides** | `viewToDefaultTemplate` derivation; store v2 `defaultOverrides`; edit→save/reset/duplicate flows; unified selector.     | High     | M      | High   | D-1          |
+| D-3 | ✅     | **Seamless transition**           | Legacy view ids resolve as ordinary pages (incl. `npc-card` alias); orphan semantics cover removed ready-made blocks.   | High     | S      | High   | D-2          |
+
+**Next spec (deferred)**: views must be **represented through templates**, not embedded as
+opaque template elements — BodyBlock, AdvantagesBlock, the specialized document pages, and even
+CharacterViewer are to be cut out and re-expressed as document-bound declarative primitives
+(trait groups, condition tracks, document lists, …), guaranteeing a user can compose the exact
+same sheet. Interim: ready-made block placements remain with proper per-block labels.
+Recorded from user review of feature 004 (2026-09-05).
+
+---
+
+### Epic: Template Primitive Composition (feature 005)
+
+Templates compose pages from **document-bound primitives** (trait rows, custom lists with
+preset entries, resources, condition tracks, identity fields) bound through a closed per-system
+binding registry (`systems/star-wars-wod/documentBindings.ts`). Default templates are explicit
+primitive-composed definitions (`systems/star-wars-wod/defaultTemplates.ts`). Spec:
+`specs/005-template-primitive-composition/spec.md`.
+
+| #   | Status | Task                              | Description                                                                                                           | Priority | Effort | Impact | Dependencies |
+| --- | ------ | --------------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------ | ------------ |
+| P-1 | ✅     | **Binding registry + primitives** | Closed binding key set (traits/lists/resources/tracks/identity fields); `primitive` block variant; renderer + editor. | High     | L      | High   | D-1          |
+| P-2 | ✅     | **Preset seeding**                | Copy-on-assign once per document×template with `metadata.seededPresets` marker; removal final; no retro-propagation.  | High     | M      | High   | P-1          |
+| P-3 | ✅     | **Defaults rebuilt (hybrid)**     | Full/droid defaults: primitives + retained placements for Force/advantages/body; brief fully compact primitives.      | High     | M      | High   | P-1          |
+| P-4 | ✅     | **Legacy demotion**               | Editor no longer offers placements; legacy render path retained for pre-005 templates + hybrid parts.                 | Medium   | S      | Medium | P-3          |
+
+**Cleanup gate (explicit, user-confirmed)**: once parity of the primitive-built pages is
+confirmed, delete the legacy block components (`features/sheet/blocks/*`), the `built-in`
+placement variant, and the retained placements inside hybrid defaults. Phase-two primitives
+(Force powers list, merits/flaws, equipment-with-catalogs) replace those placements first.

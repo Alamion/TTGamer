@@ -59,6 +59,11 @@ export interface SystemPlugin {
     id: SystemId;
     label: string;
     documents: readonly DocumentDefinition[];
+    /**
+     * Feature 005: explicit primitive-composed default templates for this setup's views.
+     * Identity = view id; absent entries fall back to legacy view derivation.
+     */
+    defaultTemplates?: readonly CustomTemplate[];
 }
 
 export interface ParsedRegisteredDocument<TData = unknown> {

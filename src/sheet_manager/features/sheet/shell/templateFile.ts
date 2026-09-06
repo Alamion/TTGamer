@@ -39,6 +39,7 @@ function labelsForFields(template: CustomTemplate, fieldIds: readonly string[]):
     const labels: string[] = [];
     for (const section of template.sections) {
         for (const block of section.blocks) {
+            if (block.type !== 'fields' && block.type !== 'table') continue;
             const fields = block.type === 'fields' ? block.fields : block.columns;
             for (const field of fields) {
                 if (fieldIds.includes(field.id)) labels.push(field.label);
@@ -76,6 +77,7 @@ function stripUnavailableBindings(template: CustomTemplate): {
                         }),
                     };
                 }
+                if (block.type !== 'table') return block;
                 return {
                     ...block,
                     columns: block.columns.map((field) => {

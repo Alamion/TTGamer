@@ -31,6 +31,11 @@ export type {
     SheetBlockPlacement,
     SystemPlugin,
 } from './types';
-export type { ResolvedCustomTemplate } from './view';
-export { resolveCustomTemplate, resolveDocumentView } from './view';
+export type { EffectiveTemplate, ResolvedCustomTemplate } from './view';
+export {
+    resolveCustomTemplate,
+    resolveDocumentView,
+    resolveEffectiveTemplate,
+    viewToDefaultTemplate,
+} from './view';
 export * from './wod-like';

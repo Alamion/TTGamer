@@ -6,13 +6,22 @@ import { createElement } from 'react';
 
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
+import { resolveDataBindingByCoordinate } from '../../../systems/star-wars-wod/documentBindings';
+import type { SheetAccentColor } from '../../../systems/types';
 import type { CustomTemplate, TemplateBlock, TemplateField } from '../../../types/template';
 import { fieldValueKey, tableValueKey } from '../../../types/template';
 import { coerceStoredValue } from '../../../types/templateValues';
+import {
+    blockAccentColor,
+    getBuiltInSheetBlock,
+    isBuiltInBlockAvailable,
+} from '../registry/builtInBlockRegistry';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import { useTemplatePage, type UseTemplatePageResult } from './hooks';
+import { PrimitiveBlockView, PrimitiveBody } from './primitives';
 
 const editor = uiMessages.sheet.templates.editor;
+const page = uiMessages.sheet.templates.page;
 const binding = uiMessages.sheet.templates.binding;
 
 const columnClasses: Record<number, string> = {
@@ -21,6 +30,43 @@ const columnClasses: Record<number, string> = {
     3: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3',
     4: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4',
 };
+
+/**
+ * Ready-made interactive page part (FR-3): renders the exact component the built-in view path
+ * uses, so parity is by construction. Ready-made blocks read document data directly — never the
+ * template value bag (FR-5: two persistence mechanisms, one page).
+ */
+function BuiltInBlockView({
+    placement,
+    accentColor,
+    systemId,
+    documentKind,
+}: {
+    placement: Extract<TemplateBlock, { type: 'built-in' }>;
+    accentColor: SheetAccentColor;
+    systemId: CustomTemplate['systemId'];
+    documentKind: CustomTemplate['documentKind'];
+}) {
+    const Block = getBuiltInSheetBlock(placement.blockId);
+    // FR-4: degradation covers unknown ids AND blocks foreign to this document kind — a fodder
+    // page part must never receive character data (prevents cross-kind schema crashes).
+    const available =
+        Block !== undefined && isBuiltInBlockAvailable(systemId, placement.blockId, documentKind);
+
+    if (!available) {
+        return (
+            <div
+                role="alert"
+                className="rounded-lg border border-dashed border-border bg-bgSurface p-4 text-sm text-textSecondary"
+            >
+                {translate(page.builtInPlaceholder, { block: placement.blockId })}
+            </div>
+        );
+    }
+    // createElement avoids the react-compiler "component created during render" lint rule:
+    // Block is a registry lookup, not an inline component definition.
+    return createElement(Block!, { accentColor });
+}
 
 function FieldCell({
     field,
@@ -31,6 +77,33 @@ function FieldCell({
     pageApi: UseTemplatePageResult;
     value: unknown;
 }) {
+    // Feature 005 review: a field whose shared value key matches a document data address
+    // operates on the document data — the interface is identical to custom (value-bag) fields.
+    const bridged = resolveDataBindingByCoordinate(
+        pageApi.template!.systemId,
+        pageApi.template!.documentKind,
+        fieldValueKey(field)
+    );
+    if (bridged) {
+        return (
+            <div className="grid gap-1">
+                <PrimitiveBody
+                    block={{
+                        id: field.id,
+                        type: 'primitive',
+                        bindingKey: bridged.key,
+                        label: field.label,
+                        compact: field.compact,
+                    }}
+                    descriptor={bridged}
+                />
+                {field.description && (
+                    <span className="text-xs text-textSecondary">{field.description}</span>
+                )}
+            </div>
+        );
+    }
+
     const control = templateFieldControl(field.type);
     const runtime =
         field.type === 'select' && field.binding ? pageApi.resolveCatalogField(field) : undefined;
@@ -210,17 +283,44 @@ function TemplateSectionView({
     pageApi: UseTemplatePageResult;
     section: CustomTemplate['sections'][number];
 }) {
-    return (
-        <div className="space-y-4">
-            {section.blocks.map((block) =>
-                block.type === 'fields' ? (
-                    <FieldsBlock key={block.id} block={block} pageApi={pageApi} />
-                ) : (
-                    <TableBlock key={block.id} block={block} pageApi={pageApi} />
-                )
-            )}
-        </div>
-    );
+    return <div className="space-y-4">{renderSectionBlocks(pageApi, section)}</div>;
+}
+
+function renderSectionBlocks(
+    pageApi: UseTemplatePageResult,
+    section: CustomTemplate['sections'][number]
+) {
+    const { systemId, documentKind } = pageApi.template!;
+    return section.blocks.map((block, index) => {
+        if (block.type === 'built-in') {
+            // Accent is automatic: primary → secondary by block parity (user review 2026-09-05).
+            return (
+                <BuiltInBlockView
+                    key={block.id}
+                    placement={block}
+                    accentColor={blockAccentColor(index)}
+                    systemId={systemId}
+                    documentKind={documentKind}
+                />
+            );
+        }
+        if (block.type === 'primitive') {
+            return (
+                <PrimitiveBlockView
+                    key={block.id}
+                    block={block}
+                    accentColor={blockAccentColor(index)}
+                    systemId={systemId}
+                    documentKind={documentKind}
+                />
+            );
+        }
+        return block.type === 'fields' ? (
+            <FieldsBlock key={block.id} block={block} pageApi={pageApi} />
+        ) : block.type === 'table' ? (
+            <TableBlock key={block.id} block={block} pageApi={pageApi} />
+        ) : null;
+    });
 }
 
 /** Counts unfilled required fields for the FR-4a soft-advisory note. */
@@ -231,6 +331,7 @@ export function countUnfilledRequired(
     let count = 0;
     for (const section of template.sections) {
         for (const block of section.blocks) {
+            if (block.type !== 'fields' && block.type !== 'table') continue;
             const items: readonly TemplateField[] =
                 block.type === 'fields' ? block.fields : block.columns;
             for (const field of items) {
@@ -250,18 +351,26 @@ export function DeclarativeSheetView({ template }: { template: CustomTemplate })
 
     return (
         <div className="mx-auto max-w-7xl space-y-6 p-4 lg:p-6">
-            {template.sections.map((section, sectionIndex) => (
-                <CollapsibleBlock
-                    key={section.id}
-                    title={section.title}
-                    storageKey={`template-${template.id}-${section.id}`}
-                    accentColor={sectionIndex % 2 === 0 ? 'primary' : 'secondary'}
-                >
-                    <SectionCard>
-                        <TemplateSectionView pageApi={pageApi} section={section} />
-                    </SectionCard>
-                </CollapsibleBlock>
-            ))}
+            {template.sections.map((section, sectionIndex) =>
+                // 'plain' sections (built-in-derived pages) stack blocks directly — the exact
+                // presentation of the original view (space-y-8), no extra collapsible chrome.
+                section.presentation === 'plain' ? (
+                    <div key={section.id} className="space-y-8">
+                        {renderSectionBlocks(pageApi, section)}
+                    </div>
+                ) : (
+                    <CollapsibleBlock
+                        key={section.id}
+                        title={section.title}
+                        storageKey={`template-${template.id}-${section.id}`}
+                        accentColor={sectionIndex % 2 === 0 ? 'primary' : 'secondary'}
+                    >
+                        <SectionCard>
+                            <TemplateSectionView pageApi={pageApi} section={section} />
+                        </SectionCard>
+                    </CollapsibleBlock>
+                )
+            )}
         </div>
     );
 }

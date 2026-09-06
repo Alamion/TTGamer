@@ -113,7 +113,7 @@ export interface CustomTraitCollection {
     onChange: (items: CustomSkill[]) => void;
 }
 
-function CustomTraitsEditor({ items, onChange }: CustomTraitCollection) {
+export function CustomTraitsEditor({ items, onChange }: CustomTraitCollection) {
     return (
         <CustomTraitList
             items={items}

@@ -67,7 +67,11 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
         activeTemplate && !('reason' in activeTemplate) ? activeTemplate.id : undefined;
     const templateOptions = currentDocument
         ? templates
-              .filter((template) => template.documentKind === currentDocument.kind)
+              .filter(
+                  (template) =>
+                      template.documentKind === currentDocument.kind &&
+                      template.systemId === currentDocument.systemId
+              )
               .map((template) => ({ id: template.id, name: template.name }))
         : [];
     const [resetDialogOpen, setResetDialogOpen] = useState(false);

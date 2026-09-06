@@ -8,6 +8,7 @@ export const TEMPLATE_LIMITS = {
     fieldsPerBlock: 60,
     optionsPerField: 100,
     fillMappingsPerField: 100,
+    presetsPerPrimitive: 30,
 } as const;
 
 const templateIdentifierSchema = z
@@ -25,8 +26,12 @@ const fieldBaseShape = {
      * Storage coordinate in the document's shared value bag (clarification D1/D2).
      * Defaults to the field id at render time; fields in different templates with an equal
      * valueKey read and write the same document-scoped value.
+     * Feature 005 review: when the coordinate matches a document data address (binding
+     * registry), the field operates on the document data — uniform interface for both worlds.
      */
     valueKey: templateIdentifierSchema.optional(),
+    /** Brief-format rendering when the field is bridged to document data (feature 005). */
+    compact: z.boolean().default(false),
 };
 
 const boundedNumberShape = {
@@ -177,13 +182,81 @@ const TableBlockSchema = z
         path: ['columns'],
     });
 
-export const TemplateBlockSchema = z.union([FieldsBlockSchema, TableBlockSchema]);
+/**
+ * Ready-made interactive page part placement (feature 004): references a registered built-in
+ * block by id. `blockId` availability is a runtime registry query (system- AND kind-scoped),
+ * never validated inside this system-agnostic schema — render degrades unavailable ids to a
+ * placeholder. Accent color is automatic (parity), not stored per placement.
+ */
+export const BuiltInBlockPlacementSchema = z.object({
+    id: templateIdentifierSchema,
+    type: z.literal('built-in'),
+    blockId: z.string().min(1).max(80),
+});
+
+export type BuiltInBlockPlacement = z.infer<typeof BuiltInBlockPlacementSchema>;
+
+/**
+ * Author-defined starting entries for a custom-list primitive (FR-16). Seeded into the bound
+ * list as ordinary entries with deterministic ids (`preset-<templateId>-<key>`) on first use.
+ */
+export const PrimitivePresetSchema = z.object({
+    key: templateIdentifierSchema,
+    label: z.string().min(1).max(120),
+    value: z.number().int().min(0).max(20).optional(),
+});
+
+export type PrimitivePreset = z.infer<typeof PrimitivePresetSchema>;
+
+/** Condition-track presentation override (FR-6): level count + per-level names. */
+export const PrimitiveTrackOverrideSchema = z
+    .object({
+        levels: z.number().int().min(1).max(20),
+        names: z.array(z.string().min(1).max(40)).min(1).max(20),
+    })
+    .refine(({ levels, names }) => names.length === levels, {
+        message: 'Track names must match level count',
+        path: ['names'],
+    });
+
+export type PrimitiveTrackOverride = z.infer<typeof PrimitiveTrackOverrideSchema>;
+
+/**
+ * Document-bound primitive (feature 005): references one binding key of the owning system's
+ * document binding registry. `bindingKey` resolution is a runtime registry query — never
+ * validated inside this system-agnostic schema; unavailable bindings degrade at render (FR-3).
+ * `label` is a presentation-only override; `compact` selects the brief-format rendering (FR-7).
+ */
+export const PrimitiveBlockSchema = z.object({
+    id: templateIdentifierSchema,
+    type: z.literal('primitive'),
+    bindingKey: z.string().min(1).max(120),
+    label: z.string().min(1).max(120).optional(),
+    compact: z.boolean().default(false),
+    track: PrimitiveTrackOverrideSchema.optional(),
+    presets: z.array(PrimitivePresetSchema).max(TEMPLATE_LIMITS.presetsPerPrimitive).optional(),
+});
+
+export type PrimitiveBlock = z.infer<typeof PrimitiveBlockSchema>;
+
+export const TemplateBlockSchema = z.union([
+    FieldsBlockSchema,
+    TableBlockSchema,
+    BuiltInBlockPlacementSchema,
+    PrimitiveBlockSchema,
+]);
 
 export const TemplateSectionSchema = z
     .object({
         id: templateIdentifierSchema,
         title: z.string().min(1).max(120),
         description: z.string().max(500).optional(),
+        /**
+         * 'card' (default): collapsible titled section. 'plain': blocks render directly on the
+         * page with no section chrome — the presentation built-in views use (feature 004),
+         * so a default template reproduces its original page exactly.
+         */
+        presentation: z.enum(['card', 'plain']).default('card'),
         blocks: z.array(TemplateBlockSchema).min(1).max(TEMPLATE_LIMITS.blocksPerSection),
     })
     .refine(({ blocks }) => hasUniqueIds(blocks), {
@@ -231,7 +304,7 @@ export function collectTemplateFields(template: CustomTemplate): Map<string, Tem
         for (const block of section.blocks) {
             if (block.type === 'fields') {
                 for (const field of block.fields) fields.set(field.id, field);
-            } else {
+            } else if (block.type === 'table') {
                 for (const column of block.columns) fields.set(column.id, column);
             }
         }
