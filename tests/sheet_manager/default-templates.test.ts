@@ -68,7 +68,7 @@ describe('explicit default templates (feature 006, R9)', () => {
             'Skills',
             'Advantages',
             'Force',
-            'Body & health',
+            'Body',
             'Other',
         ]);
         const docsPaths = sections.map((section) => section.docsPath);
@@ -126,19 +126,24 @@ describe('explicit default templates (feature 006, R9)', () => {
         expect(collected.some(({ bindingKey }) => bindingKey === 'list:customSkills')).toBe(true);
         expect(collected.some(({ bindingKey }) => bindingKey === 'list:forcePowers')).toBe(true);
         expect(collected.some(({ valueKey }) => valueKey === 'name')).toBe(true);
-        // Resource maxFrom defaults (R9): Willpower ≤ virtues sum, Force Points ≤ Willpower max.
-        const willpower = collected.find(({ bindingKey }) => bindingKey === 'resource:willpower');
-        void willpower;
-        expect(JSON.stringify(full)).toContain('conscience + passion + self-control');
-        expect(JSON.stringify(full)).toContain('willpower.max');
+        // Document-bridged fields beyond identity: home world, appearance, notes, experience.
+        for (const key of ['home-world', 'gender', 'features', 'notes', 'experience-total']) {
+            expect(
+                collected.some(({ valueKey }) => valueKey === key),
+                key
+            ).toBe(true);
+        }
+        // Max Force Points edits the pool maximum.
+        expect(JSON.stringify(full)).toContain('"part":"max"');
     });
 
-    it('brief covers the same system coordinates in compact presentation', () => {
+    it('brief is groups only, in compact presentation', () => {
         const brief = defaults.find(({ id }) => id === 'brief')!;
+        expect(brief.children.every((node) => node.type === 'group')).toBe(true);
         expect(JSON.stringify(brief)).toContain('"compact":true');
         expect(JSON.stringify(brief)).toContain('track:health');
         expect(JSON.stringify(brief)).toContain('resource:willpower');
-        expect(JSON.stringify(brief)).toContain('list:customTalents');
+        expect(JSON.stringify(brief)).toContain('equipment:weapons');
     });
 
     it('does not ship declarative defaults for the specialized pages', () => {

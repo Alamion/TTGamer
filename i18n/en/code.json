@@ -959,8 +959,8 @@
     "ttgamer.ui.sheet.templates.defaults.advantages": {
         "message": "Advantages"
     },
-    "ttgamer.ui.sheet.templates.defaults.condition": {
-        "message": "Condition"
+    "ttgamer.ui.sheet.templates.defaults.body": {
+        "message": "Body"
     },
     "ttgamer.ui.sheet.templates.defaults.customKnowledges": {
         "message": "Custom knowledges"
@@ -974,11 +974,23 @@
     "ttgamer.ui.sheet.templates.defaults.darkSideResistance": {
         "message": "Dark Side Resistance"
     },
+    "ttgamer.ui.sheet.templates.defaults.darkSideResistanceShort": {
+        "message": "Dark Side Res."
+    },
     "ttgamer.ui.sheet.templates.defaults.derivedStats": {
         "message": "Derived Stats"
     },
-    "ttgamer.ui.sheet.templates.defaults.descriptionGroup": {
-        "message": "Description"
+    "ttgamer.ui.sheet.templates.defaults.experience": {
+        "message": "Experience"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceAvailable": {
+        "message": "Available"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceSpent": {
+        "message": "Spent"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceTotal": {
+        "message": "Total XP"
     },
     "ttgamer.ui.sheet.templates.defaults.force": {
         "message": "Force"
@@ -989,14 +1001,26 @@
     "ttgamer.ui.sheet.templates.defaults.forceSkills": {
         "message": "Force Skills"
     },
+    "ttgamer.ui.sheet.templates.defaults.implants": {
+        "message": "Implants & Cyberware"
+    },
     "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber": {
-        "message": "Initiative (lightsaber)"
+        "message": "Initiative (Saber)"
     },
     "ttgamer.ui.sheet.templates.defaults.initiativeStandard": {
-        "message": "Initiative (standard)"
+        "message": "Initiative (Std)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.inventory": {
+        "message": "Inventory"
+    },
+    "ttgamer.ui.sheet.templates.defaults.jumpingDistance": {
+        "message": "Jumping Distance"
     },
     "ttgamer.ui.sheet.templates.defaults.knowledges": {
         "message": "Knowledges"
+    },
+    "ttgamer.ui.sheet.templates.defaults.maxForcePoints": {
+        "message": "Max Force Points"
     },
     "ttgamer.ui.sheet.templates.defaults.mental": {
         "message": "Mental"
@@ -1006,6 +1030,12 @@
     },
     "ttgamer.ui.sheet.templates.defaults.portrait": {
         "message": "Portrait"
+    },
+    "ttgamer.ui.sheet.templates.defaults.resolve": {
+        "message": "Resolve"
+    },
+    "ttgamer.ui.sheet.templates.defaults.runningSpeed": {
+        "message": "Running Speed"
     },
     "ttgamer.ui.sheet.templates.defaults.skills": {
         "message": "Skills"

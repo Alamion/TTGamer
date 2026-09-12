@@ -46,7 +46,12 @@ export function buildWodTraitBindings(
  */
 export function buildWodResourceBindings(
     profile: WodSheetProfile,
-    options: { documentKinds: ReadonlySet<string>; dataKeys: Readonly<Record<string, string>> }
+    options: {
+        documentKinds: ReadonlySet<string>;
+        dataKeys: Readonly<Record<string, string>>;
+        /** Pool resource ids whose maximum follows the current value upward. */
+        currentRaisesMax?: ReadonlySet<string>;
+    }
 ): ResourceBinding[] {
     return profile.resources.flatMap((resource) => {
         const dataKey = options.dataKeys[resource.id];
@@ -62,6 +67,7 @@ export function buildWodResourceBindings(
                 mode: resource.mode,
                 maximum: resource.maximum,
                 coordinate: toCoordinate(resource.id),
+                ...(options.currentRaisesMax?.has(resource.id) ? { currentRaisesMax: true } : {}),
             },
         ];
     });
@@ -93,9 +99,11 @@ export function buildWodTrackBindings(
                 documentKinds: target.documentKinds,
                 trackId: track.id,
                 dataKey: target.dataKey,
-                levels: track.levels.map(({ id, label }) => {
+                levels: track.levels.map(({ id, label, penalty }) => {
                     const translation = target.levelTranslations?.[id];
-                    return translation ? { id, label, translation } : { id, label };
+                    return translation
+                        ? { id, label, penalty, translation }
+                        : { id, label, penalty };
                 }),
             },
         ];

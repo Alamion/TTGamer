@@ -113,12 +113,18 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
     walkTemplateNodes(template.children, (node) => {
         const labelNodes = node.type === 'table' ? [node, ...node.columns] : [node];
         for (const labelled of labelNodes) {
-            if (labelled.labelMessage && !isKnownLabelMessage(labelled.labelMessage)) {
-                issues.push({
-                    code: 'unknown-label-message',
-                    nodeId: labelled.id,
-                    key: labelled.labelMessage,
-                });
+            const references = [
+                labelled.labelMessage,
+                labelled.type === 'text' ? labelled.placeholderMessage : undefined,
+            ];
+            for (const reference of references) {
+                if (reference && !isKnownLabelMessage(reference)) {
+                    issues.push({
+                        code: 'unknown-label-message',
+                        nodeId: labelled.id,
+                        key: reference,
+                    });
+                }
             }
         }
         if (node.type === 'primitive') {

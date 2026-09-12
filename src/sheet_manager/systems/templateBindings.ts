@@ -76,11 +76,15 @@ export interface ResourceBinding extends BindingBase {
     mode: 'pool' | 'rating';
     maximum: number;
     coordinate: string;
+    /** Pools: raising `current` above `max` raises `max` too (otherwise current is capped). */
+    currentRaisesMax?: boolean;
 }
 
 export interface TrackLevel {
     id: string;
     label: string;
+    /** Dice penalty while this is the deepest marked level; null = none. */
+    penalty: number | null;
     /** Translation descriptor for the level name; `label` is the untranslated fallback. */
     translation?: { id: string; message: string };
 }
@@ -95,9 +99,57 @@ export interface TrackBinding extends BindingBase {
 
 export interface FieldBinding extends BindingBase {
     kind: 'field';
-    /** Key inside the document data's metadata record. */
-    fieldKey: string;
+    /** Path inside document data, e.g. `['metadata', 'name']` or `['experience', 'total']`. */
+    path: readonly string[];
+    valueType: 'string' | 'number' | 'image';
     coordinate: string;
+    /**
+     * Custom mapping for values not stored at a single path (e.g. a portrait split across
+     * `imageUrl` / `portraitId`): `read` yields the field value, `update` the top-level update.
+     */
+    adapter?: {
+        read: (data: unknown) => unknown;
+        update: (data: unknown, value: unknown) => Record<string, unknown>;
+    };
+    /**
+     * Keeps the top-level record valid after a write (e.g. spent XP never above total). Receives
+     * and returns the value stored under `path[0]`.
+     */
+    constrain?: (record: unknown) => unknown;
+}
+
+/** Reads a nested document-data value. */
+export function readDataPath(data: unknown, path: readonly string[]): unknown {
+    let current: unknown = data;
+    for (const key of path) {
+        if (current === null || typeof current !== 'object') return undefined;
+        current = (current as Record<string, unknown>)[key];
+    }
+    return current;
+}
+
+/**
+ * The top-level update (`{ [path[0]]: nextRecord }`) that writes `value` at a field binding's
+ * path, preserving sibling keys and applying the binding's `constrain`.
+ */
+export function fieldBindingUpdate(
+    binding: FieldBinding,
+    data: unknown,
+    value: unknown
+): Record<string, unknown> {
+    const [head, ...rest] = binding.path;
+    if (!head) return {};
+    const setIn = (current: unknown, keys: readonly string[]): unknown => {
+        if (keys.length === 0) return value;
+        const [key, ...tail] = keys;
+        const record =
+            current !== null && typeof current === 'object'
+                ? (current as Record<string, unknown>)
+                : {};
+        return { ...record, [key!]: setIn(record[key!], tail) };
+    };
+    const next = setIn(readDataPath(data, [head]), rest);
+    return { [head]: binding.constrain ? binding.constrain(next) : next };
 }
 
 export type EquipmentSectionId = 'inventory' | 'armor' | 'weapons' | 'implants';
@@ -170,6 +222,8 @@ export function listNumericCoordinates(
     for (const binding of listDocumentBindings(systemId, documentKind)) {
         if (binding.kind === 'trait') {
             coordinates.push({ coordinate: binding.coordinate, label: binding.label });
+        } else if (binding.kind === 'field' && binding.valueType === 'number') {
+            coordinates.push({ coordinate: binding.coordinate, label: binding.label });
         } else if (binding.kind === 'resource') {
             coordinates.push({
                 coordinate: `${binding.coordinate}.current`,
@@ -204,6 +258,14 @@ export function readBoundNumber(
                 bound: true,
                 value: record?.[binding.traitKey]?.value ?? binding.defaultValue,
             };
+        }
+        if (
+            binding.kind === 'field' &&
+            binding.valueType === 'number' &&
+            binding.coordinate === path
+        ) {
+            const stored = readDataPath(data, binding.path);
+            return { bound: true, value: typeof stored === 'number' ? stored : 0 };
         }
         if (binding.kind === 'resource' && binding.coordinate === head) {
             const stored = data[binding.dataKey];

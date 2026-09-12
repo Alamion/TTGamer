@@ -75,6 +75,7 @@ function TextFieldControlRender({
                 onChange={(event) => onChange(event.target.value)}
                 disabled={disabled}
                 aria-label={field.label}
+                placeholder={field.placeholder}
                 className={`${inputClasses} min-h-20 w-full`}
             />
         );
@@ -86,6 +87,7 @@ function TextFieldControlRender({
             onChange={(event) => onChange(event.target.value)}
             disabled={disabled}
             aria-label={field.label}
+            placeholder={field.placeholder}
             className={`${inputClasses} w-full`}
         />
     );
@@ -555,9 +557,21 @@ function FormulaFieldControlRender({
     // Read-only computed value (FR-13): never stored, always recomputed by the hook layer;
     // failures surface as explicit labeled error states, never a silently wrong number.
     return (
-        <div className="rounded border border-border bg-bgBase px-2 py-2 text-sm text-textPrimary">
+        <div
+            className={clsx(
+                'flex items-baseline justify-between gap-3',
+                field.compact ? 'text-xs' : 'text-sm'
+            )}
+        >
+            <span className={clsx('text-textSecondary', field.hideLabel && 'sr-only')}>
+                {field.label}
+            </span>
             {formulaResult?.state === 'ok' ? (
-                <span>{formulaResult.value}</span>
+                <span className="font-mono text-textPrimary">
+                    {field.prefix}
+                    {formulaResult.value}
+                    {field.suffix}
+                </span>
             ) : formulaResult?.state === 'error' ? (
                 <span role="alert" className="text-xs text-error">
                     {formulaResult.message}
@@ -565,7 +579,6 @@ function FormulaFieldControlRender({
             ) : (
                 <span className="text-xs text-textSecondary">—</span>
             )}
-            <span className="ml-2 text-xs text-textSecondary">{field.label}</span>
         </div>
     );
 }

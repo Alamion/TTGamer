@@ -1,6 +1,6 @@
 /**
- * Template formula engine (feature 006, contracts/formula-grammar.md): arithmetic-only
- * expressions over value coordinates. Pure and deterministic — no UI, store, or system
+ * Template formula engine (feature 006, contracts/formula-grammar.md): arithmetic expressions
+ * over value coordinates, plus the `min(a, b, …)` / `max(a, b, …)` functions. Pure and deterministic — no UI, store, or system
  * imports; errors are values, never throws. A bare coordinate is a valid formula, so one
  * mechanism covers direct value links and computed formulas (`maxFrom`, FR-12/FR-13).
  */
@@ -9,7 +9,12 @@ export type Expr =
     | { kind: 'num'; value: number }
     | { kind: 'coord'; path: string }
     | { kind: 'bin'; op: '+' | '-' | '*' | '/'; left: Expr; right: Expr }
-    | { kind: 'neg'; operand: Expr };
+    | { kind: 'neg'; operand: Expr }
+    | { kind: 'call'; fn: FormulaFunction; args: Expr[] };
+
+export type FormulaFunction = 'min' | 'max';
+
+const FUNCTIONS: ReadonlySet<string> = new Set<FormulaFunction>(['min', 'max']);
 
 export type FormulaEvaluationError =
     | 'unknown-coordinate'
@@ -30,7 +35,9 @@ type Token =
     | { kind: 'coord'; path: string; position: number }
     | { kind: 'op'; op: '+' | '-' | '*' | '/'; position: number }
     | { kind: 'lparen'; position: number }
-    | { kind: 'rparen'; position: number };
+    | { kind: 'rparen'; position: number }
+    | { kind: 'comma'; position: number }
+    | { kind: 'fn'; fn: FormulaFunction; position: number };
 
 const COORDINATE_PATTERN = /[a-z][a-z0-9]*(?:-[a-z0-9]+)*/y;
 const POOL_PARTS = new Set(['current', 'max']);
@@ -55,6 +62,11 @@ function tokenize(source: string): Token[] | { message: string; position: number
             position += 1;
             continue;
         }
+        if (char === ',') {
+            tokens.push({ kind: 'comma', position });
+            position += 1;
+            continue;
+        }
         if ('+-*/'.includes(char)) {
             tokens.push({ kind: 'op', op: char as '+' | '-' | '*' | '/', position });
             position += 1;
@@ -73,7 +85,13 @@ function tokenize(source: string): Token[] | { message: string; position: number
             const base = COORDINATE_PATTERN.exec(source);
             if (!base) return { message: 'Invalid coordinate', position };
             let path = base[0];
+            const start = position;
             position = COORDINATE_PATTERN.lastIndex;
+            // A known function name directly followed by "(" is a call, not a coordinate.
+            if (FUNCTIONS.has(path) && /^\s*\(/.test(source.slice(position))) {
+                tokens.push({ kind: 'fn', fn: path as FormulaFunction, position: start });
+                continue;
+            }
             if (source[position] === '.') {
                 COORDINATE_PATTERN.lastIndex = position + 1;
                 const part = COORDINATE_PATTERN.exec(source);
@@ -167,6 +185,34 @@ class FormulaParser {
             this.cursor += 1;
             return { kind: 'coord', path: token.path };
         }
+        if (token.kind === 'fn') {
+            this.cursor += 1;
+            const open = this.peek();
+            if (!open || open.kind !== 'lparen') {
+                return { message: `Expected "(" after ${token.fn}`, position: token.position };
+            }
+            this.cursor += 1;
+            const args: Expr[] = [];
+            for (;;) {
+                const argument = this.parseExpression();
+                if (isParseError(argument)) return argument;
+                args.push(argument);
+                const separator = this.peek();
+                if (separator?.kind === 'comma') {
+                    this.cursor += 1;
+                    continue;
+                }
+                if (separator?.kind === 'rparen') {
+                    this.cursor += 1;
+                    break;
+                }
+                return {
+                    message: 'Missing closing parenthesis',
+                    position: separator?.position ?? token.position,
+                };
+            }
+            return { kind: 'call', fn: token.fn, args };
+        }
         if (token.kind === 'lparen') {
             this.cursor += 1;
             const inner = this.parseExpression();
@@ -246,6 +292,9 @@ export function collectDependencies(expr: Expr): string[] {
                 walk(node.left);
                 walk(node.right);
                 break;
+            case 'call':
+                node.args.forEach(walk);
+                break;
         }
     };
     walk(expr);
@@ -276,6 +325,18 @@ export function evaluateFormula(
             case 'neg': {
                 const inner = evalNode(node.operand);
                 return inner.ok ? { ok: true, value: -inner.value } : inner;
+            }
+            case 'call': {
+                const values: number[] = [];
+                for (const argument of node.args) {
+                    const result = evalNode(argument);
+                    if (!result.ok) return result;
+                    values.push(result.value);
+                }
+                return {
+                    ok: true,
+                    value: node.fn === 'min' ? Math.min(...values) : Math.max(...values),
+                };
             }
             case 'bin': {
                 const left = evalNode(node.left);

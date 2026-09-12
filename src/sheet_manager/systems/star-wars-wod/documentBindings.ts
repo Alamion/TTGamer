@@ -42,6 +42,8 @@ const traitBindings = buildWodTraitBindings(starWarsWodProfile, {
 
 const resourceBindings = buildWodResourceBindings(starWarsWodProfile, {
     documentKinds: CHARACTER_KINDS,
+    // Like the original sheet: raising current Willpower above its maximum raises the maximum.
+    currentRaisesMax: new Set(['willpower']),
     dataKeys: {
         willpower: 'willpower',
         'force-points': 'forcePoints',
@@ -130,25 +132,107 @@ const equipmentBindings: DocumentBindingDescriptor[] = (
     sectionId,
 }));
 
+const METADATA_FIELDS: ReadonlyArray<[key: string, label: string]> = [
+    ['name', 'Name'],
+    ['concept', 'Concept'],
+    ['player', 'Player'],
+    ['nature', 'Nature'],
+    ['adventure', 'Adventure'],
+    ['demeanor', 'Demeanor'],
+    ['species', 'Species'],
+    ['homeWorld', 'Home World'],
+    ['age', 'Age'],
+    ['gender', 'Gender'],
+    ['height', 'Height'],
+    ['build', 'Build'],
+    ['hair', 'Hair'],
+    ['eyes', 'Eyes'],
+    ['features', 'Features'],
+    ['biography', 'Biography'],
+];
+
+const toNonNegativeInteger = (value: unknown) =>
+    typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0;
+
+/** Experience stays schema-valid: whole non-negative numbers, spent never above total. */
+function constrainExperience(record: unknown): unknown {
+    const experience = (record ?? {}) as { total?: unknown; spent?: unknown };
+    const total = toNonNegativeInteger(experience.total);
+    return { total, spent: Math.min(toNonNegativeInteger(experience.spent), total) };
+}
+
+/** The portrait lives in metadata as a device blob id or an HTTPS URL (never both). */
+const portraitAdapter = {
+    read: (data: unknown) => {
+        const metadata = (data as { metadata?: { portraitId?: string; imageUrl?: string } })
+            .metadata;
+        if (metadata?.portraitId) return { source: 'device', blobId: metadata.portraitId };
+        if (metadata?.imageUrl) return { source: 'url', url: metadata.imageUrl };
+        return undefined;
+    },
+    update: (data: unknown, value: unknown) => {
+        const metadata = { ...((data as { metadata?: Record<string, unknown> }).metadata ?? {}) };
+        delete metadata.portraitId;
+        delete metadata.imageUrl;
+        const image = value as { source?: string; blobId?: string; url?: string } | undefined;
+        if (image?.source === 'device' && image.blobId) metadata.portraitId = image.blobId;
+        if (image?.source === 'url' && image.url) metadata.imageUrl = image.url;
+        return { metadata };
+    },
+};
+
 const fieldBindings: DocumentBindingDescriptor[] = [
-    'name',
-    'concept',
-    'player',
-    'nature',
-    'adventure',
-    'demeanor',
-    'species',
-    'age',
-    'appearance',
-    'biography',
-].map((fieldKey) => ({
-    key: `field:${fieldKey}`,
-    kind: 'field',
-    label: fieldKey.charAt(0).toUpperCase() + fieldKey.slice(1),
-    documentKinds: CHARACTER_KINDS,
-    fieldKey,
-    coordinate: toCoordinate(fieldKey),
-}));
+    {
+        key: 'field:portrait',
+        kind: 'field',
+        label: 'Portrait',
+        documentKinds: CHARACTER_KINDS,
+        path: ['metadata'],
+        valueType: 'image',
+        coordinate: 'portrait',
+        adapter: portraitAdapter,
+    },
+    ...METADATA_FIELDS.map(
+        ([fieldKey, label]): DocumentBindingDescriptor => ({
+            key: `field:${fieldKey}`,
+            kind: 'field',
+            label,
+            documentKinds: CHARACTER_KINDS,
+            path: ['metadata', fieldKey],
+            valueType: 'string',
+            coordinate: toCoordinate(label),
+        })
+    ),
+    {
+        key: 'field:notes',
+        kind: 'field',
+        label: 'Notes',
+        documentKinds: CHARACTER_KINDS,
+        path: ['notes'],
+        valueType: 'string',
+        coordinate: 'notes',
+    },
+    {
+        key: 'field:experience-total',
+        kind: 'field',
+        label: 'Total XP',
+        documentKinds: CHARACTER_KINDS,
+        path: ['experience', 'total'],
+        valueType: 'number',
+        coordinate: 'experience-total',
+        constrain: constrainExperience,
+    },
+    {
+        key: 'field:experience-spent',
+        kind: 'field',
+        label: 'Spent XP',
+        documentKinds: CHARACTER_KINDS,
+        path: ['experience', 'spent'],
+        valueType: 'number',
+        coordinate: 'experience-spent',
+        constrain: constrainExperience,
+    },
+];
 
 export const starWarsTemplateBindings: readonly DocumentBindingDescriptor[] = [
     ...traitBindings,

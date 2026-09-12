@@ -8,6 +8,7 @@ import { SectionCard } from '../../../components/sections/SectionCard';
 import {
     CompactConditionTrack,
     CompactRating,
+    CompactResource,
     CompactTextField,
 } from '../../../components/stat-fields/CompactSheetFields';
 import { MeritFlawList } from '../../../components/stat-fields/MeritFlawRow';
@@ -23,7 +24,11 @@ import type {
     EquipmentSectionId,
     ListBinding,
 } from '../../../systems/templateBindings';
-import { resolveDocumentBinding } from '../../../systems/templateBindings';
+import {
+    fieldBindingUpdate,
+    readDataPath,
+    resolveDocumentBinding,
+} from '../../../systems/templateBindings';
 import type {
     ConditionMark,
     CustomSkill,
@@ -41,6 +46,7 @@ import { CATALOG_BINDINGS } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
 
 const page = uiMessages.sheet.templates.page;
+const fields = uiMessages.sheet.documents.fields;
 
 const inputClasses =
     'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
@@ -76,18 +82,20 @@ function DegradedBinding({ bindingKey, reason }: { bindingKey: string; reason: D
 /** Full-width labeled text field for identity data (compact variant uses CompactTextField). */
 function IdentityField({
     label,
+    hideLabel,
     value,
     onChange,
     disabled,
 }: {
     label: string;
+    hideLabel?: boolean;
     value: string;
     onChange: (next: string) => void;
     disabled: boolean;
 }) {
     return (
         <label className="grid gap-1 text-xs font-medium text-textSecondary">
-            {label}
+            <span className={hideLabel ? 'sr-only' : undefined}>{label}</span>
             <input
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
@@ -482,7 +490,7 @@ function PrimitiveTraitBody({
                 })
             }
             onSpecializationTextChange={(text) => patch({ specializationText: text })}
-            size="lg"
+            size="md"
             minimal={descriptor.minimum}
             maxValue={descriptor.maximum}
             showFlags
@@ -526,21 +534,72 @@ function PrimitiveResourceBody({
                   current: 0,
                   max: descriptor.maximum,
               });
-    const writeCurrent = (next: number) => {
-        const clamped = Math.min(next, effectiveMax);
+    const editsMax = descriptor.mode === 'pool' && node.part === 'max';
+    const shown = editsMax ? pair.max : pair.current;
+    // Pools cap `current` at their own maximum unless the binding lets current raise it.
+    const rowMax =
+        descriptor.mode === 'pool' && !editsMax && !descriptor.currentRaisesMax
+            ? Math.min(effectiveMax, Math.max(1, pair.max))
+            : effectiveMax;
+    const writeValue = (next: number) => {
+        const clamped = Math.max(0, Math.min(next, rowMax));
+        const update =
+            descriptor.mode === 'rating'
+                ? clamped
+                : editsMax
+                  ? { current: Math.min(pair.current, clamped), max: clamped }
+                  : { current: clamped, max: Math.max(pair.max, clamped) };
         updateCharacter(character.id, {
-            [descriptor.dataKey]:
-                descriptor.mode === 'rating' ? clamped : { ...pair, current: clamped },
+            [descriptor.dataKey]: update,
         } as Partial<typeof character>);
     };
+    const clampedNotice = maxState?.degraded && (
+        <p role="alert" className="text-xs text-error">
+            {translate(page.formulaClamped)}
+        </p>
+    );
+    if (node.compact) {
+        return (
+            <div className="grid gap-1">
+                {descriptor.mode === 'pool' && !node.part ? (
+                    <CompactResource
+                        label={label}
+                        current={pair.current}
+                        maximum={pair.max}
+                        limit={effectiveMax}
+                        currentLabel={translate(fields.current)}
+                        maximumLabel={translate(fields.maximum)}
+                        disabled={readOnly}
+                        onChange={(current, maximum) =>
+                            updateCharacter(character.id, {
+                                [descriptor.dataKey]: {
+                                    current: Math.min(current, maximum),
+                                    max: maximum,
+                                },
+                            } as Partial<typeof character>)
+                        }
+                    />
+                ) : (
+                    <CompactRating
+                        label={label}
+                        value={Math.min(shown, rowMax)}
+                        max={rowMax}
+                        disabled={readOnly}
+                        onChange={writeValue}
+                    />
+                )}
+                {clampedNotice}
+            </div>
+        );
+    }
     return (
         <div className="grid gap-1">
             <TraitRow
                 label={label}
-                value={Math.min(pair.current, effectiveMax)}
-                maxValue={effectiveMax}
+                value={Math.min(shown, rowMax)}
+                maxValue={rowMax}
                 disabled={readOnly}
-                onChange={writeCurrent}
+                onChange={writeValue}
                 size={node.compact ? 'sm' : 'md'}
             />
             {maxState?.degraded && (
@@ -587,14 +646,16 @@ function PrimitiveTrackBody({
                   label: level?.translation
                       ? translate(level.translation)
                       : (level?.label ?? String(index)),
-                  penalty: index,
+                  penalty: level?.penalty ?? null,
               };
           });
     return (
         <div className="grid gap-1">
-            <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
-                {label}
-            </span>
+            {!node.hideLabel && (
+                <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
+                    {label}
+                </span>
+            )}
             <CompactConditionTrack
                 disabled={readOnly}
                 levels={levels}
@@ -621,16 +682,27 @@ function PrimitiveFieldBody({
         return <DegradedBinding bindingKey={node.bindingKey} reason="no-character" />;
     }
     const label = node.label ?? descriptor.label;
-    const raw = character.metadata[descriptor.fieldKey as keyof typeof character.metadata];
-    const value = typeof raw === 'string' ? raw : '';
+    const raw = readDataPath(character, descriptor.path);
+    const value = typeof raw === 'string' || typeof raw === 'number' ? String(raw) : '';
     const write = (next: string) =>
-        updateCharacter(character.id, {
-            metadata: { ...character.metadata, [descriptor.fieldKey]: next },
-        });
+        updateCharacter(
+            character.id,
+            fieldBindingUpdate(
+                descriptor,
+                character,
+                descriptor.valueType === 'number' ? Number(next) : next
+            ) as Partial<typeof character>
+        );
     return node.compact ? (
         <CompactTextField label={label} value={value} disabled={readOnly} onChange={write} />
     ) : (
-        <IdentityField label={label} value={value} disabled={readOnly} onChange={write} />
+        <IdentityField
+            label={label}
+            hideLabel={node.hideLabel}
+            value={value}
+            disabled={readOnly}
+            onChange={write}
+        />
     );
 }
 

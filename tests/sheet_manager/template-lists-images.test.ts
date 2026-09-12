@@ -153,7 +153,7 @@ function imageTemplate() {
         documentKind: 'character',
         schemaVersion: 3,
         children: [
-            { id: 'portrait', type: 'image', label: 'Portrait', required: false, compact: false },
+            { id: 'photo', type: 'image', label: 'Portrait', required: false, compact: false },
         ],
     });
 }
@@ -167,7 +167,7 @@ describe('image fields (feature 006 US4, T029)', () => {
         const urlInput = screen.getByLabelText('Image URL') as HTMLInputElement;
         fireEvent.change(urlInput, { target: { value: 'https://example.test/pic.webp' } });
         fireEvent.blur(urlInput);
-        expect(useDocumentStore.getState().documents[0]!.templateValues?.portrait).toEqual({
+        expect(useDocumentStore.getState().documents[0]!.templateValues?.photo).toEqual({
             source: 'url',
             url: 'https://example.test/pic.webp',
         });
@@ -179,7 +179,7 @@ describe('image fields (feature 006 US4, T029)', () => {
         fireEvent.change(urlInput, { target: { value: 'http://example.test/pic.webp' } });
         fireEvent.blur(urlInput);
         expect(screen.getByRole('alert').textContent).toContain('insecure');
-        expect(useDocumentStore.getState().documents[0]!.templateValues?.portrait).toBeUndefined();
+        expect(useDocumentStore.getState().documents[0]!.templateValues?.photo).toBeUndefined();
     });
 
     it('renders read-only without edit affordances when the context is read-only', () => {
@@ -194,7 +194,7 @@ describe('image fields (feature 006 US4, T029)', () => {
                     schemaVersion: 1,
                     metadata: { title: 'Lists', tags: [] },
                     templateValues: {
-                        portrait: { source: 'url', url: 'https://example.test/pic.webp' },
+                        photo: { source: 'url', url: 'https://example.test/pic.webp' },
                     },
                     data: { metadata: { name: '', type: 'sentient' } },
                 } as never,
@@ -222,7 +222,7 @@ describe('image fields (feature 006 US4, T029)', () => {
             schemaVersion: 1,
             metadata: { title: 'Export', tags: [] },
             templateValues: {
-                portrait: { source: 'device', blobId: 'blob-1' },
+                photo: { source: 'device', blobId: 'blob-1' },
                 linked: { source: 'url', url: 'https://example.test/x.png' },
                 note: 'kept',
             },

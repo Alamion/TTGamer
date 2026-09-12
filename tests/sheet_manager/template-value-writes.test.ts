@@ -67,10 +67,12 @@ describe('template value write path', () => {
         fireEvent.change(urlInput, { target: { value: 'https://example.test/portrait.webp' } });
         fireEvent.blur(urlInput);
 
-        expect(storedValues().portrait).toEqual({
-            source: 'url',
-            url: 'https://example.test/portrait.webp',
-        });
+        // The shipped portrait is bridged to the character's own metadata (old-sheet parity).
+        const document = useDocumentStore.getState().documents[0]!;
+        expect((document.data as { metadata: { imageUrl?: string } }).metadata.imageUrl).toBe(
+            'https://example.test/portrait.webp'
+        );
+        expect(storedValues().portrait).toBeUndefined();
     });
 
     it('validates fields by their valueKey, not their node id', () => {

@@ -959,8 +959,8 @@
     "ttgamer.ui.sheet.templates.defaults.advantages": {
         "message": "Преимущества"
     },
-    "ttgamer.ui.sheet.templates.defaults.condition": {
-        "message": "Состояние"
+    "ttgamer.ui.sheet.templates.defaults.body": {
+        "message": "Тело"
     },
     "ttgamer.ui.sheet.templates.defaults.customKnowledges": {
         "message": "Свои знания"
@@ -974,11 +974,23 @@
     "ttgamer.ui.sheet.templates.defaults.darkSideResistance": {
         "message": "Сопротивление Тёмной Стороне"
     },
+    "ttgamer.ui.sheet.templates.defaults.darkSideResistanceShort": {
+        "message": "Сопр. Тёмной Стороне"
+    },
     "ttgamer.ui.sheet.templates.defaults.derivedStats": {
         "message": "Производные показатели"
     },
-    "ttgamer.ui.sheet.templates.defaults.descriptionGroup": {
-        "message": "Описание"
+    "ttgamer.ui.sheet.templates.defaults.experience": {
+        "message": "Опыт"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceAvailable": {
+        "message": "Доступно"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceSpent": {
+        "message": "Потрачено"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceTotal": {
+        "message": "Всего опыта"
     },
     "ttgamer.ui.sheet.templates.defaults.force": {
         "message": "Сила"
@@ -989,14 +1001,26 @@
     "ttgamer.ui.sheet.templates.defaults.forceSkills": {
         "message": "Силовые навыки"
     },
+    "ttgamer.ui.sheet.templates.defaults.implants": {
+        "message": "Импланты и кибернетика"
+    },
     "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber": {
         "message": "Инициатива (свет. меч)"
     },
     "ttgamer.ui.sheet.templates.defaults.initiativeStandard": {
-        "message": "Инициатива (обычная)"
+        "message": "Инициатива (обыч.)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.inventory": {
+        "message": "Инвентарь"
+    },
+    "ttgamer.ui.sheet.templates.defaults.jumpingDistance": {
+        "message": "Дальность прыжка"
     },
     "ttgamer.ui.sheet.templates.defaults.knowledges": {
         "message": "Знания"
+    },
+    "ttgamer.ui.sheet.templates.defaults.maxForcePoints": {
+        "message": "Макс. Очки Силы"
     },
     "ttgamer.ui.sheet.templates.defaults.mental": {
         "message": "Ментальные"
@@ -1006,6 +1030,12 @@
     },
     "ttgamer.ui.sheet.templates.defaults.portrait": {
         "message": "Портрет"
+    },
+    "ttgamer.ui.sheet.templates.defaults.resolve": {
+        "message": "Стойкость"
+    },
+    "ttgamer.ui.sheet.templates.defaults.runningSpeed": {
+        "message": "Скорость бега"
     },
     "ttgamer.ui.sheet.templates.defaults.skills": {
         "message": "Навыки"

@@ -7,7 +7,13 @@ import { createElement, useMemo } from 'react';
 
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
-import { resolveDataBindingByCoordinate } from '../../../systems/templateBindings';
+import { useCharacter } from '../../../hooks';
+import type { FieldBinding } from '../../../systems/templateBindings';
+import {
+    fieldBindingUpdate,
+    readDataPath,
+    resolveDataBindingByCoordinate,
+} from '../../../systems/templateBindings';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
 import { fieldValueKey, isTemplateField, tableValueKey } from '../../../types/template';
 import { listValueKey } from '../../../types/template';
@@ -61,9 +67,12 @@ function FieldCell({
         template.documentKind,
         fieldValueKey(field)
     );
+    if (bridged?.kind === 'field') {
+        return <BoundFieldCell field={field} binding={bridged} />;
+    }
     if (bridged) {
         return (
-            <div className="grid gap-1">
+            <div className="grid grid-cols-1 gap-1">
                 <PrimitiveNodeView
                     node={{
                         id: field.id,
@@ -123,9 +132,28 @@ function FieldCell({
         }
     };
 
+    const controlElement = createElement(control, {
+        field,
+        value,
+        onChange: handleChange,
+        disabled: pageApi.disabled,
+        resolvedMax: maxState?.resolvedMax,
+        maxDegraded: maxState?.degraded,
+        formulaResult,
+        catalogOptions: runtime?.options,
+        documentOptions: pageApi.documentOptions,
+    });
+    // Computed values read as "label … value" rows; the control renders both.
+    if (field.type === 'formula') return controlElement;
+
     return (
-        <div className="grid gap-1">
-            <span className="text-xs font-medium text-textSecondary">
+        <div className="grid grid-cols-1 gap-1">
+            <span
+                className={clsx(
+                    'text-xs font-medium text-textSecondary',
+                    field.hideLabel && 'sr-only'
+                )}
+            >
                 {field.label}
                 {field.required && (
                     <span
@@ -136,22 +164,68 @@ function FieldCell({
                     </span>
                 )}
             </span>
-            {createElement(control, {
-                field,
-                value,
-                onChange: handleChange,
-                disabled: pageApi.disabled,
-                resolvedMax: maxState?.resolvedMax,
-                maxDegraded: maxState?.degraded,
-                formulaResult,
-                catalogOptions: runtime?.options,
-                documentOptions: pageApi.documentOptions,
-            })}
+            {controlElement}
             {runtime?.degraded && (
                 <p role="alert" className="text-xs text-error">
                     {translate(binding.degraded, { catalog: runtime.catalogId })}
                 </p>
             )}
+            {field.description && (
+                <span className="text-xs text-textSecondary">{field.description}</span>
+            )}
+        </div>
+    );
+}
+
+/**
+ * A field bridged to document data (identity, biography, notes, experience): the field keeps
+ * its own control and presentation (multiline, placeholder, hidden label); only the storage is
+ * the document instead of the template value bag.
+ */
+function BoundFieldCell({ field, binding }: { field: TemplateField; binding: FieldBinding }) {
+    const { character, readOnly, updateCharacter } = useCharacter();
+    if (!character) return null;
+    const stored = binding.adapter
+        ? binding.adapter.read(character)
+        : readDataPath(character, binding.path);
+    const value = coerceStoredValue(field, stored);
+    const onChange = (next: unknown) => {
+        if (binding.adapter) {
+            updateCharacter(
+                character.id,
+                binding.adapter.update(character, next) as Partial<typeof character>
+            );
+            return;
+        }
+        const typed =
+            binding.valueType === 'number'
+                ? typeof next === 'number'
+                    ? next
+                    : 0
+                : typeof next === 'string'
+                  ? next
+                  : '';
+        updateCharacter(
+            character.id,
+            fieldBindingUpdate(binding, character, typed) as Partial<typeof character>
+        );
+    };
+    return (
+        <div className="grid grid-cols-1 gap-1">
+            <span
+                className={clsx(
+                    'text-xs font-medium text-textSecondary',
+                    field.hideLabel && 'sr-only'
+                )}
+            >
+                {field.label}
+            </span>
+            {createElement(templateFieldControl(field.type), {
+                field,
+                value,
+                onChange,
+                disabled: readOnly,
+            })}
             {field.description && (
                 <span className="text-xs text-textSecondary">{field.description}</span>
             )}
@@ -278,7 +352,7 @@ function ListView({
           }))
         : [];
     return (
-        <div className="grid gap-1" data-list-columns={node.columns}>
+        <div className="grid grid-cols-1 gap-1" data-list-columns={node.columns}>
             {node.title && <h3 className="text-sm font-semibold text-textPrimary">{node.title}</h3>}
             <CustomListView
                 list={node}
@@ -321,8 +395,13 @@ function NodeView({
         // remembered per node (storageKey `template-<templateId>-<nodeId>`).
         return (
             <SectionCard
-                title={node.title}
-                storageKey={node.collapsible ? `template-${template.id}-${node.id}` : undefined}
+                title={node.hideTitle ? undefined : node.title}
+                docsPath={node.hideTitle ? undefined : node.docsPath}
+                storageKey={
+                    node.collapsible && !node.hideTitle
+                        ? `template-${template.id}-${node.id}`
+                        : undefined
+                }
             >
                 <ChildrenGrid nodes={node.children} pageApi={pageApi} columns={node.columns} />
             </SectionCard>
@@ -364,7 +443,7 @@ function ChildrenGrid({
     columns?: number;
 }) {
     if (nodes.length === 0) return null;
-    const children = nodes.map((node, index) => (
+    const renderNode = (node: TemplateNode, index: number) => (
         <NodeView
             key={node.id}
             node={node}
@@ -372,7 +451,29 @@ function ChildrenGrid({
             // Accent alternation is automatic (by sibling parity), never stored (FR-11).
             accentColor={index % 2 === 0 ? 'primary' : 'secondary'}
         />
-    ));
+    );
+    const children = nodes.map(renderNode);
+    // Explicit placement: children stack inside their assigned column (unplaced → column 1).
+    if (columns && columns > 1 && nodes.some((node) => node.column !== undefined)) {
+        const stacks = Array.from({ length: columns }, (_, columnIndex) =>
+            nodes
+                .map((node, index) => ({ node, index }))
+                .filter(({ node }) => Math.min(node.column ?? 1, columns) === columnIndex + 1)
+        );
+        return (
+            <div className={clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])}>
+                {stacks.map((stack, columnIndex) => (
+                    <div
+                        key={columnIndex}
+                        className="grid grid-cols-1 content-start gap-4"
+                        data-column={columnIndex + 1}
+                    >
+                        {stack.map(({ node, index }) => renderNode(node, index))}
+                    </div>
+                ))}
+            </div>
+        );
+    }
     if (columns && columns > 1) {
         return (
             <div className={clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])}>
@@ -380,7 +481,7 @@ function ChildrenGrid({
             </div>
         );
     }
-    return <div className="grid gap-4">{children}</div>;
+    return <div className="grid grid-cols-1 gap-4">{children}</div>;
 }
 
 /** Counts unfilled required fields for the FR-4a soft-advisory note (walks the whole tree). */
@@ -427,7 +528,11 @@ export function DeclarativeSheetView({
     const pageApi = useTemplatePage(localized, { seedPresets: !embedded });
 
     return (
-        <div className={embedded ? 'space-y-6' : 'mx-auto max-w-7xl space-y-6 p-4 lg:p-6'}>
+        <div
+            className={
+                embedded ? 'min-w-0 space-y-6' : 'mx-auto min-w-0 max-w-7xl space-y-6 p-4 lg:p-6'
+            }
+        >
             <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
         </div>
     );

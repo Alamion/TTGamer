@@ -557,7 +557,7 @@ function collectDependenciesSafe(expr: Expr): string[] {
         else if (node.kind === 'bin') {
             walk(node.left);
             walk(node.right);
-        }
+        } else if (node.kind === 'call') node.args.forEach(walk);
     };
     walk(expr);
     return coords;

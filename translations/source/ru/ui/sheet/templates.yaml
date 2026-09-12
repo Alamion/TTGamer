@@ -159,10 +159,20 @@ defaults:
     darkSideResistance: Сопротивление Тёмной Стороне
     forcePowers: Силы Силы
     derivedStats: Производные показатели
-    initiativeStandard: Инициатива (обычная)
+    initiativeStandard: Инициатива (обыч.)
     initiativeLightsaber: Инициатива (свет. меч)
-    condition: Состояние
-    descriptionGroup: Описание
+    maxForcePoints: Макс. Очки Силы
+    resolve: Стойкость
+    darkSideResistanceShort: Сопр. Тёмной Стороне
+    body: Тело
+    inventory: Инвентарь
+    implants: Импланты и кибернетика
+    jumpingDistance: Дальность прыжка
+    runningSpeed: Скорость бега
+    experience: Опыт
+    experienceTotal: Всего опыта
+    experienceSpent: Потрачено
+    experienceAvailable: Доступно
 builtInBlocks:
     base: Шапка персонажа
     attributes: Атрибуты

@@ -114,7 +114,7 @@ describe('declarative default templates (feature 006, zero placements)', () => {
         expect(screen.queryAllByRole('alert')).toHaveLength(0);
     });
 
-    it('brief default is composed from compact fields, lists, and the condition track', () => {
+    it('brief default is composed from compact groups without sections', () => {
         const briefTemplate = defaultTemplate('brief');
         expect(briefTemplate).toBeDefined();
         if (!briefTemplate) return;
@@ -128,16 +128,19 @@ describe('declarative default templates (feature 006, zero placements)', () => {
                 if (node.type === 'primitive') {
                     expect(
                         node.bindingKey.startsWith('track:') ||
-                            node.bindingKey.startsWith('resource:')
+                            node.bindingKey.startsWith('resource:') ||
+                            node.bindingKey.startsWith('equipment:')
                     ).toBe(true);
                 }
             }
         };
         walk(briefTemplate.children);
-        const baseSection = briefTemplate.children.find((node) => node.type === 'section');
-        expect(baseSection).toBeDefined();
+        expect(briefTemplate.children.some((node) => node.type === 'section')).toBe(false);
         render(createElement(DeclarativeSheetView, { template: briefTemplate }));
-        expect(screen.queryAllByRole('alert')).toHaveLength(0);
+        // Equipment needs the sheet's body handlers; everything else renders without alerts.
+        const issues = takeSheetIssues();
+        expect(issues.every(({ details }) => details?.reason === 'no-body-handlers')).toBe(true);
+        expect(screen.queryAllByRole('alert')).toHaveLength(issues.length);
     });
 
     it('degrades foreign-kind assignment instead of rendering wrong data', () => {

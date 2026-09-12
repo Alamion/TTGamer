@@ -159,10 +159,20 @@ defaults:
     darkSideResistance: Dark Side Resistance
     forcePowers: Force Powers
     derivedStats: Derived Stats
-    initiativeStandard: Initiative (standard)
-    initiativeLightsaber: Initiative (lightsaber)
-    condition: Condition
-    descriptionGroup: Description
+    initiativeStandard: Initiative (Std)
+    initiativeLightsaber: Initiative (Saber)
+    maxForcePoints: Max Force Points
+    resolve: Resolve
+    darkSideResistanceShort: Dark Side Res.
+    body: Body
+    inventory: Inventory
+    implants: Implants & Cyberware
+    jumpingDistance: Jumping Distance
+    runningSpeed: Running Speed
+    experience: Experience
+    experienceTotal: Total XP
+    experienceSpent: Spent
+    experienceAvailable: Available
 builtInBlocks:
     base: Character header
     attributes: Attributes

@@ -52,6 +52,16 @@ function localizeNode(node: TemplateNode, locale: string): TemplateNode {
             next = { ...node, label: resolveLabelMessage(reference, node.label, locale) };
         }
     }
+    if (next.type === 'text' && next.placeholderMessage) {
+        next = {
+            ...next,
+            placeholder: resolveLabelMessage(
+                next.placeholderMessage,
+                next.placeholder ?? '',
+                locale
+            ),
+        };
+    }
     if (next.type === 'section' || next.type === 'group') {
         return { ...next, children: next.children.map((child) => localizeNode(child, locale)) };
     }

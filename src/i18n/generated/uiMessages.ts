@@ -1480,19 +1480,59 @@ export const uiMessages = {
                 },
                 initiativeStandard: {
                     id: 'ttgamer.ui.sheet.templates.defaults.initiativeStandard',
-                    message: 'Initiative (standard)',
+                    message: 'Initiative (Std)',
                 },
                 initiativeLightsaber: {
                     id: 'ttgamer.ui.sheet.templates.defaults.initiativeLightsaber',
-                    message: 'Initiative (lightsaber)',
+                    message: 'Initiative (Saber)',
                 },
-                condition: {
-                    id: 'ttgamer.ui.sheet.templates.defaults.condition',
-                    message: 'Condition',
+                maxForcePoints: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.maxForcePoints',
+                    message: 'Max Force Points',
                 },
-                descriptionGroup: {
-                    id: 'ttgamer.ui.sheet.templates.defaults.descriptionGroup',
-                    message: 'Description',
+                resolve: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.resolve',
+                    message: 'Resolve',
+                },
+                darkSideResistanceShort: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.darkSideResistanceShort',
+                    message: 'Dark Side Res.',
+                },
+                body: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.body',
+                    message: 'Body',
+                },
+                inventory: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.inventory',
+                    message: 'Inventory',
+                },
+                implants: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.implants',
+                    message: 'Implants & Cyberware',
+                },
+                jumpingDistance: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.jumpingDistance',
+                    message: 'Jumping Distance',
+                },
+                runningSpeed: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.runningSpeed',
+                    message: 'Running Speed',
+                },
+                experience: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.experience',
+                    message: 'Experience',
+                },
+                experienceTotal: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.experienceTotal',
+                    message: 'Total XP',
+                },
+                experienceSpent: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.experienceSpent',
+                    message: 'Spent',
+                },
+                experienceAvailable: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.experienceAvailable',
+                    message: 'Available',
                 },
             },
             builtInBlocks: {

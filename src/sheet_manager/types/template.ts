@@ -40,10 +40,22 @@ export const LabelMessageSchema = z
 
 const labelMessageShape = { labelMessage: LabelMessageSchema.optional() };
 
+/**
+ * Placement inside the parent's column layout (1-based). When any child of a multi-column
+ * container sets a column, children stack vertically inside their column instead of flowing
+ * through the grid row by row.
+ */
+const placementShape = {
+    column: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+};
+
 const fieldBaseShape = {
     id: templateIdentifierSchema,
     label: z.string().min(1).max(120),
     ...labelMessageShape,
+    ...placementShape,
+    /** Keep the label for accessibility and the editor, but do not show it on the page. */
+    hideLabel: z.boolean().optional(),
     description: z.string().max(500).optional(),
     required: z.boolean().default(false),
     /**
@@ -75,6 +87,8 @@ const TextFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('text'),
     multiline: z.boolean().default(false),
+    placeholder: z.string().max(120).optional(),
+    placeholderMessage: LabelMessageSchema.optional(),
 });
 
 const NumberFieldSchema = z.object({
@@ -101,6 +115,9 @@ const FormulaFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('formula'),
     formula: z.string().min(1).max(500),
+    /** Display decoration around the computed number (e.g. `×` for multipliers). */
+    prefix: z.string().max(8).optional(),
+    suffix: z.string().max(8).optional(),
 });
 
 function hasUniqueIds(values: readonly { id: string }[]) {
@@ -273,6 +290,10 @@ const PrimitiveNodeSchema = z.object({
     bindingKey: z.string().min(1).max(120),
     label: z.string().min(1).max(120).optional(),
     ...labelMessageShape,
+    ...placementShape,
+    hideLabel: z.boolean().optional(),
+    /** Pool resources: edit the current value (default) or the maximum. */
+    part: z.enum(['current', 'max']).optional(),
     compact: z.boolean().default(false),
     track: PrimitiveTrackOverrideSchema.optional(),
     ...maxFromShape,
@@ -284,6 +305,7 @@ const ListNodeSchema = z.object({
     type: z.literal('list'),
     title: z.string().min(1).max(120).optional(),
     ...labelMessageShape,
+    ...placementShape,
     valueKey: templateIdentifierSchema.optional(),
     bindingKey: z.string().min(1).max(120).optional(),
     columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).default(1),
@@ -295,6 +317,7 @@ const TableNodeSchema = z.object({
     type: z.literal('table'),
     title: z.string().min(1).max(120).optional(),
     ...labelMessageShape,
+    ...placementShape,
     valueKey: templateIdentifierSchema.optional(),
     minRows: z.number().int().min(0).max(1_000).default(0),
     maxRows: z.number().int().min(1).max(1_000).default(100),
@@ -306,6 +329,7 @@ export interface SectionNode {
     type: 'section';
     title: string;
     labelMessage?: string;
+    column?: number;
     /** Documentation link rendered as a help affordance in the section header (FR-9). */
     docsPath?: string;
     /** Column layout for direct children, 1–4 (FR-9); unset = single column stack. */
@@ -318,6 +342,10 @@ export interface GroupNode {
     type: 'group';
     title: string;
     labelMessage?: string;
+    column?: number;
+    /** Title kept for the editor and accessibility but not shown on the card. */
+    hideTitle?: boolean;
+    docsPath?: string;
     /** Opt-in collapsibility (FR-10); state is remembered per user via a storage key. */
     collapsible: boolean;
     columns?: number;
@@ -396,6 +424,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 type: z.literal('section'),
                 title: z.string().min(1).max(120),
                 ...labelMessageShape,
+                ...placementShape,
                 docsPath: z.string().max(500).optional(),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
@@ -405,6 +434,9 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 type: z.literal('group'),
                 title: z.string().min(1).max(120),
                 ...labelMessageShape,
+                ...placementShape,
+                hideTitle: z.boolean().optional(),
+                docsPath: z.string().max(500).optional(),
                 collapsible: z.boolean().default(false),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
@@ -574,7 +606,12 @@ export function collectFormulaDependencies(template: CustomTemplate): FormulaDep
 function parseFormulaSafe(source: string): string[] | undefined {
     // Local import would create a cycle (formula module imports nothing from template);
     // the dependency extraction is duplicated deliberately as a tiny regex walk.
-    return source.match(/[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.(?:current|max))?/g) ?? [];
+    // Whole identifiers only; an identifier followed by "(" is a function call (min/max).
+    return (
+        source.match(
+            /[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.(?:current|max))?(?![a-z0-9.-])(?!\s*\()/g
+        ) ?? []
+    );
 }
 
 export const CustomTemplateSchema = z
