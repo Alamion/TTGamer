@@ -22,6 +22,17 @@ export {
     starWarsWodSystem,
 } from './star-wars-wod';
 export type {
+    DocumentBindingDescriptor,
+    DocumentBindingKind,
+    EquipmentBinding,
+    FieldBinding,
+    ListBinding,
+    ResourceBinding,
+    SystemListShape,
+    TrackBinding,
+    TraitBinding,
+} from './templateBindings';
+export type {
     BuiltInDocumentLayout,
     DeclarativeDocumentLayout,
     DocumentDefinition,

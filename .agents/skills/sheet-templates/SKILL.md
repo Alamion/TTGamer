@@ -65,34 +65,55 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
 - Images: `{source:'device', blobId}` (IndexedDB via `persistence/portraitStorage.ts`) or
   `{source:'url', url}` (HTTPS only). Device values are stripped from JSON exports.
 
-## Bindings (`systems/star-wars-wod/documentBindings.ts`)
+## Bindings and the system boundary
 
-Closed registry, keys persisted as strings (no compile-time checking):
+Contract: `systems/templateBindings.ts` (system-independent). Each plugin declares
+`SystemPlugin.templateBindings`; generic code queries them with `listDocumentBindings`,
+`resolveDocumentBinding`, `resolveDataBindingByCoordinate`, `listNumericCoordinates`,
+`readBoundNumber`, and `createListEntry`. Descriptors carry every data path (`map`, `dataKey`,
+`coordinate`, `defaultValue`, `entryShape`, track `levels` with translation descriptors), so
+generic code never computes a system's data shape. An ESLint `no-restricted-imports` rule
+fails any import of `systems/star-wars-wod` from declarative, editor, hooks, types, or
+`wod-like` code.
 
-| Kind        | Key shape                                                | Data                                                      |
-| ----------- | -------------------------------------------------------- | --------------------------------------------------------- |
-| `trait`     | `trait:<groupId>:<TraitKey>`                             | `attributes`/`skills`/`virtues`/`forceSkills`             |
-| `resource`  | `resource:willpower\|force-points\|dark-side-resistance` | pools / rating                                            |
-| `track`     | `track:health`, `track:vehicle-damage`                   | condition tracks                                          |
-| `field`     | `field:<metadataKey>`                                    | `data.metadata`                                           |
-| `list`      | `list:<SystemListId>`                                    | `systemListDataKey()` (`forcePowers` → `forcePowerItems`) |
-| `equipment` | `equipment:inventory\|armor\|weapons\|implants`          | body sections via `useBodyHandlers`                       |
+WoD-family systems build trait/resource/track bindings from their profile with
+`systems/wod-like/templateBindings.ts` (`buildWodTraitBindings`, `buildWodResourceBindings`,
+`buildWodTrackBindings`, `toCoordinate`). Star Wars declarations: `systems/star-wars-wod/documentBindings.ts`.
 
-- Bindings are filtered by document kind; only `star-wars-wod` registers any
-  (`listDocumentBindings` hard-codes the system id).
+| Kind        | Key shape                                                | Star Wars data                                 |
+| ----------- | -------------------------------------------------------- | ---------------------------------------------- |
+| `trait`     | `trait:<groupId>:<TraitKey>`                             | `attributes`/`skills`/`virtues`/`forceSkills`  |
+| `resource`  | `resource:willpower\|force-points\|dark-side-resistance` | `willpower`/`forcePoints` pools, rating number |
+| `track`     | `track:health`, `track:vehicle-damage`                   | `health`, `damage`                             |
+| `field`     | `field:<metadataKey>`                                    | `data.metadata`                                |
+| `list`      | `list:<listId>`                                          | `dataKey` (`forcePowers` → `forcePowerItems`)  |
+| `equipment` | `equipment:inventory\|armor\|weapons\|implants`          | body sections via `useBodyHandlers`            |
+
+- List entry shapes: `trait` `{id,label,value}`, `named-trait` `{id,name,value}`, `merit-flaw`
+  `{id,label,points}`. Preset seeding and the list molecules both follow `entryShape`.
+- Keys are persisted as plain strings (no compile-time checking yet).
 - An unknown key, wrong kind, missing character, or missing body handlers renders the labeled
   `DegradedBinding` notice and reports `binding-unresolved` with a `reason`.
 - Catalogs (`features/sheet/data/catalogBindings.ts`, `CATALOG_BINDINGS`) are the only path
-  from `src/data` into select fields. Templates persist `catalogId` + fill mappings; selecting
-  an entry copies mapped details into target fields (replace re-copies, clear keeps values).
-  Unknown catalogs degrade to manual choice and report `catalog-unavailable`. System lists use a
-  second, hard-coded catalog lookup in `primitives.tsx` (`listCatalog`).
+  from `src/data` into templates: select fields persist `catalogId` + fill mappings (copy on
+  select; replace re-copies, clear keeps values) and system lists resolve
+  `binding.catalog.catalogId` from the same registry. Unknown catalogs degrade to manual choice
+  and report `catalog-unavailable`.
+
+## Document source
+
+Renderers never read the store directly: `useTemplatePage` and `useCharacter` read
+`useDocumentSource()` (`hooks/useDocumentSource.ts`). Default = the editable store's current
+document. Wrap a subtree in `DocumentSourceContext.Provider` with
+`createStaticDocumentSource(envelope)` to render any document read-only (no writes, no preset
+seeding) — the seam for documentation previews.
 
 ## Formulas (`features/sheet/declarative/formula.ts`)
 
 - Grammar: numbers, coordinates (`kebab` or `pool.current`/`pool.max`), `+ - * /`, parentheses,
   unary minus. Pure tokenizer → parser → evaluator.
-- One coordinate space: bag numbers plus system traits/pools (`resolveBase` in `hooks.ts`).
+- One coordinate space: bag numbers plus system traits/pools (`readBoundNumber`, called from
+  `resolveBase` in `hooks.ts`).
 - `formula` fields are read-only and never stored. `maxFrom` (rating/number/primitive) clamps
   the display; stored values are clamped only when the bounded value itself is edited.
 - Errors are labeled in the UI (`unknown-coordinate` names the coordinate, `circular`,
@@ -168,28 +189,31 @@ type list, and issue checks; type list in `templateFile.ts`; `FieldEditor` confi
 tests. Also re-check the leaf-field predicates (`collectTemplateFields`, `countUnfilledRequired`,
 `draft.ts`, `ElementEditor.tsx`, `templateFile.ts`) — they are hand-written, not exhaustive.
 
-**New binding kind**: descriptor union + registry array + `resolveDataBindingByCoordinate` +
-`listNumericCoordinates` (`documentBindings.ts`); `PrimitiveNodeView` switch
-(`primitives.tsx`); numeric resolution in `hooks.ts` `resolveBase` if it is numeric; editor
-palette/bridged factories (`ElementEditor.tsx`) and `PrimitiveConfig`.
+**New binding kind**: descriptor interface + union in `systems/templateBindings.ts` (plus
+`resolveDataBindingByCoordinate` / `listNumericCoordinates` / `readBoundNumber` if it is
+bridgeable or numeric); declarations in the system's bindings file; `PrimitiveNodeView` switch
+(`primitives.tsx`); editor palette/bridged factories (`ElementEditor.tsx`) and `PrimitiveConfig`.
+
+**New system**: a `SystemPlugin` with `documents`, optional `defaultTemplates`, and
+`templateBindings` (WoD-family: build from the profile with `wod-like/templateBindings.ts`).
+No generic file changes are needed for data addressing.
 
 **New catalog**: `defineCatalog` entry in `catalogBindings.ts` (closed fillable-detail set);
-if a system list uses it, also `listCatalog` in `primitives.tsx`.
+lists reference it by `catalog.catalogId`.
 
-## Known debts (as of 2026-09-12)
+## Known debts (as of 2026-09-13)
 
 - Built-in React blocks (`features/sheet/blocks/*`) still back creature/vehicle/fodder pages and
   `CharacterViewer`; catalog copy-on-select is duplicated in `AdvantagesBlock` and
   `primitives.tsx` (`primitive-parity.test.tsx` guards the pair). Retirement waits for
   user-confirmed parity.
-- Star Wars specifics leak into generic declarative code (`hooks.ts` resource ids and trait
-  defaults, `documentBindings` imported directly by `hooks.ts`, `draft.ts`,
-  `DeclarativeSheetView.tsx`).
+- Primitive molecules (trait rows, merit/flaw lists, equipment sections) are WoD-family UI and
+  read through the `character` capability (`BaseCharacter`); a non-WoD system will need its own
+  molecules behind the same binding kinds.
 - `bindingKey`/`catalogId` are plain strings; typos surface only at render time.
 - `useTemplatePage` (`hooks.ts`) mixes store wiring, formula evaluation, list/catalog runtime,
   and preset seeding; `draft.ts` and `ElementEditor.tsx` are similarly overloaded.
-- Unused exports awaiting cleanup: `writeTraitValue`/`writeList` (tests only),
-  `listBuiltInBlocks`, `isBuiltInBlockAvailable`, `blockAccentColor`, `newNodeId`,
+- Unused exports awaiting cleanup: `listBuiltInBlocks`, `isBuiltInBlockAvailable`, `blockAccentColor`, `newNodeId`,
   `ALL_TEMPLATE_SKELETONS`, `collectPrimitiveNodes`.
 
 ## Tests map (`tests/sheet_manager/`)
@@ -200,6 +224,7 @@ if a system list uses it, also `listCatalog` in `primitives.tsx`.
 | Value write path, validation     | `template-value-writes.test.ts`, `document-template-values.test.ts`                  |
 | Renderer, bridging, catalogs     | `declarative-sheet.test.tsx`, `shared-values.test.tsx`                               |
 | Primitives, parity with built-in | `primitives.test.ts`, `primitive-parity.test.tsx`, `primitive-seeding.test.ts`       |
+| Bindings, document source        | `document-bindings.test.ts`, `document-source.test.ts`                               |
 | Lists, images                    | `template-lists-images.test.ts`                                                      |
 | Formulas                         | `template-formulas.test.ts`                                                          |
 | Defaults, overrides, resolution  | `default-templates.test.ts`, `built-in-templates.test.ts`, `view-resolution.test.ts` |

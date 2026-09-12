@@ -3,14 +3,14 @@ import { useCallback, useEffect, useMemo } from 'react';
 
 import { useCharacterContext } from '../../../context/CharacterContext';
 import { reportSheetIssue } from '../../../diagnostics';
-import { useDocumentStore } from '../../../store/documentStore';
-import type { CharacterLike } from '../../../systems/star-wars-wod/documentBindings';
+import { useDocumentSource } from '../../../hooks/useDocumentSource';
+import type { DocumentBindingDescriptor } from '../../../systems/templateBindings';
+import type { SystemListShape } from '../../../systems/templateBindings';
 import {
-    listDocumentBindings,
+    createListEntry,
+    readBoundNumber,
     resolveDocumentBinding,
-    systemListDataKey,
-    toCoordinate,
-} from '../../../systems/star-wars-wod/documentBindings';
+} from '../../../systems/templateBindings';
 import type { CustomTemplate, ListNode, TemplateField } from '../../../types/template';
 import {
     collectListNodes,
@@ -54,7 +54,7 @@ export interface FormulaState {
 }
 
 export interface SystemListRuntime {
-    descriptor: NonNullable<ReturnType<typeof resolveDocumentBinding>>;
+    descriptor: DocumentBindingDescriptor;
     data: readonly unknown[];
     write: (next: readonly unknown[]) => void;
 }
@@ -107,17 +107,17 @@ function readRows(value: unknown): Record<string, Record<string, unknown>> {
 }
 
 export function useTemplatePage(template: CustomTemplate | undefined): UseTemplatePageResult {
+    const source = useDocumentSource();
     const {
-        currentDocumentId,
         documents,
+        document,
         updateDocumentData,
         updateDocumentMetadata,
         updateTemplateValues,
-    } = useDocumentStore();
-    const { readOnly } = useCharacterContext();
+    } = source;
+    const readOnly = useCharacterContext().readOnly || source.readOnly;
     const locale = useDocusaurusContext().i18n.currentLocale;
-
-    const document = documents.find(({ id }) => id === currentDocumentId);
+    const currentDocumentId = document?.id;
     const templateId = template?.id;
     // Values live in one document-global bag keyed by valueKey (clarification D1).
     const values = useMemo<TemplatePageValues>(
@@ -131,7 +131,7 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
         [template]
     );
 
-    const documentData = document?.data as CharacterLike | undefined;
+    const documentData = document?.data as Record<string, unknown> | undefined;
 
     const setValue = useCallback(
         (fieldOrKey: string, value: unknown) => {
@@ -227,40 +227,15 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
                 return undefined;
             };
 
-            // System traits: coordinate → trait value; pools → .current / .max.
+            // System-bound coordinates (traits, pool parts) read document data.
             if (documentData) {
-                for (const binding of listDocumentBindings(
+                const bound = readBoundNumber(
                     template.systemId,
-                    template.documentKind
-                )) {
-                    if (binding.kind === 'trait') {
-                        if (toCoordinate(binding.traitKey) === path) {
-                            const record = documentData[binding.map] as
-                                | Record<string, { value?: number }>
-                                | undefined;
-                            // Unset traits keep their schema defaults (skills 0, others 1).
-                            return (
-                                record?.[binding.traitKey]?.value ??
-                                (binding.map === 'skills' ? 0 : 1)
-                            );
-                        }
-                    } else if (binding.kind === 'resource') {
-                        const base = toCoordinate(binding.resourceId);
-                        const [head, part] = path.split('.');
-                        if (head === base) {
-                            if (binding.resourceId === 'willpower') {
-                                const pool = documentData.willpower;
-                                return part === 'max' ? pool?.max : pool?.current;
-                            }
-                            if (binding.resourceId === 'force-points') {
-                                const pool = documentData.forcePoints;
-                                return part === 'max' ? pool?.max : pool?.current;
-                            }
-                            if (part === 'max') return undefined; // rating scalars expose no max
-                            return documentData.darkSideResistance;
-                        }
-                    }
-                }
+                    template.documentKind,
+                    documentData,
+                    path
+                );
+                if (bound.bound) return bound.value;
             }
             const [head, part] = path.split('.');
             if (part === 'current' || part === 'max') {
@@ -398,7 +373,7 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
             }
             const listId =
                 descriptor.kind === 'list'
-                    ? systemListDataKey(descriptor.listId)
+                    ? descriptor.dataKey
                     : descriptor.kind === 'equipment'
                       ? descriptor.sectionId
                       : undefined;
@@ -464,6 +439,7 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
 
         const pending: Array<{
             listId: string;
+            shape: SystemListShape;
             presets: Array<{ key: string; label: string; value?: number }>;
         }> = [];
         for (const list of collectListNodes(template)) {
@@ -474,8 +450,13 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
                     template.documentKind,
                     list.bindingKey
                 );
-                const listId = descriptor?.kind === 'list' ? descriptor.listId : undefined;
-                if (listId) pending.push({ listId, presets: list.presets });
+                if (descriptor?.kind === 'list') {
+                    pending.push({
+                        listId: descriptor.dataKey,
+                        shape: descriptor.entryShape,
+                        presets: list.presets,
+                    });
+                }
             } else if (list.valueKey) {
                 // Value-coordinate lists seed into the bag as ordinary starting entries.
                 const stored: unknown = values[list.valueKey];
@@ -508,18 +489,20 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
         }
         updateDocumentData(currentDocumentId, (raw) => {
             const next = { ...(raw as Record<string, unknown>) };
-            for (const { listId, presets } of pending) {
+            for (const { listId, shape, presets } of pending) {
                 const list = Array.isArray(next[listId])
                     ? (next[listId] as Array<Record<string, unknown>>)
                     : [];
                 const known = new Set(list.map((item) => String(item.id ?? '')));
                 const seeded = presets
                     .filter((preset) => !known.has(`preset-${template.id}-${preset.key}`))
-                    .map((preset) => ({
-                        id: `preset-${template.id}-${preset.key}`,
-                        label: preset.label,
-                        value: preset.value ?? 0,
-                    }));
+                    .map((preset) =>
+                        createListEntry(shape, {
+                            id: `preset-${template.id}-${preset.key}`,
+                            label: preset.label,
+                            value: preset.value ?? 0,
+                        })
+                    );
                 next[listId] = [...list, ...seeded];
             }
             return next;

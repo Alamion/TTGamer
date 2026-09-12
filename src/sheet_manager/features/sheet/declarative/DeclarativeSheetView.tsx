@@ -6,7 +6,7 @@ import { createElement } from 'react';
 
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
-import { resolveDataBindingByCoordinate } from '../../../systems/star-wars-wod/documentBindings';
+import { resolveDataBindingByCoordinate } from '../../../systems/templateBindings';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
 import { fieldValueKey, isContainerNode, tableValueKey } from '../../../types/template';
 import { listValueKey } from '../../../types/template';

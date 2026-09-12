@@ -1,14 +1,11 @@
 import { starWarsWodProfile } from '@site/src/sheet_manager/systems/star-wars-wod';
-import type { CharacterLike } from '@site/src/sheet_manager/systems/star-wars-wod/documentBindings';
 import {
     listDocumentBindings,
     listNumericCoordinates,
+    readBoundNumber,
     resolveDataBindingByCoordinate,
     resolveDocumentBinding,
-    systemListDataKey,
-    writeList,
-    writeTraitValue,
-} from '@site/src/sheet_manager/systems/star-wars-wod/documentBindings';
+} from '@site/src/sheet_manager/systems/templateBindings';
 import { describe, expect, it } from 'vitest';
 
 describe('document binding registry (feature 005, T007)', () => {
@@ -85,23 +82,22 @@ describe('document binding registry (feature 005, T007)', () => {
         ).toBeUndefined();
     });
 
-    it('write transforms are pure and shape-correct', () => {
+    it('reads bound formula coordinates from document data, falling back to trait defaults', () => {
         const data = {
-            metadata: { name: '' },
-            attributes: {},
-            skills: { Athletics: { value: 2 } },
-            customSkills: [],
-        } as unknown as CharacterLike;
-
-        const traitPatch = writeTraitValue(data, 'attributes', 'Strength', { value: 3 });
-        expect(traitPatch.attributes['Strength']?.value).toBe(3);
-        expect(data.attributes['Strength']).toBeUndefined(); // input untouched
-
-        const listPatch = writeList(data, 'customSkills', [
-            { id: 'preset-t1-occultism', label: 'Occultism', value: 2 },
-        ]);
-        expect(listPatch.customSkills).toHaveLength(1);
-        expect(data.customSkills).toHaveLength(0);
+            attributes: { Strength: { value: 3 } },
+            skills: {},
+            willpower: { current: 4, max: 7 },
+            darkSideResistance: 6,
+        };
+        const read = (path: string) => readBoundNumber('star-wars-wod', 'character', data, path);
+        expect(read('strength')).toEqual({ bound: true, value: 3 });
+        expect(read('dexterity')).toEqual({ bound: true, value: 1 }); // unset attribute
+        expect(read('alertness')).toEqual({ bound: true, value: 0 }); // unset ability
+        expect(read('willpower.current')).toEqual({ bound: true, value: 4 });
+        expect(read('willpower.max')).toEqual({ bound: true, value: 7 });
+        expect(read('dark-side-resistance')).toEqual({ bound: true, value: 6 });
+        expect(read('dark-side-resistance.max')).toEqual({ bound: true, value: undefined });
+        expect(read('origin')).toEqual({ bound: false });
     });
 
     it('declares the new-kind system lists with catalog metadata (feature 006, T009/T010)', () => {
@@ -148,9 +144,29 @@ describe('document binding registry (feature 005, T007)', () => {
     });
 
     it('maps force powers to the forcePowerItems data key (single representation)', () => {
-        expect(systemListDataKey('forcePowers')).toBe('forcePowerItems');
-        expect(systemListDataKey('customSkills')).toBe('customSkills');
-        expect(systemListDataKey('merits')).toBe('merits');
+        const dataKey = (key: string) => {
+            const binding = resolveDocumentBinding('star-wars-wod', 'character', key);
+            return binding?.kind === 'list' ? binding.dataKey : undefined;
+        };
+        expect(dataKey('list:forcePowers')).toBe('forcePowerItems');
+        expect(dataKey('list:customSkills')).toBe('customSkills');
+        expect(dataKey('list:merits')).toBe('merits');
+    });
+
+    it('carries translated level descriptors for condition tracks', () => {
+        const health = resolveDocumentBinding('star-wars-wod', 'character', 'track:health');
+        expect(health?.kind === 'track' && health.levels.map(({ id }) => id)).toEqual([
+            'bruised',
+            'hurt',
+            'injured',
+            'wounded',
+            'mauled',
+            'crippled',
+            'incapacitated',
+        ]);
+        expect(health?.kind === 'track' && health.levels[0]?.translation?.id).toBe(
+            'ttgamer.ui.sheet.documents.fields.healthLevels.bruised'
+        );
     });
 
     it('declares catalog-backed equipment bindings (feature 006)', () => {

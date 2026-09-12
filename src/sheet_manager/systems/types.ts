@@ -9,6 +9,7 @@ import type {
 } from '../types/document';
 import type { CustomTemplate } from '../types/template';
 import type { DocumentCapabilities } from './capabilities';
+import type { DocumentBindingDescriptor } from './templateBindings';
 
 export type SheetAccentColor = 'primary' | 'secondary';
 
@@ -64,6 +65,8 @@ export interface SystemPlugin {
      * Identity = view id; absent entries fall back to legacy view derivation.
      */
     defaultTemplates?: readonly CustomTemplate[];
+    /** Document data addresses templates may bind to; generic template code reads only these. */
+    templateBindings?: readonly DocumentBindingDescriptor[];
 }
 
 export interface ParsedRegisteredDocument<TData = unknown> {

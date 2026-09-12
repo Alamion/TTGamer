@@ -1,9 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { BACKGROUNDS } from '../../../../../src/data/backgroundsData';
-import { FORCE_POWERS } from '../../../../../src/data/forcePowersData';
-import { MERITS_FLAWS } from '../../../../../src/data/meritsFlawsData';
 import { buildDiceNotation } from '../../../../shared/utils/diceNotation';
 import { generateId } from '../../../../shared/utils/random';
 import type { CatalogEntry } from '../../../components';
@@ -23,37 +20,30 @@ import { reportSheetIssue } from '../../../diagnostics';
 import { useCharacter } from '../../../hooks';
 import type {
     DocumentBindingDescriptor,
+    EquipmentSectionId,
     ListBinding,
-} from '../../../systems/star-wars-wod/documentBindings';
-import {
-    resolveDocumentBinding,
-    systemListDataKey,
-} from '../../../systems/star-wars-wod/documentBindings';
-import type { CustomSkill, MeritFlawItem, TraitValue } from '../../../types/character';
-import { DEFAULT_ATTRIBUTE_VALUE, DEFAULT_SKILL_VALUE } from '../../../types/character';
+} from '../../../systems/templateBindings';
+import { resolveDocumentBinding } from '../../../systems/templateBindings';
+import type {
+    ConditionMark,
+    CustomSkill,
+    MeritFlawItem,
+    TraitValue,
+} from '../../../types/character';
+import { DEFAULT_ATTRIBUTE_VALUE } from '../../../types/character';
 import type { ListNode, PrimitiveNode } from '../../../types/template';
 import { listValueKey } from '../../../types/template';
 import { ArmorSection } from '../body/ArmorSection';
 import { ImplantsSection } from '../body/ImplantsSection';
 import { InventorySection } from '../body/InventorySection';
 import { WeaponsSection } from '../body/WeaponsSection';
+import { CATALOG_BINDINGS } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
 
 const page = uiMessages.sheet.templates.page;
-const fields = uiMessages.sheet.documents.fields;
 
 const inputClasses =
     'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
-
-const HEALTH_LEVEL_NAMES = [
-    'Bruised',
-    'Hurt',
-    'Injured',
-    'Wounded',
-    'Mauled',
-    'Crippled',
-    'Incapacitated',
-] as const;
 
 /** maxFrom resolution for this node (feature 006 FR-12); degraded when the source is unavailable. */
 export interface PrimitiveMaxState {
@@ -133,15 +123,21 @@ function toCatalogEntries(
 function listCatalog(binding: ListBinding): CatalogEntry[] | undefined {
     if (!binding.catalog) return undefined;
     const { catalogId, catalogFilter } = binding.catalog;
-    if (catalogId === 'force-powers') return toCatalogEntries(FORCE_POWERS);
-    if (catalogId === 'merits-flaws') return toCatalogEntries(MERITS_FLAWS, catalogFilter);
-    if (catalogId === 'backgrounds') return toCatalogEntries(BACKGROUNDS);
-    return undefined;
+    const catalog = CATALOG_BINDINGS.get(catalogId);
+    if (!catalog) {
+        reportSheetIssue({
+            code: 'catalog-unavailable',
+            message: 'List binding declares a catalog that is not registered',
+            details: { catalogId, bindingKey: binding.key },
+        });
+        return undefined;
+    }
+    return toCatalogEntries(catalog.entries, catalogFilter);
 }
 
 /**
- * System-bound trait-shaped list (customTalents/customSkills/customKnowledges/forcePowers/
- * backgrounds): entries {id, label, value}; catalog selection copies the entry name.
+ * System-bound trait-shaped list (`trait` and `named-trait` entry shapes): entries
+ * {id, label, value}; catalog selection copies the entry name.
  */
 function TraitListBindingView({
     binding,
@@ -210,7 +206,7 @@ function SystemListBody({
     columns?: 1 | 2 | 3 | 4;
 }) {
     const { character, updateCharacter } = useCharacter();
-    const dataKey = systemListDataKey(binding.listId);
+    const { dataKey } = binding;
     const raw = character
         ? (((character as unknown as Record<string, unknown>)[dataKey] as unknown[] | undefined) ??
           [])
@@ -219,9 +215,9 @@ function SystemListBody({
     const write = (next: unknown[]) =>
         character && updateCharacter(character.id, { [dataKey]: next } as never);
 
-    if (binding.listId === 'merits' || binding.listId === 'flaws') {
+    if (binding.entryShape === 'merit-flaw') {
         const items = raw as MeritFlawItem[];
-        const isMerit = binding.listId === 'merits';
+        const isMerit = binding.catalog?.catalogFilter?.value !== 'Flaw';
         return (
             <MeritFlawList
                 title={title}
@@ -256,11 +252,11 @@ function SystemListBody({
         value: typeof item.value === 'number' ? item.value : 0,
     }));
     // Reverse mapping keeps unknown fields (specialization flags, catalog ids, `name` for
-    // Force powers) intact across label/value edits — entries are edits, never re-creations.
+    // named traits) intact across label/value edits — entries are edits, never re-creations.
     const rawById = new Map(rawItems.map((item) => [String(item.id ?? ''), item]));
     const toRaw = (entry: TraitListEntry): Record<string, unknown> => {
         const source = rawById.get(entry.id);
-        if (binding.listId === 'forcePowers') {
+        if (binding.entryShape === 'named-trait') {
             return { ...(source ?? {}), id: entry.id, name: entry.label, value: entry.value };
         }
         return { ...(source ?? { id: entry.id, specialization: false }), ...entry };
@@ -279,7 +275,7 @@ function SystemListBody({
                             String(item.id ?? '') === id
                                 ? {
                                       ...item,
-                                      ...(binding.listId === 'forcePowers'
+                                      ...(binding.entryShape === 'named-trait'
                                           ? { name: entry.name }
                                           : { label: entry.name }),
                                       catalogId: entry.id,
@@ -313,8 +309,10 @@ export function CustomListView({
                     kind: 'list',
                     label: list.title ?? list.id,
                     documentKinds: new Set<string>(),
-                    listId: 'customSkills',
-                } as ListBinding
+                    listId: list.id,
+                    dataKey: listValueKey(list),
+                    entryShape: 'trait',
+                } satisfies ListBinding
             }
             items={entries}
             disabled={disabled}
@@ -362,11 +360,7 @@ export function SystemListView({
 // Equipment bindings (US6): the body-section molecules with handler parity.
 // ---------------------------------------------------------------------------
 
-function EquipmentBody({
-    sectionId,
-}: {
-    sectionId: 'inventory' | 'armor' | 'weapons' | 'implants';
-}) {
+function EquipmentBody({ sectionId }: { sectionId: EquipmentSectionId }) {
     const handlers = useBodyHandlers();
     if (!handlers) {
         return <DegradedBinding bindingKey={`equipment:${sectionId}`} reason="no-body-handlers" />;
@@ -451,9 +445,10 @@ function PrimitiveTraitBody({
     const record = (character as unknown as Record<string, Record<string, TraitValue> | undefined>)[
         descriptor.map
     ];
-    const trait: TraitValue =
-        record?.[descriptor.traitKey] ??
-        (descriptor.map === 'skills' ? DEFAULT_SKILL_VALUE : DEFAULT_ATTRIBUTE_VALUE);
+    const trait: TraitValue = record?.[descriptor.traitKey] ?? {
+        ...DEFAULT_ATTRIBUTE_VALUE,
+        value: descriptor.defaultValue,
+    };
     const patch = (updates: Partial<TraitValue>) =>
         updateCharacter(character.id, {
             [descriptor.map]: {
@@ -523,25 +518,20 @@ function PrimitiveResourceBody({
         maxState?.degraded === true || maxState?.resolvedMax === undefined
             ? descriptor.maximum
             : Math.min(maxState.resolvedMax, descriptor.maximum);
+    const stored = (character as unknown as Record<string, unknown>)[descriptor.dataKey];
     const pair =
         descriptor.mode === 'rating'
-            ? { current: character.darkSideResistance ?? 0, max: descriptor.maximum }
-            : ((descriptor.resourceId === 'willpower'
-                  ? character.willpower
-                  : character.forcePoints) ?? {
+            ? { current: typeof stored === 'number' ? stored : 0, max: descriptor.maximum }
+            : ((stored as { current: number; max: number } | undefined) ?? {
                   current: 0,
                   max: descriptor.maximum,
               });
     const writeCurrent = (next: number) => {
         const clamped = Math.min(next, effectiveMax);
-        updateCharacter(
-            character.id,
-            descriptor.resourceId === 'dark-side-resistance'
-                ? { darkSideResistance: clamped }
-                : descriptor.resourceId === 'willpower'
-                  ? { willpower: { ...pair, current: clamped } }
-                  : { forcePoints: { ...pair, current: clamped } }
-        );
+        updateCharacter(character.id, {
+            [descriptor.dataKey]:
+                descriptor.mode === 'rating' ? clamped : { ...pair, current: clamped },
+        } as Partial<typeof character>);
     };
     return (
         <div className="grid gap-1">
@@ -570,7 +560,12 @@ function PrimitiveTrackBody({
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'track' }>;
 }) {
     const { character, readOnly, updateCharacter } = useCharacter();
-    if (!character || descriptor.trackId !== 'health') {
+    const track = character
+        ? ((character as unknown as Record<string, unknown>)[descriptor.dataKey] as
+              | { levels: ConditionMark[] }
+              | undefined)
+        : undefined;
+    if (!character || !track) {
         return (
             <DegradedBinding
                 bindingKey={node.bindingKey}
@@ -579,19 +574,19 @@ function PrimitiveTrackBody({
         );
     }
     const label = node.label ?? descriptor.label;
-    const healthLabels = fields.healthLevels as Record<string, { message: string }>;
     const levels = node.track
         ? node.track.names.map((name, index) => ({
               id: `level-${index}`,
               label: name,
               penalty: null,
           }))
-        : character.health.levels.map((_, index) => {
-              const name = HEALTH_LEVEL_NAMES[Math.min(index, HEALTH_LEVEL_NAMES.length - 1)];
-              const levelLabel = healthLabels[name];
+        : track.levels.map((_, index) => {
+              const level = descriptor.levels[Math.min(index, descriptor.levels.length - 1)];
               return {
-                  id: name.toLowerCase(),
-                  label: levelLabel ? translate(levelLabel) : name,
+                  id: level?.id ?? `level-${index}`,
+                  label: level?.translation
+                      ? translate(level.translation)
+                      : (level?.label ?? String(index)),
                   penalty: index,
               };
           });
@@ -603,8 +598,12 @@ function PrimitiveTrackBody({
             <CompactConditionTrack
                 disabled={readOnly}
                 levels={levels}
-                marks={character.health.levels}
-                onChange={(next) => updateCharacter(character.id, { health: { levels: next } })}
+                marks={track.levels}
+                onChange={(next) =>
+                    updateCharacter(character.id, {
+                        [descriptor.dataKey]: { ...track, levels: next },
+                    } as Partial<typeof character>)
+                }
             />
         </div>
     );

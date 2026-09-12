@@ -17,11 +17,8 @@ import type {
     FieldBinding,
     ResourceBinding,
     TraitBinding,
-} from '../../../systems/star-wars-wod/documentBindings';
-import {
-    listDocumentBindings,
-    toCoordinate,
-} from '../../../systems/star-wars-wod/documentBindings';
+} from '../../../systems/templateBindings';
+import { listDocumentBindings } from '../../../systems/templateBindings';
 import type {
     CustomTemplate,
     GroupNode,
@@ -102,7 +99,7 @@ function bridgedTraitField(binding: TraitBinding): TemplateField {
         min: 0,
         max: binding.maximum,
         presentation: 'dots',
-        valueKey: toCoordinate(binding.traitKey),
+        valueKey: binding.coordinate,
     };
 }
 
@@ -115,7 +112,7 @@ function bridgedResourceField(binding: ResourceBinding): TemplateField {
         type: 'resource',
         min: 0,
         max: binding.maximum,
-        valueKey: toCoordinate(binding.resourceId),
+        valueKey: binding.coordinate,
     };
 }
 
@@ -127,7 +124,7 @@ function bridgedIdentityField(binding: FieldBinding): TemplateField {
         compact: false,
         type: 'text',
         multiline: false,
-        valueKey: toCoordinate(binding.fieldKey),
+        valueKey: binding.coordinate,
     };
 }
 

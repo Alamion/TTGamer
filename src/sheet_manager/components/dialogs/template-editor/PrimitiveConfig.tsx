@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { listDocumentBindings } from '../../../systems/star-wars-wod/documentBindings';
+import { listDocumentBindings } from '../../../systems/templateBindings';
 import type { CustomTemplate, PrimitiveNode } from '../../../types/template';
 import type { NodeUpdates } from './draft';
 import { listNumericCoordinateOptions } from './draft';

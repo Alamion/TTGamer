@@ -4,7 +4,7 @@ import {
     type FormulaDependencyEntry,
     parseFormula,
 } from '../../../features/sheet/declarative/formula';
-import { listNumericCoordinates } from '../../../systems/star-wars-wod/documentBindings';
+import { listNumericCoordinates } from '../../../systems/templateBindings';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import type {
     CustomTemplate,

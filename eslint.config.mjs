@@ -29,6 +29,33 @@ export default defineConfig([
         },
     },
     {
+        // System boundary: generic template code reaches systems only through
+        // `systems/templateBindings` and the registry, never a concrete system module.
+        files: [
+            'src/sheet_manager/features/sheet/declarative/**/*.{ts,tsx}',
+            'src/sheet_manager/components/dialogs/template-editor/**/*.{ts,tsx}',
+            'src/sheet_manager/systems/templateBindings.ts',
+            'src/sheet_manager/systems/view.ts',
+            'src/sheet_manager/systems/wod-like/**/*.ts',
+            'src/sheet_manager/types/**/*.ts',
+            'src/sheet_manager/hooks/**/*.ts',
+        ],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            group: ['**/systems/star-wars-wod', '**/systems/star-wars-wod/**'],
+                            message:
+                                'Generic sheet code must not import a concrete system; declare the need on SystemPlugin (e.g. templateBindings) instead.',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
+    {
         files: ['scripts/**/*.ts', '*.config.{js,mjs,ts}', 'sidebars.ts'],
         languageOptions: {
             globals: globals.node,

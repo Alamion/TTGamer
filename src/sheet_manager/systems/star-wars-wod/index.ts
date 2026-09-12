@@ -15,6 +15,7 @@ import type {
     SystemPlugin,
 } from '../types';
 import { starWarsWodDefaultTemplates } from './defaultTemplates';
+import { starWarsTemplateBindings } from './documentBindings';
 import {
     createDefaultCreatureData,
     createDefaultDroidData,
@@ -183,6 +184,7 @@ export const starWarsWodSystem: SystemPlugin = {
         starWarsFodderDefinition,
     ],
     defaultTemplates: starWarsWodDefaultTemplates,
+    templateBindings: starWarsTemplateBindings,
 };
 
 export * from './profile';

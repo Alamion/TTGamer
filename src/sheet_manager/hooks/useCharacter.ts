@@ -1,24 +1,24 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useCharacterContext } from '../context/CharacterContext';
-import { useDocumentStore } from '../store/documentStore';
 import { systemRegistry } from '../systems';
 import type { BaseCharacter } from '../types/character';
+import { useDocumentSource } from './useDocumentSource';
 
 export function useCharacter() {
-    const { currentDocumentId, documents, updateDocumentData, updateDocumentMetadata } =
-        useDocumentStore();
-    const { character: contextChar, readOnly } = useCharacterContext();
+    const source = useDocumentSource();
+    const { documents, document, updateDocumentData, updateDocumentMetadata } = source;
+    const { character: contextChar, readOnly: contextReadOnly } = useCharacterContext();
+    const readOnly = contextReadOnly || source.readOnly;
 
     const storedCharacter = useMemo(() => {
-        const document = documents.find(({ id }) => id === currentDocumentId);
         if (!document) return null;
         const definition = systemRegistry.getDocumentDefinition(
             document.systemId,
             document.definitionId
         );
         return definition?.capabilities?.character?.read(document.id, document.data) ?? null;
-    }, [currentDocumentId, documents]);
+    }, [document]);
     const character = contextChar ?? storedCharacter;
 
     const characterRef = useRef(character);
