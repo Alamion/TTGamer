@@ -96,7 +96,11 @@ WoD-family systems build trait/resource/track bindings from their profile with
 
 - List entry shapes: `trait` `{id,label,value}`, `named-trait` `{id,name,value}`, `merit-flaw`
   `{id,label,points}`. Preset seeding and the list molecules both follow `entryShape`.
-- Keys are persisted as plain strings (no compile-time checking yet).
+- Keys are persisted as plain strings, checked by `validateTemplateReferences`
+  (`features/sheet/data/templateReferences.ts`) wherever templates enter the system: editor
+  draft issues, file import (reports `template-reference-invalid`), and a test over every
+  shipped default. It checks binding keys and list binding kinds, catalog ids, fill details and
+  fill targets, and formula/`maxFrom` coordinates against `listTemplateNumericCoordinates`.
 - An unknown key, wrong kind, missing character, or missing body handlers renders the labeled
   `DegradedBinding` notice and reports `binding-unresolved` with a `reason`.
 - Catalogs (`features/sheet/data/catalogBindings.ts`, `CATALOG_BINDINGS`) are the only path
@@ -156,7 +160,7 @@ The selector (`ViewModeSelect`) encodes custom templates as `tpl:<id>`; view ids
 
 - `draft.ts`: `EditorDraft = CustomTemplate`; pure tree ops (`insertNode`, `moveNode`,
   `updateNode`, `removeNode`), node factories, and `collectDraftIssues` (limits, duplicate ids,
-  bounds, formula parse/unknown coordinate/cycles). It does **not** validate `bindingKey`s.
+  bounds, formula parse errors, cycles, plus every `validateTemplateReferences` issue).
 - `ElementEditor.tsx`: recursive panels (grip = move on the left, chevron = collapse on the
   right), palette, bridged-field factories. `FieldEditor.tsx` / `PrimitiveConfig.tsx`: config.
 - `TemplateEditorDialog`: explicit save/discard; editing a default id saves through
@@ -175,7 +179,7 @@ manual choice and listed in the degradation report. Filenames: `ttgamer_template
 
 - `reportSheetIssue({ code, message, details })` — codes: `template-value-write-rejected`,
   `template-value-write-skipped`, `template-quarantined`, `document-recovered`,
-  `binding-unresolved`, `catalog-unavailable`, `formula-error`.
+  `binding-unresolved`, `catalog-unavailable`, `formula-error`, `template-reference-invalid`.
 - In development each distinct issue is logged once as `[sheet_manager] <code>: …` in the
   browser console. **A silently ignored edit, an empty section, or a "degraded" card → check
   the console first.**
@@ -216,7 +220,8 @@ lists reference it by `catalog.catalogId`.
 - Primitive molecules (trait rows, merit/flaw lists, equipment sections) are WoD-family UI and
   read through the `character` capability (`BaseCharacter`); a non-WoD system will need its own
   molecules behind the same binding kinds.
-- `bindingKey`/`catalogId` are plain strings; typos surface only at render time.
+- Binding keys are not literal types (bindings are built at runtime per system); integrity
+  relies on `validateTemplateReferences` rather than the compiler.
 - `useTemplatePage` (`hooks.ts`) mixes store wiring, formula evaluation, list/catalog runtime,
   and preset seeding; `draft.ts` and `ElementEditor.tsx` are similarly overloaded.
 - Unused exports awaiting cleanup: `listBuiltInBlocks`, `isBuiltInBlockAvailable`, `blockAccentColor`, `newNodeId`,
@@ -236,6 +241,7 @@ lists reference it by `catalog.catalogId`.
 | Defaults, overrides, resolution  | `default-templates.test.ts`, `built-in-templates.test.ts`, `view-resolution.test.ts` |
 | Stores, quarantine               | `template-store.test.ts`, `template-store-migration.test.ts`                         |
 | Editor                           | `template-editor.test.tsx`                                                           |
+| References                       | `template-references.test.ts`                                                        |
 | File format                      | `template-file.test.ts`, `catalog-bindings.test.ts`                                  |
 
 ## History (read for rationale only)

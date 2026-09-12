@@ -20,7 +20,6 @@ import {
     type EditorDraft,
     generateDraftId,
     insertNode,
-    listNumericCoordinateOptions,
     moveNode,
     removeNode,
     removeOption,
@@ -88,21 +87,20 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
 
     const issueMessages = useMemo(
         () =>
-            collectDraftIssues(
-                draft,
-                {
-                    emptyName: t(editor.emptyName),
-                    emptyLabel: t(editor.emptyLabel),
-                    duplicateId: t(editor.duplicateId),
-                    invalidKey: t(editor.invalidKey),
-                    limitReached: t(editor.limitReached),
-                    invalidBounds: t(editor.invalidBounds),
-                    invalidFormula: t(editor.invalidFormula),
-                    unknownCoordinate: t(editor.unknownCoordinate),
-                    circularDependency: t(editor.circularDependency),
-                },
-                { numericCoordinates: listNumericCoordinateOptions(draft).map((c) => c.coordinate) }
-            ).map((issue) => issue.message),
+            collectDraftIssues(draft, {
+                emptyName: t(editor.emptyName),
+                emptyLabel: t(editor.emptyLabel),
+                duplicateId: t(editor.duplicateId),
+                invalidKey: t(editor.invalidKey),
+                limitReached: t(editor.limitReached),
+                invalidBounds: t(editor.invalidBounds),
+                invalidFormula: t(editor.invalidFormula),
+                unknownCoordinate: t(editor.unknownCoordinate),
+                circularDependency: t(editor.circularDependency),
+                unknownBinding: t(editor.unknownBinding),
+                unknownCatalog: t(editor.unknownCatalog),
+                unknownFillTarget: t(editor.unknownFillTarget),
+            }).map((issue) => issue.message),
         [draft, t]
     );
 

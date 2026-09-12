@@ -120,6 +120,9 @@ editor:
     invalidFormula: Неверная формула в «{id}» — проверьте выражение.
     unknownCoordinate: Неизвестное значение «{id}» в формуле.
     circularDependency: 'Обнаружена циклическая зависимость: {id}'
+    unknownBinding: Неизвестная привязка к данным «{id}» для этого типа документа.
+    unknownCatalog: Неизвестный каталог или поле каталога «{id}».
+    unknownFillTarget: Автозаполнение ссылается на несуществующее поле «{id}».
     depthMessage: Достигнут предел вложенности — максимум {limit} уровней.
     countMessage: Достигнут предел элементов — максимум {limit}.
 fieldTypes:

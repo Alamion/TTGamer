@@ -1,10 +1,14 @@
 import { generateId } from '../../../../shared/utils/random';
 import {
+    listTemplateNumericCoordinates,
+    type TemplateReferenceIssue,
+    validateTemplateReferences,
+} from '../../../features/sheet/data/templateReferences';
+import {
     detectDependencyCycles,
     type FormulaDependencyEntry,
     parseFormula,
 } from '../../../features/sheet/declarative/formula';
-import { listNumericCoordinates } from '../../../systems/templateBindings';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import type {
     CustomTemplate,
@@ -21,7 +25,6 @@ import {
     collectFormulaDependencies,
     collectTemplateNodes,
     collectTreeIssues,
-    fieldValueKey,
     isContainerNode,
     isTemplateField,
     TEMPLATE_LIMITS,
@@ -391,6 +394,27 @@ export interface DraftIssueMessages {
     invalidFormula: string;
     unknownCoordinate: string;
     circularDependency: string;
+    unknownBinding: string;
+    unknownCatalog: string;
+    unknownFillTarget: string;
+}
+
+function referenceIssueMessage(
+    issue: TemplateReferenceIssue,
+    messages: DraftIssueMessages
+): string {
+    switch (issue.code) {
+        case 'unknown-binding':
+        case 'binding-kind-mismatch':
+            return interpolate(messages.unknownBinding, { id: issue.key });
+        case 'unknown-catalog':
+        case 'unknown-fill-detail':
+            return interpolate(messages.unknownCatalog, { id: issue.key });
+        case 'unknown-fill-target':
+            return interpolate(messages.unknownFillTarget, { id: issue.key });
+        case 'unknown-coordinate':
+            return interpolate(messages.unknownCoordinate, { id: issue.key });
+    }
 }
 
 const IDENTIFIER_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
@@ -409,11 +433,7 @@ function interpolate(template: string, values: Record<string, string | number>):
  * defensive (imports/edits could introduce collisions) alongside limits, bounds, and formula
  * validation (parse errors, unknown coordinates, cycles — FR-14).
  */
-export function collectDraftIssues(
-    draft: EditorDraft,
-    messages: DraftIssueMessages,
-    options: { numericCoordinates?: readonly string[] } = {}
-): DraftIssue[] {
+export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessages): DraftIssue[] {
     const issues: DraftIssue[] = [];
     if (draft.name.trim().length === 0) {
         issues.push({ message: messages.emptyName });
@@ -466,23 +486,10 @@ export function collectDraftIssues(
             if (node.label.trim().length === 0) issues.push({ message: messages.emptyLabel });
             checkEffectiveKey(node.valueKey ?? node.id);
             if (node.type === 'formula' && node.formula.trim().length > 0) {
-                const parsed = parseFormula(node.formula);
-                if (!parsed.ok) {
+                if (!parseFormula(node.formula).ok) {
                     issues.push({
                         message: interpolate(messages.invalidFormula, { id: node.label }),
                     });
-                } else if (options.numericCoordinates) {
-                    const known = new Set(options.numericCoordinates);
-                    const unknown = parsed.coords.filter(
-                        (coordinate: string) => !known.has(coordinate)
-                    );
-                    if (unknown.length > 0) {
-                        issues.push({
-                            message: interpolate(messages.unknownCoordinate, {
-                                id: unknown.join(', '),
-                            }),
-                        });
-                    }
                 }
             }
         }
@@ -504,23 +511,10 @@ export function collectDraftIssues(
             (node.type === 'rating' || node.type === 'number' || node.type === 'primitive') &&
             node.maxFrom
         ) {
-            const parsed = parseFormula(node.maxFrom);
-            if (!parsed.ok) {
+            if (!parseFormula(node.maxFrom).ok) {
                 issues.push({
                     message: interpolate(messages.invalidFormula, { id: node.label ?? node.id }),
                 });
-            } else if (options.numericCoordinates) {
-                const known = new Set(options.numericCoordinates);
-                const unknown = parsed.coords.filter(
-                    (coordinate: string) => !known.has(coordinate)
-                );
-                if (unknown.length > 0) {
-                    issues.push({
-                        message: interpolate(messages.unknownCoordinate, {
-                            id: unknown.join(', '),
-                        }),
-                    });
-                }
             }
         }
         if (node.type === 'list' && node.valueKey !== undefined) {
@@ -536,6 +530,9 @@ export function collectDraftIssues(
         issues.push({
             message: interpolate(messages.circularDependency, { id: cycle.join(' → ') }),
         });
+    }
+    for (const issue of validateTemplateReferences(draft)) {
+        issues.push({ message: referenceIssueMessage(issue, messages) });
     }
     return issues;
 }
@@ -691,28 +688,8 @@ export function setDraftKind(draft: EditorDraft, documentKind: string): EditorDr
     return { ...draft, documentKind: documentKind as EditorDraft['documentKind'] };
 }
 
-/**
- * The unified numeric coordinate space (contracts/formula-grammar.md §2): system bindings
- * (traits, pool parts) plus this template's own numeric fields — one undifferentiated list
- * for formula/maxFrom pickers and validation; the system/custom split stays under the hood.
- */
-export function listNumericCoordinateOptions(
-    draft: EditorDraft
-): ReadonlyArray<{ coordinate: string; label: string }> {
-    const options = [...listNumericCoordinates(draft.systemId, draft.documentKind)].map(
-        (entry) => ({ ...entry })
-    );
-    walkTemplateNodes(draft.children, (node) => {
-        if (node.type === 'number' || node.type === 'rating') {
-            options.push({ coordinate: fieldValueKey(node), label: node.label });
-        } else if (node.type === 'resource') {
-            const key = fieldValueKey(node);
-            options.push({ coordinate: `${key}.current`, label: `${node.label} (current)` });
-            options.push({ coordinate: `${key}.max`, label: `${node.label} (max)` });
-        }
-    });
-    return options;
-}
+/** The unified numeric coordinate space for formula/maxFrom pickers (system + template). */
+export const listNumericCoordinateOptions = listTemplateNumericCoordinates;
 
 /** Attaches (or re-points) a catalog binding on a select field; enforces single choice. */
 export function attachCatalog(draft: EditorDraft, fieldId: string, catalogId: string): EditorDraft {

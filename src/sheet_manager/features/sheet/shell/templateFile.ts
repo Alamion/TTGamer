@@ -1,6 +1,8 @@
+import { reportSheetIssue } from '../../../diagnostics';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
 import { CustomTemplateSchema, isTemplateField, walkTemplateNodes } from '../../../types/template';
 import { CATALOG_BINDINGS } from '../data/catalogBindings';
+import { validateTemplateReferences } from '../data/templateReferences';
 
 /**
  * Template file transfer boundary: a self-describing JSON wrapper around the declarative
@@ -115,6 +117,14 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
     // FR-21 (003): templates referencing unavailable catalogs still import; the affected
     // fields degrade to manual choice fields (binding stripped) and the user is told which.
     const { template: resolved, degradedFields } = stripUnavailableBindings(template);
+    // Remaining broken references still import (they degrade at render); report each one.
+    for (const issue of validateTemplateReferences(resolved)) {
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'Imported template references something this build does not provide',
+            details: { templateId: resolved.id, ...issue },
+        });
+    }
     return { ok: true, template: resolved, degradedCatalogFields: degradedFields };
 }
 

@@ -34,6 +34,9 @@ const ISSUE_MESSAGES = {
     invalidFormula: 'Invalid formula in "{id}".',
     unknownCoordinate: 'Unknown value "{id}".',
     circularDependency: 'Circular dependency: {id}',
+    unknownBinding: 'Unknown binding "{id}".',
+    unknownCatalog: 'Unknown catalog "{id}".',
+    unknownFillTarget: 'Missing fill target "{id}".',
 };
 
 /** Asserts success so subsequent `.draft` accesses typecheck. */

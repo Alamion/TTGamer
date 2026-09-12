@@ -120,6 +120,9 @@ editor:
     invalidFormula: Invalid formula in "{id}" — check the expression.
     unknownCoordinate: Unknown value "{id}" referenced by a formula.
     circularDependency: 'Circular dependency detected: {id}'
+    unknownBinding: Unknown data binding "{id}" for this document kind.
+    unknownCatalog: Unknown catalog or catalog detail "{id}".
+    unknownFillTarget: 'Auto-fill targets a field that does not exist: "{id}".'
     depthMessage: Nesting limit reached — {limit} levels maximum.
     countMessage: Element limit reached — {limit} elements maximum.
 fieldTypes:

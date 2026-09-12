@@ -1193,8 +1193,17 @@
     "ttgamer.ui.sheet.templates.editor.tableValueKey": {
         "message": "Shared value key (table rows)"
     },
+    "ttgamer.ui.sheet.templates.editor.unknownBinding": {
+        "message": "Unknown data binding \"{id}\" for this document kind."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownCatalog": {
+        "message": "Unknown catalog or catalog detail \"{id}\"."
+    },
     "ttgamer.ui.sheet.templates.editor.unknownCoordinate": {
         "message": "Unknown value \"{id}\" referenced by a formula."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownFillTarget": {
+        "message": "Auto-fill targets a field that does not exist: \"{id}\"."
     },
     "ttgamer.ui.sheet.templates.editor.untitledName": {
         "message": "Untitled template"

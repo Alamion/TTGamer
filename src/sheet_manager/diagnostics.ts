@@ -13,7 +13,8 @@ export type SheetIssueCode =
     | 'document-recovered'
     | 'binding-unresolved'
     | 'catalog-unavailable'
-    | 'formula-error';
+    | 'formula-error'
+    | 'template-reference-invalid';
 
 export interface SheetIssue {
     code: SheetIssueCode;

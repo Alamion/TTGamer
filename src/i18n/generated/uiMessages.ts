@@ -1326,6 +1326,18 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.circularDependency',
                     message: 'Circular dependency detected: {id}',
                 },
+                unknownBinding: {
+                    id: 'ttgamer.ui.sheet.templates.editor.unknownBinding',
+                    message: 'Unknown data binding "{id}" for this document kind.',
+                },
+                unknownCatalog: {
+                    id: 'ttgamer.ui.sheet.templates.editor.unknownCatalog',
+                    message: 'Unknown catalog or catalog detail "{id}".',
+                },
+                unknownFillTarget: {
+                    id: 'ttgamer.ui.sheet.templates.editor.unknownFillTarget',
+                    message: 'Auto-fill targets a field that does not exist: "{id}".',
+                },
                 depthMessage: {
                     id: 'ttgamer.ui.sheet.templates.editor.depthMessage',
                     message: 'Nesting limit reached — {limit} levels maximum.',

@@ -1193,8 +1193,17 @@
     "ttgamer.ui.sheet.templates.editor.tableValueKey": {
         "message": "Общий ключ значения (строки таблицы)"
     },
+    "ttgamer.ui.sheet.templates.editor.unknownBinding": {
+        "message": "Неизвестная привязка к данным «{id}» для этого типа документа."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownCatalog": {
+        "message": "Неизвестный каталог или поле каталога «{id}»."
+    },
     "ttgamer.ui.sheet.templates.editor.unknownCoordinate": {
         "message": "Неизвестное значение «{id}» в формуле."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownFillTarget": {
+        "message": "Автозаполнение ссылается на несуществующее поле «{id}»."
     },
     "ttgamer.ui.sheet.templates.editor.untitledName": {
         "message": "Шаблон без названия"
