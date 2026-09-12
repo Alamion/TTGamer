@@ -9,7 +9,6 @@ import {
     ReferenceFieldControl,
     ResourceFieldControl,
     SelectFieldControl,
-    TemplateFieldControl,
     type TemplateFieldControlProps,
     TextFieldControl,
     ToggleFieldControl,
@@ -19,7 +18,7 @@ type FieldControl = ComponentType<TemplateFieldControlProps>;
 
 /**
  * Declarative field type → control mapping (atoms: store-free, value + callbacks only).
- * Unknown types fall back to the generic control, which renders a no-op.
+ * Exhaustive by type: a new field type without a control fails typecheck.
  */
 const registry: { [K in TemplateField['type']]: FieldControl } = {
     text: TextFieldControl,
@@ -34,5 +33,5 @@ const registry: { [K in TemplateField['type']]: FieldControl } = {
 };
 
 export function templateFieldControl(type: TemplateField['type']): FieldControl {
-    return registry[type] ?? TemplateFieldControl;
+    return registry[type];
 }

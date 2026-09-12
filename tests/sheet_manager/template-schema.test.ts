@@ -272,3 +272,40 @@ describe('value shapes: lists and images (T003/T006)', () => {
         expect(coerceStoredValue(imageField, undefined)).toBeUndefined();
     });
 });
+
+describe('node schema errors (discriminated union)', () => {
+    const parseChildren = (children: unknown[]) =>
+        CustomTemplateSchema.safeParse({
+            id: 'errors-kit',
+            name: 'Errors Kit',
+            documentKind: 'character',
+            schemaVersion: TEMPLATE_SCHEMA_VERSION,
+            children,
+        });
+
+    it('reports an unknown node type as a single discriminator error', () => {
+        const result = parseChildren([{ id: 'odd', type: 'date', label: 'When' }]);
+        expect(result.success).toBe(false);
+        const issues = result.success ? [] : result.error.issues;
+        expect(issues).toHaveLength(1);
+        expect(issues[0]?.code).toBe('invalid_union_discriminator');
+    });
+
+    it('reports only the offending property of a known type', () => {
+        const result = parseChildren([{ id: 'luck', type: 'rating', label: 'Luck', max: 500 }]);
+        const issues = result.success ? [] : result.error.issues;
+        expect(issues.map(({ path }) => path.join('.'))).toEqual(['children.0.max']);
+    });
+
+    it('keeps cross-property rules with their paths', () => {
+        const result = parseChildren([
+            { id: 'luck', type: 'number', label: 'Luck', min: 5, max: 1 },
+            { id: 'kit-list', type: 'list' },
+        ]);
+        const messages = result.success ? [] : result.error.issues.map(({ message }) => message);
+        expect(messages).toContain('Minimum cannot exceed maximum');
+        expect(messages).toContain(
+            'A list must use exactly one storage mode: valueKey or bindingKey'
+        );
+    });
+});

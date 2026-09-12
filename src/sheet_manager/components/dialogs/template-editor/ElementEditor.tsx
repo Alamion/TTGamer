@@ -23,13 +23,17 @@ import type {
     CustomTemplate,
     GroupNode,
     ListNode,
-    PrimitiveNode,
     SectionNode,
     TableNode,
     TemplateField,
     TemplateNode,
 } from '../../../types/template';
-import { TEMPLATE_LIMITS } from '../../../types/template';
+import {
+    isContainerNode,
+    isTemplateField,
+    TEMPLATE_FIELD_TYPES,
+    TEMPLATE_LIMITS,
+} from '../../../types/template';
 import { generateDraftId, newField as newDraftField, type NodeUpdates } from './draft';
 import { FieldEditor } from './FieldEditor';
 import { PrimitiveConfig } from './PrimitiveConfig';
@@ -64,21 +68,8 @@ export interface ElementEditorCallbacks {
     onRemoveTableColumn: (tableId: string, columnId: string) => void;
 }
 
-function isContainer(node: TemplateNode): node is SectionNode | GroupNode {
-    return node.type === 'section' || node.type === 'group';
-}
-
-function isFieldNode(
-    node: TemplateNode
-): node is Exclude<TemplateNode, SectionNode | GroupNode | TableNode | ListNode | PrimitiveNode> {
-    return !(
-        node.type === 'section' ||
-        node.type === 'group' ||
-        node.type === 'table' ||
-        node.type === 'list' ||
-        node.type === 'primitive'
-    );
-}
+const isContainer = isContainerNode;
+const isFieldNode = isTemplateField;
 
 function countNodes(children: readonly TemplateNode[]): number {
     let count = 0;
@@ -384,17 +375,8 @@ function AddElementPalette({
     );
 }
 
-const FIELD_TYPE_OPTIONS: ReadonlyArray<{ value: TemplateField['type']; label: string }> = [
-    { value: 'text', label: fieldTypes.text.message },
-    { value: 'number', label: fieldTypes.number.message },
-    { value: 'toggle', label: fieldTypes.toggle.message },
-    { value: 'select', label: fieldTypes.select.message },
-    { value: 'rating', label: fieldTypes.rating.message },
-    { value: 'resource', label: fieldTypes.resource.message },
-    { value: 'reference', label: fieldTypes.reference.message },
-    { value: 'image', label: fieldTypes.image.message },
-    { value: 'formula', label: fieldTypes.formula.message },
-];
+const FIELD_TYPE_OPTIONS: ReadonlyArray<{ value: TemplateField['type']; label: string }> =
+    TEMPLATE_FIELD_TYPES.map((type) => ({ value: type, label: fieldTypes[type].message }));
 
 /**
  * The recursive node editor: one panel per element at any depth. Affordances (spec FR-6/FR-7):

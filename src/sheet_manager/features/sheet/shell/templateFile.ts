@@ -1,5 +1,5 @@
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
-import { CustomTemplateSchema, walkTemplateNodes } from '../../../types/template';
+import { CustomTemplateSchema, isTemplateField, walkTemplateNodes } from '../../../types/template';
 import { CATALOG_BINDINGS } from '../data/catalogBindings';
 
 /**
@@ -46,17 +46,7 @@ function mapTreeFields(
         if (node.type === 'table') {
             return { ...node, columns: node.columns.map(map) };
         }
-        if (
-            node.type === 'text' ||
-            node.type === 'number' ||
-            node.type === 'toggle' ||
-            node.type === 'image' ||
-            node.type === 'formula' ||
-            node.type === 'select' ||
-            node.type === 'rating' ||
-            node.type === 'resource' ||
-            node.type === 'reference'
-        ) {
+        if (isTemplateField(node)) {
             return map(node);
         }
         return node;
@@ -140,12 +130,7 @@ export function describeDegradedFields(
             for (const column of node.columns) {
                 if (wanted.has(column.id)) labels.push(column.label);
             }
-        } else if (
-            node.type !== 'section' &&
-            node.type !== 'group' &&
-            node.type !== 'list' &&
-            node.type !== 'primitive'
-        ) {
+        } else if (isTemplateField(node)) {
             if (wanted.has(node.id)) labels.push(node.label);
         }
     });

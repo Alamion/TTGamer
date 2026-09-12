@@ -42,8 +42,13 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   (exactly one of `valueKey` or `bindingKey`), `primitive` (`bindingKey` into system data).
 - Guardrails (`TEMPLATE_LIMITS`, `collectTreeIssues`): depth 10, 200 nodes, one id namespace
   across the whole tree; identifiers are lowercase kebab-case.
-- `CustomTemplateSchema` is `z.union` (not discriminated), so parse errors are noisy — use
-  `describeError()` from `diagnostics.ts` to summarize them.
+- Node and field schemas are a `z.discriminatedUnion('type', …)` of plain objects;
+  cross-property rules (bounds, unique option/column ids, list storage mode) run in
+  `refineField` / `refineNode`. Unknown types yield one `invalid_union_discriminator` issue.
+- `TEMPLATE_FIELD_TYPES` and `TEMPLATE_STRUCTURE_TYPES` are the canonical type lists;
+  `isTemplateField` / `isContainerNode` are the only leaf/container predicates. Type-level
+  guards (`TemplateFieldTypesAreComplete`, `TemplateNodeTypesAreComplete`) fail typecheck when a
+  list and the schema disagree.
 - `systemId` defaults to `star-wars-wod`; compatibility is `systemId` + `documentKind`.
 
 ## Coordinates and value storage
@@ -181,13 +186,14 @@ manual choice and listed in the degradation report. Filenames: `ttgamer_template
 
 ## Extension checklists
 
-**New field type** (e.g. `date`): schema + both union lists in `types/template.ts`; value type,
-page schema, and both switches in `types/templateValues.ts`; control + registry entry
-(`fieldControls.tsx`, `registry/declarativeFieldRegistry.ts`); `draft.ts` `baseField` switch,
-type list, and issue checks; type list in `templateFile.ts`; `FieldEditor` config branch and
-`ElementEditor` palette; en/ru YAML under `translations/source` + `yarn build:translations`;
-tests. Also re-check the leaf-field predicates (`collectTemplateFields`, `countUnfilledRequired`,
-`draft.ts`, `ElementEditor.tsx`, `templateFile.ts`) — they are hand-written, not exhaustive.
+**New field type** (e.g. `date`): object schema, `fieldObjectSchemas`, the node
+discriminated union, `TEMPLATE_FIELD_TYPES`, and `refineField` in `types/template.ts`; the
+value switches in `types/templateValues.ts`; a control in `fieldControls.tsx` + the entry in
+`registry/declarativeFieldRegistry.ts`; the `baseField` factory in `draft.ts`; a config branch
+in `FieldEditor.tsx`; the `fieldTypes.<type>` label in en/ru YAML + `yarn build:translations`;
+tests. The compiler flags every missing piece except the `FieldEditor` branch and tests
+(exhaustive switches and `Record<TemplateField['type'], …>` maps; the editor type picker and
+all leaf predicates derive from the canonical list).
 
 **New binding kind**: descriptor interface + union in `systems/templateBindings.ts` (plus
 `resolveDataBindingByCoordinate` / `listNumericCoordinates` / `readBoundNumber` if it is

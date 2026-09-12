@@ -574,26 +574,3 @@ export function FormulaFieldControl(props: TemplateFieldControlProps) {
     const { field, ...rest } = props;
     return FormulaFieldControlRender({ field: field as FieldType<'formula'>, ...rest });
 }
-
-export function TemplateFieldControl(props: TemplateFieldControlProps) {
-    switch (props.field.type) {
-        case 'text':
-            return <TextFieldControl {...props} />;
-        case 'number':
-            return <NumberFieldControl {...props} />;
-        case 'toggle':
-            return <ToggleFieldControl {...props} />;
-        case 'select':
-            return <SelectFieldControl {...props} />;
-        case 'rating':
-            return <RatingFieldControl {...props} />;
-        case 'resource':
-            return <ResourceFieldControl {...props} />;
-        case 'reference':
-            return <ReferenceFieldControl {...props} />;
-        case 'image':
-            return <ImageFieldControl {...props} />;
-        case 'formula':
-            return <FormulaFieldControl {...props} />;
-    }
-}

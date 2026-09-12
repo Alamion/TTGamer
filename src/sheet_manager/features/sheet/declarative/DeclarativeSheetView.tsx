@@ -8,7 +8,7 @@ import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock'
 import { SectionCard } from '../../../components/sections/SectionCard';
 import { resolveDataBindingByCoordinate } from '../../../systems/templateBindings';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
-import { fieldValueKey, isContainerNode, tableValueKey } from '../../../types/template';
+import { fieldValueKey, isTemplateField, tableValueKey } from '../../../types/template';
 import { listValueKey } from '../../../types/template';
 import { coerceStoredValue } from '../../../types/templateValues';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
@@ -387,11 +387,6 @@ export function countUnfilledRequired(
     values: Record<string, unknown>
 ): number {
     let count = 0;
-    const isField = (node: TemplateNode): node is TemplateField =>
-        !isContainerNode(node) &&
-        node.type !== 'table' &&
-        node.type !== 'list' &&
-        node.type !== 'primitive';
     walkChildren(template.children);
     function walkChildren(children: readonly TemplateNode[]): void {
         for (const node of children) {
@@ -403,7 +398,7 @@ export function countUnfilledRequired(
                 for (const column of node.columns) countRequired(column);
                 continue;
             }
-            if (isField(node)) countRequired(node);
+            if (isTemplateField(node)) countRequired(node);
         }
     }
     function countRequired(field: TemplateField): void {

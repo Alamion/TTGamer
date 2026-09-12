@@ -46,7 +46,7 @@ const boundedNumberShape = {
     step: z.number().finite().positive().optional(),
 };
 
-const validateNumberBounds = (value: { min?: number; max?: number }) =>
+const hasValidBounds = (value: { min?: number; max?: number }) =>
     value.min === undefined || value.max === undefined || value.min <= value.max;
 
 /**
@@ -61,14 +61,12 @@ const TextFieldSchema = z.object({
     multiline: z.boolean().default(false),
 });
 
-const NumberFieldSchema = z
-    .object({
-        ...fieldBaseShape,
-        type: z.literal('number'),
-        ...boundedNumberShape,
-        ...maxFromShape,
-    })
-    .refine(validateNumberBounds, { message: 'Minimum cannot exceed maximum', path: ['min'] });
+const NumberFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('number'),
+    ...boundedNumberShape,
+    ...maxFromShape,
+});
 
 const ToggleFieldSchema = z.object({
     ...fieldBaseShape,
@@ -111,64 +109,50 @@ export const CatalogBindingSchema = z.object({
 export type CatalogFillRule = z.infer<typeof CatalogFillRuleSchema>;
 export type CatalogBinding = z.infer<typeof CatalogBindingSchema>;
 
-const SelectFieldSchema = z
-    .object({
-        ...fieldBaseShape,
-        type: z.literal('select'),
-        multiple: z.boolean().default(false),
-        options: z
-            .array(
-                z.object({
-                    id: templateIdentifierSchema,
-                    label: z.string().min(1).max(120),
-                })
-            )
-            .min(1)
-            .max(TEMPLATE_LIMITS.optionsPerField),
-        binding: CatalogBindingSchema.optional(),
-    })
-    .refine(({ options }) => hasUniqueIds(options), {
-        message: 'Option IDs must be unique within a field',
-        path: ['options'],
-    })
-    .refine(({ binding, multiple }) => !binding || !multiple, {
-        message: 'Catalog-backed fields are single-choice',
-        path: ['binding'],
-    });
+const SelectFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('select'),
+    multiple: z.boolean().default(false),
+    options: z
+        .array(
+            z.object({
+                id: templateIdentifierSchema,
+                label: z.string().min(1).max(120),
+            })
+        )
+        .min(1)
+        .max(TEMPLATE_LIMITS.optionsPerField),
+    binding: CatalogBindingSchema.optional(),
+});
 
-const RatingFieldSchema = z
-    .object({
-        ...fieldBaseShape,
-        type: z.literal('rating'),
-        min: z.number().int().min(0).default(0),
-        max: z.number().int().min(1).max(100),
-        presentation: z.enum(['dots', 'boxes', 'number']).default('dots'),
-        ...maxFromShape,
-    })
-    .refine(validateNumberBounds, { message: 'Minimum cannot exceed maximum', path: ['min'] });
+const RatingFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('rating'),
+    min: z.number().int().min(0).default(0),
+    max: z.number().int().min(1).max(100),
+    presentation: z.enum(['dots', 'boxes', 'number']).default('dots'),
+    ...maxFromShape,
+});
 
-const ResourceFieldSchema = z
-    .object({
-        ...fieldBaseShape,
-        type: z.literal('resource'),
-        min: z.number().int().min(0).default(0),
-        max: z.number().int().min(1).max(1_000_000),
-    })
-    .refine(validateNumberBounds, { message: 'Minimum cannot exceed maximum', path: ['min'] });
+const ResourceFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('resource'),
+    min: z.number().int().min(0).default(0),
+    max: z.number().int().min(1).max(1_000_000),
+});
 
-const ReferenceFieldSchema = z
-    .object({
-        ...fieldBaseShape,
-        type: z.literal('reference'),
-        targetKinds: z.array(DocumentKindSchema).min(1).max(20),
-        multiple: z.boolean().default(false),
-    })
-    .refine(({ targetKinds }) => new Set(targetKinds).size === targetKinds.length, {
-        message: 'Reference target kinds must be unique',
-        path: ['targetKinds'],
-    });
+const ReferenceFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('reference'),
+    targetKinds: z.array(DocumentKindSchema).min(1).max(20),
+    multiple: z.boolean().default(false),
+});
 
-export const TemplateFieldSchema = z.union([
+/**
+ * Field members stay plain objects so they can form a discriminated union (clear per-type
+ * parse errors); cross-property rules live in `refineField`.
+ */
+const fieldObjectSchemas = [
     TextFieldSchema,
     NumberFieldSchema,
     ToggleFieldSchema,
@@ -178,9 +162,67 @@ export const TemplateFieldSchema = z.union([
     RatingFieldSchema,
     ResourceFieldSchema,
     ReferenceFieldSchema,
-]);
+] as const;
+
+type TemplateFieldObject = z.infer<(typeof fieldObjectSchemas)[number]>;
+
+function refineField(field: TemplateFieldObject, context: z.RefinementCtx): void {
+    const issue = (message: string, path: string[]) =>
+        context.addIssue({ code: z.ZodIssueCode.custom, message, path });
+    switch (field.type) {
+        case 'number':
+        case 'rating':
+        case 'resource':
+            if (!hasValidBounds(field)) issue('Minimum cannot exceed maximum', ['min']);
+            return;
+        case 'select':
+            if (!hasUniqueIds(field.options)) {
+                issue('Option IDs must be unique within a field', ['options']);
+            }
+            if (field.binding && field.multiple) {
+                issue('Catalog-backed fields are single-choice', ['binding']);
+            }
+            return;
+        case 'reference':
+            if (new Set(field.targetKinds).size !== field.targetKinds.length) {
+                issue('Reference target kinds must be unique', ['targetKinds']);
+            }
+            return;
+        case 'text':
+        case 'toggle':
+        case 'image':
+        case 'formula':
+            return;
+    }
+}
+
+export const TemplateFieldSchema = z
+    .discriminatedUnion('type', fieldObjectSchemas)
+    .superRefine(refineField);
 
 export type TemplateField = z.infer<typeof TemplateFieldSchema>;
+
+/** Every leaf field type — the single list editors, pickers, and predicates derive from. */
+export const TEMPLATE_FIELD_TYPES = [
+    'text',
+    'number',
+    'toggle',
+    'select',
+    'rating',
+    'resource',
+    'reference',
+    'image',
+    'formula',
+] as const satisfies readonly TemplateField['type'][];
+
+export type TemplateFieldType = (typeof TEMPLATE_FIELD_TYPES)[number];
+
+type Exact<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+type AssertTrue<T extends true> = T;
+/** Compile-time guard: the list above must name every schema field type. */
+export type TemplateFieldTypesAreComplete = AssertTrue<
+    Exact<TemplateFieldType, TemplateField['type']>
+>;
 
 /** Author-defined starting entries for a list element (FR-19, 005 semantics carried over). */
 export const PrimitivePresetSchema = z.object({
@@ -220,38 +262,25 @@ const PrimitiveNodeSchema = z.object({
 });
 
 /** Custom list (FR-17): own value coordinate OR a system-owned list — identical interface. */
-const ListNodeSchema = z
-    .object({
-        id: templateIdentifierSchema,
-        type: z.literal('list'),
-        title: z.string().min(1).max(120).optional(),
-        valueKey: templateIdentifierSchema.optional(),
-        bindingKey: z.string().min(1).max(120).optional(),
-        columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).default(1),
-        presets: z.array(PrimitivePresetSchema).max(TEMPLATE_LIMITS.presetsPerList).optional(),
-    })
-    .refine(({ valueKey, bindingKey }) => (valueKey === undefined) !== (bindingKey === undefined), {
-        message: 'A list must use exactly one storage mode: valueKey or bindingKey',
-    });
+const ListNodeSchema = z.object({
+    id: templateIdentifierSchema,
+    type: z.literal('list'),
+    title: z.string().min(1).max(120).optional(),
+    valueKey: templateIdentifierSchema.optional(),
+    bindingKey: z.string().min(1).max(120).optional(),
+    columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).default(1),
+    presets: z.array(PrimitivePresetSchema).max(TEMPLATE_LIMITS.presetsPerList).optional(),
+});
 
-const TableNodeSchema = z
-    .object({
-        id: templateIdentifierSchema,
-        type: z.literal('table'),
-        title: z.string().min(1).max(120).optional(),
-        valueKey: templateIdentifierSchema.optional(),
-        minRows: z.number().int().min(0).max(1_000).default(0),
-        maxRows: z.number().int().min(1).max(1_000).default(100),
-        columns: z.array(TemplateFieldSchema).min(1).max(TEMPLATE_LIMITS.tableColumnsMax),
-    })
-    .refine(({ maxRows, minRows }) => minRows <= maxRows, {
-        message: 'Minimum rows cannot exceed maximum rows',
-        path: ['minRows'],
-    })
-    .refine(({ columns }) => hasUniqueIds(columns), {
-        message: 'Column IDs must be unique within a table',
-        path: ['columns'],
-    });
+const TableNodeSchema = z.object({
+    id: templateIdentifierSchema,
+    type: z.literal('table'),
+    title: z.string().min(1).max(120).optional(),
+    valueKey: templateIdentifierSchema.optional(),
+    minRows: z.number().int().min(0).max(1_000).default(0),
+    maxRows: z.number().int().min(1).max(1_000).default(100),
+    columns: z.array(TemplateFieldSchema).min(1).max(TEMPLATE_LIMITS.tableColumnsMax),
+});
 
 export interface SectionNode {
     id: string;
@@ -287,43 +316,90 @@ export type TemplateNode =
     | PrimitiveNode
     | TemplateField;
 
+/** Container and leaf node types that are not fields. */
+export const TEMPLATE_STRUCTURE_TYPES = ['section', 'group', 'table', 'list', 'primitive'] as const;
+
+export type TemplateNodeType = (typeof TEMPLATE_STRUCTURE_TYPES)[number] | TemplateFieldType;
+
+/** Compile-time guard: structure + field types must name every node type. */
+export type TemplateNodeTypesAreComplete = AssertTrue<
+    Exact<TemplateNodeType, TemplateNode['type']>
+>;
+
+const fieldTypeSet: ReadonlySet<string> = new Set(TEMPLATE_FIELD_TYPES);
+
+/** True for leaf fields (values stored in the bag); false for containers, tables, lists, primitives. */
+export function isTemplateField(node: TemplateNode): node is TemplateField {
+    return fieldTypeSet.has(node.type);
+}
+
+function refineNode(node: TemplateNode, context: z.RefinementCtx): void {
+    const issue = (message: string, path: string[] = []) =>
+        context.addIssue({ code: z.ZodIssueCode.custom, message, path });
+    if (isTemplateField(node)) {
+        refineField(node, context);
+        return;
+    }
+    switch (node.type) {
+        case 'table':
+            if (node.minRows > node.maxRows) {
+                issue('Minimum rows cannot exceed maximum rows', ['minRows']);
+            }
+            if (!hasUniqueIds(node.columns)) {
+                issue('Column IDs must be unique within a table', ['columns']);
+            }
+            return;
+        case 'list':
+            if ((node.valueKey === undefined) === (node.bindingKey === undefined)) {
+                issue('A list must use exactly one storage mode: valueKey or bindingKey');
+            }
+            return;
+        case 'section':
+        case 'group':
+        case 'primitive':
+            return;
+    }
+}
+
 /**
- * Recursive node schema. `z.lazy` plus the explicit `TemplateNode` annotation breaks the
- * otherwise circular type inference. `z.union` (not `z.discriminatedUnion`) because several
- * members carry `.refine()` bounds (ZodEffects) — the renderer switches on `type` anyway.
+ * Recursive node schema: a discriminated union on `type` (unknown types and per-type property
+ * errors report precisely), with cross-property rules applied by `refineNode`. `z.lazy` plus
+ * the explicit `TemplateNode` annotation breaks the otherwise circular type inference.
  */
 const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
-    z.union([
-        // Containers first: section/group render chrome; everything else is a leaf.
-        z.object({
-            id: templateIdentifierSchema,
-            type: z.literal('section'),
-            title: z.string().min(1).max(120),
-            docsPath: z.string().max(500).optional(),
-            columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
-            children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
-        }),
-        z.object({
-            id: templateIdentifierSchema,
-            type: z.literal('group'),
-            title: z.string().min(1).max(120),
-            collapsible: z.boolean().default(false),
-            columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
-            children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
-        }),
-        TableNodeSchema,
-        ListNodeSchema,
-        PrimitiveNodeSchema,
-        TextFieldSchema,
-        NumberFieldSchema,
-        ToggleFieldSchema,
-        ImageFieldSchema,
-        FormulaFieldSchema,
-        SelectFieldSchema,
-        RatingFieldSchema,
-        ResourceFieldSchema,
-        ReferenceFieldSchema,
-    ])
+    z
+        .discriminatedUnion('type', [
+            // Containers first: section/group render chrome; everything else is a leaf.
+            z.object({
+                id: templateIdentifierSchema,
+                type: z.literal('section'),
+                title: z.string().min(1).max(120),
+                docsPath: z.string().max(500).optional(),
+                columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+                children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
+            }),
+            z.object({
+                id: templateIdentifierSchema,
+                type: z.literal('group'),
+                title: z.string().min(1).max(120),
+                collapsible: z.boolean().default(false),
+                columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+                children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
+            }),
+            TableNodeSchema,
+            ListNodeSchema,
+            PrimitiveNodeSchema,
+            TextFieldSchema,
+            NumberFieldSchema,
+            ToggleFieldSchema,
+            ImageFieldSchema,
+            FormulaFieldSchema,
+            SelectFieldSchema,
+            RatingFieldSchema,
+            ResourceFieldSchema,
+            ReferenceFieldSchema,
+        ])
+        .superRefine((node, context) => refineNode(node as TemplateNode, context))
 ) as unknown as z.ZodType<TemplateNode>;
 
 export interface CustomTemplate {
@@ -419,12 +495,7 @@ export function collectTemplateFields(template: CustomTemplate): Map<string, Tem
     walkTemplateNodes(template.children, (node) => {
         if (node.type === 'table') {
             for (const column of node.columns) fields.set(column.id, column);
-        } else if (
-            node.type !== 'section' &&
-            node.type !== 'group' &&
-            node.type !== 'list' &&
-            node.type !== 'primitive'
-        ) {
+        } else if (isTemplateField(node)) {
             fields.set(node.id, node);
         }
     });

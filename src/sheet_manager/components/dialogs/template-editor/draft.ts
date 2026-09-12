@@ -23,6 +23,7 @@ import {
     collectTreeIssues,
     fieldValueKey,
     isContainerNode,
+    isTemplateField,
     TEMPLATE_LIMITS,
     TEMPLATE_SCHEMA_VERSION,
     walkTemplateNodes,
@@ -461,13 +462,7 @@ export function collectDraftIssues(
             checkEffectiveKey(node.valueKey ?? node.id);
             if (node.minRows > node.maxRows) issues.push({ message: messages.invalidBounds });
         }
-        if (
-            node.type !== 'section' &&
-            node.type !== 'group' &&
-            node.type !== 'table' &&
-            node.type !== 'list' &&
-            node.type !== 'primitive'
-        ) {
+        if (isTemplateField(node)) {
             if (node.label.trim().length === 0) issues.push({ message: messages.emptyLabel });
             checkEffectiveKey(node.valueKey ?? node.id);
             if (node.type === 'formula' && node.formula.trim().length > 0) {
@@ -597,17 +592,7 @@ function mapFieldItems(
                 ),
             };
         }
-        if (
-            node.type === 'text' ||
-            node.type === 'number' ||
-            node.type === 'toggle' ||
-            node.type === 'image' ||
-            node.type === 'formula' ||
-            node.type === 'select' ||
-            node.type === 'rating' ||
-            node.type === 'resource' ||
-            node.type === 'reference'
-        ) {
+        if (isTemplateField(node)) {
             return node.id === fieldId ? map(node) : node;
         }
         return node;
