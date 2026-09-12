@@ -178,7 +178,30 @@ primitive-composed definitions (`systems/star-wars-wod/defaultTemplates.ts`). Sp
 | P-3 | ✅     | **Defaults rebuilt (hybrid)**     | Full/droid defaults: primitives + retained placements for Force/advantages/body; brief fully compact primitives.      | High     | M      | High   | P-1          |
 | P-4 | ✅     | **Legacy demotion**               | Editor no longer offers placements; legacy render path retained for pre-005 templates + hybrid parts.                 | Medium   | S      | Medium | P-3          |
 
-**Cleanup gate (explicit, user-confirmed)**: once parity of the primitive-built pages is
-confirmed, delete the legacy block components (`features/sheet/blocks/*`), the `built-in`
-placement variant, and the retained placements inside hybrid defaults. Phase-two primitives
-(Force powers list, merits/flaws, equipment-with-catalogs) replace those placements first.
+---
+
+### Epic: Template Composition Usability (feature 006)
+
+Templates are recursive node trees: every element (section, field group, field, table, list,
+image, primitive) is placeable at any depth under shared guardrails (depth 10, 200 nodes, one
+identifier namespace). Formulas (`+ − × ÷`, parentheses, unary minus) and `maxFrom` bounds run
+over one undifferentiated coordinate space (bag values + system bindings); results are never
+stored. Lists gain system bindings beyond the skills domain (Force powers, merits/flaws,
+backgrounds), image fields are per-document (device blob or HTTPS URL), and section/group
+presentation splits into collapsible blocks vs titled cards. Default templates are rebuilt from
+scratch with zero placements. Spec: `specs/006-template-composition-usability/spec.md`.
+
+| #   | Status | Task                            | Description                                                                                                                  | Priority | Effort | Impact | Dependencies |
+| --- | ------ | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------ | ------------ |
+| C-1 | ✅     | **Recursive schema + editor**   | TemplateNode union (v3); tree ops with guardrails; recursive ElementEditor with drag/keyboard reorder, distinct collapse.    | High     | L      | High   | P-1          |
+| C-2 | ✅     | **Formula engine**              | Pure tokenizer/parser/evaluator; authoring validation (parse, unknown coordinate, cycles); display clamp, no stored results. | High     | L      | High   | C-1          |
+| C-3 | ✅     | **Retirement + quarantine**     | Store v3: pre-feature templates fail the v3 parse and retire into the bounded quarantine; documents fall back to built-ins.  | High     | S      | High   | C-1          |
+| C-4 | ✅     | **Lists, images, presentation** | System list bindings (Force powers/merits/flaws/backgrounds + equipment); per-document image fields; section/group split.    | High     | L      | High   | C-1, C-2     |
+| C-5 | ✅     | **Defaults rebuilt (pure)**     | Full/droid/brief defaults recomposed as pure declarative trees mirroring the built-in viewer order; zero placements.         | High     | M      | High   | C-4          |
+
+**Legacy retirement gate (explicit, user-confirmed)** — supersedes the feature 005 cleanup gate.
+The `built-in` placement variant is already gone from the template schema. What remains is the
+definition-owned built-in layout path: creature/vehicle/fodder pages (and their `brief`) plus the
+`features/sheet/blocks/*` components also used by `CharacterViewer`. It stays until the user
+confirms declarative parity; then delete the blocks, the layouts, and the duplicated
+copy-on-select logic. Current state: `.agents/skills/sheet-templates/SKILL.md`.

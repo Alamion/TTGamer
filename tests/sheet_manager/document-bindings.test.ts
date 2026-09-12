@@ -2,8 +2,10 @@ import { starWarsWodProfile } from '@site/src/sheet_manager/systems/star-wars-wo
 import type { CharacterLike } from '@site/src/sheet_manager/systems/star-wars-wod/documentBindings';
 import {
     listDocumentBindings,
+    listNumericCoordinates,
     resolveDataBindingByCoordinate,
     resolveDocumentBinding,
+    systemListDataKey,
     writeList,
     writeTraitValue,
 } from '@site/src/sheet_manager/systems/star-wars-wod/documentBindings';
@@ -100,5 +102,87 @@ describe('document binding registry (feature 005, T007)', () => {
         ]);
         expect(listPatch.customSkills).toHaveLength(1);
         expect(data.customSkills).toHaveLength(0);
+    });
+
+    it('declares the new-kind system lists with catalog metadata (feature 006, T009/T010)', () => {
+        const bindings = listDocumentBindings('star-wars-wod', 'character');
+        for (const listId of [
+            'customTalents',
+            'customSkills',
+            'customKnowledges',
+            'forcePowers',
+            'merits',
+            'flaws',
+            'backgrounds',
+        ]) {
+            const binding = bindings.find(
+                (candidate) => candidate.kind === 'list' && candidate.listId === listId
+            );
+            expect(binding, listId).toBeDefined();
+        }
+        // Catalog-backed lists declare their catalog id (and filters where split).
+        const forcePowers = bindings.find(
+            (candidate) => candidate.kind === 'list' && candidate.listId === 'forcePowers'
+        );
+        expect(
+            forcePowers?.kind === 'list' && forcePowers.catalog?.catalogId === 'force-powers'
+        ).toBe(true);
+        const merits = bindings.find(
+            (candidate) => candidate.kind === 'list' && candidate.listId === 'merits'
+        );
+        expect(
+            merits?.kind === 'list' &&
+                merits.catalog?.catalogId === 'merits-flaws' &&
+                merits.catalog?.catalogFilter?.value === 'Merit'
+        ).toBe(true);
+        const flaws = bindings.find(
+            (candidate) => candidate.kind === 'list' && candidate.listId === 'flaws'
+        );
+        expect(flaws?.kind === 'list' && flaws.catalog?.catalogFilter?.value === 'Flaw').toBe(true);
+        const backgrounds = bindings.find(
+            (candidate) => candidate.kind === 'list' && candidate.listId === 'backgrounds'
+        );
+        expect(
+            backgrounds?.kind === 'list' && backgrounds.catalog?.catalogId === 'backgrounds'
+        ).toBe(true);
+    });
+
+    it('maps force powers to the forcePowerItems data key (single representation)', () => {
+        expect(systemListDataKey('forcePowers')).toBe('forcePowerItems');
+        expect(systemListDataKey('customSkills')).toBe('customSkills');
+        expect(systemListDataKey('merits')).toBe('merits');
+    });
+
+    it('declares catalog-backed equipment bindings (feature 006)', () => {
+        const bindings = listDocumentBindings('star-wars-wod', 'character');
+        for (const sectionId of ['inventory', 'armor', 'weapons', 'implants']) {
+            const binding = bindings.find(
+                (candidate) => candidate.kind === 'equipment' && candidate.sectionId === sectionId
+            );
+            expect(binding, sectionId).toBeDefined();
+        }
+        // Equipment is character-scoped: no vehicle/creature equipment bindings.
+        expect(
+            listDocumentBindings('star-wars-wod', 'vehicle').filter(
+                (binding) => binding.kind === 'equipment'
+            )
+        ).toHaveLength(0);
+    });
+
+    it('enumerates numeric coordinates with pool suffixes for formulas (feature 006)', () => {
+        const coordinates = listNumericCoordinates('star-wars-wod', 'character');
+        const byCoordinate = new Map(coordinates.map((entry) => [entry.coordinate, entry.label]));
+        // Traits expose their value.
+        expect(byCoordinate.get('strength')).toBeDefined();
+        expect(byCoordinate.get('wits')).toBeDefined();
+        // Pools expose .current and .max forms.
+        expect(byCoordinate.get('willpower.current')).toBeDefined();
+        expect(byCoordinate.get('willpower.max')).toBeDefined();
+        expect(byCoordinate.get('force-points.max')).toBeDefined();
+        // Non-numeric bindings stay out of the formula space.
+        expect(byCoordinate.has('custom-skills')).toBe(false);
+        expect(byCoordinate.has('health')).toBe(false);
+        // Foreign systems enumerate nothing.
+        expect(listNumericCoordinates('other-system', 'character')).toHaveLength(0);
     });
 });

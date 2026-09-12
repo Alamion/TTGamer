@@ -1,0 +1,217 @@
+---
+name: sheet-templates
+description: Current-state reference for sheet_manager page templates — node tree, value storage and coordinates, bindings, formulas, page resolution, editor, import/export, diagnostics, extension checklists, and known debts. Load before touching anything template-related.
+---
+
+# Sheet Templates — Current State
+
+This file is the **single current-state description** of the template system. Specs 003–006
+are change history: read them only for the rationale behind a decision, never to learn how
+the system works today. When code and this file disagree, the code wins — fix this file in the
+same change.
+
+## Mental model
+
+A **template** is a declarative page: a recursive tree of nodes rendered by
+`DeclarativeSheetView` against the current document. Templates never contain executable code.
+Every rendered value lives in exactly one of two places:
+
+| Storage                   | What goes there                                                 | Written by                            |
+| ------------------------- | --------------------------------------------------------------- | ------------------------------------- |
+| `document.templateValues` | Custom values: flat bag keyed by **coordinate** (valueKey)      | `documentStore.updateTemplateValues`  |
+| `document.data`           | System data (traits, pools, identity, lists, equipment, health) | `updateDocumentData` / `useCharacter` |
+
+The template itself lives in one of three places, and **the renderer does not care which**:
+
+| Source          | Location                                                                      | Identity                                       |
+| --------------- | ----------------------------------------------------------------------------- | ---------------------------------------------- |
+| User template   | `templateStore.templates` (`universal-template-storage`, v3)                  | user id                                        |
+| Shipped default | `SystemPlugin.defaultTemplates` (`systems/star-wars-wod/defaultTemplates.ts`) | view id (`full-sheet`, `droid-sheet`, `brief`) |
+| Edited default  | `templateStore.defaultOverrides[viewId]`                                      | view id                                        |
+
+Always pass the **resolved template object** around (the store write path takes it); never
+re-look a template up by id — `getTemplate(id)` only sees user templates.
+
+## Node tree (`types/template.ts`, schema v3)
+
+- Containers: `section` (CollapsibleBlock, no background, `docsPath`, `columns` 1–4) and `group`
+  (SectionCard surface, opt-in `collapsible`). Accents alternate by sibling parity, never stored.
+- Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `formula`, `select`,
+  `rating`, `resource`, `reference`.
+- Other leaves: `table` (columns are fields; rows stored under `tableValueKey`), `list`
+  (exactly one of `valueKey` or `bindingKey`), `primitive` (`bindingKey` into system data).
+- Guardrails (`TEMPLATE_LIMITS`, `collectTreeIssues`): depth 10, 200 nodes, one id namespace
+  across the whole tree; identifiers are lowercase kebab-case.
+- `CustomTemplateSchema` is `z.union` (not discriminated), so parse errors are noisy — use
+  `describeError()` from `diagnostics.ts` to summarize them.
+- `systemId` defaults to `star-wars-wod`; compatibility is `systemId` + `documentKind`.
+
+## Coordinates and value storage
+
+- A field's coordinate is `valueKey ?? id` (`fieldValueKey`, `tableValueKey`, `listValueKey`).
+  Equal coordinates in different templates **share one value** (document-global bag).
+- **Bridging**: `resolveDataBindingByCoordinate` — if a field's coordinate equals a system data
+  address (kebab trait key like `strength`/`self-control`, resource id, identity field key),
+  the field renders as the matching primitive and reads/writes `document.data`, ignoring the
+  field's own type. Default templates rely on this; a custom field named `name` is bridged too.
+- Write path (`documentStore.updateTemplateValues(documentId, template, updater)`):
+    - validates only **changed** keys that match a field/table coordinate of the given template
+      (`validateTemplateValue`); unchanged stale values never block writes to other keys;
+    - keys the template does not declare (orphans) pass through untouched — never deleted;
+    - `undefined` from the updater clears a key;
+    - rejections report `template-value-write-rejected` with `key` and `reason`.
+- Read path: `coerceStoredValue` converts values stored before a field type change; the store
+  data is never mutated by rendering.
+- Images: `{source:'device', blobId}` (IndexedDB via `persistence/portraitStorage.ts`) or
+  `{source:'url', url}` (HTTPS only). Device values are stripped from JSON exports.
+
+## Bindings (`systems/star-wars-wod/documentBindings.ts`)
+
+Closed registry, keys persisted as strings (no compile-time checking):
+
+| Kind        | Key shape                                                | Data                                                      |
+| ----------- | -------------------------------------------------------- | --------------------------------------------------------- |
+| `trait`     | `trait:<groupId>:<TraitKey>`                             | `attributes`/`skills`/`virtues`/`forceSkills`             |
+| `resource`  | `resource:willpower\|force-points\|dark-side-resistance` | pools / rating                                            |
+| `track`     | `track:health`, `track:vehicle-damage`                   | condition tracks                                          |
+| `field`     | `field:<metadataKey>`                                    | `data.metadata`                                           |
+| `list`      | `list:<SystemListId>`                                    | `systemListDataKey()` (`forcePowers` → `forcePowerItems`) |
+| `equipment` | `equipment:inventory\|armor\|weapons\|implants`          | body sections via `useBodyHandlers`                       |
+
+- Bindings are filtered by document kind; only `star-wars-wod` registers any
+  (`listDocumentBindings` hard-codes the system id).
+- An unknown key, wrong kind, missing character, or missing body handlers renders the labeled
+  `DegradedBinding` notice and reports `binding-unresolved` with a `reason`.
+- Catalogs (`features/sheet/data/catalogBindings.ts`, `CATALOG_BINDINGS`) are the only path
+  from `src/data` into select fields. Templates persist `catalogId` + fill mappings; selecting
+  an entry copies mapped details into target fields (replace re-copies, clear keeps values).
+  Unknown catalogs degrade to manual choice and report `catalog-unavailable`. System lists use a
+  second, hard-coded catalog lookup in `primitives.tsx` (`listCatalog`).
+
+## Formulas (`features/sheet/declarative/formula.ts`)
+
+- Grammar: numbers, coordinates (`kebab` or `pool.current`/`pool.max`), `+ - * /`, parentheses,
+  unary minus. Pure tokenizer → parser → evaluator.
+- One coordinate space: bag numbers plus system traits/pools (`resolveBase` in `hooks.ts`).
+- `formula` fields are read-only and never stored. `maxFrom` (rating/number/primitive) clamps
+  the display; stored values are clamped only when the bounded value itself is edited.
+- Errors are labeled in the UI (`unknown-coordinate` names the coordinate, `circular`,
+  `division-by-zero`, `non-numeric`). Unparseable formulas also report `formula-error`.
+- Cycles are rejected at authoring (`collectDraftIssues`); at render the evaluator in
+  `useTemplatePage` re-orders by dependency with its own cycle guard.
+- `collectFormulaDependencies` in `types/template.ts` uses a regex, not the parser (import
+  cycle workaround) — it can disagree with `parseFormula` on odd input.
+
+## Page resolution (`features/sheet/CharacterSheet.tsx`, `systems/view.ts`)
+
+1. `metadata.templateId` → `resolveCustomTemplate` against user templates. Found and kind
+   matches → render it. Missing/foreign → remember a fallback notice.
+2. Otherwise the view id (`metadata.preferredViewId`, aliases via `legacyIds`) →
+   `resolveEffectiveTemplate`: user template with that id, else the system's shipped default
+   (override applied when present, `modified: true`).
+3. Otherwise the definition's `built-in` layout mounts React blocks through
+   `registry/builtInBlockRegistry.ts`. Today this path serves creature, vehicle, and fodder
+   pages (and their `brief`), because only character-kind defaults exist.
+
+The selector (`ViewModeSelect`) encodes custom templates as `tpl:<id>`; view ids are plain.
+
+## Stores and persistence
+
+- `templateStore` v3: `templates`, `quarantine` (max 100), `defaultOverrides`. Entries failing
+  the v3 parse (including all pre-006 shapes) move to quarantine and report
+  `template-quarantined` with the Zod summary. There is no migration of old template shapes.
+- `documentStore` v3: flat `templateValues`; v2 nested bags are flattened on load
+  (`flattenLegacyTemplateValues`). Unparseable documents go to `recoveryEntries` (max 100) and
+  report `document-recovered`.
+- `metadata.seededPresets`: list presets are copied once per document × template
+  (copy-on-assign). The seeding effect in `useTemplatePage` writes bag, data, and metadata.
+
+## Editor (`components/dialogs/template-editor/`)
+
+- `draft.ts`: `EditorDraft = CustomTemplate`; pure tree ops (`insertNode`, `moveNode`,
+  `updateNode`, `removeNode`), node factories, and `collectDraftIssues` (limits, duplicate ids,
+  bounds, formula parse/unknown coordinate/cycles). It does **not** validate `bindingKey`s.
+- `ElementEditor.tsx`: recursive panels (grip = move on the left, chevron = collapse on the
+  right), palette, bridged-field factories. `FieldEditor.tsx` / `PrimitiveConfig.tsx`: config.
+- `TemplateEditorDialog`: explicit save/discard; editing a default id saves through
+  `setDefaultOverride`, everything else through `saveTemplate`. Library: reset clears the
+  override; defaults cannot be deleted.
+
+## Import / export (`features/sheet/shell/templateFile.ts`)
+
+`ttgamer-template` wrapper, format version 3 exactly (older and newer are rejected with the
+version error). Full validation before any state change; unavailable catalogs are stripped to
+manual choice and listed in the degradation report. Filenames: `ttgamer_template_<id>.json`.
+
+## Diagnostics (debug here first)
+
+`src/sheet_manager/diagnostics.ts` is the single channel for degradation paths:
+
+- `reportSheetIssue({ code, message, details })` — codes: `template-value-write-rejected`,
+  `template-value-write-skipped`, `template-quarantined`, `document-recovered`,
+  `binding-unresolved`, `catalog-unavailable`, `formula-error`.
+- In development each distinct issue is logged once as `[sheet_manager] <code>: …` in the
+  browser console. **A silently ignored edit, an empty section, or a "degraded" card → check
+  the console first.**
+- Tests: `tests/setup/sheetIssues.ts` fails any test that produces an unexpected issue.
+  Tests that exercise degradation on purpose call `takeSheetIssues()` and assert on the result.
+- New graceful-degradation code (`return`, `catch`, fallback render) must report through this
+  channel; a silent fallback is a bug.
+
+## Extension checklists
+
+**New field type** (e.g. `date`): schema + both union lists in `types/template.ts`; value type,
+page schema, and both switches in `types/templateValues.ts`; control + registry entry
+(`fieldControls.tsx`, `registry/declarativeFieldRegistry.ts`); `draft.ts` `baseField` switch,
+type list, and issue checks; type list in `templateFile.ts`; `FieldEditor` config branch and
+`ElementEditor` palette; en/ru YAML under `translations/source` + `yarn build:translations`;
+tests. Also re-check the leaf-field predicates (`collectTemplateFields`, `countUnfilledRequired`,
+`draft.ts`, `ElementEditor.tsx`, `templateFile.ts`) — they are hand-written, not exhaustive.
+
+**New binding kind**: descriptor union + registry array + `resolveDataBindingByCoordinate` +
+`listNumericCoordinates` (`documentBindings.ts`); `PrimitiveNodeView` switch
+(`primitives.tsx`); numeric resolution in `hooks.ts` `resolveBase` if it is numeric; editor
+palette/bridged factories (`ElementEditor.tsx`) and `PrimitiveConfig`.
+
+**New catalog**: `defineCatalog` entry in `catalogBindings.ts` (closed fillable-detail set);
+if a system list uses it, also `listCatalog` in `primitives.tsx`.
+
+## Known debts (as of 2026-09-12)
+
+- Built-in React blocks (`features/sheet/blocks/*`) still back creature/vehicle/fodder pages and
+  `CharacterViewer`; catalog copy-on-select is duplicated in `AdvantagesBlock` and
+  `primitives.tsx` (`primitive-parity.test.tsx` guards the pair). Retirement waits for
+  user-confirmed parity.
+- Star Wars specifics leak into generic declarative code (`hooks.ts` resource ids and trait
+  defaults, `documentBindings` imported directly by `hooks.ts`, `draft.ts`,
+  `DeclarativeSheetView.tsx`).
+- `bindingKey`/`catalogId` are plain strings; typos surface only at render time.
+- `useTemplatePage` (`hooks.ts`) mixes store wiring, formula evaluation, list/catalog runtime,
+  and preset seeding; `draft.ts` and `ElementEditor.tsx` are similarly overloaded.
+- Unused exports awaiting cleanup: `writeTraitValue`/`writeList` (tests only),
+  `listBuiltInBlocks`, `isBuiltInBlockAvailable`, `blockAccentColor`, `newNodeId`,
+  `ALL_TEMPLATE_SKELETONS`, `collectPrimitiveNodes`.
+
+## Tests map (`tests/sheet_manager/`)
+
+| Concern                          | File                                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| Schema, tree guardrails          | `template-schema.test.ts`                                                            |
+| Value write path, validation     | `template-value-writes.test.ts`, `document-template-values.test.ts`                  |
+| Renderer, bridging, catalogs     | `declarative-sheet.test.tsx`, `shared-values.test.tsx`                               |
+| Primitives, parity with built-in | `primitives.test.ts`, `primitive-parity.test.tsx`, `primitive-seeding.test.ts`       |
+| Lists, images                    | `template-lists-images.test.ts`                                                      |
+| Formulas                         | `template-formulas.test.ts`                                                          |
+| Defaults, overrides, resolution  | `default-templates.test.ts`, `built-in-templates.test.ts`, `view-resolution.test.ts` |
+| Stores, quarantine               | `template-store.test.ts`, `template-store-migration.test.ts`                         |
+| Editor                           | `template-editor.test.tsx`                                                           |
+| File format                      | `template-file.test.ts`, `catalog-bindings.test.ts`                                  |
+
+## History (read for rationale only)
+
+| Spec | What it introduced                                                   | Superseded parts                              |
+| ---- | -------------------------------------------------------------------- | --------------------------------------------- |
+| 003  | Section → block → field templates, catalog bindings, file format v1  | Fixed hierarchy, file v1 (→ 006)              |
+| 004  | Views as default templates, overrides, `built-in` block placements   | View-derived defaults, placements (→ 005/006) |
+| 005  | Binding registry, primitives, preset seeding, hybrid defaults        | Hybrid defaults, placement path (→ 006)       |
+| 006  | Recursive tree v3, formulas, lists/images, pure defaults, quarantine | —                                             |

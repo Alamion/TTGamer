@@ -21,7 +21,16 @@ interface MeritFlawListProps {
     docsPath?: string;
     catalog?: CatalogEntry[];
     onCatalogSelect?: (id: string, entry: CatalogEntry) => void;
+    /** Column layout for the entry grid, 1–4 (feature 006 FR-17). */
+    columns?: 1 | 2 | 3 | 4;
 }
+
+const meritColumns = {
+    1: 'grid-cols-1',
+    2: 'grid-cols-1 md:grid-cols-2',
+    3: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3',
+    4: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4',
+};
 
 export function MeritFlawList({
     title,
@@ -34,10 +43,15 @@ export function MeritFlawList({
     docsPath,
     catalog,
     onCatalogSelect,
+    columns = 1,
 }: MeritFlawListProps) {
     return (
         <SectionCard title={title} docsPath={docsPath}>
-            <div className="space-y-2">
+            <div
+                className={
+                    columns > 1 ? `grid gap-x-4 gap-y-2 ${meritColumns[columns]}` : 'space-y-2'
+                }
+            >
                 {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-2">
                         <span className="font-mono font-bold text-md text-textPrimary">

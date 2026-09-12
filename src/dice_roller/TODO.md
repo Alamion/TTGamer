@@ -27,11 +27,14 @@ Tasks are grouped by **area** (logical dependency) and ordered by priority withi
 
 ## 3D Renderer
 
-| #   | Status | Task                               | Description                                                                                                                                                                     | Priority |
-| --- | ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| 4   | ✅     | **Roll-session ownership**         | One shared physical field with session-bound lock/reroll/add/settle/manual/arrange/dismiss operations and per-roll physical budgets                                             | High     |
-| 5   | 🟡     | **Orchestrator integration tests** | Compound/penetrating explosions, caps, and concurrent handle ownership are covered; add mixed supported/unsupported groups, d100 rerolls/explosions, fallback, and cancellation | High     |
-| 6   | ⬜     | **Lazy load Three.js / cannon-es** | Dynamic imports for 3D packages to reduce initial bundle size                                                                                                                   | Medium   |
+| #   | Status | Task                               | Description                                                                                                                                                                                                                            | Priority |
+| --- | ------ | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 4   | ✅     | **Roll-session ownership**         | One shared physical field with session-bound lock/reroll/add/settle/manual/arrange/dismiss operations and per-roll physical budgets                                                                                                    | High     |
+| 5   | 🟡     | **Orchestrator integration tests** | Compound/penetrating explosions, caps, and concurrent handle ownership are covered; add mixed supported/unsupported groups, d100 rerolls/explosions, fallback, and cancellation                                                        | High     |
+| 6   | ⬜     | **Lazy load Three.js / cannon-es** | Dynamic imports for 3D packages to reduce initial bundle size                                                                                                                                                                          | Medium   |
+| 12  | ⬜     | **Large-roll 3D performance**      | Keep frame rate acceptable when rolling hundreds or thousands of physical dice at once (instancing, batching, or simplified simulation for big pools)                                                                                  | Low      |
+| 13  | ⬜     | **Simplified gravity setting**     | One user-facing control for how dice settle, from "realistic-heavy" (dice stop almost on landing, little extra tumbling — randomness mostly from initial orientation) to the current bouncy behavior (dice hop and tumble for seconds) | Low      |
+| 14  | ⬜     | **Predetermined 3D rolls**         | Guide 3D physics toward predetermined results by strongly weighting die faces (aiming bodies/quaternions at the target side), with a late-stage nudge assist when weighting alone does not settle the needed face                      | Low      |
 
 ## UI
 

@@ -17,13 +17,21 @@ export type CharacterLike = Record<string, unknown> & {
     customTalents: unknown[];
     customSkills: unknown[];
     customKnowledges: unknown[];
+    forcePowerItems?: unknown[];
+    merits?: unknown[];
+    flaws?: unknown[];
+    backgrounds?: unknown[];
+    inventory?: unknown[];
+    armor?: unknown[];
+    weapons?: unknown[];
+    implants?: unknown[];
     willpower?: { current: number; max: number };
     forcePoints?: { current: number; max: number };
     darkSideResistance?: number;
     health: { levels: unknown[] };
 };
 
-export type DocumentBindingKind = 'trait' | 'list' | 'resource' | 'track' | 'field';
+export type DocumentBindingKind = 'trait' | 'list' | 'resource' | 'track' | 'field' | 'equipment';
 
 interface BindingBase {
     key: string;
@@ -41,9 +49,28 @@ export interface TraitBinding extends BindingBase {
     maximum: number;
 }
 
+/** System-owned lists a template list element can bind to (feature 006: beyond the skills domain). */
+export type SystemListId =
+    | 'customTalents'
+    | 'customSkills'
+    | 'customKnowledges'
+    | 'forcePowers'
+    | 'merits'
+    | 'flaws'
+    | 'backgrounds';
+
+export interface ListCatalogSupport {
+    /** Catalog adapter id in features/sheet/data/catalogBindings.ts (copy-on-select). */
+    catalogId: string;
+    /** Optional option filter (e.g. the merits/flaws split by entry type). */
+    catalogFilter?: { key: string; value: string };
+}
+
 export interface ListBinding extends BindingBase {
     kind: 'list';
-    listId: 'customTalents' | 'customSkills' | 'customKnowledges';
+    listId: SystemListId;
+    /** Declared when the list is catalog-backed (copy-on-select, built-in parity). */
+    catalog?: ListCatalogSupport;
 }
 
 export interface ResourceBinding extends BindingBase {
@@ -64,12 +91,19 @@ export interface FieldBinding extends BindingBase {
     fieldKey: string;
 }
 
+/** Catalog-backed equipment sections (feature 006): rendered through the body-section molecules. */
+export interface EquipmentBinding extends BindingBase {
+    kind: 'equipment';
+    sectionId: 'inventory' | 'armor' | 'weapons' | 'implants';
+}
+
 export type DocumentBindingDescriptor =
     | TraitBinding
     | ListBinding
     | ResourceBinding
     | TrackBinding
-    | FieldBinding;
+    | FieldBinding
+    | EquipmentBinding;
 
 const CHARACTER_KINDS: ReadonlySet<string> = new Set(['character']);
 
@@ -149,17 +183,64 @@ const listBindings: DocumentBindingDescriptor[] = (
         { listId: 'customTalents', label: 'Custom talents' },
         { listId: 'customSkills', label: 'Custom skills' },
         { listId: 'customKnowledges', label: 'Custom knowledges' },
-    ] as const
-).map(({ listId, label }) => ({
+        {
+            listId: 'forcePowers',
+            label: 'Force Powers',
+            catalog: { catalogId: 'force-powers' },
+        },
+        {
+            listId: 'merits',
+            label: 'Merits',
+            catalog: { catalogId: 'merits-flaws', catalogFilter: { key: 'type', value: 'Merit' } },
+        },
+        {
+            listId: 'flaws',
+            label: 'Flaws',
+            catalog: { catalogId: 'merits-flaws', catalogFilter: { key: 'type', value: 'Flaw' } },
+        },
+        { listId: 'backgrounds', label: 'Backgrounds', catalog: { catalogId: 'backgrounds' } },
+    ] as ReadonlyArray<{
+        listId: SystemListId;
+        label: string;
+        catalog?: ListCatalogSupport;
+    }>
+).map(({ listId, label, catalog }) => ({
     key: `list:${listId}`,
     kind: 'list',
     label,
     documentKinds: CHARACTER_KINDS,
     listId,
+    ...(catalog ? { catalog } : {}),
+}));
+
+const equipmentBindings: DocumentBindingDescriptor[] = (
+    [
+        { sectionId: 'inventory', label: 'Inventory' },
+        { sectionId: 'armor', label: 'Dressed — Armor' },
+        { sectionId: 'weapons', label: 'Dressed — Weapons' },
+        { sectionId: 'implants', label: 'Implants & Cyberware' },
+    ] as const
+).map(({ sectionId, label }) => ({
+    key: `equipment:${sectionId}`,
+    kind: 'equipment',
+    label,
+    documentKinds: CHARACTER_KINDS,
+    sectionId,
 }));
 
 const characterFieldBindings: DocumentBindingDescriptor[] = (
-    ['name', 'concept', 'player', 'nature', 'adventure', 'demeanor', 'species', 'age'] as const
+    [
+        'name',
+        'concept',
+        'player',
+        'nature',
+        'adventure',
+        'demeanor',
+        'species',
+        'age',
+        'appearance',
+        'biography',
+    ] as const
 ).map((fieldKey) => ({
     key: `field:${fieldKey}`,
     kind: 'field',
@@ -173,6 +254,7 @@ const bindings: readonly DocumentBindingDescriptor[] = [
     ...resourceBindings,
     ...trackBindings,
     ...listBindings,
+    ...equipmentBindings,
     ...characterFieldBindings,
 ];
 
@@ -194,13 +276,62 @@ export function writeTraitValue(
     return { ...data, [map]: { ...data[map], [traitKey]: { ...current, ...patch } } };
 }
 
-/** Pure transform: replace a bound custom list. */
+/** Pure transform: replace a bound list (works for every SystemListId). */
 export function writeList(
     data: CharacterLike,
-    listId: ListBinding['listId'],
+    listId: SystemListId,
     items: unknown[]
 ): CharacterLike {
     return { ...data, [listId]: items };
+}
+
+/** Kebab coordinate form of a profile key ('Self Control' → 'self-control'). */
+export function toCoordinate(value: string): string {
+    return value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Document data key holding a bound list (FR: `forcePowerItems` is the single Force-power
+ * representation; retired `forcePowers` keys are stripped from imports).
+ */
+export function systemListDataKey(listId: SystemListId): string {
+    return listId === 'forcePowers' ? 'forcePowerItems' : listId;
+}
+
+export interface NumericCoordinate {
+    coordinate: string;
+    label: string;
+}
+
+/**
+ * Numeric coordinates a formula can reference (feature 006): trait values and pool parts.
+ * Pools expose `.current` / `.max` suffixes; non-scalar bindings (lists, tracks, equipment)
+ * are not numeric and stay out of the formula space.
+ */
+export function listNumericCoordinates(
+    systemId: string,
+    documentKind: string
+): readonly NumericCoordinate[] {
+    const coordinates: NumericCoordinate[] = [];
+    for (const binding of listDocumentBindings(systemId, documentKind)) {
+        if (binding.kind === 'trait') {
+            coordinates.push({
+                coordinate: toCoordinate(binding.traitKey),
+                label: `${binding.label}`,
+            });
+        } else if (binding.kind === 'resource') {
+            const base = toCoordinate(binding.resourceId);
+            coordinates.push({
+                coordinate: `${base}.current`,
+                label: `${binding.label} (current)`,
+            });
+            coordinates.push({ coordinate: `${base}.max`, label: `${binding.label} (max)` });
+        }
+    }
+    return coordinates;
 }
 
 export function listDocumentBindings(
@@ -232,19 +363,14 @@ export function resolveDataBindingByCoordinate(
     documentKind: string,
     coordinate: string
 ): DocumentBindingDescriptor | undefined {
-    const normalize = (value: string) =>
-        value
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
     return listDocumentBindings(systemId, documentKind).find((binding) => {
         switch (binding.kind) {
             case 'trait':
-                return normalize(binding.traitKey) === coordinate;
+                return toCoordinate(binding.traitKey) === coordinate;
             case 'resource':
-                return normalize(binding.resourceId) === coordinate;
+                return toCoordinate(binding.resourceId) === coordinate;
             case 'field':
-                return normalize(binding.fieldKey) === coordinate;
+                return toCoordinate(binding.fieldKey) === coordinate;
             default:
                 return false;
         }

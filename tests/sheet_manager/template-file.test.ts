@@ -13,29 +13,33 @@ function buildTemplate(id = 'share-kit', catalogId = 'melee-weapons') {
         id,
         name: 'Share Kit',
         documentKind: 'character',
-        schemaVersion: 1,
-        sections: [
+        schemaVersion: 3,
+        children: [
             {
                 id: 'kit',
+                type: 'section',
                 title: 'Kit',
-                blocks: [
+                children: [
                     {
-                        id: 'kit-fields',
-                        type: 'fields',
-                        columns: 1,
-                        fields: [
-                            {
-                                id: 'weapon-pick',
-                                label: 'Weapon',
-                                type: 'select',
-                                options: [{ id: 'placeholder', label: 'Placeholder' }],
-                                binding: {
-                                    catalogId,
-                                    fills: { name: { targetFieldId: 'weapon-name' } },
-                                },
-                            },
-                            { id: 'weapon-name', label: 'Weapon name', type: 'text' },
-                        ],
+                        id: 'weapon-pick',
+                        label: 'Weapon',
+                        type: 'select',
+                        multiple: false,
+                        options: [{ id: 'placeholder', label: 'Placeholder' }],
+                        binding: {
+                            catalogId,
+                            fills: { name: { targetFieldId: 'weapon-name' } },
+                        },
+                        required: false,
+                        compact: false,
+                    },
+                    {
+                        id: 'weapon-name',
+                        label: 'Weapon name',
+                        type: 'text',
+                        required: false,
+                        compact: false,
+                        multiline: false,
                     },
                 ],
             },
@@ -87,10 +91,19 @@ describe('template file transfer', () => {
     it('rejects schema violations without partial state', () => {
         const broken = {
             format: 'ttgamer-template',
-            formatVersion: 1,
-            template: { id: 'no-sections', name: 'Broken', sections: [] },
+            formatVersion: TEMPLATE_FILE_VERSION,
+            template: { id: 'no-children', name: 'Broken', children: [] },
         };
         expect(parseTemplateFile(JSON.stringify(broken))).toEqual({ ok: false, error: 'schema' });
+    });
+
+    it('rejects v2 and older file payloads as unsupported versions', () => {
+        const legacy = {
+            format: 'ttgamer-template',
+            formatVersion: 2,
+            template: buildTemplate(),
+        };
+        expect(parseTemplateFile(JSON.stringify(legacy))).toEqual({ ok: false, error: 'version' });
     });
 
     it('imports with degraded manual fields when a catalog is unavailable', () => {
@@ -104,12 +117,12 @@ describe('template file transfer', () => {
             'Weapon',
         ]);
         // The binding is stripped; the static placeholder options remain.
-        const field = parsed.template.sections[0]!.blocks[0]!;
-        expect(field.type).toBe('fields');
-        if (field.type === 'fields') {
-            const first = field.fields[0]!;
-            expect(first.type).toBe('select');
-            if (first.type === 'select') expect(first.binding).toBeUndefined();
+        const kit = parsed.template.children[0]!;
+        if (kit.type !== 'section' && kit.type !== 'group') {
+            throw new Error('expected a container');
         }
+        const node = kit.children[0]!;
+        expect(node.type).toBe('select');
+        if (node.type === 'select') expect(node.binding).toBeUndefined();
     });
 });

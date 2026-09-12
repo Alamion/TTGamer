@@ -10,6 +10,7 @@ describe('catalog binding registry', () => {
         expect([...CATALOG_BINDINGS.keys()].sort()).toEqual(
             [
                 'armor',
+                'backgrounds',
                 'force-powers',
                 'force-skills',
                 'melee-weapons',

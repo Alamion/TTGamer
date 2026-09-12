@@ -17,6 +17,8 @@ library:
     resetConfirmDescription: '«{name}» будет восстановлен в исходном виде. Данные документов сохранятся.'
     deleteRefused: '«{name}» — стандартная страница, её нельзя удалить. Вместо этого сделайте копию.'
     duplicateId: '«{id}» — встроенная страница; шаблонам нужен собственный идентификатор.'
+    incompatibleBadge: Несовместимый формат
+    incompatibleHint: Сохранено в предыдущем формате шаблонов. Хранится только для восстановления — пересоздайте в новом редакторе.
 primitives:
     groupIdentity: Поля личности
     groupTrait: Трейты
@@ -84,13 +86,42 @@ editor:
     save: Сохранить
     cancel: Отмена
     duplicateId: Дубликат идентификатора «{id}» — идентификаторы должны быть уникальны в своей области.
-    collapse: Свернуть секцию
-    expand: Развернуть секцию
+    collapse: Свернуть панель
+    expand: Развернуть панель
     invalidKey: Неверный ключ «{id}» — используйте строчные буквы, цифры и дефисы.
     limitReached: Достигнут лимит — максимум {limit} ({subject}).
     invalidBounds: Минимум не может превышать максимум.
     emptyName: Требуется название шаблона.
     emptyLabel: Секции и поля требуют непустого названия.
+    addElement: Добавить элемент
+    paletteFields: Поля
+    paletteContainers: Контейнеры
+    paletteData: Данные и списки
+    paletteSystemLists: Системные списки
+    paletteTracks: Треки состояний
+    paletteEquipment: Снаряжение
+    paletteSystemValues: Системные значения (привязанные поля)
+    gripHandle: Рукоять перемещения — потяните, чтобы передвинуть
+    groupTitle: Название группы
+    docsLink: Ссылка на документацию (необязательно)
+    groupCollapsible: Сворачиваемая (состояние запоминается)
+    tableTitle: Название таблицы (необязательно)
+    tableValueKey: Общий ключ значения (строки таблицы)
+    listMode: Хранилище
+    listModeCustom: Своё значение (ключ значения)
+    listModeSystem: Системный список
+    listSystemBinding: Системный список
+    listColumns: Колонки
+    listCustomKey: Ключ значения списка
+    formula: Формула
+    formulaPlaceholder: например, passion + self-control
+    maxFrom: Максимум из значения или формулы (необязательно)
+    maxFromPlaceholder: например, willpower.max
+    invalidFormula: Неверная формула в «{id}» — проверьте выражение.
+    unknownCoordinate: Неизвестное значение «{id}» в формуле.
+    circularDependency: 'Обнаружена циклическая зависимость: {id}'
+    depthMessage: Достигнут предел вложенности — максимум {limit} уровней.
+    countMessage: Достигнут предел элементов — максимум {limit}.
 fieldTypes:
     builtIn: Встроенная часть страницы
     text: Текст
@@ -100,8 +131,13 @@ fieldTypes:
     rating: Рейтинг
     resource: Ресурс
     reference: Ссылка на документ
+    image: Изображение
+    formula: Вычисляемое значение (только чтение)
     table: Таблица
     fields: Группа полей
+    section: Секция
+    group: Группа полей
+    list: Кастомный список
 builtInBlocks:
     base: Шапка персонажа
     attributes: Атрибуты
@@ -120,6 +156,17 @@ page:
     requiredUnfilled: 'Не заполнено обязательных полей: {count}.'
     builtInPlaceholder: Часть страницы «{block}» недоступна на этом устройстве.
     primitiveDegraded: 'Привязка «{binding}» недоступна на этом устройстве.'
+    formulaDegraded: 'Невозможно вычислить «{field}»: {reason}.'
+    formulaReasonUnknown: значение «{coordinate}» недоступно
+    formulaReasonCircular: циклическая зависимость
+    formulaReasonDivision: деление на ноль
+    formulaReasonNonNumeric: одно из значений — не число
+    formulaClamped: Ограничено связанным значением
+    imageInvalid: Источник изображения недоступен или небезопасен.
+    imageUpload: Загрузить изображение
+    imageUrl: URL изображения
+    imageRemove: Удалить изображение
+    imageAlt: Изображение шаблона
 binding:
     attach: Привязать каталог
     catalog: Каталог

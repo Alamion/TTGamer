@@ -41,6 +41,7 @@ export function SectionCard({
 
     const storageHeader = (
         <button
+            type="button"
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-full flex items-center justify-between p-4 text-left hover:bg-bgBase/30 transition-colors"
             aria-expanded={isExpanded}

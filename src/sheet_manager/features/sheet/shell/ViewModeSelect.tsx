@@ -41,7 +41,7 @@ export function ViewModeSelect({
 
     // FR-13: exactly one entry per page — view ids are default templates; skip custom-template
     // options whose id collides with a registered view id (they resolve through the same page).
-    const viewIds = new Set(definition.views.map(({ id }) => id));
+    const viewIds = new Set<string>(definition.views.map(({ id }) => id));
     const extraTemplates = templateOptions.filter((option) => !viewIds.has(option.id));
 
     return (

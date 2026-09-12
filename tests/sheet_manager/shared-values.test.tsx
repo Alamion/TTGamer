@@ -8,31 +8,30 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+function textField(id: string, valueKey: string) {
+    return {
+        id,
+        type: 'text' as const,
+        label: 'Eye color',
+        valueKey,
+        multiline: false,
+        compact: false,
+        required: false,
+    };
+}
+
 function buildTemplate(id: string) {
     return CustomTemplateSchema.parse({
         id,
         name: id,
         documentKind: 'character',
-        schemaVersion: 1,
-        sections: [
+        schemaVersion: 3,
+        children: [
             {
                 id: 'identity',
+                type: 'section',
                 title: 'Identity',
-                blocks: [
-                    {
-                        id: 'identity-fields',
-                        type: 'fields',
-                        columns: 1,
-                        fields: [
-                            {
-                                id: 'color',
-                                label: 'Eye color',
-                                type: 'text',
-                                valueKey: 'appearance-color',
-                            },
-                        ],
-                    },
-                ],
+                children: [textField('color', 'appearance-color')],
             },
         ],
     });
@@ -69,25 +68,12 @@ describe('shared value store across templates', () => {
         const humanPage = buildTemplate('human-page');
         const vampirePage = CustomTemplateSchema.parse({
             ...buildTemplate('vampire-page'),
-            sections: [
+            children: [
                 {
                     id: 'identity',
+                    type: 'section',
                     title: 'True identity',
-                    blocks: [
-                        {
-                            id: 'identity-fields',
-                            type: 'fields',
-                            columns: 1,
-                            fields: [
-                                {
-                                    id: 'eye-color',
-                                    label: 'Eye color',
-                                    type: 'text',
-                                    valueKey: 'appearance-color',
-                                },
-                            ],
-                        },
-                    ],
+                    children: [textField('eye-color', 'appearance-color')],
                 },
             ],
         });

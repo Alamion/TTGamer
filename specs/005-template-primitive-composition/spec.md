@@ -1,5 +1,7 @@
 # Feature Specification: Template Primitive Composition
 
+> **Historical record.** Hybrid defaults and the placement path were replaced by spec 006. Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
+
 **Feature Branch**: `005-template-primitive-composition`
 
 **Created**: 2026-09-05

@@ -54,8 +54,14 @@ export function TemplateLibraryDialog({
     onOpenChange: (open: boolean) => void;
     open: boolean;
 }) {
-    const { duplicateTemplate, removeTemplate, templates, defaultOverrides, clearDefaultOverride } =
-        useTemplateStore();
+    const {
+        duplicateTemplate,
+        removeTemplate,
+        templates,
+        defaultOverrides,
+        clearDefaultOverride,
+        quarantine,
+    } = useTemplateStore();
     const t = (descriptor: { message: string }) => translate(descriptor);
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
@@ -252,6 +258,42 @@ export function TemplateLibraryDialog({
                                 </section>
                             ))}
                         </div>
+
+                        {quarantine.length > 0 && (
+                            <div className="mt-4" data-testid="quarantine-section">
+                                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-textSecondary">
+                                    {t(library.incompatibleBadge)}
+                                </h3>
+                                <ul className="space-y-2">
+                                    {quarantine.map((entry, index) => (
+                                        <li
+                                            key={`quarantined-${index}`}
+                                            className="flex items-center gap-3 rounded-lg border border-dashed border-border bg-bgBase p-3 opacity-75"
+                                        >
+                                            <LayoutTemplate
+                                                className="h-4 w-4 shrink-0 text-textSecondary"
+                                                aria-hidden="true"
+                                            />
+                                            <div className="min-w-0 flex-1">
+                                                <p className="truncate text-sm font-medium text-textSecondary">
+                                                    {(entry as { name?: unknown }).name &&
+                                                    typeof (entry as { name: unknown }).name ===
+                                                        'string'
+                                                        ? (entry as { name: string }).name
+                                                        : `#${index + 1}`}
+                                                    <span className="ml-2 rounded bg-bgSurface px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-error">
+                                                        {t(library.incompatibleBadge)}
+                                                    </span>
+                                                </p>
+                                                <p className="text-xs text-textSecondary">
+                                                    {t(library.incompatibleHint)}
+                                                </p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
                         <div className="mt-4">
                             <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-textSecondary">

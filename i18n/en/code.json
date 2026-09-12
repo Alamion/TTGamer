@@ -965,6 +965,9 @@
     "ttgamer.ui.sheet.templates.editor.accentSecondary": {
         "message": "Secondary accent"
     },
+    "ttgamer.ui.sheet.templates.editor.addElement": {
+        "message": "Add element"
+    },
     "ttgamer.ui.sheet.templates.editor.addField": {
         "message": "Add field"
     },
@@ -989,11 +992,20 @@
     "ttgamer.ui.sheet.templates.editor.cancel": {
         "message": "Cancel"
     },
+    "ttgamer.ui.sheet.templates.editor.circularDependency": {
+        "message": "Circular dependency detected: {id}"
+    },
     "ttgamer.ui.sheet.templates.editor.collapse": {
         "message": "Collapse section"
     },
     "ttgamer.ui.sheet.templates.editor.columns": {
         "message": "Columns"
+    },
+    "ttgamer.ui.sheet.templates.editor.countMessage": {
+        "message": "Element limit reached — {limit} elements maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.depthMessage": {
+        "message": "Nesting limit reached — {limit} levels maximum."
     },
     "ttgamer.ui.sheet.templates.editor.descriptionLabel": {
         "message": "Description"
@@ -1003,6 +1015,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.discard": {
         "message": "Discard"
+    },
+    "ttgamer.ui.sheet.templates.editor.docsLink": {
+        "message": "Documentation link (optional)"
     },
     "ttgamer.ui.sheet.templates.editor.duplicateId": {
         "message": "Duplicate identifier \"{id}\" — identifiers must be unique within their scope."
@@ -1028,14 +1043,56 @@
     "ttgamer.ui.sheet.templates.editor.fieldType": {
         "message": "Field type"
     },
+    "ttgamer.ui.sheet.templates.editor.formula": {
+        "message": "Formula"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaPlaceholder": {
+        "message": "e.g. passion + self-control"
+    },
+    "ttgamer.ui.sheet.templates.editor.gripHandle": {
+        "message": "Drag handle — grab to move"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupCollapsible": {
+        "message": "Collapsible (expanded state is remembered)"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupTitle": {
+        "message": "Group title"
+    },
     "ttgamer.ui.sheet.templates.editor.invalidBounds": {
         "message": "Minimum cannot exceed maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidFormula": {
+        "message": "Invalid formula in \"{id}\" — check the expression."
     },
     "ttgamer.ui.sheet.templates.editor.invalidKey": {
         "message": "Invalid key \"{id}\" — use lowercase letters, digits, and dashes."
     },
     "ttgamer.ui.sheet.templates.editor.limitReached": {
         "message": "Limit reached — {limit} {subject} maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.listColumns": {
+        "message": "Columns"
+    },
+    "ttgamer.ui.sheet.templates.editor.listCustomKey": {
+        "message": "List value key"
+    },
+    "ttgamer.ui.sheet.templates.editor.listMode": {
+        "message": "Storage mode"
+    },
+    "ttgamer.ui.sheet.templates.editor.listModeCustom": {
+        "message": "Custom list (own value key)"
+    },
+    "ttgamer.ui.sheet.templates.editor.listModeSystem": {
+        "message": "System list"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSystemBinding": {
+        "message": "System list"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxFrom": {
+        "message": "Maximum from value or formula (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxFromPlaceholder": {
+        "message": "e.g. willpower.max"
     },
     "ttgamer.ui.sheet.templates.editor.maxRows": {
         "message": "Max rows"
@@ -1076,6 +1133,27 @@
     "ttgamer.ui.sheet.templates.editor.options": {
         "message": "Options"
     },
+    "ttgamer.ui.sheet.templates.editor.paletteContainers": {
+        "message": "Containers"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteData": {
+        "message": "Data and lists"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteEquipment": {
+        "message": "Equipment"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteFields": {
+        "message": "Fields"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSystemLists": {
+        "message": "System lists"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSystemValues": {
+        "message": "System values (bound fields)"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTracks": {
+        "message": "Condition tracks"
+    },
     "ttgamer.ui.sheet.templates.editor.presentation": {
         "message": "Presentation"
     },
@@ -1109,6 +1187,15 @@
     "ttgamer.ui.sheet.templates.editor.sectionTitle": {
         "message": "Section title"
     },
+    "ttgamer.ui.sheet.templates.editor.tableTitle": {
+        "message": "Table title (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.tableValueKey": {
+        "message": "Shared value key (table rows)"
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownCoordinate": {
+        "message": "Unknown value \"{id}\" referenced by a formula."
+    },
     "ttgamer.ui.sheet.templates.editor.untitledName": {
         "message": "Untitled template"
     },
@@ -1121,6 +1208,18 @@
     "ttgamer.ui.sheet.templates.fieldTypes.fields": {
         "message": "Field group"
     },
+    "ttgamer.ui.sheet.templates.fieldTypes.formula": {
+        "message": "Derived value (read-only)"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.group": {
+        "message": "Field group"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.image": {
+        "message": "Image"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.list": {
+        "message": "Custom list"
+    },
     "ttgamer.ui.sheet.templates.fieldTypes.number": {
         "message": "Number"
     },
@@ -1132,6 +1231,9 @@
     },
     "ttgamer.ui.sheet.templates.fieldTypes.resource": {
         "message": "Resource"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.section": {
+        "message": "Section"
     },
     "ttgamer.ui.sheet.templates.fieldTypes.select": {
         "message": "Choice"
@@ -1175,6 +1277,12 @@
     "ttgamer.ui.sheet.templates.library.export": {
         "message": "Export"
     },
+    "ttgamer.ui.sheet.templates.library.incompatibleBadge": {
+        "message": "Incompatible format"
+    },
+    "ttgamer.ui.sheet.templates.library.incompatibleHint": {
+        "message": "Saved in a previous template format. Kept for recovery only — recreate it with the new editor."
+    },
     "ttgamer.ui.sheet.templates.library.kind": {
         "message": "Kind"
     },
@@ -1207,6 +1315,39 @@
     },
     "ttgamer.ui.sheet.templates.page.fallbackTitle": {
         "message": "Template page unavailable"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaClamped": {
+        "message": "Limited by a linked value"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaDegraded": {
+        "message": "Cannot compute \"{field}\": {reason}."
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonCircular": {
+        "message": "circular dependency"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonDivision": {
+        "message": "division by zero"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonNonNumeric": {
+        "message": "a referenced value is not a number"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonUnknown": {
+        "message": "value \"{coordinate}\" is unavailable"
+    },
+    "ttgamer.ui.sheet.templates.page.imageAlt": {
+        "message": "Template image"
+    },
+    "ttgamer.ui.sheet.templates.page.imageInvalid": {
+        "message": "This image source is unavailable or insecure."
+    },
+    "ttgamer.ui.sheet.templates.page.imageRemove": {
+        "message": "Remove image"
+    },
+    "ttgamer.ui.sheet.templates.page.imageUpload": {
+        "message": "Upload image"
+    },
+    "ttgamer.ui.sheet.templates.page.imageUrl": {
+        "message": "Image URL"
     },
     "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
         "message": "Data binding \"{binding}\" is unavailable on this device."

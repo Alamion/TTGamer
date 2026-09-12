@@ -1,141 +1,136 @@
 import { DocumentKindSchema, SystemIdSchema } from '../../types/document';
-import type { CustomTemplate } from '../../types/template';
+import {
+    type CustomTemplate,
+    type GroupNode,
+    type ListNode,
+    type PrimitiveNode,
+    type SectionNode,
+    TEMPLATE_SCHEMA_VERSION,
+    type TemplateField,
+    type TemplateNode,
+} from '../../types/template';
 
 /**
- * Explicit default templates (feature 005 + review 2026-09-05).
+ * Explicit default templates (feature 006, research R9): pure declarative trees rebuilt from
+ * scratch to mirror the built-in viewer order Base → Attributes → Skills → Advantages → Force
+ * → Body → Other — identity fields, portrait image, trait fields, custom + system list
+ * bindings, the health track, resource primitives with system-default `maxFrom` formulas,
+ * derived-stat formula fields, and equipment bindings. ZERO `built-in` placements: the
+ * specialized creature/vehicle/fodder pages simply have no declarative default (their built-in
+ * layout renders), so no shipped template references the legacy placement path.
  *
- * Identity = the registered view id (no migration, no special-case mapping). System-backed
- * content is composed through **regular declarative fields with shared value keys** that the
- * binding registry bridges to document data at render time — the authoring interface is
- * identical to custom (value-bag) composition. Only explicitly custom primitives that fields
- * cannot express (condition tracks, custom lists with presets) remain primitive blocks, and the
- * not-yet-covered parts (advantages, Force, body-inventory; the specialized creature/vehicle/
- * fodder pages) remain retained `built-in` placements — the sanctioned hybrid. Phase two
- * replaces them (see TODO.md phase-two pointer).
+ * Document-backed content is composed through fields whose value keys the binding registry
+ * bridges to document data at render time; accents are automatic (sibling parity, FR-11) and
+ * never stored.
  */
 
-interface FieldInput {
-    id: string;
-    label: string;
-    type: 'text' | 'rating' | 'resource';
-    valueKey: string;
-    compact?: boolean;
-    max?: number;
-}
+const DOCS = {
+    base: '/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics',
+    attributes: '/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes',
+    skills: '/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities',
+    meritsFlaws: '/docs/star-wars-wod-2e/character/merits-flaws',
+    backgrounds: '/docs/star-wars-wod-2e/character/backgrounds',
+    virtues: '/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues',
+    derived: '/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats',
+    force: '/docs/star-wars-wod-2e/character/force',
+    forcePowers: '/docs/star-wars-wod-2e/character/force#force-powers',
+    forceSkills: '/docs/star-wars-wod-2e/character/force#force-skills',
+    equipment: '/docs/star-wars-wod-2e/equipment',
+} as const;
 
-interface PrimitiveInput {
-    id: string;
-    bindingKey: string;
-    compact?: boolean;
-    presets?: Array<{ key: string; label: string; value?: number }>;
-}
+const kebab = (value: string) => value.toLowerCase().replace(/\s+/g, '-');
 
-interface BuiltInInput {
-    id: string;
-    blockId: string;
-}
-
-interface GroupInput {
-    id: string;
-    label?: string;
-    columns?: number;
-    fields: FieldInput[];
-}
-
-interface SectionInput {
-    id: string;
-    title: string;
-    presentation: 'card' | 'plain';
-    blocks: Array<FieldInput | GroupInput | PrimitiveInput | BuiltInInput>;
-}
-
-function template(
-    viewId: string,
-    name: string,
-    documentKind: string,
-    sections: SectionInput[]
-): CustomTemplate {
-    return {
-        id: viewId,
-        name,
-        systemId: SystemIdSchema.parse('star-wars-wod'),
-        documentKind: DocumentKindSchema.parse(documentKind),
-        schemaVersion: 1,
-        sections: sections.map((section) => ({
-            id: section.id,
-            title: section.title,
-            presentation: section.presentation,
-            blocks: section.blocks.map((block) =>
-                'blockId' in block
-                    ? { id: block.id, type: 'built-in' as const, blockId: block.blockId }
-                    : 'bindingKey' in block
-                      ? {
-                            id: block.id,
-                            type: 'primitive' as const,
-                            bindingKey: block.bindingKey,
-                            compact: block.compact ?? false,
-                            ...(block.presets ? { presets: block.presets } : {}),
-                        }
-                      : 'fields' in block
-                        ? {
-                              id: block.id,
-                              type: 'fields' as const,
-                              columns: block.columns ?? 1,
-                              ...(block.label ? { title: block.label } : {}),
-                              fields: block.fields.map(toTemplateField),
-                          }
-                        : {
-                              id: block.id,
-                              type: 'fields' as const,
-                              columns: 1,
-                              fields: [toTemplateField(block)],
-                          }
-            ),
-        })),
-    } as CustomTemplate;
-}
-
-function field(
+function text(
     id: string,
     label: string,
-    type: 'text' | 'rating' | 'resource',
     valueKey: string,
-    options: { compact?: boolean; max?: number } = {}
-): FieldInput {
-    return { id, label, type, valueKey, ...options };
-}
-
-function toTemplateField(fieldInput: FieldInput) {
+    options: { multiline?: boolean; compact?: boolean } = {}
+): TemplateField {
     return {
-        id: fieldInput.id,
-        label: fieldInput.label,
-        type: fieldInput.type,
-        valueKey: fieldInput.valueKey,
-        compact: fieldInput.compact ?? false,
+        id,
+        type: 'text',
+        label,
+        valueKey,
+        multiline: options.multiline ?? false,
+        compact: options.compact ?? false,
         required: false,
-        ...(fieldInput.type === 'rating'
-            ? { min: 0, max: fieldInput.max ?? 5, presentation: 'dots' as const }
-            : {}),
-        ...(fieldInput.type === 'resource' ? { min: 0, max: fieldInput.max ?? 10 } : {}),
-        ...(fieldInput.type === 'text' ? { multiline: false } : {}),
     };
 }
 
-const ATTRIBUTE_FIELDS: ReadonlyArray<{ key: string; group: string }> = [
-    { key: 'Strength', group: 'physical' },
-    { key: 'Dexterity', group: 'physical' },
-    { key: 'Stamina', group: 'physical' },
-    { key: 'Charisma', group: 'social' },
-    { key: 'Manipulation', group: 'social' },
-    { key: 'Appearance', group: 'social' },
-    { key: 'Perception', group: 'mental' },
-    { key: 'Intelligence', group: 'mental' },
-    { key: 'Wits', group: 'mental' },
+function trait(key: string, options: { compact?: boolean; maxFrom?: string } = {}): TemplateField {
+    return {
+        id: `trait-${kebab(key)}`,
+        type: 'rating',
+        label: key,
+        valueKey: kebab(key),
+        min: 0,
+        max: 5,
+        presentation: 'dots',
+        compact: options.compact ?? false,
+        required: false,
+        ...(options.maxFrom ? { maxFrom: options.maxFrom } : {}),
+    };
+}
+
+function resource(
+    id: string,
+    bindingKey: string,
+    label: string,
+    options: { maxFrom?: string; compact?: boolean } = {}
+): PrimitiveNode {
+    return {
+        id,
+        type: 'primitive',
+        bindingKey,
+        label,
+        compact: options.compact ?? false,
+        ...(options.maxFrom ? { maxFrom: options.maxFrom } : {}),
+    };
+}
+
+function systemList(id: string, bindingKey: string, title: string): ListNode {
+    return { id, type: 'list', bindingKey, title, columns: 1 };
+}
+
+function group(id: string, title: string, children: TemplateNode[], columns?: number): GroupNode {
+    return {
+        id,
+        type: 'group',
+        title,
+        collapsible: false,
+        children,
+        ...(columns ? { columns } : {}),
+    };
+}
+
+function section(
+    id: string,
+    title: string,
+    docsPath: string,
+    children: TemplateNode[],
+    columns?: number
+): SectionNode {
+    return {
+        id,
+        type: 'section',
+        title,
+        docsPath,
+        children,
+        ...(columns ? { columns } : {}),
+    };
+}
+
+const ATTRIBUTE_GROUPS: ReadonlyArray<{ id: string; title: string; keys: string[] }> = [
+    { id: 'attributes-physical', title: 'Physical', keys: ['Strength', 'Dexterity', 'Stamina'] },
+    { id: 'attributes-social', title: 'Social', keys: ['Charisma', 'Manipulation', 'Appearance'] },
+    { id: 'attributes-mental', title: 'Mental', keys: ['Perception', 'Intelligence', 'Wits'] },
 ];
 
-const ABILITY_GROUPS: ReadonlyArray<{ group: string; keys: string[] }> = [
+const ABILITY_GROUPS: ReadonlyArray<{ id: string; title: string; list: string; keys: string[] }> = [
     {
-        group: 'talents',
+        id: 'abilities-talents',
+        title: 'Talents',
+        list: 'list-talents',
         keys: [
             'Alertness',
             'Athletics',
@@ -150,7 +145,9 @@ const ABILITY_GROUPS: ReadonlyArray<{ group: string; keys: string[] }> = [
         ],
     },
     {
-        group: 'skills',
+        id: 'abilities-skills',
+        title: 'Skills',
+        list: 'list-skills',
         keys: [
             'Blaster',
             'Gunnery',
@@ -165,7 +162,9 @@ const ABILITY_GROUPS: ReadonlyArray<{ group: string; keys: string[] }> = [
         ],
     },
     {
-        group: 'knowledges',
+        id: 'abilities-knowledges',
+        title: 'Knowledges',
+        list: 'list-knowledges',
         keys: [
             'Astrogation',
             'Bureaucracy',
@@ -181,221 +180,286 @@ const ABILITY_GROUPS: ReadonlyArray<{ group: string; keys: string[] }> = [
     },
 ];
 
-const kebab = (value: string) => value.toLowerCase().replace(/\s+/g, '-');
+const FORCE_SKILL_KEYS = ['Control', 'Dynamism', 'Rapport', 'Sense', 'Telekinesis'] as const;
+const VIRTUE_KEYS = ['Conscience', 'Passion', 'Self Control'] as const;
 
-function identityFields(compact = false): FieldInput[] {
-    return (
-        [
-            ['name', 'Name'],
-            ['concept', 'Concept'],
-            ['player', 'Player'],
-            ['nature', 'Nature'],
-            ['adventure', 'Adventure'],
-            ['demeanor', 'Demeanor'],
-            ['species', 'Species'],
-            ['age', 'Age'],
-        ] as const
-    ).map(([key, label]) =>
-        field(`field-${key}`, label, 'text', key, { ...(compact ? { compact: true } : {}) })
-    );
-}
+const IDENTITY_FIELDS: ReadonlyArray<[string, string]> = [
+    ['name', 'Name'],
+    ['concept', 'Concept'],
+    ['player', 'Player'],
+    ['nature', 'Nature'],
+    ['adventure', 'Adventure'],
+    ['demeanor', 'Demeanor'],
+    ['species', 'Species'],
+    ['age', 'Age'],
+];
 
-function traitFields(
-    keys: ReadonlyArray<{ key: string; group: string }>,
-    compact = false
-): FieldInput[] {
-    return keys.map(({ key }) =>
-        field(`trait-${kebab(key)}`, key, 'rating', kebab(key), {
-            max: 5,
-            ...(compact ? { compact: true } : {}),
-        })
-    );
-}
-
-function abilityFields(compact = false): FieldInput[] {
-    return ABILITY_GROUPS.flatMap((group) =>
-        group.keys.map((key) =>
-            field(`trait-${kebab(key)}`, key, 'rating', kebab(key), {
-                max: 5,
-                ...(compact ? { compact: true } : {}),
+function identityGroup(compact = false): GroupNode {
+    return group(
+        'identity-fields',
+        'Identity',
+        IDENTITY_FIELDS.map(([key, label], index) =>
+            text(`field-${key}`, label, key, {
+                ...(index < 2 && compact ? { multiline: false } : {}),
+                compact,
             })
+        ),
+        compact ? 3 : 2
+    );
+}
+
+function baseSection(compact = false): SectionNode {
+    return section('base', 'Base', DOCS.base, [
+        identityGroup(compact),
+        group('base-description', 'Description', [
+            text('field-appearance', 'Appearance', 'appearance', { multiline: true, compact }),
+            text('field-biography', 'Biography', 'biography', { multiline: true, compact }),
+        ]),
+        {
+            id: 'portrait-image',
+            type: 'image',
+            label: 'Portrait',
+            valueKey: 'portrait',
+            compact,
+            required: false,
+        },
+    ]);
+}
+
+function attributesSection(compact = false): SectionNode {
+    return section(
+        'attributes',
+        'Attributes',
+        DOCS.attributes,
+        ATTRIBUTE_GROUPS.map(({ id, title, keys }) =>
+            group(
+                id,
+                title,
+                keys.map((key) => trait(key, { compact })),
+                compact ? 1 : 3
+            )
         )
     );
 }
 
-function listPrimitives(compact = false): PrimitiveInput[] {
-    return [
-        {
-            id: 'list-talents',
-            bindingKey: 'list:customTalents',
-            ...(compact ? { compact: true } : {}),
-        },
-        {
-            id: 'list-skills',
-            bindingKey: 'list:customSkills',
-            ...(compact ? { compact: true } : {}),
-        },
-        {
-            id: 'list-knowledges',
-            bindingKey: 'list:customKnowledges',
-            ...(compact ? { compact: true } : {}),
-        },
-    ];
+function skillsSection(compact = false): SectionNode {
+    return section(
+        'skills',
+        'Skills',
+        DOCS.skills,
+        ABILITY_GROUPS.map(({ id, title, list, keys }) =>
+            group(id, title, [
+                ...keys.map((key) => trait(key, { compact })),
+                systemList(
+                    list,
+                    `list:custom${title.slice(0, 1).toUpperCase()}${title.slice(1)}`,
+                    `Custom ${title.toLowerCase()}`
+                ),
+            ])
+        )
+    );
 }
 
-const mainLegacyParts: BuiltInInput[] = [
-    { id: 'advantages', blockId: 'advantages' },
-    { id: 'force', blockId: 'force' },
-    { id: 'body', blockId: 'body' },
-];
-
-type ConditionPart = FieldInput | GroupInput | PrimitiveInput;
-
-function mainSheet(
-    viewId: string,
-    name: string,
-    resources: ReadonlyArray<ConditionPart>
-): CustomTemplate {
-    return template(viewId, name, 'character', [
-        {
-            id: 'identity',
-            title: 'Identity',
-            presentation: 'card',
-            blocks: [
-                { id: 'identity-fields', label: 'Identity', columns: 2, fields: identityFields() },
-            ],
-        },
-        {
-            id: 'attributes',
-            title: 'Attributes',
-            presentation: 'card',
-            blocks: traitFields(ATTRIBUTE_FIELDS),
-        },
-        {
-            id: 'abilities',
-            title: 'Abilities',
-            presentation: 'card',
-            blocks: abilityFields(),
-        },
-        {
-            id: 'lists',
-            title: 'Custom lists',
-            presentation: 'card',
-            blocks: listPrimitives(),
-        },
-        {
-            id: 'condition',
-            title: 'Condition',
-            presentation: 'card',
-            blocks: [{ id: 'track-health', bindingKey: 'track:health' }, ...resources],
-        },
-        {
-            id: 'legacy-parts',
-            title: 'Legacy parts',
-            presentation: 'plain',
-            blocks: mainLegacyParts,
-        },
-    ]);
+function advantagesSection(): SectionNode {
+    return section(
+        'advantages',
+        'Advantages',
+        DOCS.meritsFlaws,
+        [
+            group('advantages-backgrounds', 'Backgrounds', [
+                systemList('list-backgrounds', 'list:backgrounds', 'Backgrounds'),
+            ]),
+            group('advantages-merits', 'Merits', [
+                systemList('list-merits', 'list:merits', 'Merits'),
+            ]),
+            group('advantages-flaws', 'Flaws', [systemList('list-flaws', 'list:flaws', 'Flaws')]),
+        ],
+        3
+    );
 }
 
-function briefSheet(viewId: string, name: string): CustomTemplate {
-    return template(viewId, name, 'character', [
-        {
-            id: 'identity',
-            title: 'Identity',
-            presentation: 'card',
-            blocks: [
-                {
-                    id: 'identity-fields',
-                    label: 'Identity',
-                    columns: 3,
-                    fields: identityFields(true).filter((f) =>
-                        ['field-name', 'field-concept', 'field-species'].includes(f.id)
-                    ),
-                },
-            ],
-        },
-        {
-            id: 'attributes',
-            title: 'Attributes',
-            presentation: 'card',
-            blocks: traitFields(ATTRIBUTE_FIELDS, true),
-        },
-        {
-            id: 'condition',
-            title: 'Condition',
-            presentation: 'card',
-            blocks: [
-                { id: 'track-health', bindingKey: 'track:health', compact: true },
-                field('resource-willpower', 'Willpower', 'resource', 'willpower', {
-                    compact: true,
-                    max: 10,
+function forceSection(compact = false): SectionNode {
+    return section('force', 'Force', DOCS.force, [
+        group(
+            'force-skills-group',
+            'Force Skills',
+            FORCE_SKILL_KEYS.map((key) => trait(key, { compact })),
+            3
+        ),
+        group(
+            'force-virtues',
+            'Virtues',
+            VIRTUE_KEYS.map((key) => trait(key, { compact })),
+            3
+        ),
+        group(
+            'force-resources',
+            'Resources',
+            [
+                resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                    maxFrom: 'conscience + passion + self-control',
+                    compact,
                 }),
-            ],
-        },
-        {
-            id: 'lists',
-            title: 'Custom lists',
-            presentation: 'card',
-            blocks: listPrimitives(true),
-        },
-    ]);
-}
-
-function placementOnlySheet(
-    viewId: string,
-    name: string,
-    documentKind: string,
-    blockId: string
-): CustomTemplate {
-    return template(viewId, name, documentKind, [
-        {
-            id: 'page',
-            title: name,
-            presentation: 'plain',
-            blocks: [{ id: blockId, blockId }],
-        },
-    ]);
-}
-
-/** All default templates for the setup: bridged-field composition + sanctioned hybrid parts. */
-export const starWarsWodDefaultTemplates: readonly CustomTemplate[] = [
-    mainSheet('full-sheet', 'Full sheet', [
-        {
-            id: 'condition-resources',
-            label: 'Resources',
-            columns: 2,
-            fields: [
-                field('resource-willpower', 'Willpower', 'resource', 'willpower', { max: 10 }),
-                field('resource-force-points', 'Force Points', 'resource', 'force-points', {
-                    max: 10,
+                resource('resource-force-points', 'resource:force-points', 'Force Points', {
+                    maxFrom: 'willpower.max',
+                    compact,
                 }),
-                field(
+                resource(
                     'resource-dark-side',
+                    'resource:dark-side-resistance',
                     'Dark Side Resistance',
-                    'resource',
-                    'dark-side-resistance',
                     {
-                        max: 10,
+                        compact,
                     }
                 ),
             ],
-        },
-        { id: 'track-health', bindingKey: 'track:health' },
-    ]),
-    mainSheet('droid-sheet', 'Droid sheet', [
+            3
+        ),
+        group('force-powers-group', 'Force Powers', [
+            systemList('list-force-powers', 'list:forcePowers', 'Force Powers'),
+        ]),
+    ]);
+}
+
+function bodySection(): SectionNode {
+    return section('body', 'Body & health', DOCS.equipment, [
+        { id: 'track-health', type: 'primitive', bindingKey: 'track:health', compact: false },
         {
-            id: 'condition-resources',
-            label: 'Resources',
-            columns: 2,
-            fields: [
-                field('resource-willpower', 'Willpower', 'resource', 'willpower', { max: 10 }),
-            ],
+            id: 'equipment-inventory',
+            type: 'primitive',
+            bindingKey: 'equipment:inventory',
+            compact: false,
         },
-        { id: 'track-health', bindingKey: 'track:health' },
-    ]),
+        { id: 'equipment-armor', type: 'primitive', bindingKey: 'equipment:armor', compact: false },
+        {
+            id: 'equipment-weapons',
+            type: 'primitive',
+            bindingKey: 'equipment:weapons',
+            compact: false,
+        },
+        {
+            id: 'equipment-implants',
+            type: 'primitive',
+            bindingKey: 'equipment:implants',
+            compact: false,
+        },
+    ]);
+}
+
+function otherSection(compact = false): SectionNode {
+    return section('other', 'Other', DOCS.derived, [
+        group(
+            'derived-stats',
+            'Derived Stats',
+            [
+                {
+                    id: 'derived-initiative',
+                    type: 'formula',
+                    label: 'Initiative (standard)',
+                    formula: 'wits + alertness',
+                    compact,
+                    required: false,
+                },
+                {
+                    id: 'derived-initiative-saber',
+                    type: 'formula',
+                    label: 'Initiative (lightsaber)',
+                    formula: 'wits + alertness + control',
+                    compact,
+                    required: false,
+                },
+            ],
+            2
+        ),
+    ]);
+}
+
+function fullSheet(viewId: string, name: string, compact = false): CustomTemplate {
+    return {
+        id: viewId,
+        name,
+        systemId: SystemIdSchema.parse('star-wars-wod'),
+        documentKind: DocumentKindSchema.parse('character'),
+        schemaVersion: TEMPLATE_SCHEMA_VERSION,
+        children: [
+            baseSection(compact),
+            attributesSection(compact),
+            skillsSection(compact),
+            advantagesSection(),
+            forceSection(compact),
+            bodySection(),
+            otherSection(compact),
+        ],
+    };
+}
+
+function briefSheet(viewId: string, name: string): CustomTemplate {
+    return {
+        id: viewId,
+        name,
+        systemId: SystemIdSchema.parse('star-wars-wod'),
+        documentKind: DocumentKindSchema.parse('character'),
+        schemaVersion: TEMPLATE_SCHEMA_VERSION,
+        children: [
+            section('base', 'Base', DOCS.base, [
+                group(
+                    'identity-fields',
+                    'Identity',
+                    IDENTITY_FIELDS.filter(([key]) =>
+                        ['name', 'concept', 'species'].includes(key)
+                    ).map(([key, label]) => text(`field-${key}`, label, key, { compact: true })),
+                    3
+                ),
+                {
+                    id: 'portrait-image',
+                    type: 'image',
+                    label: 'Portrait',
+                    valueKey: 'portrait',
+                    compact: true,
+                    required: false,
+                },
+            ]),
+            attributesSection(true),
+            section('condition', 'Condition', DOCS.derived, [
+                group('condition-track', 'Condition', [
+                    {
+                        id: 'track-health',
+                        type: 'primitive',
+                        bindingKey: 'track:health',
+                        compact: true,
+                    },
+                    resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                        maxFrom: 'conscience + passion + self-control',
+                        compact: true,
+                    }),
+                    {
+                        id: 'derived-initiative',
+                        type: 'formula',
+                        label: 'Initiative (standard)',
+                        formula: 'wits + alertness',
+                        compact: true,
+                        required: false,
+                    },
+                ]),
+            ]),
+            section(
+                'lists',
+                'Custom lists',
+                DOCS.skills,
+                [
+                    systemList('list-talents', 'list:customTalents', 'Custom talents'),
+                    systemList('list-skills', 'list:customSkills', 'Custom skills'),
+                    systemList('list-knowledges', 'list:customKnowledges', 'Custom knowledges'),
+                ],
+                3
+            ),
+        ],
+    };
+}
+
+/** All default templates for the setup (R9): pure declarative trees, zero placements. */
+export const starWarsWodDefaultTemplates: readonly CustomTemplate[] = [
+    fullSheet('full-sheet', 'Full sheet'),
+    fullSheet('droid-sheet', 'Droid sheet'),
     briefSheet('brief', 'Brief'),
-    placementOnlySheet('creature-sheet', 'Creature sheet', 'creature', 'star-wars-creature-sheet'),
-    placementOnlySheet('vehicle-sheet', 'Vehicle sheet', 'vehicle', 'star-wars-vehicle-sheet'),
-    placementOnlySheet('fodder-sheet', 'Fodder group', 'group', 'star-wars-fodder-sheet'),
 ];

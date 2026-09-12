@@ -111,9 +111,11 @@ interface TraitGroupsBlockProps extends DocumentBlockProps {
 export interface CustomTraitCollection {
     items: CustomSkill[];
     onChange: (items: CustomSkill[]) => void;
+    /** Column layout for the editor's grid context, 1–4 (feature 006 FR-17). */
+    columns?: 1 | 2 | 3 | 4;
 }
 
-export function CustomTraitsEditor({ items, onChange }: CustomTraitCollection) {
+export function CustomTraitsEditor({ items, onChange, columns = 1 }: CustomTraitCollection) {
     return (
         <CustomTraitList
             items={items}
@@ -151,6 +153,7 @@ export function CustomTraitsEditor({ items, onChange }: CustomTraitCollection) {
             }
             size="md"
             showFlags
+            columns={columns}
         />
     );
 }

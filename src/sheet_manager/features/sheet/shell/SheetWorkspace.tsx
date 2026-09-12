@@ -85,8 +85,22 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
 
     const handleExport = () => {
         if (!currentDocument) return;
+        // Device-backed template images live in IndexedDB blobs; the JSON export strips them
+        // (URL values and document data travel) — feature 006 FR-16.
+        const values = currentDocument.templateValues ?? {};
+        const exportableValues = Object.fromEntries(
+            Object.entries(values).filter(
+                ([, value]) =>
+                    !(
+                        typeof value === 'object' &&
+                        value !== null &&
+                        !Array.isArray(value) &&
+                        (value as { source?: unknown }).source === 'device'
+                    )
+            )
+        );
         const data = JSON.stringify(
-            currentDocument,
+            { ...currentDocument, templateValues: exportableValues },
             (key, value) => (key === 'portraitId' ? undefined : value),
             2
         );

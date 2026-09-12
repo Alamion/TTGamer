@@ -7,18 +7,14 @@ import { createElement } from 'react';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
 import { resolveDataBindingByCoordinate } from '../../../systems/star-wars-wod/documentBindings';
-import type { SheetAccentColor } from '../../../systems/types';
-import type { CustomTemplate, TemplateBlock, TemplateField } from '../../../types/template';
-import { fieldValueKey, tableValueKey } from '../../../types/template';
+import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
+import { fieldValueKey, isContainerNode, tableValueKey } from '../../../types/template';
+import { listValueKey } from '../../../types/template';
 import { coerceStoredValue } from '../../../types/templateValues';
-import {
-    blockAccentColor,
-    getBuiltInSheetBlock,
-    isBuiltInBlockAvailable,
-} from '../registry/builtInBlockRegistry';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
+import type { FormulaEvaluationError } from './formula';
 import { useTemplatePage, type UseTemplatePageResult } from './hooks';
-import { PrimitiveBlockView, PrimitiveBody } from './primitives';
+import { CustomListView, PrimitiveNodeView, SystemListView } from './primitives';
 
 const editor = uiMessages.sheet.templates.editor;
 const page = uiMessages.sheet.templates.page;
@@ -31,41 +27,19 @@ const columnClasses: Record<number, string> = {
     4: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4',
 };
 
-/**
- * Ready-made interactive page part (FR-3): renders the exact component the built-in view path
- * uses, so parity is by construction. Ready-made blocks read document data directly — never the
- * template value bag (FR-5: two persistence mechanisms, one page).
- */
-function BuiltInBlockView({
-    placement,
-    accentColor,
-    systemId,
-    documentKind,
-}: {
-    placement: Extract<TemplateBlock, { type: 'built-in' }>;
-    accentColor: SheetAccentColor;
-    systemId: CustomTemplate['systemId'];
-    documentKind: CustomTemplate['documentKind'];
-}) {
-    const Block = getBuiltInSheetBlock(placement.blockId);
-    // FR-4: degradation covers unknown ids AND blocks foreign to this document kind — a fodder
-    // page part must never receive character data (prevents cross-kind schema crashes).
-    const available =
-        Block !== undefined && isBuiltInBlockAvailable(systemId, placement.blockId, documentKind);
-
-    if (!available) {
-        return (
-            <div
-                role="alert"
-                className="rounded-lg border border-dashed border-border bg-bgSurface p-4 text-sm text-textSecondary"
-            >
-                {translate(page.builtInPlaceholder, { block: placement.blockId })}
-            </div>
-        );
+function formulaErrorMessage(reason: FormulaEvaluationError | 'parse', coordinate = ''): string {
+    switch (reason) {
+        case 'circular':
+            return translate(page.formulaReasonCircular);
+        case 'division-by-zero':
+            return translate(page.formulaReasonDivision);
+        case 'non-numeric':
+            return translate(page.formulaReasonNonNumeric);
+        case 'unknown-coordinate':
+        case 'parse':
+        default:
+            return translate(page.formulaReasonUnknown).replace('{coordinate}', coordinate);
     }
-    // createElement avoids the react-compiler "component created during render" lint rule:
-    // Block is a registry lookup, not an inline component definition.
-    return createElement(Block!, { accentColor });
 }
 
 function FieldCell({
@@ -77,25 +51,27 @@ function FieldCell({
     pageApi: UseTemplatePageResult;
     value: unknown;
 }) {
+    const template = pageApi.template!;
     // Feature 005 review: a field whose shared value key matches a document data address
     // operates on the document data — the interface is identical to custom (value-bag) fields.
     const bridged = resolveDataBindingByCoordinate(
-        pageApi.template!.systemId,
-        pageApi.template!.documentKind,
+        template.systemId,
+        template.documentKind,
         fieldValueKey(field)
     );
     if (bridged) {
         return (
             <div className="grid gap-1">
-                <PrimitiveBody
-                    block={{
+                <PrimitiveNodeView
+                    node={{
                         id: field.id,
                         type: 'primitive',
                         bindingKey: bridged.key,
                         label: field.label,
                         compact: field.compact,
                     }}
-                    descriptor={bridged}
+                    systemId={template.systemId}
+                    documentKind={template.documentKind}
                 />
                 {field.description && (
                     <span className="text-xs text-textSecondary">{field.description}</span>
@@ -107,6 +83,21 @@ function FieldCell({
     const control = templateFieldControl(field.type);
     const runtime =
         field.type === 'select' && field.binding ? pageApi.resolveCatalogField(field) : undefined;
+
+    const maxState = pageApi.formulaState.maxima.get(field.id);
+    const formulaResult =
+        field.type === 'formula'
+            ? (() => {
+                  const result = pageApi.formulaState.results.get(fieldValueKey(field));
+                  if (!result) return undefined;
+                  return result.state === 'ok'
+                      ? ({ state: 'ok', value: result.value } as const)
+                      : ({
+                            state: 'error',
+                            message: formulaErrorMessage(result.reason, result.coordinate),
+                        } as const);
+              })()
+            : undefined;
 
     const handleChange = (next: unknown) => {
         pageApi.setValue(fieldValueKey(field), next);
@@ -148,6 +139,9 @@ function FieldCell({
                 value,
                 onChange: handleChange,
                 disabled: pageApi.disabled,
+                resolvedMax: maxState?.resolvedMax,
+                maxDegraded: maxState?.degraded,
+                formulaResult,
                 catalogOptions: runtime?.options,
                 documentOptions: pageApi.documentOptions,
             })}
@@ -163,35 +157,14 @@ function FieldCell({
     );
 }
 
-function FieldsBlock({
-    block,
-    pageApi,
-}: {
-    block: Extract<TemplateBlock, { type: 'fields' }>;
-    pageApi: UseTemplatePageResult;
-}) {
-    return (
-        <div className={clsx('grid gap-4', columnClasses[block.columns] ?? columnClasses[1])}>
-            {block.fields.map((field) => (
-                <FieldCell
-                    key={field.id}
-                    field={field}
-                    pageApi={pageApi}
-                    value={coerceStoredValue(field, pageApi.values[fieldValueKey(field)])}
-                />
-            ))}
-        </div>
-    );
-}
-
 function TableBlock({
-    block,
+    node,
     pageApi,
 }: {
-    block: Extract<TemplateBlock, { type: 'table' }>;
+    node: Extract<TemplateNode, { type: 'table' }>;
     pageApi: UseTemplatePageResult;
 }) {
-    const stored = pageApi.values[tableValueKey(block)];
+    const stored = pageApi.values[tableValueKey(node)];
     const rows =
         typeof stored === 'object' &&
         stored !== null &&
@@ -203,10 +176,13 @@ function TableBlock({
 
     return (
         <div className="overflow-x-auto">
+            {node.title && (
+                <h3 className="mb-2 text-sm font-semibold text-textPrimary">{node.title}</h3>
+            )}
             <table className="w-full text-sm">
                 <thead>
                     <tr>
-                        {block.columns.map((column) => (
+                        {node.columns.map((column) => (
                             <th
                                 key={column.id}
                                 scope="col"
@@ -225,7 +201,7 @@ function TableBlock({
                 <tbody>
                     {rowEntries.map(([rowIndex, row]) => (
                         <tr key={rowIndex} data-row={rowIndex}>
-                            {block.columns.map((column) => {
+                            {node.columns.map((column) => {
                                 const Control = templateFieldControl(column.type);
                                 return (
                                     <td key={column.id} className="px-2 py-1.5 align-top">
@@ -234,7 +210,7 @@ function TableBlock({
                                             value={coerceStoredValue(column, row[column.id])}
                                             onChange={(next) =>
                                                 pageApi.setRowValue(
-                                                    block.id,
+                                                    tableValueKey(node),
                                                     rowIndex,
                                                     column.id,
                                                     next
@@ -249,10 +225,8 @@ function TableBlock({
                             <td className="px-1 py-1.5 align-top">
                                 <button
                                     type="button"
-                                    onClick={() => pageApi.removeRow(block.id, rowIndex)}
-                                    disabled={
-                                        pageApi.disabled || rowEntries.length <= block.minRows
-                                    }
+                                    onClick={() => pageApi.removeRow(tableValueKey(node), rowIndex)}
+                                    disabled={pageApi.disabled || rowEntries.length <= node.minRows}
                                     aria-label={translate(editor.remove)}
                                     className="rounded p-1 text-textSecondary hover:bg-bgBase hover:text-error disabled:opacity-40"
                                 >
@@ -265,8 +239,8 @@ function TableBlock({
             </table>
             <button
                 type="button"
-                onClick={() => pageApi.addRow(block.id)}
-                disabled={pageApi.disabled || rowEntries.length >= block.maxRows}
+                onClick={() => pageApi.addRow(tableValueKey(node))}
+                disabled={pageApi.disabled || rowEntries.length >= node.maxRows}
                 className="mt-2 flex items-center gap-1 rounded px-2 py-1 text-xs text-primary hover:bg-bgBase disabled:opacity-40"
             >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
@@ -276,71 +250,167 @@ function TableBlock({
     );
 }
 
-function TemplateSectionView({
+function ListView({
+    node,
     pageApi,
-    section,
 }: {
+    node: Extract<TemplateNode, { type: 'list' }>;
     pageApi: UseTemplatePageResult;
-    section: CustomTemplate['sections'][number];
 }) {
-    return <div className="space-y-4">{renderSectionBlocks(pageApi, section)}</div>;
+    if (node.bindingKey) {
+        return (
+            <SystemListView
+                list={node}
+                systemId={pageApi.template!.systemId}
+                documentKind={pageApi.template!.documentKind}
+                disabled={pageApi.disabled}
+            />
+        );
+    }
+    const stored: unknown = pageApi.values[listValueKey(node)];
+    const entries = Array.isArray(stored)
+        ? (stored as Array<{ id: string; label: string; value?: number }>).map((entry) => ({
+              id: entry.id,
+              label: entry.label,
+              value: typeof entry.value === 'number' ? entry.value : 0,
+          }))
+        : [];
+    return (
+        <div className="grid gap-1" data-list-columns={node.columns}>
+            {node.title && <h3 className="text-sm font-semibold text-textPrimary">{node.title}</h3>}
+            <CustomListView
+                list={node}
+                entries={entries}
+                disabled={pageApi.disabled}
+                onChange={(next) => pageApi.setValue(listValueKey(node), next)}
+            />
+        </div>
+    );
 }
 
-function renderSectionBlocks(
-    pageApi: UseTemplatePageResult,
-    section: CustomTemplate['sections'][number]
-) {
-    const { systemId, documentKind } = pageApi.template!;
-    return section.blocks.map((block, index) => {
-        if (block.type === 'built-in') {
-            // Accent is automatic: primary → secondary by block parity (user review 2026-09-05).
-            return (
-                <BuiltInBlockView
-                    key={block.id}
-                    placement={block}
-                    accentColor={blockAccentColor(index)}
-                    systemId={systemId}
-                    documentKind={documentKind}
-                />
-            );
-        }
-        if (block.type === 'primitive') {
-            return (
-                <PrimitiveBlockView
-                    key={block.id}
-                    block={block}
-                    accentColor={blockAccentColor(index)}
-                    systemId={systemId}
-                    documentKind={documentKind}
-                />
-            );
-        }
-        return block.type === 'fields' ? (
-            <FieldsBlock key={block.id} block={block} pageApi={pageApi} />
-        ) : block.type === 'table' ? (
-            <TableBlock key={block.id} block={block} pageApi={pageApi} />
-        ) : null;
-    });
+function NodeView({
+    node,
+    pageApi,
+    accentColor,
+}: {
+    node: TemplateNode;
+    pageApi: UseTemplatePageResult;
+    accentColor: 'primary' | 'secondary';
+}) {
+    const template = pageApi.template!;
+
+    if (node.type === 'section') {
+        // Presentation (US3): a section is a collapsible block without a background box;
+        // docs link and column layout ride on the block header.
+        return (
+            <CollapsibleBlock
+                title={node.title}
+                storageKey={`template-${template.id}-${node.id}`}
+                docsPath={node.docsPath}
+                accentColor={accentColor}
+            >
+                <ChildrenGrid nodes={node.children} pageApi={pageApi} columns={node.columns} />
+            </CollapsibleBlock>
+        );
+    }
+
+    if (node.type === 'group') {
+        // Presentation (US3): a group is a titled surface card; collapsibility is opt-in and
+        // remembered per node (storageKey `template-<templateId>-<nodeId>`).
+        return (
+            <SectionCard
+                title={node.title}
+                storageKey={node.collapsible ? `template-${template.id}-${node.id}` : undefined}
+            >
+                <ChildrenGrid nodes={node.children} pageApi={pageApi} columns={node.columns} />
+            </SectionCard>
+        );
+    }
+
+    if (node.type === 'table') return <TableBlock node={node} pageApi={pageApi} />;
+    if (node.type === 'list') return <ListView node={node} pageApi={pageApi} />;
+
+    if (node.type === 'primitive') {
+        const maxState = pageApi.formulaState.maxima.get(node.id);
+        return (
+            <PrimitiveNodeView
+                node={node}
+                systemId={template.systemId}
+                documentKind={template.documentKind}
+                maxState={maxState}
+            />
+        );
+    }
+
+    // Leaf fields (text/number/toggle/image/formula/select/rating/resource/reference).
+    return (
+        <FieldCell
+            field={node}
+            pageApi={pageApi}
+            value={coerceStoredValue(node, pageApi.values[fieldValueKey(node)])}
+        />
+    );
 }
 
-/** Counts unfilled required fields for the FR-4a soft-advisory note. */
+function ChildrenGrid({
+    nodes,
+    pageApi,
+    columns,
+}: {
+    nodes: readonly TemplateNode[];
+    pageApi: UseTemplatePageResult;
+    columns?: number;
+}) {
+    if (nodes.length === 0) return null;
+    const children = nodes.map((node, index) => (
+        <NodeView
+            key={node.id}
+            node={node}
+            pageApi={pageApi}
+            // Accent alternation is automatic (by sibling parity), never stored (FR-11).
+            accentColor={index % 2 === 0 ? 'primary' : 'secondary'}
+        />
+    ));
+    if (columns && columns > 1) {
+        return (
+            <div className={clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])}>
+                {children}
+            </div>
+        );
+    }
+    return <div className="grid gap-4">{children}</div>;
+}
+
+/** Counts unfilled required fields for the FR-4a soft-advisory note (walks the whole tree). */
 export function countUnfilledRequired(
     template: CustomTemplate,
     values: Record<string, unknown>
 ): number {
     let count = 0;
-    for (const section of template.sections) {
-        for (const block of section.blocks) {
-            if (block.type !== 'fields' && block.type !== 'table') continue;
-            const items: readonly TemplateField[] =
-                block.type === 'fields' ? block.fields : block.columns;
-            for (const field of items) {
-                if (!field.required) continue;
-                const raw = values[fieldValueKey(field)];
-                if (raw === undefined || raw === '' || (Array.isArray(raw) && raw.length === 0)) {
-                    count += 1;
-                }
+    const isField = (node: TemplateNode): node is TemplateField =>
+        !isContainerNode(node) &&
+        node.type !== 'table' &&
+        node.type !== 'list' &&
+        node.type !== 'primitive';
+    walkChildren(template.children);
+    function walkChildren(children: readonly TemplateNode[]): void {
+        for (const node of children) {
+            if (node.type === 'section' || node.type === 'group') {
+                walkChildren(node.children);
+                continue;
             }
+            if (node.type === 'table') {
+                for (const column of node.columns) countRequired(column);
+                continue;
+            }
+            if (isField(node)) countRequired(node);
+        }
+    }
+    function countRequired(field: TemplateField): void {
+        if (!field.required) return;
+        const raw = values[fieldValueKey(field)];
+        if (raw === undefined || raw === '' || (Array.isArray(raw) && raw.length === 0)) {
+            count += 1;
         }
     }
     return count;
@@ -351,26 +421,7 @@ export function DeclarativeSheetView({ template }: { template: CustomTemplate })
 
     return (
         <div className="mx-auto max-w-7xl space-y-6 p-4 lg:p-6">
-            {template.sections.map((section, sectionIndex) =>
-                // 'plain' sections (built-in-derived pages) stack blocks directly — the exact
-                // presentation of the original view (space-y-8), no extra collapsible chrome.
-                section.presentation === 'plain' ? (
-                    <div key={section.id} className="space-y-8">
-                        {renderSectionBlocks(pageApi, section)}
-                    </div>
-                ) : (
-                    <CollapsibleBlock
-                        key={section.id}
-                        title={section.title}
-                        storageKey={`template-${template.id}-${section.id}`}
-                        accentColor={sectionIndex % 2 === 0 ? 'primary' : 'secondary'}
-                    >
-                        <SectionCard>
-                            <TemplateSectionView pageApi={pageApi} section={section} />
-                        </SectionCard>
-                    </CollapsibleBlock>
-                )
-            )}
+            <ChildrenGrid nodes={template.children} pageApi={pageApi} />
         </div>
     );
 }

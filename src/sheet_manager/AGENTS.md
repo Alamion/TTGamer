@@ -29,7 +29,7 @@ src/sheet_manager/
 │   └── hooks/                # sheet-local behavior hooks
 ├── hooks/                    # useCharacter and update helpers
 ├── systems/                  # system plugins, document definitions, registry
-├── store/                    # documentStore (polymorphic documents, v2) + templateStore (library)
+├── store/                    # documentStore (polymorphic documents, v3) + templateStore (library, v3)
 └── types/                    # generic contracts, template schema, templateValues bag
 ```
 
@@ -94,24 +94,20 @@ Generic documents use validated open-ended kind identifiers so non-character rec
 
 ## Custom Page Templates
 
-- Templates are declarative data (sections → blocks → typed fields) persisted in
-  `store/templateStore.ts` under `'universal-template-storage'`; they never enter document
-  definition schemas. Documents select one via `metadata.templateId`, and per-document field
-  values live in one flat envelope `templateValues` bag keyed by each field's `valueKey`
-  (store version 3; fields in different templates with an equal `valueKey` share one value;
-  templates are system-scoped — compatibility matches `systemId` + kind).
-- Strict value validation happens on the write path (`updateTemplateValues`), where the owning
-  template is resolvable; the envelope layer only enforces size/bounds. Orphaned values (fields
-  the template no longer declares) pass through untouched — never destructively deleted.
-- `resolveCustomTemplate()` returns ready / missing / none; a stale `templateId` renders the
-  built-in page plus a fallback notice and keeps the assignment re-pointable.
-- Catalog bindings (`features/sheet/data/catalogBindings.ts`) are the only way `src/data`
-  catalogs reach template fields. Templates persist `catalogId` + fill ids; option labels and
-  detail values resolve at render time; selecting an entry copies mapped details into linked
-  fields as character-owned values (replace re-copies, clear leaves values).
-- Template import/export uses the `ttgamer-template` v1 wrapper in
-  `features/sheet/shell/templateFile.ts`; validation is complete before any state change, and
-  unavailable catalogs degrade to manual choice fields with a named-field report.
+The current-state reference is `.agents/skills/sheet-templates/SKILL.md` — load it before any
+template change. Specs 003–006 are change history, not a description of today's system; do not
+duplicate template facts here. Invariants that must never be broken:
+
+- Templates are declarative trees and never contain executable code; they never enter document
+  definition schemas.
+- Custom values live in the flat `templateValues` bag keyed by coordinate (`valueKey ?? id`);
+  system values live in `document.data`. Orphaned values are never deleted.
+- Pass the resolved template object to the store write path; never look templates up by id
+  (`getTemplate` sees only user templates, not shipped defaults or overrides).
+- Every graceful-degradation path (rejected write, quarantine, unresolved binding, missing
+  catalog, broken formula) reports through `diagnostics.ts` `reportSheetIssue`. Silent fallbacks
+  are bugs.
+- A template change is not done until the skill reflects it.
 
 ## Derived State
 

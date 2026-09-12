@@ -5,21 +5,27 @@ import {
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { takeSheetIssues } from '../setup/sheetIssues';
+
 function buildTemplate(id: string, name = 'Test Template') {
     return CustomTemplateSchema.parse({
         id,
         name,
         documentKind: 'character',
-        schemaVersion: 1,
-        sections: [
+        schemaVersion: 3,
+        children: [
             {
                 id: 'identity',
+                type: 'section',
                 title: 'Identity',
-                blocks: [
+                children: [
                     {
-                        id: 'identity-fields',
-                        type: 'fields',
-                        fields: [{ id: 'origin', label: 'Origin', type: 'text' }],
+                        id: 'origin',
+                        type: 'text',
+                        label: 'Origin',
+                        required: false,
+                        compact: false,
+                        multiline: false,
                     },
                 ],
             },
@@ -81,6 +87,10 @@ describe('template store', () => {
         });
         expect(migrated.templates.map(({ id }) => id)).toEqual(['keeper']);
         expect(migrated.quarantine).toHaveLength(3);
+        expect(takeSheetIssues().map(({ details }) => details?.templateId)).toEqual([
+            'broken',
+            'also-broken',
+        ]);
     });
 
     it('caps the quarantine collection size', () => {

@@ -2,11 +2,22 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useCallback, useEffect, useMemo } from 'react';
 
 import { useCharacterContext } from '../../../context/CharacterContext';
+import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentStore } from '../../../store/documentStore';
-import { resolveDocumentBinding } from '../../../systems/star-wars-wod/documentBindings';
-import type { CustomTemplate, TemplateField } from '../../../types/template';
-import { fieldValueKey } from '../../../types/template';
-import { collectTemplateFields } from '../../../types/template';
+import type { CharacterLike } from '../../../systems/star-wars-wod/documentBindings';
+import {
+    listDocumentBindings,
+    resolveDocumentBinding,
+    systemListDataKey,
+    toCoordinate,
+} from '../../../systems/star-wars-wod/documentBindings';
+import type { CustomTemplate, ListNode, TemplateField } from '../../../types/template';
+import {
+    collectListNodes,
+    collectTemplateFields,
+    fieldValueKey,
+    walkTemplateNodes,
+} from '../../../types/template';
 import type { TemplatePageValues } from '../../../types/templateValues';
 import {
     CATALOG_BINDINGS,
@@ -14,6 +25,7 @@ import {
     readDetailValue,
 } from '../data/catalogBindings';
 import type { CatalogOption, DocumentOption } from './fieldControls';
+import { evaluateFormula, type Expr, type FormulaEvaluationError, parseFormula } from './formula';
 
 export type TemplatePageStatus = 'none' | 'ready' | 'missing';
 
@@ -30,13 +42,32 @@ export interface CatalogFieldRuntime {
     readDetail: (entry: { id: string; name: string }, key: string) => string | number | undefined;
 }
 
+export interface FormulaState {
+    /** Computed result for a formula field; error surfaces as a labeled state (FR-15). */
+    results: ReadonlyMap<
+        string,
+        | { state: 'ok'; value: number }
+        | { state: 'error'; reason: FormulaEvaluationError | 'parse'; coordinate?: string }
+    >;
+    /** Per-node computed maxima for `maxFrom` (FR-12); degraded when the source is unavailable. */
+    maxima: ReadonlyMap<string, { resolvedMax?: number; degraded?: boolean }>;
+}
+
+export interface SystemListRuntime {
+    descriptor: NonNullable<ReturnType<typeof resolveDocumentBinding>>;
+    data: readonly unknown[];
+    write: (next: readonly unknown[]) => void;
+}
+
 export interface UseTemplatePageResult {
     addRow: (blockId: string) => void;
     disabled: boolean;
     /** Documents for reference controls (current store, excluding the active document). */
     documentOptions: ReadonlyArray<DocumentOption>;
+    formulaState: FormulaState;
     removeRow: (blockId: string, rowIndex: string) => void;
     resolveCatalogField: (field: TemplateField) => CatalogFieldRuntime | undefined;
+    resolveSystemList: (list: ListNode) => SystemListRuntime | undefined;
     setRowValue: (blockId: string, rowIndex: string, columnId: string, value: unknown) => void;
     /** Writes by storage coordinate (valueKey); resolves template field ids internally. */
     setValue: (fieldOrKey: string, value: unknown) => void;
@@ -60,6 +91,12 @@ function templateFieldCoordsFor(template: CustomTemplate): Map<string, string> {
     return map;
 }
 
+function parsedFormula(source: string): { ok: true; expr: Expr } | { ok: false } {
+    const parsed = parseFormula(source);
+    if (parsed.ok) return { ok: true, expr: parsed.expr };
+    return { ok: false };
+}
+
 function readRows(value: unknown): Record<string, Record<string, unknown>> {
     return typeof value === 'object' &&
         value !== null &&
@@ -73,9 +110,9 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
     const {
         currentDocumentId,
         documents,
-        updateTemplateValues,
         updateDocumentData,
         updateDocumentMetadata,
+        updateTemplateValues,
     } = useDocumentStore();
     const { readOnly } = useCharacterContext();
     const locale = useDocusaurusContext().i18n.currentLocale;
@@ -94,23 +131,25 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
         [template]
     );
 
+    const documentData = document?.data as CharacterLike | undefined;
+
     const setValue = useCallback(
         (fieldOrKey: string, value: unknown) => {
-            if (!currentDocumentId || !templateId || readOnly) return;
+            if (!currentDocumentId || !template || readOnly) return;
             // Accepts either a template field id (resolved to its valueKey) or an explicit key.
             const coordinate = fieldCoords.get(fieldOrKey) ?? fieldOrKey;
-            updateTemplateValues(currentDocumentId, templateId, (page) => ({
+            updateTemplateValues(currentDocumentId, template, (page) => ({
                 ...page,
                 [coordinate]: value as TemplatePageValues[string],
             }));
         },
-        [currentDocumentId, templateId, readOnly, updateTemplateValues, fieldCoords]
+        [currentDocumentId, template, readOnly, updateTemplateValues, fieldCoords]
     );
 
     const setRowValue = useCallback(
         (blockId: string, rowIndex: string, columnId: string, value: unknown) => {
-            if (!currentDocumentId || !templateId || readOnly) return;
-            updateTemplateValues(currentDocumentId, templateId, (page) => {
+            if (!currentDocumentId || !template || readOnly) return;
+            updateTemplateValues(currentDocumentId, template, (page) => {
                 const rows = readRows(page[blockId]);
                 const row = rows[rowIndex] ?? {};
                 return {
@@ -122,13 +161,13 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
                 } as TemplatePageValues;
             });
         },
-        [currentDocumentId, templateId, readOnly, updateTemplateValues]
+        [currentDocumentId, template, readOnly, updateTemplateValues]
     );
 
     const addRow = useCallback(
         (blockId: string) => {
-            if (!currentDocumentId || !templateId || readOnly) return;
-            updateTemplateValues(currentDocumentId, templateId, (page) => {
+            if (!currentDocumentId || !template || readOnly) return;
+            updateTemplateValues(currentDocumentId, template, (page) => {
                 const rows = readRows(page[blockId]);
                 let index = 0;
                 while (rows[String(index)] !== undefined) index += 1;
@@ -138,20 +177,20 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
                 };
             });
         },
-        [currentDocumentId, templateId, readOnly, updateTemplateValues]
+        [currentDocumentId, template, readOnly, updateTemplateValues]
     );
 
     const removeRow = useCallback(
         (blockId: string, rowIndex: string) => {
-            if (!currentDocumentId || !templateId || readOnly) return;
-            updateTemplateValues(currentDocumentId, templateId, (page) => {
+            if (!currentDocumentId || !template || readOnly) return;
+            updateTemplateValues(currentDocumentId, template, (page) => {
                 const rows = readRows(page[blockId]);
                 const next = { ...rows };
                 delete next[rowIndex];
                 return { ...page, [blockId]: next } as TemplatePageValues;
             });
         },
-        [currentDocumentId, templateId, readOnly, updateTemplateValues]
+        [currentDocumentId, template, readOnly, updateTemplateValues]
     );
 
     const documentOptions = useMemo<DocumentOption[]>(
@@ -165,31 +204,298 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
         [documents, document?.id]
     );
 
-    // Preset seeding (feature 005, FR-16): copy-on-assign, once per document×template.
-    // Presets land as ordinary custom-list entries; removal is final (marker prevents re-seed);
+    // -- Formula engine (feature 006): unified coordinate space, memoized per render pass. --
+    const formulaState = useMemo<FormulaState>(() => {
+        const results = new Map<
+            string,
+            | { state: 'ok'; value: number }
+            | { state: 'error'; reason: FormulaEvaluationError | 'parse'; coordinate?: string }
+        >();
+        const maxima = new Map<string, { resolvedMax?: number; degraded?: boolean }>();
+        if (!template) return { results, maxima };
+
+        // Base numeric resolver: bag values + system-bound coordinates (undifferentiated).
+        const resolveBase = (path: string): number | undefined => {
+            const bagNumber = (key: string, part?: 'current' | 'max'): number | undefined => {
+                const stored = values[key];
+                if (typeof stored === 'number') return part === 'max' ? undefined : stored;
+                if (typeof stored === 'object' && stored !== null && 'current' in stored) {
+                    const pool = stored as { current: number; max: number };
+                    if (part === 'max') return pool.max;
+                    return part === 'current' ? pool.current : pool.current;
+                }
+                return undefined;
+            };
+
+            // System traits: coordinate → trait value; pools → .current / .max.
+            if (documentData) {
+                for (const binding of listDocumentBindings(
+                    template.systemId,
+                    template.documentKind
+                )) {
+                    if (binding.kind === 'trait') {
+                        if (toCoordinate(binding.traitKey) === path) {
+                            const record = documentData[binding.map] as
+                                | Record<string, { value?: number }>
+                                | undefined;
+                            // Unset traits keep their schema defaults (skills 0, others 1).
+                            return (
+                                record?.[binding.traitKey]?.value ??
+                                (binding.map === 'skills' ? 0 : 1)
+                            );
+                        }
+                    } else if (binding.kind === 'resource') {
+                        const base = toCoordinate(binding.resourceId);
+                        const [head, part] = path.split('.');
+                        if (head === base) {
+                            if (binding.resourceId === 'willpower') {
+                                const pool = documentData.willpower;
+                                return part === 'max' ? pool?.max : pool?.current;
+                            }
+                            if (binding.resourceId === 'force-points') {
+                                const pool = documentData.forcePoints;
+                                return part === 'max' ? pool?.max : pool?.current;
+                            }
+                            if (part === 'max') return undefined; // rating scalars expose no max
+                            return documentData.darkSideResistance;
+                        }
+                    }
+                }
+            }
+            const [head, part] = path.split('.');
+            if (part === 'current' || part === 'max') {
+                return bagNumber(head, part as 'current' | 'max');
+            }
+            return bagNumber(path);
+        };
+
+        // Formula fields first, evaluated in dependency order with a cycle guard.
+        const formulaFields: Array<{ coordinate: string; expr: Expr }> = [];
+        walkTemplateNodes(template.children, (node) => {
+            if (node.type === 'formula') {
+                const parsed = parsedFormula(node.formula);
+                if (parsed.ok) {
+                    formulaFields.push({ coordinate: fieldValueKey(node), expr: parsed.expr });
+                } else {
+                    results.set(fieldValueKey(node), { state: 'error', reason: 'parse' });
+                    reportSheetIssue({
+                        code: 'formula-error',
+                        message: 'Formula field does not parse',
+                        details: {
+                            templateId: template.id,
+                            nodeId: node.id,
+                            formula: node.formula,
+                        },
+                    });
+                }
+            }
+        });
+        const computed = new Set<string>();
+        const pending = new Set<string>(formulaFields.map(({ coordinate }) => coordinate));
+        let guard = formulaFields.length + 1;
+        while (pending.size > 0 && guard > 0) {
+            guard -= 1;
+            let progressed = false;
+            for (const entry of formulaFields) {
+                if (computed.has(entry.coordinate)) continue;
+                const unresolved = collectDependenciesSafe(entry.expr).some(
+                    (coordinate) =>
+                        pending.has(coordinate) &&
+                        !computed.has(coordinate) &&
+                        coordinate !== entry.coordinate
+                );
+                if (unresolved) continue;
+                const resolution = evaluateFormula(entry.expr, (path) => {
+                    if (path === entry.coordinate) return undefined; // self-reference → unknown
+                    const computedEntry = formulaFields.find(
+                        (candidate) => candidate.coordinate === path
+                    );
+                    if (computedEntry && computed.has(path)) {
+                        const value = results.get(path);
+                        return value && value.state === 'ok' ? value.value : undefined;
+                    }
+                    return resolveBase(path);
+                });
+                results.set(
+                    entry.coordinate,
+                    resolution.ok
+                        ? { state: 'ok', value: resolution.value }
+                        : {
+                              state: 'error',
+                              reason: resolution.error,
+                              coordinate: resolution.coordinate,
+                          }
+                );
+                if (resolution.ok || resolution.error !== 'unknown-coordinate') {
+                    computed.add(entry.coordinate);
+                    pending.delete(entry.coordinate);
+                    progressed = true;
+                }
+            }
+            if (!progressed) {
+                // Remaining coordinates are circular (or reference a broken chain).
+                for (const coordinate of pending) {
+                    results.set(coordinate, { state: 'error', reason: 'circular' });
+                    computed.add(coordinate);
+                }
+                break;
+            }
+        }
+
+        // maxFrom evaluation: display clamp data for rating/number fields and pool primitives.
+        walkTemplateNodes(template.children, (node) => {
+            const source =
+                (node.type === 'rating' || node.type === 'number') && node.maxFrom
+                    ? node.maxFrom
+                    : node.type === 'primitive' && node.maxFrom
+                      ? node.maxFrom
+                      : undefined;
+            if (!source) return;
+            const parsed = parsedFormula(source);
+            if (!parsed.ok) {
+                maxima.set(node.id, { degraded: true });
+                reportSheetIssue({
+                    code: 'formula-error',
+                    message: 'maxFrom formula does not parse',
+                    details: { templateId: template.id, nodeId: node.id, formula: source },
+                });
+                return;
+            }
+            const resolution = evaluateFormula(parsed.expr, (path) => {
+                const computedEntry = formulaFields.find(
+                    (candidate) => candidate.coordinate === path
+                );
+                if (computedEntry && computed.has(path)) {
+                    const value = results.get(path);
+                    return value && value.state === 'ok' ? value.value : undefined;
+                }
+                return resolveBase(path);
+            });
+            maxima.set(
+                node.id,
+                resolution.ok ? { resolvedMax: resolution.value } : { degraded: true }
+            );
+        });
+
+        return { results, maxima };
+    }, [template, values, documentData]);
+
+    const resolveSystemList = useCallback(
+        (list: ListNode): SystemListRuntime | undefined => {
+            if (!list.bindingKey || !document) return undefined;
+            const descriptor = resolveDocumentBinding(
+                template?.systemId ?? document.systemId,
+                template?.documentKind ?? document.kind,
+                list.bindingKey
+            );
+            if (!descriptor) {
+                reportSheetIssue({
+                    code: 'binding-unresolved',
+                    message: 'List binding key is not registered for this system and kind',
+                    details: { bindingKey: list.bindingKey, nodeId: list.id },
+                });
+                return undefined;
+            }
+            const listId =
+                descriptor.kind === 'list'
+                    ? systemListDataKey(descriptor.listId)
+                    : descriptor.kind === 'equipment'
+                      ? descriptor.sectionId
+                      : undefined;
+            if (!listId) return undefined;
+            const data = (documentData as Record<string, unknown> | undefined)?.[listId];
+            return {
+                descriptor,
+                data: Array.isArray(data) ? data : [],
+                write: (next) => {
+                    if (!currentDocumentId || readOnly) return;
+                    updateDocumentData(currentDocumentId, (raw) => ({
+                        ...(raw as Record<string, unknown>),
+                        [listId]: next,
+                    }));
+                },
+            };
+        },
+        [document, documentData, template, currentDocumentId, readOnly, updateDocumentData]
+    );
+
+    const resolveCatalogField = useCallback(
+        (field: TemplateField): CatalogFieldRuntime | undefined => {
+            if (field.type !== 'select' || !field.binding) return undefined;
+            const catalogId = field.binding.catalogId;
+            const binding = CATALOG_BINDINGS.get(catalogId);
+            if (!binding) {
+                // FR-21 degradation: manual fallback with static options, binding retained.
+                reportSheetIssue({
+                    code: 'catalog-unavailable',
+                    message: 'Catalog binding is not available; falling back to manual choice',
+                    details: { catalogId, fieldId: field.id },
+                });
+                return {
+                    catalogId,
+                    degraded: true,
+                    options: [],
+                    details: new Map(),
+                    getEntry: () => undefined,
+                    readDetail: () => undefined,
+                };
+            }
+            return {
+                catalogId,
+                degraded: false,
+                options: binding.entries.map((entry) => ({
+                    value: entry.id,
+                    label: binding.entryLabel(entry, locale),
+                })),
+                details: new Map(binding.fillableDetails.map((detail) => [detail.key, detail])),
+                getEntry: (entryId) => binding.entries.find((entry) => entry.id === entryId),
+                readDetail: readDetailValue,
+            };
+        },
+        [locale]
+    );
+
+    // Preset seeding (feature 005, FR-19): copy-on-assign, once per document×template.
+    // Presets land as ordinary list entries; removal is final (marker prevents re-seed);
     // later author edits to presets never propagate to already-seeded documents.
     useEffect(() => {
         if (!template || !currentDocumentId || readOnly) return;
         if (document?.metadata.seededPresets?.includes(template.id)) return;
 
         const pending: Array<{
-            listId: 'customTalents' | 'customSkills' | 'customKnowledges';
-            presets: NonNullable<
-                CustomTemplate['sections'][number]['blocks'][number] extends never
-                    ? never
-                    : Array<{ key: string; label: string; value?: number }>
-            >;
+            listId: string;
+            presets: Array<{ key: string; label: string; value?: number }>;
         }> = [];
-        for (const section of template.sections) {
-            for (const block of section.blocks) {
-                if (block.type !== 'primitive' || !block.presets?.length) continue;
+        for (const list of collectListNodes(template)) {
+            if (!list.presets?.length) continue;
+            if (list.bindingKey) {
                 const descriptor = resolveDocumentBinding(
                     template.systemId,
                     template.documentKind,
-                    block.bindingKey
+                    list.bindingKey
                 );
-                if (descriptor?.kind !== 'list') continue;
-                pending.push({ listId: descriptor.listId, presets: block.presets });
+                const listId = descriptor?.kind === 'list' ? descriptor.listId : undefined;
+                if (listId) pending.push({ listId, presets: list.presets });
+            } else if (list.valueKey) {
+                // Value-coordinate lists seed into the bag as ordinary starting entries.
+                const stored: unknown = values[list.valueKey];
+                const entries = Array.isArray(stored)
+                    ? (stored as Array<{ id: string; label: string; value?: number }>)
+                    : [];
+                const known = new Set(entries.map((entry) => String(entry.id ?? '')));
+                const seeded = list.presets
+                    .filter((preset) => !known.has(`preset-${template.id}-${preset.key}`))
+                    .map((preset) => ({
+                        id: `preset-${template.id}-${preset.key}`,
+                        label: preset.label,
+                        value: preset.value ?? 0,
+                    }));
+                if (seeded.length > 0) {
+                    updateTemplateValues(currentDocumentId, template, (page) => ({
+                        ...page,
+                        [list.valueKey!]: [...entries, ...seeded],
+                    }));
+                }
             }
         }
         if (pending.length === 0) {
@@ -200,9 +506,6 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
             });
             return;
         }
-
-        const existing = new Map(pending.map(({ listId }) => [listId, false]));
-        void existing;
         updateDocumentData(currentDocumentId, (raw) => {
             const next = { ...(raw as Record<string, unknown>) };
             for (const { listId, presets } of pending) {
@@ -228,53 +531,39 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
         template,
         currentDocumentId,
         readOnly,
-        document?.metadata.seededPresets,
+        document,
+        values,
         updateDocumentData,
         updateDocumentMetadata,
-        document,
+        updateTemplateValues,
     ]);
-
-    const resolveCatalogField = useCallback(
-        (field: TemplateField): CatalogFieldRuntime | undefined => {
-            if (field.type !== 'select' || !field.binding) return undefined;
-            const catalogId = field.binding.catalogId;
-            const binding = CATALOG_BINDINGS.get(catalogId);
-            if (!binding) {
-                // FR-21 degradation: manual fallback with static options, binding retained.
-                return {
-                    catalogId,
-                    degraded: true,
-                    options: [],
-                    details: new Map(),
-                    getEntry: () => undefined,
-                    readDetail: () => undefined,
-                };
-            }
-            return {
-                catalogId,
-                degraded: false,
-                options: binding.entries.map((entry) => ({
-                    value: entry.id,
-                    label: binding.entryLabel(entry, locale),
-                })),
-                details: new Map(binding.fillableDetails.map((detail) => [detail.key, detail])),
-                getEntry: (entryId) => binding.entries.find((entry) => entry.id === entryId),
-                readDetail: readDetailValue,
-            };
-        },
-        [locale]
-    );
 
     return {
         addRow,
         disabled: readOnly,
         documentOptions,
+        formulaState,
         removeRow,
         resolveCatalogField,
+        resolveSystemList,
         setRowValue,
         setValue,
         status: template ? 'ready' : 'none',
         template,
         values,
     };
+}
+
+function collectDependenciesSafe(expr: Expr): string[] {
+    const coords: string[] = [];
+    const walk = (node: Expr): void => {
+        if (node.kind === 'coord') coords.push(node.path);
+        else if (node.kind === 'neg') walk(node.operand);
+        else if (node.kind === 'bin') {
+            walk(node.left);
+            walk(node.right);
+        }
+    };
+    walk(expr);
+    return coords;
 }

@@ -120,6 +120,7 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 | ------------------------ | ---------------------------------------------------------------------- |
 | `dice-logic`             | Working on dice lexer, parser, evaluator, or renderer                  |
 | `sheet-manager`          | Working on character schema, store, derived stats, or blocks           |
+| `sheet-templates`        | Anything template-related: tree, values, bindings, formulas, editor    |
 | `docusaurus-integration` | Adding pages, navbar items, theme config                               |
 | `tailwind-theming`       | Using colors, dark mode, palette variables                             |
 | `mdx-documentation`      | Writing MDX docs — admonitions, cross-refs, dice notation              |
@@ -136,7 +137,12 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 - Data changes must pass `yarn validate:data`. Star Wars documentation path changes must be mirrored under Russian i18n and pass `yarn validate:i18n`.
 - YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`; do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.
 
-## 9. Verification Scope
+## 9. Specs vs Current State
+
+- `specs/NNN-*` are change records: they explain why a feature was built, and later specs amend earlier ones. Never reconstruct current behavior from a spec chain.
+- Current behavior lives in module `AGENTS.md` files and `.agents/skills/`. A feature is complete only when those are updated and superseded specs carry a historical banner.
+
+## 10. Verification Scope
 
 - Small code edit: targeted tests plus `yarn verify:fast`.
 - Dice parser/evaluator or schema/persistence edit: `yarn verify`.

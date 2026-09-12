@@ -32,10 +32,5 @@ export type {
     SystemPlugin,
 } from './types';
 export type { EffectiveTemplate, ResolvedCustomTemplate } from './view';
-export {
-    resolveCustomTemplate,
-    resolveDocumentView,
-    resolveEffectiveTemplate,
-    viewToDefaultTemplate,
-} from './view';
+export { resolveCustomTemplate, resolveDocumentView, resolveEffectiveTemplate } from './view';
 export * from './wod-like';

@@ -18,5 +18,6 @@ export default defineConfig({
             reporter: ['text', 'html'],
         },
         include: ['tests/**/*.test.{ts,tsx}'],
+        setupFiles: ['tests/setup/sheetIssues.ts'],
     },
 });

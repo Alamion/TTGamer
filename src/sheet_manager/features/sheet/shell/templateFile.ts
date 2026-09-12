@@ -1,17 +1,17 @@
-import type { CustomTemplate } from '../../../types/template';
-import { CustomTemplateSchema } from '../../../types/template';
+import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
+import { CustomTemplateSchema, walkTemplateNodes } from '../../../types/template';
 import { CATALOG_BINDINGS } from '../data/catalogBindings';
 
 /**
- * Template file transfer boundary (contracts/template-file-format.md): a self-describing
- * JSON wrapper around the declarative template definition. Validation happens fully before
- * any state change; unknown keys are stripped by the schema, never trusted.
- * Version 2 adds `systemId` + `valueKey`. v1 files import via the schema's systemId default
- * ('star-wars-wod' — the only system that existed at v1).
+ * Template file transfer boundary: a self-describing JSON wrapper around the declarative
+ * template definition. Validation happens fully before any state change; unknown keys are
+ * stripped by the schema, never trusted. Version 3 (feature 006) carries the recursive node
+ * tree (`children`); v2 and older files are rejected with the version error — pre-feature
+ * templates retire rather than migrate (spec FR-4/A5).
  */
 
 export const TEMPLATE_FILE_FORMAT = 'ttgamer-template';
-export const TEMPLATE_FILE_VERSION = 2;
+export const TEMPLATE_FILE_VERSION = 3;
 
 export interface TemplateFilePayload {
     format: string;
@@ -35,18 +35,32 @@ export function buildTemplateFilename(templateId: string): string {
     return `ttgamer_template_${templateId}.json`;
 }
 
-function labelsForFields(template: CustomTemplate, fieldIds: readonly string[]): string[] {
-    const labels: string[] = [];
-    for (const section of template.sections) {
-        for (const block of section.blocks) {
-            if (block.type !== 'fields' && block.type !== 'table') continue;
-            const fields = block.type === 'fields' ? block.fields : block.columns;
-            for (const field of fields) {
-                if (fieldIds.includes(field.id)) labels.push(field.label);
-            }
+function mapTreeFields(
+    children: readonly TemplateNode[],
+    map: (field: TemplateField) => TemplateField
+): TemplateNode[] {
+    return children.map((node) => {
+        if (node.type === 'section' || node.type === 'group') {
+            return { ...node, children: mapTreeFields(node.children, map) };
         }
-    }
-    return labels;
+        if (node.type === 'table') {
+            return { ...node, columns: node.columns.map(map) };
+        }
+        if (
+            node.type === 'text' ||
+            node.type === 'number' ||
+            node.type === 'toggle' ||
+            node.type === 'image' ||
+            node.type === 'formula' ||
+            node.type === 'select' ||
+            node.type === 'rating' ||
+            node.type === 'resource' ||
+            node.type === 'reference'
+        ) {
+            return map(node);
+        }
+        return node;
+    });
 }
 
 function stripUnavailableBindings(template: CustomTemplate): {
@@ -54,48 +68,21 @@ function stripUnavailableBindings(template: CustomTemplate): {
     degradedFields: readonly string[];
 } {
     const degradedFields: string[] = [];
-    const stripped = {
+    const stripped: CustomTemplate = {
         ...template,
-        sections: template.sections.map((section) => ({
-            ...section,
-            blocks: section.blocks.map((block) => {
-                if (block.type === 'fields') {
-                    return {
-                        ...block,
-                        fields: block.fields.map((field) => {
-                            if (
-                                field.type !== 'select' ||
-                                !field.binding ||
-                                CATALOG_BINDINGS.has(field.binding.catalogId)
-                            ) {
-                                return field;
-                            }
-                            degradedFields.push(field.id);
-                            const { binding: _removed, ...manual } = field;
-                            void _removed;
-                            return manual;
-                        }),
-                    };
-                }
-                if (block.type !== 'table') return block;
-                return {
-                    ...block,
-                    columns: block.columns.map((field) => {
-                        if (
-                            field.type !== 'select' ||
-                            !field.binding ||
-                            CATALOG_BINDINGS.has(field.binding.catalogId)
-                        ) {
-                            return field;
-                        }
-                        degradedFields.push(field.id);
-                        const { binding: _removed, ...manual } = field;
-                        void _removed;
-                        return manual;
-                    }),
-                };
-            }),
-        })),
+        children: mapTreeFields(template.children, (field) => {
+            if (
+                field.type !== 'select' ||
+                !field.binding ||
+                CATALOG_BINDINGS.has(field.binding.catalogId)
+            ) {
+                return field;
+            }
+            degradedFields.push(field.id);
+            const { binding: _removed, ...manual } = field;
+            void _removed;
+            return manual;
+        }),
     };
     return { template: CustomTemplateSchema.parse(stripped), degradedFields };
 }
@@ -118,8 +105,9 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
     if (
         typeof payload.formatVersion !== 'number' ||
         !Number.isInteger(payload.formatVersion) ||
-        payload.formatVersion < 1
+        payload.formatVersion < TEMPLATE_FILE_VERSION
     ) {
+        // Older files (fixed hierarchy) are not migrated — rejected with the version error.
         return { ok: false, error: 'version' };
     }
     if (payload.formatVersion > TEMPLATE_FILE_VERSION) {
@@ -134,8 +122,8 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
         return { ok: false, error: 'schema' };
     }
 
-    // FR-21: templates referencing unavailable catalogs still import; the affected fields
-    // degrade to manual choice fields (binding stripped) and the user is told which ones.
+    // FR-21 (003): templates referencing unavailable catalogs still import; the affected
+    // fields degrade to manual choice fields (binding stripped) and the user is told which.
     const { template: resolved, degradedFields } = stripUnavailableBindings(template);
     return { ok: true, template: resolved, degradedCatalogFields: degradedFields };
 }
@@ -145,5 +133,21 @@ export function describeDegradedFields(
     template: CustomTemplate,
     fieldIds: readonly string[]
 ): readonly string[] {
-    return labelsForFields(template, fieldIds);
+    const labels: string[] = [];
+    const wanted = new Set(fieldIds);
+    walkTemplateNodes(template.children, (node) => {
+        if (node.type === 'table') {
+            for (const column of node.columns) {
+                if (wanted.has(column.id)) labels.push(column.label);
+            }
+        } else if (
+            node.type !== 'section' &&
+            node.type !== 'group' &&
+            node.type !== 'list' &&
+            node.type !== 'primitive'
+        ) {
+            if (wanted.has(node.id)) labels.push(node.label);
+        }
+    });
+    return labels;
 }

@@ -7,13 +7,13 @@ import {
     useTemplateStore,
 } from '@site/src/sheet_manager/store/templateStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
-import {
-    resolveEffectiveTemplate,
-    viewToDefaultTemplate,
-} from '@site/src/sheet_manager/systems/view';
+import { resolveEffectiveTemplate } from '@site/src/sheet_manager/systems/view';
 import { DocumentKindSchema, DocumentViewIdSchema } from '@site/src/sheet_manager/types/document';
+import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
+
+import { takeSheetIssues } from '../setup/sheetIssues';
 
 function modifiedOverride(viewId: string) {
     return CustomTemplateSchema.parse({
@@ -21,88 +21,142 @@ function modifiedOverride(viewId: string) {
         name: 'Renamed Full',
         systemId: 'star-wars-wod',
         documentKind: 'character',
-        schemaVersion: 1,
-        sections: [
+        schemaVersion: 3,
+        children: [
             {
-                id: 'page',
-                title: 'Page',
-                blocks: [{ id: 'base', type: 'built-in', blockId: 'base', accentColor: 'primary' }],
+                id: 'identity',
+                type: 'section',
+                title: 'Identity',
+                children: [
+                    {
+                        id: 'origin',
+                        type: 'text',
+                        label: 'Origin',
+                        required: false,
+                        compact: false,
+                        multiline: false,
+                    },
+                ],
             },
         ],
     });
 }
 
-describe('default templates from registered views (feature 004)', () => {
-    it('derives a default template for every registered built-in view (T007)', () => {
-        for (const system of systemRegistry.getSystems()) {
-            for (const definition of system.documents) {
-                for (const view of definition.views) {
-                    const derived = viewToDefaultTemplate(view, system.id, definition.kind);
-                    if (view.layout.type !== 'built-in') {
-                        expect(derived).toBeUndefined();
-                        continue;
-                    }
-                    expect(derived).toBeDefined();
-                    expect(derived?.id).toBe(view.id);
-                    expect(derived?.systemId).toBe(system.id);
-                    expect(derived?.documentKind).toBe(definition.kind);
-                    // Built-in pages stack blocks directly — no extra section chrome (US fix 1).
-                    expect(derived?.sections[0]?.presentation).toBe('plain');
-                    const builtInBlocks =
-                        view.layout.type === 'built-in' ? view.layout.blocks : undefined;
-                    if (!builtInBlocks) break;
-                    // Structure mirrors the view: order + accent settings preserved.
-                    const blocks = derived?.sections[0]?.blocks ?? [];
-                    expect(blocks).toHaveLength(builtInBlocks.length);
-                    blocks.forEach((block, index) => {
-                        const source = builtInBlocks[index];
-                        expect(block.type).toBe('built-in');
-                        if (block.type === 'built-in' && source) {
-                            expect(block.blockId).toBe(source.id);
-                            // Accent is automatic now — not stored per placement.
-                            expect('accentColor' in block).toBe(false);
-                        }
-                        void index;
-                    });
-                }
-            }
+const characterKind = DocumentKindSchema.parse('character');
+
+describe('explicit default templates (feature 006, R9)', () => {
+    const defaults = systemRegistry.getSystem('star-wars-wod')?.defaultTemplates ?? [];
+
+    it('provides explicit defaults for full-sheet, droid-sheet, and brief', () => {
+        expect(defaults.map(({ id }) => id)).toEqual(['full-sheet', 'droid-sheet', 'brief']);
+        for (const template of defaults) {
+            expect(template.systemId).toBe('star-wars-wod');
+            expect(template.documentKind).toBe('character');
+            expect(template.schemaVersion).toBe(3);
         }
     });
 
-    it('derives deterministically — same view always yields identical template (T007)', () => {
-        const definition = systemRegistry.getDocumentDefinition('star-wars-wod', 'character');
-        const view = definition?.views[0];
-        expect(view).toBeDefined();
-        if (!view) return;
-        const first = viewToDefaultTemplate(view, 'star-wars-wod', definition.kind);
-        const second = viewToDefaultTemplate(view, 'star-wars-wod', definition.kind);
-        expect(first).toEqual(second);
+    it('mirrors the built-in viewer composition order with the same docsPath links', () => {
+        const full = defaults.find(({ id }) => id === 'full-sheet')!;
+        const sections = full.children.filter(
+            (node): node is Extract<CustomTemplate['children'][number], { type: 'section' }> =>
+                node.type === 'section'
+        );
+        expect(sections.map(({ title }) => title)).toEqual([
+            'Base',
+            'Attributes',
+            'Skills',
+            'Advantages',
+            'Force',
+            'Body & health',
+            'Other',
+        ]);
+        const docsPaths = sections.map((section) => section.docsPath);
+        expect(docsPaths[0]).toContain('/docs/star-wars-wod-2e/quick-start');
+        expect(docsPaths[1]).toContain('attributes-abilities#attributes');
+        expect(docsPaths[2]).toContain('attributes-abilities#abilities');
+        expect(docsPaths[3]).toContain('merits-flaws');
+        expect(docsPaths[4]).toContain('/character/force');
+        expect(docsPaths[5]).toContain('/equipment');
+        expect(docsPaths[6]).toContain('derived-stats');
     });
 
-    it('store migration v1→v2: absent defaultOverrides key becomes an empty map (T015)', () => {
-        const migrated = migrateTemplateStoreState({ templates: [], quarantine: [] });
-        expect(migrated.defaultOverrides).toEqual({});
+    it('composes system content from first-class elements (no placements, R9)', () => {
+        const full = defaults.find(({ id }) => id === 'full-sheet')!;
+        const visit = (node: CustomTemplate['children'][number]): void => {
+            expect(node.type).not.toBe('built-in');
+            if (node.type === 'section' || node.type === 'group') {
+                for (const child of node.children) visit(child);
+            }
+        };
+        for (const node of full.children) visit(node);
     });
 
-    it('store migration v1→v2: invalid override entries are quarantined, valid kept (T015)', () => {
-        const valid = modifiedOverride('full-sheet');
-        const migrated = migrateTemplateStoreState({
-            templates: [],
-            quarantine: [],
-            defaultOverrides: { 'full-sheet': valid, broken: { nope: true } },
-        });
-        expect(migrated.defaultOverrides['full-sheet']).toBeDefined();
-        expect(migrated.defaultOverrides['broken']).toBeUndefined();
-        expect(migrated.quarantine).toContainEqual({ nope: true });
+    it('stores no accent colors — presentation accents are automatic (FR-11)', () => {
+        expect(JSON.stringify(defaults)).not.toContain('accentColor');
+        expect(JSON.stringify(defaults)).not.toContain('"accent"');
     });
 
-    it('resolves a default template from a view id and flags modified state (T016)', () => {
+    it('covers identity fields, portrait, trait fields, lists, track, resources, formulas, equipment', () => {
+        const full = defaults.find(({ id }) => id === 'full-sheet')!;
+        const collected: Array<{ type: string; bindingKey?: string; valueKey?: string }> = [];
+        const walk = (nodes: readonly CustomTemplate['children'][number][]): void => {
+            for (const node of nodes) {
+                if (node.type === 'section' || node.type === 'group') {
+                    walk(node.children);
+                    continue;
+                }
+                collected.push({
+                    type: node.type,
+                    bindingKey:
+                        node.type === 'primitive' || node.type === 'list'
+                            ? node.bindingKey
+                            : undefined,
+                    valueKey:
+                        'valueKey' in node ? (node.valueKey as string | undefined) : undefined,
+                });
+            }
+        };
+        walk(full.children);
+        expect(collected.some(({ type }) => type === 'image')).toBe(true);
+        expect(collected.some(({ type }) => type === 'formula')).toBe(true);
+        expect(collected.some(({ bindingKey }) => bindingKey === 'track:health')).toBe(true);
+        expect(collected.some(({ bindingKey }) => bindingKey === 'resource:willpower')).toBe(true);
+        expect(collected.some(({ bindingKey }) => bindingKey === 'equipment:inventory')).toBe(true);
+        expect(collected.some(({ bindingKey }) => bindingKey === 'list:customSkills')).toBe(true);
+        expect(collected.some(({ bindingKey }) => bindingKey === 'list:forcePowers')).toBe(true);
+        expect(collected.some(({ valueKey }) => valueKey === 'name')).toBe(true);
+        // Resource maxFrom defaults (R9): Willpower ≤ virtues sum, Force Points ≤ Willpower max.
+        const willpower = collected.find(({ bindingKey }) => bindingKey === 'resource:willpower');
+        void willpower;
+        expect(JSON.stringify(full)).toContain('conscience + passion + self-control');
+        expect(JSON.stringify(full)).toContain('willpower.max');
+    });
+
+    it('brief covers the same system coordinates in compact presentation', () => {
+        const brief = defaults.find(({ id }) => id === 'brief')!;
+        expect(JSON.stringify(brief)).toContain('"compact":true');
+        expect(JSON.stringify(brief)).toContain('track:health');
+        expect(JSON.stringify(brief)).toContain('resource:willpower');
+        expect(JSON.stringify(brief)).toContain('list:customTalents');
+    });
+
+    it('does not ship declarative defaults for the specialized pages', () => {
+        const ids = defaults.map(({ id }) => id);
+        expect(ids).not.toContain('creature-sheet');
+        expect(ids).not.toContain('vehicle-sheet');
+        expect(ids).not.toContain('fodder-sheet');
+    });
+});
+
+describe('effective template resolution (feature 004/006)', () => {
+    it('resolves an explicit default template from a view id and flags modified state', () => {
         const state = { templates: [], defaultOverrides: {} };
         const pristine = resolveEffectiveTemplate(
             'full-sheet',
             state,
             'star-wars-wod',
-            DocumentKindSchema.parse('character')
+            characterKind
         );
         expect(pristine?.isDefault).toBe(true);
         expect(pristine?.modified).toBe(false);
@@ -116,33 +170,20 @@ describe('default templates from registered views (feature 004)', () => {
             'full-sheet',
             overriddenState,
             'star-wars-wod',
-            DocumentKindSchema.parse('character')
+            characterKind
         );
         expect(modified?.isDefault).toBe(true);
         expect(modified?.modified).toBe(true);
         expect(modified?.template.name).toBe('Renamed Full');
     });
 
-    it('prefers a custom template over a same-id default and misses cleanly (T016)', () => {
-        const custom = CustomTemplateSchema.parse({
-            id: 'full-sheet-clone',
-            name: 'Clone',
-            systemId: 'star-wars-wod',
-            documentKind: 'character',
-            schemaVersion: 1,
-            sections: [
-                {
-                    id: 'page',
-                    title: 'Page',
-                    blocks: [{ id: 'base', type: 'built-in', blockId: 'base' }],
-                },
-            ],
-        });
+    it('prefers a custom template over a same-id default and misses cleanly', () => {
+        const custom = modifiedOverride('full-sheet-clone');
         const resolvedCustom = resolveEffectiveTemplate(
             'full-sheet-clone',
             { templates: [custom], defaultOverrides: {} },
             'star-wars-wod',
-            DocumentKindSchema.parse('character')
+            characterKind
         );
         expect(resolvedCustom?.isDefault).toBe(false);
 
@@ -151,10 +192,10 @@ describe('default templates from registered views (feature 004)', () => {
                 'no-such-view',
                 { templates: [], defaultOverrides: {} },
                 'star-wars-wod',
-                DocumentKindSchema.parse('character')
+                characterKind
             )
         ).toBeUndefined();
-        // Kind mismatch is not compatible (FR-15).
+        // Kind mismatch is not compatible.
         expect(
             resolveEffectiveTemplate(
                 'full-sheet',
@@ -165,7 +206,19 @@ describe('default templates from registered views (feature 004)', () => {
         ).toBeUndefined();
     });
 
-    it('store: setDefaultOverride then clearDefaultOverride round-trips modified state (T015/T023)', () => {
+    it('resolves legacy view selections (npc-card → brief) with no migration', () => {
+        const state = { templates: [], defaultOverrides: {} };
+        const viaLegacy = resolveEffectiveTemplate(
+            'npc-card',
+            state,
+            'star-wars-wod',
+            characterKind
+        );
+        expect(viaLegacy?.isDefault).toBe(true);
+        expect(viaLegacy?.template.id).toBe('brief');
+    });
+
+    it('store: setDefaultOverride then clearDefaultOverride round-trips modified state', () => {
         const { setDefaultOverride, clearDefaultOverride } = useTemplateStore.getState();
         useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
 
@@ -176,7 +229,7 @@ describe('default templates from registered views (feature 004)', () => {
                 'full-sheet',
                 useTemplateStore.getState(),
                 'star-wars-wod',
-                DocumentKindSchema.parse('character')
+                characterKind
             )?.modified
         ).toBe(true);
 
@@ -187,48 +240,23 @@ describe('default templates from registered views (feature 004)', () => {
                 'full-sheet',
                 useTemplateStore.getState(),
                 'star-wars-wod',
-                DocumentKindSchema.parse('character')
+                characterKind
             )?.modified
         ).toBe(false);
-        // Pristine content re-derived from the registry, not user data (FR-10).
+        // Pristine content comes from the registry, not user data.
         expect(
             resolveEffectiveTemplate(
                 'full-sheet',
                 useTemplateStore.getState(),
                 'star-wars-wod',
-                DocumentKindSchema.parse('character')
+                characterKind
             )?.template.name
         ).not.toBe('Renamed Full');
 
         useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
     });
 
-    it('store: removeTemplate refuses registered view ids (FR-11, T015)', () => {
-        useTemplateStore.setState({
-            templates: [
-                CustomTemplateSchema.parse({
-                    id: 'custom-kit',
-                    name: 'Custom Kit',
-                    documentKind: 'character',
-                    schemaVersion: 1,
-                    sections: [
-                        {
-                            id: 'page',
-                            title: 'Page',
-                            blocks: [{ id: 'base', type: 'built-in', blockId: 'base' }],
-                        },
-                    ],
-                }),
-            ],
-            quarantine: [],
-            defaultOverrides: {},
-        });
-        const { removeTemplate } = useTemplateStore.getState();
-        removeTemplate('custom-kit');
-        expect(useTemplateStore.getState().templates).toHaveLength(0);
-    });
-
-    it('store: duplicate of a modified default snapshots effective content with a fresh id (Q1)', () => {
+    it('store: duplicate of a modified default snapshots effective content with a fresh id', () => {
         useTemplateStore.setState({
             templates: [],
             quarantine: [],
@@ -246,10 +274,22 @@ describe('default templates from registered views (feature 004)', () => {
         useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
     });
 
-    it('selector: registered view ids and tpl: ids never collide (FR-13, T016)', () => {
-        // Default templates use view ids directly; custom templates are prefixed `tpl:` in the
-        // selector value space, so a custom template whose id equals a view id still can never
-        // produce a duplicate option value.
+    it('store migration v1→v2: invalid override entries are quarantined, valid kept', () => {
+        const valid = modifiedOverride('full-sheet');
+        const migrated = migrateTemplateStoreState({
+            templates: [],
+            quarantine: [],
+            defaultOverrides: { 'full-sheet': valid, broken: { nope: true } },
+        });
+        expect(migrated.defaultOverrides['full-sheet']).toBeDefined();
+        expect(migrated.defaultOverrides['broken']).toBeUndefined();
+        expect(migrated.quarantine).toContainEqual({ nope: true });
+        expect(new Set(takeSheetIssues().map(({ code }) => code))).toEqual(
+            new Set(['template-quarantined'])
+        );
+    });
+
+    it('selector: registered view ids and tpl: ids never collide', () => {
         const viewIds = new Set(
             systemRegistry
                 .getSystem('star-wars-wod')
@@ -260,7 +300,6 @@ describe('default templates from registered views (feature 004)', () => {
         ];
         const collisions = templateOptions.filter((option) => viewIds.has(option.id));
         expect(collisions).toHaveLength(1);
-        // Selector skips these (ViewModeSelect filter) — option values remain distinct.
         const values = new Set([
             ...viewIds,
             ...templateOptions.map((option) => `tpl:${option.id}`),
@@ -278,30 +317,15 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach } from 'vitest';
 
-describe('seamless transition and data safety (US3, feature 004)', () => {
+describe('default template rendering and data safety', () => {
     afterEach(cleanup);
 
-    it('resolves legacy view selections (npc-card → brief) with no migration (T024)', () => {
-        const state = { templates: [], defaultOverrides: {} };
-        // Legacy alias resolves to the brief default template (explicit field composition
-        // in feature 005; legacy view ids are aliases of the same page).
-        const viaLegacy = resolveEffectiveTemplate(
-            'npc-card',
-            state,
-            'star-wars-wod',
-            DocumentKindSchema.parse('character')
-        );
-        expect(viaLegacy?.isDefault).toBe(true);
-        expect(viaLegacy?.template.id).toBe('brief');
-        // The explicit default wins over legacy derivation — bridged fields + track primitive.
-        const blockTypes = viaLegacy?.template.sections
-            .flatMap((section) => section.blocks)
-            .map((block) => block.type);
-        expect(blockTypes).toContain('fields');
-        expect(blockTypes).not.toContain('built-in');
-    });
-
-    it('renders a pre-upgrade document through its default template unchanged (T024)', () => {
+    it('renders the full default template for a pre-upgrade document unchanged', () => {
+        const full = systemRegistry
+            .getSystem('star-wars-wod')
+            ?.defaultTemplates?.find(({ id }) => id === 'full-sheet');
+        expect(full).toBeDefined();
+        useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
         useDocumentStore.setState({
             documents: [
                 {
@@ -317,29 +341,17 @@ describe('seamless transition and data safety (US3, feature 004)', () => {
             ],
             currentDocumentId: 'legacy-doc',
         });
-        render(
-            createElement(DeclarativeSheetView, {
-                template: viewToDefaultTemplate(
-                    systemRegistry
-                        .getDocumentDefinition('star-wars-wod', 'character')!
-                        .views.find(({ id }) => id === 'full-sheet')!,
-                    'star-wars-wod',
-                    DocumentKindSchema.parse('character')
-                )!,
-            })
-        );
+        render(createElement(DeclarativeSheetView, { template: full! }));
         // The full page renders its standard sections without placeholder alerts.
         expect(screen.queryAllByRole('alert')).toHaveLength(0);
         expect(screen.queryAllByText(/unavailable on this device/i)).toHaveLength(0);
     });
 
-    it('retains orphaned values after template content removal; reset restores pristine (T025)', () => {
+    it('retains orphaned values after template content removal; reset restores pristine', () => {
         useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
         const override = modifiedOverride('full-sheet');
-        // Orphan simulation: value stored under a key the modified template no longer addresses.
+        // Orphan semantics: removal of fields never deletes bag entries — values stay verbatim.
         const bag = { 'orphan-key': 'precious-data', origin: 'Corellia' };
-        // Orphan semantics (FR-14/spec-003 FR-12): removal of fields never deletes bag entries —
-        // values stay in the document envelope untouched; the store keeps them verbatim.
         const surviving = Object.fromEntries(
             Object.entries(bag).filter(([key]) => key !== 'never-existed')
         );
@@ -350,7 +362,7 @@ describe('seamless transition and data safety (US3, feature 004)', () => {
             ...createDefaultStarWarsCharacterData(),
         });
         expect(character.health).toBeDefined();
-        // Reset: override deleted → pristine derived from the registry (FR-10).
+        // Reset: override deleted → pristine derived from the registry.
         useTemplateStore.getState().setDefaultOverride('full-sheet', override);
         useTemplateStore.getState().clearDefaultOverride('full-sheet');
         expect(useTemplateStore.getState().defaultOverrides['full-sheet']).toBeUndefined();
@@ -359,14 +371,14 @@ describe('seamless transition and data safety (US3, feature 004)', () => {
                 'full-sheet',
                 useTemplateStore.getState(),
                 'star-wars-wod',
-                DocumentKindSchema.parse('character')
+                characterKind
             )?.template.name
         ).not.toBe('Renamed Full');
     });
 });
 
-describe('skeletons mirror the real view structure (feature 005)', () => {
-    it('every registered definition yields a skeleton matching its explicit default template', () => {
+describe('skeletons mirror the real default structure', () => {
+    it('every definition with an explicit default yields a matching skeleton', () => {
         for (const system of systemRegistry.getSystems()) {
             const defaults = system.defaultTemplates ?? [];
             for (const definition of system.documents) {
@@ -376,13 +388,17 @@ describe('skeletons mirror the real view structure (feature 005)', () => {
                 const source = defaults.find(
                     (template) => template.id === definition.defaultViewId
                 );
-                expect(source, `no default template for ${definition.id}`).toBeDefined();
+                if (!source) {
+                    // Specialized pages have no declarative default and no skeleton.
+                    expect(skeletons).toHaveLength(0);
+                    continue;
+                }
                 expect(skeletons).toHaveLength(1);
                 const skeleton = skeletons[0]!;
                 // Identical structure, independent identity.
-                expect(skeleton.sections).toEqual(source?.sections);
+                expect(skeleton.children).toEqual(source.children);
                 expect(skeleton.id).toBe(`skeleton-${definition.id}`);
-                expect(skeleton.id).not.toBe(source?.id);
+                expect(skeleton.id).not.toBe(source.id);
                 expect(skeleton.documentKind).toBe(definition.kind);
             }
         }

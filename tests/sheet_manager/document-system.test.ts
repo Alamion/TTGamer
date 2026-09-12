@@ -25,44 +25,69 @@ import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
+import { takeSheetIssues } from '../setup/sheetIssues';
+
 describe('custom document templates', () => {
     it('accepts custom document kinds, bounded fields, tables, and references', () => {
         const template = CustomTemplateSchema.parse({
             id: 'campaign-organization',
             name: 'Campaign Organization',
             documentKind: 'organization',
-            schemaVersion: 1,
-            sections: [
+            schemaVersion: 3,
+            children: [
                 {
                     id: 'identity',
+                    type: 'section',
                     title: 'Identity',
-                    blocks: [
+                    children: [
                         {
-                            id: 'summary',
-                            type: 'fields',
-                            fields: [
-                                { id: 'name', label: 'Name', type: 'text', required: true },
-                                {
-                                    id: 'influence',
-                                    label: 'Influence',
-                                    type: 'rating',
-                                    max: 10,
-                                },
-                                {
-                                    id: 'allies',
-                                    label: 'Allies',
-                                    type: 'reference',
-                                    targetKinds: ['character', 'organization'],
-                                    multiple: true,
-                                },
-                            ],
+                            id: 'name',
+                            label: 'Name',
+                            type: 'text',
+                            required: true,
+                            compact: false,
+                            multiline: false,
+                        },
+                        {
+                            id: 'influence',
+                            label: 'Influence',
+                            type: 'rating',
+                            max: 10,
+                            min: 0,
+                            presentation: 'dots',
+                            required: false,
+                            compact: false,
+                        },
+                        {
+                            id: 'allies',
+                            label: 'Allies',
+                            type: 'reference',
+                            targetKinds: ['character', 'organization'],
+                            multiple: true,
+                            required: false,
+                            compact: false,
                         },
                         {
                             id: 'members',
                             type: 'table',
+                            minRows: 0,
+                            maxRows: 100,
                             columns: [
-                                { id: 'name', label: 'Name', type: 'text' },
-                                { id: 'active', label: 'Active', type: 'toggle' },
+                                {
+                                    id: 'name',
+                                    label: 'Name',
+                                    type: 'text',
+                                    required: false,
+                                    compact: false,
+                                    multiline: false,
+                                },
+                                {
+                                    id: 'active',
+                                    label: 'Active',
+                                    type: 'toggle',
+                                    required: false,
+                                    compact: false,
+                                },
                             ],
                         },
                     ],
@@ -71,7 +96,11 @@ describe('custom document templates', () => {
         });
 
         expect(template.documentKind).toBe('organization');
-        expect(template.sections[0].blocks).toHaveLength(2);
+        const identity = template.children[0]!;
+        if (identity.type !== 'section' && identity.type !== 'group') {
+            throw new Error('expected a container');
+        }
+        expect(identity.children).toHaveLength(4);
     });
 
     it('rejects duplicate IDs and invalid numeric bounds', () => {
@@ -79,19 +108,21 @@ describe('custom document templates', () => {
             id: 'broken-template',
             name: 'Broken Template',
             documentKind: 'event',
-            schemaVersion: 1,
-            sections: [
+            schemaVersion: 3,
+            children: [
                 {
                     id: 'details',
+                    type: 'section',
                     title: 'Details',
-                    blocks: [
+                    children: [
                         {
-                            id: 'facts',
-                            type: 'fields',
-                            fields: [
-                                { id: 'score', label: 'Score', type: 'number', min: 10, max: 1 },
-                                { id: 'score', label: 'Other score', type: 'number' },
-                            ],
+                            id: 'score',
+                            label: 'Score',
+                            type: 'number',
+                            min: 10,
+                            max: 1,
+                            required: false,
+                            compact: false,
                         },
                     ],
                 },
@@ -106,26 +137,24 @@ describe('custom document templates', () => {
             id: 'duplicate-options',
             name: 'Duplicate Options',
             documentKind: 'item',
-            schemaVersion: 1,
-            sections: [
+            schemaVersion: 3,
+            children: [
                 {
                     id: 'details',
+                    type: 'section',
                     title: 'Details',
-                    blocks: [
+                    children: [
                         {
-                            id: 'fields',
-                            type: 'fields',
-                            fields: [
-                                {
-                                    id: 'quality',
-                                    label: 'Quality',
-                                    type: 'select',
-                                    options: [
-                                        { id: 'standard', label: 'Standard' },
-                                        { id: 'standard', label: 'Also standard' },
-                                    ],
-                                },
+                            id: 'quality',
+                            label: 'Quality',
+                            type: 'select',
+                            multiple: false,
+                            options: [
+                                { id: 'standard', label: 'Standard' },
+                                { id: 'standard', label: 'Also standard' },
                             ],
+                            required: false,
+                            compact: false,
                         },
                     ],
                 },
@@ -457,5 +486,11 @@ describe('document store migration', () => {
         expect(migrated.documents[0].definitionId).toBe('droid');
         expect(migrated.documents[0].data).toHaveProperty('damage');
         expect(migrated.recoveryEntries).toEqual([invalid]);
+        expect(takeSheetIssues()).toEqual([
+            expect.objectContaining({
+                code: 'document-recovered',
+                details: expect.objectContaining({ documentId: 'broken' }),
+            }),
+        ]);
     });
 });

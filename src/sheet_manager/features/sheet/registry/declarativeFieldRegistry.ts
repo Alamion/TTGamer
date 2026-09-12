@@ -2,6 +2,8 @@ import type { ComponentType } from 'react';
 
 import type { TemplateField } from '../../../types/template';
 import {
+    FormulaFieldControl,
+    ImageFieldControl,
     NumberFieldControl,
     RatingFieldControl,
     ReferenceFieldControl,
@@ -27,6 +29,8 @@ const registry: { [K in TemplateField['type']]: FieldControl } = {
     rating: RatingFieldControl,
     resource: ResourceFieldControl,
     reference: ReferenceFieldControl,
+    image: ImageFieldControl,
+    formula: FormulaFieldControl,
 };
 
 export function templateFieldControl(type: TemplateField['type']): FieldControl {

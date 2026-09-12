@@ -920,6 +920,15 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.library.duplicateId',
                     message: '"{id}" is a built-in page — templates need their own identifier.',
                 },
+                incompatibleBadge: {
+                    id: 'ttgamer.ui.sheet.templates.library.incompatibleBadge',
+                    message: 'Incompatible format',
+                },
+                incompatibleHint: {
+                    id: 'ttgamer.ui.sheet.templates.library.incompatibleHint',
+                    message:
+                        'Saved in a previous template format. Kept for recovery only — recreate it with the new editor.',
+                },
             },
             primitives: {
                 groupIdentity: {
@@ -1209,6 +1218,122 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.emptyLabel',
                     message: 'Every section and field needs a non-empty label.',
                 },
+                addElement: {
+                    id: 'ttgamer.ui.sheet.templates.editor.addElement',
+                    message: 'Add element',
+                },
+                paletteFields: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteFields',
+                    message: 'Fields',
+                },
+                paletteContainers: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteContainers',
+                    message: 'Containers',
+                },
+                paletteData: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteData',
+                    message: 'Data and lists',
+                },
+                paletteSystemLists: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteSystemLists',
+                    message: 'System lists',
+                },
+                paletteTracks: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteTracks',
+                    message: 'Condition tracks',
+                },
+                paletteEquipment: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteEquipment',
+                    message: 'Equipment',
+                },
+                paletteSystemValues: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteSystemValues',
+                    message: 'System values (bound fields)',
+                },
+                gripHandle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.gripHandle',
+                    message: 'Drag handle — grab to move',
+                },
+                groupTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.groupTitle',
+                    message: 'Group title',
+                },
+                docsLink: {
+                    id: 'ttgamer.ui.sheet.templates.editor.docsLink',
+                    message: 'Documentation link (optional)',
+                },
+                groupCollapsible: {
+                    id: 'ttgamer.ui.sheet.templates.editor.groupCollapsible',
+                    message: 'Collapsible (expanded state is remembered)',
+                },
+                tableTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.tableTitle',
+                    message: 'Table title (optional)',
+                },
+                tableValueKey: {
+                    id: 'ttgamer.ui.sheet.templates.editor.tableValueKey',
+                    message: 'Shared value key (table rows)',
+                },
+                listMode: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listMode',
+                    message: 'Storage mode',
+                },
+                listModeCustom: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listModeCustom',
+                    message: 'Custom list (own value key)',
+                },
+                listModeSystem: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listModeSystem',
+                    message: 'System list',
+                },
+                listSystemBinding: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listSystemBinding',
+                    message: 'System list',
+                },
+                listColumns: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listColumns',
+                    message: 'Columns',
+                },
+                listCustomKey: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listCustomKey',
+                    message: 'List value key',
+                },
+                formula: {
+                    id: 'ttgamer.ui.sheet.templates.editor.formula',
+                    message: 'Formula',
+                },
+                formulaPlaceholder: {
+                    id: 'ttgamer.ui.sheet.templates.editor.formulaPlaceholder',
+                    message: 'e.g. passion + self-control',
+                },
+                maxFrom: {
+                    id: 'ttgamer.ui.sheet.templates.editor.maxFrom',
+                    message: 'Maximum from value or formula (optional)',
+                },
+                maxFromPlaceholder: {
+                    id: 'ttgamer.ui.sheet.templates.editor.maxFromPlaceholder',
+                    message: 'e.g. willpower.max',
+                },
+                invalidFormula: {
+                    id: 'ttgamer.ui.sheet.templates.editor.invalidFormula',
+                    message: 'Invalid formula in "{id}" — check the expression.',
+                },
+                unknownCoordinate: {
+                    id: 'ttgamer.ui.sheet.templates.editor.unknownCoordinate',
+                    message: 'Unknown value "{id}" referenced by a formula.',
+                },
+                circularDependency: {
+                    id: 'ttgamer.ui.sheet.templates.editor.circularDependency',
+                    message: 'Circular dependency detected: {id}',
+                },
+                depthMessage: {
+                    id: 'ttgamer.ui.sheet.templates.editor.depthMessage',
+                    message: 'Nesting limit reached — {limit} levels maximum.',
+                },
+                countMessage: {
+                    id: 'ttgamer.ui.sheet.templates.editor.countMessage',
+                    message: 'Element limit reached — {limit} elements maximum.',
+                },
             },
             fieldTypes: {
                 builtIn: {
@@ -1243,6 +1368,14 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.fieldTypes.reference',
                     message: 'Document reference',
                 },
+                image: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.image',
+                    message: 'Image',
+                },
+                formula: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.formula',
+                    message: 'Derived value (read-only)',
+                },
                 table: {
                     id: 'ttgamer.ui.sheet.templates.fieldTypes.table',
                     message: 'Table',
@@ -1250,6 +1383,18 @@ export const uiMessages = {
                 fields: {
                     id: 'ttgamer.ui.sheet.templates.fieldTypes.fields',
                     message: 'Field group',
+                },
+                section: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.section',
+                    message: 'Section',
+                },
+                group: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.group',
+                    message: 'Field group',
+                },
+                list: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.list',
+                    message: 'Custom list',
                 },
             },
             builtInBlocks: {
@@ -1319,6 +1464,50 @@ export const uiMessages = {
                 primitiveDegraded: {
                     id: 'ttgamer.ui.sheet.templates.page.primitiveDegraded',
                     message: 'Data binding "{binding}" is unavailable on this device.',
+                },
+                formulaDegraded: {
+                    id: 'ttgamer.ui.sheet.templates.page.formulaDegraded',
+                    message: 'Cannot compute "{field}": {reason}.',
+                },
+                formulaReasonUnknown: {
+                    id: 'ttgamer.ui.sheet.templates.page.formulaReasonUnknown',
+                    message: 'value "{coordinate}" is unavailable',
+                },
+                formulaReasonCircular: {
+                    id: 'ttgamer.ui.sheet.templates.page.formulaReasonCircular',
+                    message: 'circular dependency',
+                },
+                formulaReasonDivision: {
+                    id: 'ttgamer.ui.sheet.templates.page.formulaReasonDivision',
+                    message: 'division by zero',
+                },
+                formulaReasonNonNumeric: {
+                    id: 'ttgamer.ui.sheet.templates.page.formulaReasonNonNumeric',
+                    message: 'a referenced value is not a number',
+                },
+                formulaClamped: {
+                    id: 'ttgamer.ui.sheet.templates.page.formulaClamped',
+                    message: 'Limited by a linked value',
+                },
+                imageInvalid: {
+                    id: 'ttgamer.ui.sheet.templates.page.imageInvalid',
+                    message: 'This image source is unavailable or insecure.',
+                },
+                imageUpload: {
+                    id: 'ttgamer.ui.sheet.templates.page.imageUpload',
+                    message: 'Upload image',
+                },
+                imageUrl: {
+                    id: 'ttgamer.ui.sheet.templates.page.imageUrl',
+                    message: 'Image URL',
+                },
+                imageRemove: {
+                    id: 'ttgamer.ui.sheet.templates.page.imageRemove',
+                    message: 'Remove image',
+                },
+                imageAlt: {
+                    id: 'ttgamer.ui.sheet.templates.page.imageAlt',
+                    message: 'Template image',
                 },
             },
             binding: {

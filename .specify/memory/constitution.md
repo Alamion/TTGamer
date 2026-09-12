@@ -1,22 +1,18 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.0.0 -> 1.1.0 (amendment: repository language split rule)
+Version change: 1.1.0 -> 1.2.0 (amendment: observable degradation + current-state documentation)
 
-Principle mapping:
-  [PRINCIPLE_1] -> I. Modular Semi-Autonomy
-  [PRINCIPLE_2] -> II. Explicit Contracts at Boundaries
-  [PRINCIPLE_3] -> III. Pleasurable Cross-Module Interactions
-  [PRINCIPLE_4] -> IV. Fit-for-Purpose Code Quality
-  [PRINCIPLE_5] -> V. Risk-Proportional Testing
-  [PRINCIPLE_6] -> VI. Consistent, Accessible Experience (expanded: language split rule)
-  [PRINCIPLE_7] -> VII. Performance as a Shared Budget
+Modified principles:
+  III. Pleasurable Cross-Module Interactions — graceful degradation MUST also be observable
+       (reported through the module's diagnostics channel; tests fail on unexpected reports)
 
 Sections:
-  Added: "Quality & Standards Matrix" (per-module expectations)
-  Added: "Verification Workflow"
-  Added: Governance rules (replaces scaffold placeholder)
-  Expanded: Principle VI — Russian localization scoped to user-facing surfaces; repository working documents are English-only
+  Expanded: Governance — "Current-state documentation" rule (specs are change records; module
+            AGENTS.md + .agents/skills hold current behavior; features close only when updated)
+
+Runtime guidance updated: AGENTS.md (§9 Specs vs Current State), src/sheet_manager/AGENTS.md,
+  .agents/skills/sheet-templates/SKILL.md (new), .agents/skills/sheet-manager/SKILL.md
 
 Deferred TODOs: none
 -->
@@ -78,6 +74,10 @@ and consistent. Rules:
 - Failure MUST degrade gracefully: a blocked webhook, missing sheet, or unsupported
   notation yields a clear, actionable message — never a dead end, silent drop, or raw
   stack trace surfaced to the user.
+- Degradation MUST be observable to developers: every fallback, rejected write, quarantine,
+  or unresolved reference reports through the module's diagnostics channel (for
+  `sheet_manager`, `diagnostics.ts`), and tests fail on unexpected reports. A silent
+  fallback is a defect.
 - New interactions MUST state which two modules they connect, which contract they rely
   on (Principle II), and what the user sees on success and on failure before merge.
 
@@ -215,8 +215,13 @@ is perceived, the principles govern and this table clarifies application.
 - **Compliance review**: reviews verify principle compliance explicitly; complexity
   beyond the standards here must be justified in the PR description; unverifiable claims
   ("it's fast", "it's tested") are replaced by the concrete gate that proves them.
+- **Current-state documentation**: specifications under `specs/` are change records and
+  may be amended by later specs; they MUST NOT be the only description of current behavior.
+  Each module's current behavior lives in its `AGENTS.md` and matching `.agents/skills/`
+  reference. A feature is complete only when those are updated and every superseded spec
+  carries a historical banner pointing at the current-state reference.
 - **Runtime guidance**: `AGENTS.md` is the operational cheat sheet and the designated
   guidance file for day-to-day development; it must remain consistent with this
   constitution and defer to it on conflict.
 
-**Version**: 1.1.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-02
+**Version**: 1.2.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-12

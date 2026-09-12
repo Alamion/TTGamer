@@ -1,5 +1,7 @@
 # Feature Specification: Custom Character Page Templates
 
+> **Historical record.** Superseded in part by specs 004–006. Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
+
 **Feature Branch**: `003-custom-sheet-templates`
 
 **Created**: 2026-09-02

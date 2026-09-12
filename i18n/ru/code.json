@@ -965,6 +965,9 @@
     "ttgamer.ui.sheet.templates.editor.accentSecondary": {
         "message": "Дополнительный акцент"
     },
+    "ttgamer.ui.sheet.templates.editor.addElement": {
+        "message": "Добавить элемент"
+    },
     "ttgamer.ui.sheet.templates.editor.addField": {
         "message": "Добавить поле"
     },
@@ -989,11 +992,20 @@
     "ttgamer.ui.sheet.templates.editor.cancel": {
         "message": "Отмена"
     },
+    "ttgamer.ui.sheet.templates.editor.circularDependency": {
+        "message": "Обнаружена циклическая зависимость: {id}"
+    },
     "ttgamer.ui.sheet.templates.editor.collapse": {
-        "message": "Свернуть секцию"
+        "message": "Свернуть панель"
     },
     "ttgamer.ui.sheet.templates.editor.columns": {
         "message": "Колонки"
+    },
+    "ttgamer.ui.sheet.templates.editor.countMessage": {
+        "message": "Достигнут предел элементов — максимум {limit}."
+    },
+    "ttgamer.ui.sheet.templates.editor.depthMessage": {
+        "message": "Достигнут предел вложенности — максимум {limit} уровней."
     },
     "ttgamer.ui.sheet.templates.editor.descriptionLabel": {
         "message": "Описание"
@@ -1003,6 +1015,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.discard": {
         "message": "Отменить"
+    },
+    "ttgamer.ui.sheet.templates.editor.docsLink": {
+        "message": "Ссылка на документацию (необязательно)"
     },
     "ttgamer.ui.sheet.templates.editor.duplicateId": {
         "message": "Дубликат идентификатора «{id}» — идентификаторы должны быть уникальны в своей области."
@@ -1014,7 +1029,7 @@
         "message": "Требуется название шаблона."
     },
     "ttgamer.ui.sheet.templates.editor.expand": {
-        "message": "Развернуть секцию"
+        "message": "Развернуть панель"
     },
     "ttgamer.ui.sheet.templates.editor.fieldDescription": {
         "message": "Подсказка (необязательно)"
@@ -1028,14 +1043,56 @@
     "ttgamer.ui.sheet.templates.editor.fieldType": {
         "message": "Тип поля"
     },
+    "ttgamer.ui.sheet.templates.editor.formula": {
+        "message": "Формула"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaPlaceholder": {
+        "message": "например, passion + self-control"
+    },
+    "ttgamer.ui.sheet.templates.editor.gripHandle": {
+        "message": "Рукоять перемещения — потяните, чтобы передвинуть"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupCollapsible": {
+        "message": "Сворачиваемая (состояние запоминается)"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupTitle": {
+        "message": "Название группы"
+    },
     "ttgamer.ui.sheet.templates.editor.invalidBounds": {
         "message": "Минимум не может превышать максимум."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidFormula": {
+        "message": "Неверная формула в «{id}» — проверьте выражение."
     },
     "ttgamer.ui.sheet.templates.editor.invalidKey": {
         "message": "Неверный ключ «{id}» — используйте строчные буквы, цифры и дефисы."
     },
     "ttgamer.ui.sheet.templates.editor.limitReached": {
         "message": "Достигнут лимит — максимум {limit} ({subject})."
+    },
+    "ttgamer.ui.sheet.templates.editor.listColumns": {
+        "message": "Колонки"
+    },
+    "ttgamer.ui.sheet.templates.editor.listCustomKey": {
+        "message": "Ключ значения списка"
+    },
+    "ttgamer.ui.sheet.templates.editor.listMode": {
+        "message": "Хранилище"
+    },
+    "ttgamer.ui.sheet.templates.editor.listModeCustom": {
+        "message": "Своё значение (ключ значения)"
+    },
+    "ttgamer.ui.sheet.templates.editor.listModeSystem": {
+        "message": "Системный список"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSystemBinding": {
+        "message": "Системный список"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxFrom": {
+        "message": "Максимум из значения или формулы (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxFromPlaceholder": {
+        "message": "например, willpower.max"
     },
     "ttgamer.ui.sheet.templates.editor.maxRows": {
         "message": "Макс. строк"
@@ -1076,6 +1133,27 @@
     "ttgamer.ui.sheet.templates.editor.options": {
         "message": "Варианты"
     },
+    "ttgamer.ui.sheet.templates.editor.paletteContainers": {
+        "message": "Контейнеры"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteData": {
+        "message": "Данные и списки"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteEquipment": {
+        "message": "Снаряжение"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteFields": {
+        "message": "Поля"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSystemLists": {
+        "message": "Системные списки"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSystemValues": {
+        "message": "Системные значения (привязанные поля)"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTracks": {
+        "message": "Треки состояний"
+    },
     "ttgamer.ui.sheet.templates.editor.presentation": {
         "message": "Отображение"
     },
@@ -1109,6 +1187,15 @@
     "ttgamer.ui.sheet.templates.editor.sectionTitle": {
         "message": "Заголовок секции"
     },
+    "ttgamer.ui.sheet.templates.editor.tableTitle": {
+        "message": "Название таблицы (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.tableValueKey": {
+        "message": "Общий ключ значения (строки таблицы)"
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownCoordinate": {
+        "message": "Неизвестное значение «{id}» в формуле."
+    },
     "ttgamer.ui.sheet.templates.editor.untitledName": {
         "message": "Шаблон без названия"
     },
@@ -1121,6 +1208,18 @@
     "ttgamer.ui.sheet.templates.fieldTypes.fields": {
         "message": "Группа полей"
     },
+    "ttgamer.ui.sheet.templates.fieldTypes.formula": {
+        "message": "Вычисляемое значение (только чтение)"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.group": {
+        "message": "Группа полей"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.image": {
+        "message": "Изображение"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.list": {
+        "message": "Кастомный список"
+    },
     "ttgamer.ui.sheet.templates.fieldTypes.number": {
         "message": "Число"
     },
@@ -1132,6 +1231,9 @@
     },
     "ttgamer.ui.sheet.templates.fieldTypes.resource": {
         "message": "Ресурс"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.section": {
+        "message": "Секция"
     },
     "ttgamer.ui.sheet.templates.fieldTypes.select": {
         "message": "Выбор"
@@ -1175,6 +1277,12 @@
     "ttgamer.ui.sheet.templates.library.export": {
         "message": "Экспорт"
     },
+    "ttgamer.ui.sheet.templates.library.incompatibleBadge": {
+        "message": "Несовместимый формат"
+    },
+    "ttgamer.ui.sheet.templates.library.incompatibleHint": {
+        "message": "Сохранено в предыдущем формате шаблонов. Хранится только для восстановления — пересоздайте в новом редакторе."
+    },
     "ttgamer.ui.sheet.templates.library.kind": {
         "message": "Тип"
     },
@@ -1207,6 +1315,39 @@
     },
     "ttgamer.ui.sheet.templates.page.fallbackTitle": {
         "message": "Страница шаблона недоступна"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaClamped": {
+        "message": "Ограничено связанным значением"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaDegraded": {
+        "message": "Невозможно вычислить «{field}»: {reason}."
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonCircular": {
+        "message": "циклическая зависимость"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonDivision": {
+        "message": "деление на ноль"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonNonNumeric": {
+        "message": "одно из значений — не число"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonUnknown": {
+        "message": "значение «{coordinate}» недоступно"
+    },
+    "ttgamer.ui.sheet.templates.page.imageAlt": {
+        "message": "Изображение шаблона"
+    },
+    "ttgamer.ui.sheet.templates.page.imageInvalid": {
+        "message": "Источник изображения недоступен или небезопасен."
+    },
+    "ttgamer.ui.sheet.templates.page.imageRemove": {
+        "message": "Удалить изображение"
+    },
+    "ttgamer.ui.sheet.templates.page.imageUpload": {
+        "message": "Загрузить изображение"
+    },
+    "ttgamer.ui.sheet.templates.page.imageUrl": {
+        "message": "URL изображения"
     },
     "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
         "message": "Привязка «{binding}» недоступна на этом устройстве."

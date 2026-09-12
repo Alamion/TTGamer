@@ -1,15 +1,23 @@
 import { z } from 'zod';
 
+import type { DocumentKind, SystemId } from './document';
 import { DocumentKindSchema, SystemIdSchema } from './document';
 
 export const TEMPLATE_LIMITS = {
-    sections: 40,
-    blocksPerSection: 50,
-    fieldsPerBlock: 60,
+    /** Nesting guardrail (spec A2): root children are depth 1. */
+    maxDepth: 10,
+    /** Total nodes across the whole tree (spec FR-3 authoring-time rejection). */
+    nodesPerTemplate: 200,
     optionsPerField: 100,
     fillMappingsPerField: 100,
-    presetsPerPrimitive: 30,
+    presetsPerList: 30,
+    columnsMax: 4,
+    tableColumnsMax: 60,
+    listEntriesMax: 1_000,
 } as const;
+
+/** Template file/schema generation authored by this build (contracts/template-node-model.md). */
+export const TEMPLATE_SCHEMA_VERSION = 3;
 
 const templateIdentifierSchema = z
     .string()
@@ -23,11 +31,9 @@ const fieldBaseShape = {
     description: z.string().max(500).optional(),
     required: z.boolean().default(false),
     /**
-     * Storage coordinate in the document's shared value bag (clarification D1/D2).
-     * Defaults to the field id at render time; fields in different templates with an equal
-     * valueKey read and write the same document-scoped value.
-     * Feature 005 review: when the coordinate matches a document data address (binding
-     * registry), the field operates on the document data — uniform interface for both worlds.
+     * Storage coordinate in the document's shared value bag. Defaults to the field id at
+     * render time; fields in different templates with an equal valueKey read and write the
+     * same document-scoped value.
      */
     valueKey: templateIdentifierSchema.optional(),
     /** Brief-format rendering when the field is bridged to document data (feature 005). */
@@ -43,6 +49,12 @@ const boundedNumberShape = {
 const validateNumberBounds = (value: { min?: number; max?: number }) =>
     value.min === undefined || value.max === undefined || value.min <= value.max;
 
+/**
+ * Dynamic maximum (spec FR-12): a coordinate reference or arithmetic formula over the unified
+ * coordinate space. A bare coordinate is a valid formula — one mechanism covers both.
+ */
+const maxFromShape = { maxFrom: z.string().min(1).max(500).optional() };
+
 const TextFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('text'),
@@ -54,12 +66,27 @@ const NumberFieldSchema = z
         ...fieldBaseShape,
         type: z.literal('number'),
         ...boundedNumberShape,
+        ...maxFromShape,
     })
     .refine(validateNumberBounds, { message: 'Minimum cannot exceed maximum', path: ['min'] });
 
 const ToggleFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('toggle'),
+});
+
+const ImageFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('image'),
+});
+
+/**
+ * Read-only computed field (spec FR-13): displays the formula result; never stores it (A4).
+ */
+const FormulaFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('formula'),
+    formula: z.string().min(1).max(500),
 });
 
 function hasUniqueIds(values: readonly { id: string }[]) {
@@ -116,6 +143,7 @@ const RatingFieldSchema = z
         min: z.number().int().min(0).default(0),
         max: z.number().int().min(1).max(100),
         presentation: z.enum(['dots', 'boxes', 'number']).default('dots'),
+        ...maxFromShape,
     })
     .refine(validateNumberBounds, { message: 'Minimum cannot exceed maximum', path: ['min'] });
 
@@ -144,62 +172,17 @@ export const TemplateFieldSchema = z.union([
     TextFieldSchema,
     NumberFieldSchema,
     ToggleFieldSchema,
+    ImageFieldSchema,
+    FormulaFieldSchema,
     SelectFieldSchema,
     RatingFieldSchema,
     ResourceFieldSchema,
     ReferenceFieldSchema,
 ]);
 
-const FieldsBlockSchema = z
-    .object({
-        id: templateIdentifierSchema,
-        type: z.literal('fields'),
-        title: z.string().min(1).max(120).optional(),
-        columns: z.number().int().min(1).max(4).default(1),
-        fields: z.array(TemplateFieldSchema).min(1).max(TEMPLATE_LIMITS.fieldsPerBlock),
-    })
-    .refine(({ fields }) => hasUniqueIds(fields), {
-        message: 'Field IDs must be unique within a block',
-        path: ['fields'],
-    });
+export type TemplateField = z.infer<typeof TemplateFieldSchema>;
 
-const TableBlockSchema = z
-    .object({
-        id: templateIdentifierSchema,
-        type: z.literal('table'),
-        title: z.string().min(1).max(120).optional(),
-        valueKey: templateIdentifierSchema.optional(),
-        minRows: z.number().int().min(0).max(1_000).default(0),
-        maxRows: z.number().int().min(1).max(1_000).default(100),
-        columns: z.array(TemplateFieldSchema).min(1).max(TEMPLATE_LIMITS.fieldsPerBlock),
-    })
-    .refine(({ maxRows, minRows }) => minRows <= maxRows, {
-        message: 'Minimum rows cannot exceed maximum rows',
-        path: ['minRows'],
-    })
-    .refine(({ columns }) => hasUniqueIds(columns), {
-        message: 'Column IDs must be unique within a table',
-        path: ['columns'],
-    });
-
-/**
- * Ready-made interactive page part placement (feature 004): references a registered built-in
- * block by id. `blockId` availability is a runtime registry query (system- AND kind-scoped),
- * never validated inside this system-agnostic schema — render degrades unavailable ids to a
- * placeholder. Accent color is automatic (parity), not stored per placement.
- */
-export const BuiltInBlockPlacementSchema = z.object({
-    id: templateIdentifierSchema,
-    type: z.literal('built-in'),
-    blockId: z.string().min(1).max(80),
-});
-
-export type BuiltInBlockPlacement = z.infer<typeof BuiltInBlockPlacementSchema>;
-
-/**
- * Author-defined starting entries for a custom-list primitive (FR-16). Seeded into the bound
- * list as ordinary entries with deterministic ids (`preset-<templateId>-<key>`) on first use.
- */
+/** Author-defined starting entries for a list element (FR-19, 005 semantics carried over). */
 export const PrimitivePresetSchema = z.object({
     key: templateIdentifierSchema,
     label: z.string().min(1).max(120),
@@ -208,7 +191,7 @@ export const PrimitivePresetSchema = z.object({
 
 export type PrimitivePreset = z.infer<typeof PrimitivePresetSchema>;
 
-/** Condition-track presentation override (FR-6): level count + per-level names. */
+/** Condition-track presentation override (005 FR-6): level count + per-level names. */
 export const PrimitiveTrackOverrideSchema = z
     .object({
         levels: z.number().int().min(1).max(20),
@@ -223,67 +206,197 @@ export type PrimitiveTrackOverride = z.infer<typeof PrimitiveTrackOverrideSchema
 
 /**
  * Document-bound primitive (feature 005): references one binding key of the owning system's
- * document binding registry. `bindingKey` resolution is a runtime registry query — never
- * validated inside this system-agnostic schema; unavailable bindings degrade at render (FR-3).
- * `label` is a presentation-only override; `compact` selects the brief-format rendering (FR-7).
+ * registry. Resolution is a runtime registry query — unavailable bindings degrade at render.
+ * `maxFrom` (feature 006) bounds system pools (Willpower/Force Points ceilings, FR-12).
  */
-export const PrimitiveBlockSchema = z.object({
+const PrimitiveNodeSchema = z.object({
     id: templateIdentifierSchema,
     type: z.literal('primitive'),
     bindingKey: z.string().min(1).max(120),
     label: z.string().min(1).max(120).optional(),
     compact: z.boolean().default(false),
     track: PrimitiveTrackOverrideSchema.optional(),
-    presets: z.array(PrimitivePresetSchema).max(TEMPLATE_LIMITS.presetsPerPrimitive).optional(),
+    ...maxFromShape,
 });
 
-export type PrimitiveBlock = z.infer<typeof PrimitiveBlockSchema>;
-
-export const TemplateBlockSchema = z.union([
-    FieldsBlockSchema,
-    TableBlockSchema,
-    BuiltInBlockPlacementSchema,
-    PrimitiveBlockSchema,
-]);
-
-export const TemplateSectionSchema = z
+/** Custom list (FR-17): own value coordinate OR a system-owned list — identical interface. */
+const ListNodeSchema = z
     .object({
         id: templateIdentifierSchema,
-        title: z.string().min(1).max(120),
-        description: z.string().max(500).optional(),
-        /**
-         * 'card' (default): collapsible titled section. 'plain': blocks render directly on the
-         * page with no section chrome — the presentation built-in views use (feature 004),
-         * so a default template reproduces its original page exactly.
-         */
-        presentation: z.enum(['card', 'plain']).default('card'),
-        blocks: z.array(TemplateBlockSchema).min(1).max(TEMPLATE_LIMITS.blocksPerSection),
+        type: z.literal('list'),
+        title: z.string().min(1).max(120).optional(),
+        valueKey: templateIdentifierSchema.optional(),
+        bindingKey: z.string().min(1).max(120).optional(),
+        columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).default(1),
+        presets: z.array(PrimitivePresetSchema).max(TEMPLATE_LIMITS.presetsPerList).optional(),
     })
-    .refine(({ blocks }) => hasUniqueIds(blocks), {
-        message: 'Block IDs must be unique within a section',
-        path: ['blocks'],
+    .refine(({ valueKey, bindingKey }) => (valueKey === undefined) !== (bindingKey === undefined), {
+        message: 'A list must use exactly one storage mode: valueKey or bindingKey',
     });
 
-export const CustomTemplateSchema = z
+const TableNodeSchema = z
     .object({
         id: templateIdentifierSchema,
-        name: z.string().min(1).max(120),
-        description: z.string().max(1_000).optional(),
-        /** Owning system: page assignment and library listing match system + kind (D4). */
-        systemId: SystemIdSchema.optional().default(SystemIdSchema.parse('star-wars-wod')),
-        documentKind: DocumentKindSchema,
-        schemaVersion: z.number().int().positive().max(1_000_000),
-        sections: z.array(TemplateSectionSchema).min(1).max(TEMPLATE_LIMITS.sections),
+        type: z.literal('table'),
+        title: z.string().min(1).max(120).optional(),
+        valueKey: templateIdentifierSchema.optional(),
+        minRows: z.number().int().min(0).max(1_000).default(0),
+        maxRows: z.number().int().min(1).max(1_000).default(100),
+        columns: z.array(TemplateFieldSchema).min(1).max(TEMPLATE_LIMITS.tableColumnsMax),
     })
-    .refine(({ sections }) => hasUniqueIds(sections), {
-        message: 'Section IDs must be unique within a template',
-        path: ['sections'],
+    .refine(({ maxRows, minRows }) => minRows <= maxRows, {
+        message: 'Minimum rows cannot exceed maximum rows',
+        path: ['minRows'],
+    })
+    .refine(({ columns }) => hasUniqueIds(columns), {
+        message: 'Column IDs must be unique within a table',
+        path: ['columns'],
     });
 
-export type TemplateField = z.infer<typeof TemplateFieldSchema>;
-export type TemplateBlock = z.infer<typeof TemplateBlockSchema>;
-export type TemplateSection = z.infer<typeof TemplateSectionSchema>;
-export type CustomTemplate = z.infer<typeof CustomTemplateSchema>;
+export interface SectionNode {
+    id: string;
+    type: 'section';
+    title: string;
+    /** Documentation link rendered as a help affordance in the section header (FR-9). */
+    docsPath?: string;
+    /** Column layout for direct children, 1–4 (FR-9); unset = single column stack. */
+    columns?: number;
+    children: TemplateNode[];
+}
+
+export interface GroupNode {
+    id: string;
+    type: 'group';
+    title: string;
+    /** Opt-in collapsibility (FR-10); state is remembered per user via a storage key. */
+    collapsible: boolean;
+    columns?: number;
+    children: TemplateNode[];
+}
+
+export type TableNode = z.infer<typeof TableNodeSchema>;
+export type ListNode = z.infer<typeof ListNodeSchema>;
+export type PrimitiveNode = z.infer<typeof PrimitiveNodeSchema>;
+
+/** Any node of the template tree — containers and leaves share one placement model (FR-1). */
+export type TemplateNode =
+    | SectionNode
+    | GroupNode
+    | TableNode
+    | ListNode
+    | PrimitiveNode
+    | TemplateField;
+
+/**
+ * Recursive node schema. `z.lazy` plus the explicit `TemplateNode` annotation breaks the
+ * otherwise circular type inference. `z.union` (not `z.discriminatedUnion`) because several
+ * members carry `.refine()` bounds (ZodEffects) — the renderer switches on `type` anyway.
+ */
+const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
+    z.union([
+        // Containers first: section/group render chrome; everything else is a leaf.
+        z.object({
+            id: templateIdentifierSchema,
+            type: z.literal('section'),
+            title: z.string().min(1).max(120),
+            docsPath: z.string().max(500).optional(),
+            columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+            children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
+        }),
+        z.object({
+            id: templateIdentifierSchema,
+            type: z.literal('group'),
+            title: z.string().min(1).max(120),
+            collapsible: z.boolean().default(false),
+            columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+            children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
+        }),
+        TableNodeSchema,
+        ListNodeSchema,
+        PrimitiveNodeSchema,
+        TextFieldSchema,
+        NumberFieldSchema,
+        ToggleFieldSchema,
+        ImageFieldSchema,
+        FormulaFieldSchema,
+        SelectFieldSchema,
+        RatingFieldSchema,
+        ResourceFieldSchema,
+        ReferenceFieldSchema,
+    ])
+) as unknown as z.ZodType<TemplateNode>;
+
+export interface CustomTemplate {
+    id: string;
+    name: string;
+    description?: string;
+    /** Owning system: page assignment and library listing match system + kind. */
+    systemId: SystemId;
+    documentKind: DocumentKind;
+    schemaVersion: number;
+    children: TemplateNode[];
+}
+
+export interface TemplateTreeIssue {
+    code: 'depth' | 'count' | 'duplicate-id';
+    nodeId?: string;
+    actual?: number;
+    limit?: number;
+}
+
+export function isContainerNode(node: TemplateNode): node is SectionNode | GroupNode {
+    return node.type === 'section' || node.type === 'group';
+}
+
+/** Depth-first walk; root children are depth 1 (the guardrail counts from the page root). */
+export function walkTemplateNodes(
+    children: readonly TemplateNode[],
+    visit: (node: TemplateNode, depth: number) => void
+): void {
+    const walk = (nodes: readonly TemplateNode[], depth: number): void => {
+        for (const node of nodes) {
+            visit(node, depth);
+            if (node.type === 'section' || node.type === 'group') walk(node.children, depth + 1);
+        }
+    };
+    walk(children, 1);
+}
+
+export function collectTemplateNodes(template: CustomTemplate): TemplateNode[] {
+    const nodes: TemplateNode[] = [];
+    walkTemplateNodes(template.children, (node) => nodes.push(node));
+    return nodes;
+}
+
+/**
+ * Tree integrity (FR-2/FR-3): depth guardrail, node budget, and one identifier namespace
+ * across the whole tree. Structural shape is validated by the schema; these rules need a
+ * walk, so they run alongside it wherever templates are saved or imported.
+ */
+export function collectTreeIssues(template: CustomTemplate): TemplateTreeIssue[] {
+    const issues: TemplateTreeIssue[] = [];
+    const seenIds = new Set<string>();
+    let count = 0;
+    walkTemplateNodes(template.children, (node, depth) => {
+        count += 1;
+        if (depth > TEMPLATE_LIMITS.maxDepth) {
+            issues.push({
+                code: 'depth',
+                nodeId: node.id,
+                actual: depth,
+                limit: TEMPLATE_LIMITS.maxDepth,
+            });
+        }
+        if (seenIds.has(node.id)) {
+            issues.push({ code: 'duplicate-id', nodeId: node.id });
+        }
+        seenIds.add(node.id);
+    });
+    if (count > TEMPLATE_LIMITS.nodesPerTemplate) {
+        issues.push({ code: 'count', actual: count, limit: TEMPLATE_LIMITS.nodesPerTemplate });
+    }
+    return issues;
+}
 
 /** Storage coordinate for a field's value: explicit valueKey or the field id. */
 export function fieldValueKey(field: TemplateField): string {
@@ -291,23 +404,95 @@ export function fieldValueKey(field: TemplateField): string {
 }
 
 /** Table rows are stored under the block's valueKey (default = block id). */
-export function tableValueKey(
-    block: Extract<CustomTemplate['sections'][number]['blocks'][number], { type: 'table' }>
-): string {
+export function tableValueKey(block: TableNode): string {
     return block.valueKey ?? block.id;
 }
 
-/** Every fillable input definition in a template, keyed by its identifier (fields and table columns). */
+/** List entries are stored under the list's valueKey (value-key storage mode). */
+export function listValueKey(list: ListNode): string {
+    return list.valueKey ?? list.id;
+}
+
+/** Every fillable input definition in a template (leaf fields and table columns). */
 export function collectTemplateFields(template: CustomTemplate): Map<string, TemplateField> {
     const fields = new Map<string, TemplateField>();
-    for (const section of template.sections) {
-        for (const block of section.blocks) {
-            if (block.type === 'fields') {
-                for (const field of block.fields) fields.set(field.id, field);
-            } else if (block.type === 'table') {
-                for (const column of block.columns) fields.set(column.id, column);
-            }
+    walkTemplateNodes(template.children, (node) => {
+        if (node.type === 'table') {
+            for (const column of node.columns) fields.set(column.id, column);
+        } else if (
+            node.type !== 'section' &&
+            node.type !== 'group' &&
+            node.type !== 'list' &&
+            node.type !== 'primitive'
+        ) {
+            fields.set(node.id, node);
         }
-    }
+    });
     return fields;
 }
+
+export function collectListNodes(template: CustomTemplate): ListNode[] {
+    const lists: ListNode[] = [];
+    walkTemplateNodes(template.children, (node) => {
+        if (node.type === 'list') lists.push(node);
+    });
+    return lists;
+}
+
+export function collectPrimitiveNodes(template: CustomTemplate): PrimitiveNode[] {
+    const primitives: PrimitiveNode[] = [];
+    walkTemplateNodes(template.children, (node) => {
+        if (node.type === 'primitive') primitives.push(node);
+    });
+    return primitives;
+}
+
+export interface FormulaDependencySource {
+    /** Human-facing identifier for authoring messages (node id). */
+    id: string;
+    /** Coordinate the formula writes (formula fields); `maxFrom` bounds, never writes. */
+    writes?: string;
+    reads: string[];
+}
+
+/**
+ * Formula dependency edges for authoring-time cycle detection (contracts/formula-grammar.md
+ * §4). Unparseable formulas are skipped here — they are flagged separately as parse errors.
+ */
+export function collectFormulaDependencies(template: CustomTemplate): FormulaDependencySource[] {
+    const sources: FormulaDependencySource[] = [];
+    walkTemplateNodes(template.children, (node) => {
+        if (node.type === 'formula') {
+            const parsed = parseFormulaSafe(node.formula);
+            if (parsed) sources.push({ id: node.id, writes: fieldValueKey(node), reads: parsed });
+        }
+        if (
+            (node.type === 'rating' || node.type === 'number' || node.type === 'primitive') &&
+            node.maxFrom
+        ) {
+            const parsed = parseFormulaSafe(node.maxFrom);
+            if (parsed) sources.push({ id: node.id, reads: parsed });
+        }
+    });
+    return sources;
+}
+
+function parseFormulaSafe(source: string): string[] | undefined {
+    // Local import would create a cycle (formula module imports nothing from template);
+    // the dependency extraction is duplicated deliberately as a tiny regex walk.
+    return source.match(/[a-z][a-z0-9]*(?:-[a-z0-9]+)*(?:\.(?:current|max))?/g) ?? [];
+}
+
+export const CustomTemplateSchema = z
+    .object({
+        id: templateIdentifierSchema,
+        name: z.string().min(1).max(120),
+        description: z.string().max(1_000).optional(),
+        systemId: SystemIdSchema.optional().default(SystemIdSchema.parse('star-wars-wod')),
+        documentKind: DocumentKindSchema,
+        schemaVersion: z.number().int().positive().max(1_000_000),
+        children: z.array(templateNodeSchema).min(1).max(TEMPLATE_LIMITS.nodesPerTemplate),
+    })
+    .refine((template) => collectTreeIssues(template as CustomTemplate).length === 0, {
+        message: 'Template tree violates depth, node-count, or unique-id rules',
+    });

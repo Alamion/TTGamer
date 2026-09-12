@@ -1,0 +1,156 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+
+import { listDocumentBindings } from '../../../systems/star-wars-wod/documentBindings';
+import type { CustomTemplate, PrimitiveNode } from '../../../types/template';
+import type { NodeUpdates } from './draft';
+import { listNumericCoordinateOptions } from './draft';
+
+const primitives = uiMessages.sheet.templates.primitives;
+const editorMaxFrom = uiMessages.sheet.templates.editor.maxFrom;
+const editorMaxFromPlaceholder = uiMessages.sheet.templates.editor.maxFromPlaceholder;
+
+const inputClasses =
+    'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
+
+/**
+ * Config panel for a document-bound primitive: binding (same-kind re-bind only), label
+ * override, compact flag, track level/name overrides, and the formula-bound maximum
+ * (`maxFrom`, FR-12) for pool resources. Presets live on list nodes, not primitives.
+ */
+export function PrimitiveConfig({
+    draft,
+    node,
+    onUpdate,
+}: {
+    draft: CustomTemplate;
+    node: PrimitiveNode;
+    onUpdate: (nodeId: string, updates: NodeUpdates) => void;
+}) {
+    const t = (descriptor: { message: string }, values?: Record<string, string | number>) =>
+        translate(descriptor, values);
+    const bindings = listDocumentBindings(draft.systemId, draft.documentKind);
+    const descriptor = bindings.find((binding) => binding.key === node.bindingKey);
+    const sameKindBindings = descriptor
+        ? bindings.filter((binding) => binding.kind === descriptor.kind)
+        : bindings;
+    const coordinates = listNumericCoordinateOptions(draft);
+    const update = (updates: NodeUpdates) => onUpdate(node.id, updates);
+
+    return (
+        <div className="space-y-3 rounded border border-border bg-bgSurface p-3">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-textSecondary">
+                {t(primitives.boundTo, { binding: node.bindingKey })}
+            </p>
+
+            <label className="grid gap-1 text-xs text-textSecondary">
+                {t(primitives.binding)}
+                <select
+                    value={node.bindingKey}
+                    onChange={(event) => update({ bindingKey: event.target.value })}
+                    className={inputClasses}
+                >
+                    {sameKindBindings.map((binding) => (
+                        <option key={binding.key} value={binding.key}>
+                            {binding.label}
+                        </option>
+                    ))}
+                </select>
+            </label>
+
+            <label className="grid gap-1 text-xs text-textSecondary">
+                {t(primitives.labelOverride)}
+                <input
+                    value={node.label ?? ''}
+                    onChange={(event) =>
+                        update({
+                            label: event.target.value.length > 0 ? event.target.value : undefined,
+                        })
+                    }
+                    placeholder={t(primitives.labelOverridePlaceholder)}
+                    className={inputClasses}
+                />
+            </label>
+
+            <label className="flex items-center gap-2 text-xs text-textSecondary">
+                <input
+                    type="checkbox"
+                    checked={node.compact}
+                    onChange={(event) => update({ compact: event.target.checked })}
+                />
+                {t(primitives.compact)}
+            </label>
+
+            {descriptor?.kind === 'resource' && (
+                <label className="grid gap-1 text-xs text-textSecondary">
+                    {t(editorMaxFrom)}
+                    <input
+                        value={node.maxFrom ?? ''}
+                        onChange={(event) =>
+                            update({
+                                maxFrom:
+                                    event.target.value.length > 0 ? event.target.value : undefined,
+                            })
+                        }
+                        placeholder={t(editorMaxFromPlaceholder)}
+                        aria-label={t(editorMaxFrom)}
+                        list={`maxfrom-coordinates-${node.id}`}
+                        className={inputClasses}
+                    />
+                    <datalist id={`maxfrom-coordinates-${node.id}`}>
+                        {coordinates.map((option) => (
+                            <option key={option.coordinate} value={option.coordinate}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </datalist>
+                </label>
+            )}
+
+            {descriptor?.kind === 'track' && (
+                <div className="grid gap-2">
+                    <label className="grid gap-1 text-xs text-textSecondary">
+                        {t(primitives.trackLevels)}
+                        <input
+                            type="number"
+                            min={1}
+                            max={20}
+                            value={node.track?.levels ?? 0}
+                            onChange={(event) => {
+                                const count = Math.max(0, Number(event.target.value) || 0);
+                                if (count === 0) {
+                                    update({ track: undefined });
+                                    return;
+                                }
+                                const names = node.track?.names ?? [];
+                                const nextNames = Array.from(
+                                    { length: count },
+                                    (_, index) => names[index] ?? `Level ${index + 1}`
+                                );
+                                update({ track: { levels: count, names: nextNames } });
+                            }}
+                            className={`${inputClasses} w-20`}
+                        />
+                    </label>
+                    {node.track?.names.map((name, index) => (
+                        <label
+                            key={`${node.id}-track-${index}`}
+                            className="grid gap-1 text-xs text-textSecondary"
+                        >
+                            {t(primitives.trackLevelName, { index: index + 1 })}
+                            <input
+                                value={name}
+                                onChange={(event) => {
+                                    const names = [...node.track!.names];
+                                    names[index] = event.target.value;
+                                    update({ track: { levels: node.track!.levels, names } });
+                                }}
+                                className={inputClasses}
+                            />
+                        </label>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}

@@ -2,11 +2,18 @@ import type { StateCreator } from 'zustand';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { describeError, reportSheetIssue } from '../diagnostics';
 import type { SystemId } from '../types/document';
 import type { CustomTemplate } from '../types/template';
 import { CustomTemplateSchema } from '../types/template';
 
-const STORE_VERSION = 2;
+/**
+ * Store version 3 (feature 006): templates are recursive node trees (`children`, schema v3).
+ * Pre-feature shapes (fixed `sections` hierarchy) fail the v3 parse and retire into the
+ * bounded quarantine — no migration while there is no permanent user base (spec FR-4/A5);
+ * documents pointing at retired ids fall back to the built-in page via `resolveCustomTemplate`.
+ */
+const STORE_VERSION = 3;
 const MAX_QUARANTINE_ENTRIES = 100;
 
 export interface TemplateStoreState {
@@ -34,6 +41,22 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
+/** Retires an unparseable template into the bounded quarantine and reports why. */
+function quarantineEntry(quarantine: unknown[], entry: unknown, error: unknown) {
+    const retained = quarantine.length < MAX_QUARANTINE_ENTRIES;
+    if (retained) quarantine.push(entry);
+    reportSheetIssue({
+        code: 'template-quarantined',
+        message: retained
+            ? 'Persisted template failed to parse and moved to quarantine'
+            : 'Persisted template failed to parse and was dropped (quarantine is full)',
+        details: {
+            templateId: isRecord(entry) ? entry.id : undefined,
+            error: describeError(error),
+        },
+    });
+}
+
 export function migrateTemplateStoreState(input: unknown): PersistedTemplateState {
     if (!isRecord(input) || !Array.isArray(input.templates)) {
         return { templates: [], quarantine: [], defaultOverrides: {} };
@@ -47,20 +70,21 @@ export function migrateTemplateStoreState(input: unknown): PersistedTemplateStat
     for (const entry of input.templates) {
         try {
             templates.push(CustomTemplateSchema.parse(entry));
-        } catch {
-            if (quarantine.length < MAX_QUARANTINE_ENTRIES) quarantine.push(entry);
+        } catch (error) {
+            quarantineEntry(quarantine, entry, error);
         }
     }
 
-    // v2: default-template overrides — absent key → {}; invalid entries quarantine (FR-4 safety).
+    // v3: recursive node trees — pre-feature shapes fail the v3 parse and retire into the
+    // bounded quarantine (FR-4); failed entries are retained, never silently dropped.
     const defaultOverrides: Record<string, CustomTemplate> = {};
     const rawOverrides = input.defaultOverrides;
     if (isRecord(rawOverrides)) {
         for (const [viewId, entry] of Object.entries(rawOverrides)) {
             try {
                 defaultOverrides[viewId] = CustomTemplateSchema.parse(entry);
-            } catch {
-                if (quarantine.length < MAX_QUARANTINE_ENTRIES) quarantine.push(entry);
+            } catch (error) {
+                quarantineEntry(quarantine, entry, error);
             }
         }
     }

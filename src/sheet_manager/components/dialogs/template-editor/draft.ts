@@ -1,24 +1,48 @@
 import { generateId } from '../../../../shared/utils/random';
+import {
+    detectDependencyCycles,
+    type FormulaDependencyEntry,
+    parseFormula,
+} from '../../../features/sheet/declarative/formula';
+import { listNumericCoordinates } from '../../../systems/star-wars-wod/documentBindings';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import type {
     CustomTemplate,
+    GroupNode,
+    ListNode,
     PrimitivePreset,
     PrimitiveTrackOverride,
-    TemplateBlock,
+    SectionNode,
+    TableNode,
     TemplateField,
+    TemplateNode,
 } from '../../../types/template';
-import { TEMPLATE_LIMITS, TemplateFieldSchema } from '../../../types/template';
+import {
+    collectFormulaDependencies,
+    collectTemplateNodes,
+    collectTreeIssues,
+    fieldValueKey,
+    isContainerNode,
+    TEMPLATE_LIMITS,
+    TEMPLATE_SCHEMA_VERSION,
+    walkTemplateNodes,
+} from '../../../types/template';
 
-/** Type-safe structural updates for a block (type/id/fields are managed separately). */
-export type BlockUpdates = {
+/** Type-safe structural updates for a node (type/id/children are managed separately). */
+export type NodeUpdates = {
     title?: string;
     columns?: number;
+    collapsible?: boolean;
+    docsPath?: string;
     minRows?: number;
     maxRows?: number;
-    accentColor?: 'primary' | 'secondary';
+    valueKey?: string;
     bindingKey?: string;
+    formula?: string;
+    maxFrom?: string;
     label?: string;
     compact?: boolean;
+    multiline?: boolean;
     track?: PrimitiveTrackOverride;
     presets?: PrimitivePreset[];
 };
@@ -34,478 +58,216 @@ function newId(prefix: string): string {
 }
 
 /** Public id generator for callers that seed drafts outside this module. */
-export function generateDraftId(prefix: 'tpl' | 'sec' | 'blk' | 'f' | 'opt'): string {
+export function newNodeId(prefix: Parameters<typeof generateDraftId>[0]): string {
+    return generateDraftId(prefix);
+}
+
+export function generateDraftId(
+    prefix: 'tpl' | 'sec' | 'grp' | 'blk' | 'lst' | 'f' | 'opt'
+): string {
     return newId(prefix);
 }
 
 export type EditorDraft = CustomTemplate;
 
-export function newTextField(label = ''): TemplateField {
-    return TemplateFieldSchema.parse({
-        id: newId('f'),
-        label: label || 'New field',
-        type: 'text',
+export type DraftOpResult =
+    | { ok: true; draft: EditorDraft }
+    | { ok: false; error: 'depth' | 'count' | 'self-move'; limit?: number; actual?: number };
+
+function ok(draft: EditorDraft): DraftOpResult {
+    return { ok: true, draft };
+}
+
+function fail(
+    error: 'depth' | 'count' | 'self-move',
+    limit?: number,
+    actual?: number
+): DraftOpResult {
+    return { ok: false, error, limit, actual };
+}
+
+function countSubtree(node: TemplateNode): number {
+    let count = 1;
+    if (isContainerNode(node)) for (const child of node.children) count += countSubtree(child);
+    return count;
+}
+
+function subtreeHeight(node: TemplateNode): number {
+    if (!isContainerNode(node)) return 1;
+    return 1 + Math.max(0, ...node.children.map(subtreeHeight));
+}
+
+interface NodeLocation {
+    parent: TemplateNode[] | undefined; // undefined = page root
+    parentId: string | null;
+    index: number;
+    depth: number; // depth of the node itself (root children are 1)
+}
+
+function locate(draft: EditorDraft, nodeId: string): NodeLocation | undefined {
+    let found: NodeLocation | undefined;
+    const search = (children: TemplateNode[], parentId: string | null, depth: number): boolean => {
+        for (let index = 0; index < children.length; index += 1) {
+            const node = children[index]!;
+            if (node.id === nodeId) {
+                found = { parent: children, parentId, index, depth };
+                return true;
+            }
+            if (isContainerNode(node) && search(node.children, node.id, depth + 1)) return true;
+        }
+        return false;
+    };
+    search(draft.children, null, 1);
+    return found;
+}
+
+function containsNode(node: TemplateNode, nodeId: string): boolean {
+    if (node.id === nodeId) return true;
+    if (!isContainerNode(node)) return false;
+    return node.children.some((child) => containsNode(child, nodeId));
+}
+
+function replaceAt(
+    children: TemplateNode[],
+    parentId: string | null,
+    nodeId: string,
+    next: TemplateNode | undefined
+): TemplateNode[] {
+    if (parentId === null) {
+        return next === undefined
+            ? children.filter((node) => node.id !== nodeId)
+            : children.map((node) => (node.id === nodeId ? next : node));
+    }
+    return children.map((node) => {
+        if (!isContainerNode(node)) return node;
+        if (node.id === parentId) {
+            return {
+                ...node,
+                children:
+                    next === undefined
+                        ? node.children.filter((child) => child.id !== nodeId)
+                        : node.children.map((child) => (child.id === nodeId ? next : child)),
+            };
+        }
+        return { ...node, children: replaceAt(node.children, parentId, nodeId, next) };
     });
 }
 
-function newFieldsBlock(): TemplateBlock {
-    return {
-        id: newId('blk'),
-        type: 'fields',
-        columns: 1,
-        fields: [newTextField()],
-    };
+function insertInto(draft: EditorDraft, index: number, node: TemplateNode): EditorDraft {
+    const children = [...draft.children];
+    children.splice(Math.min(Math.max(index, 0), children.length), 0, node);
+    return { ...draft, children };
 }
 
-export function createEmptyDraft(documentKind: string): EditorDraft {
-    return {
-        id: newId('tpl'),
-        name: '',
-        systemId: SystemIdSchema.parse('star-wars-wod'),
-        documentKind: documentKind as EditorDraft['documentKind'],
-        schemaVersion: 1,
-        sections: [
-            {
-                id: newId('sec'),
-                title: 'New section',
-                presentation: 'card',
-                blocks: [newFieldsBlock()],
-            },
-        ],
-    };
-}
-
-export function createDraftFromTemplate(
-    source: EditorDraft,
-    overrides: Partial<Pick<EditorDraft, 'id' | 'name'>> = {}
+function insertIntoContainer(
+    draft: EditorDraft,
+    parentId: string,
+    index: number,
+    node: TemplateNode
 ): EditorDraft {
-    return structuredClone({ ...source, ...overrides });
-}
-
-export interface DraftIssue {
-    message: string;
-}
-
-export interface DraftIssueMessages {
-    emptyName: string;
-    emptyLabel: string;
-    duplicateId: string;
-    invalidKey: string;
-    limitReached: string;
-    invalidBounds: string;
-}
-
-const IDENTIFIER_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
-const MAX_KEY_LENGTH = 64;
-
-function isValidKey(key: string): boolean {
-    return key.length > 0 && key.length <= MAX_KEY_LENGTH && IDENTIFIER_PATTERN.test(key);
-}
-
-function interpolate(template: string, values: Record<string, string | number>): string {
-    return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
-}
-
-/**
- * Live draft integrity feedback (spec FR-4). Structural identifiers are generated, but the
- * checks stay defensive (imports/edits could introduce collisions) alongside limits and bounds.
- */
-export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessages): DraftIssue[] {
-    const issues: DraftIssue[] = [];
-    if (draft.name.trim().length === 0) {
-        issues.push({ message: messages.emptyName });
-    }
-
-    // FR-27: one namespace per template — effective keys of all fields and table blocks.
-    const seenEffectiveKeys = new Set<string>();
-    const checkEffectiveKey = (key: string) => {
-        if (!isValidKey(key)) {
-            issues.push({ message: interpolate(messages.invalidKey, { id: key }) });
-            return;
-        }
-        if (seenEffectiveKeys.has(key)) {
-            issues.push({ message: interpolate(messages.duplicateId, { id: key }) });
-        }
-        seenEffectiveKeys.add(key);
-    };
-
-    const seenSectionIds = new Set<string>();
-    for (const section of draft.sections) {
-        if (seenSectionIds.has(section.id)) {
-            issues.push({ message: interpolate(messages.duplicateId, { id: section.id }) });
-        }
-        seenSectionIds.add(section.id);
-        if (section.title.trim().length === 0) {
-            issues.push({ message: messages.emptyLabel });
-        }
-
-        const seenBlockIds = new Set<string>();
-        for (const block of section.blocks) {
-            if (seenBlockIds.has(block.id)) {
-                issues.push({ message: interpolate(messages.duplicateId, { id: block.id }) });
+    const insert = (children: TemplateNode[]): TemplateNode[] =>
+        children.map((child) => {
+            if (!isContainerNode(child)) return child;
+            if (child.id === parentId) {
+                const next = [...child.children];
+                next.splice(Math.min(Math.max(index, 0), next.length), 0, node);
+                return { ...child, children: next };
             }
-            seenBlockIds.add(block.id);
-
-            if (block.type === 'table') {
-                checkEffectiveKey(block.valueKey ?? block.id);
-            }
-
-            const items: readonly TemplateField[] =
-                block.type === 'fields'
-                    ? block.fields
-                    : block.type === 'table'
-                      ? block.columns
-                      : [];
-            const seenFieldIds = new Set<string>();
-            for (const field of items) {
-                if (seenFieldIds.has(field.id)) {
-                    issues.push({ message: interpolate(messages.duplicateId, { id: field.id }) });
-                }
-                seenFieldIds.add(field.id);
-                if (field.label.trim().length === 0) {
-                    issues.push({ message: messages.emptyLabel });
-                }
-                checkEffectiveKey(field.valueKey ?? field.id);
-
-                if (field.type === 'select') {
-                    const seenOptions = new Set<string>();
-                    for (const option of field.options) {
-                        if (seenOptions.has(option.id)) {
-                            issues.push({
-                                message: interpolate(messages.duplicateId, { id: option.id }),
-                            });
-                        }
-                        seenOptions.add(option.id);
-                    }
-                }
-            }
-        }
-    }
-
-    const sectionCount = draft.sections.length;
-    if (sectionCount > TEMPLATE_LIMITS.sections) {
-        issues.push({
-            message: interpolate(messages.limitReached, {
-                limit: TEMPLATE_LIMITS.sections,
-                subject: 'sections',
-            }),
+            return { ...child, children: insert(child.children) };
         });
+    return { ...draft, children: insert(draft.children) };
+}
+
+export function insertNode(
+    draft: EditorDraft,
+    parentId: string | null,
+    index: number,
+    node: TemplateNode
+): DraftOpResult {
+    const parentDepth = parentId === null ? 0 : locate(draft, parentId)?.depth;
+    if (parentDepth === undefined) return fail('self-move');
+    const height = subtreeHeight(node);
+    if (parentDepth + height > TEMPLATE_LIMITS.maxDepth) {
+        return fail('depth', TEMPLATE_LIMITS.maxDepth, parentDepth + height);
     }
-    for (const section of draft.sections) {
-        if (section.blocks.length > TEMPLATE_LIMITS.blocksPerSection) {
-            issues.push({
-                message: interpolate(messages.limitReached, {
-                    limit: TEMPLATE_LIMITS.blocksPerSection,
-                    subject: 'blocks',
-                }),
-            });
-        }
-        for (const block of section.blocks) {
-            if (block.type === 'fields' && block.fields.length > TEMPLATE_LIMITS.fieldsPerBlock) {
-                issues.push({
-                    message: interpolate(messages.limitReached, {
-                        limit: TEMPLATE_LIMITS.fieldsPerBlock,
-                        subject: 'fields',
-                    }),
-                });
-            }
-            if (block.type === 'table' && block.columns.length > TEMPLATE_LIMITS.fieldsPerBlock) {
-                issues.push({
-                    message: interpolate(messages.limitReached, {
-                        limit: TEMPLATE_LIMITS.fieldsPerBlock,
-                        subject: 'columns',
-                    }),
-                });
-            }
-            if (block.type === 'table' && block.minRows > block.maxRows) {
-                issues.push({ message: messages.invalidBounds });
-            }
-            const items: readonly TemplateField[] =
-                block.type === 'fields'
-                    ? block.fields
-                    : block.type === 'table'
-                      ? block.columns
-                      : [];
-            for (const field of items) {
-                if (
-                    (field.type === 'number' ||
-                        field.type === 'rating' ||
-                        field.type === 'resource') &&
-                    field.min !== undefined &&
-                    field.max !== undefined &&
-                    field.min > field.max
-                ) {
-                    issues.push({ message: messages.invalidBounds });
-                }
-            }
-        }
+    const total = collectTemplateNodes(draft).length + countSubtree(node);
+    if (total > TEMPLATE_LIMITS.nodesPerTemplate) {
+        return fail('count', TEMPLATE_LIMITS.nodesPerTemplate, total);
     }
-    return issues;
-}
-
-function move<T>(items: T[], index: number, offset: -1 | 1): T[] {
-    const target = index + offset;
-    if (target < 0 || target >= items.length) return items;
-    const next = [...items];
-    const [item] = next.splice(index, 1);
-    next.splice(target, 0, item!);
-    return next;
-}
-
-export function addSection(draft: EditorDraft): EditorDraft {
-    return {
-        ...draft,
-        sections: [
-            ...draft.sections,
-            {
-                id: newId('sec'),
-                title: 'New section',
-                presentation: 'card',
-                blocks: [newFieldsBlock()],
-            },
-        ],
-    };
-}
-
-export function removeSection(draft: EditorDraft, sectionId: string): EditorDraft {
-    if (draft.sections.length <= 1) return draft;
-    return {
-        ...draft,
-        sections: draft.sections.filter((section) => section.id !== sectionId),
-    };
-}
-
-export function moveSection(draft: EditorDraft, sectionId: string, offset: -1 | 1): EditorDraft {
-    const index = draft.sections.findIndex((section) => section.id === sectionId);
-    return { ...draft, sections: move(draft.sections, index, offset) };
-}
-
-export function renameSection(draft: EditorDraft, sectionId: string, title: string): EditorDraft {
-    return {
-        ...draft,
-        sections: draft.sections.map((section) =>
-            section.id === sectionId ? { ...section, title } : section
-        ),
-    };
-}
-
-export function addBlock(
-    draft: EditorDraft,
-    sectionId: string,
-    type: 'fields' | 'table' | { type: 'built-in'; blockId: string; label: string }
-): EditorDraft {
-    const block: TemplateBlock =
-        type === 'fields'
-            ? newFieldsBlock()
-            : type === 'table'
-              ? {
-                    id: newId('blk'),
-                    type: 'table',
-                    minRows: 0,
-                    maxRows: 100,
-                    columns: [newTextField()],
-                }
-              : {
-                    id: newId('blk'),
-                    type: 'built-in',
-                    blockId: type.blockId,
-                };
-    return {
-        ...draft,
-        sections: draft.sections.map((section) =>
-            section.id === sectionId ? { ...section, blocks: [...section.blocks, block] } : section
-        ),
-    };
-}
-
-/** Adds a document-bound primitive placement for the given binding key (feature 005). */
-export function addPrimitive(
-    draft: EditorDraft,
-    sectionId: string,
-    bindingKey: string,
-    defaults?: { label?: string; compact?: boolean }
-): EditorDraft {
-    const block: TemplateBlock = {
-        id: newId('blk'),
-        type: 'primitive',
-        bindingKey,
-        compact: defaults?.compact ?? false,
-        ...(defaults?.label ? { label: defaults.label } : {}),
-    };
-    return {
-        ...draft,
-        sections: draft.sections.map((section) =>
-            section.id === sectionId ? { ...section, blocks: [...section.blocks, block] } : section
-        ),
-    };
-}
-
-export function setPrimitivePresets(
-    draft: EditorDraft,
-    sectionId: string,
-    blockId: string,
-    presets: PrimitivePreset[]
-): EditorDraft {
-    return {
-        ...draft,
-        sections: draft.sections.map((section) =>
-            section.id === sectionId
-                ? {
-                      ...section,
-                      blocks: section.blocks.map((block) =>
-                          block.id === blockId && block.type === 'primitive'
-                              ? { ...block, presets }
-                              : block
-                      ),
-                  }
-                : section
-        ),
-    };
-}
-
-export function setPrimitiveTrack(
-    draft: EditorDraft,
-    sectionId: string,
-    blockId: string,
-    track: PrimitiveTrackOverride | undefined
-): EditorDraft {
-    return {
-        ...draft,
-        sections: draft.sections.map((section) =>
-            section.id === sectionId
-                ? {
-                      ...section,
-                      blocks: section.blocks.map((block) =>
-                          block.id === blockId && block.type === 'primitive'
-                              ? { ...block, track }
-                              : block
-                      ),
-                  }
-                : section
-        ),
-    };
-}
-
-export function removeBlock(draft: EditorDraft, sectionId: string, blockId: string): EditorDraft {
-    return {
-        ...draft,
-        sections: draft.sections.map((section) =>
-            section.id === sectionId
-                ? { ...section, blocks: section.blocks.filter((block) => block.id !== blockId) }
-                : section
-        ),
-    };
-}
-
-export function moveBlock(
-    draft: EditorDraft,
-    sectionId: string,
-    blockId: string,
-    offset: -1 | 1
-): EditorDraft {
-    return {
-        ...draft,
-        sections: draft.sections.map((section) => {
-            if (section.id !== sectionId) return section;
-            const index = section.blocks.findIndex((block) => block.id === blockId);
-            return { ...section, blocks: move(section.blocks, index, offset) };
-        }),
-    };
-}
-
-export function updateBlock(
-    draft: EditorDraft,
-    sectionId: string,
-    blockId: string,
-    updates: BlockUpdates
-): EditorDraft {
-    return {
-        ...draft,
-        sections: draft.sections.map((section) =>
-            section.id === sectionId
-                ? {
-                      ...section,
-                      blocks: section.blocks.map((block) =>
-                          block.id === blockId ? ({ ...block, ...updates } as TemplateBlock) : block
-                      ),
-                  }
-                : section
-        ),
-    };
-}
-
-function mapBlockItems(
-    draft: EditorDraft,
-    blockId: string,
-    map: (fields: TemplateField[]) => TemplateField[]
-): EditorDraft {
-    return {
-        ...draft,
-        sections: draft.sections.map((section) => ({
-            ...section,
-            blocks: section.blocks.map((block) => {
-                if (block.id !== blockId) return block;
-                if (block.type === 'fields') return { ...block, fields: map([...block.fields]) };
-                if (block.type === 'table') return { ...block, columns: map([...block.columns]) };
-                return block;
-            }),
-        })),
-    };
-}
-
-export function addField(draft: EditorDraft, blockId: string): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) => [...items, newTextField()]);
-}
-
-export function removeField(draft: EditorDraft, blockId: string, fieldId: string): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        items.length <= 1 ? items : items.filter((field) => field.id !== fieldId)
+    return ok(
+        parentId === null
+            ? insertInto(draft, index, node)
+            : insertIntoContainer(draft, parentId, index, node)
     );
 }
 
-export function moveField(
+export function removeNode(draft: EditorDraft, nodeId: string): EditorDraft {
+    const location = locate(draft, nodeId);
+    if (!location) return draft;
+    return {
+        ...draft,
+        children: replaceAt(draft.children, location.parentId, nodeId, undefined),
+    };
+}
+
+/** Moves the whole subtree (ids and children intact); rejects self-subtree targets. */
+export function moveNode(
     draft: EditorDraft,
-    blockId: string,
-    fieldId: string,
-    offset: -1 | 1
-): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        move(
-            items,
-            items.findIndex((field) => field.id === fieldId),
-            offset
-        )
+    nodeId: string,
+    targetParentId: string | null,
+    targetIndex: number
+): DraftOpResult {
+    const location = locate(draft, nodeId);
+    if (!location) return fail('self-move');
+    if (targetParentId !== null) {
+        const node = location.parent![location.index]!;
+        if (containsNode(node, targetParentId)) return fail('self-move');
+    }
+    const node = location.parent![location.index]!;
+    const parentDepth = targetParentId === null ? 0 : locate(draft, targetParentId)?.depth;
+    if (parentDepth === undefined) return fail('self-move');
+    if (parentDepth + 1 + subtreeHeight(node) - 1 > TEMPLATE_LIMITS.maxDepth) {
+        return fail('depth', TEMPLATE_LIMITS.maxDepth, parentDepth + subtreeHeight(node));
+    }
+    const detached = {
+        ...draft,
+        children: replaceAt(draft.children, location.parentId, nodeId, undefined),
+    };
+    return ok(
+        targetParentId === null
+            ? insertInto(detached, targetIndex, node)
+            : insertIntoContainer(detached, targetParentId, targetIndex, node)
     );
 }
 
-/**
- * Draft mutations are lenient: they apply structural changes without running the save-time
- * schema, so transient states (a cleared label mid-keystroke) cannot crash the editor.
- * Integrity is enforced by `collectDraftIssues` (live feedback) and the save parse.
- */
-
-export function updateField(
-    draft: EditorDraft,
-    blockId: string,
-    fieldId: string,
-    updates: Partial<TemplateField>
-): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        items.map((field) =>
-            field.id === fieldId ? ({ ...field, ...updates } as TemplateField) : field
-        )
-    );
+export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpdates): EditorDraft {
+    const apply = (node: TemplateNode): TemplateNode => {
+        if (node.id !== nodeId) {
+            return isContainerNode(node) ? { ...node, children: node.children.map(apply) } : node;
+        }
+        const merged = { ...node, ...updates } as TemplateNode;
+        // Clearing optional strings normalizes to absent instead of empty strings.
+        for (const key of ['docsPath', 'valueKey', 'bindingKey', 'label', 'maxFrom'] as const) {
+            if (key in updates && (merged as Record<string, unknown>)[key] === '') {
+                delete (merged as Record<string, unknown>)[key];
+            }
+        }
+        return merged;
+    };
+    return { ...draft, children: draft.children.map(apply) };
 }
 
-/** Type-change defaults mirror the schema defaults without parsing the whole field. */
-function retypeField(field: TemplateField, type: TemplateField['type']): TemplateField {
+// ---------------------------------------------------------------------------
+// Field factories and field-scoped helpers (fields live anywhere in the tree).
+// ---------------------------------------------------------------------------
+
+function baseField(type: TemplateField['type'], label: string): TemplateField {
     const base = {
-        id: field.id,
-        label: field.label,
-        required: field.required,
+        id: newId('f'),
+        // Draft-safe: transient empty labels are allowed in the draft and flagged live.
+        label,
+        required: false,
         compact: false,
-        ...(field.description !== undefined ? { description: field.description } : {}),
-        ...(field.valueKey !== undefined ? { valueKey: field.valueKey } : {}),
     };
     switch (type) {
         case 'text':
@@ -514,6 +276,10 @@ function retypeField(field: TemplateField, type: TemplateField['type']): Templat
             return { ...base, type: 'number' };
         case 'toggle':
             return { ...base, type: 'toggle' };
+        case 'image':
+            return { ...base, type: 'image' };
+        case 'formula':
+            return { ...base, type: 'formula', formula: '' };
         case 'select':
             return {
                 ...base,
@@ -535,68 +301,397 @@ function retypeField(field: TemplateField, type: TemplateField['type']): Templat
     }
 }
 
-/** Changing the type resets type-specific settings so the field stays valid. */
-export function changeFieldType(
-    draft: EditorDraft,
-    blockId: string,
-    fieldId: string,
-    type: TemplateField['type']
+export function newField(type: TemplateField['type'], label?: string): TemplateField {
+    return baseField(type, label ?? '');
+}
+
+export function newSectionNode(): SectionNode {
+    return { id: newId('sec'), type: 'section', title: 'New section', children: [] };
+}
+
+export function newGroupNode(): GroupNode {
+    return {
+        id: newId('grp'),
+        type: 'group',
+        title: 'New group',
+        collapsible: false,
+        children: [],
+    };
+}
+
+export function newTableNode(): TableNode {
+    return {
+        id: newId('blk'),
+        type: 'table',
+        minRows: 0,
+        maxRows: 100,
+        columns: [newField('text', 'Column 1')],
+    };
+}
+
+export function newListNode(storage: { valueKey?: string; bindingKey?: string }): ListNode {
+    return {
+        id: newId('lst'),
+        type: 'list',
+        columns: 1,
+        ...(storage.valueKey ? { valueKey: storage.valueKey } : {}),
+        ...(storage.bindingKey ? { bindingKey: storage.bindingKey } : {}),
+    };
+}
+
+export function newPrimitiveNode(
+    bindingKey: string,
+    defaults?: { label?: string; compact?: boolean }
+): TemplateNode {
+    return {
+        id: newId('blk'),
+        type: 'primitive',
+        bindingKey,
+        compact: defaults?.compact ?? false,
+        ...(defaults?.label ? { label: defaults.label } : {}),
+    };
+}
+
+export function createEmptyDraft(documentKind: string): EditorDraft {
+    const section = newSectionNode();
+    section.children.push(newField('text', 'New field'));
+    return {
+        id: newId('tpl'),
+        name: '',
+        systemId: SystemIdSchema.parse('star-wars-wod'),
+        documentKind: documentKind as EditorDraft['documentKind'],
+        schemaVersion: TEMPLATE_SCHEMA_VERSION,
+        children: [section],
+    };
+}
+
+export function createDraftFromTemplate(
+    source: EditorDraft,
+    overrides: Partial<Pick<EditorDraft, 'id' | 'name'>> = {}
 ): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        items.map((field) => (field.id === fieldId ? retypeField(field, type) : field))
+    return structuredClone({ ...source, ...overrides });
+}
+
+// ---------------------------------------------------------------------------
+// Live draft integrity feedback.
+// ---------------------------------------------------------------------------
+
+export interface DraftIssue {
+    message: string;
+}
+
+export interface DraftIssueMessages {
+    emptyName: string;
+    emptyLabel: string;
+    duplicateId: string;
+    invalidKey: string;
+    limitReached: string;
+    invalidBounds: string;
+    invalidFormula: string;
+    unknownCoordinate: string;
+    circularDependency: string;
+}
+
+const IDENTIFIER_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+const MAX_KEY_LENGTH = 64;
+
+function isValidKey(key: string): boolean {
+    return key.length > 0 && key.length <= MAX_KEY_LENGTH && IDENTIFIER_PATTERN.test(key);
+}
+
+function interpolate(template: string, values: Record<string, string | number>): string {
+    return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
+}
+
+/**
+ * Live draft integrity feedback. Structural identifiers are generated, but the checks stay
+ * defensive (imports/edits could introduce collisions) alongside limits, bounds, and formula
+ * validation (parse errors, unknown coordinates, cycles — FR-14).
+ */
+export function collectDraftIssues(
+    draft: EditorDraft,
+    messages: DraftIssueMessages,
+    options: { numericCoordinates?: readonly string[] } = {}
+): DraftIssue[] {
+    const issues: DraftIssue[] = [];
+    if (draft.name.trim().length === 0) {
+        issues.push({ message: messages.emptyName });
+    }
+
+    for (const issue of collectTreeIssues(draft)) {
+        if (issue.code === 'depth') {
+            issues.push({
+                message: interpolate(messages.limitReached, {
+                    limit: issue.limit ?? 0,
+                    subject: 'nesting levels',
+                }),
+            });
+        } else if (issue.code === 'count') {
+            issues.push({
+                message: interpolate(messages.limitReached, {
+                    limit: issue.limit ?? 0,
+                    subject: 'elements',
+                }),
+            });
+        } else {
+            issues.push({ message: interpolate(messages.duplicateId, { id: issue.nodeId ?? '' }) });
+        }
+    }
+
+    const seenEffectiveKeys = new Set<string>();
+    const checkEffectiveKey = (key: string) => {
+        if (!isValidKey(key)) {
+            issues.push({ message: interpolate(messages.invalidKey, { id: key }) });
+            return;
+        }
+        if (seenEffectiveKeys.has(key)) {
+            issues.push({ message: interpolate(messages.duplicateId, { id: key }) });
+        }
+        seenEffectiveKeys.add(key);
+    };
+
+    const seenNodeIds = new Set<string>();
+    walkTemplateNodes(draft.children, (node) => {
+        if (seenNodeIds.has(node.id)) return;
+        seenNodeIds.add(node.id);
+        if (node.type === 'section' || node.type === 'group') {
+            if (node.title.trim().length === 0) issues.push({ message: messages.emptyLabel });
+        }
+        if (node.type === 'table') {
+            checkEffectiveKey(node.valueKey ?? node.id);
+            if (node.minRows > node.maxRows) issues.push({ message: messages.invalidBounds });
+        }
+        if (
+            node.type !== 'section' &&
+            node.type !== 'group' &&
+            node.type !== 'table' &&
+            node.type !== 'list' &&
+            node.type !== 'primitive'
+        ) {
+            if (node.label.trim().length === 0) issues.push({ message: messages.emptyLabel });
+            checkEffectiveKey(node.valueKey ?? node.id);
+            if (node.type === 'formula' && node.formula.trim().length > 0) {
+                const parsed = parseFormula(node.formula);
+                if (!parsed.ok) {
+                    issues.push({
+                        message: interpolate(messages.invalidFormula, { id: node.label }),
+                    });
+                } else if (options.numericCoordinates) {
+                    const known = new Set(options.numericCoordinates);
+                    const unknown = parsed.coords.filter(
+                        (coordinate: string) => !known.has(coordinate)
+                    );
+                    if (unknown.length > 0) {
+                        issues.push({
+                            message: interpolate(messages.unknownCoordinate, {
+                                id: unknown.join(', '),
+                            }),
+                        });
+                    }
+                }
+            }
+        }
+        if (node.type === 'select') {
+            const seenOptions = new Set<string>();
+            for (const option of node.options) {
+                if (seenOptions.has(option.id)) {
+                    issues.push({ message: interpolate(messages.duplicateId, { id: option.id }) });
+                }
+                seenOptions.add(option.id);
+            }
+        }
+        if (node.type === 'number' || node.type === 'rating' || node.type === 'resource') {
+            if (node.min !== undefined && node.max !== undefined && node.min > node.max) {
+                issues.push({ message: messages.invalidBounds });
+            }
+        }
+        if (
+            (node.type === 'rating' || node.type === 'number' || node.type === 'primitive') &&
+            node.maxFrom
+        ) {
+            const parsed = parseFormula(node.maxFrom);
+            if (!parsed.ok) {
+                issues.push({
+                    message: interpolate(messages.invalidFormula, { id: node.label ?? node.id }),
+                });
+            } else if (options.numericCoordinates) {
+                const known = new Set(options.numericCoordinates);
+                const unknown = parsed.coords.filter(
+                    (coordinate: string) => !known.has(coordinate)
+                );
+                if (unknown.length > 0) {
+                    issues.push({
+                        message: interpolate(messages.unknownCoordinate, {
+                            id: unknown.join(', '),
+                        }),
+                    });
+                }
+            }
+        }
+        if (node.type === 'list' && node.valueKey !== undefined) {
+            checkEffectiveKey(node.valueKey);
+        }
+    });
+
+    // Cycle detection across formula writers (FR-14; defense in depth at render separately).
+    const dependencies: FormulaDependencyEntry[] = collectFormulaDependencies(draft).map(
+        (source) => ({ id: source.id, writes: source.writes, reads: source.reads })
+    );
+    for (const cycle of detectDependencyCycles(dependencies)) {
+        issues.push({
+            message: interpolate(messages.circularDependency, { id: cycle.join(' → ') }),
+        });
+    }
+    return issues;
+}
+
+// ---------------------------------------------------------------------------
+// Field-scoped tree operations (a field may live anywhere; table columns likewise).
+// ---------------------------------------------------------------------------
+
+function mapTableColumns(
+    draft: EditorDraft,
+    tableId: string,
+    map: (columns: TemplateField[]) => TemplateField[]
+): EditorDraft {
+    const apply = (node: TemplateNode): TemplateNode => {
+        if (isContainerNode(node)) return { ...node, children: node.children.map(apply) };
+        if (node.type === 'table' && node.id === tableId) {
+            return { ...node, columns: map([...node.columns]) };
+        }
+        return node;
+    };
+    return { ...draft, children: draft.children.map(apply) };
+}
+
+export function addTableColumn(draft: EditorDraft, tableId: string): EditorDraft {
+    return mapTableColumns(draft, tableId, (columns) =>
+        columns.length >= TEMPLATE_LIMITS.tableColumnsMax
+            ? columns
+            : [...columns, newField('text', `Column ${columns.length + 1}`)]
     );
 }
 
-export function addOption(draft: EditorDraft, blockId: string, fieldId: string): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        items.map((field) => {
-            if (field.id !== fieldId || field.type !== 'select') return field;
-            if (field.options.length >= TEMPLATE_LIMITS.optionsPerField) return field;
-            return {
-                ...field,
-                options: [
-                    ...field.options,
-                    { id: newId('opt'), label: `Option ${field.options.length + 1}` },
-                ],
-            };
-        })
+export function removeTableColumn(
+    draft: EditorDraft,
+    tableId: string,
+    columnId: string
+): EditorDraft {
+    return mapTableColumns(draft, tableId, (columns) =>
+        columns.length <= 1 ? columns : columns.filter((column) => column.id !== columnId)
     );
+}
+
+function mapFieldItems(
+    draft: EditorDraft,
+    fieldId: string,
+    map: (field: TemplateField) => TemplateField
+): EditorDraft {
+    const apply = (node: TemplateNode): TemplateNode => {
+        if (isContainerNode(node)) return { ...node, children: node.children.map(apply) };
+        if (node.type === 'table') {
+            return {
+                ...node,
+                columns: node.columns.map((column) =>
+                    column.id === fieldId ? map(column) : column
+                ),
+            };
+        }
+        if (
+            node.type === 'text' ||
+            node.type === 'number' ||
+            node.type === 'toggle' ||
+            node.type === 'image' ||
+            node.type === 'formula' ||
+            node.type === 'select' ||
+            node.type === 'rating' ||
+            node.type === 'resource' ||
+            node.type === 'reference'
+        ) {
+            return node.id === fieldId ? map(node) : node;
+        }
+        return node;
+    };
+    return { ...draft, children: draft.children.map(apply) };
+}
+
+export function addFieldToContainer(
+    draft: EditorDraft,
+    parentId: string | null,
+    type: TemplateField['type'],
+    label?: string
+): DraftOpResult {
+    return insertNode(draft, parentId, Number.MAX_SAFE_INTEGER, newField(type, label));
+}
+
+export function removeFieldNode(draft: EditorDraft, fieldId: string): EditorDraft {
+    return removeNode(draft, fieldId);
+}
+
+/** Changing the type resets type-specific settings so the field stays valid. */
+function retypeField(field: TemplateField, type: TemplateField['type']): TemplateField {
+    const next = baseField(type, field.label);
+    return {
+        ...next,
+        id: field.id,
+        required: field.required,
+        ...(field.valueKey !== undefined ? { valueKey: field.valueKey } : {}),
+    };
+}
+
+export function changeFieldType(
+    draft: EditorDraft,
+    fieldId: string,
+    type: TemplateField['type']
+): EditorDraft {
+    return mapFieldItems(draft, fieldId, (field) => retypeField(field, type));
+}
+
+export function updateField(
+    draft: EditorDraft,
+    fieldId: string,
+    updates: Partial<TemplateField>
+): EditorDraft {
+    return mapFieldItems(draft, fieldId, (field) => ({ ...field, ...updates }) as TemplateField);
+}
+
+export function addOption(draft: EditorDraft, fieldId: string): EditorDraft {
+    return mapFieldItems(draft, fieldId, (field) => {
+        if (field.type !== 'select' || field.options.length >= TEMPLATE_LIMITS.optionsPerField) {
+            return field;
+        }
+        return {
+            ...field,
+            options: [
+                ...field.options,
+                { id: newId('opt'), label: `Option ${field.options.length + 1}` },
+            ],
+        };
+    });
 }
 
 export function updateOption(
     draft: EditorDraft,
-    blockId: string,
     fieldId: string,
     optionId: string,
     label: string
 ): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        items.map((field) => {
-            if (field.id !== fieldId || field.type !== 'select') return field;
-            return {
-                ...field,
-                options: field.options.map((option) =>
-                    option.id === optionId ? { ...option, label } : option
-                ),
-            };
-        })
-    );
+    return mapFieldItems(draft, fieldId, (field) => {
+        if (field.type !== 'select') return field;
+        return {
+            ...field,
+            options: field.options.map((option) =>
+                option.id === optionId ? { ...option, label } : option
+            ),
+        };
+    });
 }
 
-export function removeOption(
-    draft: EditorDraft,
-    blockId: string,
-    fieldId: string,
-    optionId: string
-): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        items.map((field) => {
-            if (field.id !== fieldId || field.type !== 'select' || field.options.length <= 1) {
-                return field;
-            }
-            return { ...field, options: field.options.filter((option) => option.id !== optionId) };
-        })
-    );
+export function removeOption(draft: EditorDraft, fieldId: string, optionId: string): EditorDraft {
+    return mapFieldItems(draft, fieldId, (field) => {
+        if (field.type !== 'select' || field.options.length <= 1) return field;
+        return { ...field, options: field.options.filter((option) => option.id !== optionId) };
+    });
 }
 
 export function renameDraft(draft: EditorDraft, name: string): EditorDraft {
@@ -611,50 +706,61 @@ export function setDraftKind(draft: EditorDraft, documentKind: string): EditorDr
     return { ...draft, documentKind: documentKind as EditorDraft['documentKind'] };
 }
 
-/** Attaches (or re-points) a catalog binding on a select field; enforces single choice. */
-export function attachCatalog(
-    draft: EditorDraft,
-    blockId: string,
-    fieldId: string,
-    catalogId: string
-): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        items.map((field) => {
-            if (field.id !== fieldId || field.type !== 'select') return field;
-            return {
-                ...field,
-                multiple: false,
-                binding: { catalogId, fills: field.binding?.fills ?? {} },
-            } as TemplateField;
-        })
+/**
+ * The unified numeric coordinate space (contracts/formula-grammar.md §2): system bindings
+ * (traits, pool parts) plus this template's own numeric fields — one undifferentiated list
+ * for formula/maxFrom pickers and validation; the system/custom split stays under the hood.
+ */
+export function listNumericCoordinateOptions(
+    draft: EditorDraft
+): ReadonlyArray<{ coordinate: string; label: string }> {
+    const options = [...listNumericCoordinates(draft.systemId, draft.documentKind)].map(
+        (entry) => ({ ...entry })
     );
+    walkTemplateNodes(draft.children, (node) => {
+        if (node.type === 'number' || node.type === 'rating') {
+            options.push({ coordinate: fieldValueKey(node), label: node.label });
+        } else if (node.type === 'resource') {
+            const key = fieldValueKey(node);
+            options.push({ coordinate: `${key}.current`, label: `${node.label} (current)` });
+            options.push({ coordinate: `${key}.max`, label: `${node.label} (max)` });
+        }
+    });
+    return options;
 }
 
-export function detachCatalog(draft: EditorDraft, blockId: string, fieldId: string): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        items.map((field) => {
-            if (field.id !== fieldId || field.type !== 'select') return field;
-            const { binding: _removed, ...withoutBinding } = field;
-            void _removed;
-            return withoutBinding as TemplateField;
-        })
-    );
+/** Attaches (or re-points) a catalog binding on a select field; enforces single choice. */
+export function attachCatalog(draft: EditorDraft, fieldId: string, catalogId: string): EditorDraft {
+    return mapFieldItems(draft, fieldId, (field) => {
+        if (field.type !== 'select') return field;
+        return {
+            ...field,
+            multiple: false,
+            binding: { catalogId, fills: field.binding?.fills ?? {} },
+        } as TemplateField;
+    });
+}
+
+export function detachCatalog(draft: EditorDraft, fieldId: string): EditorDraft {
+    return mapFieldItems(draft, fieldId, (field) => {
+        if (field.type !== 'select') return field;
+        const { binding: _removed, ...withoutBinding } = field;
+        void _removed;
+        return withoutBinding as TemplateField;
+    });
 }
 
 export function updateFill(
     draft: EditorDraft,
-    blockId: string,
     fieldId: string,
     detailKey: string,
     rule: { targetFieldId: string; disabled?: boolean } | undefined
 ): EditorDraft {
-    return mapBlockItems(draft, blockId, (items) =>
-        items.map((field) => {
-            if (field.id !== fieldId || field.type !== 'select' || !field.binding) return field;
-            const fills = { ...field.binding.fills };
-            if (rule) fills[detailKey] = rule;
-            else delete fills[detailKey];
-            return { ...field, binding: { ...field.binding, fills } } as TemplateField;
-        })
-    );
+    return mapFieldItems(draft, fieldId, (field) => {
+        if (field.type !== 'select' || !field.binding) return field;
+        const fills = { ...field.binding.fills };
+        if (rule) fills[detailKey] = rule;
+        else delete fills[detailKey];
+        return { ...field, binding: { ...field.binding, fills } } as TemplateField;
+    });
 }

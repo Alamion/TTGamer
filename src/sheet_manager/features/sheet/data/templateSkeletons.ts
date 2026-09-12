@@ -1,6 +1,10 @@
 import { systemRegistry } from '../../../systems';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
-import { type CustomTemplate, CustomTemplateSchema } from '../../../types/template';
+import {
+    type CustomTemplate,
+    CustomTemplateSchema,
+    TEMPLATE_SCHEMA_VERSION,
+} from '../../../types/template';
 
 /**
  * Starter skeletons offered as "copy of a built-in page layout" bases. Each skeleton mirrors the
@@ -42,17 +46,20 @@ const fallbackSkeleton = CustomTemplateSchema.parse({
     name: 'Blank page skeleton',
     systemId: SystemIdSchema.parse('star-wars-wod'),
     documentKind: DocumentKindSchema.parse('character'),
-    schemaVersion: 1,
-    sections: [
+    schemaVersion: TEMPLATE_SCHEMA_VERSION,
+    children: [
         {
             id: 'identity',
+            type: 'section',
             title: 'Identity',
-            blocks: [
+            children: [
                 {
-                    id: 'identity-fields',
-                    type: 'fields',
-                    columns: 2,
-                    fields: [{ id: 'name', label: 'Name', type: 'text', required: true }],
+                    id: 'name',
+                    type: 'text',
+                    label: 'Name',
+                    required: true,
+                    compact: false,
+                    multiline: false,
                 },
             ],
         },

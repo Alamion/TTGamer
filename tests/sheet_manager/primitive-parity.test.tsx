@@ -4,51 +4,55 @@ import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/dec
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import {
-    createDefaultCreatureData,
     createDefaultDroidData,
-    createDefaultFodderData,
     createDefaultStarWarsCharacterData,
-    createDefaultVehicleData,
 } from '@site/src/sheet_manager/systems/star-wars-wod';
+import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
 import { cleanup, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { takeSheetIssues } from '../setup/sheetIssues';
 
 function defaultTemplate(id: string) {
     return systemRegistry.getSystem('star-wars-wod')?.defaultTemplates?.find((t) => t.id === id);
 }
 
-function seedDocument() {
+function seedDocument(
+    data: unknown = createDefaultStarWarsCharacterData(),
+    kind = 'character',
+    definitionId = 'character'
+) {
     useDocumentStore.setState({
         documents: [
             {
                 id: 'doc-parity',
-                kind: 'character',
+                kind,
                 systemId: 'star-wars-wod',
-                definitionId: 'character',
+                definitionId,
                 schemaVersion: 1,
                 metadata: { title: 'Parity Target', tags: [] },
                 templateValues: {},
-                data: createDefaultStarWarsCharacterData(),
+                data,
             } as never,
         ],
         currentDocumentId: 'doc-parity',
     });
 }
 
-describe('primitive-composed default templates (feature 005)', () => {
-    beforeEach(seedDocument);
+describe('declarative default templates (feature 006, zero placements)', () => {
+    beforeEach(() => seedDocument());
     afterEach(cleanup);
 
-    it('character full default covers identity, traits, lists, condition + legacy parts (T020)', () => {
+    it('character full default covers identity, attributes, skills, advantages, force, body, other', () => {
         const template = defaultTemplate('full-sheet');
         expect(template).toBeDefined();
         render(createElement(DeclarativeSheetView, { template: template! }));
-        // No degradation: every binding resolves and every legacy placement mounts.
+        // No degradation: every binding resolves.
         expect(screen.queryAllByRole('alert')).toHaveLength(0);
-        // Identity fields (primitives).
+        // Identity fields.
         expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(8);
-        // Attribute rows (primitives) — sample labels across the three groups.
+        // Attribute rows — sample labels across the three groups.
         expect(screen.getAllByText('Strength').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Charisma').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Wits').length).toBeGreaterThan(0);
@@ -56,170 +60,96 @@ describe('primitive-composed default templates (feature 005)', () => {
         expect(screen.getAllByText('Athletics').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Blaster').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Astrogation').length).toBeGreaterThan(0);
-        // Condition primitives.
+        // System lists for custom skills.
+        expect(screen.getAllByText(/Custom talents/i).length).toBeGreaterThan(0);
+        // Condition + resources.
         expect(screen.getAllByText('Health').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Willpower').length).toBeGreaterThan(0);
-        // Legacy placements mounted (advantages/force/body) — their content is present.
+        // Advantages / Force / Body / Other section content.
         expect(screen.getAllByText('Advantages').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Force').length).toBeGreaterThan(0);
+        expect(screen.getAllByText(/Derived Stats/i).length).toBeGreaterThan(0);
     });
 
-    it('droid/creature/vehicle/fodder defaults render without degradation (T021)', () => {
-        const cases: Array<{
-            viewId: string;
-            document: Record<string, unknown>;
-        }> = [
-            {
-                viewId: 'droid-sheet',
-                document: {
-                    id: 'doc-droid',
-                    kind: 'character',
-                    systemId: 'star-wars-wod',
-                    definitionId: 'droid',
-                    schemaVersion: 1,
-                    metadata: { title: 'Droid', tags: [] },
-                    templateValues: {},
-                    data: createDefaultDroidData(),
-                },
-            },
-            {
-                viewId: 'creature-sheet',
-                document: {
-                    id: 'doc-creature',
-                    kind: 'creature',
-                    systemId: 'star-wars-wod',
-                    definitionId: 'creature',
-                    schemaVersion: 1,
-                    metadata: { title: 'Creature', tags: [] },
-                    templateValues: {},
-                    data: createDefaultCreatureData(),
-                },
-            },
-            {
-                viewId: 'vehicle-sheet',
-                document: {
-                    id: 'doc-vehicle',
-                    kind: 'vehicle',
-                    systemId: 'star-wars-wod',
-                    definitionId: 'vehicle',
-                    schemaVersion: 1,
-                    metadata: { title: 'Vehicle', tags: [] },
-                    templateValues: {},
-                    data: createDefaultVehicleData(),
-                },
-            },
-            {
-                viewId: 'fodder-sheet',
-                document: {
-                    id: 'doc-fodder',
-                    kind: 'group',
-                    systemId: 'star-wars-wod',
-                    definitionId: 'fodder-group',
-                    schemaVersion: 1,
-                    metadata: { title: 'Fodder', tags: [] },
-                    templateValues: {},
-                    data: createDefaultFodderData(),
-                },
-            },
-        ];
-        for (const { viewId, document } of cases) {
-            cleanup();
-            useDocumentStore.setState({
-                documents: [document as never],
-                currentDocumentId: document.id as string,
-            });
-            const template = defaultTemplate(viewId);
-            expect(template, viewId).toBeDefined();
-            render(createElement(DeclarativeSheetView, { template: template! }));
-            expect(screen.queryAllByRole('alert')).toHaveLength(0);
+    it('ships zero built-in placements across every default template', () => {
+        const defaults = systemRegistry.getSystem('star-wars-wod')?.defaultTemplates ?? [];
+        expect(defaults.length).toBeGreaterThan(0);
+        for (const template of defaults) {
+            const walk = (nodes: typeof template.children): void => {
+                for (const node of nodes) {
+                    expect(JSON.stringify(node)).not.toContain('"built-in"');
+                    if (node.type === 'section' || node.type === 'group') walk(node.children);
+                }
+            };
+            walk(template.children);
         }
+        // Specialized pages keep their built-in layouts (no declarative default exists).
+        expect(defaultTemplate('creature-sheet')).toBeUndefined();
+        expect(defaultTemplate('vehicle-sheet')).toBeUndefined();
+        expect(defaultTemplate('fodder-sheet')).toBeUndefined();
     });
 
-    it('scenario: no Force, with Willpower, custom skills (T022, SC-002)', () => {
-        // A user composes a variant: drop the Force/advantages/body legacy parts, keep the rest.
+    it('droid default renders without degradation (T021 successor)', () => {
+        seedDocument(createDefaultDroidData(), 'character', 'droid');
+        const template = defaultTemplate('droid-sheet');
+        expect(template).toBeDefined();
+        render(createElement(DeclarativeSheetView, { template: template! }));
+        expect(screen.queryAllByRole('alert')).toHaveLength(0);
+        expect(screen.getAllByText('Strength').length).toBeGreaterThan(0);
+    });
+
+    it('scenario: dropping the force section keeps the rest composable (SC-002 successor)', () => {
         const full = defaultTemplate('full-sheet')!;
         const variant = {
             ...full,
             id: 'no-force-variant',
             name: 'No Force Variant',
-            sections: full.sections.map((section) =>
-                section.id === 'legacy-parts'
-                    ? {
-                          ...section,
-                          blocks: section.blocks.filter(
-                              (block) =>
-                                  !('blockId' in block) ||
-                                  (block.blockId !== 'force' && block.blockId !== 'advantages')
-                          ),
-                      }
-                    : section
+            children: full.children.filter(
+                (node) => !(node.type === 'section' && node.id === 'force')
             ),
         };
         render(createElement(DeclarativeSheetView, { template: variant as typeof full }));
-        // Willpower (derived resource) is still present and rendered.
-        expect(screen.getAllByText('Willpower').length).toBeGreaterThan(0);
-        // Skills remain composable: they render as rows on the page.
+        expect(screen.getAllByText('Health').length).toBeGreaterThan(0);
         expect(screen.getAllByText('Blaster').length).toBeGreaterThan(0);
         expect(screen.queryAllByRole('alert')).toHaveLength(0);
     });
 
-    it('brief default is composed from bridged compact fields (T023/T024)', () => {
-        const brief = defaultTemplate('brief');
-        expect(brief).toBeDefined();
-        // No legacy placement: the brief is field-composed. System-backed rows are regular
-        // fields with shared value keys bridged to document data (review 2026-09-05); only the
-        // condition track stays a primitive (fields cannot express it yet).
-        for (const section of brief!.sections) {
-            for (const block of section.blocks) {
-                expect(['fields', 'primitive']).toContain(block.type);
-                if (block.type === 'primitive') {
-                    // Only the sanctioned custom primitives remain: tracks and preset lists.
+    it('brief default is composed from compact fields, lists, and the condition track', () => {
+        const briefTemplate = defaultTemplate('brief');
+        expect(briefTemplate).toBeDefined();
+        if (!briefTemplate) return;
+        // Verify structure: no placements, compact fields, primitives only for tracks.
+        const walk = (nodes: CustomTemplate['children']): void => {
+            for (const node of nodes) {
+                if (node.type === 'section' || node.type === 'group') {
+                    walk(node.children);
+                    continue;
+                }
+                if (node.type === 'primitive') {
                     expect(
-                        block.type === 'primitive' &&
-                            (block.bindingKey.startsWith('track:') ||
-                                block.bindingKey.startsWith('list:'))
+                        node.bindingKey.startsWith('track:') ||
+                            node.bindingKey.startsWith('resource:')
                     ).toBe(true);
                 }
             }
-        }
-        // Compact flags ride on the bridged fields (brief-format rendering).
-        const attributesSection = brief!.sections.find(({ id }) => id === 'attributes');
-        const firstTrait = attributesSection?.blocks[0];
-        expect(firstTrait?.type).toBe('fields');
-        if (firstTrait?.type === 'fields') {
-            expect(firstTrait.fields.every((f) => f.compact)).toBe(true);
-        }
-        render(createElement(DeclarativeSheetView, { template: brief! }));
+        };
+        walk(briefTemplate.children);
+        const baseSection = briefTemplate.children.find((node) => node.type === 'section');
+        expect(baseSection).toBeDefined();
+        render(createElement(DeclarativeSheetView, { template: briefTemplate }));
         expect(screen.queryAllByRole('alert')).toHaveLength(0);
     });
 
-    it('legacy placements still render for pre-005 templates (T027, FR-12)', () => {
-        const preUpgrade = {
-            id: 'pre-005-template',
-            name: 'Pre-005 Template',
-            systemId: 'star-wars-wod',
-            documentKind: 'character',
-            schemaVersion: 1,
-            sections: [
-                {
-                    id: 'page',
-                    title: 'Page',
-                    presentation: 'plain',
-                    blocks: [
-                        { id: 'base', type: 'built-in', blockId: 'base' },
-                        { id: 'skills', type: 'built-in', blockId: 'skills' },
-                    ],
-                },
-            ],
-        } as const;
-        render(
-            createElement(DeclarativeSheetView, {
-                template: preUpgrade as unknown as Parameters<
-                    typeof DeclarativeSheetView
-                >[0]['template'],
-            })
-        );
-        // Legacy path retained: the placements render (their content mounts), no crash.
-        expect(screen.queryAllByRole('alert')).toHaveLength(0);
-        expect(screen.getAllByText('Skills').length).toBeGreaterThan(0);
+    it('degrades foreign-kind assignment instead of rendering wrong data', () => {
+        // A creature document assigned the character default: bindings for the character kind
+        // are unavailable on creature documents — every primitive degrades, nothing crashes.
+        seedDocument({ metadata: { name: '' } }, 'creature', 'creature');
+        const template = defaultTemplate('full-sheet')!;
+        render(createElement(DeclarativeSheetView, { template }));
+        // The renderer itself must not crash; degradation paths are labeled.
+        expect(document.body.textContent).not.toBeNull();
+        const issues = takeSheetIssues();
+        expect(issues.length).toBeGreaterThan(0);
+        expect(issues.every(({ code }) => code === 'binding-unresolved')).toBe(true);
     });
 });

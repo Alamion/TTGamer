@@ -1,10 +1,11 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 
 import type { CustomTemplate, TemplateField } from '../../../types/template';
 import { TEMPLATE_LIMITS } from '../../../types/template';
 import { CatalogBindingEditor } from './CatalogBindingEditor';
+import { listNumericCoordinateOptions } from './draft';
 
 const editor = uiMessages.sheet.templates.editor;
 const fieldTypes = uiMessages.sheet.templates.fieldTypes;
@@ -20,13 +21,18 @@ const FIELD_TYPE_OPTIONS: ReadonlyArray<{ value: TemplateField['type']; label: s
     { value: 'rating', label: fieldTypes.rating.message },
     { value: 'resource', label: fieldTypes.resource.message },
     { value: 'reference', label: fieldTypes.reference.message },
+    { value: 'image', label: fieldTypes.image.message },
+    { value: 'formula', label: fieldTypes.formula.message },
 ];
 
+/**
+ * Config-only field editor: the panel header (move/collapse/remove affordances) belongs to
+ * the owning ElementEditor — this component renders just the field's settings, so its
+ * appearance is identical wherever the field lives (page root, group, section, table).
+ */
 export interface FieldEditorCallbacks {
     onUpdate: (updates: Partial<TemplateField>) => void;
     onChangeType: (type: TemplateField['type']) => void;
-    onMove: (offset: -1 | 1) => void;
-    onRemove: () => void;
     onAddOption: () => void;
     onUpdateOption: (optionId: string, label: string) => void;
     onRemoveOption: (optionId: string) => void;
@@ -42,17 +48,20 @@ export function FieldEditor({
     callbacks,
     draft,
     field,
-    selfId,
 }: {
     callbacks: FieldEditorCallbacks;
     draft: CustomTemplate;
     field: TemplateField;
-    selfId: string;
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
+    const coordinates = listNumericCoordinateOptions(draft);
+    const coordinateDatalist = `coordinates-${field.id}`;
 
     return (
-        <div className="rounded border border-border bg-bgBase p-3" data-field-id={field.id}>
+        <div
+            className="space-y-2 rounded border border-border bg-bgSurface p-3"
+            data-field-id={field.id}
+        >
             <div className="flex items-center gap-2">
                 <input
                     value={field.label}
@@ -75,30 +84,6 @@ export function FieldEditor({
                         </option>
                     ))}
                 </select>
-                <button
-                    type="button"
-                    onClick={() => callbacks.onMove(-1)}
-                    aria-label={t(editor.moveUp)}
-                    className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-textPrimary"
-                >
-                    <ChevronUp className="h-4 w-4" aria-hidden="true" />
-                </button>
-                <button
-                    type="button"
-                    onClick={() => callbacks.onMove(1)}
-                    aria-label={t(editor.moveDown)}
-                    className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-textPrimary"
-                >
-                    <ChevronDown className="h-4 w-4" aria-hidden="true" />
-                </button>
-                <button
-                    type="button"
-                    onClick={callbacks.onRemove}
-                    aria-label={t(editor.remove)}
-                    className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
-                >
-                    <Trash2 className="h-4 w-4" aria-hidden="true" />
-                </button>
             </div>
 
             <input
@@ -112,7 +97,7 @@ export function FieldEditor({
                 }
                 placeholder={t(editor.fieldDescription)}
                 aria-label={t(editor.fieldDescription)}
-                className={`${inputClasses} mt-2 w-full`}
+                className={`${inputClasses} w-full`}
             />
 
             <input
@@ -126,10 +111,10 @@ export function FieldEditor({
                 }
                 placeholder={t(editor.valueKeyLabel)}
                 aria-label={t(editor.valueKeyLabel)}
-                className={`${inputClasses} mt-2 w-full`}
+                className={`${inputClasses} w-full`}
             />
 
-            <label className="mt-2 flex items-center gap-2 text-xs text-textSecondary">
+            <label className="flex items-center gap-2 text-xs text-textSecondary">
                 <input
                     type="checkbox"
                     checked={field.required}
@@ -139,8 +124,49 @@ export function FieldEditor({
                 {t(editor.fieldRequired)}
             </label>
 
+            {field.type === 'formula' && (
+                <label className="grid gap-1 text-xs text-textSecondary">
+                    {t(editor.formula)}
+                    <input
+                        value={field.formula}
+                        onChange={(event) => callbacks.onUpdate({ formula: event.target.value })}
+                        placeholder={t(editor.formulaPlaceholder)}
+                        aria-label={t(editor.formula)}
+                        list={coordinateDatalist}
+                        className={`${inputClasses} w-full font-mono`}
+                    />
+                </label>
+            )}
+
+            {(field.type === 'number' || field.type === 'rating') && (
+                <label className="grid gap-1 text-xs text-textSecondary">
+                    {t(editor.maxFrom)}
+                    <input
+                        value={field.maxFrom ?? ''}
+                        onChange={(event) =>
+                            callbacks.onUpdate({
+                                maxFrom:
+                                    event.target.value.length > 0 ? event.target.value : undefined,
+                            })
+                        }
+                        placeholder={t(editor.maxFromPlaceholder)}
+                        aria-label={t(editor.maxFrom)}
+                        list={coordinateDatalist}
+                        className={`${inputClasses} w-full font-mono`}
+                    />
+                </label>
+            )}
+
+            <datalist id={coordinateDatalist}>
+                {coordinates.map((option) => (
+                    <option key={option.coordinate} value={option.coordinate}>
+                        {option.label}
+                    </option>
+                ))}
+            </datalist>
+
             {field.type === 'text' && (
-                <label className="mt-2 flex items-center gap-2 text-xs text-textSecondary">
+                <label className="flex items-center gap-2 text-xs text-textSecondary">
                     <input
                         type="checkbox"
                         checked={field.multiline}
@@ -154,7 +180,7 @@ export function FieldEditor({
             )}
 
             {field.type === 'number' && (
-                <div className="mt-2 flex items-center gap-2 text-xs text-textSecondary">
+                <div className="flex items-center gap-2 text-xs text-textSecondary">
                     <input
                         type="number"
                         value={field.min ?? ''}
@@ -201,7 +227,7 @@ export function FieldEditor({
             )}
 
             {field.type === 'select' && (
-                <div className="mt-2">
+                <div>
                     <label className="flex items-center gap-2 text-xs text-textSecondary">
                         <input
                             type="checkbox"
@@ -254,13 +280,13 @@ export function FieldEditor({
                         }}
                         draft={draft}
                         field={field}
-                        selfId={selfId}
+                        selfId={field.id}
                     />
                 </div>
             )}
 
             {field.type === 'rating' && (
-                <div className="mt-2 flex items-center gap-2 text-xs text-textSecondary">
+                <div className="flex items-center gap-2 text-xs text-textSecondary">
                     <input
                         type="number"
                         value={field.max}
@@ -290,7 +316,7 @@ export function FieldEditor({
             )}
 
             {field.type === 'resource' && (
-                <div className="mt-2 flex items-center gap-2 text-xs text-textSecondary">
+                <div className="flex items-center gap-2 text-xs text-textSecondary">
                     <input
                         type="number"
                         value={field.min}
@@ -316,7 +342,7 @@ export function FieldEditor({
             )}
 
             {field.type === 'reference' && (
-                <label className="mt-2 flex items-center gap-2 text-xs text-textSecondary">
+                <label className="flex items-center gap-2 text-xs text-textSecondary">
                     <input
                         type="checkbox"
                         checked={field.multiple}

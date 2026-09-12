@@ -47,8 +47,10 @@ updates)` for writes. The droid capability maps persisted `damage` ↔ `health` 
 
 `store/documentStore.ts` — Zustand 5 + `persist` (async localForage storage, IndexedDB):
 
-- Storage key `'universal-character-storage'`, `version: 1`, `migrate: migrateDocumentStoreState`.
+- Storage key `'universal-character-storage'`, `version: 3`, `migrate: migrateDocumentStoreState`.
 - State: `documents[]`, `currentDocumentId`, bounded `recoveryEntries` (max 100).
+- Envelopes also carry the flat `templateValues` bag; templates, defaults, formulas, and the
+  template write path are documented in `.agents/skills/sheet-templates/SKILL.md`.
 - `migrateDocumentStoreState()` accepts both envelope collections and legacy
   `{ characters: [...] }` shapes; legacy characters are wrapped via `wrapLegacyCharacter()`
   (droids map `inventory → builtInEquipment`, `health → damage`); failed entries land in
@@ -61,9 +63,10 @@ updates)` for writes. The droid capability maps persisted `damage` ↔ `health` 
 
 1. `features/sheet/CharacterSheet.tsx` renders `SheetWorkspace` (shell: toolbar, create/manage
    dialogs, import/export, view select) around `CurrentDocumentSheet`.
-2. `CurrentDocumentSheet` resolves the view via `resolveDocumentView()` (honors
-   `metadata.preferredViewId` and definition-owned `legacyIds`, e.g. `npc-card → brief`) and
-   maps view blocks through `registry/builtInBlockRegistry.ts`.
+2. `CurrentDocumentSheet` renders an assigned custom template, else the effective default
+   template for the view (`resolveEffectiveTemplate`), else the view's built-in layout via
+   `resolveDocumentView()` (honors `legacyIds`, e.g. `npc-card → brief`) and
+   `registry/builtInBlockRegistry.ts`. Details: `sheet-templates` skill.
 3. Blocks (`features/sheet/blocks`, `features/sheet/body`) read through `useCharacter()`
    (`hooks/useCharacter.ts`): viewer context wins, else the store document read through the
    definition's `capabilities.character.read()`; updates are ignored in read-only context.

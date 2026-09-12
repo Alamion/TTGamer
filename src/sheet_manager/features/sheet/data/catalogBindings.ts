@@ -1,6 +1,7 @@
 import { localizeCatalogEntry } from '@site/src/data/localizeCatalogEntry';
 
 import { ARMOR } from '../../../../data/armorData';
+import { BACKGROUNDS } from '../../../../data/backgroundsData';
 import { FORCE_POWERS } from '../../../../data/forcePowersData';
 import { FORCE_SKILLS } from '../../../../data/forceSkills';
 import { MELEE_WEAPONS } from '../../../../data/meleeWeaponsData';
@@ -124,6 +125,12 @@ export const MERITS_FLAWS_BINDING = defineCatalog('merits-flaws', MERITS_FLAWS, 
     textDetail('description', 'Description'),
 ]);
 
+export const BACKGROUNDS_BINDING = defineCatalog('backgrounds', BACKGROUNDS, [
+    textDetail('name', 'Name'),
+    textDetail('shortDescription', 'Summary'),
+    textDetail('description', 'Description'),
+]);
+
 interface AnyCatalogEntry {
     id: string;
     name: string;
@@ -138,6 +145,7 @@ const CATALOG_LIST: readonly CatalogBindingEntry<AnyCatalogEntry>[] = [
     FORCE_SKILLS_BINDING as unknown as CatalogBindingEntry<AnyCatalogEntry>,
     SPECIES_BINDING as unknown as CatalogBindingEntry<AnyCatalogEntry>,
     MERITS_FLAWS_BINDING as unknown as CatalogBindingEntry<AnyCatalogEntry>,
+    BACKGROUNDS_BINDING as unknown as CatalogBindingEntry<AnyCatalogEntry>,
 ];
 
 export const CATALOG_BINDINGS: ReadonlyMap<string, CatalogBindingEntry<AnyCatalogEntry>> = new Map(

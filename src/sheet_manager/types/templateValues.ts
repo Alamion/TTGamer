@@ -11,6 +11,7 @@ export const TEMPLATE_VALUES_LIMITS = {
     templatesPerDocument: 100,
     entriesPerTemplate: 2_000,
     stringMaxLength: 10_000,
+    listEntriesMax: 1_000,
 } as const;
 
 const boundedString = z.string().max(TEMPLATE_VALUES_LIMITS.stringMaxLength);
@@ -32,6 +33,34 @@ export const TemplateResourceValueSchema = z
 
 export type TemplateResourceValue = z.infer<typeof TemplateResourceValueSchema>;
 
+/** One custom-list entry (feature 006): stable id, name, optional rating. */
+export const TemplateListEntrySchema = z.object({
+    id: z.string().min(1).max(64),
+    label: z.string().min(1).max(120),
+    value: z.number().int().min(0).max(20).optional(),
+});
+
+export type TemplateListEntry = z.infer<typeof TemplateListEntrySchema>;
+
+export const TemplateListValueSchema = z
+    .array(TemplateListEntrySchema)
+    .max(TEMPLATE_VALUES_LIMITS.listEntriesMax);
+
+export type TemplateListValue = z.infer<typeof TemplateListValueSchema>;
+
+/**
+ * Per-document image value (feature 006): device-local blob reference (IndexedDB, excluded
+ * from JSON exports) or a secure remote URL. Envelope layer is permissive; strict source
+ * rules (HTTPS-only URLs) apply at the write path and render.
+ */
+export const TemplateImageValueSchema = z.union([
+    z.object({ source: z.literal('device'), blobId: z.string().min(1).max(128) }).strict(),
+    // URL sources must be HTTPS (site-relative resources stay portrait-owned, not template data).
+    z.object({ source: z.literal('url'), url: z.string().url().startsWith('https://') }).strict(),
+]);
+
+export type TemplateImageValue = z.infer<typeof TemplateImageValueSchema>;
+
 /** One table cell: a primitive or a resource value. */
 export const TemplateTableCellSchema = z.union([PrimitiveValueSchema, TemplateResourceValueSchema]);
 
@@ -51,7 +80,13 @@ export type TemplateTableRows = z.infer<typeof TemplateTableRowsSchema>;
 export const TemplatePageValuesSchema = z
     .record(
         z.string().min(1).max(64),
-        z.union([PrimitiveValueSchema, TemplateResourceValueSchema, TemplateTableRowsSchema])
+        z.union([
+            PrimitiveValueSchema,
+            TemplateResourceValueSchema,
+            TemplateTableRowsSchema,
+            TemplateListValueSchema,
+            TemplateImageValueSchema,
+        ])
     )
     .refine((values) => Object.keys(values).length <= TEMPLATE_VALUES_LIMITS.entriesPerTemplate, {
         message: `At most ${TEMPLATE_VALUES_LIMITS.entriesPerTemplate} stored entries per template`,
@@ -74,7 +109,9 @@ export type TemplateFieldValue =
     | boolean
     | string[]
     | TemplateResourceValue
-    | TemplateTableRows;
+    | TemplateTableRows
+    | TemplateListValue
+    | TemplateImageValue;
 
 export type ValidateValueResult =
     | { ok: true; value: TemplateFieldValue }
@@ -179,6 +216,20 @@ function validateReference(
         : { ok: false, reason: 'type' };
 }
 
+/** Strict write-path validation for a stored custom-list value (feature 006, FR-17). */
+export function validateListValue(value: unknown): ValidateValueResult {
+    const result = TemplateListValueSchema.safeParse(value);
+    return result.success
+        ? { ok: true, value: result.data }
+        : { ok: false, reason: Array.isArray(value) ? 'bounds' : 'type' };
+}
+
+/** Strict write-path validation for a stored image value (feature 006, FR-16). */
+export function validateImageValue(value: unknown): ValidateValueResult {
+    const result = TemplateImageValueSchema.safeParse(value);
+    return result.success ? { ok: true, value: result.data } : { ok: false, reason: 'type' };
+}
+
 /** Strict write-path validation for one stored value against its template field definition. */
 export function validateTemplateValue(field: TemplateField, value: unknown): ValidateValueResult {
     switch (field.type) {
@@ -196,6 +247,11 @@ export function validateTemplateValue(field: TemplateField, value: unknown): Val
             return validateResource(field, value);
         case 'reference':
             return validateReference(field, value);
+        case 'image':
+            return validateImageValue(value);
+        case 'formula':
+            // Formula results are computed, never stored (spec A4).
+            return { ok: false, reason: 'type' };
     }
 }
 
@@ -236,6 +292,8 @@ export function coerceStoredValue(
             return undefined;
         case 'rating':
         case 'resource':
+        case 'image':
+        case 'formula':
             return undefined;
         case 'select':
             if (field.multiple && typeof value === 'string') return [value];

@@ -8,16 +8,20 @@ function buildTemplate(id: string, documentKind = 'character') {
         id,
         name: id,
         documentKind,
-        schemaVersion: 1,
-        sections: [
+        schemaVersion: 3,
+        children: [
             {
                 id: 'identity',
+                type: 'section',
                 title: 'Identity',
-                blocks: [
+                children: [
                     {
-                        id: 'identity-fields',
-                        type: 'fields',
-                        fields: [{ id: 'origin', label: 'Origin', type: 'text' }],
+                        id: 'origin',
+                        type: 'text',
+                        label: 'Origin',
+                        required: false,
+                        compact: false,
+                        multiline: false,
                     },
                 ],
             },

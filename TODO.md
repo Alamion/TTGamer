@@ -72,3 +72,4 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [ ] ⬜ **T-033 — Playwright smoke tests** (none) — homepage, docs, sheet, and dice routes plus keyboard flows get smoke coverage.
 - [ ] ⬜ **T-034 — Axe accessibility checks** (none) — dialogs, tables, sheet controls, and the dice panel get automated accessibility checks.
 - [ ] ⬜ **T-035 — Property/fuzz tests** (none) — parser/evaluator limits and catalog filter URL round-trips get property-based coverage.
+- [ ] ⬜ **T-036 — Static template images** (none) — template authors place decorative images that are part of the template itself (e.g. template-specific backgrounds or banners), shown identically for every document using the template; complements the per-document image field.

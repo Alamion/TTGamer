@@ -15,17 +15,18 @@ function buildPresetTemplate(id = 'preset-kit'): CustomTemplate {
         name: 'Preset Kit',
         systemId: 'star-wars-wod',
         documentKind: 'character',
-        schemaVersion: 1,
-        sections: [
+        schemaVersion: 3,
+        children: [
             {
                 id: 'page',
+                type: 'section',
                 title: 'Page',
-                presentation: 'plain',
-                blocks: [
+                children: [
                     {
                         id: 'skills-list',
-                        type: 'primitive',
+                        type: 'list',
                         bindingKey: 'list:customSkills',
+                        columns: 1,
                         presets: [
                             { key: 'occultism', label: 'Occultism', value: 2 },
                             { key: 'lore-jedi', label: 'Lore: Jedi', value: 1 },
@@ -78,13 +79,15 @@ describe('preset seeding (feature 005, T015/FR-16)', () => {
             name: 'Plain Kit',
             systemId: 'star-wars-wod',
             documentKind: 'character',
-            schemaVersion: 1,
-            sections: [
+            schemaVersion: 3,
+            children: [
                 {
                     id: 'page',
+                    type: 'section',
                     title: 'Page',
-                    presentation: 'plain',
-                    blocks: [{ id: 'name', type: 'primitive', bindingKey: 'field:name' }],
+                    children: [
+                        { id: 'name', type: 'primitive', bindingKey: 'field:name', compact: false },
+                    ],
                 },
             ],
         });
@@ -138,16 +141,17 @@ describe('preset seeding (feature 005, T015/FR-16)', () => {
         useDocumentStore.setState(({ documents }) => ({ documents }));
         const withEditedPresets = CustomTemplateSchema.parse({
             ...edited,
-            sections: [
+            children: [
                 {
                     id: 'page',
+                    type: 'section',
                     title: 'Page',
-                    presentation: 'plain',
-                    blocks: [
+                    children: [
                         {
                             id: 'skills-list',
-                            type: 'primitive',
+                            type: 'list',
                             bindingKey: 'list:customSkills',
+                            columns: 1,
                             presets: [{ key: 'new-trait', label: 'New Trait', value: 3 }],
                         },
                     ],

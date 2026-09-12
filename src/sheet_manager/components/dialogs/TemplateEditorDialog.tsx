@@ -7,11 +7,8 @@ import { useTemplateStore } from '../../store/templateStore';
 import { type CustomTemplate, CustomTemplateSchema } from '../../types/template';
 import { ConfirmDialog } from './ConfirmDialog';
 import {
-    addBlock,
-    addField,
     addOption,
-    addPrimitive,
-    addSection,
+    addTableColumn,
     attachCatalog,
     changeFieldType,
     collectDraftIssues,
@@ -19,25 +16,22 @@ import {
     createEmptyDraft,
     describeDraft,
     detachCatalog,
+    type DraftOpResult,
     type EditorDraft,
     generateDraftId,
-    moveBlock,
-    moveField,
-    moveSection,
-    removeBlock,
-    removeField,
+    insertNode,
+    listNumericCoordinateOptions,
+    moveNode,
+    removeNode,
     removeOption,
-    removeSection,
-    renameDraft,
-    renameSection,
+    removeTableColumn,
     setDraftKind,
-    updateBlock,
     updateField,
     updateFill,
+    updateNode,
     updateOption,
 } from './template-editor/draft';
-import type { FieldEditorCallbacks } from './template-editor/FieldEditor';
-import { SectionEditor } from './template-editor/SectionEditor';
+import { ChildrenList, type ElementEditorCallbacks } from './template-editor/ElementEditor';
 import { isDefaultTemplateId } from './TemplateLibraryDialog';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -78,16 +72,37 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
     const [initialJson] = useState(() => JSON.stringify(draft));
     const isDirty = JSON.stringify(draft) !== initialJson;
 
+    const applyOp = (result: DraftOpResult) => {
+        if (result.ok) {
+            setDraft(result.draft);
+            return;
+        }
+        setSaveIssues([
+            result.error === 'depth'
+                ? t(editor.depthMessage).replace('{limit}', String(result.limit ?? 0))
+                : result.error === 'count'
+                  ? t(editor.countMessage).replace('{limit}', String(result.limit ?? 0))
+                  : t(editor.duplicateId).replace('{id}', result.error),
+        ]);
+    };
+
     const issueMessages = useMemo(
         () =>
-            collectDraftIssues(draft, {
-                emptyName: t(editor.emptyName),
-                emptyLabel: t(editor.emptyLabel),
-                duplicateId: t(editor.duplicateId),
-                invalidKey: t(editor.invalidKey),
-                limitReached: t(editor.limitReached),
-                invalidBounds: t(editor.invalidBounds),
-            }).map((issue) => issue.message),
+            collectDraftIssues(
+                draft,
+                {
+                    emptyName: t(editor.emptyName),
+                    emptyLabel: t(editor.emptyLabel),
+                    duplicateId: t(editor.duplicateId),
+                    invalidKey: t(editor.invalidKey),
+                    limitReached: t(editor.limitReached),
+                    invalidBounds: t(editor.invalidBounds),
+                    invalidFormula: t(editor.invalidFormula),
+                    unknownCoordinate: t(editor.unknownCoordinate),
+                    circularDependency: t(editor.circularDependency),
+                },
+                { numericCoordinates: listNumericCoordinateOptions(draft).map((c) => c.coordinate) }
+            ).map((issue) => issue.message),
         [draft, t]
     );
 
@@ -114,24 +129,30 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
         else onClose();
     };
 
-    const fieldCallbacks = (blockId: string, fieldId: string): FieldEditorCallbacks => ({
-        onUpdate: (updates) =>
-            setDraft((current) => updateField(current, blockId, fieldId, updates)),
-        onChangeType: (type) =>
-            setDraft((current) => changeFieldType(current, blockId, fieldId, type)),
-        onMove: (offset) => setDraft((current) => moveField(current, blockId, fieldId, offset)),
-        onRemove: () => setDraft((current) => removeField(current, blockId, fieldId)),
-        onAddOption: () => setDraft((current) => addOption(current, blockId, fieldId)),
-        onUpdateOption: (optionId, label) =>
-            setDraft((current) => updateOption(current, blockId, fieldId, optionId, label)),
-        onRemoveOption: (optionId) =>
-            setDraft((current) => removeOption(current, blockId, fieldId, optionId)),
-        onAttachCatalog: (catalogId) =>
-            setDraft((current) => attachCatalog(current, blockId, fieldId, catalogId)),
-        onDetachCatalog: () => setDraft((current) => detachCatalog(current, blockId, fieldId)),
-        onUpdateFill: (detailKey, rule) =>
-            setDraft((current) => updateFill(current, blockId, fieldId, detailKey, rule)),
-    });
+    const callbacks: ElementEditorCallbacks = {
+        onUpdate: (nodeId, updates) => setDraft((current) => updateNode(current, nodeId, updates)),
+        onInsert: (parentId, index, node) => applyOp(insertNode(draft, parentId, index, node)),
+        onRemove: (nodeId) => setDraft((current) => removeNode(current, nodeId)),
+        onMove: (nodeId, targetParentId, index) =>
+            applyOp(moveNode(draft, nodeId, targetParentId, index)),
+        onFieldUpdate: (fieldId, updates) =>
+            setDraft((current) => updateField(current, fieldId, updates)),
+        onFieldTypeChange: (fieldId, type) =>
+            setDraft((current) => changeFieldType(current, fieldId, type)),
+        onAddOption: (fieldId) => setDraft((current) => addOption(current, fieldId)),
+        onUpdateOption: (fieldId, optionId, label) =>
+            setDraft((current) => updateOption(current, fieldId, optionId, label)),
+        onRemoveOption: (fieldId, optionId) =>
+            setDraft((current) => removeOption(current, fieldId, optionId)),
+        onAttachCatalog: (fieldId, catalogId) =>
+            setDraft((current) => attachCatalog(current, fieldId, catalogId)),
+        onDetachCatalog: (fieldId) => setDraft((current) => detachCatalog(current, fieldId)),
+        onUpdateFill: (fieldId, detailKey, rule) =>
+            setDraft((current) => updateFill(current, fieldId, detailKey, rule)),
+        onAddTableColumn: (tableId) => setDraft((current) => addTableColumn(current, tableId)),
+        onRemoveTableColumn: (tableId, columnId) =>
+            setDraft((current) => removeTableColumn(current, tableId, columnId)),
+    };
 
     const visibleIssues = [...issueMessages, ...saveIssues];
 
@@ -154,18 +175,20 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
                         <div className="flex flex-wrap items-center gap-2">
                             <input
                                 value={draft.name}
-                                onChange={(event) =>
-                                    setDraft((current) => renameDraft(current, event.target.value))
-                                }
+                                onChange={(event) => {
+                                    const name = event.target.value;
+                                    setDraft((current) => ({ ...current, name }));
+                                }}
                                 placeholder={t(editor.namePlaceholder)}
                                 aria-label={t(editor.name)}
                                 className={`${inputClasses} min-w-0 flex-1 font-medium`}
                             />
                             <select
                                 value={draft.documentKind}
-                                onChange={(event) =>
-                                    setDraft((current) => setDraftKind(current, event.target.value))
-                                }
+                                onChange={(event) => {
+                                    const kind = event.target.value;
+                                    setDraft((current) => setDraftKind(current, kind));
+                                }}
                                 aria-label={t(library.kind)}
                                 className={inputClasses}
                             >
@@ -178,9 +201,10 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
                         </div>
                         <input
                             value={draft.description ?? ''}
-                            onChange={(event) =>
-                                setDraft((current) => describeDraft(current, event.target.value))
-                            }
+                            onChange={(event) => {
+                                const description = event.target.value;
+                                setDraft((current) => describeDraft(current, description));
+                            }}
                             placeholder={t(editor.descriptionPlaceholder)}
                             aria-label={t(editor.descriptionLabel)}
                             className={`${inputClasses} mt-2 w-full`}
@@ -188,56 +212,13 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
                     </div>
 
                     <div className="flex-1 space-y-4 overflow-y-auto p-4">
-                        {draft.sections.map((section) => (
-                            <SectionEditor
-                                key={section.id}
-                                draft={draft}
-                                section={section}
-                                callbacks={{
-                                    onRename: (title) =>
-                                        setDraft((current) =>
-                                            renameSection(current, section.id, title)
-                                        ),
-                                    onMove: (offset) =>
-                                        setDraft((current) =>
-                                            moveSection(current, section.id, offset)
-                                        ),
-                                    onRemove: () =>
-                                        setDraft((current) => removeSection(current, section.id)),
-                                    onAddBlock: (type) =>
-                                        setDraft((current) => addBlock(current, section.id, type)),
-                                    onAddPrimitive: (bindingKey) =>
-                                        setDraft((current) =>
-                                            addPrimitive(current, section.id, bindingKey)
-                                        ),
-                                    blockCallbacks: (blockId) => ({
-                                        onUpdate: (updates) =>
-                                            setDraft((current) =>
-                                                updateBlock(current, section.id, blockId, updates)
-                                            ),
-                                        onMove: (offset) =>
-                                            setDraft((current) =>
-                                                moveBlock(current, section.id, blockId, offset)
-                                            ),
-                                        onRemove: () =>
-                                            setDraft((current) =>
-                                                removeBlock(current, section.id, blockId)
-                                            ),
-                                        onAddField: () =>
-                                            setDraft((current) => addField(current, blockId)),
-                                        fieldCallbacks: (fieldId) =>
-                                            fieldCallbacks(blockId, fieldId),
-                                    }),
-                                }}
-                            />
-                        ))}
-                        <button
-                            type="button"
-                            onClick={() => setDraft((current) => addSection(current))}
-                            className="w-full rounded-lg border border-dashed border-border py-2 text-sm text-primary hover:bg-bgBase"
-                        >
-                            + {t(editor.addSection)}
-                        </button>
+                        <ChildrenList
+                            callbacks={callbacks}
+                            depth={1}
+                            draft={draft}
+                            nodes={draft.children}
+                            parentId={null}
+                        />
                     </div>
 
                     <div className="border-t border-border p-4">
