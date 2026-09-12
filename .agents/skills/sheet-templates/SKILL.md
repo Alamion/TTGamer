@@ -50,6 +50,17 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   guards (`TemplateFieldTypesAreComplete`, `TemplateNodeTypesAreComplete`) fail typecheck when a
   list and the schema disagree.
 - `systemId` defaults to `star-wars-wod`; compatibility is `systemId` + `documentKind`.
+- Layout and presentation:
+    - `column` (1–4) on any node places it in its parent's column layout; when any child of a
+      multi-column container sets it, children stack inside their column instead of flowing
+      row by row (unplaced children go to column 1). Renderer grids use `grid-cols-1`
+      (`minmax(0,1fr)`) tracks so wide rows shrink instead of clipping.
+    - Groups: `hideTitle` (no header, never collapsible), `docsPath` (help link), opt-in
+      `collapsible`.
+    - Fields: `hideLabel` (kept for screen readers); text fields `placeholder` +
+      `placeholderMessage`; formula fields `prefix`/`suffix`, rendered as "label … value" rows.
+    - Primitives: `hideLabel`; pool resources `part: 'max'` edits the maximum (current is capped
+      to it). Compact pools render `current / max` boxes, compact ratings number boxes.
 - Labels: every labelled node may carry `labelMessage` — a UI message id (`ttgamer.ui.…`) or a
   catalog entry (`catalog:<catalogId>/<entryId>`, e.g. attribute names). `DeclarativeSheetView`
   renders `localizeTemplate(template, locale)` (`features/sheet/declarative/localizeTemplate.ts`);
@@ -92,15 +103,20 @@ WoD-family systems build trait/resource/track bindings from their profile with
 `systems/wod-like/templateBindings.ts` (`buildWodTraitBindings`, `buildWodResourceBindings`,
 `buildWodTrackBindings`, `toCoordinate`). Star Wars declarations: `systems/star-wars-wod/documentBindings.ts`.
 
-| Kind        | Key shape                                                | Star Wars data                                 |
-| ----------- | -------------------------------------------------------- | ---------------------------------------------- |
-| `trait`     | `trait:<groupId>:<TraitKey>`                             | `attributes`/`skills`/`virtues`/`forceSkills`  |
-| `resource`  | `resource:willpower\|force-points\|dark-side-resistance` | `willpower`/`forcePoints` pools, rating number |
-| `track`     | `track:health`, `track:vehicle-damage`                   | `health`, `damage`                             |
-| `field`     | `field:<metadataKey>`                                    | `data.metadata`                                |
-| `list`      | `list:<listId>`                                          | `dataKey` (`forcePowers` → `forcePowerItems`)  |
-| `equipment` | `equipment:inventory\|armor\|weapons\|implants`          | body sections via `useBodyHandlers`            |
+| Kind        | Key shape                                                | Star Wars data                                                        |
+| ----------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
+| `trait`     | `trait:<groupId>:<TraitKey>`                             | `attributes`/`skills`/`virtues`/`forceSkills`                         |
+| `resource`  | `resource:willpower\|force-points\|dark-side-resistance` | `willpower`/`forcePoints` pools, rating number                        |
+| `track`     | `track:health`, `track:vehicle-damage`                   | `health`, `damage`                                                    |
+| `field`     | `field:<key>`                                            | any data path (`path`, `valueType`, optional `constrain` / `adapter`) |
+| `list`      | `list:<listId>`                                          | `dataKey` (`forcePowers` → `forcePowerItems`)                         |
+| `equipment` | `equipment:inventory\|armor\|weapons\|implants`          | body sections via `useBodyHandlers`                                   |
 
+- Field bindings: `path` + `valueType` (`string`/`number`/`image`). Bridged fields keep their own
+  control (textarea, placeholder, number input); `constrain` keeps the top-level record valid
+  (experience: spent ≤ total) and `adapter` maps split values (portrait ↔
+  `metadata.portraitId`/`imageUrl`). Numeric field bindings are formula coordinates
+  (`experience-total - experience-spent`). Pool resources may set `currentRaisesMax` (Willpower).
 - List entry shapes: `trait` `{id,label,value}`, `named-trait` `{id,name,value}`, `merit-flaw`
   `{id,label,points}`. Preset seeding and the list molecules both follow `entryShape`.
 - Keys are persisted as plain strings, checked by `validateTemplateReferences`
@@ -127,7 +143,7 @@ seeding) — the seam for documentation previews.
 ## Formulas (`features/sheet/declarative/formula.ts`)
 
 - Grammar: numbers, coordinates (`kebab` or `pool.current`/`pool.max`), `+ - * /`, parentheses,
-  unary minus. Pure tokenizer → parser → evaluator.
+  unary minus, and `min(a, b, …)` / `max(a, b, …)`. Pure tokenizer → parser → evaluator.
 - One coordinate space: bag numbers plus system traits/pools (`readBoundNumber`, called from
   `resolveBase` in `hooks.ts`).
 - `formula` fields are read-only and never stored. `maxFrom` (rating/number/primitive) clamps
@@ -241,6 +257,8 @@ lists reference it by `catalog.catalogId`.
 - Primitive molecules (trait rows, merit/flaw lists, equipment sections) are WoD-family UI and
   read through the `character` capability (`BaseCharacter`); a non-WoD system will need its own
   molecules behind the same binding kinds.
+- The editor does not yet expose `column`, `hideTitle`, `hideLabel`, `placeholder`,
+  `prefix`/`suffix`, `part`, or group `docsPath`; edits preserve them, but authors cannot set them.
 - Binding keys are not literal types (bindings are built at runtime per system); integrity
   relies on `validateTemplateReferences` rather than the compiler.
 - `useTemplatePage` (`hooks.ts`) mixes store wiring, formula evaluation, list/catalog runtime,

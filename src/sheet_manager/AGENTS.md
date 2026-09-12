@@ -112,7 +112,7 @@ duplicate template facts here. Invariants that must never be broken:
 ## Derived State
 
 - `calculateHealthPenalty()` uses the deepest marked health level.
-- Virtues define the minimum Willpower and Dark Side Resistance values shown in `ForceBlock`; merits/flaws may raise the stored values. Neither resource belongs in the read-only `DerivedStatsBlock`.
+- Virtues define the minimum Willpower (`min(passion + self-control, 10)`) and Dark Side Resistance (`max(0, min(5 + conscience - passion, 10))`); the default template shows these minimums as read-only Derived Stats, while the editable resources live in the Force section's Resources group. Merits/flaws may raise the stored values.
 - Current Force Points may legitimately be zero.
 - Detailed formulas are in `.agents/skills/sheet-manager/SKILL.md`.
 
