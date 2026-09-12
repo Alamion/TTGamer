@@ -106,7 +106,18 @@ function readRows(value: unknown): Record<string, Record<string, unknown>> {
         : {};
 }
 
-export function useTemplatePage(template: CustomTemplate | undefined): UseTemplatePageResult {
+export interface UseTemplatePageOptions {
+    /**
+     * Copy list presets into the document on first render (default). Partial renders (docs
+     * fragments) must not seed: the per-template marker would block the full page's lists.
+     */
+    seedPresets?: boolean;
+}
+
+export function useTemplatePage(
+    template: CustomTemplate | undefined,
+    { seedPresets = true }: UseTemplatePageOptions = {}
+): UseTemplatePageResult {
     const source = useDocumentSource();
     const {
         documents,
@@ -434,7 +445,7 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
     // Presets land as ordinary list entries; removal is final (marker prevents re-seed);
     // later author edits to presets never propagate to already-seeded documents.
     useEffect(() => {
-        if (!template || !currentDocumentId || readOnly) return;
+        if (!seedPresets || !template || !currentDocumentId || readOnly) return;
         if (document?.metadata.seededPresets?.includes(template.id)) return;
 
         const pending: Array<{
@@ -513,6 +524,7 @@ export function useTemplatePage(template: CustomTemplate | undefined): UseTempla
     }, [
         template,
         currentDocumentId,
+        seedPresets,
         readOnly,
         document,
         values,

@@ -413,14 +413,21 @@ export function countUnfilledRequired(
     return count;
 }
 
-export function DeclarativeSheetView({ template }: { template: CustomTemplate }) {
+export function DeclarativeSheetView({
+    template,
+    embedded = false,
+}: {
+    template: CustomTemplate;
+    /** Embedded in another page (docs): no page chrome, no preset seeding. */
+    embedded?: boolean;
+}) {
     const locale = useDocusaurusContext().i18n.currentLocale;
     // Translated display copy; ids and storage coordinates are identical to the source.
     const localized = useMemo(() => localizeTemplate(template, locale), [template, locale]);
-    const pageApi = useTemplatePage(localized);
+    const pageApi = useTemplatePage(localized, { seedPresets: !embedded });
 
     return (
-        <div className="mx-auto max-w-7xl space-y-6 p-4 lg:p-6">
+        <div className={embedded ? 'space-y-6' : 'mx-auto max-w-7xl space-y-6 p-4 lg:p-6'}>
             <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
         </div>
     );

@@ -6,9 +6,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { isPresetId } from '../data/presets';
 import { describeError, reportSheetIssue } from '../diagnostics';
 import { deletePortrait } from '../persistence/portraitStorage';
-import { starWarsCharacterDefinition, starWarsDroidDefinition, systemRegistry } from '../systems';
-import { DroidDataSchema, StarWarsCharacterDataSchema } from '../systems/star-wars-wod';
-import { BaseCharacterSchema } from '../types/character';
+import { systemRegistry } from '../systems';
+import { characterDocumentFromBase } from '../systems/star-wars-wod/characterDocument';
 import type { DocumentMetadata, UnknownDocumentEnvelope } from '../types/document';
 import { DocumentMetadataSchema } from '../types/document';
 import {
@@ -200,36 +199,6 @@ function getPortraitId(document: UnknownDocumentEnvelope | undefined) {
     return typeof portraitId === 'string' ? portraitId : undefined;
 }
 
-function wrapLegacyCharacter(input: unknown): UnknownDocumentEnvelope {
-    const character = BaseCharacterSchema.parse(input);
-    const { id, ...characterData } = character;
-    const definition =
-        character.metadata.type === 'droid' ? starWarsDroidDefinition : starWarsCharacterDefinition;
-    const data =
-        definition === starWarsDroidDefinition
-            ? DroidDataSchema.parse({
-                  ...characterData,
-                  builtInEquipment: character.inventory,
-                  damage: character.health,
-              })
-            : StarWarsCharacterDataSchema.parse(characterData);
-
-    return {
-        id,
-        kind: definition.kind,
-        systemId: systemRegistry.getSystem('star-wars-wod')!.id,
-        definitionId: definition.id,
-        schemaVersion: definition.schemaVersion,
-        metadata: {
-            title: character.metadata.name,
-            tags: [],
-            preferredViewId: definition.defaultViewId,
-        },
-        templateValues: {},
-        data,
-    };
-}
-
 /**
  * Prepares a persisted entry for schema parsing: v2 entries carry a nested
  * `{ templateId: { fieldKey: value } }` bag, which the v3 flat schema rejects before any
@@ -287,7 +256,7 @@ export function migrateDocumentStoreState(input: unknown): PersistedDocumentStat
     const recoveryEntries: unknown[] = [];
     for (const entry of legacyCharacters) {
         try {
-            documents.push(wrapLegacyCharacter(entry));
+            documents.push(characterDocumentFromBase(entry));
         } catch (error) {
             retainForRecovery(recoveryEntries, entry, error);
         }

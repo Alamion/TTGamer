@@ -139,6 +139,20 @@ seeding) — the seam for documentation previews.
 - `collectFormulaDependencies` in `types/template.ts` uses a regex, not the parser (import
   cycle workaround) — it can disagree with `parseFormula` on odd input.
 
+## Documentation embeds (`src/sheet_manager/docsEmbeds.tsx`)
+
+The only entry point docs import. Embeds render the **shipped** default template (never an
+edited override) so prose and page stay in sync:
+
+- `<TemplateFragment template="full-sheet" node="attributes" />` — a subtree against the
+  reader's current document (editable); renders nothing without a compatible document.
+- `<TemplatePreview document={presetCharacterDocument(JAX_VORN_PRESET)} node="base" />` — a
+  fixed document, read-only (`healthPreviewDocument(levels)` for condition-track examples).
+- Embeds use `DeclarativeSheetView embedded` (no page chrome, no preset seeding — a partial
+  render must not mark the template as seeded).
+- `tests/sheet_manager/docs-embeds.test.tsx` scans en + ru MDX and fails on any embed whose
+  template/node does not exist, so renaming a node id breaks the test, not the docs.
+
 ## Page resolution (`features/sheet/CharacterSheet.tsx`, `systems/view.ts`)
 
 1. `metadata.templateId` → `resolveCustomTemplate` against user templates. Found and kind
