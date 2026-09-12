@@ -1,8 +1,9 @@
 import { translate } from '@docusaurus/Translate';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
-import { createElement } from 'react';
+import { createElement, useMemo } from 'react';
 
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
@@ -14,6 +15,7 @@ import { coerceStoredValue } from '../../../types/templateValues';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import type { FormulaEvaluationError } from './formula';
 import { useTemplatePage, type UseTemplatePageResult } from './hooks';
+import { localizeTemplate } from './localizeTemplate';
 import { CustomListView, PrimitiveNodeView, SystemListView } from './primitives';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -412,11 +414,14 @@ export function countUnfilledRequired(
 }
 
 export function DeclarativeSheetView({ template }: { template: CustomTemplate }) {
-    const pageApi = useTemplatePage(template);
+    const locale = useDocusaurusContext().i18n.currentLocale;
+    // Translated display copy; ids and storage coordinates are identical to the source.
+    const localized = useMemo(() => localizeTemplate(template, locale), [template, locale]);
+    const pageApi = useTemplatePage(localized);
 
     return (
         <div className="mx-auto max-w-7xl space-y-6 p-4 lg:p-6">
-            <ChildrenGrid nodes={template.children} pageApi={pageApi} />
+            <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
         </div>
     );
 }

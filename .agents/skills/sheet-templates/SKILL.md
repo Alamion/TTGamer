@@ -50,6 +50,13 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   guards (`TemplateFieldTypesAreComplete`, `TemplateNodeTypesAreComplete`) fail typecheck when a
   list and the schema disagree.
 - `systemId` defaults to `star-wars-wod`; compatibility is `systemId` + `documentKind`.
+- Labels: every labelled node may carry `labelMessage` — a UI message id (`ttgamer.ui.…`) or a
+  catalog entry (`catalog:<catalogId>/<entryId>`, e.g. attribute names). `DeclarativeSheetView`
+  renders `localizeTemplate(template, locale)` (`features/sheet/declarative/localizeTemplate.ts`);
+  the stored `label`/`title` is the fallback. Editing a label or title in the editor drops the
+  reference. Shipped defaults attach references in one pass (`withLabelMessages` in
+  `defaultTemplates.ts`; new keys live under `ui.sheet.templates.defaults`). Unknown references
+  are `unknown-label-message` reference issues.
 
 ## Coordinates and value storage
 

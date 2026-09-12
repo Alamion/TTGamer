@@ -25,9 +25,25 @@ const templateIdentifierSchema = z
     .max(64)
     .regex(/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/, 'Expected a lowercase kebab-case identifier');
 
+/**
+ * Translation reference for a node's label/title (shipped templates): a UI message id
+ * (`ttgamer.ui.…`) or a data-catalog entry name (`catalog:<catalogId>/<entryId>`). The stored
+ * label is the untranslated fallback; editing the label in the editor drops the reference.
+ */
+export const LabelMessageSchema = z
+    .string()
+    .max(200)
+    .regex(
+        /^(ttgamer\.[A-Za-z0-9._-]+|catalog:[a-z0-9-]+\/[a-z0-9-]+)$/,
+        'Expected a ttgamer.* message id or catalog:<catalog>/<entry>'
+    );
+
+const labelMessageShape = { labelMessage: LabelMessageSchema.optional() };
+
 const fieldBaseShape = {
     id: templateIdentifierSchema,
     label: z.string().min(1).max(120),
+    ...labelMessageShape,
     description: z.string().max(500).optional(),
     required: z.boolean().default(false),
     /**
@@ -256,6 +272,7 @@ const PrimitiveNodeSchema = z.object({
     type: z.literal('primitive'),
     bindingKey: z.string().min(1).max(120),
     label: z.string().min(1).max(120).optional(),
+    ...labelMessageShape,
     compact: z.boolean().default(false),
     track: PrimitiveTrackOverrideSchema.optional(),
     ...maxFromShape,
@@ -266,6 +283,7 @@ const ListNodeSchema = z.object({
     id: templateIdentifierSchema,
     type: z.literal('list'),
     title: z.string().min(1).max(120).optional(),
+    ...labelMessageShape,
     valueKey: templateIdentifierSchema.optional(),
     bindingKey: z.string().min(1).max(120).optional(),
     columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).default(1),
@@ -276,6 +294,7 @@ const TableNodeSchema = z.object({
     id: templateIdentifierSchema,
     type: z.literal('table'),
     title: z.string().min(1).max(120).optional(),
+    ...labelMessageShape,
     valueKey: templateIdentifierSchema.optional(),
     minRows: z.number().int().min(0).max(1_000).default(0),
     maxRows: z.number().int().min(1).max(1_000).default(100),
@@ -286,6 +305,7 @@ export interface SectionNode {
     id: string;
     type: 'section';
     title: string;
+    labelMessage?: string;
     /** Documentation link rendered as a help affordance in the section header (FR-9). */
     docsPath?: string;
     /** Column layout for direct children, 1–4 (FR-9); unset = single column stack. */
@@ -297,6 +317,7 @@ export interface GroupNode {
     id: string;
     type: 'group';
     title: string;
+    labelMessage?: string;
     /** Opt-in collapsibility (FR-10); state is remembered per user via a storage key. */
     collapsible: boolean;
     columns?: number;
@@ -374,6 +395,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 id: templateIdentifierSchema,
                 type: z.literal('section'),
                 title: z.string().min(1).max(120),
+                ...labelMessageShape,
                 docsPath: z.string().max(500).optional(),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
@@ -382,6 +404,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 id: templateIdentifierSchema,
                 type: z.literal('group'),
                 title: z.string().min(1).max(120),
+                ...labelMessageShape,
                 collapsible: z.boolean().default(false),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),

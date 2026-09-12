@@ -123,6 +123,7 @@ editor:
     unknownBinding: Неизвестная привязка к данным «{id}» для этого типа документа.
     unknownCatalog: Неизвестный каталог или поле каталога «{id}».
     unknownFillTarget: Автозаполнение ссылается на несуществующее поле «{id}».
+    unknownLabelMessage: Неизвестная ссылка на перевод «{id}».
     depthMessage: Достигнут предел вложенности — максимум {limit} уровней.
     countMessage: Достигнут предел элементов — максимум {limit}.
 fieldTypes:
@@ -141,6 +142,27 @@ fieldTypes:
     section: Секция
     group: Группа полей
     list: Кастомный список
+defaults:
+    portrait: Портрет
+    physical: Физические
+    social: Социальные
+    mental: Ментальные
+    talents: Таланты
+    skills: Навыки
+    knowledges: Знания
+    customTalents: Свои таланты
+    customSkills: Свои навыки
+    customKnowledges: Свои знания
+    advantages: Преимущества
+    force: Сила
+    forceSkills: Силовые навыки
+    darkSideResistance: Сопротивление Тёмной Стороне
+    forcePowers: Силы Силы
+    derivedStats: Производные показатели
+    initiativeStandard: Инициатива (обычная)
+    initiativeLightsaber: Инициатива (свет. меч)
+    condition: Состояние
+    descriptionGroup: Описание
 builtInBlocks:
     base: Шапка персонажа
     attributes: Атрибуты

@@ -37,6 +37,7 @@ const ISSUE_MESSAGES = {
     unknownBinding: 'Unknown binding "{id}".',
     unknownCatalog: 'Unknown catalog "{id}".',
     unknownFillTarget: 'Missing fill target "{id}".',
+    unknownLabelMessage: 'Unknown translation "{id}".',
 };
 
 /** Asserts success so subsequent `.draft` accesses typecheck. */

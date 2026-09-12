@@ -2,6 +2,7 @@ import { listDocumentBindings, listNumericCoordinates } from '../../../systems/t
 import type { CustomTemplate } from '../../../types/template';
 import { fieldValueKey, isTemplateField, walkTemplateNodes } from '../../../types/template';
 import { parseFormula } from '../declarative/formula';
+import { isKnownLabelMessage } from '../declarative/localizeTemplate';
 import { CATALOG_BINDINGS } from './catalogBindings';
 
 /**
@@ -17,7 +18,8 @@ export type TemplateReferenceIssue =
     | { code: 'unknown-catalog'; nodeId: string; key: string }
     | { code: 'unknown-fill-detail'; nodeId: string; key: string }
     | { code: 'unknown-fill-target'; nodeId: string; key: string }
-    | { code: 'unknown-coordinate'; nodeId: string; key: string };
+    | { code: 'unknown-coordinate'; nodeId: string; key: string }
+    | { code: 'unknown-label-message'; nodeId: string; key: string };
 
 export interface NumericCoordinateOption {
     coordinate: string;
@@ -109,6 +111,16 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
     };
 
     walkTemplateNodes(template.children, (node) => {
+        const labelNodes = node.type === 'table' ? [node, ...node.columns] : [node];
+        for (const labelled of labelNodes) {
+            if (labelled.labelMessage && !isKnownLabelMessage(labelled.labelMessage)) {
+                issues.push({
+                    code: 'unknown-label-message',
+                    nodeId: labelled.id,
+                    key: labelled.labelMessage,
+                });
+            }
+        }
         if (node.type === 'primitive') {
             if (!bindings.has(node.bindingKey)) {
                 issues.push({ code: 'unknown-binding', nodeId: node.id, key: node.bindingKey });

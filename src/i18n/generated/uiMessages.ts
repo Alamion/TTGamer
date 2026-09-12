@@ -1338,6 +1338,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.unknownFillTarget',
                     message: 'Auto-fill targets a field that does not exist: "{id}".',
                 },
+                unknownLabelMessage: {
+                    id: 'ttgamer.ui.sheet.templates.editor.unknownLabelMessage',
+                    message: 'Unknown translation reference "{id}".',
+                },
                 depthMessage: {
                     id: 'ttgamer.ui.sheet.templates.editor.depthMessage',
                     message: 'Nesting limit reached — {limit} levels maximum.',
@@ -1407,6 +1411,88 @@ export const uiMessages = {
                 list: {
                     id: 'ttgamer.ui.sheet.templates.fieldTypes.list',
                     message: 'Custom list',
+                },
+            },
+            defaults: {
+                portrait: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.portrait',
+                    message: 'Portrait',
+                },
+                physical: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.physical',
+                    message: 'Physical',
+                },
+                social: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.social',
+                    message: 'Social',
+                },
+                mental: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.mental',
+                    message: 'Mental',
+                },
+                talents: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.talents',
+                    message: 'Talents',
+                },
+                skills: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.skills',
+                    message: 'Skills',
+                },
+                knowledges: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.knowledges',
+                    message: 'Knowledges',
+                },
+                customTalents: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.customTalents',
+                    message: 'Custom talents',
+                },
+                customSkills: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.customSkills',
+                    message: 'Custom skills',
+                },
+                customKnowledges: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.customKnowledges',
+                    message: 'Custom knowledges',
+                },
+                advantages: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.advantages',
+                    message: 'Advantages',
+                },
+                force: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.force',
+                    message: 'Force',
+                },
+                forceSkills: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.forceSkills',
+                    message: 'Force Skills',
+                },
+                darkSideResistance: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.darkSideResistance',
+                    message: 'Dark Side Resistance',
+                },
+                forcePowers: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.forcePowers',
+                    message: 'Force Powers',
+                },
+                derivedStats: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.derivedStats',
+                    message: 'Derived Stats',
+                },
+                initiativeStandard: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.initiativeStandard',
+                    message: 'Initiative (standard)',
+                },
+                initiativeLightsaber: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.initiativeLightsaber',
+                    message: 'Initiative (lightsaber)',
+                },
+                condition: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.condition',
+                    message: 'Condition',
+                },
+                descriptionGroup: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.descriptionGroup',
+                    message: 'Description',
                 },
             },
             builtInBlocks: {

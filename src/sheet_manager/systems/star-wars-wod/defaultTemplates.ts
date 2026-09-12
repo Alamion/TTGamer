@@ -1,3 +1,5 @@
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+
 import { DocumentKindSchema, SystemIdSchema } from '../../types/document';
 import {
     type CustomTemplate,
@@ -457,9 +459,87 @@ function briefSheet(viewId: string, name: string): CustomTemplate {
     };
 }
 
+const sheetMessages = uiMessages.sheet;
+const defaultMessages = sheetMessages.templates.defaults;
+const baseFields = sheetMessages.base.fields;
+const documentFields = sheetMessages.documents.fields;
+
+/** Stored English label/title → translation reference for the shipped trees. */
+const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
+    Base: sheetMessages.base.title,
+    Identity: documentFields.identity,
+    Name: baseFields.name.label,
+    Concept: baseFields.concept.label,
+    Player: baseFields.player.label,
+    Nature: baseFields.nature.label,
+    Adventure: baseFields.adventure.label,
+    Demeanor: baseFields.demeanor.label,
+    Species: baseFields.species.label,
+    Age: baseFields.age.label,
+    Description: defaultMessages.descriptionGroup,
+    Appearance: sheetMessages.base.appearance,
+    Biography: sheetMessages.base.biography,
+    Portrait: defaultMessages.portrait,
+    Attributes: documentFields.attributes,
+    Physical: defaultMessages.physical,
+    Social: defaultMessages.social,
+    Mental: defaultMessages.mental,
+    Skills: defaultMessages.skills,
+    Talents: defaultMessages.talents,
+    Knowledges: defaultMessages.knowledges,
+    'Custom talents': defaultMessages.customTalents,
+    'Custom skills': defaultMessages.customSkills,
+    'Custom knowledges': defaultMessages.customKnowledges,
+    'Custom lists': sheetMessages.templates.primitives.groupList,
+    Advantages: defaultMessages.advantages,
+    Backgrounds: documentFields.backgrounds,
+    Merits: documentFields.merits,
+    Flaws: documentFields.flaws,
+    Force: defaultMessages.force,
+    'Force Skills': defaultMessages.forceSkills,
+    'Force Points': documentFields.forcePoints,
+    'Force Powers': defaultMessages.forcePowers,
+    Virtues: documentFields.virtues,
+    Resources: documentFields.resources,
+    Willpower: documentFields.willpower,
+    'Dark Side Resistance': defaultMessages.darkSideResistance,
+    'Body & health': sheetMessages.templates.builtInBlocks.body,
+    Other: sheetMessages.templates.builtInBlocks.other,
+    'Derived Stats': defaultMessages.derivedStats,
+    'Initiative (standard)': defaultMessages.initiativeStandard,
+    'Initiative (lightsaber)': defaultMessages.initiativeLightsaber,
+    Condition: defaultMessages.condition,
+};
+
+/** Attribute names are owned by the `attributes` data catalog (single translation owner). */
+const ATTRIBUTE_COORDINATES: ReadonlySet<string> = new Set(
+    ATTRIBUTE_GROUPS.flatMap(({ keys }) => keys.map(kebab))
+);
+
+function withLabelMessages(node: TemplateNode): TemplateNode {
+    const label = 'title' in node ? node.title : 'label' in node ? node.label : undefined;
+    const isAttribute =
+        node.type === 'rating' &&
+        node.valueKey !== undefined &&
+        ATTRIBUTE_COORDINATES.has(node.valueKey);
+    const reference = isAttribute
+        ? `catalog:attributes/${node.valueKey}`
+        : label
+          ? LABEL_MESSAGES[label]?.id
+          : undefined;
+    const next = reference ? { ...node, labelMessage: reference } : node;
+    return next.type === 'section' || next.type === 'group'
+        ? { ...next, children: next.children.map(withLabelMessages) }
+        : next;
+}
+
+function translatable(template: CustomTemplate): CustomTemplate {
+    return { ...template, children: template.children.map(withLabelMessages) };
+}
+
 /** All default templates for the setup (R9): pure declarative trees, zero placements. */
 export const starWarsWodDefaultTemplates: readonly CustomTemplate[] = [
-    fullSheet('full-sheet', 'Full sheet'),
-    fullSheet('droid-sheet', 'Droid sheet'),
-    briefSheet('brief', 'Brief'),
+    translatable(fullSheet('full-sheet', 'Full sheet')),
+    translatable(fullSheet('droid-sheet', 'Droid sheet')),
+    translatable(briefSheet('brief', 'Brief')),
 ];

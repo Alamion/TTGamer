@@ -250,6 +250,10 @@ export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpda
             return isContainerNode(node) ? { ...node, children: node.children.map(apply) } : node;
         }
         const merged = { ...node, ...updates } as TemplateNode;
+        // An author-edited label replaces the shipped translation reference.
+        if ('label' in updates || 'title' in updates) {
+            delete (merged as { labelMessage?: string }).labelMessage;
+        }
         // Clearing optional strings normalizes to absent instead of empty strings.
         for (const key of ['docsPath', 'valueKey', 'bindingKey', 'label', 'maxFrom'] as const) {
             if (key in updates && (merged as Record<string, unknown>)[key] === '') {
@@ -397,6 +401,7 @@ export interface DraftIssueMessages {
     unknownBinding: string;
     unknownCatalog: string;
     unknownFillTarget: string;
+    unknownLabelMessage: string;
 }
 
 function referenceIssueMessage(
@@ -414,6 +419,8 @@ function referenceIssueMessage(
             return interpolate(messages.unknownFillTarget, { id: issue.key });
         case 'unknown-coordinate':
             return interpolate(messages.unknownCoordinate, { id: issue.key });
+        case 'unknown-label-message':
+            return interpolate(messages.unknownLabelMessage, { id: issue.key });
     }
 }
 
@@ -634,7 +641,12 @@ export function updateField(
     fieldId: string,
     updates: Partial<TemplateField>
 ): EditorDraft {
-    return mapFieldItems(draft, fieldId, (field) => ({ ...field, ...updates }) as TemplateField);
+    return mapFieldItems(draft, fieldId, (field) => {
+        const next = { ...field, ...updates } as TemplateField;
+        // An author-edited label replaces the shipped translation reference.
+        if ('label' in updates) delete next.labelMessage;
+        return next;
+    });
 }
 
 export function addOption(draft: EditorDraft, fieldId: string): EditorDraft {

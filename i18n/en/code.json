@@ -956,6 +956,66 @@
     "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-vehicle-sheet": {
         "message": "Vehicle page"
     },
+    "ttgamer.ui.sheet.templates.defaults.advantages": {
+        "message": "Advantages"
+    },
+    "ttgamer.ui.sheet.templates.defaults.condition": {
+        "message": "Condition"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customKnowledges": {
+        "message": "Custom knowledges"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customSkills": {
+        "message": "Custom skills"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customTalents": {
+        "message": "Custom talents"
+    },
+    "ttgamer.ui.sheet.templates.defaults.darkSideResistance": {
+        "message": "Dark Side Resistance"
+    },
+    "ttgamer.ui.sheet.templates.defaults.derivedStats": {
+        "message": "Derived Stats"
+    },
+    "ttgamer.ui.sheet.templates.defaults.descriptionGroup": {
+        "message": "Description"
+    },
+    "ttgamer.ui.sheet.templates.defaults.force": {
+        "message": "Force"
+    },
+    "ttgamer.ui.sheet.templates.defaults.forcePowers": {
+        "message": "Force Powers"
+    },
+    "ttgamer.ui.sheet.templates.defaults.forceSkills": {
+        "message": "Force Skills"
+    },
+    "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber": {
+        "message": "Initiative (lightsaber)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.initiativeStandard": {
+        "message": "Initiative (standard)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.knowledges": {
+        "message": "Knowledges"
+    },
+    "ttgamer.ui.sheet.templates.defaults.mental": {
+        "message": "Mental"
+    },
+    "ttgamer.ui.sheet.templates.defaults.physical": {
+        "message": "Physical"
+    },
+    "ttgamer.ui.sheet.templates.defaults.portrait": {
+        "message": "Portrait"
+    },
+    "ttgamer.ui.sheet.templates.defaults.skills": {
+        "message": "Skills"
+    },
+    "ttgamer.ui.sheet.templates.defaults.social": {
+        "message": "Social"
+    },
+    "ttgamer.ui.sheet.templates.defaults.talents": {
+        "message": "Talents"
+    },
     "ttgamer.ui.sheet.templates.editor.accentColor": {
         "message": "Accent color"
     },
@@ -1204,6 +1264,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.unknownFillTarget": {
         "message": "Auto-fill targets a field that does not exist: \"{id}\"."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownLabelMessage": {
+        "message": "Unknown translation reference \"{id}\"."
     },
     "ttgamer.ui.sheet.templates.editor.untitledName": {
         "message": "Untitled template"

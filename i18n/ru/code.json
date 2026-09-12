@@ -956,6 +956,66 @@
     "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-vehicle-sheet": {
         "message": "Страница техники"
     },
+    "ttgamer.ui.sheet.templates.defaults.advantages": {
+        "message": "Преимущества"
+    },
+    "ttgamer.ui.sheet.templates.defaults.condition": {
+        "message": "Состояние"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customKnowledges": {
+        "message": "Свои знания"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customSkills": {
+        "message": "Свои навыки"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customTalents": {
+        "message": "Свои таланты"
+    },
+    "ttgamer.ui.sheet.templates.defaults.darkSideResistance": {
+        "message": "Сопротивление Тёмной Стороне"
+    },
+    "ttgamer.ui.sheet.templates.defaults.derivedStats": {
+        "message": "Производные показатели"
+    },
+    "ttgamer.ui.sheet.templates.defaults.descriptionGroup": {
+        "message": "Описание"
+    },
+    "ttgamer.ui.sheet.templates.defaults.force": {
+        "message": "Сила"
+    },
+    "ttgamer.ui.sheet.templates.defaults.forcePowers": {
+        "message": "Силы Силы"
+    },
+    "ttgamer.ui.sheet.templates.defaults.forceSkills": {
+        "message": "Силовые навыки"
+    },
+    "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber": {
+        "message": "Инициатива (свет. меч)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.initiativeStandard": {
+        "message": "Инициатива (обычная)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.knowledges": {
+        "message": "Знания"
+    },
+    "ttgamer.ui.sheet.templates.defaults.mental": {
+        "message": "Ментальные"
+    },
+    "ttgamer.ui.sheet.templates.defaults.physical": {
+        "message": "Физические"
+    },
+    "ttgamer.ui.sheet.templates.defaults.portrait": {
+        "message": "Портрет"
+    },
+    "ttgamer.ui.sheet.templates.defaults.skills": {
+        "message": "Навыки"
+    },
+    "ttgamer.ui.sheet.templates.defaults.social": {
+        "message": "Социальные"
+    },
+    "ttgamer.ui.sheet.templates.defaults.talents": {
+        "message": "Таланты"
+    },
     "ttgamer.ui.sheet.templates.editor.accentColor": {
         "message": "Цвет акцента"
     },
@@ -1204,6 +1264,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.unknownFillTarget": {
         "message": "Автозаполнение ссылается на несуществующее поле «{id}»."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownLabelMessage": {
+        "message": "Неизвестная ссылка на перевод «{id}»."
     },
     "ttgamer.ui.sheet.templates.editor.untitledName": {
         "message": "Шаблон без названия"

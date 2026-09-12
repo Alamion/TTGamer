@@ -100,6 +100,7 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
                 unknownBinding: t(editor.unknownBinding),
                 unknownCatalog: t(editor.unknownCatalog),
                 unknownFillTarget: t(editor.unknownFillTarget),
+                unknownLabelMessage: t(editor.unknownLabelMessage),
             }).map((issue) => issue.message),
         [draft, t]
     );

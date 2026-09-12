@@ -123,6 +123,7 @@ editor:
     unknownBinding: Unknown data binding "{id}" for this document kind.
     unknownCatalog: Unknown catalog or catalog detail "{id}".
     unknownFillTarget: 'Auto-fill targets a field that does not exist: "{id}".'
+    unknownLabelMessage: Unknown translation reference "{id}".
     depthMessage: Nesting limit reached — {limit} levels maximum.
     countMessage: Element limit reached — {limit} elements maximum.
 fieldTypes:
@@ -141,6 +142,27 @@ fieldTypes:
     section: Section
     group: Field group
     list: Custom list
+defaults:
+    portrait: Portrait
+    physical: Physical
+    social: Social
+    mental: Mental
+    talents: Talents
+    skills: Skills
+    knowledges: Knowledges
+    customTalents: Custom talents
+    customSkills: Custom skills
+    customKnowledges: Custom knowledges
+    advantages: Advantages
+    force: Force
+    forceSkills: Force Skills
+    darkSideResistance: Dark Side Resistance
+    forcePowers: Force Powers
+    derivedStats: Derived Stats
+    initiativeStandard: Initiative (standard)
+    initiativeLightsaber: Initiative (lightsaber)
+    condition: Condition
+    descriptionGroup: Description
 builtInBlocks:
     base: Character header
     attributes: Attributes
