@@ -178,7 +178,10 @@ describe('system registry', () => {
             'full-sheet',
             'brief',
         ]);
-        expect(starWarsDroidDefinition.views.map(({ id }) => id)).toEqual(['droid-sheet', 'brief']);
+        expect(starWarsDroidDefinition.views.map(({ id }) => id)).toEqual([
+            'droid-sheet',
+            'droid-brief',
+        ]);
         expect(starWarsCreatureDefinition.views.map(({ id }) => id)).toEqual([
             'creature-sheet',
             'brief',

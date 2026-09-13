@@ -36,6 +36,7 @@ import {
 } from '../../../types/template';
 import { generateDraftId, newField as newDraftField, type NodeUpdates } from './draft';
 import { FieldEditor } from './FieldEditor';
+import { ColumnLayoutControl, ColumnPlacementControl, ToggleRow } from './LayoutControls';
 import { PrimitiveConfig } from './PrimitiveConfig';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -130,12 +131,15 @@ export function ChildrenList({
     draft,
     nodes,
     parentId,
+    parentColumns,
 }: {
     callbacks: ElementEditorCallbacks;
     depth: number;
     draft: CustomTemplate;
     nodes: readonly TemplateNode[];
     parentId: string | null;
+    /** Column count of the container these children live in (placement is offered above 1). */
+    parentColumns?: number;
 }) {
     const [paletteOpen, setPaletteOpen] = useState(false);
 
@@ -172,6 +176,7 @@ export function ChildrenList({
                         indexInParent={index}
                         node={node}
                         parentId={parentId}
+                        parentColumns={parentColumns}
                     />
                 </div>
             ))}
@@ -391,6 +396,7 @@ function ElementEditor({
     indexInParent,
     node,
     parentId,
+    parentColumns = 1,
 }: {
     callbacks: ElementEditorCallbacks;
     depth: number;
@@ -398,6 +404,7 @@ function ElementEditor({
     indexInParent: number;
     node: TemplateNode;
     parentId: string | null;
+    parentColumns?: number;
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
     const container = isContainer(node);
@@ -484,7 +491,14 @@ function ElementEditor({
             </div>
 
             {(!container || isExpanded) && (
-                <div className="mt-3">
+                <div className="mt-3 space-y-3">
+                    {parentColumns > 1 && (
+                        <ColumnPlacementControl
+                            parentColumns={parentColumns}
+                            value={node.column}
+                            onChange={(column) => callbacks.onUpdate(node.id, { column })}
+                        />
+                    )}
                     {node.type === 'section' && <SectionConfig callbacks={callbacks} node={node} />}
                     {node.type === 'group' && <GroupConfig callbacks={callbacks} node={node} />}
                     {node.type === 'table' && <TableConfig callbacks={callbacks} node={node} />}
@@ -522,6 +536,7 @@ function ElementEditor({
                                 draft={draft}
                                 nodes={node.children}
                                 parentId={node.id}
+                                parentColumns={node.columns}
                             />
                         </div>
                     )}
@@ -578,9 +593,10 @@ function SectionConfig({
                 aria-label={t(editor.docsLink)}
                 className={`${inputClasses} w-full`}
             />
-            <ColumnSelect
-                onChange={(columns) => callbacks.onUpdate(node.id, { columns })}
-                value={node.columns}
+            <ColumnLayoutControl
+                columns={node.columns}
+                columnWidths={node.columnWidths}
+                onChange={(updates) => callbacks.onUpdate(node.id, updates)}
             />
         </div>
     );
@@ -596,20 +612,33 @@ function GroupConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
                 aria-label={t(editor.groupTitle)}
                 className={`${inputClasses} w-full font-medium`}
             />
-            <label className="flex items-center gap-2 text-xs text-textSecondary">
+            <ToggleRow
+                checked={!node.hideTitle}
+                label={t(editor.showTitle)}
+                onChange={(checked) => callbacks.onUpdate(node.id, { hideTitle: !checked })}
+            />
+            <ToggleRow
+                checked={node.collapsible && !node.hideTitle}
+                disabled={node.hideTitle === true}
+                hint={node.hideTitle ? t(editor.hiddenTitleHint) : undefined}
+                label={t(editor.groupCollapsible)}
+                onChange={(checked) => callbacks.onUpdate(node.id, { collapsible: checked })}
+            />
+            {!node.hideTitle && (
                 <input
-                    type="checkbox"
-                    checked={node.collapsible}
+                    value={node.docsPath ?? ''}
                     onChange={(event) =>
-                        callbacks.onUpdate(node.id, { collapsible: event.target.checked })
+                        callbacks.onUpdate(node.id, { docsPath: event.target.value })
                     }
-                    className="h-3.5 w-3.5"
+                    placeholder={t(editor.docsLink)}
+                    aria-label={t(editor.docsLink)}
+                    className={`${inputClasses} w-full`}
                 />
-                {t(editor.groupCollapsible)}
-            </label>
-            <ColumnSelect
-                onChange={(columns) => callbacks.onUpdate(node.id, { columns })}
-                value={node.columns}
+            )}
+            <ColumnLayoutControl
+                columns={node.columns}
+                columnWidths={node.columnWidths}
+                onChange={(updates) => callbacks.onUpdate(node.id, updates)}
             />
         </div>
     );
@@ -786,6 +815,16 @@ function ListConfig({
             <ColumnSelect
                 onChange={(columns) => listUpdate({ columns: columns ?? 1 })}
                 value={node.columns}
+            />
+            <ToggleRow
+                checked={node.showTitle === true}
+                label={t(editor.listShowTitle)}
+                onChange={(checked) => listUpdate({ showTitle: checked || undefined })}
+            />
+            <ToggleRow
+                checked={node.framed === true}
+                label={t(editor.listFramed)}
+                onChange={(checked) => listUpdate({ framed: checked || undefined })}
             />
             <ListPresetsEditor callbacks={callbacks} node={node} />
         </div>

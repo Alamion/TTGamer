@@ -1322,6 +1322,83 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.maxFromPlaceholder',
                     message: 'e.g. willpower.max',
                 },
+                layoutHeading: {
+                    id: 'ttgamer.ui.sheet.templates.editor.layoutHeading',
+                    message: 'Layout',
+                },
+                columnPlacement: {
+                    id: 'ttgamer.ui.sheet.templates.editor.columnPlacement',
+                    message: 'Column in parent',
+                },
+                columnAuto: {
+                    id: 'ttgamer.ui.sheet.templates.editor.columnAuto',
+                    message: 'Auto',
+                },
+                equalWidths: {
+                    id: 'ttgamer.ui.sheet.templates.editor.equalWidths',
+                    message: 'Equal column widths',
+                },
+                columnWidth: {
+                    id: 'ttgamer.ui.sheet.templates.editor.columnWidth',
+                    message: 'Column {index} width',
+                },
+                columnWidthsHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.columnWidthsHint',
+                    message:
+                        'Widths are proportional: 2 and 1 make the first column twice as wide.',
+                },
+                showTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.showTitle',
+                    message: 'Show title',
+                },
+                hiddenTitleHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.hiddenTitleHint',
+                    message: 'A group without a visible title cannot be collapsed.',
+                },
+                showLabel: {
+                    id: 'ttgamer.ui.sheet.templates.editor.showLabel',
+                    message: 'Show label',
+                },
+                placeholderText: {
+                    id: 'ttgamer.ui.sheet.templates.editor.placeholderText',
+                    message: 'Placeholder text (optional)',
+                },
+                formulaPrefix: {
+                    id: 'ttgamer.ui.sheet.templates.editor.formulaPrefix',
+                    message: 'Before value (e.g. ×)',
+                },
+                formulaSuffix: {
+                    id: 'ttgamer.ui.sheet.templates.editor.formulaSuffix',
+                    message: 'After value (e.g. m)',
+                },
+                primitivePart: {
+                    id: 'ttgamer.ui.sheet.templates.editor.primitivePart',
+                    message: 'Edits',
+                },
+                partCurrent: {
+                    id: 'ttgamer.ui.sheet.templates.editor.partCurrent',
+                    message: 'Current value',
+                },
+                partMax: {
+                    id: 'ttgamer.ui.sheet.templates.editor.partMax',
+                    message: 'Maximum',
+                },
+                minFrom: {
+                    id: 'ttgamer.ui.sheet.templates.editor.minFrom',
+                    message: 'Minimum from value or formula (optional)',
+                },
+                minFromPlaceholder: {
+                    id: 'ttgamer.ui.sheet.templates.editor.minFromPlaceholder',
+                    message: 'e.g. self-control',
+                },
+                listShowTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listShowTitle',
+                    message: 'Show list title',
+                },
+                listFramed: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listFramed',
+                    message: 'Draw a border around the list',
+                },
                 invalidFormula: {
                     id: 'ttgamer.ui.sheet.templates.editor.invalidFormula',
                     message: 'Invalid formula in "{id}" — check the expression.',

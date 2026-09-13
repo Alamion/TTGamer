@@ -463,3 +463,149 @@ describe('editor affordances (US2)', () => {
         ).toBe(collapsedBefore === 'true' ? 'false' : 'true');
     });
 });
+
+describe('editor layout and presentation controls', () => {
+    beforeEach(() => {
+        useTemplateStore.setState({ templates: [], quarantine: [] });
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    const panel = (nodeId: string) =>
+        document.querySelector(`[data-node-id="${nodeId}"]`) as HTMLElement;
+
+    function openEditor() {
+        const template = CustomTemplateSchema.parse({
+            id: 'layout-editor-kit',
+            name: 'Layout Editor Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'page',
+                    type: 'section',
+                    title: 'Page',
+                    columns: 2,
+                    children: [
+                        {
+                            id: 'identity',
+                            type: 'group',
+                            title: 'Identity',
+                            collapsible: true,
+                            children: [
+                                { id: 'bio', type: 'text', label: 'Biography', multiline: true },
+                                { id: 'total', type: 'formula', label: 'Total', formula: '1 + 1' },
+                            ],
+                        },
+                        {
+                            id: 'max-fp',
+                            type: 'primitive',
+                            bindingKey: 'resource:force-points',
+                            label: 'Max Force Points',
+                        },
+                        { id: 'powers', type: 'list', bindingKey: 'list:forcePowers' },
+                    ],
+                },
+            ],
+        });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+    }
+
+    function saved() {
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const [template] = useTemplateStore.getState().templates;
+        const find = (id: string): Record<string, unknown> | undefined => {
+            let found: Record<string, unknown> | undefined;
+            const walk = (nodes: readonly TemplateNode[]) => {
+                for (const node of nodes) {
+                    if (node.id === id) found = node as unknown as Record<string, unknown>;
+                    if (node.type === 'section' || node.type === 'group') walk(node.children);
+                }
+            };
+            walk(template!.children);
+            return found;
+        };
+        return find;
+    }
+
+    it('offers column placement only inside multi-column containers', () => {
+        openEditor();
+        expect(
+            within(panel('identity')).getAllByRole('radiogroup', { name: 'Column in parent' })
+        ).toHaveLength(1); // the group itself; its single-column children get none
+        fireEvent.click(
+            within(
+                within(panel('identity')).getAllByRole('radiogroup', {
+                    name: 'Column in parent',
+                })[0]!
+            ).getByRole('radio', { name: '2' })
+        );
+        expect(saved()('identity')?.column).toBe(2);
+    });
+
+    it('sets proportional column widths with a live preview', () => {
+        openEditor();
+        const section = panel('page');
+        fireEvent.click(within(section).getAllByLabelText('Equal column widths')[0]!);
+        fireEvent.change(within(section).getAllByLabelText('Column 1 width')[0]!, {
+            target: { value: '2' },
+        });
+        const preview = within(section).getAllByTestId('column-preview')[0]!;
+        expect((preview.children[0] as HTMLElement).style.flexGrow).toBe('2');
+        expect(saved()('page')?.columnWidths).toEqual([2, 1]);
+    });
+
+    it('hides a group title and explains why it can no longer collapse', () => {
+        openEditor();
+        const group = panel('identity');
+        fireEvent.click(within(group).getAllByLabelText('Show title')[0]!);
+        const collapsible = within(group).getAllByLabelText(
+            'Collapsible (expanded state is remembered)'
+        )[0] as HTMLInputElement;
+        expect(collapsible.disabled).toBe(true);
+        expect(
+            within(group).getByText('A group without a visible title cannot be collapsed.')
+        ).not.toBeNull();
+        expect(saved()('identity')?.hideTitle).toBe(true);
+    });
+
+    it('edits field label visibility, placeholder, and formula decoration', () => {
+        openEditor();
+        fireEvent.click(within(panel('bio')).getByLabelText('Show label'));
+        fireEvent.change(within(panel('bio')).getByLabelText('Placeholder text (optional)'), {
+            target: { value: 'Character biography...' },
+        });
+        fireEvent.change(within(panel('total')).getByLabelText('Before value (e.g. ×)'), {
+            target: { value: '×' },
+        });
+        const find = saved();
+        expect(find('bio')).toMatchObject({
+            hideLabel: true,
+            placeholder: 'Character biography...',
+        });
+        expect(find('total')?.prefix).toBe('×');
+    });
+
+    it('edits pool part and minimum on resources, and list title and border', () => {
+        openEditor();
+        fireEvent.change(within(panel('max-fp')).getByLabelText('Edits'), {
+            target: { value: 'max' },
+        });
+        fireEvent.change(
+            within(panel('max-fp')).getByLabelText('Minimum from value or formula (optional)'),
+            { target: { value: 'self-control' } }
+        );
+        fireEvent.click(within(panel('powers')).getByLabelText('Show list title'));
+        fireEvent.click(within(panel('powers')).getByLabelText('Draw a border around the list'));
+        const find = saved();
+        expect(find('max-fp')).toMatchObject({ part: 'max', minFrom: 'self-control' });
+        expect(find('powers')).toMatchObject({ showTitle: true, framed: true });
+    });
+});

@@ -36,6 +36,14 @@ import {
 export type NodeUpdates = {
     title?: string;
     columns?: number;
+    columnWidths?: number[];
+    column?: number;
+    hideTitle?: boolean;
+    hideLabel?: boolean;
+    part?: 'current' | 'max';
+    minFrom?: string;
+    showTitle?: boolean;
+    framed?: boolean;
     collapsible?: boolean;
     docsPath?: string;
     minRows?: number;
@@ -255,7 +263,14 @@ export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpda
             delete (merged as { labelMessage?: string }).labelMessage;
         }
         // Clearing optional strings normalizes to absent instead of empty strings.
-        for (const key of ['docsPath', 'valueKey', 'bindingKey', 'label', 'maxFrom'] as const) {
+        for (const key of [
+            'docsPath',
+            'valueKey',
+            'bindingKey',
+            'label',
+            'maxFrom',
+            'minFrom',
+        ] as const) {
             if (key in updates && (merged as Record<string, unknown>)[key] === '') {
                 delete (merged as Record<string, unknown>)[key];
             }

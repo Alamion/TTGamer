@@ -106,6 +106,13 @@ const DROID_FULL_VIEW = builtInView('droid-sheet', viewLabels.droidSheet, [
     { id: 'body', accentColor: 'secondary' },
     { id: 'other', accentColor: 'primary' },
 ]);
+// Droids get their own brief page; documents saved with the shared brief id resolve to it.
+const DROID_BRIEF_VIEW = builtInView(
+    'droid-brief',
+    viewLabels.brief,
+    [{ id: 'brief-document' }],
+    ['brief', 'npc-card']
+);
 const CREATURE_FULL_VIEW = builtInView('creature-sheet', viewLabels.creatureSheet, [
     { id: 'star-wars-creature-sheet' },
 ]);
@@ -136,7 +143,7 @@ export const starWarsDroidDefinition: DocumentDefinition = {
     schema: DroidDataSchema,
     createDefault: createDefaultDroidData,
     defaultViewId: DROID_FULL_VIEW.id,
-    views: [DROID_FULL_VIEW, BRIEF_VIEW],
+    views: [DROID_FULL_VIEW, DROID_BRIEF_VIEW],
     capabilities: { character: droidCharacterCapability },
 };
 

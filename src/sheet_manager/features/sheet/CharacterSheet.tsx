@@ -54,9 +54,9 @@ function CurrentDocumentSheet() {
 
     // Feature 004: the selected view IS a default template — render it declaratively with its
     // persisted override applied (no migration, no special-case mapping).
-    const viewId =
-        document.metadata.preferredViewId ??
-        resolveDocumentView(definition, document.metadata.preferredViewId)?.id;
+    // Resolve through the document's own definition: several definitions share a kind (character
+    // and droid), and legacy aliases map to that definition's canonical view.
+    const viewId = resolveDocumentView(definition, document.metadata.preferredViewId)?.id;
     if (viewId) {
         const effective = resolveEffectiveTemplate(
             viewId,

@@ -6,8 +6,15 @@ import {
     migrateTemplateStoreState,
     useTemplateStore,
 } from '@site/src/sheet_manager/store/templateStore';
-import { systemRegistry } from '@site/src/sheet_manager/systems';
-import { resolveEffectiveTemplate } from '@site/src/sheet_manager/systems/view';
+import {
+    starWarsCharacterDefinition,
+    starWarsDroidDefinition,
+    systemRegistry,
+} from '@site/src/sheet_manager/systems';
+import {
+    resolveDocumentView,
+    resolveEffectiveTemplate,
+} from '@site/src/sheet_manager/systems/view';
 import { DocumentKindSchema, DocumentViewIdSchema } from '@site/src/sheet_manager/types/document';
 import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
@@ -48,7 +55,12 @@ describe('explicit default templates (feature 006, R9)', () => {
     const defaults = systemRegistry.getSystem('star-wars-wod')?.defaultTemplates ?? [];
 
     it('provides explicit defaults for full-sheet, droid-sheet, and brief', () => {
-        expect(defaults.map(({ id }) => id)).toEqual(['full-sheet', 'droid-sheet', 'brief']);
+        expect(defaults.map(({ id }) => id)).toEqual([
+            'full-sheet',
+            'droid-sheet',
+            'brief',
+            'droid-brief',
+        ]);
         for (const template of defaults) {
             expect(template.systemId).toBe('star-wars-wod');
             expect(template.documentKind).toBe('character');
@@ -144,6 +156,20 @@ describe('explicit default templates (feature 006, R9)', () => {
         expect(JSON.stringify(brief)).toContain('track:health');
         expect(JSON.stringify(brief)).toContain('resource:willpower');
         expect(JSON.stringify(brief)).toContain('equipment:weapons');
+    });
+
+    it('resolves the brief through the document definition (droids get their own brief)', () => {
+        const state = { templates: [], defaultOverrides: {} };
+        const briefFor = (definition: typeof starWarsDroidDefinition) => {
+            const view = resolveDocumentView(definition, DocumentViewIdSchema.parse('brief'));
+            return resolveEffectiveTemplate(view!.id, state, 'star-wars-wod', characterKind)
+                ?.template;
+        };
+        const droidBrief = briefFor(starWarsDroidDefinition)!;
+        expect(droidBrief.id).toBe('droid-brief');
+        expect(JSON.stringify(droidBrief)).toContain('track:droid-damage');
+        expect(JSON.stringify(droidBrief)).not.toContain('resource:force-points');
+        expect(briefFor(starWarsCharacterDefinition)!.id).toBe('brief');
     });
 
     it('does not ship declarative defaults for the specialized pages', () => {

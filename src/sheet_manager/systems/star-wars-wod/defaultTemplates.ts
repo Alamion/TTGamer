@@ -585,9 +585,11 @@ function fullSheet(viewId: string, name: string, variant: SheetVariant): CustomT
 
 /**
  * Brief perspective: no sections — only the field groups a player or GM glances at during a
- * mission, in compact presentation.
+ * mission, in compact presentation. Droids have no Force: Resolve keeps virtues, Willpower, and
+ * standard initiative, and the condition strip uses the damage chart.
  */
-function briefSheet(viewId: string, name: string): CustomTemplate {
+function briefSheet(viewId: string, name: string, variant: SheetVariant): CustomTemplate {
+    const isDroid = variant === 'droid';
     const compactTraits = (keys: readonly string[]) =>
         keys.map((key) => trait(key, { compact: true }));
     const placed = <T extends TemplateNode>(node: T, column: number): T => ({ ...node, column });
@@ -634,43 +636,59 @@ function briefSheet(viewId: string, name: string): CustomTemplate {
                         }),
                         2
                     ),
-                    placed(
-                        resource('resource-force-points', 'resource:force-points', 'Force Points', {
-                            compact: true,
-                        }),
-                        2
-                    ),
-                    placed(
-                        resource(
-                            'resource-dark-side',
-                            'resource:dark-side-resistance',
-                            'Dark Side Resistance',
-                            { compact: true }
-                        ),
-                        2
-                    ),
+                    ...(isDroid
+                        ? []
+                        : [
+                              placed(
+                                  resource(
+                                      'resource-force-points',
+                                      'resource:force-points',
+                                      'Force Points',
+                                      { compact: true }
+                                  ),
+                                  2
+                              ),
+                              placed(
+                                  resource(
+                                      'resource-dark-side',
+                                      'resource:dark-side-resistance',
+                                      'Dark Side Resistance',
+                                      { compact: true }
+                                  ),
+                                  2
+                              ),
+                          ]),
                     placed(
                         formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative, {
                             compact: true,
                         }),
                         3
                     ),
-                    placed(
-                        formula(
-                            'derived-initiative-saber',
-                            'Initiative (Saber)',
-                            DERIVED.initiativeSaber,
-                            { compact: true }
-                        ),
-                        3
-                    ),
+                    ...(isDroid
+                        ? []
+                        : [
+                              placed(
+                                  formula(
+                                      'derived-initiative-saber',
+                                      'Initiative (Saber)',
+                                      DERIVED.initiativeSaber,
+                                      { compact: true }
+                                  ),
+                                  3
+                              ),
+                          ]),
                 ],
                 { columns: 3 }
             ),
             group(
                 'brief-health',
-                'Health',
-                [primitive('track-health', 'track:health', { compact: true, label: 'Health' })],
+                isDroid ? 'Damage' : 'Health',
+                [
+                    primitive('track-health', isDroid ? 'track:droid-damage' : 'track:health', {
+                        compact: true,
+                        label: isDroid ? 'Damage' : 'Health',
+                    }),
+                ],
                 { hideTitle: true }
             ),
             group(
@@ -790,5 +808,6 @@ function translatable(template: CustomTemplate): CustomTemplate {
 export const starWarsWodDefaultTemplates: readonly CustomTemplate[] = [
     translatable(fullSheet('full-sheet', 'Full sheet', 'character')),
     translatable(fullSheet('droid-sheet', 'Droid sheet', 'droid')),
-    translatable(briefSheet('brief', 'Brief')),
+    translatable(briefSheet('brief', 'Brief', 'character')),
+    translatable(briefSheet('droid-brief', 'Droid brief', 'droid')),
 ];

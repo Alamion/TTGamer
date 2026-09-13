@@ -5,10 +5,12 @@ import { listDocumentBindings } from '../../../systems/templateBindings';
 import type { CustomTemplate, PrimitiveNode } from '../../../types/template';
 import type { NodeUpdates } from './draft';
 import { listNumericCoordinateOptions } from './draft';
+import { ToggleRow } from './LayoutControls';
 
 const primitives = uiMessages.sheet.templates.primitives;
-const editorMaxFrom = uiMessages.sheet.templates.editor.maxFrom;
-const editorMaxFromPlaceholder = uiMessages.sheet.templates.editor.maxFromPlaceholder;
+const editor = uiMessages.sheet.templates.editor;
+const editorMaxFrom = editor.maxFrom;
+const editorMaxFromPlaceholder = editor.maxFromPlaceholder;
 
 const inputClasses =
     'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
@@ -80,6 +82,48 @@ export function PrimitiveConfig({
                 />
                 {t(primitives.compact)}
             </label>
+
+            <ToggleRow
+                checked={!node.hideLabel}
+                label={t(editor.showLabel)}
+                onChange={(checked) => update({ hideLabel: checked ? undefined : true })}
+            />
+
+            {descriptor?.kind === 'resource' && descriptor.mode === 'pool' && (
+                <label className="grid gap-1 text-xs text-textSecondary">
+                    {t(editor.primitivePart)}
+                    <select
+                        value={node.part ?? 'current'}
+                        onChange={(event) =>
+                            update({ part: event.target.value === 'max' ? 'max' : undefined })
+                        }
+                        aria-label={t(editor.primitivePart)}
+                        className={inputClasses}
+                    >
+                        <option value="current">{t(editor.partCurrent)}</option>
+                        <option value="max">{t(editor.partMax)}</option>
+                    </select>
+                </label>
+            )}
+
+            {descriptor?.kind === 'resource' && (
+                <label className="grid gap-1 text-xs text-textSecondary">
+                    {t(editor.minFrom)}
+                    <input
+                        value={node.minFrom ?? ''}
+                        onChange={(event) =>
+                            update({
+                                minFrom:
+                                    event.target.value.length > 0 ? event.target.value : undefined,
+                            })
+                        }
+                        placeholder={t(editor.minFromPlaceholder)}
+                        aria-label={t(editor.minFrom)}
+                        list={`maxfrom-coordinates-${node.id}`}
+                        className={inputClasses}
+                    />
+                </label>
+            )}
 
             {descriptor?.kind === 'resource' && (
                 <label className="grid gap-1 text-xs text-textSecondary">

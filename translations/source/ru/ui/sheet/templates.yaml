@@ -117,6 +117,25 @@ editor:
     formulaPlaceholder: например, passion + self-control
     maxFrom: Максимум из значения или формулы (необязательно)
     maxFromPlaceholder: например, willpower.max
+    layoutHeading: Раскладка
+    columnPlacement: Колонка в родителе
+    columnAuto: Авто
+    equalWidths: Колонки одинаковой ширины
+    columnWidth: Ширина колонки {index}
+    columnWidthsHint: 'Ширины пропорциональны: 2 и 1 делают первую колонку вдвое шире.'
+    showTitle: Показывать заголовок
+    hiddenTitleHint: Группу без видимого заголовка нельзя свернуть.
+    showLabel: Показывать подпись
+    placeholderText: Текст-подсказка (необязательно)
+    formulaPrefix: Перед значением (например, ×)
+    formulaSuffix: После значения (например, м)
+    primitivePart: Редактирует
+    partCurrent: Текущее значение
+    partMax: Максимум
+    minFrom: Минимум из значения или формулы (необязательно)
+    minFromPlaceholder: например, self-control
+    listShowTitle: Показывать заголовок списка
+    listFramed: Рамка вокруг списка
     invalidFormula: Неверная формула в «{id}» — проверьте выражение.
     unknownCoordinate: Неизвестное значение «{id}» в формуле.
     circularDependency: 'Обнаружена циклическая зависимость: {id}'

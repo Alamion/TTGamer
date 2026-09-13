@@ -3,9 +3,10 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Plus, Trash2 } from 'lucide-react';
 
 import type { CustomTemplate, TemplateField } from '../../../types/template';
-import { TEMPLATE_LIMITS } from '../../../types/template';
+import { TEMPLATE_FIELD_TYPES, TEMPLATE_LIMITS } from '../../../types/template';
 import { CatalogBindingEditor } from './CatalogBindingEditor';
 import { listNumericCoordinateOptions } from './draft';
+import { ToggleRow } from './LayoutControls';
 
 const editor = uiMessages.sheet.templates.editor;
 const fieldTypes = uiMessages.sheet.templates.fieldTypes;
@@ -13,17 +14,10 @@ const fieldTypes = uiMessages.sheet.templates.fieldTypes;
 const inputClasses =
     'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
 
-const FIELD_TYPE_OPTIONS: ReadonlyArray<{ value: TemplateField['type']; label: string }> = [
-    { value: 'text', label: fieldTypes.text.message },
-    { value: 'number', label: fieldTypes.number.message },
-    { value: 'toggle', label: fieldTypes.toggle.message },
-    { value: 'select', label: fieldTypes.select.message },
-    { value: 'rating', label: fieldTypes.rating.message },
-    { value: 'resource', label: fieldTypes.resource.message },
-    { value: 'reference', label: fieldTypes.reference.message },
-    { value: 'image', label: fieldTypes.image.message },
-    { value: 'formula', label: fieldTypes.formula.message },
-];
+const FIELD_TYPE_OPTIONS: ReadonlyArray<{ value: TemplateField['type']; label: string }> =
+    TEMPLATE_FIELD_TYPES.map((type) => ({ value: type, label: fieldTypes[type].message }));
+
+const optionalText = (value: string) => (value.length > 0 ? value : undefined);
 
 /**
  * Config-only field editor: the panel header (move/collapse/remove affordances) belongs to
@@ -124,6 +118,29 @@ export function FieldEditor({
                 {t(editor.fieldRequired)}
             </label>
 
+            <ToggleRow
+                checked={!field.hideLabel}
+                label={t(editor.showLabel)}
+                onChange={(checked) =>
+                    callbacks.onUpdate({ hideLabel: checked ? undefined : true })
+                }
+            />
+
+            {field.type === 'text' && (
+                <input
+                    value={field.placeholder ?? ''}
+                    onChange={(event) =>
+                        callbacks.onUpdate({
+                            placeholder: optionalText(event.target.value),
+                            placeholderMessage: undefined,
+                        })
+                    }
+                    placeholder={t(editor.placeholderText)}
+                    aria-label={t(editor.placeholderText)}
+                    className={`${inputClasses} w-full`}
+                />
+            )}
+
             {field.type === 'formula' && (
                 <label className="grid gap-1 text-xs text-textSecondary">
                     {t(editor.formula)}
@@ -136,6 +153,31 @@ export function FieldEditor({
                         className={`${inputClasses} w-full font-mono`}
                     />
                 </label>
+            )}
+
+            {field.type === 'formula' && (
+                <div className="flex items-center gap-2">
+                    <input
+                        value={field.prefix ?? ''}
+                        maxLength={8}
+                        onChange={(event) =>
+                            callbacks.onUpdate({ prefix: optionalText(event.target.value) })
+                        }
+                        placeholder={t(editor.formulaPrefix)}
+                        aria-label={t(editor.formulaPrefix)}
+                        className={`${inputClasses} min-w-0 flex-1`}
+                    />
+                    <input
+                        value={field.suffix ?? ''}
+                        maxLength={8}
+                        onChange={(event) =>
+                            callbacks.onUpdate({ suffix: optionalText(event.target.value) })
+                        }
+                        placeholder={t(editor.formulaSuffix)}
+                        aria-label={t(editor.formulaSuffix)}
+                        className={`${inputClasses} min-w-0 flex-1`}
+                    />
+                </div>
             )}
 
             {(field.type === 'number' || field.type === 'rating') && (

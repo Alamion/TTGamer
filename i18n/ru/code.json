@@ -1094,8 +1094,20 @@
     "ttgamer.ui.sheet.templates.editor.collapse": {
         "message": "Свернуть панель"
     },
+    "ttgamer.ui.sheet.templates.editor.columnAuto": {
+        "message": "Авто"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnPlacement": {
+        "message": "Колонка в родителе"
+    },
     "ttgamer.ui.sheet.templates.editor.columns": {
         "message": "Колонки"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnWidth": {
+        "message": "Ширина колонки {index}"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnWidthsHint": {
+        "message": "Ширины пропорциональны: 2 и 1 делают первую колонку вдвое шире."
     },
     "ttgamer.ui.sheet.templates.editor.countMessage": {
         "message": "Достигнут предел элементов — максимум {limit}."
@@ -1124,6 +1136,9 @@
     "ttgamer.ui.sheet.templates.editor.emptyName": {
         "message": "Требуется название шаблона."
     },
+    "ttgamer.ui.sheet.templates.editor.equalWidths": {
+        "message": "Колонки одинаковой ширины"
+    },
     "ttgamer.ui.sheet.templates.editor.expand": {
         "message": "Развернуть панель"
     },
@@ -1145,6 +1160,12 @@
     "ttgamer.ui.sheet.templates.editor.formulaPlaceholder": {
         "message": "например, passion + self-control"
     },
+    "ttgamer.ui.sheet.templates.editor.formulaPrefix": {
+        "message": "Перед значением (например, ×)"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaSuffix": {
+        "message": "После значения (например, м)"
+    },
     "ttgamer.ui.sheet.templates.editor.gripHandle": {
         "message": "Рукоять перемещения — потяните, чтобы передвинуть"
     },
@@ -1153,6 +1174,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.groupTitle": {
         "message": "Название группы"
+    },
+    "ttgamer.ui.sheet.templates.editor.hiddenTitleHint": {
+        "message": "Группу без видимого заголовка нельзя свернуть."
     },
     "ttgamer.ui.sheet.templates.editor.invalidBounds": {
         "message": "Минимум не может превышать максимум."
@@ -1163,6 +1187,9 @@
     "ttgamer.ui.sheet.templates.editor.invalidKey": {
         "message": "Неверный ключ «{id}» — используйте строчные буквы, цифры и дефисы."
     },
+    "ttgamer.ui.sheet.templates.editor.layoutHeading": {
+        "message": "Раскладка"
+    },
     "ttgamer.ui.sheet.templates.editor.limitReached": {
         "message": "Достигнут лимит — максимум {limit} ({subject})."
     },
@@ -1172,6 +1199,9 @@
     "ttgamer.ui.sheet.templates.editor.listCustomKey": {
         "message": "Ключ значения списка"
     },
+    "ttgamer.ui.sheet.templates.editor.listFramed": {
+        "message": "Рамка вокруг списка"
+    },
     "ttgamer.ui.sheet.templates.editor.listMode": {
         "message": "Хранилище"
     },
@@ -1180,6 +1210,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.listModeSystem": {
         "message": "Системный список"
+    },
+    "ttgamer.ui.sheet.templates.editor.listShowTitle": {
+        "message": "Показывать заголовок списка"
     },
     "ttgamer.ui.sheet.templates.editor.listSystemBinding": {
         "message": "Системный список"
@@ -1192,6 +1225,12 @@
     },
     "ttgamer.ui.sheet.templates.editor.maxRows": {
         "message": "Макс. строк"
+    },
+    "ttgamer.ui.sheet.templates.editor.minFrom": {
+        "message": "Минимум из значения или формулы (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.minFromPlaceholder": {
+        "message": "например, self-control"
     },
     "ttgamer.ui.sheet.templates.editor.minRows": {
         "message": "Мин. строк"
@@ -1250,8 +1289,20 @@
     "ttgamer.ui.sheet.templates.editor.paletteTracks": {
         "message": "Треки состояний"
     },
+    "ttgamer.ui.sheet.templates.editor.partCurrent": {
+        "message": "Текущее значение"
+    },
+    "ttgamer.ui.sheet.templates.editor.partMax": {
+        "message": "Максимум"
+    },
+    "ttgamer.ui.sheet.templates.editor.placeholderText": {
+        "message": "Текст-подсказка (необязательно)"
+    },
     "ttgamer.ui.sheet.templates.editor.presentation": {
         "message": "Отображение"
+    },
+    "ttgamer.ui.sheet.templates.editor.primitivePart": {
+        "message": "Редактирует"
     },
     "ttgamer.ui.sheet.templates.editor.ratingBoxes": {
         "message": "Клетки"
@@ -1282,6 +1333,12 @@
     },
     "ttgamer.ui.sheet.templates.editor.sectionTitle": {
         "message": "Заголовок секции"
+    },
+    "ttgamer.ui.sheet.templates.editor.showLabel": {
+        "message": "Показывать подпись"
+    },
+    "ttgamer.ui.sheet.templates.editor.showTitle": {
+        "message": "Показывать заголовок"
     },
     "ttgamer.ui.sheet.templates.editor.tableTitle": {
         "message": "Название таблицы (необязательно)"

@@ -126,6 +126,10 @@ WoD-family systems build trait/resource/track bindings from their profile with
   damage chart's level names and penalties. The shipped `droid-sheet` is the `droid` variant of
   the full sheet: no Force skills/powers or Force Points, per-group free-point fields
   (`droid-free-<group>` bag values), Built-in equipment, and the damage chart.
+- Views resolve through the document's own definition (`resolveDocumentView` →
+  `resolveEffectiveTemplate`): character and droid share the `character` kind, so the droid
+  definition registers its own `droid-brief` view (aliases `brief`, `npc-card`) whose shipped
+  template drops Force content and uses the damage strip.
 - List entry shapes: `trait` `{id,label,value}`, `named-trait` `{id,name,value}`, `merit-flaw`
   `{id,label,points}`. Preset seeding and the list molecules both follow `entryShape`.
 - Keys are persisted as plain strings, checked by `validateTemplateReferences`
@@ -209,6 +213,12 @@ The selector (`ViewModeSelect`) encodes custom templates as `tpl:<id>`; view ids
   bounds, formula parse errors, cycles, plus every `validateTemplateReferences` issue).
 - `ElementEditor.tsx`: recursive panels (grip = move on the left, chevron = collapse on the
   right), palette, bridged-field factories. `FieldEditor.tsx` / `PrimitiveConfig.tsx`: config.
+- Layout controls (`LayoutControls.tsx`): column placement appears on a panel only when its
+  parent has more than one column; sections/groups get column count + proportional widths with
+  a preview bar; groups "Show title" (hiding it disables collapsing, with a hint) and docs
+  link; fields "Show label", text placeholder, formula before/after decoration; primitives
+  "Show label", pool "Edits current/maximum", "Minimum from"; lists "Show list title" and
+  "Draw a border". Editing a label or placeholder drops its shipped translation reference.
 - `TemplateEditorDialog`: explicit save/discard; editing a default id saves through
   `setDefaultOverride`, everything else through `saveTemplate`. Library: reset clears the
   override; defaults cannot be deleted.
@@ -266,8 +276,6 @@ lists reference it by `catalog.catalogId`.
 - Primitive molecules (trait rows, merit/flaw lists, equipment sections) are WoD-family UI and
   read through the `character` capability (`BaseCharacter`); a non-WoD system will need its own
   molecules behind the same binding kinds.
-- The editor does not yet expose `column`, `hideTitle`, `hideLabel`, `placeholder`,
-  `prefix`/`suffix`, `part`, or group `docsPath`; edits preserve them, but authors cannot set them.
 - Binding keys are not literal types (bindings are built at runtime per system); integrity
   relies on `validateTemplateReferences` rather than the compiler.
 - `useTemplatePage` (`hooks.ts`) mixes store wiring, formula evaluation, list/catalog runtime,
