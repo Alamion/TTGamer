@@ -21,19 +21,6 @@ export { CollapsibleBlock } from './sections/CollapsibleBlock.tsx';
 export { CollapsibleItem } from './sections/CollapsibleItem.tsx';
 export type { DataTableColumn, DataTableProps } from './sections/DataTable.tsx';
 export { DataTable } from './sections/DataTable.tsx';
-export type {
-    ConditionTrackMember,
-    DocumentFieldDefinition,
-    DocumentResourceValue,
-} from './sections/DocumentSheetSections.tsx';
-export {
-    ConditionTrackBlock,
-    CustomTraitsBlock,
-    DocumentFieldsBlock,
-    EditableTableBlock,
-    ResourceBlock,
-    TraitGroupsBlock,
-} from './sections/DocumentSheetSections.tsx';
 export { SectionCard } from './sections/SectionCard.tsx';
 export {
     CompactConditionTrack,
@@ -47,4 +34,3 @@ export { MeritFlawList } from './stat-fields/MeritFlawRow.tsx';
 export { StatDot } from './stat-fields/StatDot.tsx';
 export { StatLabel } from './stat-fields/StatLabel.tsx';
 export { CustomTraitList, TraitRow, TraitRowWithInput } from './stat-fields/TraitRow.tsx';
-export { CharacterViewer } from './viewer/CharacterViewer.tsx';

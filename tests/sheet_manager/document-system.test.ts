@@ -184,15 +184,15 @@ describe('system registry', () => {
         ]);
         expect(starWarsCreatureDefinition.views.map(({ id }) => id)).toEqual([
             'creature-sheet',
-            'brief',
+            'creature-brief',
         ]);
         expect(starWarsVehicleDefinition.views.map(({ id }) => id)).toEqual([
             'vehicle-sheet',
-            'brief',
+            'vehicle-brief',
         ]);
         expect(starWarsFodderDefinition.views.map(({ id }) => id)).toEqual([
             'fodder-sheet',
-            'brief',
+            'fodder-brief',
         ]);
 
         for (const definition of starWarsWodSystem.documents) {
@@ -204,18 +204,13 @@ describe('system registry', () => {
         expect(starWarsVehicleDefinition.kind).toBe('vehicle');
         expect(starWarsFodderDefinition.kind).toBe('group');
 
-        const droidLayout = starWarsDroidDefinition.views[0].layout;
-        expect(droidLayout.type).toBe('built-in');
-        if (droidLayout.type === 'built-in') {
-            expect(droidLayout.blocks.map(({ id }) => id)).toEqual([
-                'base',
-                'attributes',
-                'skills',
-                'advantages',
-                'force',
-                'body',
-                'other',
-            ]);
+        for (const definition of starWarsWodSystem.documents) {
+            for (const view of definition.views) {
+                expect(view.layout, `${definition.id}:${view.id}`).toEqual({
+                    type: 'declarative',
+                    templateId: view.id,
+                });
+            }
         }
     });
 
@@ -322,7 +317,7 @@ describe('system registry', () => {
                         {
                             id: DocumentViewIdSchema.parse('default'),
                             label: { id: 'test.event.views.default', message: 'Default' },
-                            layout: { type: 'built-in', blocks: [] },
+                            layout: { type: 'declarative', templateId: 'default' },
                         },
                     ],
                     migrate: (data, fromVersion) => {

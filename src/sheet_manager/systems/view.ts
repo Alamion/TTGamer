@@ -16,7 +16,10 @@ export function resolveDocumentView(
     return definition.views.find(({ id }) => id === definition.defaultViewId);
 }
 
-export type ResolvedCustomTemplate = CustomTemplate | { reason: 'missing' } | undefined;
+export type ResolvedCustomTemplate =
+    | CustomTemplate
+    | { reason: 'missing' | 'kind-mismatch' }
+    | undefined;
 
 /**
  * Resolves a document's custom page assignment: `undefined` = no assignment (built-in path),
@@ -46,7 +49,9 @@ export function resolveEffectiveTemplate(
     systemId: string,
     documentKind: DocumentKind
 ): EffectiveTemplate | undefined {
-    const custom = state.templates.find((candidate) => candidate.id === id);
+    const custom = state.templates.find(
+        (candidate) => candidate.id === id && candidate.documentKind === documentKind
+    );
     if (custom) return { template: custom, isDefault: false, modified: false };
 
     // Feature 005/006: explicit primitive-composed default templates are the only default
@@ -59,7 +64,9 @@ export function resolveEffectiveTemplate(
         .getSystem(systemId)
         ?.defaultTemplates?.find((template) => template.id === canonicalId);
     if (!explicit || explicit.documentKind !== documentKind) return undefined;
-    const override = state.defaultOverrides[id];
+    // Overrides belong to the canonical page: a legacy alias shared by several kinds (`brief`)
+    // must not pick up another kind's edited default.
+    const override = state.defaultOverrides[canonicalId];
     if (override) return { template: override, isDefault: true, modified: true };
     return { template: explicit, isDefault: true, modified: false };
 }
@@ -88,6 +95,7 @@ export function resolveCustomTemplate(
 ): ResolvedCustomTemplate {
     if (!templateId) return undefined;
     const template = library.find((candidate) => candidate.id === templateId);
-    if (!template || template.documentKind !== documentKind) return { reason: 'missing' };
+    if (!template) return { reason: 'missing' };
+    if (template.documentKind !== documentKind) return { reason: 'kind-mismatch' };
     return template;
 }

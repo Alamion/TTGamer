@@ -14,7 +14,13 @@ export type SheetIssueCode =
     | 'binding-unresolved'
     | 'catalog-unavailable'
     | 'formula-error'
-    | 'template-reference-invalid';
+    | 'template-reference-invalid'
+    /** A document rendered a page other than the one it asked for (stale id, kind mismatch). */
+    | 'template-fallback'
+    /** A reference value names a document that no longer exists. */
+    | 'reference-target-missing'
+    /** A catalog value was clamped or dropped while filling a sheet. */
+    | 'catalog-detail-out-of-range';
 
 export interface SheetIssue {
     code: SheetIssueCode;

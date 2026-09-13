@@ -8,7 +8,7 @@
         "ignoreDeprecations": "6.0",
         "strict": true
     },
-    "exclude": [".docusaurus", "build"],
+    "exclude": [".docusaurus", "build", "context"],
     "files": [],
     "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
 }

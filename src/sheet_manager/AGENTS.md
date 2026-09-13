@@ -12,23 +12,22 @@ src/sheet_manager/
 │   ├── controls/             # generic inputs: checkbox, textarea, catalog picker
 │   ├── dialogs/              # create/manage/confirm/import-conflict/template modal flows
 │   │   └── template-editor/  # template editor subcomponents + pure draft model
-│   ├── sections/             # collapsible panels, cards, tables, reusable document sections
-│   ├── stat-fields/          # atomic traits, dots, labels, Force and merit/flaw rows
-│   └── viewer/               # read-only character display adapter
+│   ├── sections/             # collapsible panels, cards, tables
+│   └── stat-fields/          # atomic traits, dots, labels, Force and merit/flaw rows
 ├── context/                  # read-only CharacterContext
 ├── data/                     # bundled character presets
 ├── features/sheet/           # the assembled interactive sheet
 │   ├── shell/                # toolbar, view selector, workspace-level import/export state,
 │   │                         # template library entry, template file transfer module
-│   ├── blocks/               # standard-character top-level sections
 │   ├── body/                 # character equipment and implant editors
-│   ├── views/                # one module per named view (brief, creature, vehicle, fodder)
-│   ├── declarative/          # custom-template page renderer: fields/table blocks, page hook
-│   ├── registry/             # layout block → component mapping (built-in + declarative fields)
+│   ├── declarative/          # template page renderer: fields, tables, primitives, member
+│   │                         # tracks, bound document access, page hook
+│   ├── registry/             # template field type → control mapping
 │   ├── data/                 # sheet-local catalog adapters + catalog binding registry
 │   └── hooks/                # sheet-local behavior hooks
 ├── hooks/                    # useCharacter and update helpers
-├── systems/                  # system plugins, document definitions, registry
+├── systems/                  # system plugins, document definitions, bindings, shipped templates
+├── templates/                # setting-neutral template node builders
 ├── store/                    # documentStore (polymorphic documents, v3) + templateStore (library, v3)
 └── types/                    # generic contracts, template schema, templateValues bag
 ```
@@ -48,16 +47,17 @@ Use dependency direction, not component size, to classify sheet UI:
 2. **Molecules** (`components/sections`) combine atoms into one reusable interaction such
    as a trait group, resource group, condition track, or editable table. They may accept
    definition/profile data but must not select the current document.
-3. **Blocks** (`features/sheet/blocks`, `features/sheet/body`) adapt one document capability
-   to molecules. A block may use a capability hook, but must not decide which document view
-   is active or render a workspace shell.
-4. **Views** (`features/sheet/views`) compose blocks or compact molecules into one named
-   representation. Views must not duplicate an atom or molecule that another view needs.
+3. **Bound elements** (`features/sheet/declarative`, `features/sheet/body`) adapt document data
+   to molecules through bindings (`useBoundDocument`, `useBodyHandlers`). They must not decide
+   which document view is active or render a workspace shell.
+4. **Views** are shipped templates (`systems/<system>/templates/`): declarative trees composed
+   from bound elements. There are no hand-written view components; a new page is a template.
 5. **Shells** (`features/sheet/shell`) own collection, import/export, toolbar, and active-view
    concerns. They do not contain system mechanics.
 
-Document definitions own the available views. `brief` is a representation capability, not
-a document kind: every built-in definition must register it. Keep obsolete persisted view
+Document definitions own the available views, each backed by a shipped template of the same id
+and kind. A brief is a representation, not a document kind: every definition registers its own
+brief view (aliases `brief`/`npc-card` where older data may use them). Keep obsolete persisted view
 IDs as definition-owned aliases until their data can no longer exist. View labels are
 definition-owned translation descriptors; shells must not maintain view-ID label maps.
 
@@ -65,17 +65,19 @@ Prefer capability adapters for related payloads. For example, sentient and droid
 share character trait/equipment blocks; the droid adapter maps its mechanical `damage` track
 to the shared condition capability without changing persisted field names. Labels and track
 profiles remain definition-owned configuration. Shared views route by capability presence
-(`capabilities.character`), never by `definitionId` string matching.
+(`capabilities.character`), never by `definitionId` string matching. Retired pre-template
+blocks and views are archived for reference in `context/legacy-sheet-components/`.
 
 ## Character Access
 
-All sheet blocks, including derived and experience blocks, use `useCharacter()`:
+Bound template elements use `useBoundDocument()` (any kind); equipment and legacy-shaped
+character helpers use `useCharacter()`:
 
 - viewer context wins when present;
 - otherwise the editable Zustand character is used;
 - updates are ignored in read-only context.
 
-Do not read `currentCharacter` directly inside a reusable sheet block. Direct store access is appropriate for layout/manager operations that explicitly manage the collection.
+Do not read `currentCharacter` directly inside a reusable sheet element. Direct store access is appropriate for layout/manager operations that explicitly manage the collection.
 
 ## Schema and Import/Export
 
@@ -90,7 +92,7 @@ Do not read `currentCharacter` directly inside a reusable sheet block. Direct st
 
 Persistence uses a Zustand version and migration strategy. Invalid legacy or current entries are retained in the bounded recovery collection instead of being silently discarded.
 
-Generic documents use validated open-ended kind identifiers so non-character records do not require a core enum change. Built-in systems register code-owned layouts; user templates use the bounded declarative schemas in `types/template.ts` and must never contain executable code.
+Generic documents use validated open-ended kind identifiers so non-character records do not require a core enum change. Built-in systems register code-owned shipped templates; user templates use the bounded declarative schemas in `types/template.ts` and must never contain executable code.
 
 ## Custom Page Templates
 
@@ -127,4 +129,4 @@ duplicate template facts here. Invariants that must never be broken:
 
 ## Testing
 
-Run schema/import/derived-stat tests for changes to `types/`, persistence, or import/export. Run `yarn verify` before handoff. Load `.agents/skills/sheet-manager/SKILL.md` for schema, store, derived-stat, or block changes.
+Run schema/import/derived-stat tests for changes to `types/`, persistence, or import/export. Run `yarn verify` before handoff. Load `.agents/skills/sheet-manager/SKILL.md` for schema, store, or derived-stat changes and `.agents/skills/sheet-templates/SKILL.md` for pages, bindings, or docs embeds.

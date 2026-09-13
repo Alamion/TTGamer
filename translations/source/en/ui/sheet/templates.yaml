@@ -39,6 +39,11 @@ primitives:
     removePreset: Remove preset
     degraded: 'Data binding "{binding}" is unavailable on this device.'
 editor:
+    visibleWhen: Show only when a value matches
+    visibleWhenCoordinate: Value key
+    visibleWhenOperator: Comparison
+    visibleWhenValue: Value
+    startsCollapsed: Starts collapsed
     untitledName: Untitled template
     name: Name
     namePlaceholder: Template name
@@ -176,6 +181,7 @@ fieldTypes:
     group: Field group
     list: Custom list
 defaults:
+    other: Other
     portrait: Portrait
     physical: Physical
     social: Social
@@ -206,23 +212,11 @@ defaults:
     experienceSpent: Spent
     experienceAvailable: Available
     freePoints: Free points
-builtInBlocks:
-    base: Character header
-    attributes: Attributes
-    skills: Skills
-    advantages: Advantages
-    force: Force abilities
-    body: Body & health
-    other: Other
-    brief-document: Brief card
-    star-wars-creature-sheet: Creature page
-    star-wars-vehicle-sheet: Vehicle page
-    star-wars-fodder-sheet: Fodder group page
 page:
+    embedNoDocument: Create or open a character to fill in this part of the sheet here.
     fallbackTitle: Template page unavailable
     fallbackDescription: The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.
     requiredUnfilled: '{count} required field(s) are still empty.'
-    builtInPlaceholder: Page part "{block}" is unavailable on this device.
     primitiveDegraded: 'Data binding "{binding}" is unavailable on this device.'
     formulaDegraded: 'Cannot compute "{field}": {reason}.'
     formulaReasonUnknown: value "{coordinate}" is unavailable
@@ -255,3 +249,83 @@ transfer:
     conflictTitle: Template already exists
     conflictPrompt: Replace it, import a duplicate with a new ID, or cancel this file.
     degradedReport: Some catalogs are unavailable here — these fields fell back to manual lists - {fields}
+cohort:
+    members: Members
+    member: Member {label}
+    addMember: Add member
+    removeMember: Remove member {label}
+    memberLabel: Member label
+    defeated: Out of the fight
+    penalty: Penalty
+    level: Level
+    trackLength: Health levels
+    maxMembersReached: A group can have at most {count} members.
+    removeTitle: Remove damaged member?
+    removeDescription: Member {label} has recorded damage. Removing it deletes that damage.
+    shortenTitle: Shorten the health track?
+    shortenDescription: Some members have damage on levels that will be hidden. Their marks move to the last remaining level.
+    confirm: Confirm
+    cancel: Cancel
+reference:
+    search: Type a name to search
+    noMatches: No matching documents
+    remove: Remove {title}
+    open: Open {title}
+    missing: Linked document no longer exists
+entities:
+    identification: Identification
+    details: Details
+    descriptionLabel: Description
+    source: Source
+    movement: Movement
+    threatTier: Threat tier
+    tierNamed: Named
+    tierFodder: Fodder
+    soak: Soak
+    soaksLethal: Soaks lethal damage
+    cannotSoakLethal: Cannot soak lethal damage
+    speciesCatalog: Bestiary entry
+    modelCatalog: Catalog model
+    armorCatalog: Catalog armor
+    scaleReference: Scale reference
+    scaleReferenceText: Each scale step between attacker and target adds +1 difficulty to hit for the larger combatant and −1 to damage; the smaller combatant gets the reverse.
+    category: Category
+    durabilityReroll: Reroll 10s on Durability
+    crewCapacity: Crew & capacity
+    systemSlots: System slots
+    system: System
+    damaged: Damaged
+    crewStations: Crew stations
+    pilot: Pilot
+    copilot: Co-pilot
+    gunners: Gunners
+    engineer: Engineer
+    sensors: Sensors
+    comms: Comms
+    modifications: Modifications & quirks
+    modification: Modification
+    effect: Effect
+    quirk: Quirk
+    group: Group
+    leader: Leader
+    traits: Traits
+    quickPools: Quick pools
+    specialtyPool: Specialty pool
+    secondaryPool: Secondary pool
+    lethal: Lethal
+    bashing: Bashing
+    arcFront: Front
+    arcRear: Rear
+    arcLeft: Left
+    arcRight: Right
+    arcTurret: Turret
+    arcAll: All
+    pools: Pools
+    creatureSheet: Creature sheet
+    creatureBrief: Creature brief
+    vehicleSheet: Vehicle sheet
+    vehicleBrief: Vehicle brief
+    fodderSheet: Fodder group sheet
+    fodderBrief: Fodder group brief
+    soakAll: Soak (lethal and bashing)
+    soakBashingOnly: Soak (bashing only)

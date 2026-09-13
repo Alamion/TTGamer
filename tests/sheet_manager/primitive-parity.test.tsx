@@ -94,10 +94,10 @@ describe('declarative default templates (feature 006, zero placements)', () => {
             };
             walk(template.children);
         }
-        // Specialized pages keep their built-in layouts (no declarative default exists).
-        expect(defaultTemplate('creature-sheet')).toBeUndefined();
-        expect(defaultTemplate('vehicle-sheet')).toBeUndefined();
-        expect(defaultTemplate('fodder-sheet')).toBeUndefined();
+        // Feature 007: the entity pages are shipped templates too.
+        expect(defaultTemplate('creature-sheet')).toBeDefined();
+        expect(defaultTemplate('vehicle-sheet')).toBeDefined();
+        expect(defaultTemplate('fodder-sheet')).toBeDefined();
     });
 
     it('droid default renders without degradation (T021 successor)', () => {

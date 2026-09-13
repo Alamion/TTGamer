@@ -21,6 +21,16 @@ import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
+import preFeatureCharacterTemplates from './fixtures/character-templates.pre-007.json';
+
+describe('character templates after the builder split (feature 007)', () => {
+    it('produce exactly the pre-refactor trees', () => {
+        const shipped = systemRegistry
+            .getSystem('star-wars-wod')!
+            .defaultTemplates!.filter((template) => template.documentKind === 'character');
+        expect(JSON.parse(JSON.stringify(shipped))).toEqual(preFeatureCharacterTemplates);
+    });
+});
 
 function modifiedOverride(viewId: string) {
     return CustomTemplateSchema.parse({
@@ -53,17 +63,24 @@ const characterKind = DocumentKindSchema.parse('character');
 
 describe('explicit default templates (feature 006, R9)', () => {
     const defaults = systemRegistry.getSystem('star-wars-wod')?.defaultTemplates ?? [];
+    const documentKindOf = (id: string) =>
+        defaults.find((template) => template.id === id)?.documentKind;
 
-    it('provides explicit defaults for full-sheet, droid-sheet, and brief', () => {
-        expect(defaults.map(({ id }) => id)).toEqual([
-            'full-sheet',
-            'droid-sheet',
-            'brief',
-            'droid-brief',
+    it('provides explicit defaults for every Star Wars page', () => {
+        expect(defaults.map(({ id }) => `${id}:${documentKindOf(id)}`)).toEqual([
+            'full-sheet:character',
+            'droid-sheet:character',
+            'brief:character',
+            'droid-brief:character',
+            'creature-sheet:creature',
+            'creature-brief:creature',
+            'vehicle-sheet:vehicle',
+            'vehicle-brief:vehicle',
+            'fodder-sheet:group',
+            'fodder-brief:group',
         ]);
         for (const template of defaults) {
             expect(template.systemId).toBe('star-wars-wod');
-            expect(template.documentKind).toBe('character');
             expect(template.schemaVersion).toBe(3);
         }
     });
@@ -172,11 +189,9 @@ describe('explicit default templates (feature 006, R9)', () => {
         expect(briefFor(starWarsCharacterDefinition)!.id).toBe('brief');
     });
 
-    it('does not ship declarative defaults for the specialized pages', () => {
+    it('gives every entity page a distinct identity from the character pages', () => {
         const ids = defaults.map(({ id }) => id);
-        expect(ids).not.toContain('creature-sheet');
-        expect(ids).not.toContain('vehicle-sheet');
-        expect(ids).not.toContain('fodder-sheet');
+        expect(new Set(ids).size).toBe(ids.length);
     });
 });
 

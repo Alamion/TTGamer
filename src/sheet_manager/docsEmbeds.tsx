@@ -1,7 +1,10 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useMemo } from 'react';
 
 import { reportSheetIssue } from './diagnostics';
 import { DeclarativeSheetView } from './features/sheet/declarative/DeclarativeSheetView';
+import { CreateCharacterButton } from './features/sheet/shell/CreateCharacterButton';
 import {
     createStaticDocumentSource,
     DocumentSourceContext,
@@ -9,6 +12,7 @@ import {
 } from './hooks/useDocumentSource';
 import { systemRegistry } from './systems';
 import { characterDocumentFromBase } from './systems/star-wars-wod/characterDocument';
+import { starWarsExampleDocument, vehicleDamageDocument } from './systems/star-wars-wod/examples';
 import type { BaseCharacter, ConditionMark } from './types/character';
 import type { UnknownDocumentEnvelope } from './types/document';
 import type { CustomTemplate, TemplateNode } from './types/template';
@@ -67,8 +71,18 @@ function useFragment(target: FragmentTarget): CustomTemplate | undefined {
 export function TemplateFragment(props: FragmentTarget) {
     const { document } = useDocumentSource();
     const fragment = useFragment(props);
-    // Like the old blocks: nothing to show until the reader has a compatible document.
-    if (!fragment || !document || document.kind !== fragment.documentKind) return null;
+    if (!fragment) return null;
+    if (!document || document.kind !== fragment.documentKind) {
+        // No compatible document yet: offer the next step instead of an empty gap.
+        return (
+            <div className="flex flex-wrap items-center gap-3 rounded-lg border border-dashed border-border bg-bgSurface p-4">
+                <p className="text-sm text-textSecondary">
+                    {translate(uiMessages.sheet.templates.page.embedNoDocument)}
+                </p>
+                {fragment.documentKind === 'character' && <CreateCharacterButton />}
+            </div>
+        );
+    }
     return <DeclarativeSheetView template={fragment} embedded />;
 }
 
@@ -76,15 +90,40 @@ export function TemplateFragment(props: FragmentTarget) {
 export function TemplatePreview({
     document,
     ...target
-}: FragmentTarget & { document: UnknownDocumentEnvelope }) {
-    const source = useMemo(() => createStaticDocumentSource(document), [document]);
+}: FragmentTarget & { document: UnknownDocumentEnvelope | undefined }) {
+    const source = useMemo(
+        () => (document ? createStaticDocumentSource(document) : undefined),
+        [document]
+    );
     const fragment = useFragment(target);
-    if (!fragment) return null;
+    if (!fragment || !source) return null;
     return (
         <DocumentSourceContext.Provider value={source}>
             <DeclarativeSheetView template={fragment} embedded />
         </DocumentSourceContext.Provider>
     );
+}
+
+export { JAX_VORN_PRESET } from './data/presets';
+
+/** A fixed example document for documentation previews (e.g. `wampa::preset`). */
+export function exampleDocument(id: string): UnknownDocumentEnvelope | undefined {
+    const document = starWarsExampleDocument(id);
+    if (!document) {
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'Documentation embed references an example document that does not exist',
+            details: { exampleId: id },
+        });
+    }
+    return document;
+}
+
+/** Preview document of a vehicle whose damage track shows the given marks. */
+export function vehicleDamagePreviewDocument(
+    levels: readonly ConditionMark[]
+): UnknownDocumentEnvelope {
+    return vehicleDamageDocument(levels);
 }
 
 /** Preview document for a bundled character preset. */
@@ -96,7 +135,7 @@ export function presetCharacterDocument(character: BaseCharacter): UnknownDocume
 export function healthPreviewDocument(levels: readonly ConditionMark[]): UnknownDocumentEnvelope {
     return characterDocumentFromBase({
         id: 'health-preview',
-        metadata: { name: '', type: 'sentient', template: '' },
+        metadata: { name: '', type: 'sentient', template: 'standard' },
         attributes: {},
         skills: {},
         health: { levels },

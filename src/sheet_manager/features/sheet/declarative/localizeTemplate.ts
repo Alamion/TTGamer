@@ -62,6 +62,19 @@ function localizeNode(node: TemplateNode, locale: string): TemplateNode {
             ),
         };
     }
+    if (next.type === 'select' && next.options.some((option) => option.labelMessage)) {
+        next = {
+            ...next,
+            options: next.options.map((option) =>
+                option.labelMessage
+                    ? {
+                          ...option,
+                          label: resolveLabelMessage(option.labelMessage, option.label, locale),
+                      }
+                    : option
+            ),
+        };
+    }
     if (next.type === 'section' || next.type === 'group') {
         return { ...next, children: next.children.map((child) => localizeNode(child, locale)) };
     }

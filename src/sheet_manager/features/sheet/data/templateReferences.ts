@@ -1,6 +1,15 @@
-import { listDocumentBindings, listNumericCoordinates } from '../../../systems/templateBindings';
+import {
+    listDocumentBindings,
+    listNumericCoordinates,
+    resolveWritableBinding,
+} from '../../../systems/templateBindings';
 import type { CustomTemplate } from '../../../types/template';
-import { fieldValueKey, isTemplateField, walkTemplateNodes } from '../../../types/template';
+import {
+    fieldValueKey,
+    isTemplateField,
+    listValueKey,
+    walkTemplateNodes,
+} from '../../../types/template';
 import { parseFormula } from '../declarative/formula';
 import { isKnownLabelMessage } from '../declarative/localizeTemplate';
 import { CATALOG_BINDINGS } from './catalogBindings';
@@ -69,10 +78,23 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
         listTemplateNumericCoordinates(template).map(({ coordinate }) => coordinate)
     );
     const fieldIds = new Set<string>();
+    // Storage coordinates a fill or render condition may address: field ids and value keys,
+    // value-key lists, and document data owned by the kind's writable bindings.
+    const storageCoordinates = new Set<string>();
     walkTemplateNodes(template.children, (node) => {
-        if (isTemplateField(node)) fieldIds.add(node.id);
+        if (isTemplateField(node)) {
+            fieldIds.add(node.id);
+            storageCoordinates.add(fieldValueKey(node));
+        }
+        if (node.type === 'list' && node.valueKey !== undefined) {
+            storageCoordinates.add(listValueKey(node));
+        }
         if (node.type === 'table') for (const column of node.columns) fieldIds.add(column.id);
     });
+    const isStorageCoordinate = (key: string) =>
+        fieldIds.has(key) ||
+        storageCoordinates.has(key) ||
+        resolveWritableBinding(template.systemId, template.documentKind, key) !== undefined;
 
     const checkCoordinates = (nodeId: string, source: string | undefined) => {
         if (!source) return;
@@ -107,7 +129,7 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
             if (!details.has(detailKey)) {
                 issues.push({ code: 'unknown-fill-detail', nodeId: field.id, key: detailKey });
             }
-            if (!rule.disabled && !fieldIds.has(rule.targetFieldId)) {
+            if (!rule.disabled && !isStorageCoordinate(rule.targetFieldId)) {
                 issues.push({
                     code: 'unknown-fill-target',
                     nodeId: field.id,
@@ -123,6 +145,9 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
             const references = [
                 labelled.labelMessage,
                 labelled.type === 'text' ? labelled.placeholderMessage : undefined,
+                ...(labelled.type === 'select'
+                    ? labelled.options.map((option) => option.labelMessage)
+                    : []),
             ];
             for (const reference of references) {
                 if (reference && !isKnownLabelMessage(reference)) {
@@ -133,6 +158,13 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
                     });
                 }
             }
+        }
+        if (node.visibleWhen && !isStorageCoordinate(node.visibleWhen.coordinate)) {
+            issues.push({
+                code: 'unknown-coordinate',
+                nodeId: node.id,
+                key: node.visibleWhen.coordinate,
+            });
         }
         if (node.type === 'primitive') {
             if (!bindings.has(node.bindingKey)) {

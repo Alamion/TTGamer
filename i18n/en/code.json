@@ -929,38 +929,53 @@
     "ttgamer.ui.sheet.templates.binding.fillTarget": {
         "message": "Fill into"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.advantages": {
-        "message": "Advantages"
+    "ttgamer.ui.sheet.templates.cohort.addMember": {
+        "message": "Add member"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.attributes": {
-        "message": "Attributes"
+    "ttgamer.ui.sheet.templates.cohort.cancel": {
+        "message": "Cancel"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.base": {
-        "message": "Character header"
+    "ttgamer.ui.sheet.templates.cohort.confirm": {
+        "message": "Confirm"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.body": {
-        "message": "Body & health"
+    "ttgamer.ui.sheet.templates.cohort.defeated": {
+        "message": "Out of the fight"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.brief-document": {
-        "message": "Brief card"
+    "ttgamer.ui.sheet.templates.cohort.level": {
+        "message": "Level"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.force": {
-        "message": "Force abilities"
+    "ttgamer.ui.sheet.templates.cohort.maxMembersReached": {
+        "message": "A group can have at most {count} members."
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.other": {
-        "message": "Other"
+    "ttgamer.ui.sheet.templates.cohort.member": {
+        "message": "Member {label}"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.skills": {
-        "message": "Skills"
+    "ttgamer.ui.sheet.templates.cohort.memberLabel": {
+        "message": "Member label"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-creature-sheet": {
-        "message": "Creature page"
+    "ttgamer.ui.sheet.templates.cohort.members": {
+        "message": "Members"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-fodder-sheet": {
-        "message": "Fodder group page"
+    "ttgamer.ui.sheet.templates.cohort.penalty": {
+        "message": "Penalty"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-vehicle-sheet": {
-        "message": "Vehicle page"
+    "ttgamer.ui.sheet.templates.cohort.removeDescription": {
+        "message": "Member {label} has recorded damage. Removing it deletes that damage."
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeMember": {
+        "message": "Remove member {label}"
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeTitle": {
+        "message": "Remove damaged member?"
+    },
+    "ttgamer.ui.sheet.templates.cohort.shortenDescription": {
+        "message": "Some members have damage on levels that will be hidden. Their marks move to the last remaining level."
+    },
+    "ttgamer.ui.sheet.templates.cohort.shortenTitle": {
+        "message": "Shorten the health track?"
+    },
+    "ttgamer.ui.sheet.templates.cohort.trackLength": {
+        "message": "Health levels"
     },
     "ttgamer.ui.sheet.templates.defaults.advantages": {
         "message": "Advantages"
@@ -1030,6 +1045,9 @@
     },
     "ttgamer.ui.sheet.templates.defaults.mental": {
         "message": "Mental"
+    },
+    "ttgamer.ui.sheet.templates.defaults.other": {
+        "message": "Other"
     },
     "ttgamer.ui.sheet.templates.defaults.physical": {
         "message": "Physical"
@@ -1376,6 +1394,9 @@
     "ttgamer.ui.sheet.templates.editor.sourceTypeLocked": {
         "message": "The type follows the character sheet value."
     },
+    "ttgamer.ui.sheet.templates.editor.startsCollapsed": {
+        "message": "Starts collapsed"
+    },
     "ttgamer.ui.sheet.templates.editor.tableTitle": {
         "message": "Table title (optional)"
     },
@@ -1408,6 +1429,186 @@
     },
     "ttgamer.ui.sheet.templates.editor.valueSource": {
         "message": "Stores value in"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhen": {
+        "message": "Show only when a value matches"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenCoordinate": {
+        "message": "Value key"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenOperator": {
+        "message": "Comparison"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenValue": {
+        "message": "Value"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcAll": {
+        "message": "All"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcFront": {
+        "message": "Front"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcLeft": {
+        "message": "Left"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcRear": {
+        "message": "Rear"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcRight": {
+        "message": "Right"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcTurret": {
+        "message": "Turret"
+    },
+    "ttgamer.ui.sheet.templates.entities.armorCatalog": {
+        "message": "Catalog armor"
+    },
+    "ttgamer.ui.sheet.templates.entities.bashing": {
+        "message": "Bashing"
+    },
+    "ttgamer.ui.sheet.templates.entities.cannotSoakLethal": {
+        "message": "Cannot soak lethal damage"
+    },
+    "ttgamer.ui.sheet.templates.entities.category": {
+        "message": "Category"
+    },
+    "ttgamer.ui.sheet.templates.entities.comms": {
+        "message": "Comms"
+    },
+    "ttgamer.ui.sheet.templates.entities.copilot": {
+        "message": "Co-pilot"
+    },
+    "ttgamer.ui.sheet.templates.entities.creatureBrief": {
+        "message": "Creature brief"
+    },
+    "ttgamer.ui.sheet.templates.entities.creatureSheet": {
+        "message": "Creature sheet"
+    },
+    "ttgamer.ui.sheet.templates.entities.crewCapacity": {
+        "message": "Crew & capacity"
+    },
+    "ttgamer.ui.sheet.templates.entities.crewStations": {
+        "message": "Crew stations"
+    },
+    "ttgamer.ui.sheet.templates.entities.damaged": {
+        "message": "Damaged"
+    },
+    "ttgamer.ui.sheet.templates.entities.descriptionLabel": {
+        "message": "Description"
+    },
+    "ttgamer.ui.sheet.templates.entities.details": {
+        "message": "Details"
+    },
+    "ttgamer.ui.sheet.templates.entities.durabilityReroll": {
+        "message": "Reroll 10s on Durability"
+    },
+    "ttgamer.ui.sheet.templates.entities.effect": {
+        "message": "Effect"
+    },
+    "ttgamer.ui.sheet.templates.entities.engineer": {
+        "message": "Engineer"
+    },
+    "ttgamer.ui.sheet.templates.entities.fodderBrief": {
+        "message": "Fodder group brief"
+    },
+    "ttgamer.ui.sheet.templates.entities.fodderSheet": {
+        "message": "Fodder group sheet"
+    },
+    "ttgamer.ui.sheet.templates.entities.group": {
+        "message": "Group"
+    },
+    "ttgamer.ui.sheet.templates.entities.gunners": {
+        "message": "Gunners"
+    },
+    "ttgamer.ui.sheet.templates.entities.identification": {
+        "message": "Identification"
+    },
+    "ttgamer.ui.sheet.templates.entities.leader": {
+        "message": "Leader"
+    },
+    "ttgamer.ui.sheet.templates.entities.lethal": {
+        "message": "Lethal"
+    },
+    "ttgamer.ui.sheet.templates.entities.modelCatalog": {
+        "message": "Catalog model"
+    },
+    "ttgamer.ui.sheet.templates.entities.modification": {
+        "message": "Modification"
+    },
+    "ttgamer.ui.sheet.templates.entities.modifications": {
+        "message": "Modifications & quirks"
+    },
+    "ttgamer.ui.sheet.templates.entities.movement": {
+        "message": "Movement"
+    },
+    "ttgamer.ui.sheet.templates.entities.pilot": {
+        "message": "Pilot"
+    },
+    "ttgamer.ui.sheet.templates.entities.pools": {
+        "message": "Pools"
+    },
+    "ttgamer.ui.sheet.templates.entities.quickPools": {
+        "message": "Quick pools"
+    },
+    "ttgamer.ui.sheet.templates.entities.quirk": {
+        "message": "Quirk"
+    },
+    "ttgamer.ui.sheet.templates.entities.scaleReference": {
+        "message": "Scale reference"
+    },
+    "ttgamer.ui.sheet.templates.entities.scaleReferenceText": {
+        "message": "Each scale step between attacker and target adds +1 difficulty to hit for the larger combatant and −1 to damage; the smaller combatant gets the reverse."
+    },
+    "ttgamer.ui.sheet.templates.entities.secondaryPool": {
+        "message": "Secondary pool"
+    },
+    "ttgamer.ui.sheet.templates.entities.sensors": {
+        "message": "Sensors"
+    },
+    "ttgamer.ui.sheet.templates.entities.soak": {
+        "message": "Soak"
+    },
+    "ttgamer.ui.sheet.templates.entities.soakAll": {
+        "message": "Soak (lethal and bashing)"
+    },
+    "ttgamer.ui.sheet.templates.entities.soakBashingOnly": {
+        "message": "Soak (bashing only)"
+    },
+    "ttgamer.ui.sheet.templates.entities.soaksLethal": {
+        "message": "Soaks lethal damage"
+    },
+    "ttgamer.ui.sheet.templates.entities.source": {
+        "message": "Source"
+    },
+    "ttgamer.ui.sheet.templates.entities.specialtyPool": {
+        "message": "Specialty pool"
+    },
+    "ttgamer.ui.sheet.templates.entities.speciesCatalog": {
+        "message": "Bestiary entry"
+    },
+    "ttgamer.ui.sheet.templates.entities.system": {
+        "message": "System"
+    },
+    "ttgamer.ui.sheet.templates.entities.systemSlots": {
+        "message": "System slots"
+    },
+    "ttgamer.ui.sheet.templates.entities.threatTier": {
+        "message": "Threat tier"
+    },
+    "ttgamer.ui.sheet.templates.entities.tierFodder": {
+        "message": "Fodder"
+    },
+    "ttgamer.ui.sheet.templates.entities.tierNamed": {
+        "message": "Named"
+    },
+    "ttgamer.ui.sheet.templates.entities.traits": {
+        "message": "Traits"
+    },
+    "ttgamer.ui.sheet.templates.entities.vehicleBrief": {
+        "message": "Vehicle brief"
+    },
+    "ttgamer.ui.sheet.templates.entities.vehicleSheet": {
+        "message": "Vehicle sheet"
     },
     "ttgamer.ui.sheet.templates.fieldTypes.builtIn": {
         "message": "Built-in page part"
@@ -1514,8 +1715,8 @@
     "ttgamer.ui.sheet.templates.library.unnamedKind": {
         "message": "Other"
     },
-    "ttgamer.ui.sheet.templates.page.builtInPlaceholder": {
-        "message": "Page part \"{block}\" is unavailable on this device."
+    "ttgamer.ui.sheet.templates.page.embedNoDocument": {
+        "message": "Create or open a character to fill in this part of the sheet here."
     },
     "ttgamer.ui.sheet.templates.page.fallbackDescription": {
         "message": "The template assigned to this page is missing. Showing the standard page instead — you can pick another page below."
@@ -1615,6 +1816,21 @@
     },
     "ttgamer.ui.sheet.templates.primitives.trackLevels": {
         "message": "Levels"
+    },
+    "ttgamer.ui.sheet.templates.reference.missing": {
+        "message": "Linked document no longer exists"
+    },
+    "ttgamer.ui.sheet.templates.reference.noMatches": {
+        "message": "No matching documents"
+    },
+    "ttgamer.ui.sheet.templates.reference.open": {
+        "message": "Open {title}"
+    },
+    "ttgamer.ui.sheet.templates.reference.remove": {
+        "message": "Remove {title}"
+    },
+    "ttgamer.ui.sheet.templates.reference.search": {
+        "message": "Type a name to search"
     },
     "ttgamer.ui.sheet.templates.transfer.conflictPrompt": {
         "message": "Replace it, import a duplicate with a new ID, or cancel this file."

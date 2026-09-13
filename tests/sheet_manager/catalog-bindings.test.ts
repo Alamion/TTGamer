@@ -11,6 +11,7 @@ describe('catalog binding registry', () => {
             [
                 'armor',
                 'backgrounds',
+                'creatures',
                 'force-powers',
                 'force-skills',
                 'melee-weapons',
@@ -18,6 +19,7 @@ describe('catalog binding registry', () => {
                 'ranged-weapons',
                 'species',
                 'tools-gear',
+                'vehicles',
             ].sort()
         );
     });
@@ -31,10 +33,10 @@ describe('catalog binding registry', () => {
         }
     });
 
-    it('declares only text/number fill kinds', () => {
+    it('declares only the supported fill kinds', () => {
         for (const binding of CATALOG_BINDINGS.values()) {
             for (const detail of binding.fillableDetails) {
-                expect(['text', 'number']).toContain(detail.kind);
+                expect(['text', 'number', 'boolean', 'rows']).toContain(detail.kind);
             }
         }
     });

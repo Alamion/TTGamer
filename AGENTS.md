@@ -87,8 +87,8 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 │   │   ├── store/             #   Zustand store
 │   │   └── utils/             #   Constants, events, types-ext
 │   ├── sheet_manager/         # Character sheet manager
-│   │   ├── components/        #   Modal, viewer, StatDot, TraitRow, collapsibles
-│   │   ├── features/sheet/    #   Sheet blocks (Attribute, Skill, Health, Force, etc.)
+│   │   ├── components/        #   Modal, StatDot, TraitRow, collapsibles
+│   │   ├── features/sheet/    #   Workspace shell + declarative template renderer
 │   │   ├── store/             #   Zustand + IndexedDB persistence
 │   │   ├── types/             #   Zod schemas + TS types
 │   │   └── context/           #   CharacterContext (multi-character)
@@ -119,7 +119,7 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 | Skill                    | When to Load                                                           |
 | ------------------------ | ---------------------------------------------------------------------- |
 | `dice-logic`             | Working on dice lexer, parser, evaluator, or renderer                  |
-| `sheet-manager`          | Working on character schema, store, derived stats, or blocks           |
+| `sheet-manager`          | Working on character schema, store, derived stats, or sheet elements   |
 | `sheet-templates`        | Anything template-related: tree, values, bindings, formulas, editor    |
 | `docusaurus-integration` | Adding pages, navbar items, theme config                               |
 | `tailwind-theming`       | Using colors, dark mode, palette variables                             |
@@ -132,7 +132,7 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 
 - `dice_roller/dice-logic/index.ts` is the small public API. Internal dice code and tests should import the specific internal file they own.
 - `shared/` contains system-independent UI and utilities only. Cross-feature or external-service behavior belongs in `integrations/`.
-- Sheet blocks must read through `useCharacter()`, which selects viewer context first and the editable store second.
+- Bound sheet elements read through `useBoundDocument()` (character capability for characters, typed document data for other kinds); pages are shipped templates, not React blocks.
 - Imported character JSON must pass `BaseCharacterSchema`; Zod strips unknown legacy fields.
 - Data changes must pass `yarn validate:data`. Star Wars documentation path changes must be mirrored under Russian i18n and pass `yarn validate:i18n`.
 - YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`; do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.

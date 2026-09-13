@@ -8,12 +8,7 @@ import {
     DocumentViewIdSchema,
     SystemIdSchema,
 } from '../../types/document';
-import type {
-    DocumentDefinition,
-    DocumentViewLabel,
-    SheetBlockPlacement,
-    SystemPlugin,
-} from '../types';
+import type { DocumentDefinition, DocumentViewLabel, SystemPlugin } from '../types';
 import { starWarsWodDefaultTemplates } from './defaultTemplates';
 import { starWarsTemplateBindings } from './documentBindings';
 import {
@@ -31,32 +26,20 @@ import {
 
 export const STAR_WARS_WOD_SYSTEM_ID = SystemIdSchema.parse('star-wars-wod');
 
-function builtInView(
-    id: string,
-    label: DocumentViewLabel,
-    blocks: readonly SheetBlockPlacement[],
-    legacyIds: readonly string[] = []
-) {
+const viewLabels = uiMessages.sheet.documents.views;
+
+/** A view whose page is the shipped default template with the same id. */
+function templateView(id: string, label: DocumentViewLabel, legacyIds: readonly string[] = []) {
     return {
         id: DocumentViewIdSchema.parse(id),
         label,
-        layout: { type: 'built-in' as const, blocks },
+        layout: { type: 'declarative' as const, templateId: id },
         legacyIds: legacyIds.map((legacyId) => DocumentViewIdSchema.parse(legacyId)),
     };
 }
 
-const viewLabels = uiMessages.sheet.documents.views;
-
-const CHARACTER_FULL_VIEW = builtInView('full-sheet', viewLabels.fullSheet, [
-    { id: 'base', accentColor: 'primary' },
-    { id: 'attributes', accentColor: 'secondary' },
-    { id: 'skills', accentColor: 'primary' },
-    { id: 'advantages', accentColor: 'secondary' },
-    { id: 'force', accentColor: 'primary' },
-    { id: 'body', accentColor: 'secondary' },
-    { id: 'other', accentColor: 'primary' },
-]);
-const BRIEF_VIEW = builtInView('brief', viewLabels.brief, [{ id: 'brief-document' }], ['npc-card']);
+const CHARACTER_FULL_VIEW = templateView('full-sheet', viewLabels.fullSheet);
+const BRIEF_VIEW = templateView('brief', viewLabels.brief, ['npc-card']);
 
 function dataUpdates(updates: Partial<BaseCharacter>) {
     const next = { ...updates } as Record<string, unknown>;
@@ -97,31 +80,16 @@ const droidCharacterCapability = {
         return DroidDataSchema.parse({ ...DroidDataSchema.parse(data), ...next });
     },
 };
-const DROID_FULL_VIEW = builtInView('droid-sheet', viewLabels.droidSheet, [
-    { id: 'base', accentColor: 'primary' },
-    { id: 'attributes', accentColor: 'secondary' },
-    { id: 'skills', accentColor: 'primary' },
-    { id: 'advantages', accentColor: 'secondary' },
-    { id: 'force', accentColor: 'primary' },
-    { id: 'body', accentColor: 'secondary' },
-    { id: 'other', accentColor: 'primary' },
-]);
+const DROID_FULL_VIEW = templateView('droid-sheet', viewLabels.droidSheet);
 // Droids get their own brief page; documents saved with the shared brief id resolve to it.
-const DROID_BRIEF_VIEW = builtInView(
-    'droid-brief',
-    viewLabels.brief,
-    [{ id: 'brief-document' }],
-    ['brief', 'npc-card']
-);
-const CREATURE_FULL_VIEW = builtInView('creature-sheet', viewLabels.creatureSheet, [
-    { id: 'star-wars-creature-sheet' },
-]);
-const VEHICLE_FULL_VIEW = builtInView('vehicle-sheet', viewLabels.vehicleSheet, [
-    { id: 'star-wars-vehicle-sheet' },
-]);
-const FODDER_VIEW = builtInView('fodder-sheet', viewLabels.fodderSheet, [
-    { id: 'star-wars-fodder-sheet' },
-]);
+const DROID_BRIEF_VIEW = templateView('droid-brief', viewLabels.brief, ['brief', 'npc-card']);
+const CREATURE_FULL_VIEW = templateView('creature-sheet', viewLabels.creatureSheet);
+const VEHICLE_FULL_VIEW = templateView('vehicle-sheet', viewLabels.vehicleSheet);
+const FODDER_VIEW = templateView('fodder-sheet', viewLabels.fodderSheet);
+// Entity documents saved with the shared brief id (or the older npc-card) open their own brief.
+const CREATURE_BRIEF_VIEW = templateView('creature-brief', viewLabels.brief, ['brief', 'npc-card']);
+const VEHICLE_BRIEF_VIEW = templateView('vehicle-brief', viewLabels.brief, ['brief', 'npc-card']);
+const FODDER_BRIEF_VIEW = templateView('fodder-brief', viewLabels.brief, ['brief', 'npc-card']);
 
 export const starWarsCharacterDefinition: DocumentDefinition = {
     id: DocumentDefinitionIdSchema.parse('character'),
@@ -155,7 +123,7 @@ export const starWarsCreatureDefinition: DocumentDefinition = {
     schema: CreatureDataSchema,
     createDefault: createDefaultCreatureData,
     defaultViewId: CREATURE_FULL_VIEW.id,
-    views: [CREATURE_FULL_VIEW, BRIEF_VIEW],
+    views: [CREATURE_FULL_VIEW, CREATURE_BRIEF_VIEW],
 };
 
 export const starWarsVehicleDefinition: DocumentDefinition = {
@@ -166,7 +134,7 @@ export const starWarsVehicleDefinition: DocumentDefinition = {
     schema: VehicleDataSchema,
     createDefault: createDefaultVehicleData,
     defaultViewId: VEHICLE_FULL_VIEW.id,
-    views: [VEHICLE_FULL_VIEW, BRIEF_VIEW],
+    views: [VEHICLE_FULL_VIEW, VEHICLE_BRIEF_VIEW],
 };
 
 export const starWarsFodderDefinition: DocumentDefinition = {
@@ -177,7 +145,7 @@ export const starWarsFodderDefinition: DocumentDefinition = {
     schema: FodderDataSchema,
     createDefault: createDefaultFodderData,
     defaultViewId: FODDER_VIEW.id,
-    views: [FODDER_VIEW, BRIEF_VIEW],
+    views: [FODDER_VIEW, FODDER_BRIEF_VIEW],
 };
 
 export const starWarsWodSystem: SystemPlugin = {

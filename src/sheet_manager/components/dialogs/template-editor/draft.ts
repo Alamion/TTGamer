@@ -20,6 +20,7 @@ import type {
     TableNode,
     TemplateField,
     TemplateNode,
+    VisibleWhen,
 } from '../../../types/template';
 import {
     collectFormulaDependencies,
@@ -35,6 +36,8 @@ import {
 /** Type-safe structural updates for a node (type/id/children are managed separately). */
 export type NodeUpdates = {
     title?: string;
+    visibleWhen?: VisibleWhen;
+    defaultCollapsed?: boolean;
     columns?: number;
     columnWidths?: number[];
     column?: number;
@@ -297,6 +300,9 @@ export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpda
             if (key in updates && (merged as Record<string, unknown>)[key] === '') {
                 delete (merged as Record<string, unknown>)[key];
             }
+        }
+        for (const key of ['visibleWhen', 'defaultCollapsed'] as const) {
+            if (key in updates && !updates[key]) delete (merged as Record<string, unknown>)[key];
         }
         return merged;
     };

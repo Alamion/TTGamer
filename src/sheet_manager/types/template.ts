@@ -41,12 +41,30 @@ export const LabelMessageSchema = z
 const labelMessageShape = { labelMessage: LabelMessageSchema.optional() };
 
 /**
+ * Render-time condition on any node: shown only while the value at `coordinate` equals `equals`
+ * (`not` inverts). Evaluated against the shared coordinate space; never affects storage, and
+ * the template editor always shows the node.
+ */
+export const VisibleWhenSchema = z.object({
+    coordinate: z
+        .string()
+        .min(1)
+        .max(120)
+        .regex(/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/, 'Expected a kebab-case coordinate'),
+    equals: z.union([z.string().max(120), z.number().finite(), z.boolean()]),
+    not: z.boolean().optional(),
+});
+
+export type VisibleWhen = z.infer<typeof VisibleWhenSchema>;
+
+/**
  * Placement inside the parent's column layout (1-based). When any child of a multi-column
  * container sets a column, children stack vertically inside their column instead of flowing
  * through the grid row by row.
  */
 const placementShape = {
     column: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+    visibleWhen: VisibleWhenSchema.optional(),
 };
 
 const fieldBaseShape = {
@@ -163,6 +181,7 @@ const SelectFieldSchema = z.object({
             z.object({
                 id: templateIdentifierSchema,
                 label: z.string().min(1).max(120),
+                ...labelMessageShape,
             })
         )
         .min(1)
@@ -310,6 +329,8 @@ const PrimitiveNodeSchema = z.object({
     minFrom: z.string().min(1).max(500).optional(),
     compact: z.boolean().default(false),
     track: PrimitiveTrackOverrideSchema.optional(),
+    /** Member tracks (bindings with members): member cap; ignored by other bindings. */
+    cohort: z.object({ maxMembers: z.number().int().min(1).max(24) }).optional(),
     ...maxFromShape,
 });
 
@@ -348,6 +369,9 @@ export interface SectionNode {
     title: string;
     labelMessage?: string;
     column?: number;
+    visibleWhen?: VisibleWhen;
+    /** Starts collapsed until the reader opens it (the choice is then remembered). */
+    defaultCollapsed?: boolean;
     /** Documentation link rendered as a help affordance in the section header (FR-9). */
     docsPath?: string;
     /** Column layout for direct children, 1–4 (FR-9); unset = single column stack. */
@@ -362,11 +386,14 @@ export interface GroupNode {
     title: string;
     labelMessage?: string;
     column?: number;
+    visibleWhen?: VisibleWhen;
     /** Title kept for the editor and accessibility but not shown on the card. */
     hideTitle?: boolean;
     docsPath?: string;
     /** Opt-in collapsibility (FR-10); state is remembered per user via a storage key. */
     collapsible: boolean;
+    /** Collapsible groups only: start collapsed until opened. */
+    defaultCollapsed?: boolean;
     columns?: number;
     columnWidths?: number[];
     children: TemplateNode[];
@@ -446,6 +473,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 ...labelMessageShape,
                 ...placementShape,
                 docsPath: z.string().max(500).optional(),
+                defaultCollapsed: z.boolean().optional(),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
                 ...columnWidthsShape,
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
@@ -459,6 +487,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 hideTitle: z.boolean().optional(),
                 docsPath: z.string().max(500).optional(),
                 collapsible: z.boolean().default(false),
+                defaultCollapsed: z.boolean().optional(),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
                 ...columnWidthsShape,
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),

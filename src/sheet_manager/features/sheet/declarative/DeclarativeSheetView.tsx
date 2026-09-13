@@ -7,7 +7,6 @@ import { createElement, type CSSProperties, useMemo } from 'react';
 
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
-import { useCharacter } from '../../../hooks';
 import type { FieldBinding } from '../../../systems/templateBindings';
 import {
     fieldBindingUpdate,
@@ -18,7 +17,9 @@ import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types
 import { fieldValueKey, isTemplateField, tableValueKey } from '../../../types/template';
 import { listValueKey } from '../../../types/template';
 import { coerceStoredValue } from '../../../types/templateValues';
+import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
+import { useBoundDocument } from './boundDocument';
 import type { FormulaEvaluationError } from './formula';
 import { useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { localizeTemplate } from './localizeTemplate';
@@ -111,9 +112,9 @@ function FieldCell({
             : undefined;
 
     const handleChange = (next: unknown) => {
-        pageApi.setValue(fieldValueKey(field), next);
-        // Copy-on-select (FR-17): selecting copies mapped details as character-owned values;
-        // replacing re-copies, clearing the selection leaves copied values untouched.
+        // Copy-on-select (feature 007 contract): picking an entry overwrites every mapped target
+        // with the entry's value (bag or document data) in one change; a detail the entry lacks
+        // leaves its target untouched, an empty one clears it; clearing the selection copies nothing.
         if (
             runtime &&
             !runtime.degraded &&
@@ -122,14 +123,21 @@ function FieldCell({
             typeof next === 'string' &&
             next.length > 0
         ) {
-            const entry = runtime.getEntry(next);
-            if (!entry) return;
-            for (const [detailKey, rule] of Object.entries(field.binding.fills)) {
-                if (rule.disabled) continue;
-                if (!runtime.details.has(detailKey)) continue;
-                pageApi.setValue(rule.targetFieldId, runtime.readDetail(entry, detailKey));
-            }
+            const details = readCatalogDetails(runtime.catalogId, next);
+            const fills = details
+                ? Object.entries(field.binding.fills)
+                      .filter(
+                          ([detailKey, rule]) => !rule.disabled && runtime.details.has(detailKey)
+                      )
+                      .map(([detailKey, rule]) => ({
+                          target: rule.targetFieldId,
+                          value: details[detailKey],
+                      }))
+                : [];
+            pageApi.applyWrites([{ target: fieldValueKey(field), value: next }, ...fills]);
+            return;
         }
+        pageApi.setValue(fieldValueKey(field), next);
     };
 
     const controlElement = createElement(control, {
@@ -142,6 +150,8 @@ function FieldCell({
         formulaResult,
         catalogOptions: runtime?.options,
         documentOptions: pageApi.documentOptions,
+        onOpenDocument: pageApi.openDocument,
+        previewSource: pageApi.previewSource,
     });
     // Computed values read as "label … value" rows; the control renders both.
     if (field.type === 'formula') return controlElement;
@@ -183,18 +193,16 @@ function FieldCell({
  * the document instead of the template value bag.
  */
 function BoundFieldCell({ field, binding }: { field: TemplateField; binding: FieldBinding }) {
-    const { character, readOnly, updateCharacter } = useCharacter();
-    if (!character) return null;
+    const bound = useBoundDocument();
+    if (!bound) return null;
+    const { readOnly } = bound;
     const stored = binding.adapter
-        ? binding.adapter.read(character)
-        : readDataPath(character, binding.path);
+        ? binding.adapter.read(bound.data)
+        : readDataPath(bound.data, binding.path);
     const value = coerceStoredValue(field, stored);
     const onChange = (next: unknown) => {
         if (binding.adapter) {
-            updateCharacter(
-                character.id,
-                binding.adapter.update(character, next) as Partial<typeof character>
-            );
+            bound.update(binding.adapter.update(bound.data, next));
             return;
         }
         const typed =
@@ -205,10 +213,8 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
                 : typeof next === 'string'
                   ? next
                   : '';
-        updateCharacter(
-            character.id,
-            fieldBindingUpdate(binding, character, typed) as Partial<typeof character>
-        );
+        bound.update(fieldBindingUpdate(binding, bound.data, typed));
+        if (binding.syncsTitle && typeof typed === 'string') bound.setTitle(typed);
     };
     return (
         <div className="grid grid-cols-1 gap-1">
@@ -294,6 +300,8 @@ function TableBlock({
                                             }
                                             disabled={pageApi.disabled}
                                             documentOptions={pageApi.documentOptions}
+                                            onOpenDocument={pageApi.openDocument}
+                                            previewSource={pageApi.previewSource}
                                         />
                                     </td>
                                 );
@@ -376,6 +384,7 @@ function NodeView({
     accentColor: 'primary' | 'secondary';
 }) {
     const template = pageApi.template!;
+    if (node.visibleWhen && !pageApi.isVisible(node.visibleWhen, node.id)) return null;
 
     if (node.type === 'section') {
         // Presentation (US3): a section is a collapsible block without a background box;
@@ -386,6 +395,7 @@ function NodeView({
                 storageKey={`template-${template.id}-${node.id}`}
                 docsPath={node.docsPath}
                 accentColor={accentColor}
+                defaultExpanded={!node.defaultCollapsed}
             >
                 <ChildrenGrid
                     nodes={node.children}
@@ -409,6 +419,7 @@ function NodeView({
                         ? `template-${template.id}-${node.id}`
                         : undefined
                 }
+                defaultExpanded={!(node.collapsible && node.defaultCollapsed)}
             >
                 <ChildrenGrid
                     nodes={node.children}

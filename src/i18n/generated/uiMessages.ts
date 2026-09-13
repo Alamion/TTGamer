@@ -1013,6 +1013,26 @@ export const uiMessages = {
                 },
             },
             editor: {
+                visibleWhen: {
+                    id: 'ttgamer.ui.sheet.templates.editor.visibleWhen',
+                    message: 'Show only when a value matches',
+                },
+                visibleWhenCoordinate: {
+                    id: 'ttgamer.ui.sheet.templates.editor.visibleWhenCoordinate',
+                    message: 'Value key',
+                },
+                visibleWhenOperator: {
+                    id: 'ttgamer.ui.sheet.templates.editor.visibleWhenOperator',
+                    message: 'Comparison',
+                },
+                visibleWhenValue: {
+                    id: 'ttgamer.ui.sheet.templates.editor.visibleWhenValue',
+                    message: 'Value',
+                },
+                startsCollapsed: {
+                    id: 'ttgamer.ui.sheet.templates.editor.startsCollapsed',
+                    message: 'Starts collapsed',
+                },
                 untitledName: {
                     id: 'ttgamer.ui.sheet.templates.editor.untitledName',
                     message: 'Untitled template',
@@ -1555,6 +1575,10 @@ export const uiMessages = {
                 },
             },
             defaults: {
+                other: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.other',
+                    message: 'Other',
+                },
                 portrait: {
                     id: 'ttgamer.ui.sheet.templates.defaults.portrait',
                     message: 'Portrait',
@@ -1676,53 +1700,11 @@ export const uiMessages = {
                     message: 'Free points',
                 },
             },
-            builtInBlocks: {
-                base: {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.base',
-                    message: 'Character header',
-                },
-                attributes: {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.attributes',
-                    message: 'Attributes',
-                },
-                skills: {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.skills',
-                    message: 'Skills',
-                },
-                advantages: {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.advantages',
-                    message: 'Advantages',
-                },
-                force: {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.force',
-                    message: 'Force abilities',
-                },
-                body: {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.body',
-                    message: 'Body & health',
-                },
-                other: {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.other',
-                    message: 'Other',
-                },
-                'brief-document': {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.brief-document',
-                    message: 'Brief card',
-                },
-                'star-wars-creature-sheet': {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.star-wars-creature-sheet',
-                    message: 'Creature page',
-                },
-                'star-wars-vehicle-sheet': {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.star-wars-vehicle-sheet',
-                    message: 'Vehicle page',
-                },
-                'star-wars-fodder-sheet': {
-                    id: 'ttgamer.ui.sheet.templates.builtInBlocks.star-wars-fodder-sheet',
-                    message: 'Fodder group page',
-                },
-            },
             page: {
+                embedNoDocument: {
+                    id: 'ttgamer.ui.sheet.templates.page.embedNoDocument',
+                    message: 'Create or open a character to fill in this part of the sheet here.',
+                },
                 fallbackTitle: {
                     id: 'ttgamer.ui.sheet.templates.page.fallbackTitle',
                     message: 'Template page unavailable',
@@ -1735,10 +1717,6 @@ export const uiMessages = {
                 requiredUnfilled: {
                     id: 'ttgamer.ui.sheet.templates.page.requiredUnfilled',
                     message: '{count} required field(s) are still empty.',
-                },
-                builtInPlaceholder: {
-                    id: 'ttgamer.ui.sheet.templates.page.builtInPlaceholder',
-                    message: 'Page part "{block}" is unavailable on this device.',
                 },
                 primitiveDegraded: {
                     id: 'ttgamer.ui.sheet.templates.page.primitiveDegraded',
@@ -1866,6 +1844,322 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.transfer.degradedReport',
                     message:
                         'Some catalogs are unavailable here — these fields fell back to manual lists - {fields}',
+                },
+            },
+            cohort: {
+                members: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.members',
+                    message: 'Members',
+                },
+                member: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.member',
+                    message: 'Member {label}',
+                },
+                addMember: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.addMember',
+                    message: 'Add member',
+                },
+                removeMember: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.removeMember',
+                    message: 'Remove member {label}',
+                },
+                memberLabel: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.memberLabel',
+                    message: 'Member label',
+                },
+                defeated: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.defeated',
+                    message: 'Out of the fight',
+                },
+                penalty: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.penalty',
+                    message: 'Penalty',
+                },
+                level: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.level',
+                    message: 'Level',
+                },
+                trackLength: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.trackLength',
+                    message: 'Health levels',
+                },
+                maxMembersReached: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.maxMembersReached',
+                    message: 'A group can have at most {count} members.',
+                },
+                removeTitle: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.removeTitle',
+                    message: 'Remove damaged member?',
+                },
+                removeDescription: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.removeDescription',
+                    message: 'Member {label} has recorded damage. Removing it deletes that damage.',
+                },
+                shortenTitle: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.shortenTitle',
+                    message: 'Shorten the health track?',
+                },
+                shortenDescription: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.shortenDescription',
+                    message:
+                        'Some members have damage on levels that will be hidden. Their marks move to the last remaining level.',
+                },
+                confirm: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.confirm',
+                    message: 'Confirm',
+                },
+                cancel: {
+                    id: 'ttgamer.ui.sheet.templates.cohort.cancel',
+                    message: 'Cancel',
+                },
+            },
+            reference: {
+                search: {
+                    id: 'ttgamer.ui.sheet.templates.reference.search',
+                    message: 'Type a name to search',
+                },
+                noMatches: {
+                    id: 'ttgamer.ui.sheet.templates.reference.noMatches',
+                    message: 'No matching documents',
+                },
+                remove: {
+                    id: 'ttgamer.ui.sheet.templates.reference.remove',
+                    message: 'Remove {title}',
+                },
+                open: {
+                    id: 'ttgamer.ui.sheet.templates.reference.open',
+                    message: 'Open {title}',
+                },
+                missing: {
+                    id: 'ttgamer.ui.sheet.templates.reference.missing',
+                    message: 'Linked document no longer exists',
+                },
+            },
+            entities: {
+                identification: {
+                    id: 'ttgamer.ui.sheet.templates.entities.identification',
+                    message: 'Identification',
+                },
+                details: {
+                    id: 'ttgamer.ui.sheet.templates.entities.details',
+                    message: 'Details',
+                },
+                descriptionLabel: {
+                    id: 'ttgamer.ui.sheet.templates.entities.descriptionLabel',
+                    message: 'Description',
+                },
+                source: {
+                    id: 'ttgamer.ui.sheet.templates.entities.source',
+                    message: 'Source',
+                },
+                movement: {
+                    id: 'ttgamer.ui.sheet.templates.entities.movement',
+                    message: 'Movement',
+                },
+                threatTier: {
+                    id: 'ttgamer.ui.sheet.templates.entities.threatTier',
+                    message: 'Threat tier',
+                },
+                tierNamed: {
+                    id: 'ttgamer.ui.sheet.templates.entities.tierNamed',
+                    message: 'Named',
+                },
+                tierFodder: {
+                    id: 'ttgamer.ui.sheet.templates.entities.tierFodder',
+                    message: 'Fodder',
+                },
+                soak: {
+                    id: 'ttgamer.ui.sheet.templates.entities.soak',
+                    message: 'Soak',
+                },
+                soaksLethal: {
+                    id: 'ttgamer.ui.sheet.templates.entities.soaksLethal',
+                    message: 'Soaks lethal damage',
+                },
+                cannotSoakLethal: {
+                    id: 'ttgamer.ui.sheet.templates.entities.cannotSoakLethal',
+                    message: 'Cannot soak lethal damage',
+                },
+                speciesCatalog: {
+                    id: 'ttgamer.ui.sheet.templates.entities.speciesCatalog',
+                    message: 'Bestiary entry',
+                },
+                modelCatalog: {
+                    id: 'ttgamer.ui.sheet.templates.entities.modelCatalog',
+                    message: 'Catalog model',
+                },
+                armorCatalog: {
+                    id: 'ttgamer.ui.sheet.templates.entities.armorCatalog',
+                    message: 'Catalog armor',
+                },
+                scaleReference: {
+                    id: 'ttgamer.ui.sheet.templates.entities.scaleReference',
+                    message: 'Scale reference',
+                },
+                scaleReferenceText: {
+                    id: 'ttgamer.ui.sheet.templates.entities.scaleReferenceText',
+                    message:
+                        'Each scale step between attacker and target adds +1 difficulty to hit for the larger combatant and −1 to damage; the smaller combatant gets the reverse.',
+                },
+                category: {
+                    id: 'ttgamer.ui.sheet.templates.entities.category',
+                    message: 'Category',
+                },
+                durabilityReroll: {
+                    id: 'ttgamer.ui.sheet.templates.entities.durabilityReroll',
+                    message: 'Reroll 10s on Durability',
+                },
+                crewCapacity: {
+                    id: 'ttgamer.ui.sheet.templates.entities.crewCapacity',
+                    message: 'Crew & capacity',
+                },
+                systemSlots: {
+                    id: 'ttgamer.ui.sheet.templates.entities.systemSlots',
+                    message: 'System slots',
+                },
+                system: {
+                    id: 'ttgamer.ui.sheet.templates.entities.system',
+                    message: 'System',
+                },
+                damaged: {
+                    id: 'ttgamer.ui.sheet.templates.entities.damaged',
+                    message: 'Damaged',
+                },
+                crewStations: {
+                    id: 'ttgamer.ui.sheet.templates.entities.crewStations',
+                    message: 'Crew stations',
+                },
+                pilot: {
+                    id: 'ttgamer.ui.sheet.templates.entities.pilot',
+                    message: 'Pilot',
+                },
+                copilot: {
+                    id: 'ttgamer.ui.sheet.templates.entities.copilot',
+                    message: 'Co-pilot',
+                },
+                gunners: {
+                    id: 'ttgamer.ui.sheet.templates.entities.gunners',
+                    message: 'Gunners',
+                },
+                engineer: {
+                    id: 'ttgamer.ui.sheet.templates.entities.engineer',
+                    message: 'Engineer',
+                },
+                sensors: {
+                    id: 'ttgamer.ui.sheet.templates.entities.sensors',
+                    message: 'Sensors',
+                },
+                comms: {
+                    id: 'ttgamer.ui.sheet.templates.entities.comms',
+                    message: 'Comms',
+                },
+                modifications: {
+                    id: 'ttgamer.ui.sheet.templates.entities.modifications',
+                    message: 'Modifications & quirks',
+                },
+                modification: {
+                    id: 'ttgamer.ui.sheet.templates.entities.modification',
+                    message: 'Modification',
+                },
+                effect: {
+                    id: 'ttgamer.ui.sheet.templates.entities.effect',
+                    message: 'Effect',
+                },
+                quirk: {
+                    id: 'ttgamer.ui.sheet.templates.entities.quirk',
+                    message: 'Quirk',
+                },
+                group: {
+                    id: 'ttgamer.ui.sheet.templates.entities.group',
+                    message: 'Group',
+                },
+                leader: {
+                    id: 'ttgamer.ui.sheet.templates.entities.leader',
+                    message: 'Leader',
+                },
+                traits: {
+                    id: 'ttgamer.ui.sheet.templates.entities.traits',
+                    message: 'Traits',
+                },
+                quickPools: {
+                    id: 'ttgamer.ui.sheet.templates.entities.quickPools',
+                    message: 'Quick pools',
+                },
+                specialtyPool: {
+                    id: 'ttgamer.ui.sheet.templates.entities.specialtyPool',
+                    message: 'Specialty pool',
+                },
+                secondaryPool: {
+                    id: 'ttgamer.ui.sheet.templates.entities.secondaryPool',
+                    message: 'Secondary pool',
+                },
+                lethal: {
+                    id: 'ttgamer.ui.sheet.templates.entities.lethal',
+                    message: 'Lethal',
+                },
+                bashing: {
+                    id: 'ttgamer.ui.sheet.templates.entities.bashing',
+                    message: 'Bashing',
+                },
+                arcFront: {
+                    id: 'ttgamer.ui.sheet.templates.entities.arcFront',
+                    message: 'Front',
+                },
+                arcRear: {
+                    id: 'ttgamer.ui.sheet.templates.entities.arcRear',
+                    message: 'Rear',
+                },
+                arcLeft: {
+                    id: 'ttgamer.ui.sheet.templates.entities.arcLeft',
+                    message: 'Left',
+                },
+                arcRight: {
+                    id: 'ttgamer.ui.sheet.templates.entities.arcRight',
+                    message: 'Right',
+                },
+                arcTurret: {
+                    id: 'ttgamer.ui.sheet.templates.entities.arcTurret',
+                    message: 'Turret',
+                },
+                arcAll: {
+                    id: 'ttgamer.ui.sheet.templates.entities.arcAll',
+                    message: 'All',
+                },
+                pools: {
+                    id: 'ttgamer.ui.sheet.templates.entities.pools',
+                    message: 'Pools',
+                },
+                creatureSheet: {
+                    id: 'ttgamer.ui.sheet.templates.entities.creatureSheet',
+                    message: 'Creature sheet',
+                },
+                creatureBrief: {
+                    id: 'ttgamer.ui.sheet.templates.entities.creatureBrief',
+                    message: 'Creature brief',
+                },
+                vehicleSheet: {
+                    id: 'ttgamer.ui.sheet.templates.entities.vehicleSheet',
+                    message: 'Vehicle sheet',
+                },
+                vehicleBrief: {
+                    id: 'ttgamer.ui.sheet.templates.entities.vehicleBrief',
+                    message: 'Vehicle brief',
+                },
+                fodderSheet: {
+                    id: 'ttgamer.ui.sheet.templates.entities.fodderSheet',
+                    message: 'Fodder group sheet',
+                },
+                fodderBrief: {
+                    id: 'ttgamer.ui.sheet.templates.entities.fodderBrief',
+                    message: 'Fodder group brief',
+                },
+                soakAll: {
+                    id: 'ttgamer.ui.sheet.templates.entities.soakAll',
+                    message: 'Soak (lethal and bashing)',
+                },
+                soakBashingOnly: {
+                    id: 'ttgamer.ui.sheet.templates.entities.soakBashingOnly',
+                    message: 'Soak (bashing only)',
                 },
             },
         },

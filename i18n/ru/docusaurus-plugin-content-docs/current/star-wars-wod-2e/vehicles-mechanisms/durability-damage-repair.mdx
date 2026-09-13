@@ -5,6 +5,7 @@ title: Прочность, урон и ремонт
 
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { TemplatePreview, vehicleDamagePreviewDocument } from '/src/sheet_manager/docsEmbeds';
 
 # Прочность, урон и ремонт
 
@@ -27,6 +28,42 @@ import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
 | **Разбит**          | —     | Остановка реактора. Не может функционировать.             |
 
 Когда транспорт достигает **Разбит**, реактор отключается. Он не может двигаться, стрелять из оружия или использовать щиты. Любой транспорт, получивший урон сверх Разбит, **уничтожен** — взорван, разорван пополам или иным образом не подлежит восстановлению.
+
+<TWWrapper>
+    <TemplatePreview
+        template="vehicle-sheet"
+        node="damage-track"
+        document={vehicleDamagePreviewDocument([
+            'slash',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
+</TWWrapper>
+
+_Транспорт с **лёгкими** повреждениями: две отметки, −1D к пулам._
+
+<TWWrapper>
+    <TemplatePreview
+        template="vehicle-sheet"
+        node="damage-track"
+        document={vehicleDamagePreviewDocument([
+            'cross',
+            'cross',
+            'slash',
+            'slash',
+            'cross',
+            'empty',
+            'empty',
+        ])}
+    />
+</TWWrapper>
+
+_Транспорт с **тяжёлыми** повреждениями: пять отметок, −4D к пулам._
 
 ### Тип урона
 

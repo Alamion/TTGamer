@@ -96,3 +96,35 @@ describe('template reference validation', () => {
         ]);
     });
 });
+
+describe('feature 007 reference targets', () => {
+    it('accepts bound document coordinates as fill targets and flags unknown conditions', () => {
+        const kit = CustomTemplateSchema.parse({
+            id: 'creature-kit',
+            name: 'Creature kit',
+            documentKind: 'creature',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'pick',
+                    type: 'select',
+                    label: 'Pick',
+                    options: [{ id: 'custom', label: 'Custom' }],
+                    binding: {
+                        catalogId: 'creatures',
+                        fills: {
+                            strength: { targetFieldId: 'strength' },
+                            attacks: { targetFieldId: 'attacks' },
+                            movement: { targetFieldId: 'nowhere' },
+                        },
+                    },
+                    visibleWhen: { coordinate: 'no-such-value', equals: 1 },
+                },
+            ],
+        });
+        expect(validateTemplateReferences(kit)).toEqual([
+            { code: 'unknown-coordinate', nodeId: 'pick', key: 'no-such-value' },
+            { code: 'unknown-fill-target', nodeId: 'pick', key: 'nowhere' },
+        ]);
+    });
+});

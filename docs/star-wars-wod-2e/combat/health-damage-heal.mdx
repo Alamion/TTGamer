@@ -6,7 +6,7 @@ title: Health, Damage & Healing
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
 import { CharRoll } from '/src/integrations/docs-character-rolls/CharRoll';
-import { HealthViewer } from '/src/sheet_manager/components/viewer/CharacterViewer';
+import { TemplatePreview, healthPreviewDocument } from '/src/sheet_manager/docsEmbeds';
 import { DataCatalog } from '/src/shared/components/DataCatalog';
 import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
 import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
@@ -32,7 +32,18 @@ The health track has seven levels, each with an associated wound penalty:
 | **Incapacitated** | —       | Cannot act. Unconscious or system shutdown.   |
 
 <TWWrapper>
-    <HealthViewer levels={['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 A healthy character — all seven levels clear.
@@ -48,7 +59,18 @@ There are three damage types, each marked differently on the health track.
 Blunt trauma, fists, falls, collisions. Soaked normally.
 
 <TWWrapper>
-    <HealthViewer levels={['slash', 'slash', 'slash', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'slash',
+            'slash',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Three levels of Bashing damage — Bruised, Hurt, and Injured marked with slashes.
@@ -62,7 +84,18 @@ Three levels of Bashing damage — Bruised, Hurt, and Injured marked with slashe
 Blaster bolts, lightsabers, explosives, vibro-blades. The real danger.
 
 <TWWrapper>
-    <HealthViewer levels={['cross', 'cross', 'cross', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'cross',
+            'cross',
+            'cross',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Three levels of Lethal damage — Bruised, Hurt, and Injured marked with crosses.
@@ -76,7 +109,18 @@ Three levels of Lethal damage — Bruised, Hurt, and Injured marked with crosses
 Stun settings on blasters, ion weapons (vs. droids), electrical bursts.
 
 <TWWrapper>
-    <HealthViewer levels={['slash', 'slash', 'empty', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'slash',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Two levels of Stun damage — marked with slashes, same visual as Bashing.
@@ -93,7 +137,18 @@ Stun damage replaces V:TM's Aggravated damage. It is marked and tracked like Bas
 Multiple damage types can stack on the same track. The penalty is always from the first non-empty level.
 
 <TWWrapper>
-    <HealthViewer levels={['cross', 'slash', 'empty', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'cross',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Lethal at Bruised, Bashing at Hurt — penalty is 0 (Bruised is the first marked level).
@@ -264,7 +319,18 @@ The lost limb can later be replaced with a cybernetic prosthesis (see [Droids & 
 ## Droid Damage & Recovery
 
 <TWWrapper>
-    <HealthViewer levels={['slash', 'slash', 'slash', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'slash',
+            'slash',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Droid damage shown: three levels of ion/stun damage (Bruised, Hurt, Injured).

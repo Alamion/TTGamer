@@ -21,7 +21,6 @@ import {
     TraitRowWithInput,
 } from '../../../components/stat-fields/TraitRow';
 import { reportSheetIssue } from '../../../diagnostics';
-import { useCharacter } from '../../../hooks';
 import type {
     DocumentBindingDescriptor,
     EquipmentSectionId,
@@ -47,6 +46,9 @@ import { InventorySection } from '../body/InventorySection';
 import { WeaponsSection } from '../body/WeaponsSection';
 import { CATALOG_BINDINGS } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
+import { useBoundDocument } from './boundDocument';
+import { CohortTrack } from './CohortTrack';
+import { EnumField, RowsBody } from './RowsBody';
 
 const page = uiMessages.sheet.templates.page;
 const fields = uiMessages.sheet.documents.fields;
@@ -65,7 +67,7 @@ export interface PrimitiveMaxState {
 type DegradedReason =
     | 'unregistered-binding'
     | 'wrong-binding-kind'
-    | 'no-character'
+    | 'no-document'
     | 'no-body-handlers';
 
 function DegradedBinding({ bindingKey, reason }: { bindingKey: string; reason: DegradedReason }) {
@@ -223,15 +225,11 @@ function SystemListBody({
     showTitle?: boolean;
     framed?: boolean;
 }) {
-    const { character, updateCharacter } = useCharacter();
+    const bound = useBoundDocument();
     const { dataKey } = binding;
-    const raw = character
-        ? (((character as unknown as Record<string, unknown>)[dataKey] as unknown[] | undefined) ??
-          [])
-        : [];
+    const raw = (bound?.data[dataKey] as unknown[] | undefined) ?? [];
 
-    const write = (next: unknown[]) =>
-        character && updateCharacter(character.id, { [dataKey]: next } as never);
+    const write = (next: unknown[]) => bound?.update({ [dataKey]: next });
 
     if (binding.entryShape === 'merit-flaw') {
         const items = raw as MeritFlawItem[];
@@ -472,25 +470,24 @@ function PrimitiveTraitBody({
     node: PrimitiveNode;
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'trait' }>;
 }) {
-    const { character, readOnly, updateCharacter } = useCharacter();
-    if (!character) {
-        return <DegradedBinding bindingKey={node.bindingKey} reason="no-character" />;
+    const bound = useBoundDocument();
+    if (!bound) {
+        return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
     }
+    const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
-    const record = (character as unknown as Record<string, Record<string, TraitValue> | undefined>)[
-        descriptor.map
-    ];
+    const record = bound.data[descriptor.map] as Record<string, TraitValue> | undefined;
     const trait: TraitValue = record?.[descriptor.traitKey] ?? {
         ...DEFAULT_ATTRIBUTE_VALUE,
         value: descriptor.defaultValue,
     };
     const patch = (updates: Partial<TraitValue>) =>
-        updateCharacter(character.id, {
+        bound.update({
             [descriptor.map]: {
                 ...(record ?? {}),
                 [descriptor.traitKey]: { ...trait, ...updates },
             },
-        } as never);
+        });
     if (node.compact) {
         return (
             <CompactRating
@@ -525,7 +522,7 @@ function PrimitiveTraitBody({
             experienced={trait.experienced ?? false}
             practiced={trait.practiced ?? false}
             onDiceRoll={buildDiceNotation}
-            characterName={character.metadata.name}
+            characterName={bound.name}
         />
     );
 }
@@ -544,16 +541,17 @@ function PrimitiveResourceBody({
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'resource' }>;
     maxState?: PrimitiveMaxState;
 }) {
-    const { character, readOnly, updateCharacter } = useCharacter();
-    if (!character) {
-        return <DegradedBinding bindingKey={node.bindingKey} reason="no-character" />;
+    const bound = useBoundDocument();
+    if (!bound) {
+        return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
     }
+    const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
     const effectiveMax =
         maxState?.degraded === true || maxState?.resolvedMax === undefined
             ? descriptor.maximum
             : Math.min(maxState.resolvedMax, descriptor.maximum);
-    const stored = (character as unknown as Record<string, unknown>)[descriptor.dataKey];
+    const stored = bound.data[descriptor.dataKey];
     const pair =
         descriptor.mode === 'rating'
             ? { current: typeof stored === 'number' ? stored : 0, max: descriptor.maximum }
@@ -577,9 +575,7 @@ function PrimitiveResourceBody({
                 : editsMax
                   ? { current: Math.min(pair.current, clamped), max: clamped }
                   : { current: clamped, max: Math.max(pair.max, clamped) };
-        updateCharacter(character.id, {
-            [descriptor.dataKey]: update,
-        } as Partial<typeof character>);
+        bound.update({ [descriptor.dataKey]: update });
     };
     const clampedNotice = maxState?.degraded && (
         <p role="alert" className="text-xs text-error">
@@ -599,12 +595,12 @@ function PrimitiveResourceBody({
                         maximumLabel={translate(fields.maximum)}
                         disabled={readOnly}
                         onChange={(current, maximum) =>
-                            updateCharacter(character.id, {
+                            bound.update({
                                 [descriptor.dataKey]: {
                                     current: Math.min(current, maximum),
                                     max: maximum,
                                 },
-                            } as Partial<typeof character>)
+                            })
                         }
                     />
                 ) : (
@@ -647,20 +643,26 @@ function PrimitiveTrackBody({
     node: PrimitiveNode;
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'track' }>;
 }) {
-    const { character, readOnly, updateCharacter } = useCharacter();
-    const track = character
-        ? ((character as unknown as Record<string, unknown>)[descriptor.dataKey] as
-              | { levels: ConditionMark[] }
-              | undefined)
-        : undefined;
-    if (!character || !track) {
+    const bound = useBoundDocument();
+    if (bound && descriptor.members) {
         return (
-            <DegradedBinding
-                bindingKey={node.bindingKey}
-                reason={character ? 'wrong-binding-kind' : 'no-character'}
+            <CohortTrack
+                node={node}
+                descriptor={descriptor as Parameters<typeof CohortTrack>[0]['descriptor']}
+                bound={bound}
             />
         );
     }
+    const track = bound?.data[descriptor.dataKey] as { levels: ConditionMark[] } | undefined;
+    if (!bound || !track) {
+        return (
+            <DegradedBinding
+                bindingKey={node.bindingKey}
+                reason={bound ? 'wrong-binding-kind' : 'no-document'}
+            />
+        );
+    }
+    const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
     const levels = node.track
         ? node.track.names.map((name, index) => ({
@@ -679,9 +681,7 @@ function PrimitiveTrackBody({
               };
           });
     const writeMarks = (next: ConditionMark[]) =>
-        updateCharacter(character.id, {
-            [descriptor.dataKey]: { ...track, levels: next },
-        } as Partial<typeof character>);
+        bound.update({ [descriptor.dataKey]: { ...track, levels: next } });
     // Brief: one line of squares; full: a table with Level / Penalty / mark columns.
     if (node.compact) {
         return (
@@ -723,22 +723,37 @@ function PrimitiveFieldBody({
     node: PrimitiveNode;
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'field' }>;
 }) {
-    const { character, readOnly, updateCharacter } = useCharacter();
-    if (!character) {
-        return <DegradedBinding bindingKey={node.bindingKey} reason="no-character" />;
+    const bound = useBoundDocument();
+    if (!bound) {
+        return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
     }
+    const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
-    const raw = readDataPath(character, descriptor.path);
+    const raw = readDataPath(bound.data, descriptor.path);
     const value = typeof raw === 'string' || typeof raw === 'number' ? String(raw) : '';
-    const write = (next: string) =>
-        updateCharacter(
-            character.id,
+    const write = (next: string) => {
+        bound.update(
             fieldBindingUpdate(
                 descriptor,
-                character,
+                bound.data,
                 descriptor.valueType === 'number' ? Number(next) : next
-            ) as Partial<typeof character>
+            )
         );
+        if (descriptor.syncsTitle) bound.setTitle(next);
+    };
+    if (descriptor.valueType === 'enum' && descriptor.options) {
+        return (
+            <EnumField
+                label={label}
+                hideLabel={node.hideLabel}
+                compact={node.compact}
+                value={value}
+                options={descriptor.options}
+                disabled={readOnly}
+                onChange={write}
+            />
+        );
+    }
     return node.compact ? (
         <CompactTextField label={label} value={value} disabled={readOnly} onChange={write} />
     ) : (
@@ -764,7 +779,7 @@ export function PrimitiveNodeView({
     documentKind: string;
     maxState?: PrimitiveMaxState;
 }) {
-    const { readOnly } = useCharacter();
+    const readOnly = useBoundDocument()?.readOnly ?? true;
     const descriptor = resolveDocumentBinding(systemId, documentKind, node.bindingKey);
     if (!descriptor) {
         return <DegradedBinding bindingKey={node.bindingKey} reason="unregistered-binding" />;
@@ -782,6 +797,8 @@ export function PrimitiveNodeView({
             return <PrimitiveFieldBody node={node} descriptor={descriptor} />;
         case 'equipment':
             return <EquipmentView node={node} descriptor={descriptor} />;
+        case 'rows':
+            return <RowsBody node={node} descriptor={descriptor} />;
         case 'list':
             return (
                 <SystemListBody

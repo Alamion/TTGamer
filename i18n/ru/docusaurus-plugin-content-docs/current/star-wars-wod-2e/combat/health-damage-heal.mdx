@@ -6,7 +6,7 @@ title: Здоровье, урон и исцеление
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
 import { CharRoll } from '/src/integrations/docs-character-rolls/CharRoll';
-import { HealthViewer } from '/src/sheet_manager/components/viewer/CharacterViewer';
+import { TemplatePreview, healthPreviewDocument } from '/src/sheet_manager/docsEmbeds';
 import { DataCatalog } from '/src/shared/components/DataCatalog';
 import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
 import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFlawsConfig';
@@ -32,7 +32,18 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFla
 | **Выведен из строя** | —     | Не может действовать. Без сознания или отключение системы. |
 
 <TWWrapper>
-    <HealthViewer levels={['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Здоровый персонаж — все семь уровней чисты.
@@ -48,7 +59,18 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFla
 Тупые травмы, кулаки, падения, столкновения. Сопротивляется обычным образом.
 
 <TWWrapper>
-    <HealthViewer levels={['slash', 'slash', 'slash', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'slash',
+            'slash',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Три уровня Дробящего урона — Синяк, Потрёпан и Ранен отмечены косой чертой.
@@ -62,7 +84,18 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFla
 Заряды бластеров, световые мечи, взрывчатка, виброклинки. Настоящая опасность.
 
 <TWWrapper>
-    <HealthViewer levels={['cross', 'cross', 'cross', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'cross',
+            'cross',
+            'cross',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Три уровня Летального урона — Синяк, Потрёпан и Ранен отмечены крестиком.
@@ -76,7 +109,18 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFla
 Режим оглушения на бластерах, ионное оружие (против дроидов), электрические разряды.
 
 <TWWrapper>
-    <HealthViewer levels={['slash', 'slash', 'empty', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'slash',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Два уровня Оглушающего урона — отмечены косой чертой, как Дробящий.
@@ -93,7 +137,18 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFla
 Несколько типов урона могут накладываться на одном треке. Штраф всегда берётся от первого непустого уровня.
 
 <TWWrapper>
-    <HealthViewer levels={['cross', 'slash', 'empty', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'cross',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Летальный на Синяке, Дробящий на Потрёпанном — штраф 0 (Синяк — первый отмеченный уровень).
@@ -264,7 +319,18 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '/src/data/meritsFla
 ## Урон и восстановление дроидов
 
 <TWWrapper>
-    <HealthViewer levels={['slash', 'slash', 'slash', 'empty', 'empty', 'empty', 'empty']} />
+    <TemplatePreview
+        node="track-health"
+        document={healthPreviewDocument([
+            'slash',
+            'slash',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
 </TWWrapper>
 
 Повреждения дроидов показаны: три уровня ионного/оглушающего урона (Синяк, Потрёпан, Ранен).

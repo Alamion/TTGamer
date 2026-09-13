@@ -11,24 +11,13 @@ import type { CustomTemplate } from '../types/template';
 import type { DocumentCapabilities } from './capabilities';
 import type { DocumentBindingDescriptor } from './templateBindings';
 
-export type SheetAccentColor = 'primary' | 'secondary';
-
-export interface SheetBlockPlacement {
-    id: string;
-    accentColor?: SheetAccentColor;
-}
-
-export interface BuiltInDocumentLayout {
-    type: 'built-in';
-    blocks: readonly SheetBlockPlacement[];
-}
-
+/** The view's page is the system's shipped default template with this id (and the view's kind). */
 export interface DeclarativeDocumentLayout {
     type: 'declarative';
-    template: CustomTemplate;
+    templateId: string;
 }
 
-export type DocumentLayout = BuiltInDocumentLayout | DeclarativeDocumentLayout;
+export type DocumentLayout = DeclarativeDocumentLayout;
 
 export interface DocumentViewLabel {
     id: string;

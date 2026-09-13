@@ -7,7 +7,14 @@ import { systemRegistry } from './index';
  * Templates persist only the binding key.
  */
 
-export type DocumentBindingKind = 'trait' | 'list' | 'resource' | 'track' | 'field' | 'equipment';
+export type DocumentBindingKind =
+    | 'trait'
+    | 'list'
+    | 'resource'
+    | 'track'
+    | 'field'
+    | 'equipment'
+    | 'rows';
 
 interface BindingBase {
     key: string;
@@ -46,6 +53,8 @@ export interface ListBinding extends BindingBase {
     dataKey: string;
     entryShape: SystemListShape;
     catalog?: ListCatalogSupport;
+    /** Coordinate a catalog fill can target (entries replace the whole list). */
+    coordinate?: string;
 }
 
 /** Raw document-data entry for a new list item, shaped by the list's entry shape. */
@@ -92,17 +101,48 @@ export interface TrackLevel {
 export interface TrackBinding extends BindingBase {
     kind: 'track';
     trackId: string;
-    /** Record in document data holding `{ levels: ConditionMark[] }`. */
+    /**
+     * Record in document data holding `{ levels: ConditionMark[] }`; with `members`, the array
+     * of members, each holding the track under `members.trackKey`.
+     */
     dataKey: string;
     levels: readonly TrackLevel[];
+    /** One track per member (groups, packs, squadrons). */
+    members?: { trackKey: string; maxMembers: number };
+    /**
+     * Visible level sets by track length; the length is read at `lengthPath` in document data.
+     * Visible level i is stored in slot i.
+     */
+    variants?: {
+        lengthPath: readonly string[];
+        levelsByLength: Readonly<Record<number, readonly TrackLevel[]>>;
+    };
+}
+
+/** Visible levels of a track for a given stored length (falls back to the full track). */
+export function trackLevelsFor(binding: TrackBinding, length: unknown): readonly TrackLevel[] {
+    if (!binding.variants || typeof length !== 'number') return binding.levels;
+    return binding.variants.levelsByLength[length] ?? binding.levels;
+}
+
+export interface BindingOption {
+    id: string;
+    label: string;
+    translation?: { id: string; message: string };
 }
 
 export interface FieldBinding extends BindingBase {
     kind: 'field';
     /** Path inside document data, e.g. `['metadata', 'name']` or `['experience', 'total']`. */
     path: readonly string[];
-    valueType: 'string' | 'number' | 'image';
+    valueType: 'string' | 'number' | 'image' | 'enum';
     coordinate: string;
+    /** Closed value set (`enum`); ids are the stored values. */
+    options?: readonly BindingOption[];
+    /** Numeric reading of a text value for formulas (e.g. `'+3D'` → 3). */
+    numeric?: (raw: unknown) => number | undefined;
+    /** Writing this field also renames the document (entities without a metadata name). */
+    syncsTitle?: boolean;
     /**
      * Custom mapping for values not stored at a single path (e.g. a portrait split across
      * `imageUrl` / `portraitId`): `read` yields the field value, `update` the top-level update.
@@ -160,13 +200,44 @@ export interface EquipmentBinding extends BindingBase {
     sectionId: EquipmentSectionId;
 }
 
+export interface RowsColumn {
+    key: string;
+    label: string;
+    translation?: { id: string; message: string };
+    /** `enum` stores option ids; an unknown stored value is shown as-is and kept until changed. */
+    type: 'text' | 'enum';
+    options?: readonly BindingOption[];
+}
+
+/**
+ * An array of plain records in document data edited as a table (attacks, weapons, systems).
+ * Every row carries a generated `id`; columns are the editable string properties.
+ */
+export interface RowsBinding extends BindingBase {
+    kind: 'rows';
+    dataKey: string;
+    coordinate: string;
+    maxRows: number;
+    columns: readonly RowsColumn[];
+    /**
+     * Name-column suggestions: picking a catalog entry fills mapped columns of that row
+     * (detail key → column key), overwriting them.
+     */
+    catalog?: {
+        catalogIds: readonly string[];
+        column: string;
+        fills: Readonly<Record<string, string>>;
+    };
+}
+
 export type DocumentBindingDescriptor =
     | TraitBinding
     | ListBinding
     | ResourceBinding
     | TrackBinding
     | FieldBinding
-    | EquipmentBinding;
+    | EquipmentBinding
+    | RowsBinding;
 
 export interface NumericCoordinate {
     coordinate: string;
@@ -222,7 +293,10 @@ export function listNumericCoordinates(
     for (const binding of listDocumentBindings(systemId, documentKind)) {
         if (binding.kind === 'trait') {
             coordinates.push({ coordinate: binding.coordinate, label: binding.label });
-        } else if (binding.kind === 'field' && binding.valueType === 'number') {
+        } else if (
+            binding.kind === 'field' &&
+            (binding.valueType === 'number' || binding.numeric)
+        ) {
             coordinates.push({ coordinate: binding.coordinate, label: binding.label });
         } else if (binding.kind === 'resource') {
             coordinates.push({
@@ -259,13 +333,12 @@ export function readBoundNumber(
                 value: record?.[binding.traitKey]?.value ?? binding.defaultValue,
             };
         }
-        if (
-            binding.kind === 'field' &&
-            binding.valueType === 'number' &&
-            binding.coordinate === path
-        ) {
+        if (binding.kind === 'field' && binding.coordinate === path) {
             const stored = readDataPath(data, binding.path);
-            return { bound: true, value: typeof stored === 'number' ? stored : 0 };
+            if (binding.numeric) return { bound: true, value: binding.numeric(stored) };
+            if (binding.valueType === 'number') {
+                return { bound: true, value: typeof stored === 'number' ? stored : 0 };
+            }
         }
         if (binding.kind === 'resource' && binding.coordinate === head) {
             const stored = data[binding.dataKey];
@@ -280,4 +353,127 @@ export function readBoundNumber(
         }
     }
     return { bound: false };
+}
+
+/** Bindings a coordinate write (e.g. a catalog fill) can target in document data. */
+export type WritableBinding =
+    | TraitBinding
+    | ResourceBinding
+    | FieldBinding
+    | RowsBinding
+    | (ListBinding & { coordinate: string });
+
+export function resolveWritableBinding(
+    systemId: string,
+    documentKind: string,
+    coordinate: string
+): WritableBinding | undefined {
+    for (const binding of listDocumentBindings(systemId, documentKind)) {
+        if (
+            (binding.kind === 'trait' ||
+                binding.kind === 'resource' ||
+                binding.kind === 'field' ||
+                binding.kind === 'rows' ||
+                binding.kind === 'list') &&
+            binding.coordinate === coordinate
+        ) {
+            return binding as WritableBinding;
+        }
+    }
+    return undefined;
+}
+
+let generatedRowCounter = 0;
+
+/** Stable-enough row id for rows created by fills (documents re-parse, so ids only need uniqueness). */
+export function createRowId(): string {
+    generatedRowCounter += 1;
+    return `row-${Date.now().toString(36)}-${generatedRowCounter.toString(36)}`;
+}
+
+const clampInt = (value: number, minimum: number, maximum: number) =>
+    Math.max(minimum, Math.min(maximum, Math.trunc(value)));
+
+/**
+ * The top-level document-data update that stores `value` through a writable binding. `null`
+ * clears (empty text, default trait, empty list); `undefined` must be filtered by the caller.
+ */
+export function boundWriteUpdate(
+    binding: WritableBinding,
+    data: Readonly<Record<string, unknown>>,
+    value: unknown
+): Record<string, unknown> {
+    switch (binding.kind) {
+        case 'trait': {
+            const record = (data[binding.map] ?? {}) as Record<string, Record<string, unknown>>;
+            const current = record[binding.traitKey] ?? {};
+            const next =
+                typeof value === 'number'
+                    ? clampInt(value, binding.minimum, binding.maximum)
+                    : binding.defaultValue;
+            return {
+                [binding.map]: { ...record, [binding.traitKey]: { ...current, value: next } },
+            };
+        }
+        case 'resource': {
+            if (binding.mode === 'rating') {
+                return {
+                    [binding.dataKey]:
+                        typeof value === 'number' ? clampInt(value, 0, binding.maximum) : 0,
+                };
+            }
+            const pool =
+                typeof value === 'number'
+                    ? { current: value, max: value }
+                    : value && typeof value === 'object'
+                      ? (value as { current?: number; max?: number })
+                      : { current: 0, max: 0 };
+            const max = clampInt(pool.max ?? 0, 0, binding.maximum);
+            return {
+                [binding.dataKey]: { current: clampInt(pool.current ?? 0, 0, max), max },
+            };
+        }
+        case 'field': {
+            const typed =
+                binding.valueType === 'number'
+                    ? typeof value === 'number'
+                        ? value
+                        : 0
+                    : binding.valueType === 'enum'
+                      ? binding.options?.some((option) => option.id === value)
+                          ? value
+                          : readDataPath(data, binding.path)
+                      : value === null || value === undefined
+                        ? ''
+                        : String(value);
+            return fieldBindingUpdate(binding, data, typed);
+        }
+        case 'rows': {
+            const rows = Array.isArray(value) ? value : [];
+            return {
+                [binding.dataKey]: rows.slice(0, binding.maxRows).map((row) => {
+                    const source = (row ?? {}) as Record<string, unknown>;
+                    const entry: Record<string, unknown> = { id: createRowId() };
+                    for (const column of binding.columns) {
+                        const cell = source[column.key];
+                        if (cell !== undefined && cell !== null) entry[column.key] = String(cell);
+                    }
+                    return entry;
+                }),
+            };
+        }
+        case 'list': {
+            const entries = Array.isArray(value) ? value : [];
+            return {
+                [binding.dataKey]: entries.map((entry) => {
+                    const source = (entry ?? {}) as { label?: unknown; value?: unknown };
+                    return createListEntry(binding.entryShape, {
+                        id: createRowId(),
+                        label: String(source.label ?? ''),
+                        value: typeof source.value === 'number' ? source.value : 0,
+                    });
+                }),
+            };
+        }
+    }
 }

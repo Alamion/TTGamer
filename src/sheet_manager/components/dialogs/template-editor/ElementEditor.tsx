@@ -25,7 +25,12 @@ import { isContainerNode, isTemplateField, TEMPLATE_LIMITS } from '../../../type
 import { generateDraftId, newField as newDraftField, type NodeUpdates } from './draft';
 import { useEditorModel } from './EditorModel';
 import { FieldEditor } from './FieldEditor';
-import { ColumnLayoutControl, ColumnPlacementControl, ToggleRow } from './LayoutControls';
+import {
+    ColumnLayoutControl,
+    ColumnPlacementControl,
+    ToggleRow,
+    VisibilityControl,
+} from './LayoutControls';
 import { PrimitiveConfig } from './PrimitiveConfig';
 import { ListSourceSelect } from './SourceControls';
 
@@ -413,6 +418,10 @@ const ElementEditor = memo(function ElementEditor({
                             onChange={(column) => callbacks.onUpdate(node.id, { column })}
                         />
                     )}
+                    <VisibilityControl
+                        value={node.visibleWhen}
+                        onChange={(visibleWhen) => callbacks.onUpdate(node.id, { visibleWhen })}
+                    />
                     {node.type === 'section' && <SectionConfig callbacks={callbacks} node={node} />}
                     {node.type === 'group' && <GroupConfig callbacks={callbacks} node={node} />}
                     {node.type === 'table' && <TableConfig callbacks={callbacks} node={node} />}
@@ -510,6 +519,11 @@ function SectionConfig({
                 aria-label={t(editor.docsLink)}
                 className={`${inputClasses} w-full`}
             />
+            <ToggleRow
+                checked={node.defaultCollapsed === true}
+                label={t(editor.startsCollapsed)}
+                onChange={(checked) => callbacks.onUpdate(node.id, { defaultCollapsed: checked })}
+            />
             <ColumnLayoutControl
                 columns={node.columns}
                 columnWidths={node.columnWidths}
@@ -541,6 +555,15 @@ function GroupConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
                 label={t(editor.groupCollapsible)}
                 onChange={(checked) => callbacks.onUpdate(node.id, { collapsible: checked })}
             />
+            {node.collapsible && !node.hideTitle && (
+                <ToggleRow
+                    checked={node.defaultCollapsed === true}
+                    label={t(editor.startsCollapsed)}
+                    onChange={(checked) =>
+                        callbacks.onUpdate(node.id, { defaultCollapsed: checked })
+                    }
+                />
+            )}
             {!node.hideTitle && (
                 <input
                     value={node.docsPath ?? ''}

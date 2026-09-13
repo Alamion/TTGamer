@@ -1,7 +1,9 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { AlertTriangle } from 'lucide-react';
+import { useEffect } from 'react';
 
+import { reportSheetIssue } from '../../diagnostics';
 import { useDocumentStore } from '../../store/documentStore';
 import { useTemplateStore } from '../../store/templateStore';
 import {
@@ -11,7 +13,6 @@ import {
     systemRegistry,
 } from '../../systems';
 import { DeclarativeSheetView } from './declarative/DeclarativeSheetView';
-import { getBuiltInSheetBlock } from './registry/builtInBlockRegistry';
 import { SheetWorkspace } from './shell/SheetWorkspace';
 
 const page = uiMessages.sheet.templates.page;
@@ -35,6 +36,28 @@ function FallbackNotice() {
     );
 }
 
+type FallbackReason = 'missing' | 'kind-mismatch' | 'unknown-view' | 'no-default';
+
+/** Reports a page fallback once per distinct document/reason (degradation stays observable). */
+function FallbackReport({
+    documentId,
+    reason,
+    requested,
+}: {
+    documentId: string;
+    reason: FallbackReason;
+    requested?: string;
+}) {
+    useEffect(() => {
+        reportSheetIssue({
+            code: 'template-fallback',
+            message: 'Document rendered a fallback page instead of the requested one',
+            details: { documentId, reason, requested },
+        });
+    }, [documentId, reason, requested]);
+    return null;
+}
+
 function CurrentDocumentSheet() {
     const { currentDocumentId, documents } = useDocumentStore();
     const { templates, defaultOverrides } = useTemplateStore();
@@ -51,6 +74,24 @@ function CurrentDocumentSheet() {
     if (resolved && !('reason' in resolved)) {
         return <DeclarativeSheetView template={resolved} />;
     }
+    const customFallback = resolved && 'reason' in resolved && (
+        <FallbackReport
+            documentId={document.id}
+            reason={resolved.reason}
+            requested={document.metadata.templateId}
+        />
+    );
+    const preferredViewId = document.metadata.preferredViewId;
+    const viewFallback = preferredViewId &&
+        !definition.views.some(
+            (view) => view.id === preferredViewId || view.legacyIds?.includes(preferredViewId)
+        ) && (
+            <FallbackReport
+                documentId={document.id}
+                reason="unknown-view"
+                requested={preferredViewId}
+            />
+        );
 
     // Feature 004: the selected view IS a default template — render it declaratively with its
     // persisted override applied (no migration, no special-case mapping).
@@ -67,6 +108,8 @@ function CurrentDocumentSheet() {
         if (effective) {
             return (
                 <>
+                    {customFallback}
+                    {viewFallback}
                     {resolved && 'reason' in resolved && <FallbackNotice />}
                     <DeclarativeSheetView template={effective.template} />
                 </>
@@ -74,26 +117,14 @@ function CurrentDocumentSheet() {
         }
     }
 
-    const view = resolveDocumentView(definition, document.metadata.preferredViewId);
-    if (!view) return null;
-
-    const content =
-        view.layout.type === 'built-in' ? (
-            <div className="mx-auto max-w-7xl space-y-8 p-4 lg:p-6">
-                {view.layout.blocks.map((block) => {
-                    const Block = getBuiltInSheetBlock(block.id);
-                    if (!Block) throw new Error(`Unknown built-in sheet block: ${block.id}`);
-                    return <Block key={block.id} accentColor={block.accentColor} />;
-                })}
-            </div>
-        ) : null;
-
-    if (!resolved) return content;
-
+    // Every view is a shipped template (registry test guarded); reaching here means the view's
+    // template is missing — show the notice, never throw.
     return (
         <>
+            {customFallback}
+            {viewFallback}
+            <FallbackReport documentId={document.id} reason="no-default" requested={viewId} />
             <FallbackNotice />
-            {content}
         </>
     );
 }

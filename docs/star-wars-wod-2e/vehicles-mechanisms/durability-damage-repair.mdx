@@ -5,6 +5,7 @@ title: Durability, Damage & Repair
 
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
+import { TemplatePreview, vehicleDamagePreviewDocument } from '/src/sheet_manager/docsEmbeds';
 
 # Durability, Damage & Repair
 
@@ -27,6 +28,42 @@ Like characters, vehicles have a **7-level damage track**. Each level applies a 
 | **Wrecked**  | —       | Reactor shutdown. Cannot function.                   |
 
 When a vehicle reaches **Wrecked**, the reactor shuts down. It cannot move, fire weapons, or use shields. Any vehicle that sustains damage beyond Wrecked is **destroyed** — exploded, split in half, or otherwise unrecoverable.
+
+<TWWrapper>
+    <TemplatePreview
+        template="vehicle-sheet"
+        node="damage-track"
+        document={vehicleDamagePreviewDocument([
+            'slash',
+            'slash',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+            'empty',
+        ])}
+    />
+</TWWrapper>
+
+_A vehicle with **Light** damage: two hits marked, −1D to its pools._
+
+<TWWrapper>
+    <TemplatePreview
+        template="vehicle-sheet"
+        node="damage-track"
+        document={vehicleDamagePreviewDocument([
+            'cross',
+            'cross',
+            'slash',
+            'slash',
+            'cross',
+            'empty',
+            'empty',
+        ])}
+    />
+</TWWrapper>
+
+_A vehicle at **Severe**: five levels marked, −4D to its pools._
 
 ### Damage Type
 

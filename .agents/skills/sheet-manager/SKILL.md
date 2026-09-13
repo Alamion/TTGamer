@@ -64,17 +64,18 @@ updates)` for writes. The droid capability maps persisted `damage` ↔ `health` 
 1. `features/sheet/CharacterSheet.tsx` renders `SheetWorkspace` (shell: toolbar, create/manage
    dialogs, import/export, view select) around `CurrentDocumentSheet`.
 2. `CurrentDocumentSheet` renders an assigned custom template, else the effective default
-   template for the view (`resolveEffectiveTemplate`), else the view's built-in layout via
-   `resolveDocumentView()` (honors `legacyIds`, e.g. `npc-card → brief`) and
-   `registry/builtInBlockRegistry.ts`. Details: `sheet-templates` skill.
-3. Blocks (`features/sheet/blocks`, `features/sheet/body`) read through `useCharacter()`
-   (`hooks/useCharacter.ts`): viewer context wins, else the store document read through the
-   definition's `capabilities.character.read()`; updates are ignored in read-only context.
-4. Character-like full views: base → attributes → skills → advantages → force/resolve →
-   body → other. Creature/vehicle/fodder views live in `features/sheet/views/` (one module per
-   document, plus `StarWarsSheetSupport.tsx` for shared view helpers).
-5. Custom talents/skills/knowledges render inside their ability group column
-   (`SkillBlock.tsx`, brief: `BriefCharacterSheet.tsx`) — never as separate top-level sections.
+   template for the view (`resolveDocumentView()` honors `legacyIds`, e.g. `npc-card → brief`,
+   then `resolveEffectiveTemplate`). Every view is a shipped template; there is no built-in
+   React layout path. Details: `sheet-templates` skill.
+3. Bound template elements read and write through `useBoundDocument()`
+   (`features/sheet/declarative/boundDocument.ts`): character documents via their
+   `capabilities.character`, every other kind via its typed `document.data`; read-only context
+   ignores writes. Equipment sections (`features/sheet/body`) still use `useCharacter()`.
+4. Shipped pages: character/droid full (base → attributes → skills → advantages →
+   force/resolve → body → other) and brief; creature, vehicle, and fodder group full and brief
+   pages (`systems/star-wars-wod/templates/`).
+5. Custom talents/skills/knowledges render inside their ability group column (bound lists in
+   the character templates) — never as separate top-level sections.
 
 ## Import/Export Flow
 
@@ -97,9 +98,10 @@ Implemented in `features/sheet/shell/SheetWorkspace.tsx`:
 | Jumping Distance             | `×min(Control, Telekinesis)`                    |
 | Running Speed                | `×min(Control, Telekinesis)`                    |
 
-Virtues provide the minimum values for the editable Willpower and Dark Side Resistance
-resources in `blocks/ForceBlock.tsx`; merits/flaws may raise them. The other formulas are
-read-only values in `blocks/StatsBlock.tsx`. `calculateHealthPenalty()` (`types/character.ts`)
+Virtues provide the minimum values (`minFrom`) for the editable Willpower and Dark Side
+Resistance resources in the character template's Force section; merits/flaws may raise them.
+The other formulas are read-only formula fields in its Other section
+(`systems/star-wars-wod/templates/character.ts`). `calculateHealthPenalty()` (`types/character.ts`)
 returns the deepest marked level's penalty (Bruised 0 → Crippled −5; Incapacitated none).
 
 ## Testing Notes
@@ -107,8 +109,8 @@ returns the deepest marked level's penalty (Bruised 0 → Crippled −5; Incapac
 - Component tests need Docusaurus stubs: `vitest.config.ts` aliases
   `@docusaurus/Translate` and `@docusaurus/useDocusaurusContext` to `tests/stubs/`. Render
   with `createElement()` if the suite avoids JSX parsing quirks.
-- Composition regression coverage: `tests/sheet_manager/brief-character-sheet.test.tsx`
-  (brief view, custom traits embedded in ability groups), `document-system.test.ts`
-  (registry, migrations, view aliases).
+- Composition regression coverage: `primitive-parity.test.tsx` and `entity-templates.test.tsx`
+  (shipped pages render without degradation), `document-system.test.ts` (registry, migrations,
+  view aliases, template-backed views).
 - Run `yarn verify` for schema/persistence/import changes; `yarn verify:fast` plus targeted
   tests otherwise.

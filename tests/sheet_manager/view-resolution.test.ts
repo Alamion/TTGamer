@@ -1,4 +1,7 @@
-import { resolveCustomTemplate } from '@site/src/sheet_manager/systems/view';
+import {
+    resolveCustomTemplate,
+    resolveEffectiveTemplate,
+} from '@site/src/sheet_manager/systems/view';
 import { DocumentKindSchema } from '@site/src/sheet_manager/types/document';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
@@ -48,13 +51,62 @@ describe('resolveCustomTemplate', () => {
         });
     });
 
-    it('reports a missing template on kind mismatch', () => {
+    it('reports a kind mismatch separately from a missing template', () => {
         expect(resolveCustomTemplate('vehicle-page', library, characterKind)).toEqual({
-            reason: 'missing',
+            reason: 'kind-mismatch',
         });
     });
 
     it('resolves the vehicle template for vehicle documents', () => {
         expect(resolveCustomTemplate('vehicle-page', library, vehicleKind)).toEqual(library[1]);
+    });
+});
+
+describe('resolveEffectiveTemplate (feature 007)', () => {
+    const creatureKind = DocumentKindSchema.parse('creature');
+    const empty = { templates: [], defaultOverrides: {} };
+
+    it('resolves each entity kind to its own shipped page, including legacy brief ids', () => {
+        expect(
+            resolveEffectiveTemplate('creature-sheet', empty, 'star-wars-wod', creatureKind)
+                ?.template.id
+        ).toBe('creature-sheet');
+        expect(
+            resolveEffectiveTemplate('brief', empty, 'star-wars-wod', creatureKind)?.template.id
+        ).toBe('creature-brief');
+        expect(
+            resolveEffectiveTemplate(
+                'brief',
+                empty,
+                'star-wars-wod',
+                DocumentKindSchema.parse('vehicle')
+            )?.template.id
+        ).toBe('vehicle-brief');
+    });
+
+    it('ignores a user template of another kind that shares the id', () => {
+        const foreign = buildTemplate('creature-sheet', 'vehicle');
+        const resolved = resolveEffectiveTemplate(
+            'creature-sheet',
+            { templates: [foreign], defaultOverrides: {} },
+            'star-wars-wod',
+            creatureKind
+        );
+        expect(resolved?.isDefault).toBe(true);
+        expect(resolved?.template.documentKind).toBe('creature');
+    });
+});
+
+describe('default overrides by canonical page (feature 007)', () => {
+    it('does not apply the character brief override to a creature opened via the brief alias', () => {
+        const characterBriefOverride = buildTemplate('brief');
+        const resolved = resolveEffectiveTemplate(
+            'brief',
+            { templates: [], defaultOverrides: { brief: characterBriefOverride } },
+            'star-wars-wod',
+            DocumentKindSchema.parse('creature')
+        );
+        expect(resolved?.template.id).toBe('creature-brief');
+        expect(resolved?.modified).toBe(false);
     });
 });

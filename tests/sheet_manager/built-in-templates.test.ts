@@ -1,48 +1,50 @@
-// @vitest-environment jsdom
+import { readdirSync, statSync } from 'node:fs';
+import path from 'node:path';
 
-import { resolveDocumentView } from '@site/src/sheet_manager/systems';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
-import { starWarsWodDefaultTemplates } from '@site/src/sheet_manager/systems/star-wars-wod/defaultTemplates';
 import { describe, expect, it } from 'vitest';
 
 /**
- * Legacy path retirement gate (feature 006 US7): the definition-owned built-in layouts stay
- * registered and compilable until the user confirms parity, but no shipped template may
- * reference the legacy `built-in` placement variant — pre-feature templates retire via the
- * template-store quarantine instead of migrating.
+ * Views are templates (feature 007): the `built-in` layout path and its React blocks are retired
+ * (archived under `context/legacy-sheet-components/`). Every view of every registered system must
+ * resolve to a shipped default template with the same id and document kind.
  */
-describe('legacy path retirement gate (feature 006 US7)', () => {
-    it('keeps definition-owned built-in layouts registered for specialized pages', () => {
-        // The retained legacy path: registered views with built-in layouts still resolve.
-        const creature = systemRegistry.getDocumentDefinition('star-wars-wod', 'creature');
-        expect(creature).toBeDefined();
-        const view = resolveDocumentView(creature!, creature!.defaultViewId);
-        expect(view?.layout.type).toBe('built-in');
-
-        for (const definitionId of ['creature', 'vehicle', 'fodder-group']) {
-            const definition = systemRegistry.getDocumentDefinition('star-wars-wod', definitionId);
-            const definitionView = resolveDocumentView(definition!, definition!.defaultViewId);
-            expect(definitionView?.layout.type, definitionId).toBe('built-in');
-        }
-    });
-
-    it('ships zero built-in placements across every default template', () => {
-        expect(starWarsWodDefaultTemplates.length).toBeGreaterThan(0);
-        for (const template of starWarsWodDefaultTemplates) {
-            const walk = (nodes: readonly { type: string; children?: unknown[] }[]): void => {
-                for (const node of nodes) {
-                    expect(node.type, `${template.id}:${node.type}`).not.toBe('built-in');
-                    if (node.children) walk(node.children as never);
+describe('views are shipped templates', () => {
+    it('backs every view of every system with a shipped template of the same kind', () => {
+        for (const system of systemRegistry.getSystems()) {
+            const defaults = system.defaultTemplates ?? [];
+            for (const definition of system.documents) {
+                for (const view of definition.views) {
+                    const label = `${system.id}/${definition.id}:${view.id}`;
+                    expect(view.layout.type, label).toBe('declarative');
+                    const template = defaults.find(({ id }) => id === view.id);
+                    expect(template, label).toBeDefined();
+                    expect(template?.documentKind, label).toBe(definition.kind);
                 }
-            };
-            walk(template.children);
+            }
         }
     });
 
-    it('declares specialized pages without declarative defaults (built-in layout renders)', () => {
-        const defaults = starWarsWodDefaultTemplates.map(({ id }) => id);
-        expect(defaults).not.toContain('creature-sheet');
-        expect(defaults).not.toContain('vehicle-sheet');
-        expect(defaults).not.toContain('fodder-sheet');
+    it('ships no legacy built-in placements in any default template', () => {
+        for (const system of systemRegistry.getSystems()) {
+            for (const template of system.defaultTemplates ?? []) {
+                expect(JSON.stringify(template), template.id).not.toContain('"built-in"');
+            }
+        }
+    });
+
+    it('keeps the retired block modules out of the product', () => {
+        const root = path.resolve(__dirname, '../../src/sheet_manager');
+        const exists = (relative: string) => {
+            try {
+                return statSync(path.join(root, relative)) !== undefined;
+            } catch {
+                return false;
+            }
+        };
+        expect(exists('features/sheet/blocks')).toBe(false);
+        expect(exists('components/viewer')).toBe(false);
+        expect(exists('features/sheet/registry/builtInBlockRegistry.ts')).toBe(false);
+        expect(readdirSync(path.join(root, 'features/sheet'))).not.toContain('views');
     });
 });

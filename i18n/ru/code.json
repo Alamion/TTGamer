@@ -929,38 +929,53 @@
     "ttgamer.ui.sheet.templates.binding.fillTarget": {
         "message": "Записывать в"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.advantages": {
-        "message": "Достоинства"
+    "ttgamer.ui.sheet.templates.cohort.addMember": {
+        "message": "Добавить участника"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.attributes": {
-        "message": "Атрибуты"
+    "ttgamer.ui.sheet.templates.cohort.cancel": {
+        "message": "Отмена"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.base": {
-        "message": "Шапка персонажа"
+    "ttgamer.ui.sheet.templates.cohort.confirm": {
+        "message": "Подтвердить"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.body": {
-        "message": "Тело и здоровье"
+    "ttgamer.ui.sheet.templates.cohort.defeated": {
+        "message": "Выведен из боя"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.brief-document": {
-        "message": "Краткая карточка"
+    "ttgamer.ui.sheet.templates.cohort.level": {
+        "message": "Уровень"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.force": {
-        "message": "Сила"
+    "ttgamer.ui.sheet.templates.cohort.maxMembersReached": {
+        "message": "В группе может быть не больше {count} участников."
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.other": {
-        "message": "Прочее"
+    "ttgamer.ui.sheet.templates.cohort.member": {
+        "message": "Участник {label}"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.skills": {
-        "message": "Навыки"
+    "ttgamer.ui.sheet.templates.cohort.memberLabel": {
+        "message": "Метка участника"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-creature-sheet": {
-        "message": "Страница существа"
+    "ttgamer.ui.sheet.templates.cohort.members": {
+        "message": "Участники"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-fodder-sheet": {
-        "message": "Страница группы"
+    "ttgamer.ui.sheet.templates.cohort.penalty": {
+        "message": "Штраф"
     },
-    "ttgamer.ui.sheet.templates.builtInBlocks.star-wars-vehicle-sheet": {
-        "message": "Страница техники"
+    "ttgamer.ui.sheet.templates.cohort.removeDescription": {
+        "message": "У участника {label} отмечены повреждения. Удаление сотрёт их."
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeMember": {
+        "message": "Удалить участника {label}"
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeTitle": {
+        "message": "Удалить раненого участника?"
+    },
+    "ttgamer.ui.sheet.templates.cohort.shortenDescription": {
+        "message": "У некоторых участников есть отметки на скрываемых уровнях. Они перейдут на последний оставшийся уровень."
+    },
+    "ttgamer.ui.sheet.templates.cohort.shortenTitle": {
+        "message": "Сократить шкалу здоровья?"
+    },
+    "ttgamer.ui.sheet.templates.cohort.trackLength": {
+        "message": "Уровни здоровья"
     },
     "ttgamer.ui.sheet.templates.defaults.advantages": {
         "message": "Преимущества"
@@ -1030,6 +1045,9 @@
     },
     "ttgamer.ui.sheet.templates.defaults.mental": {
         "message": "Ментальные"
+    },
+    "ttgamer.ui.sheet.templates.defaults.other": {
+        "message": "Прочее"
     },
     "ttgamer.ui.sheet.templates.defaults.physical": {
         "message": "Физические"
@@ -1376,6 +1394,9 @@
     "ttgamer.ui.sheet.templates.editor.sourceTypeLocked": {
         "message": "Тип определяется значением листа персонажа."
     },
+    "ttgamer.ui.sheet.templates.editor.startsCollapsed": {
+        "message": "Изначально свёрнуто"
+    },
     "ttgamer.ui.sheet.templates.editor.tableTitle": {
         "message": "Название таблицы (необязательно)"
     },
@@ -1408,6 +1429,186 @@
     },
     "ttgamer.ui.sheet.templates.editor.valueSource": {
         "message": "Где хранится значение"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhen": {
+        "message": "Показывать только при совпадении значения"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenCoordinate": {
+        "message": "Ключ значения"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenOperator": {
+        "message": "Сравнение"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenValue": {
+        "message": "Значение"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcAll": {
+        "message": "Все"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcFront": {
+        "message": "Перед"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcLeft": {
+        "message": "Левый борт"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcRear": {
+        "message": "Зад"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcRight": {
+        "message": "Правый борт"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcTurret": {
+        "message": "Турель"
+    },
+    "ttgamer.ui.sheet.templates.entities.armorCatalog": {
+        "message": "Броня из каталога"
+    },
+    "ttgamer.ui.sheet.templates.entities.bashing": {
+        "message": "Ударный"
+    },
+    "ttgamer.ui.sheet.templates.entities.cannotSoakLethal": {
+        "message": "Не поглощает летальный урон"
+    },
+    "ttgamer.ui.sheet.templates.entities.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.sheet.templates.entities.comms": {
+        "message": "Связь"
+    },
+    "ttgamer.ui.sheet.templates.entities.copilot": {
+        "message": "Второй пилот"
+    },
+    "ttgamer.ui.sheet.templates.entities.creatureBrief": {
+        "message": "Краткий лист существа"
+    },
+    "ttgamer.ui.sheet.templates.entities.creatureSheet": {
+        "message": "Лист существа"
+    },
+    "ttgamer.ui.sheet.templates.entities.crewCapacity": {
+        "message": "Экипаж и вместимость"
+    },
+    "ttgamer.ui.sheet.templates.entities.crewStations": {
+        "message": "Посты экипажа"
+    },
+    "ttgamer.ui.sheet.templates.entities.damaged": {
+        "message": "Повреждена"
+    },
+    "ttgamer.ui.sheet.templates.entities.descriptionLabel": {
+        "message": "Описание"
+    },
+    "ttgamer.ui.sheet.templates.entities.details": {
+        "message": "Подробности"
+    },
+    "ttgamer.ui.sheet.templates.entities.durabilityReroll": {
+        "message": "Переброс десяток на прочность"
+    },
+    "ttgamer.ui.sheet.templates.entities.effect": {
+        "message": "Эффект"
+    },
+    "ttgamer.ui.sheet.templates.entities.engineer": {
+        "message": "Инженер"
+    },
+    "ttgamer.ui.sheet.templates.entities.fodderBrief": {
+        "message": "Краткий лист группы статистов"
+    },
+    "ttgamer.ui.sheet.templates.entities.fodderSheet": {
+        "message": "Лист группы статистов"
+    },
+    "ttgamer.ui.sheet.templates.entities.group": {
+        "message": "Группа"
+    },
+    "ttgamer.ui.sheet.templates.entities.gunners": {
+        "message": "Стрелки"
+    },
+    "ttgamer.ui.sheet.templates.entities.identification": {
+        "message": "Идентификация"
+    },
+    "ttgamer.ui.sheet.templates.entities.leader": {
+        "message": "Командир"
+    },
+    "ttgamer.ui.sheet.templates.entities.lethal": {
+        "message": "Летальный"
+    },
+    "ttgamer.ui.sheet.templates.entities.modelCatalog": {
+        "message": "Модель из каталога"
+    },
+    "ttgamer.ui.sheet.templates.entities.modification": {
+        "message": "Модификация"
+    },
+    "ttgamer.ui.sheet.templates.entities.modifications": {
+        "message": "Модификации и особенности"
+    },
+    "ttgamer.ui.sheet.templates.entities.movement": {
+        "message": "Передвижение"
+    },
+    "ttgamer.ui.sheet.templates.entities.pilot": {
+        "message": "Пилот"
+    },
+    "ttgamer.ui.sheet.templates.entities.pools": {
+        "message": "Пулы"
+    },
+    "ttgamer.ui.sheet.templates.entities.quickPools": {
+        "message": "Быстрые пулы"
+    },
+    "ttgamer.ui.sheet.templates.entities.quirk": {
+        "message": "Особенность"
+    },
+    "ttgamer.ui.sheet.templates.entities.scaleReference": {
+        "message": "Справка по масштабам"
+    },
+    "ttgamer.ui.sheet.templates.entities.scaleReferenceText": {
+        "message": "Каждая ступень масштаба между атакующим и целью даёт более крупному участнику +1 к сложности попадания и −1 к урону; меньшему — наоборот."
+    },
+    "ttgamer.ui.sheet.templates.entities.secondaryPool": {
+        "message": "Второстепенный пул"
+    },
+    "ttgamer.ui.sheet.templates.entities.sensors": {
+        "message": "Сенсоры"
+    },
+    "ttgamer.ui.sheet.templates.entities.soak": {
+        "message": "Поглощение"
+    },
+    "ttgamer.ui.sheet.templates.entities.soakAll": {
+        "message": "Поглощение (летальный и ударный)"
+    },
+    "ttgamer.ui.sheet.templates.entities.soakBashingOnly": {
+        "message": "Поглощение (только ударный)"
+    },
+    "ttgamer.ui.sheet.templates.entities.soaksLethal": {
+        "message": "Поглощает летальный урон"
+    },
+    "ttgamer.ui.sheet.templates.entities.source": {
+        "message": "Источник"
+    },
+    "ttgamer.ui.sheet.templates.entities.specialtyPool": {
+        "message": "Профильный пул"
+    },
+    "ttgamer.ui.sheet.templates.entities.speciesCatalog": {
+        "message": "Запись бестиария"
+    },
+    "ttgamer.ui.sheet.templates.entities.system": {
+        "message": "Система"
+    },
+    "ttgamer.ui.sheet.templates.entities.systemSlots": {
+        "message": "Системные слоты"
+    },
+    "ttgamer.ui.sheet.templates.entities.threatTier": {
+        "message": "Уровень угрозы"
+    },
+    "ttgamer.ui.sheet.templates.entities.tierFodder": {
+        "message": "Статист"
+    },
+    "ttgamer.ui.sheet.templates.entities.tierNamed": {
+        "message": "Именной"
+    },
+    "ttgamer.ui.sheet.templates.entities.traits": {
+        "message": "Характеристики"
+    },
+    "ttgamer.ui.sheet.templates.entities.vehicleBrief": {
+        "message": "Краткий лист транспорта"
+    },
+    "ttgamer.ui.sheet.templates.entities.vehicleSheet": {
+        "message": "Лист транспорта"
     },
     "ttgamer.ui.sheet.templates.fieldTypes.builtIn": {
         "message": "Встроенная часть страницы"
@@ -1514,8 +1715,8 @@
     "ttgamer.ui.sheet.templates.library.unnamedKind": {
         "message": "Другое"
     },
-    "ttgamer.ui.sheet.templates.page.builtInPlaceholder": {
-        "message": "Часть страницы «{block}» недоступна на этом устройстве."
+    "ttgamer.ui.sheet.templates.page.embedNoDocument": {
+        "message": "Создайте или откройте персонажа, чтобы заполнить эту часть листа прямо здесь."
     },
     "ttgamer.ui.sheet.templates.page.fallbackDescription": {
         "message": "Назначенный шаблон отсутствует. Показана стандартная страница — можно выбрать другую ниже."
@@ -1615,6 +1816,21 @@
     },
     "ttgamer.ui.sheet.templates.primitives.trackLevels": {
         "message": "Уровни"
+    },
+    "ttgamer.ui.sheet.templates.reference.missing": {
+        "message": "Связанный документ больше не существует"
+    },
+    "ttgamer.ui.sheet.templates.reference.noMatches": {
+        "message": "Подходящих документов нет"
+    },
+    "ttgamer.ui.sheet.templates.reference.open": {
+        "message": "Открыть «{title}»"
+    },
+    "ttgamer.ui.sheet.templates.reference.remove": {
+        "message": "Убрать «{title}»"
+    },
+    "ttgamer.ui.sheet.templates.reference.search": {
+        "message": "Введите имя для поиска"
     },
     "ttgamer.ui.sheet.templates.transfer.conflictPrompt": {
         "message": "Заменить, импортировать копию с новым ID или отменить."

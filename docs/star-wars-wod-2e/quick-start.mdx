@@ -5,11 +5,7 @@ title: Quick Start
 
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 import { CreateCharacterButton } from '/src/sheet_manager/features/sheet/shell/CreateCharacterButton';
-import { BaseBlock } from '/src/sheet_manager/features/sheet/blocks/BaseBlock';
-import { AttributeBlock } from '/src/sheet_manager/features/sheet/blocks/AttributeBlock';
-import { SkillBlock } from '/src/sheet_manager/features/sheet/blocks/SkillBlock';
-import { AdvantagesBlock } from '/src/sheet_manager/features/sheet/blocks/AdvantagesBlock';
-import { ForceBlock } from '/src/sheet_manager/features/sheet/blocks/ForceBlock';
+import { TemplateFragment } from '/src/sheet_manager/docsEmbeds';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
 import { CharRoll } from '/src/integrations/docs-character-rolls/CharRoll';
 
@@ -89,7 +85,7 @@ Navigate to the `Base` block and fill out your identifying concept traits:
 - `Species`: Pick your species template (e.g., _Human_, _Wookiee_, _Twi'lek_)
 
 <TWWrapper>
-    <BaseBlock accentColor="primary" />
+    <TemplateFragment node="base" />
 </TWWrapper>
 
 ### 3. Distribute Your Attribute Dots
@@ -103,7 +99,7 @@ Rank these columns based on your character concept. Distribute your starting dot
 - _Note: Every attribute automatically starts with 1 inherent dot. The maximum rating for a starting character is 5._
 
 <TWWrapper>
-    <AttributeBlock accentColor="secondary" />
+    <TemplateFragment node="attributes" />
 </TWWrapper>
 
 ### 4. Distribute Your Ability Dots
@@ -117,7 +113,7 @@ Prioritize these columns and distribute your dots using the **13 / 9 / 5** budge
 - _Note: Every ability starts with 0 inherent dot. The maximum rating for a starting character is 3._
 
 <TWWrapper>
-    <SkillBlock accentColor="primary" />
+    <TemplateFragment node="skills" />
 </TWWrapper>
 
 ### 5. Establish Advantages & Virtues
@@ -125,9 +121,9 @@ Prioritize these columns and distribute your dots using the **13 / 9 / 5** budge
 - **Backgrounds:** In the `Advantages` block, click `Add Background` to allocate your **5 starting dots** into narrative vectors like `Contacts`, `Resources`, or `Vehicle`.
 - **Virtues:** In the `Force` block, locate your core ethics: `Conscience`, `Passion`, and `Self Control`. Distribute **7 dots** among them (each starts with 1 dot inherently).
 
-<TWWrapper><AdvantagesBlock accentColor="secondary"/></TWWrapper>
+<TWWrapper><TemplateFragment node="advantages" /></TWWrapper>
 <br/>
-<TWWrapper><ForceBlock accentColor="primary"/></TWWrapper>
+<TWWrapper><TemplateFragment node="force" /></TWWrapper>
 <br/>
 > **Derived Calculations:** The sheet will automatically calculate your secondary pools based on your starting virtues. Your maximum `Willpower` pool equals `Passion + Self Control` if you are playing as Jedi. Your starting `Dark Side Resistance` equals `5 + Conscience − Passion`.
 > For games with no Force users, ignore Virtues and Dark Side Resistance. Set starting `Willpower` equal to 6 and starting `Force Points` equal to 3.

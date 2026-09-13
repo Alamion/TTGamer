@@ -6,6 +6,7 @@ title: Creature & NPC Mechanics
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
 import { ScaleChart } from '/src/shared/components/ScaleChart';
+import { TemplatePreview, exampleDocument } from '/src/sheet_manager/docsEmbeds';
 
 # Creature & NPC Mechanics
 
@@ -148,24 +149,9 @@ A creature at Incapacitated can be evaded or finished at the Storyteller's discr
 
 ## Creature Example: Wampa
 
-| Field            | Value                                                            |
-| ---------------- | ---------------------------------------------------------------- |
-| **Species**      | Wampa                                                            |
-| **Type**         | Snow predator                                                    |
-| **Scale**        | Speeder                                                          |
-| **Size**         | 3m tall                                                          |
-| **Strength**     | 5D                                                               |
-| **Dexterity**    | 3D                                                               |
-| **Stamina**      | 5D                                                               |
-| **Perception**   | 2D                                                               |
-| **Intelligence** | 2D                                                               |
-| **Wits**         | 3D                                                               |
-| **Willpower**    | 6D                                                               |
-| **Abilities**    | Athletics 3D, Brawl 2D, Stealth 3D, Survival 3D, Intimidation 3D |
-| **Armor**        | Tough hide, AR +1D                                               |
-| **Attacks**      | Claw (L) STR+1D, Teeth (L) STR+2D                                |
-| **Merits**       | Powerful +3, Non-verbal Language (howl), Camouflage (snow)       |
-| **Notes**        | Hunts by tracking; buries prey in snow for later.                |
+<TWWrapper>
+    <TemplatePreview template="creature-sheet" document={exampleDocument('wampa::preset')} />
+</TWWrapper>
 
 ---
 
@@ -204,14 +190,12 @@ Unnamed NPCs — stormtroopers, pirates, bar thugs — are simplified:
 
 #### Fodder Stat Block Example: Stormtrooper
 
-| Attribute    | Dice | Ability   | Dice |
-| ------------ | ---- | --------- | ---- |
-| Strength     | 3    | Blaster   | 3    |
-| Dexterity    | 3    | Dodge     | 2    |
-| Stamina      | 3    | Melee     | 2    |
-| Perception   | 2    | Brawl     | 2    |
-| Intelligence | 2    | Athletics | 2    |
-| Wits         | 2    | Alertness | 2    |
+<TWWrapper>
+    <TemplatePreview
+        template="fodder-brief"
+        document={exampleDocument('stormtrooper-squad::preset')}
+    />
+</TWWrapper>
 
 Armor: Stormtrooper (AR +3D, Dex −2D). Weapon: Blaster Rifle (9D dmg, range 200, ammo 50). Willpower: 4. Soak: Stamina 3 + armor 3D = 6D.
 

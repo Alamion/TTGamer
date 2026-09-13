@@ -4,14 +4,18 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { useCharacterContext } from '../../../context/CharacterContext';
 import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentSource } from '../../../hooks/useDocumentSource';
+import { useDocumentStore } from '../../../store/documentStore';
 import type { DocumentBindingDescriptor } from '../../../systems/templateBindings';
 import type { SystemListShape } from '../../../systems/templateBindings';
 import {
+    boundWriteUpdate,
     createListEntry,
     readBoundNumber,
+    readDataPath,
     resolveDocumentBinding,
+    resolveWritableBinding,
 } from '../../../systems/templateBindings';
-import type { CustomTemplate, ListNode, TemplateField } from '../../../types/template';
+import type { CustomTemplate, ListNode, TemplateField, VisibleWhen } from '../../../types/template';
 import {
     collectListNodes,
     collectTemplateFields,
@@ -24,6 +28,7 @@ import {
     type CatalogFillableDetail,
     readDetailValue,
 } from '../data/catalogBindings';
+import { useBoundDocument } from './boundDocument';
 import type { CatalogOption, DocumentOption } from './fieldControls';
 import { evaluateFormula, type Expr, type FormulaEvaluationError, parseFormula } from './formula';
 
@@ -61,8 +66,25 @@ export interface SystemListRuntime {
     write: (next: readonly unknown[]) => void;
 }
 
+export interface CoordinateWrite {
+    /** Field id or storage coordinate. */
+    target: string;
+    value: unknown;
+}
+
 export interface UseTemplatePageResult {
     addRow: (blockId: string) => void;
+    /**
+     * Writes several coordinates as one change: document-data coordinates in one data update,
+     * value-bag coordinates in one bag update (catalog fills).
+     */
+    applyWrites: (writes: readonly CoordinateWrite[]) => void;
+    /** Evaluates a node's render condition against the current values. */
+    isVisible: (condition: VisibleWhen, nodeId: string) => boolean;
+    /** Switches the workspace to another document (reference links); no-op in previews. */
+    openDocument: (documentId: string) => void;
+    /** True when references render against a fixed preview (missing targets are not reported). */
+    previewSource: boolean;
     disabled: boolean;
     /** Documents for reference controls (current store, excluding the active document). */
     documentOptions: ReadonlyArray<DocumentOption>;
@@ -129,6 +151,8 @@ export function useTemplatePage(
         updateTemplateValues,
     } = source;
     const readOnly = useCharacterContext().readOnly || source.readOnly;
+    const bound = useBoundDocument();
+    const setCurrentDocument = useDocumentStore((state) => state.setCurrentDocument);
     const locale = useDocusaurusContext().i18n.currentLocale;
     const currentDocumentId = document?.id;
     const templateId = template?.id;
@@ -213,8 +237,93 @@ export function useTemplatePage(
                 .map((candidate) => ({
                     value: candidate.id,
                     label: candidate.metadata.title || candidate.definitionId,
+                    kind: candidate.kind,
                 })),
         [documents, document?.id]
+    );
+
+    const applyWrites = useCallback(
+        (writes: readonly CoordinateWrite[]) => {
+            if (!currentDocumentId || !template || readOnly || writes.length === 0) return;
+            const bagEntries: Array<[string, unknown]> = [];
+            const data: Record<string, unknown> = { ...(bound?.data ?? {}) };
+            const dataKeys = new Set<string>();
+            let title: string | undefined;
+            for (const { target, value } of writes) {
+                if (value === undefined) continue;
+                const coordinate = fieldCoords.get(target) ?? target;
+                const binding = bound
+                    ? resolveWritableBinding(template.systemId, template.documentKind, coordinate)
+                    : undefined;
+                if (binding) {
+                    const update = boundWriteUpdate(binding, data, value);
+                    Object.assign(data, update);
+                    Object.keys(update).forEach((key) => dataKeys.add(key));
+                    if (binding.kind === 'field' && binding.syncsTitle) {
+                        title = String(readDataPath(data, binding.path) ?? '');
+                    }
+                } else {
+                    bagEntries.push([coordinate, value === null ? undefined : value]);
+                }
+            }
+            if (bound && dataKeys.size > 0) {
+                bound.update(Object.fromEntries([...dataKeys].map((key) => [key, data[key]])));
+                if (title !== undefined) bound.setTitle(title);
+            }
+            if (bagEntries.length > 0) {
+                updateTemplateValues(currentDocumentId, template, (page) => ({
+                    ...page,
+                    ...(Object.fromEntries(bagEntries) as TemplatePageValues),
+                }));
+            }
+        },
+        [bound, currentDocumentId, fieldCoords, readOnly, template, updateTemplateValues]
+    );
+
+    const isVisible = useCallback(
+        (condition: VisibleWhen, nodeId: string) => {
+            if (!template) return true;
+            const binding = resolveWritableBinding(
+                template.systemId,
+                template.documentKind,
+                condition.coordinate
+            );
+            let value: unknown;
+            if (binding?.kind === 'field') {
+                value = readDataPath(documentData, binding.path);
+            } else if (binding?.kind === 'resource' && documentData) {
+                value = documentData[binding.dataKey];
+            } else if (binding) {
+                const read = readBoundNumber(
+                    template.systemId,
+                    template.documentKind,
+                    documentData ?? {},
+                    condition.coordinate
+                );
+                value = read.bound ? read.value : undefined;
+            } else if ([...fieldCoords.values()].includes(condition.coordinate)) {
+                value = values[condition.coordinate];
+            } else {
+                reportSheetIssue({
+                    code: 'binding-unresolved',
+                    message: 'Render condition references an unknown coordinate; node hidden',
+                    details: { templateId: template.id, nodeId, coordinate: condition.coordinate },
+                });
+                return false;
+            }
+            const matches = value === condition.equals;
+            return condition.not ? !matches : matches;
+        },
+        [documentData, fieldCoords, template, values]
+    );
+
+    const previewSource = source.readOnly;
+    const openDocument = useCallback(
+        (documentId: string) => {
+            if (previewSource) return;
+            setCurrentDocument(documentId);
+        },
+        [previewSource, setCurrentDocument]
     );
 
     // -- Formula engine (feature 006): unified coordinate space, memoized per render pass. --
@@ -545,6 +654,10 @@ export function useTemplatePage(
 
     return {
         addRow,
+        applyWrites,
+        isVisible,
+        openDocument,
+        previewSource,
         disabled: readOnly,
         documentOptions,
         formulaState,

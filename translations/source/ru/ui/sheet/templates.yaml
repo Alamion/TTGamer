@@ -39,6 +39,11 @@ primitives:
     removePreset: Удалить пресет
     degraded: 'Привязка «{binding}» недоступна на этом устройстве.'
 editor:
+    visibleWhen: Показывать только при совпадении значения
+    visibleWhenCoordinate: Ключ значения
+    visibleWhenOperator: Сравнение
+    visibleWhenValue: Значение
+    startsCollapsed: Изначально свёрнуто
     untitledName: Шаблон без названия
     name: Название
     namePlaceholder: Название шаблона
@@ -176,6 +181,7 @@ fieldTypes:
     group: Группа полей
     list: Кастомный список
 defaults:
+    other: Прочее
     portrait: Портрет
     physical: Физические
     social: Социальные
@@ -206,23 +212,11 @@ defaults:
     experienceSpent: Потрачено
     experienceAvailable: Доступно
     freePoints: Свободные очки
-builtInBlocks:
-    base: Шапка персонажа
-    attributes: Атрибуты
-    skills: Навыки
-    advantages: Достоинства
-    force: Сила
-    body: Тело и здоровье
-    other: Прочее
-    brief-document: Краткая карточка
-    star-wars-creature-sheet: Страница существа
-    star-wars-vehicle-sheet: Страница техники
-    star-wars-fodder-sheet: Страница группы
 page:
+    embedNoDocument: Создайте или откройте персонажа, чтобы заполнить эту часть листа прямо здесь.
     fallbackTitle: Страница шаблона недоступна
     fallbackDescription: Назначенный шаблон отсутствует. Показана стандартная страница — можно выбрать другую ниже.
     requiredUnfilled: 'Не заполнено обязательных полей: {count}.'
-    builtInPlaceholder: Часть страницы «{block}» недоступна на этом устройстве.
     primitiveDegraded: 'Привязка «{binding}» недоступна на этом устройстве.'
     formulaDegraded: 'Невозможно вычислить «{field}»: {reason}.'
     formulaReasonUnknown: значение «{coordinate}» недоступно
@@ -255,3 +249,83 @@ transfer:
     conflictTitle: Шаблон уже существует
     conflictPrompt: Заменить, импортировать копию с новым ID или отменить.
     degradedReport: 'Некоторые каталоги недоступны — поля переведены на ручные списки: {fields}'
+cohort:
+    members: Участники
+    member: Участник {label}
+    addMember: Добавить участника
+    removeMember: Удалить участника {label}
+    memberLabel: Метка участника
+    defeated: Выведен из боя
+    penalty: Штраф
+    level: Уровень
+    trackLength: Уровни здоровья
+    maxMembersReached: В группе может быть не больше {count} участников.
+    removeTitle: Удалить раненого участника?
+    removeDescription: У участника {label} отмечены повреждения. Удаление сотрёт их.
+    shortenTitle: Сократить шкалу здоровья?
+    shortenDescription: У некоторых участников есть отметки на скрываемых уровнях. Они перейдут на последний оставшийся уровень.
+    confirm: Подтвердить
+    cancel: Отмена
+reference:
+    search: Введите имя для поиска
+    noMatches: Подходящих документов нет
+    remove: Убрать «{title}»
+    open: Открыть «{title}»
+    missing: Связанный документ больше не существует
+entities:
+    identification: Идентификация
+    details: Подробности
+    descriptionLabel: Описание
+    source: Источник
+    movement: Передвижение
+    threatTier: Уровень угрозы
+    tierNamed: Именной
+    tierFodder: Статист
+    soak: Поглощение
+    soaksLethal: Поглощает летальный урон
+    cannotSoakLethal: Не поглощает летальный урон
+    speciesCatalog: Запись бестиария
+    modelCatalog: Модель из каталога
+    armorCatalog: Броня из каталога
+    scaleReference: Справка по масштабам
+    scaleReferenceText: Каждая ступень масштаба между атакующим и целью даёт более крупному участнику +1 к сложности попадания и −1 к урону; меньшему — наоборот.
+    category: Категория
+    durabilityReroll: Переброс десяток на прочность
+    crewCapacity: Экипаж и вместимость
+    systemSlots: Системные слоты
+    system: Система
+    damaged: Повреждена
+    crewStations: Посты экипажа
+    pilot: Пилот
+    copilot: Второй пилот
+    gunners: Стрелки
+    engineer: Инженер
+    sensors: Сенсоры
+    comms: Связь
+    modifications: Модификации и особенности
+    modification: Модификация
+    effect: Эффект
+    quirk: Особенность
+    group: Группа
+    leader: Командир
+    traits: Характеристики
+    quickPools: Быстрые пулы
+    specialtyPool: Профильный пул
+    secondaryPool: Второстепенный пул
+    lethal: Летальный
+    bashing: Ударный
+    arcFront: Перед
+    arcRear: Зад
+    arcLeft: Левый борт
+    arcRight: Правый борт
+    arcTurret: Турель
+    arcAll: Все
+    pools: Пулы
+    creatureSheet: Лист существа
+    creatureBrief: Краткий лист существа
+    vehicleSheet: Лист транспорта
+    vehicleBrief: Краткий лист транспорта
+    fodderSheet: Лист группы статистов
+    fodderBrief: Краткий лист группы статистов
+    soakAll: Поглощение (летальный и ударный)
+    soakBashingOnly: Поглощение (только ударный)

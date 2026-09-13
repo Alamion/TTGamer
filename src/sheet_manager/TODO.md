@@ -199,9 +199,24 @@ scratch with zero placements. Spec: `specs/006-template-composition-usability/sp
 | C-4 | ✅     | **Lists, images, presentation** | System list bindings (Force powers/merits/flaws/backgrounds + equipment); per-document image fields; section/group split.    | High     | L      | High   | C-1, C-2     |
 | C-5 | ✅     | **Defaults rebuilt (pure)**     | Full/droid/brief defaults recomposed as pure declarative trees mirroring the built-in viewer order; zero placements.         | High     | M      | High   | C-4          |
 
-**Legacy retirement gate (explicit, user-confirmed)** — supersedes the feature 005 cleanup gate.
-The `built-in` placement variant is already gone from the template schema. What remains is the
-definition-owned built-in layout path: creature/vehicle/fodder pages (and their `brief`) plus the
-`features/sheet/blocks/*` components also used by `CharacterViewer`. It stays until the user
-confirms declarative parity; then delete the blocks, the layouts, and the duplicated
-copy-on-select logic. Current state: `.agents/skills/sheet-templates/SKILL.md`.
+**Legacy retirement gate** — ✅ closed by feature 007: the built-in layout path, the
+`features/sheet/blocks/*` components, `CharacterViewer`, and the specialized pages were archived to
+`context/legacy-sheet-components/` and removed. Current state: `.agents/skills/sheet-templates/SKILL.md`.
+
+---
+
+### Epic: Entity Sheet Templates (feature 007)
+
+Creature, vehicle, and fodder group documents render shipped full and brief templates built from
+setting-neutral pieces: kind-independent bound data access, member tracks (lettering, bounded
+count, removal confirmation, 3/5/7 fodder lengths), bound rows tables with catalog suggestions,
+overwrite catalog fills with system adapters, `visibleWhen`, and reference links. Documentation
+uses `TemplateFragment` / `TemplatePreview` only, with example documents for the creature and
+vehicle rules pages. Spec: `specs/007-entity-sheet-templates/spec.md`.
+
+| #   | Status | Task                          | Description                                                                                                     | Priority | Effort | Impact | Dependencies |
+| --- | ------ | ----------------------------- | --------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------ | ------------ |
+| E-1 | ✅     | **Kind-independent bindings** | `useBoundDocument`, entity bindings (fields, enum scale, ratings, rows, member tracks), fill routing into data. | High     | L      | High   | C-5          |
+| E-2 | ✅     | **Entity templates**          | Creature, vehicle, fodder full + brief pages; per-kind views with `brief`/`npc-card` aliases; catalog adapters. | High     | L      | High   | E-1          |
+| E-3 | ✅     | **Docs embeds + examples**    | Legacy MDX embeds replaced (en + ru); Wampa, stormtrooper, X-wing, landspeeder, Falcon, damage previews.        | Medium   | M      | High   | E-2          |
+| E-4 | ✅     | **Legacy retirement**         | Archive + delete blocks, viewers, views, registry, built-in layout type; every view template-backed.            | Medium   | M      | Medium | E-3          |

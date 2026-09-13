@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 
+import type { VisibleWhen } from '../../../types/template';
 import { TEMPLATE_LIMITS } from '../../../types/template';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -185,6 +186,69 @@ export function ColumnLayoutControl({
                         ))}
                     </div>
                 </>
+            )}
+        </div>
+    );
+}
+
+/**
+ * Render condition: the element shows only while a stored value equals (or differs from) the
+ * given value. Numbers and true/false are stored typed; everything else as text.
+ */
+export function VisibilityControl({
+    onChange,
+    value,
+}: {
+    onChange: (next: VisibleWhen | undefined) => void;
+    value: VisibleWhen | undefined;
+}) {
+    const typed = (raw: string): VisibleWhen['equals'] =>
+        raw === 'true'
+            ? true
+            : raw === 'false'
+              ? false
+              : /^-?\d+(\.\d+)?$/.test(raw)
+                ? Number(raw)
+                : raw;
+    return (
+        <div className="grid gap-1">
+            <ToggleRow
+                checked={value !== undefined}
+                label={t(editor.visibleWhen)}
+                onChange={(checked) =>
+                    onChange(checked ? { coordinate: 'value', equals: '' } : undefined)
+                }
+            />
+            {value && (
+                <div className="flex flex-wrap items-center gap-2 pl-5">
+                    <input
+                        value={value.coordinate}
+                        onChange={(event) => onChange({ ...value, coordinate: event.target.value })}
+                        aria-label={t(editor.visibleWhenCoordinate)}
+                        placeholder={t(editor.visibleWhenCoordinate)}
+                        className={`${inputClasses} w-40`}
+                    />
+                    <select
+                        value={value.not ? 'not' : 'equals'}
+                        onChange={(event) =>
+                            onChange({ ...value, not: event.target.value === 'not' || undefined })
+                        }
+                        aria-label={t(editor.visibleWhenOperator)}
+                        className={inputClasses}
+                    >
+                        <option value="equals">=</option>
+                        <option value="not">≠</option>
+                    </select>
+                    <input
+                        value={String(value.equals)}
+                        onChange={(event) =>
+                            onChange({ ...value, equals: typed(event.target.value) })
+                        }
+                        aria-label={t(editor.visibleWhenValue)}
+                        placeholder={t(editor.visibleWhenValue)}
+                        className={`${inputClasses} w-32`}
+                    />
+                </div>
             )}
         </div>
     );

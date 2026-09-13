@@ -1,9 +1,11 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
-import { X } from 'lucide-react';
+import { ExternalLink, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { DocumentSearch } from '../../../components/controls/DocumentSearch';
+import { reportSheetIssue } from '../../../diagnostics';
 import {
     getSafePortraitUrl,
     loadPortrait,
@@ -13,6 +15,7 @@ import type { TemplateField } from '../../../types/template';
 import type { TemplateImageValue } from '../../../types/templateValues';
 
 const page = uiMessages.sheet.templates.page;
+const referenceMessages = uiMessages.sheet.templates.reference;
 
 /**
  * Per-type controls are rendered only after the dispatcher narrowed `field.type`; the
@@ -31,6 +34,8 @@ export interface CatalogOption {
 export interface DocumentOption {
     value: string;
     label: string;
+    /** Document kind, used to offer only the reference's target kinds. */
+    kind?: string;
 }
 
 export interface TemplateFieldControlProps {
@@ -51,6 +56,10 @@ export interface TemplateFieldControlProps {
     catalogOptions?: ReadonlyArray<CatalogOption>;
     /** Documents available for a reference control (provided by the hook layer). */
     documentOptions?: ReadonlyArray<DocumentOption>;
+    /** Opens a referenced document in the workspace. */
+    onOpenDocument?: (documentId: string) => void;
+    /** Fixed preview rendering: missing reference targets are expected, not reported. */
+    previewSource?: boolean;
 }
 
 function toDisplay(value: unknown): string {
@@ -377,50 +386,99 @@ function ReferenceFieldControlRender({
     field,
     documentOptions,
     onChange,
+    onOpenDocument,
+    previewSource,
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'reference'> }) {
-    const docs = documentOptions ?? [];
+    const docs = (documentOptions ?? []).filter(
+        (doc) => doc.kind === undefined || field.targetKinds.includes(doc.kind as never)
+    );
+    const selectedIds = (
+        Array.isArray(value) ? value : typeof value === 'string' ? [value] : []
+    ).filter((id): id is string => typeof id === 'string' && id.length > 0);
+    const titles = new Map((documentOptions ?? []).map((doc) => [doc.value, doc.label]));
+    const missing = selectedIds.filter((id) => !titles.has(id));
+    const missingKey = missing.join('|');
 
-    if (field.multiple) {
-        const selected = Array.isArray(value) ? value : [];
-        return (
-            <select
-                multiple
-                value={selected}
-                onChange={(event) =>
-                    onChange(Array.from(event.target.selectedOptions, (option) => option.value))
-                }
-                disabled={disabled}
-                aria-label={field.label}
-                className={`${inputClasses} w-full`}
-                size={Math.min(4, Math.max(2, docs.length))}
-            >
-                {docs.map((doc) => (
-                    <option key={doc.value} value={doc.value}>
-                        {doc.label}
-                    </option>
-                ))}
-            </select>
-        );
-    }
+    useEffect(() => {
+        if (previewSource || missingKey === '') return;
+        reportSheetIssue({
+            code: 'reference-target-missing',
+            message: 'Reference points to a document that no longer exists',
+            details: { fieldId: field.id, documentIds: missingKey.split('|') },
+        });
+    }, [field.id, missingKey, previewSource]);
+
+    const write = (ids: string[]) =>
+        onChange(field.multiple ? ids : ids.length > 0 ? ids[ids.length - 1] : undefined);
+    const selectable = docs.filter((doc) => !selectedIds.includes(doc.value));
+    const canSearch = !disabled && (field.multiple || selectedIds.length === 0);
 
     return (
-        <select
-            value={typeof value === 'string' ? value : ''}
-            onChange={(event) =>
-                onChange(event.target.value === '' ? undefined : event.target.value)
-            }
-            disabled={disabled}
-            aria-label={field.label}
-            className={`${inputClasses} w-full`}
-        >
-            <option value="">—</option>
-            {docs.map((doc) => (
-                <option key={doc.value} value={doc.value}>
-                    {doc.label}
-                </option>
-            ))}
-        </select>
+        <div className="grid gap-1">
+            {selectedIds.length > 0 && (
+                <ul className="flex flex-wrap gap-1" aria-label={field.label}>
+                    {selectedIds.map((id) => {
+                        const title = titles.get(id);
+                        return (
+                            <li
+                                key={id}
+                                className={clsx(
+                                    'flex items-center gap-1 rounded border px-2 py-1 text-sm',
+                                    title
+                                        ? 'border-border bg-bgBase text-textPrimary'
+                                        : 'border-error/50 text-error'
+                                )}
+                            >
+                                <span>{title ?? translate(referenceMessages.missing)}</span>
+                                {title && onOpenDocument && (
+                                    <button
+                                        type="button"
+                                        onClick={() => onOpenDocument(id)}
+                                        aria-label={translate(referenceMessages.open, { title })}
+                                        title={translate(referenceMessages.open, { title })}
+                                        className="rounded p-0.5 text-textSecondary hover:text-primary"
+                                    >
+                                        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                                    </button>
+                                )}
+                                {!disabled && (
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            write(selectedIds.filter((selected) => selected !== id))
+                                        }
+                                        aria-label={translate(referenceMessages.remove, {
+                                            title: title ?? id,
+                                        })}
+                                        className="rounded p-0.5 text-textSecondary hover:text-error"
+                                    >
+                                        <X className="h-3.5 w-3.5" aria-hidden="true" />
+                                    </button>
+                                )}
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
+            {canSearch && (
+                <DocumentSearch
+                    options={selectable}
+                    onSelect={(id) => write([...selectedIds, id])}
+                    ariaLabel={field.label}
+                    placeholder={translate(referenceMessages.search)}
+                    noMatches={translate(referenceMessages.noMatches)}
+                />
+            )}
+            {selectedIds.length === 0 && disabled && (
+                <span className="text-sm text-textSecondary">—</span>
+            )}
+            {missing.length > 0 && (
+                <p role="alert" className="text-xs text-error">
+                    {translate(referenceMessages.missing)}
+                </p>
+            )}
+        </div>
     );
 }
 

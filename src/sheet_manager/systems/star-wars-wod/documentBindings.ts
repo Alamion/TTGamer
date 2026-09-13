@@ -12,6 +12,7 @@ import {
     buildWodTraitBindings,
     toCoordinate,
 } from '../wod-like/templateBindings';
+import { starWarsEntityBindings } from './entityBindings';
 import { starWarsWodProfile } from './profile';
 
 /**
@@ -59,9 +60,10 @@ const trackBindings = buildWodTrackBindings(starWarsWodProfile, {
         documentKinds: CHARACTER_KINDS,
         levelTranslations: levelMessages.healthLevels,
     },
+    // Level set shared by the droid damage binding; vehicles bind their member tracks instead.
     'vehicle-damage': {
         dataKey: 'damage',
-        documentKinds: new Set(['vehicle']),
+        documentKinds: new Set<string>(),
         levelTranslations: levelMessages.damageLevels,
     },
 });
@@ -253,4 +255,5 @@ export const starWarsTemplateBindings: readonly DocumentBindingDescriptor[] = [
     ...listBindings,
     ...equipmentBindings,
     ...fieldBindings,
+    ...starWarsEntityBindings,
 ];

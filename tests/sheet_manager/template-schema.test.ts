@@ -309,3 +309,58 @@ describe('node schema errors (discriminated union)', () => {
         );
     });
 });
+
+describe('feature 007 schema additions', () => {
+    const base = { id: 'kit-007', name: 'Kit', documentKind: 'creature', schemaVersion: 3 };
+
+    it('accepts render conditions, collapsed defaults, member caps, and option labels', () => {
+        const parsed = CustomTemplateSchema.parse({
+            ...base,
+            children: [
+                {
+                    id: 'details',
+                    type: 'section',
+                    title: 'Details',
+                    defaultCollapsed: true,
+                    visibleWhen: { coordinate: 'threat-tier', equals: 'fodder', not: true },
+                    children: [
+                        {
+                            id: 'threat-tier',
+                            type: 'select',
+                            label: 'Tier',
+                            options: [
+                                {
+                                    id: 'named',
+                                    label: 'Named',
+                                    labelMessage: 'ttgamer.ui.sheet.templates.entities.tierNamed',
+                                },
+                            ],
+                        },
+                        {
+                            id: 'damage-track',
+                            type: 'primitive',
+                            bindingKey: 'track:members-health',
+                            cohort: { maxMembers: 12 },
+                            visibleWhen: { coordinate: 'size', equals: 3 },
+                        },
+                    ],
+                },
+            ],
+        });
+        expect(parsed.children[0]).toMatchObject({ defaultCollapsed: true });
+    });
+
+    it('rejects malformed conditions and member caps', () => {
+        const withChild = (child: unknown) =>
+            CustomTemplateSchema.safeParse({ ...base, children: [child] }).success;
+        expect(
+            withChild({ ...textField('a'), visibleWhen: { coordinate: 'Not Kebab', equals: 'x' } })
+        ).toBe(false);
+        expect(
+            withChild({ id: 'p', type: 'primitive', bindingKey: 'x', cohort: { maxMembers: 30 } })
+        ).toBe(false);
+        expect(
+            withChild({ ...textField('b'), visibleWhen: { coordinate: 'ok', equals: 'x' } })
+        ).toBe(true);
+    });
+});

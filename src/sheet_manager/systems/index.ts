@@ -33,13 +33,11 @@ export type {
     TraitBinding,
 } from './templateBindings';
 export type {
-    BuiltInDocumentLayout,
     DeclarativeDocumentLayout,
     DocumentDefinition,
     DocumentLayout,
     DocumentViewDefinition,
     ParsedRegisteredDocument,
-    SheetBlockPlacement,
     SystemPlugin,
 } from './types';
 export type { EffectiveTemplate, ResolvedCustomTemplate } from './view';

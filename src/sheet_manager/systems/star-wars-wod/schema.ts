@@ -162,6 +162,11 @@ export const FodderDataSchema = z.object({
     armor: ArmorProfileSchema,
     weapons: z.array(AttackProfileSchema).max(10).default([]),
     members: z.array(HealthCohortMemberSchema).min(1).max(24),
+    /**
+     * Visible health levels per member (typical fodder 3, tough 5, full 7). Groups saved before
+     * the setting existed parse as 7 so no recorded damage is hidden; new groups start at 3.
+     */
+    trackLength: z.union([z.literal(3), z.literal(5), z.literal(7)]).default(7),
 });
 
 export type StarWarsCharacterData = z.infer<typeof StarWarsCharacterDataSchema>;
@@ -280,5 +285,6 @@ export function createDefaultFodderData(): FodderData {
         armor: { name: '', armorRating: '', dexterityModifier: '' },
         weapons: [],
         members: [createHealthMember()],
+        trackLength: 3,
     };
 }
