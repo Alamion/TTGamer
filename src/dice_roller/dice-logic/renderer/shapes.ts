@@ -1,13 +1,14 @@
+import { debug } from '@site/src/shared/utils/logging';
 import { Body, Vec3 } from 'cannon-es';
 import {
     BufferGeometry,
-    Vector3,
-    type Mesh,
     type Material,
+    type Mesh,
     Quaternion as ThreeQuaternion,
+    Vector3,
 } from 'three';
+
 import type { DiceGeometryData } from './geometries';
-import { debug } from '@site/src/shared/utils/logging';
 
 function cannonQuaternionToThree(cannonQuat: {
     x: number;

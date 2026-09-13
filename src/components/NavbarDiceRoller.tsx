@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
 import { clsx } from 'clsx';
 import { Dices } from 'lucide-react';
+import { useCallback } from 'react';
+
 import { useDiceRollerStore } from '../dice_roller/store/diceRollerStore';
 
 export default function NavbarDiceRoller() {

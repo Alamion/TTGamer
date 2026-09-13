@@ -1,0 +1,161 @@
+toolbar:
+    export: Export
+    exportTitle: Export document as JSON
+    import: Import
+    importTitle: Import documents from JSON
+    manage: Manage
+    manageTitle: Manage documents
+    reset: Reset
+    resetTitle: Reset all document data
+    new: New
+    newTitle: Create a new document
+    importLabel: Import document file
+    noDocumentTitle: No document loaded
+    noDocumentDescription: Create a new document or load one from the manager.
+    resetDescription: Are you sure you want to reset all document data? This cannot be undone.
+    exportSuccess: Exported "{title}"
+    importSuccess: Imported "{title}"
+    importError: Failed to import "{filename}"
+conflict:
+    title: Document already exists
+    prompt: Replace it, import a duplicate with a new ID, or cancel this file.
+    duplicate: Duplicate
+    replace: Replace
+manager:
+    title: Manage documents
+    empty: No documents yet. Create one to get started.
+    name: Name
+    type: Type
+    current: current
+    selectAll: Select all documents
+    selectDocument: Select {title}
+    deleteSelected: Delete selected
+    deleteTitle: Delete documents
+    deleteDescription: Are you sure you want to delete {count} document(s)? This cannot be undone.
+    close: Close
+create:
+    title: Create document
+    prompt: Choose the Star Wars document format to create.
+    confirm: Create
+    cancel: Cancel
+types:
+    character: Character
+    droid: Droid
+    creature: Creature
+    vehicle: Vehicle
+    fodderGroup: Fodder group
+views:
+    label: View mode
+    fullSheet: Full sheet
+    brief: Brief
+    droidSheet: Droid sheet
+    creatureSheet: Creature sheet
+    vehicleSheet: Vehicle sheet
+    fodderSheet: Fodder group
+fields:
+    conditionLevel: Level
+    conditionPenalty: Penalty
+    identity: Identity
+    name: Name
+    concept: Concept
+    type: Type
+    player: Player
+    nature: Nature
+    adventure: Adventure
+    demeanor: Demeanor
+    age: Age
+    owner: Owner
+    species: Species
+    scale: Scale
+    size: Size
+    model: Model
+    crew: Crew
+    length: Length
+    cargoCapacity: Cargo capacity
+    passengers: Passengers
+    consumables: Consumables
+    speed: Speed
+    altitude: Altitude
+    sensorRange: Sensor range
+    navigationComputer: Navigation computer
+    notes: Notes
+    attributes: Attributes
+    abilities: Abilities
+    additionalTalents: Additional talents
+    additionalSkills: Additional skills
+    additionalKnowledges: Additional knowledges
+    durability: Durability
+    maneuverability: Maneuverability
+    communicationsSensors: Communications / Sensors
+    hyperdrive: Hyperdrive
+    shields: Shields
+    frontShields: Front shields
+    rearShields: Rear shields
+    willpower: Willpower
+    virtues: Virtues
+    forcePoints: Force points
+    darkSideResistance: Dark Side resistance
+    forceAndResolve: Force and resolve
+    resources: Resources
+    backgrounds: Backgrounds
+    meritsAndFlaws: Merits and flaws
+    merits: Merits
+    flaws: Flaws
+    combat: Combat
+    current: Current
+    maximum: Maximum
+    health: Health
+    damage: Damage
+    members: Members
+    addMember: Add member
+    removeMember: Remove member
+    member: Member
+    armor: Armor
+    armorType: Armor type
+    armorClass: Class
+    dexterity: Dexterity
+    addArmor: Add armor
+    attacks: Attacks
+    addAttack: Add attack
+    weapons: Weapons
+    weapon: Weapon
+    ammunition: Ammo
+    addWeapon: Add weapon
+    configuration: Configuration
+    systems: Systems
+    movementAndNavigation: Movement and navigation
+    builtInEquipment: Built-in equipment
+    addRow: Add row
+    removeRow: Remove row
+    label: Label
+    armorRating: Armor rating
+    dexterityModifier: Dexterity modifier
+    attackType: Attack type
+    range: Range
+    arc: Arc
+    none: None yet
+    healthLevels:
+        bruised: Bruised
+        hurt: Hurt
+        injured: Injured
+        wounded: Wounded
+        mauled: Mauled
+        crippled: Crippled
+        incapacitated: Incapacitated
+    damageLevels:
+        cosmetic: Cosmetic
+        light: Light
+        moderate: Moderate
+        heavy: Heavy
+        severe: Severe
+        crippled: Crippled
+        wrecked: Wrecked
+    scaleOptions:
+        deathStar: Death Star
+        capital: Capital ship
+        transport: Transport
+        starfighter: Starfighter
+        walker: Walker
+        speeder: Speeder
+        character: Character
+        vermin: Vermin

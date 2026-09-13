@@ -1,139 +1,4 @@
 {
-    "theme.ErrorPageContent.title": {
-        "message": "This page crashed.",
-        "description": "The title of the fallback page when the page crashed"
-    },
-    "theme.BackToTopButton.buttonAriaLabel": {
-        "message": "Scroll back to top",
-        "description": "The ARIA label for the back to top button"
-    },
-    "theme.blog.archive.title": {
-        "message": "Archive",
-        "description": "The page & hero title of the blog archive page"
-    },
-    "theme.blog.archive.description": {
-        "message": "Archive",
-        "description": "The page & hero description of the blog archive page"
-    },
-    "theme.blog.paginator.navAriaLabel": {
-        "message": "Blog list page navigation",
-        "description": "The ARIA label for the blog pagination"
-    },
-    "theme.blog.paginator.newerEntries": {
-        "message": "Newer entries",
-        "description": "The label used to navigate to the newer blog posts page (previous page)"
-    },
-    "theme.blog.paginator.olderEntries": {
-        "message": "Older entries",
-        "description": "The label used to navigate to the older blog posts page (next page)"
-    },
-    "theme.blog.post.paginator.navAriaLabel": {
-        "message": "Blog post page navigation",
-        "description": "The ARIA label for the blog posts pagination"
-    },
-    "theme.blog.post.paginator.newerPost": {
-        "message": "Newer post",
-        "description": "The blog post button label to navigate to the newer/previous post"
-    },
-    "theme.blog.post.paginator.olderPost": {
-        "message": "Older post",
-        "description": "The blog post button label to navigate to the older/next post"
-    },
-    "theme.tags.tagsPageLink": {
-        "message": "View all tags",
-        "description": "The label of the link targeting the tag list page"
-    },
-    "theme.colorToggle.ariaLabel.mode.system": {
-        "message": "system mode",
-        "description": "The name for the system color mode"
-    },
-    "theme.colorToggle.ariaLabel.mode.light": {
-        "message": "light mode",
-        "description": "The name for the light color mode"
-    },
-    "theme.colorToggle.ariaLabel.mode.dark": {
-        "message": "dark mode",
-        "description": "The name for the dark color mode"
-    },
-    "theme.colorToggle.ariaLabel": {
-        "message": "Switch between dark and light mode (currently {mode})",
-        "description": "The ARIA label for the color mode toggle"
-    },
-    "theme.docs.breadcrumbs.navAriaLabel": {
-        "message": "Breadcrumbs",
-        "description": "The ARIA label for the breadcrumbs"
-    },
-    "theme.docs.paginator.navAriaLabel": {
-        "message": "Docs pages",
-        "description": "The ARIA label for the docs pagination"
-    },
-    "theme.docs.paginator.previous": {
-        "message": "Previous",
-        "description": "The label used to navigate to the previous doc"
-    },
-    "theme.docs.paginator.next": {
-        "message": "Next",
-        "description": "The label used to navigate to the next doc"
-    },
-    "theme.docs.tagDocListPageTitle.nDocsTagged": {
-        "message": "One doc tagged|{count} docs tagged",
-        "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
-    },
-    "theme.docs.tagDocListPageTitle": {
-        "message": "{nDocsTagged} with \"{tagName}\"",
-        "description": "The title of the page for a docs tag"
-    },
-    "theme.docs.versionBadge.label": {
-        "message": "Version: {versionLabel}"
-    },
-    "theme.docs.versions.unreleasedVersionLabel": {
-        "message": "This is unreleased documentation for {siteTitle} {versionLabel} version.",
-        "description": "The label used to tell the user that he's browsing an unreleased doc version"
-    },
-    "theme.docs.versions.unmaintainedVersionLabel": {
-        "message": "This is documentation for {siteTitle} {versionLabel}, which is no longer actively maintained.",
-        "description": "The label used to tell the user that he's browsing an unmaintained doc version"
-    },
-    "theme.docs.versions.latestVersionSuggestionLabel": {
-        "message": "For up-to-date documentation, see the {latestVersionLink} ({versionLabel}).",
-        "description": "The label used to tell the user to check the latest version"
-    },
-    "theme.docs.versions.latestVersionLinkLabel": {
-        "message": "latest version",
-        "description": "The label used for the latest version suggestion link label"
-    },
-    "theme.common.editThisPage": {
-        "message": "Edit this page",
-        "description": "The link label to edit the current page"
-    },
-    "theme.common.headingLinkTitle": {
-        "message": "Direct link to {heading}",
-        "description": "Title for link to heading"
-    },
-    "theme.lastUpdated.atDate": {
-        "message": " on {date}",
-        "description": "The words used to describe on which date a page has been last updated"
-    },
-    "theme.lastUpdated.byUser": {
-        "message": " by {user}",
-        "description": "The words used to describe by who the page has been last updated"
-    },
-    "theme.lastUpdated.lastUpdatedAtBy": {
-        "message": "Last updated{atDate}{byUser}",
-        "description": "The sentence used to display when a page has been last updated, and by who"
-    },
-    "theme.navbar.mobileVersionsDropdown.label": {
-        "message": "Versions",
-        "description": "The label for the navbar versions dropdown on mobile view"
-    },
-    "theme.NotFound.title": {
-        "message": "Page Not Found",
-        "description": "The title of the 404 page"
-    },
-    "theme.tags.tagsListLabel": {
-        "message": "Tags:",
-        "description": "The label alongside a tag list"
-    },
     "theme.admonition.caution": {
         "message": "caution",
         "description": "The default label used for the Caution admonition (:::caution)"
@@ -162,121 +27,21 @@
         "message": "Close",
         "description": "The ARIA label for close button of announcement bar"
     },
-    "theme.blog.sidebar.navAriaLabel": {
-        "message": "Blog recent posts navigation",
-        "description": "The ARIA label for recent posts in the blog sidebar"
+    "theme.BackToTopButton.buttonAriaLabel": {
+        "message": "Scroll back to top",
+        "description": "The ARIA label for the back to top button"
     },
-    "theme.DocSidebarItem.expandCategoryAriaLabel": {
-        "message": "Expand sidebar category '{label}'",
-        "description": "The ARIA label to expand the sidebar category"
+    "theme.blog.archive.description": {
+        "message": "Archive",
+        "description": "The page & hero description of the blog archive page"
     },
-    "theme.DocSidebarItem.collapseCategoryAriaLabel": {
-        "message": "Collapse sidebar category '{label}'",
-        "description": "The ARIA label to collapse the sidebar category"
+    "theme.blog.archive.title": {
+        "message": "Archive",
+        "description": "The page & hero title of the blog archive page"
     },
-    "theme.IconExternalLink.ariaLabel": {
-        "message": "(opens in new tab)",
-        "description": "The ARIA label for the external link icon"
-    },
-    "theme.NavBar.navAriaLabel": {
-        "message": "Main",
-        "description": "The ARIA label for the main navigation"
-    },
-    "theme.navbar.mobileLanguageDropdown.label": {
-        "message": "Languages",
-        "description": "The label for the mobile language switcher dropdown"
-    },
-    "theme.NotFound.p1": {
-        "message": "We could not find what you were looking for.",
-        "description": "The first paragraph of the 404 page"
-    },
-    "theme.NotFound.p2": {
-        "message": "Please contact the owner of the site that linked you to the original URL and let them know their link is broken.",
-        "description": "The 2nd paragraph of the 404 page"
-    },
-    "theme.TOCCollapsible.toggleButtonLabel": {
-        "message": "On this page",
-        "description": "The label used by the button on the collapsible TOC component"
-    },
-    "theme.blog.post.readMore": {
-        "message": "Read more",
-        "description": "The label used in blog post item excerpts to link to full blog posts"
-    },
-    "theme.blog.post.readMoreLabel": {
-        "message": "Read more about {title}",
-        "description": "The ARIA label for the link to full blog posts from excerpts"
-    },
-    "theme.blog.post.readingTime.plurals": {
-        "message": "One min read|{readingTime} min read",
-        "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
-    },
-    "theme.CodeBlock.copy": {
-        "message": "Copy",
-        "description": "The copy button label on code blocks"
-    },
-    "theme.CodeBlock.copied": {
-        "message": "Copied",
-        "description": "The copied button label on code blocks"
-    },
-    "theme.CodeBlock.copyButtonAriaLabel": {
-        "message": "Copy code to clipboard",
-        "description": "The ARIA label for copy code blocks button"
-    },
-    "theme.CodeBlock.wordWrapToggle": {
-        "message": "Toggle word wrap",
-        "description": "The title attribute for toggle word wrapping button of code block lines"
-    },
-    "theme.docs.breadcrumbs.home": {
-        "message": "Home page",
-        "description": "The ARIA label for the home page in the breadcrumbs"
-    },
-    "theme.docs.sidebar.navAriaLabel": {
-        "message": "Docs sidebar",
-        "description": "The ARIA label for the sidebar navigation"
-    },
-    "theme.docs.sidebar.collapseButtonTitle": {
-        "message": "Collapse sidebar",
-        "description": "The title attribute for collapse button of doc sidebar"
-    },
-    "theme.docs.sidebar.collapseButtonAriaLabel": {
-        "message": "Collapse sidebar",
-        "description": "The title attribute for collapse button of doc sidebar"
-    },
-    "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
-        "message": "Close navigation bar",
-        "description": "The ARIA label for close button of mobile sidebar"
-    },
-    "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
-        "message": "← Back to main menu",
-        "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
-    },
-    "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
-        "message": "Toggle navigation bar",
-        "description": "The ARIA label for hamburger menu button of mobile navigation"
-    },
-    "theme.navbar.mobileDropdown.collapseButton.expandAriaLabel": {
-        "message": "Expand the dropdown",
-        "description": "The ARIA label of the button to expand the mobile dropdown navbar item"
-    },
-    "theme.navbar.mobileDropdown.collapseButton.collapseAriaLabel": {
-        "message": "Collapse the dropdown",
-        "description": "The ARIA label of the button to collapse the mobile dropdown navbar item"
-    },
-    "theme.docs.sidebar.expandButtonTitle": {
-        "message": "Expand sidebar",
-        "description": "The ARIA label and title attribute for expand button of doc sidebar"
-    },
-    "theme.docs.sidebar.expandButtonAriaLabel": {
-        "message": "Expand sidebar",
-        "description": "The ARIA label and title attribute for expand button of doc sidebar"
-    },
-    "theme.blog.post.plurals": {
-        "message": "One post|{count} posts",
-        "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
-    },
-    "theme.blog.tagTitle": {
-        "message": "{nPosts} tagged with \"{tagName}\"",
-        "description": "The title of the page for a blog tag"
+    "theme.blog.author.noPosts": {
+        "message": "This author has not written any posts yet.",
+        "description": "The text for authors with 0 blog post"
     },
     "theme.blog.author.pageTitle": {
         "message": "{authorName} - {nPosts}",
@@ -290,40 +55,1817 @@
         "message": "View all authors",
         "description": "The label of the link targeting the blog authors page"
     },
-    "theme.blog.author.noPosts": {
-        "message": "This author has not written any posts yet.",
-        "description": "The text for authors with 0 blog post"
+    "theme.blog.paginator.navAriaLabel": {
+        "message": "Blog list page navigation",
+        "description": "The ARIA label for the blog pagination"
     },
-    "theme.contentVisibility.unlistedBanner.title": {
-        "message": "Unlisted page",
-        "description": "The unlisted content banner title"
+    "theme.blog.paginator.newerEntries": {
+        "message": "Newer entries",
+        "description": "The label used to navigate to the newer blog posts page (previous page)"
     },
-    "theme.contentVisibility.unlistedBanner.message": {
-        "message": "This page is unlisted. Search engines will not index it, and only users having a direct link can access it.",
-        "description": "The unlisted content banner message"
+    "theme.blog.paginator.olderEntries": {
+        "message": "Older entries",
+        "description": "The label used to navigate to the older blog posts page (next page)"
     },
-    "theme.contentVisibility.draftBanner.title": {
-        "message": "Draft page",
-        "description": "The draft content banner title"
+    "theme.blog.post.paginator.navAriaLabel": {
+        "message": "Blog post page navigation",
+        "description": "The ARIA label for the blog posts pagination"
     },
-    "theme.contentVisibility.draftBanner.message": {
-        "message": "This page is a draft. It will only be visible in dev and be excluded from the production build.",
-        "description": "The draft content banner message"
+    "theme.blog.post.paginator.newerPost": {
+        "message": "Newer post",
+        "description": "The blog post button label to navigate to the newer/previous post"
     },
-    "theme.docs.DocCard.categoryDescription.plurals": {
-        "message": "1 item|{count} items",
-        "description": "The default description for a category card in the generated index about how many items this category includes"
+    "theme.blog.post.paginator.olderPost": {
+        "message": "Older post",
+        "description": "The blog post button label to navigate to the older/next post"
     },
-    "theme.ErrorPageContent.tryAgain": {
-        "message": "Try again",
-        "description": "The label of the button to try again rendering when the React error boundary captures an error"
+    "theme.blog.post.plurals": {
+        "message": "One post|{count} posts",
+        "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.blog.post.readingTime.plurals": {
+        "message": "One min read|{readingTime} min read",
+        "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.blog.post.readMore": {
+        "message": "Read more",
+        "description": "The label used in blog post item excerpts to link to full blog posts"
+    },
+    "theme.blog.post.readMoreLabel": {
+        "message": "Read more about {title}",
+        "description": "The ARIA label for the link to full blog posts from excerpts"
+    },
+    "theme.blog.sidebar.navAriaLabel": {
+        "message": "Blog recent posts navigation",
+        "description": "The ARIA label for recent posts in the blog sidebar"
+    },
+    "theme.blog.tagTitle": {
+        "message": "{nPosts} tagged with \"{tagName}\"",
+        "description": "The title of the page for a blog tag"
+    },
+    "theme.CodeBlock.copied": {
+        "message": "Copied",
+        "description": "The copied button label on code blocks"
+    },
+    "theme.CodeBlock.copy": {
+        "message": "Copy",
+        "description": "The copy button label on code blocks"
+    },
+    "theme.CodeBlock.copyButtonAriaLabel": {
+        "message": "Copy code to clipboard",
+        "description": "The ARIA label for copy code blocks button"
+    },
+    "theme.CodeBlock.wordWrapToggle": {
+        "message": "Toggle word wrap",
+        "description": "The title attribute for toggle word wrapping button of code block lines"
+    },
+    "theme.colorToggle.ariaLabel": {
+        "message": "Switch between dark and light mode (currently {mode})",
+        "description": "The ARIA label for the color mode toggle"
+    },
+    "theme.colorToggle.ariaLabel.mode.dark": {
+        "message": "dark mode",
+        "description": "The name for the dark color mode"
+    },
+    "theme.colorToggle.ariaLabel.mode.light": {
+        "message": "light mode",
+        "description": "The name for the light color mode"
+    },
+    "theme.colorToggle.ariaLabel.mode.system": {
+        "message": "system mode",
+        "description": "The name for the system color mode"
+    },
+    "theme.common.editThisPage": {
+        "message": "Edit this page",
+        "description": "The link label to edit the current page"
+    },
+    "theme.common.headingLinkTitle": {
+        "message": "Direct link to {heading}",
+        "description": "Title for link to heading"
     },
     "theme.common.skipToMainContent": {
         "message": "Skip to main content",
         "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
     },
+    "theme.contentVisibility.draftBanner.message": {
+        "message": "This page is a draft. It will only be visible in dev and be excluded from the production build.",
+        "description": "The draft content banner message"
+    },
+    "theme.contentVisibility.draftBanner.title": {
+        "message": "Draft page",
+        "description": "The draft content banner title"
+    },
+    "theme.contentVisibility.unlistedBanner.message": {
+        "message": "This page is unlisted. Search engines will not index it, and only users having a direct link can access it.",
+        "description": "The unlisted content banner message"
+    },
+    "theme.contentVisibility.unlistedBanner.title": {
+        "message": "Unlisted page",
+        "description": "The unlisted content banner title"
+    },
+    "theme.docs.breadcrumbs.home": {
+        "message": "Home page",
+        "description": "The ARIA label for the home page in the breadcrumbs"
+    },
+    "theme.docs.breadcrumbs.navAriaLabel": {
+        "message": "Breadcrumbs",
+        "description": "The ARIA label for the breadcrumbs"
+    },
+    "theme.docs.DocCard.categoryDescription.plurals": {
+        "message": "1 item|{count} items",
+        "description": "The default description for a category card in the generated index about how many items this category includes"
+    },
+    "theme.docs.paginator.navAriaLabel": {
+        "message": "Docs pages",
+        "description": "The ARIA label for the docs pagination"
+    },
+    "theme.docs.paginator.next": {
+        "message": "Next",
+        "description": "The label used to navigate to the next doc"
+    },
+    "theme.docs.paginator.previous": {
+        "message": "Previous",
+        "description": "The label used to navigate to the previous doc"
+    },
+    "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
+        "message": "Close navigation bar",
+        "description": "The ARIA label for close button of mobile sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonAriaLabel": {
+        "message": "Collapse sidebar",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonTitle": {
+        "message": "Collapse sidebar",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.expandButtonAriaLabel": {
+        "message": "Expand sidebar",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.expandButtonTitle": {
+        "message": "Expand sidebar",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.navAriaLabel": {
+        "message": "Docs sidebar",
+        "description": "The ARIA label for the sidebar navigation"
+    },
+    "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
+        "message": "Toggle navigation bar",
+        "description": "The ARIA label for hamburger menu button of mobile navigation"
+    },
+    "theme.docs.tagDocListPageTitle": {
+        "message": "{nDocsTagged} with \"{tagName}\"",
+        "description": "The title of the page for a docs tag"
+    },
+    "theme.docs.tagDocListPageTitle.nDocsTagged": {
+        "message": "One doc tagged|{count} docs tagged",
+        "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.docs.versionBadge.label": {
+        "message": "Version: {versionLabel}"
+    },
+    "theme.docs.versions.latestVersionLinkLabel": {
+        "message": "latest version",
+        "description": "The label used for the latest version suggestion link label"
+    },
+    "theme.docs.versions.latestVersionSuggestionLabel": {
+        "message": "For up-to-date documentation, see the {latestVersionLink} ({versionLabel}).",
+        "description": "The label used to tell the user to check the latest version"
+    },
+    "theme.docs.versions.unmaintainedVersionLabel": {
+        "message": "This is documentation for {siteTitle} {versionLabel}, which is no longer actively maintained.",
+        "description": "The label used to tell the user that he's browsing an unmaintained doc version"
+    },
+    "theme.docs.versions.unreleasedVersionLabel": {
+        "message": "This is unreleased documentation for {siteTitle} {versionLabel} version.",
+        "description": "The label used to tell the user that he's browsing an unreleased doc version"
+    },
+    "theme.DocSidebarItem.collapseCategoryAriaLabel": {
+        "message": "Collapse sidebar category '{label}'",
+        "description": "The ARIA label to collapse the sidebar category"
+    },
+    "theme.DocSidebarItem.expandCategoryAriaLabel": {
+        "message": "Expand sidebar category '{label}'",
+        "description": "The ARIA label to expand the sidebar category"
+    },
+    "theme.ErrorPageContent.title": {
+        "message": "This page crashed.",
+        "description": "The title of the fallback page when the page crashed"
+    },
+    "theme.ErrorPageContent.tryAgain": {
+        "message": "Try again",
+        "description": "The label of the button to try again rendering when the React error boundary captures an error"
+    },
+    "theme.IconExternalLink.ariaLabel": {
+        "message": "(opens in new tab)",
+        "description": "The ARIA label for the external link icon"
+    },
+    "theme.lastUpdated.atDate": {
+        "message": " on {date}",
+        "description": "The words used to describe on which date a page has been last updated"
+    },
+    "theme.lastUpdated.byUser": {
+        "message": " by {user}",
+        "description": "The words used to describe by who the page has been last updated"
+    },
+    "theme.lastUpdated.lastUpdatedAtBy": {
+        "message": "Last updated{atDate}{byUser}",
+        "description": "The sentence used to display when a page has been last updated, and by who"
+    },
+    "theme.navbar.mobileDropdown.collapseButton.collapseAriaLabel": {
+        "message": "Collapse the dropdown",
+        "description": "The ARIA label of the button to collapse the mobile dropdown navbar item"
+    },
+    "theme.navbar.mobileDropdown.collapseButton.expandAriaLabel": {
+        "message": "Expand the dropdown",
+        "description": "The ARIA label of the button to expand the mobile dropdown navbar item"
+    },
+    "theme.navbar.mobileLanguageDropdown.label": {
+        "message": "Languages",
+        "description": "The label for the mobile language switcher dropdown"
+    },
+    "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
+        "message": "← Back to main menu",
+        "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
+    },
+    "theme.navbar.mobileVersionsDropdown.label": {
+        "message": "Versions",
+        "description": "The label for the navbar versions dropdown on mobile view"
+    },
+    "theme.NavBar.navAriaLabel": {
+        "message": "Main",
+        "description": "The ARIA label for the main navigation"
+    },
+    "theme.NotFound.p1": {
+        "message": "We could not find what you were looking for.",
+        "description": "The first paragraph of the 404 page"
+    },
+    "theme.NotFound.p2": {
+        "message": "Please contact the owner of the site that linked you to the original URL and let them know their link is broken.",
+        "description": "The 2nd paragraph of the 404 page"
+    },
+    "theme.NotFound.title": {
+        "message": "Page Not Found",
+        "description": "The title of the 404 page"
+    },
+    "theme.tags.tagsListLabel": {
+        "message": "Tags:",
+        "description": "The label alongside a tag list"
+    },
+    "theme.tags.tagsPageLink": {
+        "message": "View all tags",
+        "description": "The label of the link targeting the tag list page"
+    },
     "theme.tags.tagsPageTitle": {
         "message": "Tags",
         "description": "The title of the tag list page"
+    },
+    "theme.TOCCollapsible.toggleButtonLabel": {
+        "message": "On this page",
+        "description": "The label used by the button on the collapsible TOC component"
+    },
+    "ttgamer.ui.sheet.base.appearance": {
+        "message": "Appearance"
+    },
+    "ttgamer.ui.sheet.base.biography": {
+        "message": "Biography"
+    },
+    "ttgamer.ui.sheet.base.biographyPlaceholder": {
+        "message": "Character biography..."
+    },
+    "ttgamer.ui.sheet.base.fields.adventure.label": {
+        "message": "Adventure"
+    },
+    "ttgamer.ui.sheet.base.fields.adventure.placeholder": {
+        "message": "Adventure/campaign..."
+    },
+    "ttgamer.ui.sheet.base.fields.age.label": {
+        "message": "Age"
+    },
+    "ttgamer.ui.sheet.base.fields.age.placeholder": {
+        "message": "Age..."
+    },
+    "ttgamer.ui.sheet.base.fields.build.label": {
+        "message": "Build"
+    },
+    "ttgamer.ui.sheet.base.fields.concept.label": {
+        "message": "Concept"
+    },
+    "ttgamer.ui.sheet.base.fields.concept.placeholder": {
+        "message": "Character concept..."
+    },
+    "ttgamer.ui.sheet.base.fields.demeanor.label": {
+        "message": "Demeanor"
+    },
+    "ttgamer.ui.sheet.base.fields.demeanor.placeholder": {
+        "message": "Demeanor..."
+    },
+    "ttgamer.ui.sheet.base.fields.eyes.label": {
+        "message": "Eyes"
+    },
+    "ttgamer.ui.sheet.base.fields.features.label": {
+        "message": "Features"
+    },
+    "ttgamer.ui.sheet.base.fields.gender.label": {
+        "message": "Gender"
+    },
+    "ttgamer.ui.sheet.base.fields.hair.label": {
+        "message": "Hair"
+    },
+    "ttgamer.ui.sheet.base.fields.height.label": {
+        "message": "Height"
+    },
+    "ttgamer.ui.sheet.base.fields.homeWorld.label": {
+        "message": "Home World"
+    },
+    "ttgamer.ui.sheet.base.fields.homeWorld.placeholder": {
+        "message": "Coruscant, Tatooine..."
+    },
+    "ttgamer.ui.sheet.base.fields.name.label": {
+        "message": "Name"
+    },
+    "ttgamer.ui.sheet.base.fields.name.placeholder": {
+        "message": "Character name..."
+    },
+    "ttgamer.ui.sheet.base.fields.nature.label": {
+        "message": "Nature"
+    },
+    "ttgamer.ui.sheet.base.fields.nature.placeholder": {
+        "message": "Nature..."
+    },
+    "ttgamer.ui.sheet.base.fields.player.label": {
+        "message": "Player"
+    },
+    "ttgamer.ui.sheet.base.fields.player.placeholder": {
+        "message": "Player name..."
+    },
+    "ttgamer.ui.sheet.base.fields.species.label": {
+        "message": "Species"
+    },
+    "ttgamer.ui.sheet.base.fields.species.placeholder": {
+        "message": "Human, Twi'lek..."
+    },
+    "ttgamer.ui.sheet.base.portrait.alt": {
+        "message": "Character portrait"
+    },
+    "ttgamer.ui.sheet.base.portrait.collapse": {
+        "message": "Collapse portrait"
+    },
+    "ttgamer.ui.sheet.base.portrait.editUrl": {
+        "message": "Edit portrait URL"
+    },
+    "ttgamer.ui.sheet.base.portrait.expand": {
+        "message": "Expand portrait"
+    },
+    "ttgamer.ui.sheet.base.portrait.hideUrlInput": {
+        "message": "Hide portrait URL input"
+    },
+    "ttgamer.ui.sheet.base.portrait.invalidUrl": {
+        "message": "Use an HTTPS URL or a site-relative path."
+    },
+    "ttgamer.ui.sheet.base.portrait.pasteAriaLabel": {
+        "message": "Character portrait; paste an image here"
+    },
+    "ttgamer.ui.sheet.base.portrait.processing": {
+        "message": "Processing…"
+    },
+    "ttgamer.ui.sheet.base.portrait.remoteHostNote": {
+        "message": "Remote image hosts receive your IP address. HTTPS only."
+    },
+    "ttgamer.ui.sheet.base.portrait.remove": {
+        "message": "Remove local portrait"
+    },
+    "ttgamer.ui.sheet.base.portrait.saved": {
+        "message": "Portrait saved on this device."
+    },
+    "ttgamer.ui.sheet.base.portrait.saveFailed": {
+        "message": "Could not save portrait."
+    },
+    "ttgamer.ui.sheet.base.portrait.upload": {
+        "message": "Upload / paste"
+    },
+    "ttgamer.ui.sheet.base.portrait.uploadTitle": {
+        "message": "Choose an image, or focus this area and paste one"
+    },
+    "ttgamer.ui.sheet.base.portrait.urlAriaLabel": {
+        "message": "Portrait image URL"
+    },
+    "ttgamer.ui.sheet.base.portrait.urlPlaceholder": {
+        "message": "https://example.com/portrait.webp"
+    },
+    "ttgamer.ui.sheet.base.title": {
+        "message": "Base"
+    },
+    "ttgamer.ui.sheet.documents.conflict.duplicate": {
+        "message": "Duplicate"
+    },
+    "ttgamer.ui.sheet.documents.conflict.prompt": {
+        "message": "Replace it, import a duplicate with a new ID, or cancel this file."
+    },
+    "ttgamer.ui.sheet.documents.conflict.replace": {
+        "message": "Replace"
+    },
+    "ttgamer.ui.sheet.documents.conflict.title": {
+        "message": "Document already exists"
+    },
+    "ttgamer.ui.sheet.documents.create.cancel": {
+        "message": "Cancel"
+    },
+    "ttgamer.ui.sheet.documents.create.confirm": {
+        "message": "Create"
+    },
+    "ttgamer.ui.sheet.documents.create.prompt": {
+        "message": "Choose the Star Wars document format to create."
+    },
+    "ttgamer.ui.sheet.documents.create.title": {
+        "message": "Create document"
+    },
+    "ttgamer.ui.sheet.documents.fields.abilities": {
+        "message": "Abilities"
+    },
+    "ttgamer.ui.sheet.documents.fields.addArmor": {
+        "message": "Add armor"
+    },
+    "ttgamer.ui.sheet.documents.fields.addAttack": {
+        "message": "Add attack"
+    },
+    "ttgamer.ui.sheet.documents.fields.additionalKnowledges": {
+        "message": "Additional knowledges"
+    },
+    "ttgamer.ui.sheet.documents.fields.additionalSkills": {
+        "message": "Additional skills"
+    },
+    "ttgamer.ui.sheet.documents.fields.additionalTalents": {
+        "message": "Additional talents"
+    },
+    "ttgamer.ui.sheet.documents.fields.addMember": {
+        "message": "Add member"
+    },
+    "ttgamer.ui.sheet.documents.fields.addRow": {
+        "message": "Add row"
+    },
+    "ttgamer.ui.sheet.documents.fields.addWeapon": {
+        "message": "Add weapon"
+    },
+    "ttgamer.ui.sheet.documents.fields.adventure": {
+        "message": "Adventure"
+    },
+    "ttgamer.ui.sheet.documents.fields.age": {
+        "message": "Age"
+    },
+    "ttgamer.ui.sheet.documents.fields.altitude": {
+        "message": "Altitude"
+    },
+    "ttgamer.ui.sheet.documents.fields.ammunition": {
+        "message": "Ammo"
+    },
+    "ttgamer.ui.sheet.documents.fields.arc": {
+        "message": "Arc"
+    },
+    "ttgamer.ui.sheet.documents.fields.armor": {
+        "message": "Armor"
+    },
+    "ttgamer.ui.sheet.documents.fields.armorClass": {
+        "message": "Class"
+    },
+    "ttgamer.ui.sheet.documents.fields.armorRating": {
+        "message": "Armor rating"
+    },
+    "ttgamer.ui.sheet.documents.fields.armorType": {
+        "message": "Armor type"
+    },
+    "ttgamer.ui.sheet.documents.fields.attacks": {
+        "message": "Attacks"
+    },
+    "ttgamer.ui.sheet.documents.fields.attackType": {
+        "message": "Attack type"
+    },
+    "ttgamer.ui.sheet.documents.fields.attributes": {
+        "message": "Attributes"
+    },
+    "ttgamer.ui.sheet.documents.fields.backgrounds": {
+        "message": "Backgrounds"
+    },
+    "ttgamer.ui.sheet.documents.fields.builtInEquipment": {
+        "message": "Built-in equipment"
+    },
+    "ttgamer.ui.sheet.documents.fields.cargoCapacity": {
+        "message": "Cargo capacity"
+    },
+    "ttgamer.ui.sheet.documents.fields.combat": {
+        "message": "Combat"
+    },
+    "ttgamer.ui.sheet.documents.fields.communicationsSensors": {
+        "message": "Communications / Sensors"
+    },
+    "ttgamer.ui.sheet.documents.fields.concept": {
+        "message": "Concept"
+    },
+    "ttgamer.ui.sheet.documents.fields.conditionLevel": {
+        "message": "Level"
+    },
+    "ttgamer.ui.sheet.documents.fields.conditionPenalty": {
+        "message": "Penalty"
+    },
+    "ttgamer.ui.sheet.documents.fields.configuration": {
+        "message": "Configuration"
+    },
+    "ttgamer.ui.sheet.documents.fields.consumables": {
+        "message": "Consumables"
+    },
+    "ttgamer.ui.sheet.documents.fields.crew": {
+        "message": "Crew"
+    },
+    "ttgamer.ui.sheet.documents.fields.current": {
+        "message": "Current"
+    },
+    "ttgamer.ui.sheet.documents.fields.damage": {
+        "message": "Damage"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.cosmetic": {
+        "message": "Cosmetic"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.crippled": {
+        "message": "Crippled"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.heavy": {
+        "message": "Heavy"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.light": {
+        "message": "Light"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.moderate": {
+        "message": "Moderate"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.severe": {
+        "message": "Severe"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.wrecked": {
+        "message": "Wrecked"
+    },
+    "ttgamer.ui.sheet.documents.fields.darkSideResistance": {
+        "message": "Dark Side resistance"
+    },
+    "ttgamer.ui.sheet.documents.fields.demeanor": {
+        "message": "Demeanor"
+    },
+    "ttgamer.ui.sheet.documents.fields.dexterity": {
+        "message": "Dexterity"
+    },
+    "ttgamer.ui.sheet.documents.fields.dexterityModifier": {
+        "message": "Dexterity modifier"
+    },
+    "ttgamer.ui.sheet.documents.fields.durability": {
+        "message": "Durability"
+    },
+    "ttgamer.ui.sheet.documents.fields.flaws": {
+        "message": "Flaws"
+    },
+    "ttgamer.ui.sheet.documents.fields.forceAndResolve": {
+        "message": "Force and resolve"
+    },
+    "ttgamer.ui.sheet.documents.fields.forcePoints": {
+        "message": "Force points"
+    },
+    "ttgamer.ui.sheet.documents.fields.frontShields": {
+        "message": "Front shields"
+    },
+    "ttgamer.ui.sheet.documents.fields.health": {
+        "message": "Health"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.bruised": {
+        "message": "Bruised"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.crippled": {
+        "message": "Crippled"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.hurt": {
+        "message": "Hurt"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.incapacitated": {
+        "message": "Incapacitated"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.injured": {
+        "message": "Injured"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.mauled": {
+        "message": "Mauled"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.wounded": {
+        "message": "Wounded"
+    },
+    "ttgamer.ui.sheet.documents.fields.hyperdrive": {
+        "message": "Hyperdrive"
+    },
+    "ttgamer.ui.sheet.documents.fields.identity": {
+        "message": "Identity"
+    },
+    "ttgamer.ui.sheet.documents.fields.label": {
+        "message": "Label"
+    },
+    "ttgamer.ui.sheet.documents.fields.length": {
+        "message": "Length"
+    },
+    "ttgamer.ui.sheet.documents.fields.maneuverability": {
+        "message": "Maneuverability"
+    },
+    "ttgamer.ui.sheet.documents.fields.maximum": {
+        "message": "Maximum"
+    },
+    "ttgamer.ui.sheet.documents.fields.member": {
+        "message": "Member"
+    },
+    "ttgamer.ui.sheet.documents.fields.members": {
+        "message": "Members"
+    },
+    "ttgamer.ui.sheet.documents.fields.merits": {
+        "message": "Merits"
+    },
+    "ttgamer.ui.sheet.documents.fields.meritsAndFlaws": {
+        "message": "Merits and flaws"
+    },
+    "ttgamer.ui.sheet.documents.fields.model": {
+        "message": "Model"
+    },
+    "ttgamer.ui.sheet.documents.fields.movementAndNavigation": {
+        "message": "Movement and navigation"
+    },
+    "ttgamer.ui.sheet.documents.fields.name": {
+        "message": "Name"
+    },
+    "ttgamer.ui.sheet.documents.fields.nature": {
+        "message": "Nature"
+    },
+    "ttgamer.ui.sheet.documents.fields.navigationComputer": {
+        "message": "Navigation computer"
+    },
+    "ttgamer.ui.sheet.documents.fields.none": {
+        "message": "None yet"
+    },
+    "ttgamer.ui.sheet.documents.fields.notes": {
+        "message": "Notes"
+    },
+    "ttgamer.ui.sheet.documents.fields.owner": {
+        "message": "Owner"
+    },
+    "ttgamer.ui.sheet.documents.fields.passengers": {
+        "message": "Passengers"
+    },
+    "ttgamer.ui.sheet.documents.fields.player": {
+        "message": "Player"
+    },
+    "ttgamer.ui.sheet.documents.fields.range": {
+        "message": "Range"
+    },
+    "ttgamer.ui.sheet.documents.fields.rearShields": {
+        "message": "Rear shields"
+    },
+    "ttgamer.ui.sheet.documents.fields.removeMember": {
+        "message": "Remove member"
+    },
+    "ttgamer.ui.sheet.documents.fields.removeRow": {
+        "message": "Remove row"
+    },
+    "ttgamer.ui.sheet.documents.fields.resources": {
+        "message": "Resources"
+    },
+    "ttgamer.ui.sheet.documents.fields.scale": {
+        "message": "Scale"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.capital": {
+        "message": "Capital ship"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.character": {
+        "message": "Character"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.deathStar": {
+        "message": "Death Star"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.speeder": {
+        "message": "Speeder"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.starfighter": {
+        "message": "Starfighter"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.transport": {
+        "message": "Transport"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.vermin": {
+        "message": "Vermin"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.walker": {
+        "message": "Walker"
+    },
+    "ttgamer.ui.sheet.documents.fields.sensorRange": {
+        "message": "Sensor range"
+    },
+    "ttgamer.ui.sheet.documents.fields.shields": {
+        "message": "Shields"
+    },
+    "ttgamer.ui.sheet.documents.fields.size": {
+        "message": "Size"
+    },
+    "ttgamer.ui.sheet.documents.fields.species": {
+        "message": "Species"
+    },
+    "ttgamer.ui.sheet.documents.fields.speed": {
+        "message": "Speed"
+    },
+    "ttgamer.ui.sheet.documents.fields.systems": {
+        "message": "Systems"
+    },
+    "ttgamer.ui.sheet.documents.fields.type": {
+        "message": "Type"
+    },
+    "ttgamer.ui.sheet.documents.fields.virtues": {
+        "message": "Virtues"
+    },
+    "ttgamer.ui.sheet.documents.fields.weapon": {
+        "message": "Weapon"
+    },
+    "ttgamer.ui.sheet.documents.fields.weapons": {
+        "message": "Weapons"
+    },
+    "ttgamer.ui.sheet.documents.fields.willpower": {
+        "message": "Willpower"
+    },
+    "ttgamer.ui.sheet.documents.manager.close": {
+        "message": "Close"
+    },
+    "ttgamer.ui.sheet.documents.manager.current": {
+        "message": "current"
+    },
+    "ttgamer.ui.sheet.documents.manager.deleteDescription": {
+        "message": "Are you sure you want to delete {count} document(s)? This cannot be undone."
+    },
+    "ttgamer.ui.sheet.documents.manager.deleteSelected": {
+        "message": "Delete selected"
+    },
+    "ttgamer.ui.sheet.documents.manager.deleteTitle": {
+        "message": "Delete documents"
+    },
+    "ttgamer.ui.sheet.documents.manager.empty": {
+        "message": "No documents yet. Create one to get started."
+    },
+    "ttgamer.ui.sheet.documents.manager.name": {
+        "message": "Name"
+    },
+    "ttgamer.ui.sheet.documents.manager.selectAll": {
+        "message": "Select all documents"
+    },
+    "ttgamer.ui.sheet.documents.manager.selectDocument": {
+        "message": "Select {title}"
+    },
+    "ttgamer.ui.sheet.documents.manager.title": {
+        "message": "Manage documents"
+    },
+    "ttgamer.ui.sheet.documents.manager.type": {
+        "message": "Type"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.export": {
+        "message": "Export"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.exportSuccess": {
+        "message": "Exported \"{title}\""
+    },
+    "ttgamer.ui.sheet.documents.toolbar.exportTitle": {
+        "message": "Export document as JSON"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.import": {
+        "message": "Import"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importError": {
+        "message": "Failed to import \"{filename}\""
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importLabel": {
+        "message": "Import document file"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importSuccess": {
+        "message": "Imported \"{title}\""
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importTitle": {
+        "message": "Import documents from JSON"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.manage": {
+        "message": "Manage"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.manageTitle": {
+        "message": "Manage documents"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.new": {
+        "message": "New"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.newTitle": {
+        "message": "Create a new document"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.noDocumentDescription": {
+        "message": "Create a new document or load one from the manager."
+    },
+    "ttgamer.ui.sheet.documents.toolbar.noDocumentTitle": {
+        "message": "No document loaded"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.reset": {
+        "message": "Reset"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.resetDescription": {
+        "message": "Are you sure you want to reset all document data? This cannot be undone."
+    },
+    "ttgamer.ui.sheet.documents.toolbar.resetTitle": {
+        "message": "Reset all document data"
+    },
+    "ttgamer.ui.sheet.documents.types.character": {
+        "message": "Character"
+    },
+    "ttgamer.ui.sheet.documents.types.creature": {
+        "message": "Creature"
+    },
+    "ttgamer.ui.sheet.documents.types.droid": {
+        "message": "Droid"
+    },
+    "ttgamer.ui.sheet.documents.types.fodderGroup": {
+        "message": "Fodder group"
+    },
+    "ttgamer.ui.sheet.documents.types.vehicle": {
+        "message": "Vehicle"
+    },
+    "ttgamer.ui.sheet.documents.views.brief": {
+        "message": "Brief"
+    },
+    "ttgamer.ui.sheet.documents.views.creatureSheet": {
+        "message": "Creature sheet"
+    },
+    "ttgamer.ui.sheet.documents.views.droidSheet": {
+        "message": "Droid sheet"
+    },
+    "ttgamer.ui.sheet.documents.views.fodderSheet": {
+        "message": "Fodder group"
+    },
+    "ttgamer.ui.sheet.documents.views.fullSheet": {
+        "message": "Full sheet"
+    },
+    "ttgamer.ui.sheet.documents.views.label": {
+        "message": "View mode"
+    },
+    "ttgamer.ui.sheet.documents.views.vehicleSheet": {
+        "message": "Vehicle sheet"
+    },
+    "ttgamer.ui.sheet.templates.binding.attach": {
+        "message": "Attach catalog"
+    },
+    "ttgamer.ui.sheet.templates.binding.catalog": {
+        "message": "Catalog"
+    },
+    "ttgamer.ui.sheet.templates.binding.degraded": {
+        "message": "Catalog \"{catalog}\" is unavailable on this device — this field now uses a manual list."
+    },
+    "ttgamer.ui.sheet.templates.binding.disabled": {
+        "message": "Off"
+    },
+    "ttgamer.ui.sheet.templates.binding.fills": {
+        "message": "Auto-fill mapping"
+    },
+    "ttgamer.ui.sheet.templates.binding.fillTarget": {
+        "message": "Fill into"
+    },
+    "ttgamer.ui.sheet.templates.cohort.addMember": {
+        "message": "Add member"
+    },
+    "ttgamer.ui.sheet.templates.cohort.cancel": {
+        "message": "Cancel"
+    },
+    "ttgamer.ui.sheet.templates.cohort.confirm": {
+        "message": "Confirm"
+    },
+    "ttgamer.ui.sheet.templates.cohort.defeated": {
+        "message": "Out of the fight"
+    },
+    "ttgamer.ui.sheet.templates.cohort.level": {
+        "message": "Level"
+    },
+    "ttgamer.ui.sheet.templates.cohort.maxMembersReached": {
+        "message": "A group can have at most {count} members."
+    },
+    "ttgamer.ui.sheet.templates.cohort.member": {
+        "message": "Member {label}"
+    },
+    "ttgamer.ui.sheet.templates.cohort.memberLabel": {
+        "message": "Member label"
+    },
+    "ttgamer.ui.sheet.templates.cohort.members": {
+        "message": "Members"
+    },
+    "ttgamer.ui.sheet.templates.cohort.penalty": {
+        "message": "Penalty"
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeDescription": {
+        "message": "Member {label} has recorded damage. Removing it deletes that damage."
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeMember": {
+        "message": "Remove member {label}"
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeTitle": {
+        "message": "Remove damaged member?"
+    },
+    "ttgamer.ui.sheet.templates.cohort.shortenDescription": {
+        "message": "Some members have damage on levels that will be hidden. Their marks move to the last remaining level."
+    },
+    "ttgamer.ui.sheet.templates.cohort.shortenTitle": {
+        "message": "Shorten the health track?"
+    },
+    "ttgamer.ui.sheet.templates.cohort.trackLength": {
+        "message": "Health levels"
+    },
+    "ttgamer.ui.sheet.templates.defaults.advantages": {
+        "message": "Advantages"
+    },
+    "ttgamer.ui.sheet.templates.defaults.body": {
+        "message": "Body"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customKnowledges": {
+        "message": "Custom knowledges"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customSkills": {
+        "message": "Custom skills"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customTalents": {
+        "message": "Custom talents"
+    },
+    "ttgamer.ui.sheet.templates.defaults.darkSideResistance": {
+        "message": "Dark Side Resistance"
+    },
+    "ttgamer.ui.sheet.templates.defaults.derivedStats": {
+        "message": "Derived Stats"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experience": {
+        "message": "Experience"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceAvailable": {
+        "message": "Available"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceSpent": {
+        "message": "Spent"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceTotal": {
+        "message": "Total XP"
+    },
+    "ttgamer.ui.sheet.templates.defaults.force": {
+        "message": "Force"
+    },
+    "ttgamer.ui.sheet.templates.defaults.forcePowers": {
+        "message": "Force Powers"
+    },
+    "ttgamer.ui.sheet.templates.defaults.forceSkills": {
+        "message": "Force Skills"
+    },
+    "ttgamer.ui.sheet.templates.defaults.freePoints": {
+        "message": "Free points"
+    },
+    "ttgamer.ui.sheet.templates.defaults.implants": {
+        "message": "Implants & Cyberware"
+    },
+    "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber": {
+        "message": "Initiative (Saber)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.initiativeStandard": {
+        "message": "Initiative (Std)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.inventory": {
+        "message": "Inventory"
+    },
+    "ttgamer.ui.sheet.templates.defaults.jumpingDistance": {
+        "message": "Jumping Distance"
+    },
+    "ttgamer.ui.sheet.templates.defaults.knowledges": {
+        "message": "Knowledges"
+    },
+    "ttgamer.ui.sheet.templates.defaults.maxForcePoints": {
+        "message": "Max Force Points"
+    },
+    "ttgamer.ui.sheet.templates.defaults.mental": {
+        "message": "Mental"
+    },
+    "ttgamer.ui.sheet.templates.defaults.other": {
+        "message": "Other"
+    },
+    "ttgamer.ui.sheet.templates.defaults.physical": {
+        "message": "Physical"
+    },
+    "ttgamer.ui.sheet.templates.defaults.portrait": {
+        "message": "Portrait"
+    },
+    "ttgamer.ui.sheet.templates.defaults.resolve": {
+        "message": "Resolve"
+    },
+    "ttgamer.ui.sheet.templates.defaults.runningSpeed": {
+        "message": "Running Speed"
+    },
+    "ttgamer.ui.sheet.templates.defaults.skills": {
+        "message": "Skills"
+    },
+    "ttgamer.ui.sheet.templates.defaults.social": {
+        "message": "Social"
+    },
+    "ttgamer.ui.sheet.templates.defaults.talents": {
+        "message": "Talents"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentColor": {
+        "message": "Accent color"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentPrimary": {
+        "message": "Primary accent"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentSecondary": {
+        "message": "Secondary accent"
+    },
+    "ttgamer.ui.sheet.templates.editor.addElement": {
+        "message": "Add element"
+    },
+    "ttgamer.ui.sheet.templates.editor.addField": {
+        "message": "Add field"
+    },
+    "ttgamer.ui.sheet.templates.editor.addFieldsBlock": {
+        "message": "Add field group"
+    },
+    "ttgamer.ui.sheet.templates.editor.addOption": {
+        "message": "Add option"
+    },
+    "ttgamer.ui.sheet.templates.editor.addRow": {
+        "message": "Add row"
+    },
+    "ttgamer.ui.sheet.templates.editor.addSection": {
+        "message": "Add section"
+    },
+    "ttgamer.ui.sheet.templates.editor.addTableBlock": {
+        "message": "Add table"
+    },
+    "ttgamer.ui.sheet.templates.editor.blockTitle": {
+        "message": "Block title (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.cancel": {
+        "message": "Cancel"
+    },
+    "ttgamer.ui.sheet.templates.editor.cannotMoveIntoItself": {
+        "message": "An element cannot be moved inside itself."
+    },
+    "ttgamer.ui.sheet.templates.editor.circularDependency": {
+        "message": "Circular dependency detected: {id}"
+    },
+    "ttgamer.ui.sheet.templates.editor.collapse": {
+        "message": "Collapse section"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnAuto": {
+        "message": "Auto"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnPlacement": {
+        "message": "Column in parent"
+    },
+    "ttgamer.ui.sheet.templates.editor.columns": {
+        "message": "Columns"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnWidth": {
+        "message": "Column {index} width"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnWidthsHint": {
+        "message": "Widths are proportional: 2 and 1 make the first column twice as wide."
+    },
+    "ttgamer.ui.sheet.templates.editor.countMessage": {
+        "message": "Element limit reached — {limit} elements maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.depthMessage": {
+        "message": "Nesting limit reached — {limit} levels maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.descriptionLabel": {
+        "message": "Description"
+    },
+    "ttgamer.ui.sheet.templates.editor.descriptionPlaceholder": {
+        "message": "What is this page for?"
+    },
+    "ttgamer.ui.sheet.templates.editor.discard": {
+        "message": "Discard"
+    },
+    "ttgamer.ui.sheet.templates.editor.docsLink": {
+        "message": "Documentation link (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.duplicateId": {
+        "message": "Duplicate identifier \"{id}\" — identifiers must be unique within their scope."
+    },
+    "ttgamer.ui.sheet.templates.editor.emptyLabel": {
+        "message": "Every section and field needs a non-empty label."
+    },
+    "ttgamer.ui.sheet.templates.editor.emptyName": {
+        "message": "Template name is required."
+    },
+    "ttgamer.ui.sheet.templates.editor.equalWidths": {
+        "message": "Equal column widths"
+    },
+    "ttgamer.ui.sheet.templates.editor.expand": {
+        "message": "Expand section"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldDescription": {
+        "message": "Help text (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldLabel": {
+        "message": "Field label"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldRequired": {
+        "message": "Required (advisory marker)"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldType": {
+        "message": "Field type"
+    },
+    "ttgamer.ui.sheet.templates.editor.formula": {
+        "message": "Formula"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaPlaceholder": {
+        "message": "e.g. passion + self-control"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaPrefix": {
+        "message": "Before value (e.g. ×)"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaSuffix": {
+        "message": "After value (e.g. m)"
+    },
+    "ttgamer.ui.sheet.templates.editor.gripHandle": {
+        "message": "Drag handle — grab to move"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupCollapsible": {
+        "message": "Collapsible (expanded state is remembered)"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupTitle": {
+        "message": "Group title"
+    },
+    "ttgamer.ui.sheet.templates.editor.hiddenTitleHint": {
+        "message": "A group without a visible title cannot be collapsed."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidBounds": {
+        "message": "Minimum cannot exceed maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidFormula": {
+        "message": "Invalid formula in \"{id}\" — check the expression."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidKey": {
+        "message": "Invalid key \"{id}\" — use lowercase letters, digits, and dashes."
+    },
+    "ttgamer.ui.sheet.templates.editor.layoutHeading": {
+        "message": "Layout"
+    },
+    "ttgamer.ui.sheet.templates.editor.limitReached": {
+        "message": "Limit reached — {limit} {subject} maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.listColumns": {
+        "message": "Columns"
+    },
+    "ttgamer.ui.sheet.templates.editor.listCustomKey": {
+        "message": "List value key"
+    },
+    "ttgamer.ui.sheet.templates.editor.listFramed": {
+        "message": "Draw a border around the list"
+    },
+    "ttgamer.ui.sheet.templates.editor.listShowTitle": {
+        "message": "Show list title"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSource": {
+        "message": "Entries"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceCustom": {
+        "message": "Custom entries"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceEquipment": {
+        "message": "Equipment"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceSystem": {
+        "message": "Character lists"
+    },
+    "ttgamer.ui.sheet.templates.editor.listTitle": {
+        "message": "List title (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxFrom": {
+        "message": "Maximum from value or formula (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxFromPlaceholder": {
+        "message": "e.g. willpower.max"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxRows": {
+        "message": "Max rows"
+    },
+    "ttgamer.ui.sheet.templates.editor.minFrom": {
+        "message": "Minimum from value or formula (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.minFromPlaceholder": {
+        "message": "e.g. self-control"
+    },
+    "ttgamer.ui.sheet.templates.editor.minRows": {
+        "message": "Min rows"
+    },
+    "ttgamer.ui.sheet.templates.editor.moveDown": {
+        "message": "Move down"
+    },
+    "ttgamer.ui.sheet.templates.editor.moveUp": {
+        "message": "Move up"
+    },
+    "ttgamer.ui.sheet.templates.editor.multiline": {
+        "message": "Multiline"
+    },
+    "ttgamer.ui.sheet.templates.editor.multiple": {
+        "message": "Allow multiple values"
+    },
+    "ttgamer.ui.sheet.templates.editor.name": {
+        "message": "Name"
+    },
+    "ttgamer.ui.sheet.templates.editor.namePlaceholder": {
+        "message": "Template name"
+    },
+    "ttgamer.ui.sheet.templates.editor.numberMax": {
+        "message": "Max"
+    },
+    "ttgamer.ui.sheet.templates.editor.numberMin": {
+        "message": "Min"
+    },
+    "ttgamer.ui.sheet.templates.editor.numberStep": {
+        "message": "Step"
+    },
+    "ttgamer.ui.sheet.templates.editor.optionLabel": {
+        "message": "Option label"
+    },
+    "ttgamer.ui.sheet.templates.editor.options": {
+        "message": "Options"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteField": {
+        "message": "Field"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteFieldHint": {
+        "message": "One value: text, number, rating, choice, formula…"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteGroup": {
+        "message": "Field group"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteGroupHint": {
+        "message": "Titled card that groups elements"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteList": {
+        "message": "List"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteListHint": {
+        "message": "Entries added one by one: custom, skills, merits, equipment…"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSection": {
+        "message": "Section"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSectionHint": {
+        "message": "Collapsible page block with a heading"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTable": {
+        "message": "Table"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTableHint": {
+        "message": "Rows of values sharing the same columns"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTracker": {
+        "message": "Tracker"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTrackerHint": {
+        "message": "Health or damage levels with penalties"
+    },
+    "ttgamer.ui.sheet.templates.editor.partCurrent": {
+        "message": "Current value"
+    },
+    "ttgamer.ui.sheet.templates.editor.partMax": {
+        "message": "Maximum"
+    },
+    "ttgamer.ui.sheet.templates.editor.placeholderText": {
+        "message": "Placeholder text (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.presentation": {
+        "message": "Presentation"
+    },
+    "ttgamer.ui.sheet.templates.editor.primitivePart": {
+        "message": "Edits"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingBoxes": {
+        "message": "Boxes"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingDots": {
+        "message": "Dots"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingNumber": {
+        "message": "Number"
+    },
+    "ttgamer.ui.sheet.templates.editor.referenceKinds": {
+        "message": "Allowed document kinds"
+    },
+    "ttgamer.ui.sheet.templates.editor.remove": {
+        "message": "Remove"
+    },
+    "ttgamer.ui.sheet.templates.editor.removeConfirmDescription": {
+        "message": "You have unsaved edits. Discard them?"
+    },
+    "ttgamer.ui.sheet.templates.editor.removeConfirmTitle": {
+        "message": "Discard changes?"
+    },
+    "ttgamer.ui.sheet.templates.editor.save": {
+        "message": "Save"
+    },
+    "ttgamer.ui.sheet.templates.editor.sections": {
+        "message": "Sections"
+    },
+    "ttgamer.ui.sheet.templates.editor.sectionTitle": {
+        "message": "Section title"
+    },
+    "ttgamer.ui.sheet.templates.editor.showLabel": {
+        "message": "Show label"
+    },
+    "ttgamer.ui.sheet.templates.editor.showTitle": {
+        "message": "Show title"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceCustom": {
+        "message": "Custom value (this template)"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceDetails": {
+        "message": "Character details"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceResources": {
+        "message": "Resources"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceTraits": {
+        "message": "Traits"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceTypeLocked": {
+        "message": "The type follows the character sheet value."
+    },
+    "ttgamer.ui.sheet.templates.editor.startsCollapsed": {
+        "message": "Starts collapsed"
+    },
+    "ttgamer.ui.sheet.templates.editor.tableTitle": {
+        "message": "Table title (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.tableValueKey": {
+        "message": "Shared value key (table rows)"
+    },
+    "ttgamer.ui.sheet.templates.editor.trackerSource": {
+        "message": "Tracks"
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownBinding": {
+        "message": "Unknown data binding \"{id}\" for this document kind."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownCatalog": {
+        "message": "Unknown catalog or catalog detail \"{id}\"."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownCoordinate": {
+        "message": "Unknown value \"{id}\" referenced by a formula."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownFillTarget": {
+        "message": "Auto-fill targets a field that does not exist: \"{id}\"."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownLabelMessage": {
+        "message": "Unknown translation reference \"{id}\"."
+    },
+    "ttgamer.ui.sheet.templates.editor.untitledName": {
+        "message": "Untitled template"
+    },
+    "ttgamer.ui.sheet.templates.editor.valueKeyLabel": {
+        "message": "Shared value key (fields with the same key share one value)"
+    },
+    "ttgamer.ui.sheet.templates.editor.valueSource": {
+        "message": "Stores value in"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhen": {
+        "message": "Show only when a value matches"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenCoordinate": {
+        "message": "Value key"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenOperator": {
+        "message": "Comparison"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenValue": {
+        "message": "Value"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcAll": {
+        "message": "All"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcFront": {
+        "message": "Front"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcLeft": {
+        "message": "Left"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcRear": {
+        "message": "Rear"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcRight": {
+        "message": "Right"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcTurret": {
+        "message": "Turret"
+    },
+    "ttgamer.ui.sheet.templates.entities.armorCatalog": {
+        "message": "Catalog armor"
+    },
+    "ttgamer.ui.sheet.templates.entities.bashing": {
+        "message": "Bashing"
+    },
+    "ttgamer.ui.sheet.templates.entities.cannotSoakLethal": {
+        "message": "Cannot soak lethal damage"
+    },
+    "ttgamer.ui.sheet.templates.entities.category": {
+        "message": "Category"
+    },
+    "ttgamer.ui.sheet.templates.entities.comms": {
+        "message": "Comms"
+    },
+    "ttgamer.ui.sheet.templates.entities.copilot": {
+        "message": "Co-pilot"
+    },
+    "ttgamer.ui.sheet.templates.entities.creatureBrief": {
+        "message": "Creature brief"
+    },
+    "ttgamer.ui.sheet.templates.entities.creatureSheet": {
+        "message": "Creature sheet"
+    },
+    "ttgamer.ui.sheet.templates.entities.crewCapacity": {
+        "message": "Crew & capacity"
+    },
+    "ttgamer.ui.sheet.templates.entities.crewStations": {
+        "message": "Crew stations"
+    },
+    "ttgamer.ui.sheet.templates.entities.damaged": {
+        "message": "Damaged"
+    },
+    "ttgamer.ui.sheet.templates.entities.descriptionLabel": {
+        "message": "Description"
+    },
+    "ttgamer.ui.sheet.templates.entities.details": {
+        "message": "Details"
+    },
+    "ttgamer.ui.sheet.templates.entities.durabilityReroll": {
+        "message": "Reroll 10s on Durability"
+    },
+    "ttgamer.ui.sheet.templates.entities.effect": {
+        "message": "Effect"
+    },
+    "ttgamer.ui.sheet.templates.entities.engineer": {
+        "message": "Engineer"
+    },
+    "ttgamer.ui.sheet.templates.entities.fodderBrief": {
+        "message": "Fodder group brief"
+    },
+    "ttgamer.ui.sheet.templates.entities.fodderSheet": {
+        "message": "Fodder group sheet"
+    },
+    "ttgamer.ui.sheet.templates.entities.group": {
+        "message": "Group"
+    },
+    "ttgamer.ui.sheet.templates.entities.gunners": {
+        "message": "Gunners"
+    },
+    "ttgamer.ui.sheet.templates.entities.identification": {
+        "message": "Identification"
+    },
+    "ttgamer.ui.sheet.templates.entities.leader": {
+        "message": "Leader"
+    },
+    "ttgamer.ui.sheet.templates.entities.lethal": {
+        "message": "Lethal"
+    },
+    "ttgamer.ui.sheet.templates.entities.modelCatalog": {
+        "message": "Catalog model"
+    },
+    "ttgamer.ui.sheet.templates.entities.modification": {
+        "message": "Modification"
+    },
+    "ttgamer.ui.sheet.templates.entities.modifications": {
+        "message": "Modifications & quirks"
+    },
+    "ttgamer.ui.sheet.templates.entities.movement": {
+        "message": "Movement"
+    },
+    "ttgamer.ui.sheet.templates.entities.pilot": {
+        "message": "Pilot"
+    },
+    "ttgamer.ui.sheet.templates.entities.pools": {
+        "message": "Pools"
+    },
+    "ttgamer.ui.sheet.templates.entities.quickPools": {
+        "message": "Quick pools"
+    },
+    "ttgamer.ui.sheet.templates.entities.quirk": {
+        "message": "Quirk"
+    },
+    "ttgamer.ui.sheet.templates.entities.scaleReference": {
+        "message": "Scale reference"
+    },
+    "ttgamer.ui.sheet.templates.entities.scaleReferenceText": {
+        "message": "Each scale step between attacker and target adds +1 difficulty to hit for the larger combatant and −1 to damage; the smaller combatant gets the reverse."
+    },
+    "ttgamer.ui.sheet.templates.entities.secondaryPool": {
+        "message": "Secondary pool"
+    },
+    "ttgamer.ui.sheet.templates.entities.sensors": {
+        "message": "Sensors"
+    },
+    "ttgamer.ui.sheet.templates.entities.soak": {
+        "message": "Soak"
+    },
+    "ttgamer.ui.sheet.templates.entities.soakAll": {
+        "message": "Soak (lethal and bashing)"
+    },
+    "ttgamer.ui.sheet.templates.entities.soakBashingOnly": {
+        "message": "Soak (bashing only)"
+    },
+    "ttgamer.ui.sheet.templates.entities.soaksLethal": {
+        "message": "Soaks lethal damage"
+    },
+    "ttgamer.ui.sheet.templates.entities.source": {
+        "message": "Source"
+    },
+    "ttgamer.ui.sheet.templates.entities.specialtyPool": {
+        "message": "Specialty pool"
+    },
+    "ttgamer.ui.sheet.templates.entities.speciesCatalog": {
+        "message": "Bestiary entry"
+    },
+    "ttgamer.ui.sheet.templates.entities.system": {
+        "message": "System"
+    },
+    "ttgamer.ui.sheet.templates.entities.systemSlots": {
+        "message": "System slots"
+    },
+    "ttgamer.ui.sheet.templates.entities.threatTier": {
+        "message": "Threat tier"
+    },
+    "ttgamer.ui.sheet.templates.entities.tierFodder": {
+        "message": "Fodder"
+    },
+    "ttgamer.ui.sheet.templates.entities.tierNamed": {
+        "message": "Named"
+    },
+    "ttgamer.ui.sheet.templates.entities.traits": {
+        "message": "Traits"
+    },
+    "ttgamer.ui.sheet.templates.entities.vehicleBrief": {
+        "message": "Vehicle brief"
+    },
+    "ttgamer.ui.sheet.templates.entities.vehicleSheet": {
+        "message": "Vehicle sheet"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.builtIn": {
+        "message": "Built-in page part"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.fields": {
+        "message": "Field group"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.formula": {
+        "message": "Derived value (read-only)"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.group": {
+        "message": "Field group"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.image": {
+        "message": "Image"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.list": {
+        "message": "Custom list"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.number": {
+        "message": "Number"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.rating": {
+        "message": "Rating"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.reference": {
+        "message": "Document reference"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.resource": {
+        "message": "Resource"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.section": {
+        "message": "Section"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.select": {
+        "message": "Choice"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.table": {
+        "message": "Table"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.text": {
+        "message": "Text"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.toggle": {
+        "message": "Toggle"
+    },
+    "ttgamer.ui.sheet.templates.library.button": {
+        "message": "Templates"
+    },
+    "ttgamer.ui.sheet.templates.library.buttonTitle": {
+        "message": "Manage character page templates"
+    },
+    "ttgamer.ui.sheet.templates.library.defaultBadge": {
+        "message": "Default"
+    },
+    "ttgamer.ui.sheet.templates.library.delete": {
+        "message": "Delete"
+    },
+    "ttgamer.ui.sheet.templates.library.deleteRefused": {
+        "message": "\"{name}\" is a default page — it cannot be deleted. Duplicate it instead."
+    },
+    "ttgamer.ui.sheet.templates.library.duplicate": {
+        "message": "Duplicate"
+    },
+    "ttgamer.ui.sheet.templates.library.duplicateId": {
+        "message": "\"{id}\" is a built-in page — templates need their own identifier."
+    },
+    "ttgamer.ui.sheet.templates.library.edit": {
+        "message": "Edit"
+    },
+    "ttgamer.ui.sheet.templates.library.empty": {
+        "message": "No templates yet. Create one to get started."
+    },
+    "ttgamer.ui.sheet.templates.library.export": {
+        "message": "Export"
+    },
+    "ttgamer.ui.sheet.templates.library.incompatibleBadge": {
+        "message": "Incompatible format"
+    },
+    "ttgamer.ui.sheet.templates.library.incompatibleHint": {
+        "message": "Saved in a previous template format. Kept for recovery only — recreate it with the new editor."
+    },
+    "ttgamer.ui.sheet.templates.library.kind": {
+        "message": "Kind"
+    },
+    "ttgamer.ui.sheet.templates.library.modifiedBadge": {
+        "message": "Modified"
+    },
+    "ttgamer.ui.sheet.templates.library.new": {
+        "message": "New template"
+    },
+    "ttgamer.ui.sheet.templates.library.reset": {
+        "message": "Reset to original"
+    },
+    "ttgamer.ui.sheet.templates.library.resetConfirmDescription": {
+        "message": "\"{name}\" will be restored to its original structure. Assigned documents keep all their data."
+    },
+    "ttgamer.ui.sheet.templates.library.resetConfirmTitle": {
+        "message": "Reset this default template?"
+    },
+    "ttgamer.ui.sheet.templates.library.title": {
+        "message": "Page templates"
+    },
+    "ttgamer.ui.sheet.templates.library.unnamedKind": {
+        "message": "Other"
+    },
+    "ttgamer.ui.sheet.templates.page.embedNoDocument": {
+        "message": "Create or open a character to fill in this part of the sheet here."
+    },
+    "ttgamer.ui.sheet.templates.page.fallbackDescription": {
+        "message": "The template assigned to this page is missing. Showing the standard page instead — you can pick another page below."
+    },
+    "ttgamer.ui.sheet.templates.page.fallbackTitle": {
+        "message": "Template page unavailable"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaClamped": {
+        "message": "Limited by a linked value"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaDegraded": {
+        "message": "Cannot compute \"{field}\": {reason}."
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonCircular": {
+        "message": "circular dependency"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonDivision": {
+        "message": "division by zero"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonNonNumeric": {
+        "message": "a referenced value is not a number"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonUnknown": {
+        "message": "value \"{coordinate}\" is unavailable"
+    },
+    "ttgamer.ui.sheet.templates.page.imageAlt": {
+        "message": "Template image"
+    },
+    "ttgamer.ui.sheet.templates.page.imageInvalid": {
+        "message": "This image source is unavailable or insecure."
+    },
+    "ttgamer.ui.sheet.templates.page.imageRemove": {
+        "message": "Remove image"
+    },
+    "ttgamer.ui.sheet.templates.page.imageUpload": {
+        "message": "Upload image"
+    },
+    "ttgamer.ui.sheet.templates.page.imageUrl": {
+        "message": "Image URL"
+    },
+    "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
+        "message": "Data binding \"{binding}\" is unavailable on this device."
+    },
+    "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
+        "message": "{count} required field(s) are still empty."
+    },
+    "ttgamer.ui.sheet.templates.primitives.addPreset": {
+        "message": "Add preset"
+    },
+    "ttgamer.ui.sheet.templates.primitives.binding": {
+        "message": "Data binding"
+    },
+    "ttgamer.ui.sheet.templates.primitives.boundTo": {
+        "message": "Bound to: {binding}"
+    },
+    "ttgamer.ui.sheet.templates.primitives.compact": {
+        "message": "Compact (brief format)"
+    },
+    "ttgamer.ui.sheet.templates.primitives.degraded": {
+        "message": "Data binding \"{binding}\" is unavailable on this device."
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupIdentity": {
+        "message": "Identity fields"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupList": {
+        "message": "Custom lists"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupResource": {
+        "message": "Resources"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupTrack": {
+        "message": "Condition tracks"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupTrait": {
+        "message": "Traits"
+    },
+    "ttgamer.ui.sheet.templates.primitives.labelOverride": {
+        "message": "Label override"
+    },
+    "ttgamer.ui.sheet.templates.primitives.labelOverridePlaceholder": {
+        "message": "Same as binding label"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presetLabel": {
+        "message": "Entry label"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presets": {
+        "message": "Preset entries"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presetValue": {
+        "message": "Default value"
+    },
+    "ttgamer.ui.sheet.templates.primitives.removePreset": {
+        "message": "Remove preset"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLevelName": {
+        "message": "Level {index} name"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLevels": {
+        "message": "Levels"
+    },
+    "ttgamer.ui.sheet.templates.reference.missing": {
+        "message": "Linked document no longer exists"
+    },
+    "ttgamer.ui.sheet.templates.reference.noMatches": {
+        "message": "No matching documents"
+    },
+    "ttgamer.ui.sheet.templates.reference.open": {
+        "message": "Open {title}"
+    },
+    "ttgamer.ui.sheet.templates.reference.remove": {
+        "message": "Remove {title}"
+    },
+    "ttgamer.ui.sheet.templates.reference.search": {
+        "message": "Type a name to search"
+    },
+    "ttgamer.ui.sheet.templates.transfer.conflictPrompt": {
+        "message": "Replace it, import a duplicate with a new ID, or cancel this file."
+    },
+    "ttgamer.ui.sheet.templates.transfer.conflictTitle": {
+        "message": "Template already exists"
+    },
+    "ttgamer.ui.sheet.templates.transfer.degradedReport": {
+        "message": "Some catalogs are unavailable here — these fields fell back to manual lists - {fields}"
+    },
+    "ttgamer.ui.sheet.templates.transfer.exportSuccess": {
+        "message": "Exported template \"{title}\""
+    },
+    "ttgamer.ui.sheet.templates.transfer.import": {
+        "message": "Import template"
+    },
+    "ttgamer.ui.sheet.templates.transfer.importError": {
+        "message": "Failed to import \"{filename}\""
+    },
+    "ttgamer.ui.sheet.templates.transfer.importErrorFormat": {
+        "message": "Failed to import \"{filename}\" — not a TTGamer template file."
+    },
+    "ttgamer.ui.sheet.templates.transfer.importErrorSchema": {
+        "message": "Failed to import \"{filename}\" — the template structure is invalid."
+    },
+    "ttgamer.ui.sheet.templates.transfer.importErrorVersion": {
+        "message": "Failed to import \"{filename}\" — the file was made by a different template format version."
+    },
+    "ttgamer.ui.sheet.templates.transfer.importLabel": {
+        "message": "Import template file"
+    },
+    "ttgamer.ui.sheet.templates.transfer.importSuccess": {
+        "message": "Imported template \"{title}\""
+    },
+    "ttgamer.ui.sheet.templates.transfer.importTitle": {
+        "message": "Import a page template from JSON"
     }
 }

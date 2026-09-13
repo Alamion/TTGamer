@@ -1,10 +1,11 @@
-import { useState } from 'react';
 import { clsx } from 'clsx';
+import { useState } from 'react';
+
+import DndTab from './DiceTabDnd';
+import StandardTab from './DiceTabStandard';
+import WodTab from './DiceTabWod';
 import NotationInput from './NotationInput';
 import RollControls from './RollControls';
-import StandardTab from './DiceTabStandard';
-import DndTab from './DiceTabDnd';
-import WodTab from './DiceTabWod';
 
 type DiceTab = 'standard' | 'dnd' | 'wod' | '';
 

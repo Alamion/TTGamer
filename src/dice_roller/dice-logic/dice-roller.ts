@@ -1,6 +1,6 @@
-import { parseToAST, validateNotation as validateNotationAST } from './dice-parser';
 import { evaluateDiceAST } from './dice-evaluator';
-import type { RollResult, FullRollResult } from './types';
+import { parseToAST, validateNotation as validateNotationAST } from './dice-parser';
+import type { FullRollResult, RollResult } from './types';
 
 function executeRollInternal(notation: string, randomFn?: () => number): FullRollResult {
     const ast = parseToAST(notation);

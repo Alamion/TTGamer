@@ -1,6 +1,8 @@
-import { themes as prismThemes } from 'prism-react-renderer';
-import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import type { Config } from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+
+import packageJson from './package.json';
 
 const config: Config = {
     title: 'TTGamer',
@@ -11,13 +13,17 @@ const config: Config = {
         v4: true,
     },
 
-    url: 'https://alamion.github.io',
+    url: 'https://ttgamer.vercel.app',
     baseUrl: '/',
 
     organizationName: 'Alamion',
     projectName: 'ttgamer',
 
     onBrokenLinks: 'throw',
+
+    customFields: {
+        version: packageJson.version,
+    },
 
     i18n: {
         defaultLocale: 'en',
@@ -112,6 +118,21 @@ const config: Config = {
         },
     } satisfies Preset.ThemeConfig,
     plugins: [
+        [
+            '@docusaurus/plugin-client-redirects',
+            {
+                redirects: [
+                    {
+                        from: '/docs/star-wars-wod-2e/creatures/beastiary',
+                        to: '/docs/star-wars-wod-2e/creatures/bestiary',
+                    },
+                    {
+                        from: '/docs/star-wars-wod-2e/vehicles-mechanisms/durability-damage-repare',
+                        to: '/docs/star-wars-wod-2e/vehicles-mechanisms/durability-damage-repair',
+                    },
+                ],
+            },
+        ],
         // function myNavbarPlugin() {
         //     return {
         //         name: 'my-navbar-plugin',

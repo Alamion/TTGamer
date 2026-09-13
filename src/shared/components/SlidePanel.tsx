@@ -1,6 +1,6 @@
-import { useCallback, useRef } from 'react';
-import type { CSSProperties, ReactNode } from 'react';
 import { X } from 'lucide-react';
+import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 interface SlidePanelProps {
     open: boolean;
@@ -15,6 +15,7 @@ interface SlidePanelProps {
     className?: string;
     style?: CSSProperties;
     closeAriaLabel?: string;
+    ariaLabel?: string;
 }
 
 export function SlidePanel({
@@ -30,8 +31,13 @@ export function SlidePanel({
     className,
     style,
     closeAriaLabel = 'Close panel',
+    ariaLabel,
 }: SlidePanelProps) {
     const widthRef = useRef(width ?? 380);
+
+    useEffect(() => {
+        if (width !== undefined) widthRef.current = width;
+    }, [width]);
 
     const handleResizeStart = useCallback(
         (e: React.MouseEvent) => {
@@ -62,22 +68,43 @@ export function SlidePanel({
         [onWidthChange, minWidth, maxWidth]
     );
 
+    const handleResizeKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+        if (!onWidthChange || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
+        event.preventDefault();
+        const delta = event.key === 'ArrowLeft' ? 20 : -20;
+        const nextWidth = Math.max(minWidth, Math.min(maxWidth, widthRef.current + delta));
+        widthRef.current = nextWidth;
+        onWidthChange(nextWidth);
+    };
+
     if (!open) return null;
 
     return (
         <>
-            {showBackdrop && <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} />}
+            {showBackdrop && (
+                <button
+                    type="button"
+                    aria-label="Close panel"
+                    className="fixed inset-0 bg-black/40 z-40"
+                    onClick={onClose}
+                />
+            )}
             <div
+                role="complementary"
+                aria-label={ariaLabel ?? title ?? 'Side panel'}
                 className={`fixed top-0 right-0 bottom-0 z-50 bg-bgSurface border-l border-border shadow-xl flex flex-col overflow-hidden ${className ?? ''}`}
                 style={{ width: width ?? undefined, ...style }}
             >
                 {onWidthChange && (
-                    <div
+                    <button
+                        type="button"
+                        aria-label="Resize panel"
                         className="absolute left-0 top-0 bottom-0 w-1.5 cursor-col-resize group z-10"
                         onMouseDown={handleResizeStart}
+                        onKeyDown={handleResizeKeyDown}
                     >
                         <div className="absolute inset-y-0 left-0 w-0.5 bg-border group-hover:bg-primary/50 transition-colors" />
-                    </div>
+                    </button>
                 )}
                 {title && (
                     <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0">

@@ -1,9 +1,10 @@
+import { EraTags } from '@site/src/shared/components/EraTags';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
-import type { SpeciesEntry } from './speciesData';
-import { MERITS_FLAWS } from './meritsFlawsData';
+
 import { arrayIncludesAnyFilterFn } from './dataFilters';
-import { EraTags } from '@site/src/shared/components/EraTags';
+import { MERITS_FLAWS } from './meritsFlawsData';
+import type { SpeciesEntry } from './speciesData';
 
 function getMeritFlaw(id: string) {
     const item = MERITS_FLAWS.find((mf) => mf.id === id);

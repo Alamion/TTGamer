@@ -1,0 +1,331 @@
+library:
+    button: Шаблоны
+    buttonTitle: Управление шаблонами страниц персонажа
+    title: Шаблоны страниц
+    empty: Шаблонов пока нет. Создайте первый.
+    new: Новый шаблон
+    edit: Изменить
+    duplicate: Дублировать
+    delete: Удалить
+    export: Экспорт
+    kind: Тип
+    unnamedKind: Другое
+    defaultBadge: Стандартный
+    modifiedBadge: Изменён
+    reset: Вернуть оригинал
+    resetConfirmTitle: Вернуть стандартный шаблон к оригиналу?
+    resetConfirmDescription: '«{name}» будет восстановлен в исходном виде. Данные документов сохранятся.'
+    deleteRefused: '«{name}» — стандартная страница, её нельзя удалить. Вместо этого сделайте копию.'
+    duplicateId: '«{id}» — встроенная страница; шаблонам нужен собственный идентификатор.'
+    incompatibleBadge: Несовместимый формат
+    incompatibleHint: Сохранено в предыдущем формате шаблонов. Хранится только для восстановления — пересоздайте в новом редакторе.
+primitives:
+    groupIdentity: Поля личности
+    groupTrait: Трейты
+    groupList: Кастомные списки
+    groupResource: Ресурсы
+    groupTrack: Треки состояний
+    binding: Привязка к данным
+    boundTo: 'Привязано: {binding}'
+    labelOverride: Своё название
+    labelOverridePlaceholder: Как у привязки
+    compact: Компактно (формат brief)
+    trackLevels: Уровни
+    trackLevelName: 'Название уровня {index}'
+    presets: Предустановленные записи
+    presetLabel: Название записи
+    presetValue: Значение по умолчанию
+    addPreset: Добавить пресет
+    removePreset: Удалить пресет
+    degraded: 'Привязка «{binding}» недоступна на этом устройстве.'
+editor:
+    visibleWhen: Показывать только при совпадении значения
+    visibleWhenCoordinate: Ключ значения
+    visibleWhenOperator: Сравнение
+    visibleWhenValue: Значение
+    startsCollapsed: Изначально свёрнуто
+    untitledName: Шаблон без названия
+    name: Название
+    namePlaceholder: Название шаблона
+    descriptionLabel: Описание
+    descriptionPlaceholder: Для чего эта страница?
+    sections: Секции
+    addSection: Добавить секцию
+    addFieldsBlock: Добавить группу полей
+    addTableBlock: Добавить таблицу
+    addField: Добавить поле
+    addOption: Добавить вариант
+    addRow: Добавить строку
+    sectionTitle: Заголовок секции
+    blockTitle: Заголовок блока (необязательно)
+    fieldLabel: Название поля
+    valueKeyLabel: Общий ключ значения (одинаковый ключ = одно значение между шаблонами)
+
+    fieldDescription: Подсказка (необязательно)
+    fieldType: Тип поля
+    fieldRequired: Обязательное (визуальная отметка)
+    columns: Колонки
+    minRows: Мин. строк
+    maxRows: Макс. строк
+    options: Варианты
+    optionLabel: Название варианта
+    numberMin: Минимум
+    numberMax: Максимум
+    numberStep: Шаг
+    multiline: Многострочное
+    presentation: Отображение
+    accentColor: Цвет акцента
+    accentPrimary: Основной акцент
+    accentSecondary: Дополнительный акцент
+    ratingDots: Точки
+    ratingBoxes: Клетки
+    ratingNumber: Число
+    referenceKinds: Разрешённые типы документов
+    multiple: Несколько значений
+    moveUp: Переместить выше
+    moveDown: Переместить ниже
+    remove: Удалить
+    removeConfirmTitle: Отменить изменения?
+    removeConfirmDescription: Есть несохранённые правки. Отменить их?
+    discard: Отменить
+    save: Сохранить
+    cancel: Отмена
+    duplicateId: Дубликат идентификатора «{id}» — идентификаторы должны быть уникальны в своей области.
+    collapse: Свернуть панель
+    expand: Развернуть панель
+    invalidKey: Неверный ключ «{id}» — используйте строчные буквы, цифры и дефисы.
+    limitReached: Достигнут лимит — максимум {limit} ({subject}).
+    invalidBounds: Минимум не может превышать максимум.
+    emptyName: Требуется название шаблона.
+    emptyLabel: Секции и поля требуют непустого названия.
+    addElement: Добавить элемент
+    paletteSection: Секция
+    paletteSectionHint: Сворачиваемый блок страницы с заголовком
+    paletteGroup: Группа полей
+    paletteGroupHint: Карточка с заголовком, объединяющая элементы
+    paletteField: Поле
+    paletteFieldHint: 'Одно значение: текст, число, рейтинг, выбор, формула…'
+    paletteTable: Таблица
+    paletteTableHint: Строки значений с общими колонками
+    paletteList: Список
+    paletteListHint: 'Записи добавляются по одной: свои, навыки, достоинства, снаряжение…'
+    paletteTracker: Трекер
+    paletteTrackerHint: Уровни здоровья или повреждений со штрафами
+    valueSource: Где хранится значение
+    sourceCustom: Своё значение (в шаблоне)
+    sourceTraits: Характеристики
+    sourceResources: Ресурсы
+    sourceDetails: Сведения о персонаже
+    sourceTypeLocked: Тип определяется значением листа персонажа.
+    listSource: Записи
+    listSourceCustom: Свои записи
+    listSourceSystem: Списки персонажа
+    listSourceEquipment: Снаряжение
+    trackerSource: Отслеживает
+    gripHandle: Рукоять перемещения — потяните, чтобы передвинуть
+    groupTitle: Название группы
+    docsLink: Ссылка на документацию (необязательно)
+    groupCollapsible: Сворачиваемая (состояние запоминается)
+    tableTitle: Название таблицы (необязательно)
+    listTitle: Заголовок списка (необязательно)
+    tableValueKey: Общий ключ значения (строки таблицы)
+    listColumns: Колонки
+    listCustomKey: Ключ значения списка
+    formula: Формула
+    formulaPlaceholder: например, passion + self-control
+    maxFrom: Максимум из значения или формулы (необязательно)
+    maxFromPlaceholder: например, willpower.max
+    cannotMoveIntoItself: Элемент нельзя переместить внутрь самого себя.
+    layoutHeading: Раскладка
+    columnPlacement: Колонка в родителе
+    columnAuto: Авто
+    equalWidths: Колонки одинаковой ширины
+    columnWidth: Ширина колонки {index}
+    columnWidthsHint: 'Ширины пропорциональны: 2 и 1 делают первую колонку вдвое шире.'
+    showTitle: Показывать заголовок
+    hiddenTitleHint: Группу без видимого заголовка нельзя свернуть.
+    showLabel: Показывать подпись
+    placeholderText: Текст-подсказка (необязательно)
+    formulaPrefix: Перед значением (например, ×)
+    formulaSuffix: После значения (например, м)
+    primitivePart: Редактирует
+    partCurrent: Текущее значение
+    partMax: Максимум
+    minFrom: Минимум из значения или формулы (необязательно)
+    minFromPlaceholder: например, self-control
+    listShowTitle: Показывать заголовок списка
+    listFramed: Рамка вокруг списка
+    invalidFormula: Неверная формула в «{id}» — проверьте выражение.
+    unknownCoordinate: Неизвестное значение «{id}» в формуле.
+    circularDependency: 'Обнаружена циклическая зависимость: {id}'
+    unknownBinding: Неизвестная привязка к данным «{id}» для этого типа документа.
+    unknownCatalog: Неизвестный каталог или поле каталога «{id}».
+    unknownFillTarget: Автозаполнение ссылается на несуществующее поле «{id}».
+    unknownLabelMessage: Неизвестная ссылка на перевод «{id}».
+    depthMessage: Достигнут предел вложенности — максимум {limit} уровней.
+    countMessage: Достигнут предел элементов — максимум {limit}.
+fieldTypes:
+    builtIn: Встроенная часть страницы
+    text: Текст
+    number: Число
+    toggle: Переключатель
+    select: Выбор
+    rating: Рейтинг
+    resource: Ресурс
+    reference: Ссылка на документ
+    image: Изображение
+    formula: Вычисляемое значение (только чтение)
+    table: Таблица
+    fields: Группа полей
+    section: Секция
+    group: Группа полей
+    list: Кастомный список
+defaults:
+    other: Прочее
+    portrait: Портрет
+    physical: Физические
+    social: Социальные
+    mental: Ментальные
+    talents: Таланты
+    skills: Навыки
+    knowledges: Знания
+    customTalents: Свои таланты
+    customSkills: Свои навыки
+    customKnowledges: Свои знания
+    advantages: Преимущества
+    force: Сила
+    forceSkills: Силовые навыки
+    darkSideResistance: Сопротивление Тёмной Стороне
+    forcePowers: Силы Силы
+    derivedStats: Производные показатели
+    initiativeStandard: Инициатива (обыч.)
+    initiativeLightsaber: Инициатива (свет. меч)
+    maxForcePoints: Макс. Очки Силы
+    resolve: Стойкость
+    body: Тело
+    inventory: Инвентарь
+    implants: Импланты и кибернетика
+    jumpingDistance: Дальность прыжка
+    runningSpeed: Скорость бега
+    experience: Опыт
+    experienceTotal: Всего опыта
+    experienceSpent: Потрачено
+    experienceAvailable: Доступно
+    freePoints: Свободные очки
+page:
+    embedNoDocument: Создайте или откройте персонажа, чтобы заполнить эту часть листа прямо здесь.
+    fallbackTitle: Страница шаблона недоступна
+    fallbackDescription: Назначенный шаблон отсутствует. Показана стандартная страница — можно выбрать другую ниже.
+    requiredUnfilled: 'Не заполнено обязательных полей: {count}.'
+    primitiveDegraded: 'Привязка «{binding}» недоступна на этом устройстве.'
+    formulaDegraded: 'Невозможно вычислить «{field}»: {reason}.'
+    formulaReasonUnknown: значение «{coordinate}» недоступно
+    formulaReasonCircular: циклическая зависимость
+    formulaReasonDivision: деление на ноль
+    formulaReasonNonNumeric: одно из значений — не число
+    formulaClamped: Ограничено связанным значением
+    imageInvalid: Источник изображения недоступен или небезопасен.
+    imageUpload: Загрузить изображение
+    imageUrl: URL изображения
+    imageRemove: Удалить изображение
+    imageAlt: Изображение шаблона
+binding:
+    attach: Привязать каталог
+    catalog: Каталог
+    fills: Автозаполнение
+    fillTarget: Записывать в
+    disabled: Выкл
+    degraded: Каталог «{catalog}» недоступен на этом устройстве — поле использует ручной список.
+transfer:
+    exportSuccess: Шаблон «{title}» экспортирован
+    import: Импорт шаблона
+    importTitle: Импортировать шаблон страницы из JSON
+    importLabel: Файл шаблона
+    importSuccess: Шаблон «{title}» импортирован
+    importError: Не удалось импортировать «{filename}»
+    importErrorFormat: Не удалось импортировать «{filename}» — это не файл шаблона TTGamer.
+    importErrorVersion: Не удалось импортировать «{filename}» — файл создан в другой версии формата шаблонов.
+    importErrorSchema: Не удалось импортировать «{filename}» — структура шаблона повреждена.
+    conflictTitle: Шаблон уже существует
+    conflictPrompt: Заменить, импортировать копию с новым ID или отменить.
+    degradedReport: 'Некоторые каталоги недоступны — поля переведены на ручные списки: {fields}'
+cohort:
+    members: Участники
+    member: Участник {label}
+    addMember: Добавить участника
+    removeMember: Удалить участника {label}
+    memberLabel: Метка участника
+    defeated: Выведен из боя
+    penalty: Штраф
+    level: Уровень
+    trackLength: Уровни здоровья
+    maxMembersReached: В группе может быть не больше {count} участников.
+    removeTitle: Удалить раненого участника?
+    removeDescription: У участника {label} отмечены повреждения. Удаление сотрёт их.
+    shortenTitle: Сократить шкалу здоровья?
+    shortenDescription: У некоторых участников есть отметки на скрываемых уровнях. Они перейдут на последний оставшийся уровень.
+    confirm: Подтвердить
+    cancel: Отмена
+reference:
+    search: Введите имя для поиска
+    noMatches: Подходящих документов нет
+    remove: Убрать «{title}»
+    open: Открыть «{title}»
+    missing: Связанный документ больше не существует
+entities:
+    identification: Идентификация
+    details: Подробности
+    descriptionLabel: Описание
+    source: Источник
+    movement: Передвижение
+    threatTier: Уровень угрозы
+    tierNamed: Именной
+    tierFodder: Статист
+    soak: Поглощение
+    soaksLethal: Поглощает летальный урон
+    cannotSoakLethal: Не поглощает летальный урон
+    speciesCatalog: Запись бестиария
+    modelCatalog: Модель из каталога
+    armorCatalog: Броня из каталога
+    scaleReference: Справка по масштабам
+    scaleReferenceText: Каждая ступень масштаба между атакующим и целью даёт более крупному участнику +1 к сложности попадания и −1 к урону; меньшему — наоборот.
+    category: Категория
+    durabilityReroll: Переброс десяток на прочность
+    crewCapacity: Экипаж и вместимость
+    systemSlots: Системные слоты
+    system: Система
+    damaged: Повреждена
+    crewStations: Посты экипажа
+    pilot: Пилот
+    copilot: Второй пилот
+    gunners: Стрелки
+    engineer: Инженер
+    sensors: Сенсоры
+    comms: Связь
+    modifications: Модификации и особенности
+    modification: Модификация
+    effect: Эффект
+    quirk: Особенность
+    group: Группа
+    leader: Командир
+    traits: Характеристики
+    quickPools: Быстрые пулы
+    specialtyPool: Профильный пул
+    secondaryPool: Второстепенный пул
+    lethal: Летальный
+    bashing: Ударный
+    arcFront: Перед
+    arcRear: Зад
+    arcLeft: Левый борт
+    arcRight: Правый борт
+    arcTurret: Турель
+    arcAll: Все
+    pools: Пулы
+    creatureSheet: Лист существа
+    creatureBrief: Краткий лист существа
+    vehicleSheet: Лист транспорта
+    vehicleBrief: Краткий лист транспорта
+    fodderSheet: Лист группы статистов
+    fodderBrief: Краткий лист группы статистов
+    soakAll: Поглощение (летальный и ударный)
+    soakBashingOnly: Поглощение (только ударный)

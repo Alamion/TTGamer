@@ -63,28 +63,16 @@
         "message": "Мир Тьмы",
         "description": "The label for category 'World of Darkness' in sidebar 'docsSidebar'"
     },
-    "sidebar.docsSidebar.category.Персонаж": {
-        "message": "Персонаж",
-        "description": "The label for category 'Персонаж' in sidebar 'docsSidebar'"
+    "sidebar.docsSidebar.category.sw-wod": {
+        "message": "Звёздные Войны WoD 2e",
+        "description": "The label for category 'Star Wars WoD 2e' in sidebar 'docsSidebar'"
     },
-    "sidebar.docsSidebar.category.Этапы создания": {
+    "sidebar.docsSidebar.category.sw-wod-creation-steps": {
         "message": "Этапы создания",
-        "description": "The label for category 'Этапы создания' in sidebar 'docsSidebar'"
+        "description": "The label for category 'Creation Steps' in sidebar 'docsSidebar'"
     },
-    "sidebar.docsSidebar.category.Бой": {
-        "message": "Бой",
-        "description": "The label for category 'Бой' in sidebar 'docsSidebar'"
-    },
-    "sidebar.docsSidebar.category.Существа": {
-        "message": "Существа",
-        "description": "The label for category 'Существа' in sidebar 'docsSidebar'"
-    },
-    "sidebar.docsSidebar.category.Транспорт и механизмы": {
-        "message": "Транспорт и механизмы",
-        "description": "The label for category 'Транспорт и механизмы' in sidebar 'docsSidebar'"
-    },
-    "sidebar.docsSidebar.category.Ведущий игры": {
-        "message": "Ведущий игры",
-        "description": "The label for category 'Ведущий игры' in sidebar 'docsSidebar'"
+    "sidebar.docsSidebar.category.sw-wod-creation-steps.link.generated-index.description": {
+        "message": "Пошаговое руководство по созданию персонажа для Star Wars WoD 2e.",
+        "description": "The generated-index page description for category 'Creation Steps' in sidebar 'docsSidebar'"
     }
 }

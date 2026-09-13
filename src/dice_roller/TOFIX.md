@@ -23,16 +23,33 @@ See root `TOFIX.md` — cross-cutting issue. Dice roller owns the UI components 
 
 ---
 
+## 🟡 High
+
+### Three.js resource ownership and disposal
+
+`ResourceTracker` does not consistently attach a single geometry/material child to its parent ownership map, and scene removal paths do not always dispose owned GPU resources. Repeated rolls and resizes can therefore retain buffers, materials, or textures.
+
+**Files:** `dice-logic/renderer/resource.ts`, `scene.ts`, and `renderer.ts`
+
+**Fix prerequisites:** define shared-resource ownership/reference counting, route removal through one release operation, add fake disposable-resource tests, then run a manual repeated-roll/resize stress check. Do not blindly dispose shared materials while live dice still reference them.
+
+## 🟢 Medium
+
+### Nested-parenthesis notation merge
+
+`mergeDiceNotation` merges into the first nested-parenthesis group via a regex that stops at the first `)`. Deeply nested input such as `((3d10+1d10)>=6)` can become unbalanced. The dice UI currently generates single-level groups, so this is limited to manually typed notation.
+
+## ⬜ Low
+
+### High-refresh-rate settling
+
+Dice can still disappear before settling on 165 Hz+ displays. CCD threshold/radius remains commented out in `shapes.ts`; reproduce and profile before changing physics parameters.
+
+---
+
 ## ✅ Done
 
 - `buildDiscordHistoryMessage` type hack (`undefined as unknown as string`) — FIXED: `details`/`formatted` made optional
 - `sessionStorage.ts` — empty catch blocks now log warnings
 - `Root.tsx` inline roll toast — extracted to `RollToastContent` component
 - `mergeDiceNotation` edge cases not tested — DONE: added tests for `d%`, fudge dice, custom faces, and new-die-modifier-wins behavior in `tests/dice_roller/logic/notation-utils.test.ts`
-
----
-
-## ℹ️ Pre-existing
-
-- 3D dice disappearing before all stop on high-refresh displays — partially mitigated, CCD threshold commented out
-- `mergeDiceNotation` merges into the _first_ nested-paren group via a regex that stops at the first `)`, so deeply nested groups (e.g. `((3d10+1d10)>=6)`) can produce unbalanced output. Only reachable via manually typed notation; the dice UI generates single-level groups.

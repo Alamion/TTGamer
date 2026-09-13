@@ -1,0 +1,18 @@
+strength:
+    name: Сила
+dexterity:
+    name: Ловкость
+stamina:
+    name: Выносливость
+charisma:
+    name: Харизма
+manipulation:
+    name: Манипулирование
+appearance:
+    name: Внешность
+perception:
+    name: Восприятие
+intelligence:
+    name: Интеллект
+wits:
+    name: Сообразительность

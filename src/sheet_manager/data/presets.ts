@@ -88,12 +88,13 @@ export const JAX_VORN_PRESET: BaseCharacter = {
         { id: 'merit-practiced', label: 'Practiced: Blaster', points: 2 },
     ],
     flaws: [
-        { id: 'flaw-softhearted', label: 'Soft-Hearted', points: -1 },
-        { id: 'flaw-enemy', label: 'Enemy: Crimson Dawn', points: -3 },
+        { id: 'flaw-softhearted', label: 'Soft-Hearted', points: 1 },
+        { id: 'flaw-enemy', label: 'Enemy: Crimson Dawn', points: 3 },
     ],
     willpower: { current: 5, max: 5 },
     forcePoints: { current: 0, max: 3 },
     darkSideResistance: 6,
+    forcePowerItems: [],
     health: {
         levels: ['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'],
     },

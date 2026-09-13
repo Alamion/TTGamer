@@ -1,0 +1,331 @@
+library:
+    button: Templates
+    buttonTitle: Manage character page templates
+    title: Page templates
+    empty: No templates yet. Create one to get started.
+    new: New template
+    edit: Edit
+    duplicate: Duplicate
+    delete: Delete
+    export: Export
+    kind: Kind
+    unnamedKind: Other
+    defaultBadge: Default
+    modifiedBadge: Modified
+    reset: Reset to original
+    resetConfirmTitle: Reset this default template?
+    resetConfirmDescription: '"{name}" will be restored to its original structure. Assigned documents keep all their data.'
+    deleteRefused: '"{name}" is a default page — it cannot be deleted. Duplicate it instead.'
+    duplicateId: '"{id}" is a built-in page — templates need their own identifier.'
+    incompatibleBadge: Incompatible format
+    incompatibleHint: Saved in a previous template format. Kept for recovery only — recreate it with the new editor.
+primitives:
+    groupIdentity: Identity fields
+    groupTrait: Traits
+    groupList: Custom lists
+    groupResource: Resources
+    groupTrack: Condition tracks
+    binding: Data binding
+    boundTo: 'Bound to: {binding}'
+    labelOverride: Label override
+    labelOverridePlaceholder: Same as binding label
+    compact: Compact (brief format)
+    trackLevels: Levels
+    trackLevelName: 'Level {index} name'
+    presets: Preset entries
+    presetLabel: Entry label
+    presetValue: Default value
+    addPreset: Add preset
+    removePreset: Remove preset
+    degraded: 'Data binding "{binding}" is unavailable on this device.'
+editor:
+    visibleWhen: Show only when a value matches
+    visibleWhenCoordinate: Value key
+    visibleWhenOperator: Comparison
+    visibleWhenValue: Value
+    startsCollapsed: Starts collapsed
+    untitledName: Untitled template
+    name: Name
+    namePlaceholder: Template name
+    descriptionLabel: Description
+    descriptionPlaceholder: What is this page for?
+    sections: Sections
+    addSection: Add section
+    addFieldsBlock: Add field group
+    addTableBlock: Add table
+    addField: Add field
+    addOption: Add option
+    addRow: Add row
+    sectionTitle: Section title
+    blockTitle: Block title (optional)
+    fieldLabel: Field label
+    valueKeyLabel: Shared value key (fields with the same key share one value)
+
+    fieldDescription: Help text (optional)
+    fieldType: Field type
+    fieldRequired: Required (advisory marker)
+    columns: Columns
+    minRows: Min rows
+    maxRows: Max rows
+    options: Options
+    optionLabel: Option label
+    numberMin: Min
+    numberMax: Max
+    numberStep: Step
+    multiline: Multiline
+    presentation: Presentation
+    accentColor: Accent color
+    accentPrimary: Primary accent
+    accentSecondary: Secondary accent
+    ratingDots: Dots
+    ratingBoxes: Boxes
+    ratingNumber: Number
+    referenceKinds: Allowed document kinds
+    multiple: Allow multiple values
+    moveUp: Move up
+    moveDown: Move down
+    remove: Remove
+    removeConfirmTitle: Discard changes?
+    removeConfirmDescription: You have unsaved edits. Discard them?
+    discard: Discard
+    save: Save
+    cancel: Cancel
+    duplicateId: Duplicate identifier "{id}" — identifiers must be unique within their scope.
+    collapse: Collapse section
+    expand: Expand section
+    invalidKey: Invalid key "{id}" — use lowercase letters, digits, and dashes.
+    limitReached: Limit reached — {limit} {subject} maximum.
+    invalidBounds: Minimum cannot exceed maximum.
+    emptyName: Template name is required.
+    emptyLabel: Every section and field needs a non-empty label.
+    addElement: Add element
+    paletteSection: Section
+    paletteSectionHint: Collapsible page block with a heading
+    paletteGroup: Field group
+    paletteGroupHint: Titled card that groups elements
+    paletteField: Field
+    paletteFieldHint: 'One value: text, number, rating, choice, formula…'
+    paletteTable: Table
+    paletteTableHint: Rows of values sharing the same columns
+    paletteList: List
+    paletteListHint: 'Entries added one by one: custom, skills, merits, equipment…'
+    paletteTracker: Tracker
+    paletteTrackerHint: Health or damage levels with penalties
+    valueSource: Stores value in
+    sourceCustom: Custom value (this template)
+    sourceTraits: Traits
+    sourceResources: Resources
+    sourceDetails: Character details
+    sourceTypeLocked: The type follows the character sheet value.
+    listSource: Entries
+    listSourceCustom: Custom entries
+    listSourceSystem: Character lists
+    listSourceEquipment: Equipment
+    trackerSource: Tracks
+    gripHandle: Drag handle — grab to move
+    groupTitle: Group title
+    docsLink: Documentation link (optional)
+    groupCollapsible: Collapsible (expanded state is remembered)
+    tableTitle: Table title (optional)
+    listTitle: List title (optional)
+    tableValueKey: Shared value key (table rows)
+    listColumns: Columns
+    listCustomKey: List value key
+    formula: Formula
+    formulaPlaceholder: e.g. passion + self-control
+    maxFrom: Maximum from value or formula (optional)
+    maxFromPlaceholder: e.g. willpower.max
+    cannotMoveIntoItself: An element cannot be moved inside itself.
+    layoutHeading: Layout
+    columnPlacement: Column in parent
+    columnAuto: Auto
+    equalWidths: Equal column widths
+    columnWidth: Column {index} width
+    columnWidthsHint: 'Widths are proportional: 2 and 1 make the first column twice as wide.'
+    showTitle: Show title
+    hiddenTitleHint: A group without a visible title cannot be collapsed.
+    showLabel: Show label
+    placeholderText: Placeholder text (optional)
+    formulaPrefix: Before value (e.g. ×)
+    formulaSuffix: After value (e.g. m)
+    primitivePart: Edits
+    partCurrent: Current value
+    partMax: Maximum
+    minFrom: Minimum from value or formula (optional)
+    minFromPlaceholder: e.g. self-control
+    listShowTitle: Show list title
+    listFramed: Draw a border around the list
+    invalidFormula: Invalid formula in "{id}" — check the expression.
+    unknownCoordinate: Unknown value "{id}" referenced by a formula.
+    circularDependency: 'Circular dependency detected: {id}'
+    unknownBinding: Unknown data binding "{id}" for this document kind.
+    unknownCatalog: Unknown catalog or catalog detail "{id}".
+    unknownFillTarget: 'Auto-fill targets a field that does not exist: "{id}".'
+    unknownLabelMessage: Unknown translation reference "{id}".
+    depthMessage: Nesting limit reached — {limit} levels maximum.
+    countMessage: Element limit reached — {limit} elements maximum.
+fieldTypes:
+    builtIn: Built-in page part
+    text: Text
+    number: Number
+    toggle: Toggle
+    select: Choice
+    rating: Rating
+    resource: Resource
+    reference: Document reference
+    image: Image
+    formula: Derived value (read-only)
+    table: Table
+    fields: Field group
+    section: Section
+    group: Field group
+    list: Custom list
+defaults:
+    other: Other
+    portrait: Portrait
+    physical: Physical
+    social: Social
+    mental: Mental
+    talents: Talents
+    skills: Skills
+    knowledges: Knowledges
+    customTalents: Custom talents
+    customSkills: Custom skills
+    customKnowledges: Custom knowledges
+    advantages: Advantages
+    force: Force
+    forceSkills: Force Skills
+    darkSideResistance: Dark Side Resistance
+    forcePowers: Force Powers
+    derivedStats: Derived Stats
+    initiativeStandard: Initiative (Std)
+    initiativeLightsaber: Initiative (Saber)
+    maxForcePoints: Max Force Points
+    resolve: Resolve
+    body: Body
+    inventory: Inventory
+    implants: Implants & Cyberware
+    jumpingDistance: Jumping Distance
+    runningSpeed: Running Speed
+    experience: Experience
+    experienceTotal: Total XP
+    experienceSpent: Spent
+    experienceAvailable: Available
+    freePoints: Free points
+page:
+    embedNoDocument: Create or open a character to fill in this part of the sheet here.
+    fallbackTitle: Template page unavailable
+    fallbackDescription: The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.
+    requiredUnfilled: '{count} required field(s) are still empty.'
+    primitiveDegraded: 'Data binding "{binding}" is unavailable on this device.'
+    formulaDegraded: 'Cannot compute "{field}": {reason}.'
+    formulaReasonUnknown: value "{coordinate}" is unavailable
+    formulaReasonCircular: circular dependency
+    formulaReasonDivision: division by zero
+    formulaReasonNonNumeric: a referenced value is not a number
+    formulaClamped: Limited by a linked value
+    imageInvalid: This image source is unavailable or insecure.
+    imageUpload: Upload image
+    imageUrl: Image URL
+    imageRemove: Remove image
+    imageAlt: Template image
+binding:
+    attach: Attach catalog
+    catalog: Catalog
+    fills: Auto-fill mapping
+    fillTarget: Fill into
+    disabled: Off
+    degraded: Catalog "{catalog}" is unavailable on this device — this field now uses a manual list.
+transfer:
+    exportSuccess: Exported template "{title}"
+    import: Import template
+    importTitle: Import a page template from JSON
+    importLabel: Import template file
+    importSuccess: Imported template "{title}"
+    importError: Failed to import "{filename}"
+    importErrorFormat: Failed to import "{filename}" — not a TTGamer template file.
+    importErrorVersion: Failed to import "{filename}" — the file was made by a different template format version.
+    importErrorSchema: Failed to import "{filename}" — the template structure is invalid.
+    conflictTitle: Template already exists
+    conflictPrompt: Replace it, import a duplicate with a new ID, or cancel this file.
+    degradedReport: Some catalogs are unavailable here — these fields fell back to manual lists - {fields}
+cohort:
+    members: Members
+    member: Member {label}
+    addMember: Add member
+    removeMember: Remove member {label}
+    memberLabel: Member label
+    defeated: Out of the fight
+    penalty: Penalty
+    level: Level
+    trackLength: Health levels
+    maxMembersReached: A group can have at most {count} members.
+    removeTitle: Remove damaged member?
+    removeDescription: Member {label} has recorded damage. Removing it deletes that damage.
+    shortenTitle: Shorten the health track?
+    shortenDescription: Some members have damage on levels that will be hidden. Their marks move to the last remaining level.
+    confirm: Confirm
+    cancel: Cancel
+reference:
+    search: Type a name to search
+    noMatches: No matching documents
+    remove: Remove {title}
+    open: Open {title}
+    missing: Linked document no longer exists
+entities:
+    identification: Identification
+    details: Details
+    descriptionLabel: Description
+    source: Source
+    movement: Movement
+    threatTier: Threat tier
+    tierNamed: Named
+    tierFodder: Fodder
+    soak: Soak
+    soaksLethal: Soaks lethal damage
+    cannotSoakLethal: Cannot soak lethal damage
+    speciesCatalog: Bestiary entry
+    modelCatalog: Catalog model
+    armorCatalog: Catalog armor
+    scaleReference: Scale reference
+    scaleReferenceText: Each scale step between attacker and target adds +1 difficulty to hit for the larger combatant and −1 to damage; the smaller combatant gets the reverse.
+    category: Category
+    durabilityReroll: Reroll 10s on Durability
+    crewCapacity: Crew & capacity
+    systemSlots: System slots
+    system: System
+    damaged: Damaged
+    crewStations: Crew stations
+    pilot: Pilot
+    copilot: Co-pilot
+    gunners: Gunners
+    engineer: Engineer
+    sensors: Sensors
+    comms: Comms
+    modifications: Modifications & quirks
+    modification: Modification
+    effect: Effect
+    quirk: Quirk
+    group: Group
+    leader: Leader
+    traits: Traits
+    quickPools: Quick pools
+    specialtyPool: Specialty pool
+    secondaryPool: Secondary pool
+    lethal: Lethal
+    bashing: Bashing
+    arcFront: Front
+    arcRear: Rear
+    arcLeft: Left
+    arcRight: Right
+    arcTurret: Turret
+    arcAll: All
+    pools: Pools
+    creatureSheet: Creature sheet
+    creatureBrief: Creature brief
+    vehicleSheet: Vehicle sheet
+    vehicleBrief: Vehicle brief
+    fodderSheet: Fodder group sheet
+    fodderBrief: Fodder group brief
+    soakAll: Soak (lethal and bashing)
+    soakBashingOnly: Soak (bashing only)

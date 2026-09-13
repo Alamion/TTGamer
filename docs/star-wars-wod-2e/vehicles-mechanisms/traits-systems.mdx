@@ -6,6 +6,7 @@ title: Vehicle Traits & Systems
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
 import { ScaleChart } from '/src/shared/components/ScaleChart';
+import { TemplatePreview, exampleDocument } from '/src/sheet_manager/docsEmbeds';
 
 # Vehicle Traits & Systems
 
@@ -202,66 +203,27 @@ A vehicle uses a simplified sheet with these sections:
 
 ### Example: X-wing Starfighter
 
-| Field               | Value                                                                                   |
-| ------------------- | --------------------------------------------------------------------------------------- |
-| **Name**            | Red Five                                                                                |
-| **Model**           | Incom T-65 X-wing                                                                       |
-| **Scale**           | Starfighter                                                                             |
-| **Crew**            | 1 + astromech droid                                                                     |
-| **Length**          | 12.5m                                                                                   |
-| **Cargo**           | 110kg                                                                                   |
-| **Passengers**      | 0                                                                                       |
-| **Consumables**     | 1 week                                                                                  |
-| **Durability**      | 4D                                                                                      |
-| **Maneuverability** | 3D                                                                                      |
-| **Speed**           | 11 (1,050 kmh)                                                                          |
-| **Altitude**        | space                                                                                   |
-| **Comm/Sensors**    | 2D (range 25)                                                                           |
-| **Hyperdrive**      | 3 (×1) / astromech nav comp                                                             |
-| **Shields**         | 2D                                                                                      |
-| **Weapons**         | 4 laser cannons (front, range 12, 8D); 2 proton torpedo launchers (front, range 3, 11D) |
+<TWWrapper>
+    <TemplatePreview template="vehicle-sheet" document={exampleDocument('red-five::preset')} />
+</TWWrapper>
 
 ### Example: Luke's Landspeeder
 
-| Field               | Value              |
-| ------------------- | ------------------ |
-| **Name**            | Luke's Landspeeder |
-| **Model**           | SoroSuub X-34      |
-| **Scale**           | Speeder            |
-| **Crew**            | 1                  |
-| **Length**          | 3.4m               |
-| **Cargo**           | 100kg              |
-| **Passengers**      | 1                  |
-| **Consumables**     | 1 day              |
-| **Durability**      | 2D                 |
-| **Maneuverability** | 3D                 |
-| **Speed**           | 4 (400 kmh)        |
-| **Altitude**        | 1m                 |
-| **Comm/Sensors**    | —                  |
-| **Hyperdrive**      | —                  |
-| **Shields**         | —                  |
-| **Weapons**         | None               |
+<TWWrapper>
+    <TemplatePreview
+        template="vehicle-brief"
+        document={exampleDocument('lukes-landspeeder::preset')}
+    />
+</TWWrapper>
 
 ### Example: Millennium Falcon
 
-| Field               | Value                                                                                                                                                    |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Name**            | Millennium Falcon                                                                                                                                        |
-| **Model**           | Corellian YT-1300                                                                                                                                        |
-| **Scale**           | Transport                                                                                                                                                |
-| **Crew**            | 2 (+ 2 gunners; skeleton 1)                                                                                                                              |
-| **Length**          | 26.7m                                                                                                                                                    |
-| **Cargo**           | 100 metric tons (10% in hidden compartments)                                                                                                             |
-| **Passengers**      | 6                                                                                                                                                        |
-| **Consumables**     | 2 months                                                                                                                                                 |
-| **Durability**      | 4D (reroll 10s)                                                                                                                                          |
-| **Maneuverability** | 4D                                                                                                                                                       |
-| **Speed**           | 12 (1,200 kmh)                                                                                                                                           |
-| **Altitude**        | space                                                                                                                                                    |
-| **Comm/Sensors**    | 4D (range 60)                                                                                                                                            |
-| **Hyperdrive**      | 5 (×0.5) / full nav comp                                                                                                                                 |
-| **Shields**         | 3D                                                                                                                                                       |
-| **Weapons**         | 2 quad laser cannons (turret, range 12, 8D); 2 concussion missile launchers (front, range 3, 11D); 1 blaster cannon (turret, range 1, 5D, Speeder scale) |
+<TWWrapper>
+    <TemplatePreview
+        template="vehicle-brief"
+        document={exampleDocument('millennium-falcon::preset')}
+    />
+</TWWrapper>
 
 ---
 
@@ -297,7 +259,7 @@ A vehicle operating without a full crew suffers penalties:
 
 ## Next Steps
 
-- [Durability, Damage & Repair](./durability-damage-repare.mdx) — Vehicle damage track, soak rules, repair mechanics
+- [Durability, Damage & Repair](./durability-damage-repair.mdx) — Vehicle damage track, soak rules, repair mechanics
 - [Space Combat](./space-combat.mdx) — Dogfighting, Gunnery vs. Pilot, capital ship battles
 - [Modifications](./modifications.mdx) — Customization background, attribute trade-offs, upgrade costs
 - [Combat Scales](../combat/combat-scales.mdx) — Scale ladder and cross-scale combat modifiers

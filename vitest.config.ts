@@ -1,13 +1,23 @@
-import { defineConfig } from 'vitest/config';
 import path from 'path';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     resolve: {
         alias: {
             '@site': path.resolve(__dirname),
+            '@docusaurus/Translate': path.resolve(__dirname, 'tests/stubs/docusaurus.ts'),
+            '@docusaurus/useDocusaurusContext': path.resolve(
+                __dirname,
+                'tests/stubs/docusaurusContext.ts'
+            ),
         },
     },
     test: {
-        include: ['tests/**/*.test.ts'],
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'html'],
+        },
+        include: ['tests/**/*.test.{ts,tsx}'],
+        setupFiles: ['tests/setup/sheetIssues.ts'],
     },
 });

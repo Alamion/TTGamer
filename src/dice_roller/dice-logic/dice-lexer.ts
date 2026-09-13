@@ -1,4 +1,6 @@
 import moo, { type Lexer, type Token } from 'moo';
+
+import { MAX_CUSTOM_FACE_COUNT } from '../utils/constants';
 import type { TokenType } from './types';
 
 const lexer: Lexer = moo.compile({
@@ -87,13 +89,30 @@ function parseCustomFaces(text: string): number[] {
             if (!isNaN(start) && !isNaN(end)) {
                 const min = Math.min(start, end);
                 const max = Math.max(start, end);
+                if (max - min + 1 > MAX_CUSTOM_FACE_COUNT) {
+                    throw new RangeError(
+                        `Custom dice may contain at most ${MAX_CUSTOM_FACE_COUNT} faces`
+                    );
+                }
                 for (let i = min; i <= max; i++) {
                     result.push(i);
+                    if (result.length > MAX_CUSTOM_FACE_COUNT) {
+                        throw new RangeError(
+                            `Custom dice may contain at most ${MAX_CUSTOM_FACE_COUNT} faces`
+                        );
+                    }
                 }
             }
         } else {
             const n = parseInt(p, 10);
-            if (!isNaN(n)) result.push(n);
+            if (!isNaN(n)) {
+                result.push(n);
+                if (result.length > MAX_CUSTOM_FACE_COUNT) {
+                    throw new RangeError(
+                        `Custom dice may contain at most ${MAX_CUSTOM_FACE_COUNT} faces`
+                    );
+                }
+            }
         }
     }
     return result;

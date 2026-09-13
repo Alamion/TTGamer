@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { parseToAST, validateNotation } from '@site/src/dice_roller/dice-logic';
+import { parseToAST, validateNotation } from '@site/src/dice_roller/dice-logic/dice-parser';
 import type {
     ASTNode,
-    DiceGroupNode,
     BinaryOpNode,
+    DiceGroupNode,
     ParenthesizedNode,
-} from '@site/src/dice_roller/dice-logic';
+} from '@site/src/dice_roller/dice-logic/types';
+import { describe, expect, it } from 'vitest';
 
 function asDice(node: unknown): DiceGroupNode {
     if (

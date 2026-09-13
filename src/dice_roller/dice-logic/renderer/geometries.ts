@@ -1,3 +1,4 @@
+import { debug } from '@site/src/shared/utils/logging';
 import { Body, ConvexPolyhedron, Vec3 } from 'cannon-es';
 import {
     BufferGeometry,
@@ -8,7 +9,7 @@ import {
     Texture,
     Vector3,
 } from 'three';
-import { debug } from '@site/src/shared/utils/logging';
+
 import { fixBrightness } from '../../utils/recolor_svg';
 
 const MATERIAL_OPTIONS = {

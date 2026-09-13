@@ -1,5 +1,7 @@
 import type { FC } from 'react';
+
 import {
+    DiceD2,
     DiceD4,
     DiceD6,
     DiceD8,
@@ -7,7 +9,6 @@ import {
     DiceD12,
     DiceD20,
     DiceD100,
-    DiceD2,
     DiceDF,
 } from './2d_dices';
 
@@ -20,28 +21,29 @@ export interface DiceConfig {
         style?: React.CSSProperties;
         className?: string;
     }>;
-    label: string;
+    /** Text drawn on each physical die. A logical d100 is illustrated by two d10s. */
+    faceLabel: string;
 }
 
 export const standardDice: DiceConfig[] = [
-    { notation: 'd2', Component: DiceD2, label: 'd2' },
-    { notation: 'd4', Component: DiceD4, label: 'd4' },
-    { notation: 'd6', Component: DiceD6, label: 'd6' },
-    { notation: 'd8', Component: DiceD8, label: 'd8' },
-    { notation: 'd10', Component: DiceD10, label: 'd10' },
-    { notation: 'd100', Component: DiceD100, label: 'd10' },
-    { notation: 'd12', Component: DiceD12, label: 'd12' },
-    { notation: 'd20', Component: DiceD20, label: 'd20' },
-    { notation: 'dF', Component: DiceDF, label: 'dF' },
+    { notation: 'd2', Component: DiceD2, faceLabel: 'd2' },
+    { notation: 'd4', Component: DiceD4, faceLabel: 'd4' },
+    { notation: 'd6', Component: DiceD6, faceLabel: 'd6' },
+    { notation: 'd8', Component: DiceD8, faceLabel: 'd8' },
+    { notation: 'd10', Component: DiceD10, faceLabel: 'd10' },
+    { notation: 'd100', Component: DiceD100, faceLabel: 'd10' },
+    { notation: 'd12', Component: DiceD12, faceLabel: 'd12' },
+    { notation: 'd20', Component: DiceD20, faceLabel: 'd20' },
+    { notation: 'dF', Component: DiceDF, faceLabel: 'dF' },
 ];
 
 export const dndDice: DiceConfig[] = [
-    { notation: 'd2', Component: DiceD2, label: 'd2' },
-    { notation: 'd4', Component: DiceD4, label: 'd4' },
-    { notation: 'd6', Component: DiceD6, label: 'd6' },
-    { notation: 'd8', Component: DiceD8, label: 'd8' },
-    { notation: 'd10', Component: DiceD10, label: 'd10' },
-    { notation: 'd100', Component: DiceD100, label: 'd10' },
-    { notation: 'd12', Component: DiceD12, label: 'd12' },
-    { notation: 'd20', Component: DiceD20, label: 'd20' },
+    { notation: 'd2', Component: DiceD2, faceLabel: 'd2' },
+    { notation: 'd4', Component: DiceD4, faceLabel: 'd4' },
+    { notation: 'd6', Component: DiceD6, faceLabel: 'd6' },
+    { notation: 'd8', Component: DiceD8, faceLabel: 'd8' },
+    { notation: 'd10', Component: DiceD10, faceLabel: 'd10' },
+    { notation: 'd100', Component: DiceD100, faceLabel: 'd10' },
+    { notation: 'd12', Component: DiceD12, faceLabel: 'd12' },
+    { notation: 'd20', Component: DiceD20, faceLabel: 'd20' },
 ];

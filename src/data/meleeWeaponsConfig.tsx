@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
+
 import type { MeleeWeaponEntry } from './meleeWeaponsData';
 
 export const MELEE_WEAPONS_COLUMNS: ColumnDef<MeleeWeaponEntry>[] = [

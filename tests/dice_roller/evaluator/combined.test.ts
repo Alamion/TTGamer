@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { parseToAST } from '@site/src/dice_roller/dice-logic/dice-parser';
 import { evaluateDiceAST } from '@site/src/dice_roller/dice-logic/dice-evaluator';
+import { parseToAST } from '@site/src/dice_roller/dice-logic/dice-parser';
+import { rollDices } from '@site/src/dice_roller/dice-logic/dice-roller';
+import { describe, expect, it } from 'vitest';
 
 function mockRandom(...values: number[]): () => number {
     let i = 0;
@@ -45,6 +46,18 @@ describe('Evaluator - combined expressions', () => {
     it('2d10%3 with modulo', () => {
         const result = evaluate('2d10%3', 0.5, 0.9);
         expect(result.total).toBe(1);
+    });
+
+    it('keeps modulo by zero finite', () => {
+        expect(rollDices('2%0').total).toBe(0);
+    });
+
+    it('rejects exponentiation overflow', () => {
+        expect(() => rollDices('99999^99999')).toThrow(/non-finite/);
+    });
+
+    it('rejects excessive numeric literals', () => {
+        expect(() => rollDices('1000000001')).toThrow(/may not exceed/);
     });
 
     it('combined: 2d20kh1 + 4d6kh3 (advantage + keep)', () => {

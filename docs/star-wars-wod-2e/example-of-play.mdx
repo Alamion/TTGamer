@@ -5,8 +5,11 @@ title: Example of Play
 
 import { TWWrapper } from '/src/shared/components/TWWrapper';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
-import { CharacterViewer } from '/src/sheet_manager/components/CharacterViewer';
-import { JAX_VORN_PRESET } from '/src/sheet_manager/data/presets';
+import {
+    JAX_VORN_PRESET,
+    TemplatePreview,
+    presetCharacterDocument,
+} from '/src/sheet_manager/docsEmbeds';
 
 # Example of Play
 
@@ -14,7 +17,9 @@ This walkthrough follows **Jax Vorn**, a Corellian smuggler, through a cantina c
 
 ## Jax Vorn
 
-<CharacterViewer character={JAX_VORN_PRESET} />
+<TWWrapper>
+    <TemplatePreview document={presetCharacterDocument(JAX_VORN_PRESET)} />
+</TWWrapper>
 
 Key stats used in this example:
 

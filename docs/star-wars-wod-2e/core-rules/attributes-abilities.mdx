@@ -9,8 +9,7 @@ import { ABILITIES } from '/src/data/abilities';
 import { ABILITY_COLUMNS, renderAbilityDetail } from '/src/data/abilityConfig';
 import { TWWrapper } from '../../../src/shared/components/TWWrapper';
 import { EntityGrid } from '/src/shared/components/EntityCard';
-import { AttributeBlock } from '../../../src/sheet_manager/features/sheet/components/AttributeBlock';
-import { SkillBlock } from '../../../src/sheet_manager/features/sheet/components/SkillBlock';
+import { TemplateFragment } from '/src/sheet_manager/docsEmbeds';
 import { DataCatalog } from '../../../src/shared/components/DataCatalog';
 
 ## Attributes
@@ -41,7 +40,7 @@ Mental Traits represent your character's total mental capacity, including memory
         getKey={(e) => e.id}
     />
     <br />
-    <AttributeBlock accentColor="secondary" />
+    <TemplateFragment node="attributes" />
 </TWWrapper>
 
 ---
@@ -73,7 +72,7 @@ Knowledges require the rigorous application of the mind, not the body. Only Ment
         id="abilities"
     />
     <br />
-    <SkillBlock accentColor="primary" />
+    <TemplateFragment node="skills" />
 </TWWrapper>
 
 ---

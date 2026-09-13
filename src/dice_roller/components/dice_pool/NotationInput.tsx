@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
 import { Info, Star } from 'lucide-react';
-import { validateNotation } from '../../dice-logic';
+import { useEffect, useRef, useState } from 'react';
+
+import { validateNotation } from '../../dice-logic/dice-parser';
 import { useDiceRollerStore } from '../../store/diceRollerStore';
 
 export default function NotationInput() {

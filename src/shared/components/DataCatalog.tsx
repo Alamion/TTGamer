@@ -1,5 +1,10 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
+import { useHistory, useLocation } from '@docusaurus/router';
+import type {
+    ColumnDef,
+    ColumnFiltersState,
+    PaginationState,
+    SortingState,
+} from '@tanstack/react-table';
 import {
     flexRender,
     getCoreRowModel,
@@ -10,26 +15,23 @@ import {
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import type {
-    ColumnDef,
-    ColumnFiltersState,
-    PaginationState,
-    SortingState,
-} from '@tanstack/react-table';
+import { clsx } from 'clsx';
 import {
+    ChevronDown,
+    ChevronDown as ChevronDownIcon,
     ChevronLeft,
     ChevronRight,
     ChevronUp,
-    ChevronDown,
     Search,
     X,
-    ChevronDown as ChevronDownIcon,
 } from 'lucide-react';
-import { clsx } from 'clsx';
-import { useHistory, useLocation } from '@docusaurus/router';
+import type { ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { deserializeStringList, serializeStringList } from '../utils/stringList';
 import { BottomSheet } from './BottomSheet';
 import { SlidePanel } from './SlidePanel';
-import { useMediaQuery } from '../hooks/useMediaQuery';
 
 type FilterMode = 'single' | 'multi';
 
@@ -237,8 +239,13 @@ export function DataCatalog<T extends { id: string }>({
         return result;
     }, [table, filterConfigs]);
 
-    const handleRowClick = (id: string) => {
+    const toggleDetail = (id: string) => {
         setSelectedId((prev) => (prev === id ? null : id));
+    };
+
+    const getRowLabel = (item: T) => {
+        if ('name' in item && typeof item.name === 'string') return item.name;
+        return getRowId(item);
     };
 
     const getFilterValue = (id: string): string =>
@@ -253,7 +260,7 @@ export function DataCatalog<T extends { id: string }>({
 
     const getSelectedValues = (id: string): string[] => {
         const raw = getFilterValue(id);
-        return raw ? raw.split(',').filter(Boolean) : [];
+        return deserializeStringList(raw);
     };
 
     const upsertColumnFilter = (id: string, value: string) => {
@@ -269,7 +276,7 @@ export function DataCatalog<T extends { id: string }>({
         const next = current.includes(option)
             ? current.filter((v) => v !== option)
             : [...current, option];
-        upsertColumnFilter(id, next.join(','));
+        upsertColumnFilter(id, serializeStringList(next));
     };
 
     const handleSingleFilterChange = (id: string, value: string) => {
@@ -477,29 +484,59 @@ export function DataCatalog<T extends { id: string }>({
                                                     key={header.id}
                                                     scope="col"
                                                     className={clsx(
-                                                        'px-4 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider',
-                                                        header.column.getCanSort() &&
-                                                            'cursor-pointer select-none hover:text-textPrimary transition-colors'
+                                                        'px-4 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider'
                                                     )}
-                                                    onClick={header.column.getToggleSortingHandler()}
+                                                    aria-sort={
+                                                        header.column.getIsSorted() === 'asc'
+                                                            ? 'ascending'
+                                                            : header.column.getIsSorted() === 'desc'
+                                                              ? 'descending'
+                                                              : header.column.getCanSort()
+                                                                ? 'none'
+                                                                : undefined
+                                                    }
                                                 >
-                                                    <span className="inline-flex items-center gap-1">
-                                                        {flexRender(
+                                                    {header.column.getCanSort() ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={header.column.getToggleSortingHandler()}
+                                                            className="inline-flex items-center gap-1 select-none hover:text-textPrimary transition-colors"
+                                                        >
+                                                            {flexRender(
+                                                                header.column.columnDef.header,
+                                                                header.getContext()
+                                                            )}
+                                                            {{
+                                                                asc: (
+                                                                    <ChevronUp
+                                                                        className="w-3.5 h-3.5"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                ),
+                                                                desc: (
+                                                                    <ChevronDown
+                                                                        className="w-3.5 h-3.5"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                ),
+                                                            }[
+                                                                header.column.getIsSorted() as string
+                                                            ] ?? null}
+                                                        </button>
+                                                    ) : (
+                                                        flexRender(
                                                             header.column.columnDef.header,
                                                             header.getContext()
-                                                        )}
-                                                        {{
-                                                            asc: (
-                                                                <ChevronUp className="w-3.5 h-3.5" />
-                                                            ),
-                                                            desc: (
-                                                                <ChevronDown className="w-3.5 h-3.5" />
-                                                            ),
-                                                        }[header.column.getIsSorted() as string] ??
-                                                            null}
-                                                    </span>
+                                                        )
+                                                    )}
                                                 </th>
                                             ))}
+                                            <th
+                                                scope="col"
+                                                className="px-4 py-3 text-right text-xs font-medium text-textSecondary uppercase tracking-wider"
+                                            >
+                                                Details
+                                            </th>
                                         </tr>
                                     ))}
                                 </thead>
@@ -507,7 +544,7 @@ export function DataCatalog<T extends { id: string }>({
                                     {table.getRowModel().rows.length === 0 ? (
                                         <tr>
                                             <td
-                                                colSpan={columns.length}
+                                                colSpan={table.getVisibleLeafColumns().length + 1}
                                                 className="px-4 py-12 text-center text-textSecondary"
                                             >
                                                 No results match your search.
@@ -517,11 +554,8 @@ export function DataCatalog<T extends { id: string }>({
                                         table.getRowModel().rows.map((row) => (
                                             <tr
                                                 key={row.id}
-                                                onClick={() =>
-                                                    handleRowClick(getRowId(row.original))
-                                                }
                                                 className={clsx(
-                                                    'border-b border-border last:border-0 transition-colors cursor-pointer',
+                                                    'border-b border-border last:border-0 transition-colors',
                                                     selectedId === getRowId(row.original)
                                                         ? 'bg-primary/10'
                                                         : 'hover:bg-bgSurface/80'
@@ -535,6 +569,27 @@ export function DataCatalog<T extends { id: string }>({
                                                         )}
                                                     </td>
                                                 ))}
+                                                <td className="px-4 py-2.5 text-right">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            toggleDetail(getRowId(row.original))
+                                                        }
+                                                        className="rounded px-2 py-1 text-xs font-medium text-primary hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                                                        aria-pressed={
+                                                            selectedId === getRowId(row.original)
+                                                        }
+                                                        aria-label={`${
+                                                            selectedId === getRowId(row.original)
+                                                                ? 'Close details for'
+                                                                : 'Open details for'
+                                                        } ${getRowLabel(row.original)}`}
+                                                    >
+                                                        {selectedId === getRowId(row.original)
+                                                            ? 'Close'
+                                                            : 'View'}
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))
                                     )}
@@ -579,6 +634,7 @@ export function DataCatalog<T extends { id: string }>({
                         minWidth={280}
                         maxWidth={800}
                         showBackdrop={false}
+                        ariaLabel="Catalog item details"
                         style={{ top: 'var(--ifm-navbar-height, 4rem)' }}
                     >
                         <div className="pl-3 pr-5 py-5">

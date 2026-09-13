@@ -1,139 +1,4 @@
 {
-    "theme.ErrorPageContent.title": {
-        "message": "На странице произошёл сбой.",
-        "description": "The title of the fallback page when the page crashed"
-    },
-    "theme.BackToTopButton.buttonAriaLabel": {
-        "message": "Прокрутка к началу",
-        "description": "The ARIA label for the back to top button"
-    },
-    "theme.blog.archive.title": {
-        "message": "Архив",
-        "description": "The page & hero title of the blog archive page"
-    },
-    "theme.blog.archive.description": {
-        "message": "Архив",
-        "description": "The page & hero description of the blog archive page"
-    },
-    "theme.blog.paginator.navAriaLabel": {
-        "message": "Навигация по странице списка блогов",
-        "description": "The ARIA label for the blog pagination"
-    },
-    "theme.blog.paginator.newerEntries": {
-        "message": "Следующие записи",
-        "description": "The label used to navigate to the newer blog posts page (previous page)"
-    },
-    "theme.blog.paginator.olderEntries": {
-        "message": "Предыдущие записи",
-        "description": "The label used to navigate to the older blog posts page (next page)"
-    },
-    "theme.blog.post.paginator.navAriaLabel": {
-        "message": "Навигация по странице поста блога",
-        "description": "The ARIA label for the blog posts pagination"
-    },
-    "theme.blog.post.paginator.newerPost": {
-        "message": "Следующий пост",
-        "description": "The blog post button label to navigate to the newer/previous post"
-    },
-    "theme.blog.post.paginator.olderPost": {
-        "message": "Предыдущий пост",
-        "description": "The blog post button label to navigate to the older/next post"
-    },
-    "theme.tags.tagsPageLink": {
-        "message": "Посмотреть все теги",
-        "description": "The label of the link targeting the tag list page"
-    },
-    "theme.colorToggle.ariaLabel.mode.system": {
-        "message": "системный режим",
-        "description": "The name for the system color mode"
-    },
-    "theme.colorToggle.ariaLabel.mode.light": {
-        "message": "Светлый режим",
-        "description": "The name for the light color mode"
-    },
-    "theme.colorToggle.ariaLabel.mode.dark": {
-        "message": "Тёмный режим",
-        "description": "The name for the dark color mode"
-    },
-    "theme.colorToggle.ariaLabel": {
-        "message": "Переключение между темным и светлым режимом (сейчас используется {mode})",
-        "description": "The ARIA label for the color mode toggle"
-    },
-    "theme.docs.breadcrumbs.navAriaLabel": {
-        "message": "Навигационная цепочка текущей страницы",
-        "description": "The ARIA label for the breadcrumbs"
-    },
-    "theme.docs.paginator.navAriaLabel": {
-        "message": "Страница документа",
-        "description": "The ARIA label for the docs pagination"
-    },
-    "theme.docs.paginator.previous": {
-        "message": "Предыдущая страница",
-        "description": "The label used to navigate to the previous doc"
-    },
-    "theme.docs.paginator.next": {
-        "message": "Следующая страница",
-        "description": "The label used to navigate to the next doc"
-    },
-    "theme.docs.tagDocListPageTitle.nDocsTagged": {
-        "message": "Одна страница|{count} страницы|{count} страниц",
-        "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
-    },
-    "theme.docs.tagDocListPageTitle": {
-        "message": "{nDocsTagged} с тегом \"{tagName}\"",
-        "description": "The title of the page for a docs tag"
-    },
-    "theme.docs.versionBadge.label": {
-        "message": "Версия: {versionLabel}"
-    },
-    "theme.docs.versions.unreleasedVersionLabel": {
-        "message": "Это документация для будущей версии {siteTitle} {versionLabel}.",
-        "description": "The label used to tell the user that he's browsing an unreleased doc version"
-    },
-    "theme.docs.versions.unmaintainedVersionLabel": {
-        "message": "Это документация {siteTitle} для версии {versionLabel}, которая уже не поддерживается.",
-        "description": "The label used to tell the user that he's browsing an unmaintained doc version"
-    },
-    "theme.docs.versions.latestVersionSuggestionLabel": {
-        "message": "Актуальная документация находится на странице {latestVersionLink} ({versionLabel}).",
-        "description": "The label used to tell the user to check the latest version"
-    },
-    "theme.docs.versions.latestVersionLinkLabel": {
-        "message": "последней версии",
-        "description": "The label used for the latest version suggestion link label"
-    },
-    "theme.common.editThisPage": {
-        "message": "Отредактировать эту страницу",
-        "description": "The link label to edit the current page"
-    },
-    "theme.common.headingLinkTitle": {
-        "message": "Прямая ссылка на {heading}",
-        "description": "Title for link to heading"
-    },
-    "theme.lastUpdated.atDate": {
-        "message": " {date}",
-        "description": "The words used to describe on which date a page has been last updated"
-    },
-    "theme.lastUpdated.byUser": {
-        "message": " от {user}",
-        "description": "The words used to describe by who the page has been last updated"
-    },
-    "theme.lastUpdated.lastUpdatedAtBy": {
-        "message": "Последнее обновление{atDate}{byUser}",
-        "description": "The sentence used to display when a page has been last updated, and by who"
-    },
-    "theme.navbar.mobileVersionsDropdown.label": {
-        "message": "Версии",
-        "description": "The label for the navbar versions dropdown on mobile view"
-    },
-    "theme.NotFound.title": {
-        "message": "Страница не найдена",
-        "description": "The title of the 404 page"
-    },
-    "theme.tags.tagsListLabel": {
-        "message": "Теги:",
-        "description": "The label alongside a tag list"
-    },
     "theme.admonition.caution": {
         "message": "предупреждение",
         "description": "The default label used for the Caution admonition (:::caution)"
@@ -162,121 +27,21 @@
         "message": "Закрыть",
         "description": "The ARIA label for close button of announcement bar"
     },
-    "theme.blog.sidebar.navAriaLabel": {
-        "message": "Навигация по последним постам в блоге",
-        "description": "The ARIA label for recent posts in the blog sidebar"
+    "theme.BackToTopButton.buttonAriaLabel": {
+        "message": "Прокрутка к началу",
+        "description": "The ARIA label for the back to top button"
     },
-    "theme.DocSidebarItem.expandCategoryAriaLabel": {
-        "message": "Expand sidebar category '{label}'",
-        "description": "The ARIA label to expand the sidebar category"
+    "theme.blog.archive.description": {
+        "message": "Архив",
+        "description": "The page & hero description of the blog archive page"
     },
-    "theme.DocSidebarItem.collapseCategoryAriaLabel": {
-        "message": "Collapse sidebar category '{label}'",
-        "description": "The ARIA label to collapse the sidebar category"
+    "theme.blog.archive.title": {
+        "message": "Архив",
+        "description": "The page & hero title of the blog archive page"
     },
-    "theme.IconExternalLink.ariaLabel": {
-        "message": "(opens in new tab)",
-        "description": "The ARIA label for the external link icon"
-    },
-    "theme.NavBar.navAriaLabel": {
-        "message": "Главная",
-        "description": "The ARIA label for the main navigation"
-    },
-    "theme.navbar.mobileLanguageDropdown.label": {
-        "message": "Языки",
-        "description": "The label for the mobile language switcher dropdown"
-    },
-    "theme.NotFound.p1": {
-        "message": "К сожалению, мы не смогли найти запрашиваемую вами страницу.",
-        "description": "The first paragraph of the 404 page"
-    },
-    "theme.NotFound.p2": {
-        "message": "Пожалуйста, обратитесь к владельцу сайта, с которого вы перешли на эту ссылку, чтобы сообщить ему, что ссылка не работает.",
-        "description": "The 2nd paragraph of the 404 page"
-    },
-    "theme.TOCCollapsible.toggleButtonLabel": {
-        "message": "Содержание этой страницы",
-        "description": "The label used by the button on the collapsible TOC component"
-    },
-    "theme.blog.post.readMore": {
-        "message": "Читать дальше",
-        "description": "The label used in blog post item excerpts to link to full blog posts"
-    },
-    "theme.blog.post.readMoreLabel": {
-        "message": "Подробнее о {title}",
-        "description": "The ARIA label for the link to full blog posts from excerpts"
-    },
-    "theme.blog.post.readingTime.plurals": {
-        "message": "{readingTime} мин. чтения|{readingTime} мин. чтения|{readingTime} мин. чтения",
-        "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
-    },
-    "theme.CodeBlock.copy": {
-        "message": "Скопировать",
-        "description": "The copy button label on code blocks"
-    },
-    "theme.CodeBlock.copied": {
-        "message": "Скопировано",
-        "description": "The copied button label on code blocks"
-    },
-    "theme.CodeBlock.copyButtonAriaLabel": {
-        "message": "Скопировать в буфер обмена",
-        "description": "The ARIA label for copy code blocks button"
-    },
-    "theme.CodeBlock.wordWrapToggle": {
-        "message": "Переключить перенос по строкам",
-        "description": "The title attribute for toggle word wrapping button of code block lines"
-    },
-    "theme.docs.breadcrumbs.home": {
-        "message": "Главная страница",
-        "description": "The ARIA label for the home page in the breadcrumbs"
-    },
-    "theme.docs.sidebar.collapseButtonTitle": {
-        "message": "Свернуть сайдбар",
-        "description": "The title attribute for collapse button of doc sidebar"
-    },
-    "theme.docs.sidebar.collapseButtonAriaLabel": {
-        "message": "Свернуть сайдбар",
-        "description": "The title attribute for collapse button of doc sidebar"
-    },
-    "theme.docs.sidebar.navAriaLabel": {
-        "message": "Боковое меню документации",
-        "description": "The ARIA label for the sidebar navigation"
-    },
-    "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
-        "message": "Закрыть панель навигации",
-        "description": "The ARIA label for close button of mobile sidebar"
-    },
-    "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
-        "message": "← Перейти к главному меню",
-        "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
-    },
-    "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
-        "message": "Переключить навигационную панель",
-        "description": "The ARIA label for hamburger menu button of mobile navigation"
-    },
-    "theme.navbar.mobileDropdown.collapseButton.expandAriaLabel": {
-        "message": "Развернуть выпадающее меню",
-        "description": "The ARIA label of the button to expand the mobile dropdown navbar item"
-    },
-    "theme.navbar.mobileDropdown.collapseButton.collapseAriaLabel": {
-        "message": "Свернуть выпадающее меню",
-        "description": "The ARIA label of the button to collapse the mobile dropdown navbar item"
-    },
-    "theme.docs.sidebar.expandButtonTitle": {
-        "message": "Развернуть сайдбар",
-        "description": "The ARIA label and title attribute for expand button of doc sidebar"
-    },
-    "theme.docs.sidebar.expandButtonAriaLabel": {
-        "message": "Развернуть сайдбар",
-        "description": "The ARIA label and title attribute for expand button of doc sidebar"
-    },
-    "theme.blog.post.plurals": {
-        "message": "{count} запись|{count} записи|{count} записей",
-        "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
-    },
-    "theme.blog.tagTitle": {
-        "message": "{nPosts} с тегом \"{tagName}\"",
-        "description": "The title of the page for a blog tag"
+    "theme.blog.author.noPosts": {
+        "message": "Этот автор ещё не написал ни одного поста.",
+        "description": "The text for authors with 0 blog post"
     },
     "theme.blog.author.pageTitle": {
         "message": "{authorName} - {nPosts}",
@@ -290,40 +55,1817 @@
         "message": "Посмотреть всех авторов",
         "description": "The label of the link targeting the blog authors page"
     },
-    "theme.blog.author.noPosts": {
-        "message": "Этот автор ещё не написал ни одного поста.",
-        "description": "The text for authors with 0 blog post"
+    "theme.blog.paginator.navAriaLabel": {
+        "message": "Навигация по странице списка блогов",
+        "description": "The ARIA label for the blog pagination"
     },
-    "theme.contentVisibility.unlistedBanner.title": {
-        "message": "Скрытая страница",
-        "description": "The unlisted content banner title"
+    "theme.blog.paginator.newerEntries": {
+        "message": "Следующие записи",
+        "description": "The label used to navigate to the newer blog posts page (previous page)"
     },
-    "theme.contentVisibility.unlistedBanner.message": {
-        "message": "Эта страница скрыта. Поисковые системы не будут её индексировать, и доступ к ней возможен только по прямой ссылке.",
-        "description": "The unlisted content banner message"
+    "theme.blog.paginator.olderEntries": {
+        "message": "Предыдущие записи",
+        "description": "The label used to navigate to the older blog posts page (next page)"
     },
-    "theme.contentVisibility.draftBanner.title": {
-        "message": "Черновик",
-        "description": "The draft content banner title"
+    "theme.blog.post.paginator.navAriaLabel": {
+        "message": "Навигация по странице поста блога",
+        "description": "The ARIA label for the blog posts pagination"
     },
-    "theme.contentVisibility.draftBanner.message": {
-        "message": "Эта страница — черновик. Она будет видна только в режиме разработки и исключена из сборки.",
-        "description": "The draft content banner message"
+    "theme.blog.post.paginator.newerPost": {
+        "message": "Следующий пост",
+        "description": "The blog post button label to navigate to the newer/previous post"
     },
-    "theme.docs.DocCard.categoryDescription.plurals": {
-        "message": "{count} элемент|{count} элемента|{count} элементов",
-        "description": "The default description for a category card in the generated index about how many items this category includes"
+    "theme.blog.post.paginator.olderPost": {
+        "message": "Предыдущий пост",
+        "description": "The blog post button label to navigate to the older/next post"
     },
-    "theme.ErrorPageContent.tryAgain": {
-        "message": "Попробуйте ещё раз",
-        "description": "The label of the button to try again rendering when the React error boundary captures an error"
+    "theme.blog.post.plurals": {
+        "message": "{count} запись|{count} записи|{count} записей",
+        "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.blog.post.readingTime.plurals": {
+        "message": "{readingTime} мин. чтения|{readingTime} мин. чтения|{readingTime} мин. чтения",
+        "description": "Pluralized label for \"{readingTime} min read\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.blog.post.readMore": {
+        "message": "Читать дальше",
+        "description": "The label used in blog post item excerpts to link to full blog posts"
+    },
+    "theme.blog.post.readMoreLabel": {
+        "message": "Подробнее о {title}",
+        "description": "The ARIA label for the link to full blog posts from excerpts"
+    },
+    "theme.blog.sidebar.navAriaLabel": {
+        "message": "Навигация по последним постам в блоге",
+        "description": "The ARIA label for recent posts in the blog sidebar"
+    },
+    "theme.blog.tagTitle": {
+        "message": "{nPosts} с тегом \"{tagName}\"",
+        "description": "The title of the page for a blog tag"
+    },
+    "theme.CodeBlock.copied": {
+        "message": "Скопировано",
+        "description": "The copied button label on code blocks"
+    },
+    "theme.CodeBlock.copy": {
+        "message": "Скопировать",
+        "description": "The copy button label on code blocks"
+    },
+    "theme.CodeBlock.copyButtonAriaLabel": {
+        "message": "Скопировать в буфер обмена",
+        "description": "The ARIA label for copy code blocks button"
+    },
+    "theme.CodeBlock.wordWrapToggle": {
+        "message": "Переключить перенос по строкам",
+        "description": "The title attribute for toggle word wrapping button of code block lines"
+    },
+    "theme.colorToggle.ariaLabel": {
+        "message": "Переключение между темным и светлым режимом (сейчас используется {mode})",
+        "description": "The ARIA label for the color mode toggle"
+    },
+    "theme.colorToggle.ariaLabel.mode.dark": {
+        "message": "Тёмный режим",
+        "description": "The name for the dark color mode"
+    },
+    "theme.colorToggle.ariaLabel.mode.light": {
+        "message": "Светлый режим",
+        "description": "The name for the light color mode"
+    },
+    "theme.colorToggle.ariaLabel.mode.system": {
+        "message": "системный режим",
+        "description": "The name for the system color mode"
+    },
+    "theme.common.editThisPage": {
+        "message": "Отредактировать эту страницу",
+        "description": "The link label to edit the current page"
+    },
+    "theme.common.headingLinkTitle": {
+        "message": "Прямая ссылка на {heading}",
+        "description": "Title for link to heading"
     },
     "theme.common.skipToMainContent": {
         "message": "Перейти к основному содержимому",
         "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
     },
+    "theme.contentVisibility.draftBanner.message": {
+        "message": "Эта страница — черновик. Она будет видна только в режиме разработки и исключена из сборки.",
+        "description": "The draft content banner message"
+    },
+    "theme.contentVisibility.draftBanner.title": {
+        "message": "Черновик",
+        "description": "The draft content banner title"
+    },
+    "theme.contentVisibility.unlistedBanner.message": {
+        "message": "Эта страница скрыта. Поисковые системы не будут её индексировать, и доступ к ней возможен только по прямой ссылке.",
+        "description": "The unlisted content banner message"
+    },
+    "theme.contentVisibility.unlistedBanner.title": {
+        "message": "Скрытая страница",
+        "description": "The unlisted content banner title"
+    },
+    "theme.docs.breadcrumbs.home": {
+        "message": "Главная страница",
+        "description": "The ARIA label for the home page in the breadcrumbs"
+    },
+    "theme.docs.breadcrumbs.navAriaLabel": {
+        "message": "Навигационная цепочка текущей страницы",
+        "description": "The ARIA label for the breadcrumbs"
+    },
+    "theme.docs.DocCard.categoryDescription.plurals": {
+        "message": "{count} элемент|{count} элемента|{count} элементов",
+        "description": "The default description for a category card in the generated index about how many items this category includes"
+    },
+    "theme.docs.paginator.navAriaLabel": {
+        "message": "Страница документа",
+        "description": "The ARIA label for the docs pagination"
+    },
+    "theme.docs.paginator.next": {
+        "message": "Следующая страница",
+        "description": "The label used to navigate to the next doc"
+    },
+    "theme.docs.paginator.previous": {
+        "message": "Предыдущая страница",
+        "description": "The label used to navigate to the previous doc"
+    },
+    "theme.docs.sidebar.closeSidebarButtonAriaLabel": {
+        "message": "Закрыть панель навигации",
+        "description": "The ARIA label for close button of mobile sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonAriaLabel": {
+        "message": "Свернуть сайдбар",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.collapseButtonTitle": {
+        "message": "Свернуть сайдбар",
+        "description": "The title attribute for collapse button of doc sidebar"
+    },
+    "theme.docs.sidebar.expandButtonAriaLabel": {
+        "message": "Развернуть сайдбар",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.expandButtonTitle": {
+        "message": "Развернуть сайдбар",
+        "description": "The ARIA label and title attribute for expand button of doc sidebar"
+    },
+    "theme.docs.sidebar.navAriaLabel": {
+        "message": "Боковое меню документации",
+        "description": "The ARIA label for the sidebar navigation"
+    },
+    "theme.docs.sidebar.toggleSidebarButtonAriaLabel": {
+        "message": "Переключить навигационную панель",
+        "description": "The ARIA label for hamburger menu button of mobile navigation"
+    },
+    "theme.docs.tagDocListPageTitle": {
+        "message": "{nDocsTagged} с тегом \"{tagName}\"",
+        "description": "The title of the page for a docs tag"
+    },
+    "theme.docs.tagDocListPageTitle.nDocsTagged": {
+        "message": "Одна страница|{count} страницы|{count} страниц",
+        "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
+    },
+    "theme.docs.versionBadge.label": {
+        "message": "Версия: {versionLabel}"
+    },
+    "theme.docs.versions.latestVersionLinkLabel": {
+        "message": "последней версии",
+        "description": "The label used for the latest version suggestion link label"
+    },
+    "theme.docs.versions.latestVersionSuggestionLabel": {
+        "message": "Актуальная документация находится на странице {latestVersionLink} ({versionLabel}).",
+        "description": "The label used to tell the user to check the latest version"
+    },
+    "theme.docs.versions.unmaintainedVersionLabel": {
+        "message": "Это документация {siteTitle} для версии {versionLabel}, которая уже не поддерживается.",
+        "description": "The label used to tell the user that he's browsing an unmaintained doc version"
+    },
+    "theme.docs.versions.unreleasedVersionLabel": {
+        "message": "Это документация для будущей версии {siteTitle} {versionLabel}.",
+        "description": "The label used to tell the user that he's browsing an unreleased doc version"
+    },
+    "theme.DocSidebarItem.collapseCategoryAriaLabel": {
+        "message": "Collapse sidebar category '{label}'",
+        "description": "The ARIA label to collapse the sidebar category"
+    },
+    "theme.DocSidebarItem.expandCategoryAriaLabel": {
+        "message": "Expand sidebar category '{label}'",
+        "description": "The ARIA label to expand the sidebar category"
+    },
+    "theme.ErrorPageContent.title": {
+        "message": "На странице произошёл сбой.",
+        "description": "The title of the fallback page when the page crashed"
+    },
+    "theme.ErrorPageContent.tryAgain": {
+        "message": "Попробуйте ещё раз",
+        "description": "The label of the button to try again rendering when the React error boundary captures an error"
+    },
+    "theme.IconExternalLink.ariaLabel": {
+        "message": "(opens in new tab)",
+        "description": "The ARIA label for the external link icon"
+    },
+    "theme.lastUpdated.atDate": {
+        "message": " {date}",
+        "description": "The words used to describe on which date a page has been last updated"
+    },
+    "theme.lastUpdated.byUser": {
+        "message": " от {user}",
+        "description": "The words used to describe by who the page has been last updated"
+    },
+    "theme.lastUpdated.lastUpdatedAtBy": {
+        "message": "Последнее обновление{atDate}{byUser}",
+        "description": "The sentence used to display when a page has been last updated, and by who"
+    },
+    "theme.navbar.mobileDropdown.collapseButton.collapseAriaLabel": {
+        "message": "Свернуть выпадающее меню",
+        "description": "The ARIA label of the button to collapse the mobile dropdown navbar item"
+    },
+    "theme.navbar.mobileDropdown.collapseButton.expandAriaLabel": {
+        "message": "Развернуть выпадающее меню",
+        "description": "The ARIA label of the button to expand the mobile dropdown navbar item"
+    },
+    "theme.navbar.mobileLanguageDropdown.label": {
+        "message": "Языки",
+        "description": "The label for the mobile language switcher dropdown"
+    },
+    "theme.navbar.mobileSidebarSecondaryMenu.backButtonLabel": {
+        "message": "← Перейти к главному меню",
+        "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
+    },
+    "theme.navbar.mobileVersionsDropdown.label": {
+        "message": "Версии",
+        "description": "The label for the navbar versions dropdown on mobile view"
+    },
+    "theme.NavBar.navAriaLabel": {
+        "message": "Главная",
+        "description": "The ARIA label for the main navigation"
+    },
+    "theme.NotFound.p1": {
+        "message": "К сожалению, мы не смогли найти запрашиваемую вами страницу.",
+        "description": "The first paragraph of the 404 page"
+    },
+    "theme.NotFound.p2": {
+        "message": "Пожалуйста, обратитесь к владельцу сайта, с которого вы перешли на эту ссылку, чтобы сообщить ему, что ссылка не работает.",
+        "description": "The 2nd paragraph of the 404 page"
+    },
+    "theme.NotFound.title": {
+        "message": "Страница не найдена",
+        "description": "The title of the 404 page"
+    },
+    "theme.tags.tagsListLabel": {
+        "message": "Теги:",
+        "description": "The label alongside a tag list"
+    },
+    "theme.tags.tagsPageLink": {
+        "message": "Посмотреть все теги",
+        "description": "The label of the link targeting the tag list page"
+    },
     "theme.tags.tagsPageTitle": {
         "message": "Теги",
         "description": "The title of the tag list page"
+    },
+    "theme.TOCCollapsible.toggleButtonLabel": {
+        "message": "Содержание этой страницы",
+        "description": "The label used by the button on the collapsible TOC component"
+    },
+    "ttgamer.ui.sheet.base.appearance": {
+        "message": "Внешность"
+    },
+    "ttgamer.ui.sheet.base.biography": {
+        "message": "Биография"
+    },
+    "ttgamer.ui.sheet.base.biographyPlaceholder": {
+        "message": "Биография персонажа..."
+    },
+    "ttgamer.ui.sheet.base.fields.adventure.label": {
+        "message": "Приключение"
+    },
+    "ttgamer.ui.sheet.base.fields.adventure.placeholder": {
+        "message": "Приключение/кампания..."
+    },
+    "ttgamer.ui.sheet.base.fields.age.label": {
+        "message": "Возраст"
+    },
+    "ttgamer.ui.sheet.base.fields.age.placeholder": {
+        "message": "Возраст..."
+    },
+    "ttgamer.ui.sheet.base.fields.build.label": {
+        "message": "Телосложение"
+    },
+    "ttgamer.ui.sheet.base.fields.concept.label": {
+        "message": "Концепция"
+    },
+    "ttgamer.ui.sheet.base.fields.concept.placeholder": {
+        "message": "Концепция персонажа..."
+    },
+    "ttgamer.ui.sheet.base.fields.demeanor.label": {
+        "message": "Маска"
+    },
+    "ttgamer.ui.sheet.base.fields.demeanor.placeholder": {
+        "message": "Маска..."
+    },
+    "ttgamer.ui.sheet.base.fields.eyes.label": {
+        "message": "Глаза"
+    },
+    "ttgamer.ui.sheet.base.fields.features.label": {
+        "message": "Приметы"
+    },
+    "ttgamer.ui.sheet.base.fields.gender.label": {
+        "message": "Пол"
+    },
+    "ttgamer.ui.sheet.base.fields.hair.label": {
+        "message": "Волосы"
+    },
+    "ttgamer.ui.sheet.base.fields.height.label": {
+        "message": "Рост"
+    },
+    "ttgamer.ui.sheet.base.fields.homeWorld.label": {
+        "message": "Родной мир"
+    },
+    "ttgamer.ui.sheet.base.fields.homeWorld.placeholder": {
+        "message": "Корусант, Татуин..."
+    },
+    "ttgamer.ui.sheet.base.fields.name.label": {
+        "message": "Имя"
+    },
+    "ttgamer.ui.sheet.base.fields.name.placeholder": {
+        "message": "Имя персонажа..."
+    },
+    "ttgamer.ui.sheet.base.fields.nature.label": {
+        "message": "Натура"
+    },
+    "ttgamer.ui.sheet.base.fields.nature.placeholder": {
+        "message": "Натура..."
+    },
+    "ttgamer.ui.sheet.base.fields.player.label": {
+        "message": "Игрок"
+    },
+    "ttgamer.ui.sheet.base.fields.player.placeholder": {
+        "message": "Имя игрока..."
+    },
+    "ttgamer.ui.sheet.base.fields.species.label": {
+        "message": "Вид"
+    },
+    "ttgamer.ui.sheet.base.fields.species.placeholder": {
+        "message": "Человек, тви'лек..."
+    },
+    "ttgamer.ui.sheet.base.portrait.alt": {
+        "message": "Портрет персонажа"
+    },
+    "ttgamer.ui.sheet.base.portrait.collapse": {
+        "message": "Свернуть портрет"
+    },
+    "ttgamer.ui.sheet.base.portrait.editUrl": {
+        "message": "Изменить URL портрета"
+    },
+    "ttgamer.ui.sheet.base.portrait.expand": {
+        "message": "Развернуть портрет"
+    },
+    "ttgamer.ui.sheet.base.portrait.hideUrlInput": {
+        "message": "Скрыть поле URL портрета"
+    },
+    "ttgamer.ui.sheet.base.portrait.invalidUrl": {
+        "message": "Используйте HTTPS-адрес или путь относительно сайта."
+    },
+    "ttgamer.ui.sheet.base.portrait.pasteAriaLabel": {
+        "message": "Портрет персонажа; вставьте сюда изображение"
+    },
+    "ttgamer.ui.sheet.base.portrait.processing": {
+        "message": "Обработка…"
+    },
+    "ttgamer.ui.sheet.base.portrait.remoteHostNote": {
+        "message": "Удалённый хост изображения получит ваш IP-адрес. Только HTTPS."
+    },
+    "ttgamer.ui.sheet.base.portrait.remove": {
+        "message": "Удалить локальный портрет"
+    },
+    "ttgamer.ui.sheet.base.portrait.saved": {
+        "message": "Портрет сохранён на этом устройстве."
+    },
+    "ttgamer.ui.sheet.base.portrait.saveFailed": {
+        "message": "Не удалось сохранить портрет."
+    },
+    "ttgamer.ui.sheet.base.portrait.upload": {
+        "message": "Загрузить / вставить"
+    },
+    "ttgamer.ui.sheet.base.portrait.uploadTitle": {
+        "message": "Выберите изображение или вставьте его после фокуса на этой области"
+    },
+    "ttgamer.ui.sheet.base.portrait.urlAriaLabel": {
+        "message": "URL изображения портрета"
+    },
+    "ttgamer.ui.sheet.base.portrait.urlPlaceholder": {
+        "message": "https://example.com/portrait.webp"
+    },
+    "ttgamer.ui.sheet.base.title": {
+        "message": "Основа"
+    },
+    "ttgamer.ui.sheet.documents.conflict.duplicate": {
+        "message": "Копировать"
+    },
+    "ttgamer.ui.sheet.documents.conflict.prompt": {
+        "message": "Замените его, импортируйте копию с новым ID или отмените импорт файла."
+    },
+    "ttgamer.ui.sheet.documents.conflict.replace": {
+        "message": "Заменить"
+    },
+    "ttgamer.ui.sheet.documents.conflict.title": {
+        "message": "Документ уже существует"
+    },
+    "ttgamer.ui.sheet.documents.create.cancel": {
+        "message": "Отмена"
+    },
+    "ttgamer.ui.sheet.documents.create.confirm": {
+        "message": "Создать"
+    },
+    "ttgamer.ui.sheet.documents.create.prompt": {
+        "message": "Выберите формат документа Star Wars."
+    },
+    "ttgamer.ui.sheet.documents.create.title": {
+        "message": "Создать документ"
+    },
+    "ttgamer.ui.sheet.documents.fields.abilities": {
+        "message": "Способности"
+    },
+    "ttgamer.ui.sheet.documents.fields.addArmor": {
+        "message": "Добавить броню"
+    },
+    "ttgamer.ui.sheet.documents.fields.addAttack": {
+        "message": "Добавить атаку"
+    },
+    "ttgamer.ui.sheet.documents.fields.additionalKnowledges": {
+        "message": "Дополнительные знания"
+    },
+    "ttgamer.ui.sheet.documents.fields.additionalSkills": {
+        "message": "Дополнительные навыки"
+    },
+    "ttgamer.ui.sheet.documents.fields.additionalTalents": {
+        "message": "Дополнительные таланты"
+    },
+    "ttgamer.ui.sheet.documents.fields.addMember": {
+        "message": "Добавить участника"
+    },
+    "ttgamer.ui.sheet.documents.fields.addRow": {
+        "message": "Добавить строку"
+    },
+    "ttgamer.ui.sheet.documents.fields.addWeapon": {
+        "message": "Добавить оружие"
+    },
+    "ttgamer.ui.sheet.documents.fields.adventure": {
+        "message": "Приключение"
+    },
+    "ttgamer.ui.sheet.documents.fields.age": {
+        "message": "Возраст"
+    },
+    "ttgamer.ui.sheet.documents.fields.altitude": {
+        "message": "Высота"
+    },
+    "ttgamer.ui.sheet.documents.fields.ammunition": {
+        "message": "Боезапас"
+    },
+    "ttgamer.ui.sheet.documents.fields.arc": {
+        "message": "Сектор обстрела"
+    },
+    "ttgamer.ui.sheet.documents.fields.armor": {
+        "message": "Броня"
+    },
+    "ttgamer.ui.sheet.documents.fields.armorClass": {
+        "message": "Класс"
+    },
+    "ttgamer.ui.sheet.documents.fields.armorRating": {
+        "message": "Рейтинг брони"
+    },
+    "ttgamer.ui.sheet.documents.fields.armorType": {
+        "message": "Тип брони"
+    },
+    "ttgamer.ui.sheet.documents.fields.attacks": {
+        "message": "Атаки"
+    },
+    "ttgamer.ui.sheet.documents.fields.attackType": {
+        "message": "Тип атаки"
+    },
+    "ttgamer.ui.sheet.documents.fields.attributes": {
+        "message": "Атрибуты"
+    },
+    "ttgamer.ui.sheet.documents.fields.backgrounds": {
+        "message": "Дополнения"
+    },
+    "ttgamer.ui.sheet.documents.fields.builtInEquipment": {
+        "message": "Встроенное оборудование"
+    },
+    "ttgamer.ui.sheet.documents.fields.cargoCapacity": {
+        "message": "Грузоподъёмность"
+    },
+    "ttgamer.ui.sheet.documents.fields.combat": {
+        "message": "Бой"
+    },
+    "ttgamer.ui.sheet.documents.fields.communicationsSensors": {
+        "message": "Связь / Сенсоры"
+    },
+    "ttgamer.ui.sheet.documents.fields.concept": {
+        "message": "Концепция"
+    },
+    "ttgamer.ui.sheet.documents.fields.conditionLevel": {
+        "message": "Уровень"
+    },
+    "ttgamer.ui.sheet.documents.fields.conditionPenalty": {
+        "message": "Штраф"
+    },
+    "ttgamer.ui.sheet.documents.fields.configuration": {
+        "message": "Конфигурация"
+    },
+    "ttgamer.ui.sheet.documents.fields.consumables": {
+        "message": "Запасы"
+    },
+    "ttgamer.ui.sheet.documents.fields.crew": {
+        "message": "Экипаж"
+    },
+    "ttgamer.ui.sheet.documents.fields.current": {
+        "message": "Текущее"
+    },
+    "ttgamer.ui.sheet.documents.fields.damage": {
+        "message": "Повреждения"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.cosmetic": {
+        "message": "Косметические"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.crippled": {
+        "message": "Обездвижен"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.heavy": {
+        "message": "Тяжёлые"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.light": {
+        "message": "Лёгкие"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.moderate": {
+        "message": "Средние"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.severe": {
+        "message": "Критические"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageLevels.wrecked": {
+        "message": "Уничтожен"
+    },
+    "ttgamer.ui.sheet.documents.fields.darkSideResistance": {
+        "message": "Сопротивление Тёмной стороне"
+    },
+    "ttgamer.ui.sheet.documents.fields.demeanor": {
+        "message": "Маска"
+    },
+    "ttgamer.ui.sheet.documents.fields.dexterity": {
+        "message": "Ловкость"
+    },
+    "ttgamer.ui.sheet.documents.fields.dexterityModifier": {
+        "message": "Модификатор ловкости"
+    },
+    "ttgamer.ui.sheet.documents.fields.durability": {
+        "message": "Прочность"
+    },
+    "ttgamer.ui.sheet.documents.fields.flaws": {
+        "message": "Недостатки"
+    },
+    "ttgamer.ui.sheet.documents.fields.forceAndResolve": {
+        "message": "Сила и стойкость"
+    },
+    "ttgamer.ui.sheet.documents.fields.forcePoints": {
+        "message": "Очки Силы"
+    },
+    "ttgamer.ui.sheet.documents.fields.frontShields": {
+        "message": "Передние щиты"
+    },
+    "ttgamer.ui.sheet.documents.fields.health": {
+        "message": "Здоровье"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.bruised": {
+        "message": "Ушибы"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.crippled": {
+        "message": "Обездвижен"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.hurt": {
+        "message": "Лёгкие ранения"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.incapacitated": {
+        "message": "Недееспособен"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.injured": {
+        "message": "Ранения"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.mauled": {
+        "message": "Искалечен"
+    },
+    "ttgamer.ui.sheet.documents.fields.healthLevels.wounded": {
+        "message": "Тяжёлые ранения"
+    },
+    "ttgamer.ui.sheet.documents.fields.hyperdrive": {
+        "message": "Гипердвигатель"
+    },
+    "ttgamer.ui.sheet.documents.fields.identity": {
+        "message": "Основные сведения"
+    },
+    "ttgamer.ui.sheet.documents.fields.label": {
+        "message": "Название"
+    },
+    "ttgamer.ui.sheet.documents.fields.length": {
+        "message": "Длина"
+    },
+    "ttgamer.ui.sheet.documents.fields.maneuverability": {
+        "message": "Манёвренность"
+    },
+    "ttgamer.ui.sheet.documents.fields.maximum": {
+        "message": "Максимум"
+    },
+    "ttgamer.ui.sheet.documents.fields.member": {
+        "message": "Участник"
+    },
+    "ttgamer.ui.sheet.documents.fields.members": {
+        "message": "Участники"
+    },
+    "ttgamer.ui.sheet.documents.fields.merits": {
+        "message": "Достоинства"
+    },
+    "ttgamer.ui.sheet.documents.fields.meritsAndFlaws": {
+        "message": "Достоинства и недостатки"
+    },
+    "ttgamer.ui.sheet.documents.fields.model": {
+        "message": "Модель"
+    },
+    "ttgamer.ui.sheet.documents.fields.movementAndNavigation": {
+        "message": "Движение и навигация"
+    },
+    "ttgamer.ui.sheet.documents.fields.name": {
+        "message": "Имя"
+    },
+    "ttgamer.ui.sheet.documents.fields.nature": {
+        "message": "Натура"
+    },
+    "ttgamer.ui.sheet.documents.fields.navigationComputer": {
+        "message": "Навигационный компьютер"
+    },
+    "ttgamer.ui.sheet.documents.fields.none": {
+        "message": "Пока пусто"
+    },
+    "ttgamer.ui.sheet.documents.fields.notes": {
+        "message": "Заметки"
+    },
+    "ttgamer.ui.sheet.documents.fields.owner": {
+        "message": "Владелец"
+    },
+    "ttgamer.ui.sheet.documents.fields.passengers": {
+        "message": "Пассажиры"
+    },
+    "ttgamer.ui.sheet.documents.fields.player": {
+        "message": "Игрок"
+    },
+    "ttgamer.ui.sheet.documents.fields.range": {
+        "message": "Дальность"
+    },
+    "ttgamer.ui.sheet.documents.fields.rearShields": {
+        "message": "Задние щиты"
+    },
+    "ttgamer.ui.sheet.documents.fields.removeMember": {
+        "message": "Удалить участника"
+    },
+    "ttgamer.ui.sheet.documents.fields.removeRow": {
+        "message": "Удалить строку"
+    },
+    "ttgamer.ui.sheet.documents.fields.resources": {
+        "message": "Ресурсы"
+    },
+    "ttgamer.ui.sheet.documents.fields.scale": {
+        "message": "Масштаб"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.capital": {
+        "message": "Крупный корабль"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.character": {
+        "message": "Персонаж"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.deathStar": {
+        "message": "Звезда Смерти"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.speeder": {
+        "message": "Спидер"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.starfighter": {
+        "message": "Истребитель"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.transport": {
+        "message": "Транспорт"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.vermin": {
+        "message": "Мелкое существо"
+    },
+    "ttgamer.ui.sheet.documents.fields.scaleOptions.walker": {
+        "message": "Шагоход"
+    },
+    "ttgamer.ui.sheet.documents.fields.sensorRange": {
+        "message": "Дальность сенсоров"
+    },
+    "ttgamer.ui.sheet.documents.fields.shields": {
+        "message": "Щиты"
+    },
+    "ttgamer.ui.sheet.documents.fields.size": {
+        "message": "Размер"
+    },
+    "ttgamer.ui.sheet.documents.fields.species": {
+        "message": "Вид"
+    },
+    "ttgamer.ui.sheet.documents.fields.speed": {
+        "message": "Скорость"
+    },
+    "ttgamer.ui.sheet.documents.fields.systems": {
+        "message": "Системы"
+    },
+    "ttgamer.ui.sheet.documents.fields.type": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.sheet.documents.fields.virtues": {
+        "message": "Добродетели"
+    },
+    "ttgamer.ui.sheet.documents.fields.weapon": {
+        "message": "Оружие"
+    },
+    "ttgamer.ui.sheet.documents.fields.weapons": {
+        "message": "Оружие"
+    },
+    "ttgamer.ui.sheet.documents.fields.willpower": {
+        "message": "Сила воли"
+    },
+    "ttgamer.ui.sheet.documents.manager.close": {
+        "message": "Закрыть"
+    },
+    "ttgamer.ui.sheet.documents.manager.current": {
+        "message": "текущий"
+    },
+    "ttgamer.ui.sheet.documents.manager.deleteDescription": {
+        "message": "Удалить документов — {count}? Это действие нельзя отменить."
+    },
+    "ttgamer.ui.sheet.documents.manager.deleteSelected": {
+        "message": "Удалить выбранные"
+    },
+    "ttgamer.ui.sheet.documents.manager.deleteTitle": {
+        "message": "Удалить документы"
+    },
+    "ttgamer.ui.sheet.documents.manager.empty": {
+        "message": "Документов пока нет. Создайте первый документ."
+    },
+    "ttgamer.ui.sheet.documents.manager.name": {
+        "message": "Название"
+    },
+    "ttgamer.ui.sheet.documents.manager.selectAll": {
+        "message": "Выбрать все документы"
+    },
+    "ttgamer.ui.sheet.documents.manager.selectDocument": {
+        "message": "Выбрать {title}"
+    },
+    "ttgamer.ui.sheet.documents.manager.title": {
+        "message": "Управление документами"
+    },
+    "ttgamer.ui.sheet.documents.manager.type": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.export": {
+        "message": "Экспорт"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.exportSuccess": {
+        "message": "Документ «{title}» экспортирован"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.exportTitle": {
+        "message": "Экспортировать документ в JSON"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.import": {
+        "message": "Импорт"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importError": {
+        "message": "Не удалось импортировать «{filename}»"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importLabel": {
+        "message": "Импортировать файл документа"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importSuccess": {
+        "message": "Документ «{title}» импортирован"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.importTitle": {
+        "message": "Импортировать документы из JSON"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.manage": {
+        "message": "Управление"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.manageTitle": {
+        "message": "Управление документами"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.new": {
+        "message": "Новый"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.newTitle": {
+        "message": "Создать новый документ"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.noDocumentDescription": {
+        "message": "Создайте новый документ или загрузите его через управление."
+    },
+    "ttgamer.ui.sheet.documents.toolbar.noDocumentTitle": {
+        "message": "Документ не загружен"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.reset": {
+        "message": "Сбросить"
+    },
+    "ttgamer.ui.sheet.documents.toolbar.resetDescription": {
+        "message": "Сбросить все данные документа? Это действие нельзя отменить."
+    },
+    "ttgamer.ui.sheet.documents.toolbar.resetTitle": {
+        "message": "Сбросить все данные документа"
+    },
+    "ttgamer.ui.sheet.documents.types.character": {
+        "message": "Персонаж"
+    },
+    "ttgamer.ui.sheet.documents.types.creature": {
+        "message": "Существо"
+    },
+    "ttgamer.ui.sheet.documents.types.droid": {
+        "message": "Дроид"
+    },
+    "ttgamer.ui.sheet.documents.types.fodderGroup": {
+        "message": "Группа статистов"
+    },
+    "ttgamer.ui.sheet.documents.types.vehicle": {
+        "message": "Транспорт"
+    },
+    "ttgamer.ui.sheet.documents.views.brief": {
+        "message": "Краткий"
+    },
+    "ttgamer.ui.sheet.documents.views.creatureSheet": {
+        "message": "Лист существа"
+    },
+    "ttgamer.ui.sheet.documents.views.droidSheet": {
+        "message": "Лист дроида"
+    },
+    "ttgamer.ui.sheet.documents.views.fodderSheet": {
+        "message": "Группа статистов"
+    },
+    "ttgamer.ui.sheet.documents.views.fullSheet": {
+        "message": "Полный лист"
+    },
+    "ttgamer.ui.sheet.documents.views.label": {
+        "message": "Режим отображения"
+    },
+    "ttgamer.ui.sheet.documents.views.vehicleSheet": {
+        "message": "Лист транспорта"
+    },
+    "ttgamer.ui.sheet.templates.binding.attach": {
+        "message": "Привязать каталог"
+    },
+    "ttgamer.ui.sheet.templates.binding.catalog": {
+        "message": "Каталог"
+    },
+    "ttgamer.ui.sheet.templates.binding.degraded": {
+        "message": "Каталог «{catalog}» недоступен на этом устройстве — поле использует ручной список."
+    },
+    "ttgamer.ui.sheet.templates.binding.disabled": {
+        "message": "Выкл"
+    },
+    "ttgamer.ui.sheet.templates.binding.fills": {
+        "message": "Автозаполнение"
+    },
+    "ttgamer.ui.sheet.templates.binding.fillTarget": {
+        "message": "Записывать в"
+    },
+    "ttgamer.ui.sheet.templates.cohort.addMember": {
+        "message": "Добавить участника"
+    },
+    "ttgamer.ui.sheet.templates.cohort.cancel": {
+        "message": "Отмена"
+    },
+    "ttgamer.ui.sheet.templates.cohort.confirm": {
+        "message": "Подтвердить"
+    },
+    "ttgamer.ui.sheet.templates.cohort.defeated": {
+        "message": "Выведен из боя"
+    },
+    "ttgamer.ui.sheet.templates.cohort.level": {
+        "message": "Уровень"
+    },
+    "ttgamer.ui.sheet.templates.cohort.maxMembersReached": {
+        "message": "В группе может быть не больше {count} участников."
+    },
+    "ttgamer.ui.sheet.templates.cohort.member": {
+        "message": "Участник {label}"
+    },
+    "ttgamer.ui.sheet.templates.cohort.memberLabel": {
+        "message": "Метка участника"
+    },
+    "ttgamer.ui.sheet.templates.cohort.members": {
+        "message": "Участники"
+    },
+    "ttgamer.ui.sheet.templates.cohort.penalty": {
+        "message": "Штраф"
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeDescription": {
+        "message": "У участника {label} отмечены повреждения. Удаление сотрёт их."
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeMember": {
+        "message": "Удалить участника {label}"
+    },
+    "ttgamer.ui.sheet.templates.cohort.removeTitle": {
+        "message": "Удалить раненого участника?"
+    },
+    "ttgamer.ui.sheet.templates.cohort.shortenDescription": {
+        "message": "У некоторых участников есть отметки на скрываемых уровнях. Они перейдут на последний оставшийся уровень."
+    },
+    "ttgamer.ui.sheet.templates.cohort.shortenTitle": {
+        "message": "Сократить шкалу здоровья?"
+    },
+    "ttgamer.ui.sheet.templates.cohort.trackLength": {
+        "message": "Уровни здоровья"
+    },
+    "ttgamer.ui.sheet.templates.defaults.advantages": {
+        "message": "Преимущества"
+    },
+    "ttgamer.ui.sheet.templates.defaults.body": {
+        "message": "Тело"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customKnowledges": {
+        "message": "Свои знания"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customSkills": {
+        "message": "Свои навыки"
+    },
+    "ttgamer.ui.sheet.templates.defaults.customTalents": {
+        "message": "Свои таланты"
+    },
+    "ttgamer.ui.sheet.templates.defaults.darkSideResistance": {
+        "message": "Сопротивление Тёмной Стороне"
+    },
+    "ttgamer.ui.sheet.templates.defaults.derivedStats": {
+        "message": "Производные показатели"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experience": {
+        "message": "Опыт"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceAvailable": {
+        "message": "Доступно"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceSpent": {
+        "message": "Потрачено"
+    },
+    "ttgamer.ui.sheet.templates.defaults.experienceTotal": {
+        "message": "Всего опыта"
+    },
+    "ttgamer.ui.sheet.templates.defaults.force": {
+        "message": "Сила"
+    },
+    "ttgamer.ui.sheet.templates.defaults.forcePowers": {
+        "message": "Силы Силы"
+    },
+    "ttgamer.ui.sheet.templates.defaults.forceSkills": {
+        "message": "Силовые навыки"
+    },
+    "ttgamer.ui.sheet.templates.defaults.freePoints": {
+        "message": "Свободные очки"
+    },
+    "ttgamer.ui.sheet.templates.defaults.implants": {
+        "message": "Импланты и кибернетика"
+    },
+    "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber": {
+        "message": "Инициатива (свет. меч)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.initiativeStandard": {
+        "message": "Инициатива (обыч.)"
+    },
+    "ttgamer.ui.sheet.templates.defaults.inventory": {
+        "message": "Инвентарь"
+    },
+    "ttgamer.ui.sheet.templates.defaults.jumpingDistance": {
+        "message": "Дальность прыжка"
+    },
+    "ttgamer.ui.sheet.templates.defaults.knowledges": {
+        "message": "Знания"
+    },
+    "ttgamer.ui.sheet.templates.defaults.maxForcePoints": {
+        "message": "Макс. Очки Силы"
+    },
+    "ttgamer.ui.sheet.templates.defaults.mental": {
+        "message": "Ментальные"
+    },
+    "ttgamer.ui.sheet.templates.defaults.other": {
+        "message": "Прочее"
+    },
+    "ttgamer.ui.sheet.templates.defaults.physical": {
+        "message": "Физические"
+    },
+    "ttgamer.ui.sheet.templates.defaults.portrait": {
+        "message": "Портрет"
+    },
+    "ttgamer.ui.sheet.templates.defaults.resolve": {
+        "message": "Стойкость"
+    },
+    "ttgamer.ui.sheet.templates.defaults.runningSpeed": {
+        "message": "Скорость бега"
+    },
+    "ttgamer.ui.sheet.templates.defaults.skills": {
+        "message": "Навыки"
+    },
+    "ttgamer.ui.sheet.templates.defaults.social": {
+        "message": "Социальные"
+    },
+    "ttgamer.ui.sheet.templates.defaults.talents": {
+        "message": "Таланты"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentColor": {
+        "message": "Цвет акцента"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentPrimary": {
+        "message": "Основной акцент"
+    },
+    "ttgamer.ui.sheet.templates.editor.accentSecondary": {
+        "message": "Дополнительный акцент"
+    },
+    "ttgamer.ui.sheet.templates.editor.addElement": {
+        "message": "Добавить элемент"
+    },
+    "ttgamer.ui.sheet.templates.editor.addField": {
+        "message": "Добавить поле"
+    },
+    "ttgamer.ui.sheet.templates.editor.addFieldsBlock": {
+        "message": "Добавить группу полей"
+    },
+    "ttgamer.ui.sheet.templates.editor.addOption": {
+        "message": "Добавить вариант"
+    },
+    "ttgamer.ui.sheet.templates.editor.addRow": {
+        "message": "Добавить строку"
+    },
+    "ttgamer.ui.sheet.templates.editor.addSection": {
+        "message": "Добавить секцию"
+    },
+    "ttgamer.ui.sheet.templates.editor.addTableBlock": {
+        "message": "Добавить таблицу"
+    },
+    "ttgamer.ui.sheet.templates.editor.blockTitle": {
+        "message": "Заголовок блока (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.cancel": {
+        "message": "Отмена"
+    },
+    "ttgamer.ui.sheet.templates.editor.cannotMoveIntoItself": {
+        "message": "Элемент нельзя переместить внутрь самого себя."
+    },
+    "ttgamer.ui.sheet.templates.editor.circularDependency": {
+        "message": "Обнаружена циклическая зависимость: {id}"
+    },
+    "ttgamer.ui.sheet.templates.editor.collapse": {
+        "message": "Свернуть панель"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnAuto": {
+        "message": "Авто"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnPlacement": {
+        "message": "Колонка в родителе"
+    },
+    "ttgamer.ui.sheet.templates.editor.columns": {
+        "message": "Колонки"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnWidth": {
+        "message": "Ширина колонки {index}"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnWidthsHint": {
+        "message": "Ширины пропорциональны: 2 и 1 делают первую колонку вдвое шире."
+    },
+    "ttgamer.ui.sheet.templates.editor.countMessage": {
+        "message": "Достигнут предел элементов — максимум {limit}."
+    },
+    "ttgamer.ui.sheet.templates.editor.depthMessage": {
+        "message": "Достигнут предел вложенности — максимум {limit} уровней."
+    },
+    "ttgamer.ui.sheet.templates.editor.descriptionLabel": {
+        "message": "Описание"
+    },
+    "ttgamer.ui.sheet.templates.editor.descriptionPlaceholder": {
+        "message": "Для чего эта страница?"
+    },
+    "ttgamer.ui.sheet.templates.editor.discard": {
+        "message": "Отменить"
+    },
+    "ttgamer.ui.sheet.templates.editor.docsLink": {
+        "message": "Ссылка на документацию (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.duplicateId": {
+        "message": "Дубликат идентификатора «{id}» — идентификаторы должны быть уникальны в своей области."
+    },
+    "ttgamer.ui.sheet.templates.editor.emptyLabel": {
+        "message": "Секции и поля требуют непустого названия."
+    },
+    "ttgamer.ui.sheet.templates.editor.emptyName": {
+        "message": "Требуется название шаблона."
+    },
+    "ttgamer.ui.sheet.templates.editor.equalWidths": {
+        "message": "Колонки одинаковой ширины"
+    },
+    "ttgamer.ui.sheet.templates.editor.expand": {
+        "message": "Развернуть панель"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldDescription": {
+        "message": "Подсказка (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldLabel": {
+        "message": "Название поля"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldRequired": {
+        "message": "Обязательное (визуальная отметка)"
+    },
+    "ttgamer.ui.sheet.templates.editor.fieldType": {
+        "message": "Тип поля"
+    },
+    "ttgamer.ui.sheet.templates.editor.formula": {
+        "message": "Формула"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaPlaceholder": {
+        "message": "например, passion + self-control"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaPrefix": {
+        "message": "Перед значением (например, ×)"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaSuffix": {
+        "message": "После значения (например, м)"
+    },
+    "ttgamer.ui.sheet.templates.editor.gripHandle": {
+        "message": "Рукоять перемещения — потяните, чтобы передвинуть"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupCollapsible": {
+        "message": "Сворачиваемая (состояние запоминается)"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupTitle": {
+        "message": "Название группы"
+    },
+    "ttgamer.ui.sheet.templates.editor.hiddenTitleHint": {
+        "message": "Группу без видимого заголовка нельзя свернуть."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidBounds": {
+        "message": "Минимум не может превышать максимум."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidFormula": {
+        "message": "Неверная формула в «{id}» — проверьте выражение."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidKey": {
+        "message": "Неверный ключ «{id}» — используйте строчные буквы, цифры и дефисы."
+    },
+    "ttgamer.ui.sheet.templates.editor.layoutHeading": {
+        "message": "Раскладка"
+    },
+    "ttgamer.ui.sheet.templates.editor.limitReached": {
+        "message": "Достигнут лимит — максимум {limit} ({subject})."
+    },
+    "ttgamer.ui.sheet.templates.editor.listColumns": {
+        "message": "Колонки"
+    },
+    "ttgamer.ui.sheet.templates.editor.listCustomKey": {
+        "message": "Ключ значения списка"
+    },
+    "ttgamer.ui.sheet.templates.editor.listFramed": {
+        "message": "Рамка вокруг списка"
+    },
+    "ttgamer.ui.sheet.templates.editor.listShowTitle": {
+        "message": "Показывать заголовок списка"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSource": {
+        "message": "Записи"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceCustom": {
+        "message": "Свои записи"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceEquipment": {
+        "message": "Снаряжение"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceSystem": {
+        "message": "Списки персонажа"
+    },
+    "ttgamer.ui.sheet.templates.editor.listTitle": {
+        "message": "Заголовок списка (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxFrom": {
+        "message": "Максимум из значения или формулы (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxFromPlaceholder": {
+        "message": "например, willpower.max"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxRows": {
+        "message": "Макс. строк"
+    },
+    "ttgamer.ui.sheet.templates.editor.minFrom": {
+        "message": "Минимум из значения или формулы (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.minFromPlaceholder": {
+        "message": "например, self-control"
+    },
+    "ttgamer.ui.sheet.templates.editor.minRows": {
+        "message": "Мин. строк"
+    },
+    "ttgamer.ui.sheet.templates.editor.moveDown": {
+        "message": "Переместить ниже"
+    },
+    "ttgamer.ui.sheet.templates.editor.moveUp": {
+        "message": "Переместить выше"
+    },
+    "ttgamer.ui.sheet.templates.editor.multiline": {
+        "message": "Многострочное"
+    },
+    "ttgamer.ui.sheet.templates.editor.multiple": {
+        "message": "Несколько значений"
+    },
+    "ttgamer.ui.sheet.templates.editor.name": {
+        "message": "Название"
+    },
+    "ttgamer.ui.sheet.templates.editor.namePlaceholder": {
+        "message": "Название шаблона"
+    },
+    "ttgamer.ui.sheet.templates.editor.numberMax": {
+        "message": "Максимум"
+    },
+    "ttgamer.ui.sheet.templates.editor.numberMin": {
+        "message": "Минимум"
+    },
+    "ttgamer.ui.sheet.templates.editor.numberStep": {
+        "message": "Шаг"
+    },
+    "ttgamer.ui.sheet.templates.editor.optionLabel": {
+        "message": "Название варианта"
+    },
+    "ttgamer.ui.sheet.templates.editor.options": {
+        "message": "Варианты"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteField": {
+        "message": "Поле"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteFieldHint": {
+        "message": "Одно значение: текст, число, рейтинг, выбор, формула…"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteGroup": {
+        "message": "Группа полей"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteGroupHint": {
+        "message": "Карточка с заголовком, объединяющая элементы"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteList": {
+        "message": "Список"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteListHint": {
+        "message": "Записи добавляются по одной: свои, навыки, достоинства, снаряжение…"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSection": {
+        "message": "Секция"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSectionHint": {
+        "message": "Сворачиваемый блок страницы с заголовком"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTable": {
+        "message": "Таблица"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTableHint": {
+        "message": "Строки значений с общими колонками"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTracker": {
+        "message": "Трекер"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTrackerHint": {
+        "message": "Уровни здоровья или повреждений со штрафами"
+    },
+    "ttgamer.ui.sheet.templates.editor.partCurrent": {
+        "message": "Текущее значение"
+    },
+    "ttgamer.ui.sheet.templates.editor.partMax": {
+        "message": "Максимум"
+    },
+    "ttgamer.ui.sheet.templates.editor.placeholderText": {
+        "message": "Текст-подсказка (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.presentation": {
+        "message": "Отображение"
+    },
+    "ttgamer.ui.sheet.templates.editor.primitivePart": {
+        "message": "Редактирует"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingBoxes": {
+        "message": "Клетки"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingDots": {
+        "message": "Точки"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingNumber": {
+        "message": "Число"
+    },
+    "ttgamer.ui.sheet.templates.editor.referenceKinds": {
+        "message": "Разрешённые типы документов"
+    },
+    "ttgamer.ui.sheet.templates.editor.remove": {
+        "message": "Удалить"
+    },
+    "ttgamer.ui.sheet.templates.editor.removeConfirmDescription": {
+        "message": "Есть несохранённые правки. Отменить их?"
+    },
+    "ttgamer.ui.sheet.templates.editor.removeConfirmTitle": {
+        "message": "Отменить изменения?"
+    },
+    "ttgamer.ui.sheet.templates.editor.save": {
+        "message": "Сохранить"
+    },
+    "ttgamer.ui.sheet.templates.editor.sections": {
+        "message": "Секции"
+    },
+    "ttgamer.ui.sheet.templates.editor.sectionTitle": {
+        "message": "Заголовок секции"
+    },
+    "ttgamer.ui.sheet.templates.editor.showLabel": {
+        "message": "Показывать подпись"
+    },
+    "ttgamer.ui.sheet.templates.editor.showTitle": {
+        "message": "Показывать заголовок"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceCustom": {
+        "message": "Своё значение (в шаблоне)"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceDetails": {
+        "message": "Сведения о персонаже"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceResources": {
+        "message": "Ресурсы"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceTraits": {
+        "message": "Характеристики"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceTypeLocked": {
+        "message": "Тип определяется значением листа персонажа."
+    },
+    "ttgamer.ui.sheet.templates.editor.startsCollapsed": {
+        "message": "Изначально свёрнуто"
+    },
+    "ttgamer.ui.sheet.templates.editor.tableTitle": {
+        "message": "Название таблицы (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.tableValueKey": {
+        "message": "Общий ключ значения (строки таблицы)"
+    },
+    "ttgamer.ui.sheet.templates.editor.trackerSource": {
+        "message": "Отслеживает"
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownBinding": {
+        "message": "Неизвестная привязка к данным «{id}» для этого типа документа."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownCatalog": {
+        "message": "Неизвестный каталог или поле каталога «{id}»."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownCoordinate": {
+        "message": "Неизвестное значение «{id}» в формуле."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownFillTarget": {
+        "message": "Автозаполнение ссылается на несуществующее поле «{id}»."
+    },
+    "ttgamer.ui.sheet.templates.editor.unknownLabelMessage": {
+        "message": "Неизвестная ссылка на перевод «{id}»."
+    },
+    "ttgamer.ui.sheet.templates.editor.untitledName": {
+        "message": "Шаблон без названия"
+    },
+    "ttgamer.ui.sheet.templates.editor.valueKeyLabel": {
+        "message": "Общий ключ значения (одинаковый ключ = одно значение между шаблонами)"
+    },
+    "ttgamer.ui.sheet.templates.editor.valueSource": {
+        "message": "Где хранится значение"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhen": {
+        "message": "Показывать только при совпадении значения"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenCoordinate": {
+        "message": "Ключ значения"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenOperator": {
+        "message": "Сравнение"
+    },
+    "ttgamer.ui.sheet.templates.editor.visibleWhenValue": {
+        "message": "Значение"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcAll": {
+        "message": "Все"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcFront": {
+        "message": "Перед"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcLeft": {
+        "message": "Левый борт"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcRear": {
+        "message": "Зад"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcRight": {
+        "message": "Правый борт"
+    },
+    "ttgamer.ui.sheet.templates.entities.arcTurret": {
+        "message": "Турель"
+    },
+    "ttgamer.ui.sheet.templates.entities.armorCatalog": {
+        "message": "Броня из каталога"
+    },
+    "ttgamer.ui.sheet.templates.entities.bashing": {
+        "message": "Ударный"
+    },
+    "ttgamer.ui.sheet.templates.entities.cannotSoakLethal": {
+        "message": "Не поглощает летальный урон"
+    },
+    "ttgamer.ui.sheet.templates.entities.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.sheet.templates.entities.comms": {
+        "message": "Связь"
+    },
+    "ttgamer.ui.sheet.templates.entities.copilot": {
+        "message": "Второй пилот"
+    },
+    "ttgamer.ui.sheet.templates.entities.creatureBrief": {
+        "message": "Краткий лист существа"
+    },
+    "ttgamer.ui.sheet.templates.entities.creatureSheet": {
+        "message": "Лист существа"
+    },
+    "ttgamer.ui.sheet.templates.entities.crewCapacity": {
+        "message": "Экипаж и вместимость"
+    },
+    "ttgamer.ui.sheet.templates.entities.crewStations": {
+        "message": "Посты экипажа"
+    },
+    "ttgamer.ui.sheet.templates.entities.damaged": {
+        "message": "Повреждена"
+    },
+    "ttgamer.ui.sheet.templates.entities.descriptionLabel": {
+        "message": "Описание"
+    },
+    "ttgamer.ui.sheet.templates.entities.details": {
+        "message": "Подробности"
+    },
+    "ttgamer.ui.sheet.templates.entities.durabilityReroll": {
+        "message": "Переброс десяток на прочность"
+    },
+    "ttgamer.ui.sheet.templates.entities.effect": {
+        "message": "Эффект"
+    },
+    "ttgamer.ui.sheet.templates.entities.engineer": {
+        "message": "Инженер"
+    },
+    "ttgamer.ui.sheet.templates.entities.fodderBrief": {
+        "message": "Краткий лист группы статистов"
+    },
+    "ttgamer.ui.sheet.templates.entities.fodderSheet": {
+        "message": "Лист группы статистов"
+    },
+    "ttgamer.ui.sheet.templates.entities.group": {
+        "message": "Группа"
+    },
+    "ttgamer.ui.sheet.templates.entities.gunners": {
+        "message": "Стрелки"
+    },
+    "ttgamer.ui.sheet.templates.entities.identification": {
+        "message": "Идентификация"
+    },
+    "ttgamer.ui.sheet.templates.entities.leader": {
+        "message": "Командир"
+    },
+    "ttgamer.ui.sheet.templates.entities.lethal": {
+        "message": "Летальный"
+    },
+    "ttgamer.ui.sheet.templates.entities.modelCatalog": {
+        "message": "Модель из каталога"
+    },
+    "ttgamer.ui.sheet.templates.entities.modification": {
+        "message": "Модификация"
+    },
+    "ttgamer.ui.sheet.templates.entities.modifications": {
+        "message": "Модификации и особенности"
+    },
+    "ttgamer.ui.sheet.templates.entities.movement": {
+        "message": "Передвижение"
+    },
+    "ttgamer.ui.sheet.templates.entities.pilot": {
+        "message": "Пилот"
+    },
+    "ttgamer.ui.sheet.templates.entities.pools": {
+        "message": "Пулы"
+    },
+    "ttgamer.ui.sheet.templates.entities.quickPools": {
+        "message": "Быстрые пулы"
+    },
+    "ttgamer.ui.sheet.templates.entities.quirk": {
+        "message": "Особенность"
+    },
+    "ttgamer.ui.sheet.templates.entities.scaleReference": {
+        "message": "Справка по масштабам"
+    },
+    "ttgamer.ui.sheet.templates.entities.scaleReferenceText": {
+        "message": "Каждая ступень масштаба между атакующим и целью даёт более крупному участнику +1 к сложности попадания и −1 к урону; меньшему — наоборот."
+    },
+    "ttgamer.ui.sheet.templates.entities.secondaryPool": {
+        "message": "Второстепенный пул"
+    },
+    "ttgamer.ui.sheet.templates.entities.sensors": {
+        "message": "Сенсоры"
+    },
+    "ttgamer.ui.sheet.templates.entities.soak": {
+        "message": "Поглощение"
+    },
+    "ttgamer.ui.sheet.templates.entities.soakAll": {
+        "message": "Поглощение (летальный и ударный)"
+    },
+    "ttgamer.ui.sheet.templates.entities.soakBashingOnly": {
+        "message": "Поглощение (только ударный)"
+    },
+    "ttgamer.ui.sheet.templates.entities.soaksLethal": {
+        "message": "Поглощает летальный урон"
+    },
+    "ttgamer.ui.sheet.templates.entities.source": {
+        "message": "Источник"
+    },
+    "ttgamer.ui.sheet.templates.entities.specialtyPool": {
+        "message": "Профильный пул"
+    },
+    "ttgamer.ui.sheet.templates.entities.speciesCatalog": {
+        "message": "Запись бестиария"
+    },
+    "ttgamer.ui.sheet.templates.entities.system": {
+        "message": "Система"
+    },
+    "ttgamer.ui.sheet.templates.entities.systemSlots": {
+        "message": "Системные слоты"
+    },
+    "ttgamer.ui.sheet.templates.entities.threatTier": {
+        "message": "Уровень угрозы"
+    },
+    "ttgamer.ui.sheet.templates.entities.tierFodder": {
+        "message": "Статист"
+    },
+    "ttgamer.ui.sheet.templates.entities.tierNamed": {
+        "message": "Именной"
+    },
+    "ttgamer.ui.sheet.templates.entities.traits": {
+        "message": "Характеристики"
+    },
+    "ttgamer.ui.sheet.templates.entities.vehicleBrief": {
+        "message": "Краткий лист транспорта"
+    },
+    "ttgamer.ui.sheet.templates.entities.vehicleSheet": {
+        "message": "Лист транспорта"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.builtIn": {
+        "message": "Встроенная часть страницы"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.fields": {
+        "message": "Группа полей"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.formula": {
+        "message": "Вычисляемое значение (только чтение)"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.group": {
+        "message": "Группа полей"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.image": {
+        "message": "Изображение"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.list": {
+        "message": "Кастомный список"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.number": {
+        "message": "Число"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.rating": {
+        "message": "Рейтинг"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.reference": {
+        "message": "Ссылка на документ"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.resource": {
+        "message": "Ресурс"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.section": {
+        "message": "Секция"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.select": {
+        "message": "Выбор"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.table": {
+        "message": "Таблица"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.text": {
+        "message": "Текст"
+    },
+    "ttgamer.ui.sheet.templates.fieldTypes.toggle": {
+        "message": "Переключатель"
+    },
+    "ttgamer.ui.sheet.templates.library.button": {
+        "message": "Шаблоны"
+    },
+    "ttgamer.ui.sheet.templates.library.buttonTitle": {
+        "message": "Управление шаблонами страниц персонажа"
+    },
+    "ttgamer.ui.sheet.templates.library.defaultBadge": {
+        "message": "Стандартный"
+    },
+    "ttgamer.ui.sheet.templates.library.delete": {
+        "message": "Удалить"
+    },
+    "ttgamer.ui.sheet.templates.library.deleteRefused": {
+        "message": "«{name}» — стандартная страница, её нельзя удалить. Вместо этого сделайте копию."
+    },
+    "ttgamer.ui.sheet.templates.library.duplicate": {
+        "message": "Дублировать"
+    },
+    "ttgamer.ui.sheet.templates.library.duplicateId": {
+        "message": "«{id}» — встроенная страница; шаблонам нужен собственный идентификатор."
+    },
+    "ttgamer.ui.sheet.templates.library.edit": {
+        "message": "Изменить"
+    },
+    "ttgamer.ui.sheet.templates.library.empty": {
+        "message": "Шаблонов пока нет. Создайте первый."
+    },
+    "ttgamer.ui.sheet.templates.library.export": {
+        "message": "Экспорт"
+    },
+    "ttgamer.ui.sheet.templates.library.incompatibleBadge": {
+        "message": "Несовместимый формат"
+    },
+    "ttgamer.ui.sheet.templates.library.incompatibleHint": {
+        "message": "Сохранено в предыдущем формате шаблонов. Хранится только для восстановления — пересоздайте в новом редакторе."
+    },
+    "ttgamer.ui.sheet.templates.library.kind": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.sheet.templates.library.modifiedBadge": {
+        "message": "Изменён"
+    },
+    "ttgamer.ui.sheet.templates.library.new": {
+        "message": "Новый шаблон"
+    },
+    "ttgamer.ui.sheet.templates.library.reset": {
+        "message": "Вернуть оригинал"
+    },
+    "ttgamer.ui.sheet.templates.library.resetConfirmDescription": {
+        "message": "«{name}» будет восстановлен в исходном виде. Данные документов сохранятся."
+    },
+    "ttgamer.ui.sheet.templates.library.resetConfirmTitle": {
+        "message": "Вернуть стандартный шаблон к оригиналу?"
+    },
+    "ttgamer.ui.sheet.templates.library.title": {
+        "message": "Шаблоны страниц"
+    },
+    "ttgamer.ui.sheet.templates.library.unnamedKind": {
+        "message": "Другое"
+    },
+    "ttgamer.ui.sheet.templates.page.embedNoDocument": {
+        "message": "Создайте или откройте персонажа, чтобы заполнить эту часть листа прямо здесь."
+    },
+    "ttgamer.ui.sheet.templates.page.fallbackDescription": {
+        "message": "Назначенный шаблон отсутствует. Показана стандартная страница — можно выбрать другую ниже."
+    },
+    "ttgamer.ui.sheet.templates.page.fallbackTitle": {
+        "message": "Страница шаблона недоступна"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaClamped": {
+        "message": "Ограничено связанным значением"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaDegraded": {
+        "message": "Невозможно вычислить «{field}»: {reason}."
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonCircular": {
+        "message": "циклическая зависимость"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonDivision": {
+        "message": "деление на ноль"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonNonNumeric": {
+        "message": "одно из значений — не число"
+    },
+    "ttgamer.ui.sheet.templates.page.formulaReasonUnknown": {
+        "message": "значение «{coordinate}» недоступно"
+    },
+    "ttgamer.ui.sheet.templates.page.imageAlt": {
+        "message": "Изображение шаблона"
+    },
+    "ttgamer.ui.sheet.templates.page.imageInvalid": {
+        "message": "Источник изображения недоступен или небезопасен."
+    },
+    "ttgamer.ui.sheet.templates.page.imageRemove": {
+        "message": "Удалить изображение"
+    },
+    "ttgamer.ui.sheet.templates.page.imageUpload": {
+        "message": "Загрузить изображение"
+    },
+    "ttgamer.ui.sheet.templates.page.imageUrl": {
+        "message": "URL изображения"
+    },
+    "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
+        "message": "Привязка «{binding}» недоступна на этом устройстве."
+    },
+    "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
+        "message": "Не заполнено обязательных полей: {count}."
+    },
+    "ttgamer.ui.sheet.templates.primitives.addPreset": {
+        "message": "Добавить пресет"
+    },
+    "ttgamer.ui.sheet.templates.primitives.binding": {
+        "message": "Привязка к данным"
+    },
+    "ttgamer.ui.sheet.templates.primitives.boundTo": {
+        "message": "Привязано: {binding}"
+    },
+    "ttgamer.ui.sheet.templates.primitives.compact": {
+        "message": "Компактно (формат brief)"
+    },
+    "ttgamer.ui.sheet.templates.primitives.degraded": {
+        "message": "Привязка «{binding}» недоступна на этом устройстве."
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupIdentity": {
+        "message": "Поля личности"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupList": {
+        "message": "Кастомные списки"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupResource": {
+        "message": "Ресурсы"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupTrack": {
+        "message": "Треки состояний"
+    },
+    "ttgamer.ui.sheet.templates.primitives.groupTrait": {
+        "message": "Трейты"
+    },
+    "ttgamer.ui.sheet.templates.primitives.labelOverride": {
+        "message": "Своё название"
+    },
+    "ttgamer.ui.sheet.templates.primitives.labelOverridePlaceholder": {
+        "message": "Как у привязки"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presetLabel": {
+        "message": "Название записи"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presets": {
+        "message": "Предустановленные записи"
+    },
+    "ttgamer.ui.sheet.templates.primitives.presetValue": {
+        "message": "Значение по умолчанию"
+    },
+    "ttgamer.ui.sheet.templates.primitives.removePreset": {
+        "message": "Удалить пресет"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLevelName": {
+        "message": "Название уровня {index}"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLevels": {
+        "message": "Уровни"
+    },
+    "ttgamer.ui.sheet.templates.reference.missing": {
+        "message": "Связанный документ больше не существует"
+    },
+    "ttgamer.ui.sheet.templates.reference.noMatches": {
+        "message": "Подходящих документов нет"
+    },
+    "ttgamer.ui.sheet.templates.reference.open": {
+        "message": "Открыть «{title}»"
+    },
+    "ttgamer.ui.sheet.templates.reference.remove": {
+        "message": "Убрать «{title}»"
+    },
+    "ttgamer.ui.sheet.templates.reference.search": {
+        "message": "Введите имя для поиска"
+    },
+    "ttgamer.ui.sheet.templates.transfer.conflictPrompt": {
+        "message": "Заменить, импортировать копию с новым ID или отменить."
+    },
+    "ttgamer.ui.sheet.templates.transfer.conflictTitle": {
+        "message": "Шаблон уже существует"
+    },
+    "ttgamer.ui.sheet.templates.transfer.degradedReport": {
+        "message": "Некоторые каталоги недоступны — поля переведены на ручные списки: {fields}"
+    },
+    "ttgamer.ui.sheet.templates.transfer.exportSuccess": {
+        "message": "Шаблон «{title}» экспортирован"
+    },
+    "ttgamer.ui.sheet.templates.transfer.import": {
+        "message": "Импорт шаблона"
+    },
+    "ttgamer.ui.sheet.templates.transfer.importError": {
+        "message": "Не удалось импортировать «{filename}»"
+    },
+    "ttgamer.ui.sheet.templates.transfer.importErrorFormat": {
+        "message": "Не удалось импортировать «{filename}» — это не файл шаблона TTGamer."
+    },
+    "ttgamer.ui.sheet.templates.transfer.importErrorSchema": {
+        "message": "Не удалось импортировать «{filename}» — структура шаблона повреждена."
+    },
+    "ttgamer.ui.sheet.templates.transfer.importErrorVersion": {
+        "message": "Не удалось импортировать «{filename}» — файл создан в другой версии формата шаблонов."
+    },
+    "ttgamer.ui.sheet.templates.transfer.importLabel": {
+        "message": "Файл шаблона"
+    },
+    "ttgamer.ui.sheet.templates.transfer.importSuccess": {
+        "message": "Шаблон «{title}» импортирован"
+    },
+    "ttgamer.ui.sheet.templates.transfer.importTitle": {
+        "message": "Импортировать шаблон страницы из JSON"
     }
 }

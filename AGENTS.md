@@ -2,7 +2,15 @@
 
 ## 1. Overview
 
-Docusaurus site hosting docs and modular React modules (character sheet manager, dice roller) for a Star Wars WEG/WoD hybrid TTRPG system.
+Docusaurus site hosting documentation and modular React tools for tabletop roleplaying games. The current production content and character sheet target a Star Wars WEG/WoD hybrid; future systems should integrate through explicit system boundaries instead of adding system conditionals throughout shared code.
+
+**Canonical deployment:** `https://ttgamer.vercel.app`. GitHub Pages settings remain only for repository links and the optional manual deploy command.
+
+**Version source:** `package.json`. Docusaurus exposes it through `customFields.version`; do not hard-code the current version in UI code.
+
+**Source-of-truth pattern:** keep machine-readable facts with one owner. Package version lives in `package.json`, release summaries in the first `CHANGELOG.md` entry, UI/catalog translation sources in `translations/source`, documentation parity in `validate:i18n`, and catalog integrity in `validate:data`. Prose may summarize those facts but must not become a second authoritative source. Roadmap intent remains human-written in TODO files.
+
+**Running server:** Usually user is already running dev server of app on http://localhost:3000/, so check fo it existence before killing processes or creating new one.
 
 **Routes:**
 | Route | Purpose |
@@ -13,21 +21,21 @@ Docusaurus site hosting docs and modular React modules (character sheet manager,
 
 ## 2. Tech Stack
 
-| Area            | Technology                       |
-| --------------- | -------------------------------- |
-| Package Manager | yarn@1.22.22                     |
-| Site Framework  | Docusaurus 3.10 (preset-classic) |
-| Frontend        | React 19 + TypeScript 6 (strict) |
-| State           | Zustand 5 (persist middleware)   |
-| Styling         | Tailwind CSS 3 + clsx            |
-| Forms           | React Hook Form + Zod            |
-| Persistence     | localForage (IndexedDB)          |
-| Icons           | Lucide-react                     |
-| Components      | Radix UI primitives              |
-| Dice Logic      | moo (lexer), nearley (parser)    |
-| 3D Rendering    | Three.js + cannon-es             |
-| Testing         | Vitest                           |
-| i18n            | Docusaurus i18n (en, ru)         |
+| Area            | Technology                          |
+| --------------- | ----------------------------------- |
+| Package Manager | yarn@1.22.22                        |
+| Site Framework  | Docusaurus 3.10 (preset-classic)    |
+| Frontend        | React 19 + TypeScript 6 (strict)    |
+| State           | Zustand 5 (persist middleware)      |
+| Styling         | Tailwind CSS 3 + clsx               |
+| Validation      | Zod                                 |
+| Persistence     | localForage (IndexedDB)             |
+| Icons           | Lucide-react                        |
+| Components      | Radix UI primitives                 |
+| Dice Logic      | moo lexer + hand-written AST parser |
+| 3D Rendering    | Three.js + cannon-es                |
+| Testing         | Vitest                              |
+| i18n            | Docusaurus i18n (en, ru)            |
 
 ## 3. Development Commands
 
@@ -42,19 +50,25 @@ Docusaurus site hosting docs and modular React modules (character sheet manager,
 | `yarn test`                         | Run Vitest tests                     |
 | `yarn test:watch`                   | Vitest watch mode                    |
 | `yarn test:coverage`                | Vitest coverage report               |
+| `yarn validate:data`                | Validate catalogs and references     |
+| `yarn validate:i18n`                | Check English/Russian docs parity    |
+| `yarn check:version`                | Check package/changelog/UI version   |
+| `yarn verify:fast`                  | Lint and typecheck                   |
+| `yarn verify:full`                  | Lint, typecheck, tests, build        |
 | `yarn deploy`                       | Deploy to GitHub Pages               |
 | `yarn clear`                        | Clear Docusaurus cache               |
 
 ## 4. Code Conventions
 
-- **Prettier:** `semi: true`, `singleQuote: true`, `tabWidth: 2`
+- **Prettier:** `semi: true`, `singleQuote: true`, `tabWidth: 4`
 - **ESLint:** React hooks + a11y focused, strict ESM (no `require()`)
 - **Styling:** Tailwind + `clsx` for conditional classes
 - **Icons:** Lucide-react
-- **No comments** unless explicitly requested
-- **Imports:** separate `import type { ... }` from value imports; sorted alphabetically
+- **Comments:** keep them uncommon; use them for non-obvious constraints or rationale, not narration
+- **Imports:** separate `import type { ... }` from value imports; let ESLint sort groups
 - **Types:** Prefer `interface` for object shapes, `type` for unions/intersections; avoid `any`
 - **Config files:** `tailwind.config.cjs` and `postcss.config.js` must be CommonJS (`module.exports`) for Docusaurus webpack
+- **Language:** repository-level documents and code (specs, TODO/TOFIX, code comments) are English-only; Russian is a localization mirror for user-facing surfaces only (UI strings via `translations/source`, docs locales via i18n)
 
 ## 5. Accessibility Rules
 
@@ -63,52 +77,26 @@ Docusaurus site hosting docs and modular React modules (character sheet manager,
 - Collapsible sections must have `aria-expanded`
 - Error messages should have `role="alert"`
 
-## 6. Feature Roadmap
-
-### Done
-
-- [x] Character sheet — sentient/droid (9 attributes, 30 abilities, Force, Virtues, health, inventory, derived stats)
-- [x] 3D dice roller (WebGL + cannon-es physics, sound, 2D SVG fallback, roll history)
-- [x] Inline dice rolls in docs
-- [x] Data catalogs — searchable/sortable/filterable tables (species, Force powers, abilities, merits/flaws, backgrounds, equipment, vehicles, creatures, terminology)
-- [x] Full documentation — 29 files: core rules, character creation (10-step), combat, vehicles, GM section, bestiary, example of play
-- [x] Character context & viewer mode (multi-character, read-only view, presets)
-- [x] i18n docs translation (en/ru)
-
-### In Progress
-
-- [ ] UI i18n (extract English strings to JSON files)
-- [ ] WoD (VtM 2e) system docs — structure started (clans, disciplines, Blood Points, Humanity)
-- [ ] Data file i18n (add `ru` fields to data entries)
-- [ ] Discord webhooks — frontend done (settings modal, subscription, sender); backend proxy pending (security)
-
-### Planned
-
-- [ ] Vehicle sheet
-- [ ] Other systems sheets (D&D, Pathfinder)
-- [ ] Database + authentication layer
-- [ ] Lazy loading for Three.js / cannon-es
-- [ ] Dice pool tabs for Pathfinder/Cthulhu
-
-## 7. Project Structure
+## 6. Project Structure
 
 ```
 ├── src/
 │   ├── dice_roller/           # Dice roller module (logic, UI, 3D renderer)
-│   │   ├── dice-logic/        #   Lexer (moo), parser (nearley), evaluator, renderer
+│   │   ├── dice-logic/        #   moo lexer, AST parser, evaluator, renderer
 │   │   ├── components/        #   Dice pool, history, 2D/3D dice, InlineRoll
 │   │   ├── store/             #   Zustand store
 │   │   └── utils/             #   Constants, events, types-ext
 │   ├── sheet_manager/         # Character sheet manager
-│   │   ├── components/        #   Modal, viewer, StatDot, TraitRow, collapsibles
-│   │   ├── features/sheet/    #   Sheet blocks (Attribute, Skill, Health, Force, etc.)
+│   │   ├── components/        #   Modal, StatDot, TraitRow, collapsibles
+│   │   ├── features/sheet/    #   Workspace shell + declarative template renderer
 │   │   ├── store/             #   Zustand + IndexedDB persistence
 │   │   ├── types/             #   Zod schemas + TS types
 │   │   └── context/           #   CharacterContext (multi-character)
-│   ├── external_apis/         # External API integrations
-│   │   └── discord/           #   Discord webhook sender (sendToDiscord.ts, barrel)
-│   ├── discord/               # Discord integration (legacy re-exports)
-│   ├── data/                  # Data layer (29 files) — all catalogs
+│   ├── integrations/          # External/cross-feature adapters
+│   │   ├── discord/           #   Bounded, queued Discord webhook delivery
+│   │   ├── docs-character-rolls/ # Documentation ↔ sheet/dice adapter
+│   │   └── sheet-dice/        #   Character stat ↔ dice panel adapter
+│   ├── data/                  # Catalog entries, filters, and table configs
 │   ├── shared/                # DataCatalog, EntityCard, TWWrapper, hooks, utils
 │   │   ├── components/        #   Reusable UI components (SecretField, DataCatalog, EntityCard, etc.)
 │   │   ├── hooks/             #   useLocalStorageState, useSessionStorageState, etc.
@@ -117,20 +105,46 @@ Docusaurus site hosting docs and modular React modules (character sheet manager,
 │   ├── theme/                 # Theme swizzles (Root, NavbarItem)
 │   └── css/                   # Global CSS + Tailwind
 ├── docs/                      # Documentation (MDX)
-│   ├── star-wars-wod-2e/      # 29 files — fully written
+│   ├── star-wars-wod-2e/      # 45 files — fully written
 │   └── wod/                   # VtM 2e structure — in progress
 ├── i18n/                      # Translations (en, ru)
-├── tests/                     # Vitest tests (dice_roller)
+├── translations/source/        # Canonical YAML UI/catalog translation sources
+├── scripts/                   # Catalog, i18n, and version validators
+├── tests/                     # Vitest logic, integration, and component tests
 └── static/                    # Images, sounds (dice impacts, surfaces)
 ```
 
-## 8. Key Skills (`.opencode/skills/`)
+## 7. Key Skills (`.agents/skills/`)
 
-| Skill                    | When to Load                                                 |
-| ------------------------ | ------------------------------------------------------------ |
-| `dice-logic`             | Working on dice lexer, parser, evaluator, or renderer        |
-| `sheet-manager`          | Working on character schema, store, derived stats, or blocks |
-| `docusaurus-integration` | Adding pages, navbar items, theme config                     |
-| `tailwind-theming`       | Using colors, dark mode, palette variables                   |
-| `mdx-documentation`      | Writing MDX docs — admonitions, cross-refs, dice notation    |
-| `typescript`             | Before writing any `.ts`/`.tsx` — code style & optimization  |
+| Skill                    | When to Load                                                           |
+| ------------------------ | ---------------------------------------------------------------------- |
+| `dice-logic`             | Working on dice lexer, parser, evaluator, or renderer                  |
+| `sheet-manager`          | Working on character schema, store, derived stats, or sheet elements   |
+| `sheet-templates`        | Anything template-related: tree, values, bindings, formulas, editor    |
+| `docusaurus-integration` | Adding pages, navbar items, theme config                               |
+| `tailwind-theming`       | Using colors, dark mode, palette variables                             |
+| `mdx-documentation`      | Writing MDX docs — admonitions, cross-refs, dice notation              |
+| `ui-i18n`                | Editing YAML UI/catalog translations or generated adapters             |
+| `backlog`                | Editing TODO.md/TOFIX.md or normalizing raw input into backlog entries |
+| `typescript`             | Before writing any `.ts`/`.tsx` — code style & optimization            |
+
+## 8. Module Boundaries
+
+- `dice_roller/dice-logic/index.ts` is the small public API. Internal dice code and tests should import the specific internal file they own.
+- `shared/` contains system-independent UI and utilities only. Cross-feature or external-service behavior belongs in `integrations/`.
+- Bound sheet elements read through `useBoundDocument()` (character capability for characters, typed document data for other kinds); pages are shipped templates, not React blocks.
+- Imported character JSON must pass `BaseCharacterSchema`; Zod strips unknown legacy fields.
+- Data changes must pass `yarn validate:data`. Star Wars documentation path changes must be mirrored under Russian i18n and pass `yarn validate:i18n`.
+- YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`; do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.
+
+## 9. Specs vs Current State
+
+- `specs/NNN-*` are change records: they explain why a feature was built, and later specs amend earlier ones. Never reconstruct current behavior from a spec chain.
+- Current behavior lives in module `AGENTS.md` files and `.agents/skills/`. A feature is complete only when those are updated and superseded specs carry a historical banner.
+
+## 10. Verification Scope
+
+- Small code edit: targeted tests plus `yarn verify:fast`.
+- Dice parser/evaluator or schema/persistence edit: `yarn verify`.
+- Config, dependency, route, generated CSS, or documentation-path edit: `yarn verify:full`.
+- The pre-commit hook runs the full verifier on `main`/`master` and the fast verifier on other branches.

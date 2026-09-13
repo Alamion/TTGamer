@@ -1,11 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import {
-    parseToAST,
-    evaluateDiceAST,
-    getRawDiceValues,
-    rollDices,
-} from '@site/src/dice_roller/dice-logic';
-import type { DiceRoll, ASTNode, DiceGroupNode } from '@site/src/dice_roller/dice-logic';
+import { evaluateDiceAST, getRawDiceValues } from '@site/src/dice_roller/dice-logic/dice-evaluator';
+import { parseToAST } from '@site/src/dice_roller/dice-logic/dice-parser';
+import { rollDices } from '@site/src/dice_roller/dice-logic/dice-roller';
+import type { ASTNode, DiceGroupNode, DiceRoll } from '@site/src/dice_roller/dice-logic/types';
+import { describe, expect, it } from 'vitest';
 
 function mockRandom(...values: number[]): () => number {
     let i = 0;

@@ -1,5 +1,31 @@
 # Changelog
 
+## v3.5.0
+
+### Major feat
+
+- **Entity sheet templates (spec 007)**: creature, vehicle, and fodder group documents render shipped full + brief templates (`systems/star-wars-wod/templates/{creature,vehicle,fodder}.ts`) covering the conversion book sheets plus GM additions — creature merits/flaws, movement, threat tier with tier-dependent soak, description/source; vehicle category, Durability reroll, system slots with damage marker, weapon arcs, crew stations linked to characters, modifications & quirks; fodder quick pools, leader link, bashing-only soak reminder
+- **Kind-independent template bindings**: `useBoundDocument()` lets template elements read and write any document kind's typed data (character capability for characters); new `rows` binding kind (attacks, weapons, configuration), enum/numeric/title-syncing field bindings, per-kind `entityBindings.ts`
+- **Member tracks**: one condition track per pack/squad/squadron member with letters A–L…, bounded member count, confirmation before removing a damaged member, "out of the fight" state, and fodder health tracks of 3/5/7 levels (new groups 3, existing groups keep 7; shortening collapses hidden marks)
+- **Catalog fills overwrite mapped values**: bestiary and vehicle catalogs with Star Wars adapters (dice → dots with clamping, scale names, armor split, arcs); fills write template values and document data in one change; a missing detail no longer clears its target; weapon rows suggest ranged/melee catalog entries
+- **Documentation on templates**: all sheet embeds in docs (en + ru) use `TemplateFragment` / `TemplatePreview`; creature and vehicle rules pages show read-only previews (Wampa, stormtrooper squad, Red Five, Luke's Landspeeder, Millennium Falcon, vehicle damage states) instead of static tables; editable embeds prompt to create a character when none is open
+- **Legacy sheet retirement**: pre-template blocks, `CharacterViewer`, the creature/vehicle/fodder/brief React pages, and the `built-in` layout path are removed (reference copies in `context/legacy-sheet-components/`); every view is a shipped template
+- **Template system (specs 003–006)**: custom page templates with a recursive node tree (sections, groups, fields, tables, lists, primitives), formulas, images, system bindings, editable default templates with overrides, template editor with drag and drop, import/export, and translatable labels
+
+### Minor feat
+
+- **Searchable document references**: reference fields (crew stations, gunners, fodder leader) show chosen documents as chips with open/remove actions and add documents through a search that lists at most eight matches — never the whole campaign
+- **Render conditions and collapsed defaults**: any template node can be shown only while a value matches (`visibleWhen`); sections and groups can start collapsed; select options take translated labels; template editor controls for both
+- **Per-kind brief views**: `creature-brief`, `vehicle-brief`, `fodder-brief`; saved `brief` / `npc-card` choices resolve to each kind's own brief
+- **Observable fallbacks**: new `template-fallback`, `reference-target-missing`, and `catalog-detail-out-of-range` diagnostics; page resolution never throws
+- **Setting-neutral authoring**: `src/sheet_manager/templates/builders.ts` + `wod-like/templateBuilders.ts`; shared template layers are guarded against system identifiers by tests
+
+### Fix
+
+- **Default overrides by canonical view**: an edited brief override of one kind no longer applies to other kinds opened through the shared `brief` alias
+- **Health preview documents**: `healthPreviewDocument` builds a valid character (the production build failed once it was used)
+- **Fodder group layout**: attributes in three columns and abilities beside Willpower (no overlapping ability rows)
+
 ## v3.4.0
 
 ### Major feat

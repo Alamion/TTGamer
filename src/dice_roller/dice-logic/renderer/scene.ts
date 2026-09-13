@@ -1,16 +1,16 @@
 import { isDevelopment } from '@site/src/shared/utils/env';
 import {
     AmbientLight,
+    CameraHelper,
     DirectionalLight,
     Mesh,
+    PCFShadowMap,
     PerspectiveCamera,
     PlaneGeometry,
     Scene,
     ShadowMaterial,
     Vector3,
     WebGLRenderer,
-    PCFShadowMap,
-    CameraHelper,
 } from 'three';
 
 export class SceneManager {

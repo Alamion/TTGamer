@@ -8,14 +8,18 @@ export function debug(...args: unknown[]): void {
     }
 }
 
+function prefix(title?: string) {
+    return title ? `[${MODULE_NAME}:${title}]` : `[${MODULE_NAME}]`;
+}
+
 export function info(message: string, title?: string, consoleArgs?: unknown[]): void {
-    console.log(`[${MODULE_NAME}]`, message, ...(consoleArgs || []));
+    console.log(prefix(title), message, ...(consoleArgs || []));
 }
 
 export function warn(message: string, title?: string, consoleArgs?: unknown[]): void {
-    console.warn(`[${MODULE_NAME}]`, message, ...(consoleArgs || []));
+    console.warn(prefix(title), message, ...(consoleArgs || []));
 }
 
 export function error(message: string, title?: string, consoleArgs?: unknown[]): void {
-    console.error(`[${MODULE_NAME}]`, message, ...(consoleArgs || []));
+    console.error(prefix(title), message, ...(consoleArgs || []));
 }

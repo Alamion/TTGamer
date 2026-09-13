@@ -1,1 +1,1 @@
-export { CharacterSheet } from './components/CharacterSheet.tsx';
+export { CharacterSheet } from './CharacterSheet.tsx';

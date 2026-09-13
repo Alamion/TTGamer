@@ -1,0 +1,3657 @@
+[
+    {
+        "id": "full-sheet",
+        "name": "Full sheet",
+        "systemId": "star-wars-wod",
+        "documentKind": "character",
+        "schemaVersion": 3,
+        "children": [
+            {
+                "id": "base",
+                "type": "section",
+                "title": "Base",
+                "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
+                "children": [
+                    {
+                        "id": "base-portrait",
+                        "type": "group",
+                        "title": "Portrait",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "portrait-image",
+                                "type": "image",
+                                "label": "Portrait",
+                                "valueKey": "portrait",
+                                "compact": false,
+                                "required": false,
+                                "hideLabel": true,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait"
+                            }
+                        ],
+                        "column": 1,
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait"
+                    },
+                    {
+                        "id": "identity-fields",
+                        "type": "group",
+                        "title": "Identity",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "field-name",
+                                "type": "text",
+                                "label": "Name",
+                                "valueKey": "name",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.name.label"
+                            },
+                            {
+                                "id": "field-concept",
+                                "type": "text",
+                                "label": "Concept",
+                                "valueKey": "concept",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label"
+                            },
+                            {
+                                "id": "field-species",
+                                "type": "text",
+                                "label": "Species",
+                                "valueKey": "species",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.species.label"
+                            },
+                            {
+                                "id": "field-player",
+                                "type": "text",
+                                "label": "Player",
+                                "valueKey": "player",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.player.label"
+                            },
+                            {
+                                "id": "field-nature",
+                                "type": "text",
+                                "label": "Nature",
+                                "valueKey": "nature",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.nature.label"
+                            },
+                            {
+                                "id": "field-home-world",
+                                "type": "text",
+                                "label": "Home World",
+                                "valueKey": "home-world",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.homeWorld.label"
+                            },
+                            {
+                                "id": "field-adventure",
+                                "type": "text",
+                                "label": "Adventure",
+                                "valueKey": "adventure",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.adventure.label"
+                            },
+                            {
+                                "id": "field-demeanor",
+                                "type": "text",
+                                "label": "Demeanor",
+                                "valueKey": "demeanor",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.demeanor.label"
+                            },
+                            {
+                                "id": "field-age",
+                                "type": "text",
+                                "label": "Age",
+                                "valueKey": "age",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.age.label"
+                            }
+                        ],
+                        "columns": 3,
+                        "column": 2,
+                        "hideTitle": true,
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
+                    },
+                    {
+                        "id": "base-appearance",
+                        "type": "group",
+                        "title": "Appearance",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "field-gender",
+                                "type": "text",
+                                "label": "Gender",
+                                "valueKey": "gender",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.gender.label"
+                            },
+                            {
+                                "id": "field-height",
+                                "type": "text",
+                                "label": "Height",
+                                "valueKey": "height",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.height.label"
+                            },
+                            {
+                                "id": "field-build",
+                                "type": "text",
+                                "label": "Build",
+                                "valueKey": "build",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.build.label"
+                            },
+                            {
+                                "id": "field-hair",
+                                "type": "text",
+                                "label": "Hair",
+                                "valueKey": "hair",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.hair.label"
+                            },
+                            {
+                                "id": "field-eyes",
+                                "type": "text",
+                                "label": "Eyes",
+                                "valueKey": "eyes",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.eyes.label"
+                            },
+                            {
+                                "id": "field-features",
+                                "type": "text",
+                                "label": "Features",
+                                "valueKey": "features",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.features.label"
+                            }
+                        ],
+                        "columns": 3,
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.base.appearance"
+                    },
+                    {
+                        "id": "base-biography",
+                        "type": "group",
+                        "title": "Biography",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "field-biography",
+                                "type": "text",
+                                "label": "Biography",
+                                "valueKey": "biography",
+                                "multiline": true,
+                                "compact": false,
+                                "required": false,
+                                "hideLabel": true,
+                                "placeholder": "Character biography...",
+                                "labelMessage": "ttgamer.ui.sheet.base.biography",
+                                "placeholderMessage": "ttgamer.ui.sheet.base.biographyPlaceholder"
+                            }
+                        ],
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.base.biography"
+                    }
+                ],
+                "columns": 2,
+                "labelMessage": "ttgamer.ui.sheet.base.title"
+            },
+            {
+                "id": "attributes",
+                "type": "section",
+                "title": "Attributes",
+                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
+                "children": [
+                    {
+                        "id": "attributes-physical",
+                        "type": "group",
+                        "title": "Physical",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-strength",
+                                "type": "rating",
+                                "label": "Strength",
+                                "valueKey": "strength",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/strength"
+                            },
+                            {
+                                "id": "trait-dexterity",
+                                "type": "rating",
+                                "label": "Dexterity",
+                                "valueKey": "dexterity",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/dexterity"
+                            },
+                            {
+                                "id": "trait-stamina",
+                                "type": "rating",
+                                "label": "Stamina",
+                                "valueKey": "stamina",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/stamina"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.physical"
+                    },
+                    {
+                        "id": "attributes-social",
+                        "type": "group",
+                        "title": "Social",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-charisma",
+                                "type": "rating",
+                                "label": "Charisma",
+                                "valueKey": "charisma",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/charisma"
+                            },
+                            {
+                                "id": "trait-manipulation",
+                                "type": "rating",
+                                "label": "Manipulation",
+                                "valueKey": "manipulation",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/manipulation"
+                            },
+                            {
+                                "id": "trait-appearance",
+                                "type": "rating",
+                                "label": "Appearance",
+                                "valueKey": "appearance",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/appearance"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.social"
+                    },
+                    {
+                        "id": "attributes-mental",
+                        "type": "group",
+                        "title": "Mental",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-perception",
+                                "type": "rating",
+                                "label": "Perception",
+                                "valueKey": "perception",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/perception"
+                            },
+                            {
+                                "id": "trait-intelligence",
+                                "type": "rating",
+                                "label": "Intelligence",
+                                "valueKey": "intelligence",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/intelligence"
+                            },
+                            {
+                                "id": "trait-wits",
+                                "type": "rating",
+                                "label": "Wits",
+                                "valueKey": "wits",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/wits"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.mental"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes"
+            },
+            {
+                "id": "skills",
+                "type": "section",
+                "title": "Skills",
+                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
+                "children": [
+                    {
+                        "id": "abilities-talents",
+                        "type": "group",
+                        "title": "Talents",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-alertness",
+                                "type": "rating",
+                                "label": "Alertness",
+                                "valueKey": "alertness",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-athletics",
+                                "type": "rating",
+                                "label": "Athletics",
+                                "valueKey": "athletics",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-brawl",
+                                "type": "rating",
+                                "label": "Brawl",
+                                "valueKey": "brawl",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-command",
+                                "type": "rating",
+                                "label": "Command",
+                                "valueKey": "command",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-diplomacy",
+                                "type": "rating",
+                                "label": "Diplomacy",
+                                "valueKey": "diplomacy",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-dodge",
+                                "type": "rating",
+                                "label": "Dodge",
+                                "valueKey": "dodge",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-empathy",
+                                "type": "rating",
+                                "label": "Empathy",
+                                "valueKey": "empathy",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-intimidation",
+                                "type": "rating",
+                                "label": "Intimidation",
+                                "valueKey": "intimidation",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-streetwise",
+                                "type": "rating",
+                                "label": "Streetwise",
+                                "valueKey": "streetwise",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-subterfuge",
+                                "type": "rating",
+                                "label": "Subterfuge",
+                                "valueKey": "subterfuge",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "list-talents",
+                                "type": "list",
+                                "bindingKey": "list:customTalents",
+                                "title": "Custom talents",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.customTalents"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.talents"
+                    },
+                    {
+                        "id": "abilities-skills",
+                        "type": "group",
+                        "title": "Skills",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-blaster",
+                                "type": "rating",
+                                "label": "Blaster",
+                                "valueKey": "blaster",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-gunnery",
+                                "type": "rating",
+                                "label": "Gunnery",
+                                "valueKey": "gunnery",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-melee",
+                                "type": "rating",
+                                "label": "Melee",
+                                "valueKey": "melee",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-pilot",
+                                "type": "rating",
+                                "label": "Pilot",
+                                "valueKey": "pilot",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-programming",
+                                "type": "rating",
+                                "label": "Programming",
+                                "valueKey": "programming",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-repair",
+                                "type": "rating",
+                                "label": "Repair",
+                                "valueKey": "repair",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-ride",
+                                "type": "rating",
+                                "label": "Ride",
+                                "valueKey": "ride",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-security",
+                                "type": "rating",
+                                "label": "Security",
+                                "valueKey": "security",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-stealth",
+                                "type": "rating",
+                                "label": "Stealth",
+                                "valueKey": "stealth",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-survival",
+                                "type": "rating",
+                                "label": "Survival",
+                                "valueKey": "survival",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "list-skills",
+                                "type": "list",
+                                "bindingKey": "list:customSkills",
+                                "title": "Custom skills",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.customSkills"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills"
+                    },
+                    {
+                        "id": "abilities-knowledges",
+                        "type": "group",
+                        "title": "Knowledges",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-astrogation",
+                                "type": "rating",
+                                "label": "Astrogation",
+                                "valueKey": "astrogation",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-bureaucracy",
+                                "type": "rating",
+                                "label": "Bureaucracy",
+                                "valueKey": "bureaucracy",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-cultures",
+                                "type": "rating",
+                                "label": "Cultures",
+                                "valueKey": "cultures",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-interfaces",
+                                "type": "rating",
+                                "label": "Interfaces",
+                                "valueKey": "interfaces",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-investigation",
+                                "type": "rating",
+                                "label": "Investigation",
+                                "valueKey": "investigation",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-languages",
+                                "type": "rating",
+                                "label": "Languages",
+                                "valueKey": "languages",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-medicine",
+                                "type": "rating",
+                                "label": "Medicine",
+                                "valueKey": "medicine",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-politics",
+                                "type": "rating",
+                                "label": "Politics",
+                                "valueKey": "politics",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-tech",
+                                "type": "rating",
+                                "label": "Tech",
+                                "valueKey": "tech",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-trade",
+                                "type": "rating",
+                                "label": "Trade",
+                                "valueKey": "trade",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "list-knowledges",
+                                "type": "list",
+                                "bindingKey": "list:customKnowledges",
+                                "title": "Custom knowledges",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.customKnowledges"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.knowledges"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills"
+            },
+            {
+                "id": "advantages",
+                "type": "section",
+                "title": "Advantages",
+                "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
+                "children": [
+                    {
+                        "id": "advantages-backgrounds",
+                        "type": "group",
+                        "title": "Backgrounds",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "list-backgrounds",
+                                "type": "list",
+                                "bindingKey": "list:backgrounds",
+                                "title": "Backgrounds",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds"
+                    },
+                    {
+                        "id": "advantages-merits",
+                        "type": "group",
+                        "title": "Merits",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "list-merits",
+                                "type": "list",
+                                "bindingKey": "list:merits",
+                                "title": "Merits",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
+                    },
+                    {
+                        "id": "advantages-flaws",
+                        "type": "group",
+                        "title": "Flaws",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "list-flaws",
+                                "type": "list",
+                                "bindingKey": "list:flaws",
+                                "title": "Flaws",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages"
+            },
+            {
+                "id": "force",
+                "type": "section",
+                "title": "Force",
+                "docsPath": "/docs/star-wars-wod-2e/character/force",
+                "children": [
+                    {
+                        "id": "force-skills-group",
+                        "type": "group",
+                        "title": "Force Skills",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-control",
+                                "type": "rating",
+                                "label": "Control",
+                                "valueKey": "control",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-dynamism",
+                                "type": "rating",
+                                "label": "Dynamism",
+                                "valueKey": "dynamism",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-rapport",
+                                "type": "rating",
+                                "label": "Rapport",
+                                "valueKey": "rapport",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-sense",
+                                "type": "rating",
+                                "label": "Sense",
+                                "valueKey": "sense",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-telekinesis",
+                                "type": "rating",
+                                "label": "Telekinesis",
+                                "valueKey": "telekinesis",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/character/force#force-skills",
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.forceSkills"
+                    },
+                    {
+                        "id": "force-virtues",
+                        "type": "group",
+                        "title": "Virtues",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-conscience",
+                                "type": "rating",
+                                "label": "Conscience",
+                                "valueKey": "conscience",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-passion",
+                                "type": "rating",
+                                "label": "Passion",
+                                "valueKey": "passion",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-self-control",
+                                "type": "rating",
+                                "label": "Self Control",
+                                "valueKey": "self-control",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            }
+                        ],
+                        "column": 2,
+                        "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues"
+                    },
+                    {
+                        "id": "force-resources",
+                        "type": "group",
+                        "title": "Resources",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "resource-willpower",
+                                "type": "primitive",
+                                "bindingKey": "resource:willpower",
+                                "label": "Willpower",
+                                "compact": false,
+                                "minFrom": "min(passion + self-control, 10)",
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+                            },
+                            {
+                                "id": "resource-max-force-points",
+                                "type": "primitive",
+                                "bindingKey": "resource:force-points",
+                                "label": "Max Force Points",
+                                "compact": false,
+                                "minFrom": "self-control",
+                                "part": "max",
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.maxForcePoints"
+                            },
+                            {
+                                "id": "resource-force-points",
+                                "type": "primitive",
+                                "bindingKey": "resource:force-points",
+                                "label": "Force Points",
+                                "compact": false,
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
+                            },
+                            {
+                                "id": "resource-dark-side",
+                                "type": "primitive",
+                                "bindingKey": "resource:dark-side-resistance",
+                                "label": "Dark Side Resistance",
+                                "compact": false,
+                                "minFrom": "max(0, min(5 + conscience - passion, 10))",
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
+                            }
+                        ],
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.resources"
+                    },
+                    {
+                        "id": "force-powers-group",
+                        "type": "group",
+                        "title": "Force Powers",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "list-force-powers",
+                                "type": "list",
+                                "bindingKey": "list:forcePowers",
+                                "title": "Force Powers",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.forcePowers"
+                            }
+                        ],
+                        "column": 3,
+                        "docsPath": "/docs/star-wars-wod-2e/character/force#force-powers",
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.forcePowers"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.force"
+            },
+            {
+                "id": "body",
+                "type": "section",
+                "title": "Body",
+                "docsPath": "/docs/star-wars-wod-2e/equipment",
+                "children": [
+                    {
+                        "id": "body-inventory",
+                        "type": "group",
+                        "title": "Inventory",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "equipment-inventory",
+                                "type": "primitive",
+                                "bindingKey": "equipment:inventory",
+                                "compact": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.inventory"
+                    },
+                    {
+                        "id": "body-weapons",
+                        "type": "group",
+                        "title": "Weapons",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "equipment-weapons",
+                                "type": "primitive",
+                                "bindingKey": "equipment:weapons",
+                                "compact": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
+                    },
+                    {
+                        "id": "body-armor",
+                        "type": "group",
+                        "title": "Armor",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "equipment-armor",
+                                "type": "primitive",
+                                "bindingKey": "equipment:armor",
+                                "compact": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/equipment#armor",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.armor"
+                    },
+                    {
+                        "id": "body-implants",
+                        "type": "group",
+                        "title": "Implants & Cyberware",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "equipment-implants",
+                                "type": "primitive",
+                                "bindingKey": "equipment:implants",
+                                "compact": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/equipment#cybernetics",
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants"
+                    },
+                    {
+                        "id": "body-health",
+                        "type": "group",
+                        "title": "Health",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "track-health",
+                                "type": "primitive",
+                                "bindingKey": "track:health",
+                                "compact": false,
+                                "hideLabel": true,
+                                "label": "Health",
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
+                            }
+                        ],
+                        "column": 2,
+                        "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
+                    }
+                ],
+                "columns": 2,
+                "columnWidths": [2, 1],
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.body"
+            },
+            {
+                "id": "other",
+                "type": "section",
+                "title": "Other",
+                "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
+                "children": [
+                    {
+                        "id": "derived-stats",
+                        "type": "group",
+                        "title": "Derived Stats",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "derived-initiative",
+                                "type": "formula",
+                                "label": "Initiative (Std)",
+                                "formula": "wits + alertness",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard"
+                            },
+                            {
+                                "id": "derived-initiative-saber",
+                                "type": "formula",
+                                "label": "Initiative (Saber)",
+                                "formula": "wits + alertness + control",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber"
+                            },
+                            {
+                                "id": "derived-jumping",
+                                "type": "formula",
+                                "label": "Jumping Distance",
+                                "formula": "max(min(control, telekinesis), 1)",
+                                "compact": false,
+                                "required": false,
+                                "prefix": "×",
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.jumpingDistance"
+                            },
+                            {
+                                "id": "derived-running",
+                                "type": "formula",
+                                "label": "Running Speed",
+                                "formula": "max(min(control, telekinesis), 1)",
+                                "compact": false,
+                                "required": false,
+                                "prefix": "×",
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.runningSpeed"
+                            }
+                        ],
+                        "columns": 2,
+                        "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.derivedStats"
+                    },
+                    {
+                        "id": "experience",
+                        "type": "group",
+                        "title": "Experience",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "field-experience-total",
+                                "type": "number",
+                                "label": "Total XP",
+                                "valueKey": "experience-total",
+                                "min": 0,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceTotal"
+                            },
+                            {
+                                "id": "field-experience-spent",
+                                "type": "number",
+                                "label": "Spent",
+                                "valueKey": "experience-spent",
+                                "min": 0,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceSpent"
+                            },
+                            {
+                                "id": "derived-experience-available",
+                                "type": "formula",
+                                "label": "Available",
+                                "formula": "experience-total - experience-spent",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAvailable"
+                            }
+                        ],
+                        "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.experience"
+                    },
+                    {
+                        "id": "notes",
+                        "type": "group",
+                        "title": "Notes",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "field-notes",
+                                "type": "text",
+                                "label": "Notes",
+                                "valueKey": "notes",
+                                "multiline": true,
+                                "compact": false,
+                                "required": false,
+                                "hideLabel": true,
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.other"
+            }
+        ]
+    },
+    {
+        "id": "droid-sheet",
+        "name": "Droid sheet",
+        "systemId": "star-wars-wod",
+        "documentKind": "character",
+        "schemaVersion": 3,
+        "children": [
+            {
+                "id": "base",
+                "type": "section",
+                "title": "Base",
+                "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
+                "children": [
+                    {
+                        "id": "base-portrait",
+                        "type": "group",
+                        "title": "Portrait",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "portrait-image",
+                                "type": "image",
+                                "label": "Portrait",
+                                "valueKey": "portrait",
+                                "compact": false,
+                                "required": false,
+                                "hideLabel": true,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait"
+                            }
+                        ],
+                        "column": 1,
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.portrait"
+                    },
+                    {
+                        "id": "identity-fields",
+                        "type": "group",
+                        "title": "Identity",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "field-name",
+                                "type": "text",
+                                "label": "Name",
+                                "valueKey": "name",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.name.label"
+                            },
+                            {
+                                "id": "field-concept",
+                                "type": "text",
+                                "label": "Concept",
+                                "valueKey": "concept",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label"
+                            },
+                            {
+                                "id": "field-species",
+                                "type": "text",
+                                "label": "Species",
+                                "valueKey": "species",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.species.label"
+                            },
+                            {
+                                "id": "field-player",
+                                "type": "text",
+                                "label": "Player",
+                                "valueKey": "player",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.player.label"
+                            },
+                            {
+                                "id": "field-nature",
+                                "type": "text",
+                                "label": "Nature",
+                                "valueKey": "nature",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.nature.label"
+                            },
+                            {
+                                "id": "field-home-world",
+                                "type": "text",
+                                "label": "Home World",
+                                "valueKey": "home-world",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.homeWorld.label"
+                            },
+                            {
+                                "id": "field-adventure",
+                                "type": "text",
+                                "label": "Adventure",
+                                "valueKey": "adventure",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.adventure.label"
+                            },
+                            {
+                                "id": "field-demeanor",
+                                "type": "text",
+                                "label": "Demeanor",
+                                "valueKey": "demeanor",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.demeanor.label"
+                            },
+                            {
+                                "id": "field-age",
+                                "type": "text",
+                                "label": "Age",
+                                "valueKey": "age",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.age.label"
+                            }
+                        ],
+                        "columns": 3,
+                        "column": 2,
+                        "hideTitle": true,
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
+                    },
+                    {
+                        "id": "base-appearance",
+                        "type": "group",
+                        "title": "Appearance",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "field-gender",
+                                "type": "text",
+                                "label": "Gender",
+                                "valueKey": "gender",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.gender.label"
+                            },
+                            {
+                                "id": "field-height",
+                                "type": "text",
+                                "label": "Height",
+                                "valueKey": "height",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.height.label"
+                            },
+                            {
+                                "id": "field-build",
+                                "type": "text",
+                                "label": "Build",
+                                "valueKey": "build",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.build.label"
+                            },
+                            {
+                                "id": "field-hair",
+                                "type": "text",
+                                "label": "Hair",
+                                "valueKey": "hair",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.hair.label"
+                            },
+                            {
+                                "id": "field-eyes",
+                                "type": "text",
+                                "label": "Eyes",
+                                "valueKey": "eyes",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.eyes.label"
+                            },
+                            {
+                                "id": "field-features",
+                                "type": "text",
+                                "label": "Features",
+                                "valueKey": "features",
+                                "multiline": false,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.base.fields.features.label"
+                            }
+                        ],
+                        "columns": 3,
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.base.appearance"
+                    },
+                    {
+                        "id": "base-biography",
+                        "type": "group",
+                        "title": "Biography",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "field-biography",
+                                "type": "text",
+                                "label": "Biography",
+                                "valueKey": "biography",
+                                "multiline": true,
+                                "compact": false,
+                                "required": false,
+                                "hideLabel": true,
+                                "placeholder": "Character biography...",
+                                "labelMessage": "ttgamer.ui.sheet.base.biography",
+                                "placeholderMessage": "ttgamer.ui.sheet.base.biographyPlaceholder"
+                            }
+                        ],
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.base.biography"
+                    }
+                ],
+                "columns": 2,
+                "labelMessage": "ttgamer.ui.sheet.base.title"
+            },
+            {
+                "id": "attributes",
+                "type": "section",
+                "title": "Attributes",
+                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
+                "children": [
+                    {
+                        "id": "attributes-physical",
+                        "type": "group",
+                        "title": "Physical",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-strength",
+                                "type": "rating",
+                                "label": "Strength",
+                                "valueKey": "strength",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/strength"
+                            },
+                            {
+                                "id": "trait-dexterity",
+                                "type": "rating",
+                                "label": "Dexterity",
+                                "valueKey": "dexterity",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/dexterity"
+                            },
+                            {
+                                "id": "trait-stamina",
+                                "type": "rating",
+                                "label": "Stamina",
+                                "valueKey": "stamina",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/stamina"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.physical"
+                    },
+                    {
+                        "id": "attributes-social",
+                        "type": "group",
+                        "title": "Social",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-charisma",
+                                "type": "rating",
+                                "label": "Charisma",
+                                "valueKey": "charisma",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/charisma"
+                            },
+                            {
+                                "id": "trait-manipulation",
+                                "type": "rating",
+                                "label": "Manipulation",
+                                "valueKey": "manipulation",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/manipulation"
+                            },
+                            {
+                                "id": "trait-appearance",
+                                "type": "rating",
+                                "label": "Appearance",
+                                "valueKey": "appearance",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/appearance"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.social"
+                    },
+                    {
+                        "id": "attributes-mental",
+                        "type": "group",
+                        "title": "Mental",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-perception",
+                                "type": "rating",
+                                "label": "Perception",
+                                "valueKey": "perception",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/perception"
+                            },
+                            {
+                                "id": "trait-intelligence",
+                                "type": "rating",
+                                "label": "Intelligence",
+                                "valueKey": "intelligence",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/intelligence"
+                            },
+                            {
+                                "id": "trait-wits",
+                                "type": "rating",
+                                "label": "Wits",
+                                "valueKey": "wits",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "catalog:attributes/wits"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.mental"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes"
+            },
+            {
+                "id": "skills",
+                "type": "section",
+                "title": "Skills",
+                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
+                "children": [
+                    {
+                        "id": "abilities-talents",
+                        "type": "group",
+                        "title": "Talents",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-alertness",
+                                "type": "rating",
+                                "label": "Alertness",
+                                "valueKey": "alertness",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-athletics",
+                                "type": "rating",
+                                "label": "Athletics",
+                                "valueKey": "athletics",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-brawl",
+                                "type": "rating",
+                                "label": "Brawl",
+                                "valueKey": "brawl",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-command",
+                                "type": "rating",
+                                "label": "Command",
+                                "valueKey": "command",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-diplomacy",
+                                "type": "rating",
+                                "label": "Diplomacy",
+                                "valueKey": "diplomacy",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-dodge",
+                                "type": "rating",
+                                "label": "Dodge",
+                                "valueKey": "dodge",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-empathy",
+                                "type": "rating",
+                                "label": "Empathy",
+                                "valueKey": "empathy",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-intimidation",
+                                "type": "rating",
+                                "label": "Intimidation",
+                                "valueKey": "intimidation",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-streetwise",
+                                "type": "rating",
+                                "label": "Streetwise",
+                                "valueKey": "streetwise",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-subterfuge",
+                                "type": "rating",
+                                "label": "Subterfuge",
+                                "valueKey": "subterfuge",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "list-talents",
+                                "type": "list",
+                                "bindingKey": "list:customTalents",
+                                "title": "Custom talents",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.customTalents"
+                            },
+                            {
+                                "id": "droid-free-talents",
+                                "type": "number",
+                                "label": "Free points",
+                                "valueKey": "droid-free-talents",
+                                "min": 0,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.freePoints"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.talents"
+                    },
+                    {
+                        "id": "abilities-skills",
+                        "type": "group",
+                        "title": "Skills",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-blaster",
+                                "type": "rating",
+                                "label": "Blaster",
+                                "valueKey": "blaster",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-gunnery",
+                                "type": "rating",
+                                "label": "Gunnery",
+                                "valueKey": "gunnery",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-melee",
+                                "type": "rating",
+                                "label": "Melee",
+                                "valueKey": "melee",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-pilot",
+                                "type": "rating",
+                                "label": "Pilot",
+                                "valueKey": "pilot",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-programming",
+                                "type": "rating",
+                                "label": "Programming",
+                                "valueKey": "programming",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-repair",
+                                "type": "rating",
+                                "label": "Repair",
+                                "valueKey": "repair",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-ride",
+                                "type": "rating",
+                                "label": "Ride",
+                                "valueKey": "ride",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-security",
+                                "type": "rating",
+                                "label": "Security",
+                                "valueKey": "security",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-stealth",
+                                "type": "rating",
+                                "label": "Stealth",
+                                "valueKey": "stealth",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-survival",
+                                "type": "rating",
+                                "label": "Survival",
+                                "valueKey": "survival",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "list-skills",
+                                "type": "list",
+                                "bindingKey": "list:customSkills",
+                                "title": "Custom skills",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.customSkills"
+                            },
+                            {
+                                "id": "droid-free-skills",
+                                "type": "number",
+                                "label": "Free points",
+                                "valueKey": "droid-free-skills",
+                                "min": 0,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.freePoints"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills"
+                    },
+                    {
+                        "id": "abilities-knowledges",
+                        "type": "group",
+                        "title": "Knowledges",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-astrogation",
+                                "type": "rating",
+                                "label": "Astrogation",
+                                "valueKey": "astrogation",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-bureaucracy",
+                                "type": "rating",
+                                "label": "Bureaucracy",
+                                "valueKey": "bureaucracy",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-cultures",
+                                "type": "rating",
+                                "label": "Cultures",
+                                "valueKey": "cultures",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-interfaces",
+                                "type": "rating",
+                                "label": "Interfaces",
+                                "valueKey": "interfaces",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-investigation",
+                                "type": "rating",
+                                "label": "Investigation",
+                                "valueKey": "investigation",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-languages",
+                                "type": "rating",
+                                "label": "Languages",
+                                "valueKey": "languages",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-medicine",
+                                "type": "rating",
+                                "label": "Medicine",
+                                "valueKey": "medicine",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-politics",
+                                "type": "rating",
+                                "label": "Politics",
+                                "valueKey": "politics",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-tech",
+                                "type": "rating",
+                                "label": "Tech",
+                                "valueKey": "tech",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-trade",
+                                "type": "rating",
+                                "label": "Trade",
+                                "valueKey": "trade",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "list-knowledges",
+                                "type": "list",
+                                "bindingKey": "list:customKnowledges",
+                                "title": "Custom knowledges",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.customKnowledges"
+                            },
+                            {
+                                "id": "droid-free-knowledges",
+                                "type": "number",
+                                "label": "Free points",
+                                "valueKey": "droid-free-knowledges",
+                                "min": 0,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.freePoints"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.knowledges"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills"
+            },
+            {
+                "id": "advantages",
+                "type": "section",
+                "title": "Advantages",
+                "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
+                "children": [
+                    {
+                        "id": "advantages-backgrounds",
+                        "type": "group",
+                        "title": "Backgrounds",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "list-backgrounds",
+                                "type": "list",
+                                "bindingKey": "list:backgrounds",
+                                "title": "Backgrounds",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.backgrounds"
+                    },
+                    {
+                        "id": "advantages-merits",
+                        "type": "group",
+                        "title": "Merits",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "list-merits",
+                                "type": "list",
+                                "bindingKey": "list:merits",
+                                "title": "Merits",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.merits"
+                    },
+                    {
+                        "id": "advantages-flaws",
+                        "type": "group",
+                        "title": "Flaws",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "list-flaws",
+                                "type": "list",
+                                "bindingKey": "list:flaws",
+                                "title": "Flaws",
+                                "columns": 1,
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages"
+            },
+            {
+                "id": "force",
+                "type": "section",
+                "title": "Resources",
+                "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+                "children": [
+                    {
+                        "id": "force-virtues",
+                        "type": "group",
+                        "title": "Virtues",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "trait-conscience",
+                                "type": "rating",
+                                "label": "Conscience",
+                                "valueKey": "conscience",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-passion",
+                                "type": "rating",
+                                "label": "Passion",
+                                "valueKey": "passion",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            },
+                            {
+                                "id": "trait-self-control",
+                                "type": "rating",
+                                "label": "Self Control",
+                                "valueKey": "self-control",
+                                "min": 0,
+                                "max": 5,
+                                "presentation": "dots",
+                                "compact": false,
+                                "required": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.virtues"
+                    },
+                    {
+                        "id": "force-resources",
+                        "type": "group",
+                        "title": "Resources",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "resource-willpower",
+                                "type": "primitive",
+                                "bindingKey": "resource:willpower",
+                                "label": "Willpower",
+                                "compact": false,
+                                "minFrom": "min(passion + self-control, 10)",
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+                            }
+                        ],
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.resources"
+                    }
+                ],
+                "columns": 2,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.resources"
+            },
+            {
+                "id": "body",
+                "type": "section",
+                "title": "Body",
+                "docsPath": "/docs/star-wars-wod-2e/equipment",
+                "children": [
+                    {
+                        "id": "body-inventory",
+                        "type": "group",
+                        "title": "Built-in equipment",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "equipment-inventory",
+                                "type": "primitive",
+                                "bindingKey": "equipment:inventory",
+                                "compact": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/equipment#tools-gear",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.builtInEquipment"
+                    },
+                    {
+                        "id": "body-weapons",
+                        "type": "group",
+                        "title": "Weapons",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "equipment-weapons",
+                                "type": "primitive",
+                                "bindingKey": "equipment:weapons",
+                                "compact": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/equipment#weapons",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
+                    },
+                    {
+                        "id": "body-armor",
+                        "type": "group",
+                        "title": "Armor",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "equipment-armor",
+                                "type": "primitive",
+                                "bindingKey": "equipment:armor",
+                                "compact": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/equipment#armor",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.armor"
+                    },
+                    {
+                        "id": "body-implants",
+                        "type": "group",
+                        "title": "Implants & Cyberware",
+                        "collapsible": true,
+                        "children": [
+                            {
+                                "id": "equipment-implants",
+                                "type": "primitive",
+                                "bindingKey": "equipment:implants",
+                                "compact": false
+                            }
+                        ],
+                        "column": 1,
+                        "docsPath": "/docs/star-wars-wod-2e/equipment#cybernetics",
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.implants"
+                    },
+                    {
+                        "id": "body-health",
+                        "type": "group",
+                        "title": "Damage",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "track-health",
+                                "type": "primitive",
+                                "bindingKey": "track:droid-damage",
+                                "compact": false,
+                                "hideLabel": true,
+                                "label": "Damage",
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
+                            }
+                        ],
+                        "column": 2,
+                        "docsPath": "/docs/star-wars-wod-2e/combat/health-damage-heal#the-health-track",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
+                    }
+                ],
+                "columns": 2,
+                "columnWidths": [2, 1],
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.body"
+            },
+            {
+                "id": "other",
+                "type": "section",
+                "title": "Other",
+                "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
+                "children": [
+                    {
+                        "id": "experience",
+                        "type": "group",
+                        "title": "Experience",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "field-experience-total",
+                                "type": "number",
+                                "label": "Total XP",
+                                "valueKey": "experience-total",
+                                "min": 0,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceTotal"
+                            },
+                            {
+                                "id": "field-experience-spent",
+                                "type": "number",
+                                "label": "Spent",
+                                "valueKey": "experience-spent",
+                                "min": 0,
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceSpent"
+                            },
+                            {
+                                "id": "derived-experience-available",
+                                "type": "formula",
+                                "label": "Available",
+                                "formula": "experience-total - experience-spent",
+                                "compact": false,
+                                "required": false,
+                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.experienceAvailable"
+                            }
+                        ],
+                        "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.experience"
+                    },
+                    {
+                        "id": "notes",
+                        "type": "group",
+                        "title": "Notes",
+                        "collapsible": false,
+                        "children": [
+                            {
+                                "id": "field-notes",
+                                "type": "text",
+                                "label": "Notes",
+                                "valueKey": "notes",
+                                "multiline": true,
+                                "compact": false,
+                                "required": false,
+                                "hideLabel": true,
+                                "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
+                            }
+                        ],
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
+                    }
+                ],
+                "columns": 2,
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.other"
+            }
+        ]
+    },
+    {
+        "id": "brief",
+        "name": "Brief",
+        "systemId": "star-wars-wod",
+        "documentKind": "character",
+        "schemaVersion": 3,
+        "children": [
+            {
+                "id": "identity-fields",
+                "type": "group",
+                "title": "Identity",
+                "collapsible": false,
+                "children": [
+                    {
+                        "id": "field-name",
+                        "type": "text",
+                        "label": "Name",
+                        "valueKey": "name",
+                        "multiline": false,
+                        "compact": true,
+                        "required": false,
+                        "labelMessage": "ttgamer.ui.sheet.base.fields.name.label"
+                    },
+                    {
+                        "id": "field-concept",
+                        "type": "text",
+                        "label": "Concept",
+                        "valueKey": "concept",
+                        "multiline": false,
+                        "compact": true,
+                        "required": false,
+                        "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label"
+                    },
+                    {
+                        "id": "field-species",
+                        "type": "text",
+                        "label": "Species",
+                        "valueKey": "species",
+                        "multiline": false,
+                        "compact": true,
+                        "required": false,
+                        "labelMessage": "ttgamer.ui.sheet.base.fields.species.label"
+                    }
+                ],
+                "columns": 3,
+                "hideTitle": true,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
+            },
+            {
+                "id": "brief-attributes",
+                "type": "group",
+                "title": "Attributes",
+                "collapsible": false,
+                "children": [
+                    {
+                        "id": "trait-strength",
+                        "type": "rating",
+                        "label": "Strength",
+                        "valueKey": "strength",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1,
+                        "labelMessage": "catalog:attributes/strength"
+                    },
+                    {
+                        "id": "trait-dexterity",
+                        "type": "rating",
+                        "label": "Dexterity",
+                        "valueKey": "dexterity",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1,
+                        "labelMessage": "catalog:attributes/dexterity"
+                    },
+                    {
+                        "id": "trait-stamina",
+                        "type": "rating",
+                        "label": "Stamina",
+                        "valueKey": "stamina",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1,
+                        "labelMessage": "catalog:attributes/stamina"
+                    },
+                    {
+                        "id": "trait-charisma",
+                        "type": "rating",
+                        "label": "Charisma",
+                        "valueKey": "charisma",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2,
+                        "labelMessage": "catalog:attributes/charisma"
+                    },
+                    {
+                        "id": "trait-manipulation",
+                        "type": "rating",
+                        "label": "Manipulation",
+                        "valueKey": "manipulation",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2,
+                        "labelMessage": "catalog:attributes/manipulation"
+                    },
+                    {
+                        "id": "trait-appearance",
+                        "type": "rating",
+                        "label": "Appearance",
+                        "valueKey": "appearance",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2,
+                        "labelMessage": "catalog:attributes/appearance"
+                    },
+                    {
+                        "id": "trait-perception",
+                        "type": "rating",
+                        "label": "Perception",
+                        "valueKey": "perception",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3,
+                        "labelMessage": "catalog:attributes/perception"
+                    },
+                    {
+                        "id": "trait-intelligence",
+                        "type": "rating",
+                        "label": "Intelligence",
+                        "valueKey": "intelligence",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3,
+                        "labelMessage": "catalog:attributes/intelligence"
+                    },
+                    {
+                        "id": "trait-wits",
+                        "type": "rating",
+                        "label": "Wits",
+                        "valueKey": "wits",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3,
+                        "labelMessage": "catalog:attributes/wits"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes"
+            },
+            {
+                "id": "brief-abilities",
+                "type": "group",
+                "title": "Abilities",
+                "collapsible": true,
+                "children": [
+                    {
+                        "id": "trait-alertness",
+                        "type": "rating",
+                        "label": "Alertness",
+                        "valueKey": "alertness",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-athletics",
+                        "type": "rating",
+                        "label": "Athletics",
+                        "valueKey": "athletics",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-brawl",
+                        "type": "rating",
+                        "label": "Brawl",
+                        "valueKey": "brawl",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-command",
+                        "type": "rating",
+                        "label": "Command",
+                        "valueKey": "command",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-diplomacy",
+                        "type": "rating",
+                        "label": "Diplomacy",
+                        "valueKey": "diplomacy",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-dodge",
+                        "type": "rating",
+                        "label": "Dodge",
+                        "valueKey": "dodge",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-empathy",
+                        "type": "rating",
+                        "label": "Empathy",
+                        "valueKey": "empathy",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-intimidation",
+                        "type": "rating",
+                        "label": "Intimidation",
+                        "valueKey": "intimidation",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-streetwise",
+                        "type": "rating",
+                        "label": "Streetwise",
+                        "valueKey": "streetwise",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-subterfuge",
+                        "type": "rating",
+                        "label": "Subterfuge",
+                        "valueKey": "subterfuge",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-blaster",
+                        "type": "rating",
+                        "label": "Blaster",
+                        "valueKey": "blaster",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-gunnery",
+                        "type": "rating",
+                        "label": "Gunnery",
+                        "valueKey": "gunnery",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-melee",
+                        "type": "rating",
+                        "label": "Melee",
+                        "valueKey": "melee",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-pilot",
+                        "type": "rating",
+                        "label": "Pilot",
+                        "valueKey": "pilot",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-programming",
+                        "type": "rating",
+                        "label": "Programming",
+                        "valueKey": "programming",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-repair",
+                        "type": "rating",
+                        "label": "Repair",
+                        "valueKey": "repair",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-ride",
+                        "type": "rating",
+                        "label": "Ride",
+                        "valueKey": "ride",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-security",
+                        "type": "rating",
+                        "label": "Security",
+                        "valueKey": "security",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-stealth",
+                        "type": "rating",
+                        "label": "Stealth",
+                        "valueKey": "stealth",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-survival",
+                        "type": "rating",
+                        "label": "Survival",
+                        "valueKey": "survival",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-astrogation",
+                        "type": "rating",
+                        "label": "Astrogation",
+                        "valueKey": "astrogation",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-bureaucracy",
+                        "type": "rating",
+                        "label": "Bureaucracy",
+                        "valueKey": "bureaucracy",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-cultures",
+                        "type": "rating",
+                        "label": "Cultures",
+                        "valueKey": "cultures",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-interfaces",
+                        "type": "rating",
+                        "label": "Interfaces",
+                        "valueKey": "interfaces",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-investigation",
+                        "type": "rating",
+                        "label": "Investigation",
+                        "valueKey": "investigation",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-languages",
+                        "type": "rating",
+                        "label": "Languages",
+                        "valueKey": "languages",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-medicine",
+                        "type": "rating",
+                        "label": "Medicine",
+                        "valueKey": "medicine",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-politics",
+                        "type": "rating",
+                        "label": "Politics",
+                        "valueKey": "politics",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-tech",
+                        "type": "rating",
+                        "label": "Tech",
+                        "valueKey": "tech",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-trade",
+                        "type": "rating",
+                        "label": "Trade",
+                        "valueKey": "trade",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
+            },
+            {
+                "id": "brief-resolve",
+                "type": "group",
+                "title": "Resolve",
+                "collapsible": false,
+                "children": [
+                    {
+                        "id": "trait-conscience",
+                        "type": "rating",
+                        "label": "Conscience",
+                        "valueKey": "conscience",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-passion",
+                        "type": "rating",
+                        "label": "Passion",
+                        "valueKey": "passion",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-self-control",
+                        "type": "rating",
+                        "label": "Self Control",
+                        "valueKey": "self-control",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "resource-willpower",
+                        "type": "primitive",
+                        "bindingKey": "resource:willpower",
+                        "label": "Willpower",
+                        "compact": true,
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+                    },
+                    {
+                        "id": "resource-force-points",
+                        "type": "primitive",
+                        "bindingKey": "resource:force-points",
+                        "label": "Force Points",
+                        "compact": true,
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
+                    },
+                    {
+                        "id": "resource-dark-side",
+                        "type": "primitive",
+                        "bindingKey": "resource:dark-side-resistance",
+                        "label": "Dark Side Resistance",
+                        "compact": true,
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
+                    },
+                    {
+                        "id": "derived-initiative",
+                        "type": "formula",
+                        "label": "Initiative (Std)",
+                        "formula": "wits + alertness",
+                        "compact": true,
+                        "required": false,
+                        "column": 3,
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard"
+                    },
+                    {
+                        "id": "derived-initiative-saber",
+                        "type": "formula",
+                        "label": "Initiative (Saber)",
+                        "formula": "wits + alertness + control",
+                        "compact": true,
+                        "required": false,
+                        "column": 3,
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve"
+            },
+            {
+                "id": "brief-health",
+                "type": "group",
+                "title": "Health",
+                "collapsible": false,
+                "children": [
+                    {
+                        "id": "track-health",
+                        "type": "primitive",
+                        "bindingKey": "track:health",
+                        "compact": true,
+                        "label": "Health",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
+                    }
+                ],
+                "hideTitle": true,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
+            },
+            {
+                "id": "brief-weapons",
+                "type": "group",
+                "title": "Weapons",
+                "collapsible": true,
+                "children": [
+                    {
+                        "id": "equipment-weapons",
+                        "type": "primitive",
+                        "bindingKey": "equipment:weapons",
+                        "compact": false
+                    }
+                ],
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
+            }
+        ]
+    },
+    {
+        "id": "droid-brief",
+        "name": "Droid brief",
+        "systemId": "star-wars-wod",
+        "documentKind": "character",
+        "schemaVersion": 3,
+        "children": [
+            {
+                "id": "identity-fields",
+                "type": "group",
+                "title": "Identity",
+                "collapsible": false,
+                "children": [
+                    {
+                        "id": "field-name",
+                        "type": "text",
+                        "label": "Name",
+                        "valueKey": "name",
+                        "multiline": false,
+                        "compact": true,
+                        "required": false,
+                        "labelMessage": "ttgamer.ui.sheet.base.fields.name.label"
+                    },
+                    {
+                        "id": "field-concept",
+                        "type": "text",
+                        "label": "Concept",
+                        "valueKey": "concept",
+                        "multiline": false,
+                        "compact": true,
+                        "required": false,
+                        "labelMessage": "ttgamer.ui.sheet.base.fields.concept.label"
+                    },
+                    {
+                        "id": "field-species",
+                        "type": "text",
+                        "label": "Species",
+                        "valueKey": "species",
+                        "multiline": false,
+                        "compact": true,
+                        "required": false,
+                        "labelMessage": "ttgamer.ui.sheet.base.fields.species.label"
+                    }
+                ],
+                "columns": 3,
+                "hideTitle": true,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
+            },
+            {
+                "id": "brief-attributes",
+                "type": "group",
+                "title": "Attributes",
+                "collapsible": false,
+                "children": [
+                    {
+                        "id": "trait-strength",
+                        "type": "rating",
+                        "label": "Strength",
+                        "valueKey": "strength",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1,
+                        "labelMessage": "catalog:attributes/strength"
+                    },
+                    {
+                        "id": "trait-dexterity",
+                        "type": "rating",
+                        "label": "Dexterity",
+                        "valueKey": "dexterity",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1,
+                        "labelMessage": "catalog:attributes/dexterity"
+                    },
+                    {
+                        "id": "trait-stamina",
+                        "type": "rating",
+                        "label": "Stamina",
+                        "valueKey": "stamina",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1,
+                        "labelMessage": "catalog:attributes/stamina"
+                    },
+                    {
+                        "id": "trait-charisma",
+                        "type": "rating",
+                        "label": "Charisma",
+                        "valueKey": "charisma",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2,
+                        "labelMessage": "catalog:attributes/charisma"
+                    },
+                    {
+                        "id": "trait-manipulation",
+                        "type": "rating",
+                        "label": "Manipulation",
+                        "valueKey": "manipulation",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2,
+                        "labelMessage": "catalog:attributes/manipulation"
+                    },
+                    {
+                        "id": "trait-appearance",
+                        "type": "rating",
+                        "label": "Appearance",
+                        "valueKey": "appearance",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2,
+                        "labelMessage": "catalog:attributes/appearance"
+                    },
+                    {
+                        "id": "trait-perception",
+                        "type": "rating",
+                        "label": "Perception",
+                        "valueKey": "perception",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3,
+                        "labelMessage": "catalog:attributes/perception"
+                    },
+                    {
+                        "id": "trait-intelligence",
+                        "type": "rating",
+                        "label": "Intelligence",
+                        "valueKey": "intelligence",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3,
+                        "labelMessage": "catalog:attributes/intelligence"
+                    },
+                    {
+                        "id": "trait-wits",
+                        "type": "rating",
+                        "label": "Wits",
+                        "valueKey": "wits",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3,
+                        "labelMessage": "catalog:attributes/wits"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes"
+            },
+            {
+                "id": "brief-abilities",
+                "type": "group",
+                "title": "Abilities",
+                "collapsible": true,
+                "children": [
+                    {
+                        "id": "trait-alertness",
+                        "type": "rating",
+                        "label": "Alertness",
+                        "valueKey": "alertness",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-athletics",
+                        "type": "rating",
+                        "label": "Athletics",
+                        "valueKey": "athletics",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-brawl",
+                        "type": "rating",
+                        "label": "Brawl",
+                        "valueKey": "brawl",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-command",
+                        "type": "rating",
+                        "label": "Command",
+                        "valueKey": "command",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-diplomacy",
+                        "type": "rating",
+                        "label": "Diplomacy",
+                        "valueKey": "diplomacy",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-dodge",
+                        "type": "rating",
+                        "label": "Dodge",
+                        "valueKey": "dodge",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-empathy",
+                        "type": "rating",
+                        "label": "Empathy",
+                        "valueKey": "empathy",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-intimidation",
+                        "type": "rating",
+                        "label": "Intimidation",
+                        "valueKey": "intimidation",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-streetwise",
+                        "type": "rating",
+                        "label": "Streetwise",
+                        "valueKey": "streetwise",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-subterfuge",
+                        "type": "rating",
+                        "label": "Subterfuge",
+                        "valueKey": "subterfuge",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-blaster",
+                        "type": "rating",
+                        "label": "Blaster",
+                        "valueKey": "blaster",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-gunnery",
+                        "type": "rating",
+                        "label": "Gunnery",
+                        "valueKey": "gunnery",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-melee",
+                        "type": "rating",
+                        "label": "Melee",
+                        "valueKey": "melee",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-pilot",
+                        "type": "rating",
+                        "label": "Pilot",
+                        "valueKey": "pilot",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-programming",
+                        "type": "rating",
+                        "label": "Programming",
+                        "valueKey": "programming",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-repair",
+                        "type": "rating",
+                        "label": "Repair",
+                        "valueKey": "repair",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-ride",
+                        "type": "rating",
+                        "label": "Ride",
+                        "valueKey": "ride",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-security",
+                        "type": "rating",
+                        "label": "Security",
+                        "valueKey": "security",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-stealth",
+                        "type": "rating",
+                        "label": "Stealth",
+                        "valueKey": "stealth",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-survival",
+                        "type": "rating",
+                        "label": "Survival",
+                        "valueKey": "survival",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 2
+                    },
+                    {
+                        "id": "trait-astrogation",
+                        "type": "rating",
+                        "label": "Astrogation",
+                        "valueKey": "astrogation",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-bureaucracy",
+                        "type": "rating",
+                        "label": "Bureaucracy",
+                        "valueKey": "bureaucracy",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-cultures",
+                        "type": "rating",
+                        "label": "Cultures",
+                        "valueKey": "cultures",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-interfaces",
+                        "type": "rating",
+                        "label": "Interfaces",
+                        "valueKey": "interfaces",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-investigation",
+                        "type": "rating",
+                        "label": "Investigation",
+                        "valueKey": "investigation",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-languages",
+                        "type": "rating",
+                        "label": "Languages",
+                        "valueKey": "languages",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-medicine",
+                        "type": "rating",
+                        "label": "Medicine",
+                        "valueKey": "medicine",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-politics",
+                        "type": "rating",
+                        "label": "Politics",
+                        "valueKey": "politics",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-tech",
+                        "type": "rating",
+                        "label": "Tech",
+                        "valueKey": "tech",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    },
+                    {
+                        "id": "trait-trade",
+                        "type": "rating",
+                        "label": "Trade",
+                        "valueKey": "trade",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 3
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
+            },
+            {
+                "id": "brief-resolve",
+                "type": "group",
+                "title": "Resolve",
+                "collapsible": false,
+                "children": [
+                    {
+                        "id": "trait-conscience",
+                        "type": "rating",
+                        "label": "Conscience",
+                        "valueKey": "conscience",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-passion",
+                        "type": "rating",
+                        "label": "Passion",
+                        "valueKey": "passion",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "trait-self-control",
+                        "type": "rating",
+                        "label": "Self Control",
+                        "valueKey": "self-control",
+                        "min": 0,
+                        "max": 5,
+                        "presentation": "dots",
+                        "compact": true,
+                        "required": false,
+                        "column": 1
+                    },
+                    {
+                        "id": "resource-willpower",
+                        "type": "primitive",
+                        "bindingKey": "resource:willpower",
+                        "label": "Willpower",
+                        "compact": true,
+                        "column": 2,
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
+                    },
+                    {
+                        "id": "derived-initiative",
+                        "type": "formula",
+                        "label": "Initiative (Std)",
+                        "formula": "wits + alertness",
+                        "compact": true,
+                        "required": false,
+                        "column": 3,
+                        "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard"
+                    }
+                ],
+                "columns": 3,
+                "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve"
+            },
+            {
+                "id": "brief-health",
+                "type": "group",
+                "title": "Damage",
+                "collapsible": false,
+                "children": [
+                    {
+                        "id": "track-health",
+                        "type": "primitive",
+                        "bindingKey": "track:droid-damage",
+                        "compact": true,
+                        "label": "Damage",
+                        "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
+                    }
+                ],
+                "hideTitle": true,
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
+            },
+            {
+                "id": "brief-weapons",
+                "type": "group",
+                "title": "Weapons",
+                "collapsible": true,
+                "children": [
+                    {
+                        "id": "equipment-weapons",
+                        "type": "primitive",
+                        "bindingKey": "equipment:weapons",
+                        "compact": false
+                    }
+                ],
+                "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
+            }
+        ]
+    }
+]

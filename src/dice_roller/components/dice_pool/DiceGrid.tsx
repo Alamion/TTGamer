@@ -1,8 +1,9 @@
 import { memo, useCallback } from 'react';
+
+import { handleDiceNotation } from '../../dice-logic/notation-utils';
 import { useDiceRollerStore } from '../../store/diceRollerStore';
-import { handleDiceNotation } from '../../dice-logic';
-import DiceButton from './DiceButton';
 import type { DiceConfig } from '../dice-config';
+import DiceButton from './DiceButton';
 
 interface DiceGridProps {
     diceConfig: readonly DiceConfig[];

@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { BaseCharacterSchema } from '@site/src/sheet_manager/types/character';
 import type { BaseCharacter } from '@site/src/sheet_manager/types/character';
+import { BaseCharacterSchema } from '@site/src/sheet_manager/types/character';
+import { describe, expect, it } from 'vitest';
 
 function buildMaximalCharacter(): BaseCharacter {
     return {
@@ -77,8 +77,6 @@ function buildMaximalCharacter(): BaseCharacter {
         willpower: { current: 7, max: 8 },
         forcePoints: { current: 5, max: 6 },
         darkSideResistance: 5,
-        forcePowers: ['awareness', 'heal'],
-        customForcePowers: [{ id: 'cfp-001', name: 'Custom Power' }],
         forcePowerItems: [
             { id: 'fpi-001', name: 'Awareness', value: 2, catalogId: 'awareness' },
             { id: 'fpi-002', name: 'Heal', value: 1 },
@@ -87,8 +85,28 @@ function buildMaximalCharacter(): BaseCharacter {
             levels: ['empty', 'slash', 'empty', 'cross', 'empty', 'empty', 'empty'],
         },
         inventory: [
-            { id: 'inv-001', text: 'Blaster Pistol' },
-            { id: 'inv-002', text: 'Comlink' },
+            {
+                id: 'inv-001',
+                text: 'Blaster Pistol',
+                description: '',
+                effects: '',
+                weight: '',
+                price: '',
+                quantity: 1,
+                maxQuantity: 1,
+                equipped: false,
+            },
+            {
+                id: 'inv-002',
+                text: 'Comlink',
+                description: '',
+                effects: '',
+                weight: '',
+                price: '',
+                quantity: 1,
+                maxQuantity: 1,
+                equipped: false,
+            },
         ],
         armor: [{ id: 'arm-001', name: 'Flak Vest', classVal: '2', ar: '+1D', dex: '-1' }],
         weapons: [
@@ -132,20 +150,20 @@ describe('Character import/export round-trip', () => {
         expect(validated!.attributes.Strength.value).toBe(3);
         expect(validated!.skills.Blaster.specialization).toBe(true);
         expect(validated!.skills.Blaster.specializationText).toBe('Heavy');
-        expect(validated!.forceSkills.Telekinesis.value).toBe(1);
+        expect(validated!.forceSkills!.Telekinesis.value).toBe(1);
         expect(validated!.backgrounds).toHaveLength(2);
         expect(validated!.merits).toHaveLength(1);
         expect(validated!.flaws).toHaveLength(1);
-        expect(validated!.willpower.current).toBe(7);
-        expect(validated!.willpower.max).toBe(8);
-        expect(validated!.forcePoints.current).toBe(5);
+        expect(validated!.willpower!.current).toBe(7);
+        expect(validated!.willpower!.max).toBe(8);
+        expect(validated!.forcePoints!.current).toBe(5);
         expect(validated!.health.levels[1]).toBe('slash');
         expect(validated!.inventory).toHaveLength(2);
         expect(validated!.armor).toHaveLength(1);
         expect(validated!.weapons).toHaveLength(1);
         expect(validated!.implants).toHaveLength(1);
-        expect(validated!.experience.total).toBe(15);
-        expect(validated!.experience.spent).toBe(12);
+        expect(validated!.experience!.total).toBe(15);
+        expect(validated!.experience!.spent).toBe(12);
         expect(validated!.forcePowerItems).toHaveLength(2);
         expect(validated!.notes).toBe(original.notes);
     });
@@ -382,7 +400,7 @@ describe('Character import/export round-trip', () => {
                     label: 'Weak Vascular System(х2 от блида,+2 стаб)',
                 },
             ],
-            willpower: { current: 7, max: 5 },
+            willpower: { current: 7, max: 7 },
             forcePoints: { current: 7, max: 7 },
             darkSideResistance: 5,
             health: {

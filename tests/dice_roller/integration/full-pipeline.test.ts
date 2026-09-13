@@ -1,6 +1,7 @@
-import { describe, it, expect } from 'vitest';
-import { rollDices, parseToAST, validateNotation } from '@site/src/dice_roller/dice-logic';
-import { extractRawValuesFromAST } from '@site/src/dice_roller/dice-logic';
+import { extractRawValuesFromAST } from '@site/src/dice_roller/dice-logic/dice-evaluator';
+import { parseToAST, validateNotation } from '@site/src/dice_roller/dice-logic/dice-parser';
+import { rollDices } from '@site/src/dice_roller/dice-logic/dice-roller';
+import { describe, expect, it } from 'vitest';
 
 function mockRandom(...values: number[]): () => number {
     let i = 0;

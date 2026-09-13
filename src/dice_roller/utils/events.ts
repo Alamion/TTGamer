@@ -1,7 +1,9 @@
 import { debug, error, warn } from '@site/src/shared/utils/logging';
-import { executeUnifiedRoll, execute2DRoll, RollCancelledError } from '../dice-logic';
-import type { RollResult } from '../dice-logic';
-import { notifyRollResult } from '../dice-logic';
+
+import { notifyRollResult } from '../dice-logic/dice-roller';
+import { RollCancelledError } from '../dice-logic/errors';
+import { execute2DRoll, executeUnifiedRoll } from '../dice-logic/roll-orchestrator';
+import type { RollResult } from '../dice-logic/types';
 
 export interface DiceRollEventPayload {
     notation: string;

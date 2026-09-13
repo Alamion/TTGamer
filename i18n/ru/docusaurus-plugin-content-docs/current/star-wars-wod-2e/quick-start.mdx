@@ -4,14 +4,10 @@ title: Быстрый старт
 ---
 
 import { TWWrapper } from '/src/shared/components/TWWrapper';
-import { NewCharacterButton } from '/src/sheet_manager/components/NewCharacterButton';
-import { BaseBlock } from '/src/sheet_manager/features/sheet/components/BaseBlock';
-import { AttributeBlock } from '/src/sheet_manager/features/sheet/components/AttributeBlock';
-import { SkillBlock } from '/src/sheet_manager/features/sheet/components/SkillBlock';
-import { AdvantagesBlock } from '/src/sheet_manager/features/sheet/components/AdvantagesBlock';
-import { ForceBlock } from '/src/sheet_manager/features/sheet/components/ForceBlock';
+import { CreateCharacterButton } from '/src/sheet_manager/features/sheet/shell/CreateCharacterButton';
+import { TemplateFragment } from '/src/sheet_manager/docsEmbeds';
 import { InlineRoll } from '/src/dice_roller/components/InlineRoll';
-import { CharRoll } from '/src/shared/components/DocCharData';
+import { CharRoll } from '/src/integrations/docs-character-rolls/CharRoll';
 
 # Быстрый старт: Игра за 15 минут
 
@@ -75,7 +71,7 @@ _Оценка:_ `6` и `9` — успехи (всего 2), но `1` отмен�
 Просто нажмите кнопку здесь:
 
 <TWWrapper>
-    <NewCharacterButton />
+    <CreateCharacterButton />
 </TWWrapper>
 
 Или перейдите в цифровой менеджер листов на `/universal_sheet` и сделайте то же самое там.
@@ -89,7 +85,7 @@ _Оценка:_ `6` и `9` — успехи (всего 2), но `1` отмен�
 - `Species` (`Раса`): Выберите шаблон расы (например, _Человек_, _Вуки_, _Тви'лек_)
 
 <TWWrapper>
-    <BaseBlock accentColor="primary" />
+    <TemplateFragment node="base" />
 </TWWrapper>
 
 ### 3. Распределите пункты Атрибутов
@@ -103,7 +99,7 @@ _Оценка:_ `6` и `9` — успехи (всего 2), но `1` отмен�
 - _Примечание: Каждый атрибут автоматически начинается с 1 врождённого пункта. Максимальный рейтинг для стартового персонажа — 5._
 
 <TWWrapper>
-    <AttributeBlock accentColor="secondary" />
+    <TemplateFragment node="attributes" />
 </TWWrapper>
 
 ### 4. Распределите пункты Способностей
@@ -117,7 +113,7 @@ _Оценка:_ `6` и `9` — успехи (всего 2), но `1` отмен�
 - _Примечание: Каждая способность начинается с 0 врождённых пунктов. Максимальный рейтинг для стартового персонажа — 3._
 
 <TWWrapper>
-    <SkillBlock accentColor="primary" />
+    <TemplateFragment node="skills" />
 </TWWrapper>
 
 ### 5. Определите преимущества и добродетели
@@ -125,9 +121,9 @@ _Оценка:_ `6` и `9` — успехи (всего 2), но `1` отмен�
 - **Бэкграунды:** В блоке `Advantages` нажмите `Add Background`, чтобы распределить **5 стартовых пунктов** на нарративные элементы, такие как `Contacts` (`Связи`), `Resources` (`Ресурсы`) или `Vehicle` (`Транспорт`).
 - **Добродетели:** В блоке `Force` найдите основные этические параметры: `Conscience` (`Совесть`), `Passion` (`Страсть`) и `Self Control` (`Самообладание`). Распределите **7 пунктов** между ними (каждая начинается с 1 врождённого пункта).
 
-<TWWrapper><AdvantagesBlock accentColor="secondary"/></TWWrapper>
+<TWWrapper><TemplateFragment node="advantages" /></TWWrapper>
 <br/>
-<TWWrapper><ForceBlock accentColor="primary"/></TWWrapper>
+<TWWrapper><TemplateFragment node="force" /></TWWrapper>
 <br/>
 > **Производные расчёты:** Лист автоматически рассчитает вторичные запасы на основе ваших стартовых добродетелей. Максимальный запас **Силы Воли** равен `Страсть + Самообладание`, если вы играете джедаем. Стартовое **Сопротивление Тёмной Стороне** равно `5 + Совесть − Страсть`.
 > В играх без пользователей Силы игнорируйте Добродетели и Сопротивление Тёмной Стороне. Установите стартовую **Силу Воли** равной 6, а стартовые **Очки Силы** — 3.

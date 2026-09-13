@@ -1,5 +1,5 @@
-import { useId, useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useId, useState } from 'react';
 
 interface SecretFieldProps {
     value: string;

@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+
 import type { BaseCharacter } from '../types/character';
 
 interface CharacterContextValue {

@@ -4,7 +4,7 @@ title: The Force
 ---
 
 import { TWWrapper } from '/src/shared/components/TWWrapper';
-import { ForceBlock } from '/src/sheet_manager/features/sheet/components/ForceBlock';
+import { TemplateFragment } from '/src/sheet_manager/docsEmbeds';
 import { FORCE_POWERS } from '/src/data/forcePowersData';
 import { FORCE_POWER_COLUMNS, renderForcePowerDetail } from '/src/data/forcePowersConfig';
 import { MERITS_FLAWS } from '/src/data/meritsFlawsData';
@@ -40,7 +40,7 @@ Click any Force Skill to see its full description and what each rating means.
         getKey={(e) => e.id}
     />
     <br />
-    <ForceBlock accentColor="primary" />
+    <TemplateFragment node="force" />
 </TWWrapper>
 
 ### Raising Force Skills

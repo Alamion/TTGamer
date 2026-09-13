@@ -1,7 +1,8 @@
+import { ScaleList } from '@site/src/shared/components/DetailSections';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
+
 import type { BackgroundEntry } from './backgroundsData';
-import { ScaleList } from '@site/src/shared/components/DetailSections';
 
 export const BACKGROUND_COLUMNS: ColumnDef<BackgroundEntry>[] = [
     {

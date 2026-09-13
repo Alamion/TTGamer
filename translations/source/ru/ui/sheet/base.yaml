@@ -1,0 +1,105 @@
+title:
+    message: Основа
+appearance:
+    message: Внешность
+biography:
+    message: Биография
+fields:
+    name:
+        label:
+            message: Имя
+        placeholder:
+            message: Имя персонажа...
+    concept:
+        label:
+            message: Концепция
+        placeholder:
+            message: Концепция персонажа...
+    species:
+        label:
+            message: Вид
+        placeholder:
+            message: Человек, тви'лек...
+    player:
+        label:
+            message: Игрок
+        placeholder:
+            message: Имя игрока...
+    nature:
+        label:
+            message: Натура
+        placeholder:
+            message: Натура...
+    homeWorld:
+        label:
+            message: Родной мир
+        placeholder:
+            message: Корусант, Татуин...
+    adventure:
+        label:
+            message: Приключение
+        placeholder:
+            message: Приключение/кампания...
+    demeanor:
+        label:
+            message: Маска
+        placeholder:
+            message: Маска...
+    age:
+        label:
+            message: Возраст
+        placeholder:
+            message: Возраст...
+    gender:
+        label:
+            message: Пол
+    height:
+        label:
+            message: Рост
+    build:
+        label:
+            message: Телосложение
+    hair:
+        label:
+            message: Волосы
+    eyes:
+        label:
+            message: Глаза
+    features:
+        label:
+            message: Приметы
+portrait:
+    expand:
+        message: Развернуть портрет
+    collapse:
+        message: Свернуть портрет
+    invalidUrl:
+        message: Используйте HTTPS-адрес или путь относительно сайта.
+    urlPlaceholder:
+        message: https://example.com/portrait.webp
+    urlAriaLabel:
+        message: URL изображения портрета
+    remoteHostNote:
+        message: Удалённый хост изображения получит ваш IP-адрес. Только HTTPS.
+    hideUrlInput:
+        message: Скрыть поле URL портрета
+    editUrl:
+        message: Изменить URL портрета
+    pasteAriaLabel:
+        message: Портрет персонажа; вставьте сюда изображение
+    alt:
+        message: Портрет персонажа
+    uploadTitle:
+        message: Выберите изображение или вставьте его после фокуса на этой области
+    processing:
+        message: Обработка…
+    upload:
+        message: Загрузить / вставить
+    remove:
+        message: Удалить локальный портрет
+    saved:
+        message: Портрет сохранён на этом устройстве.
+    saveFailed:
+        message: Не удалось сохранить портрет.
+biographyPlaceholder:
+    message: Биография персонажа...

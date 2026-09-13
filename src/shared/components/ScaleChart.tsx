@@ -2,7 +2,7 @@ import { clsx } from 'clsx';
 
 const SCALES = [
     { name: 'Death Star', dotSize: 'w-20 h-20', index: 0 },
-    { name: 'Capitol', dotSize: 'w-16 h-16', index: 1 },
+    { name: 'Capital', dotSize: 'w-16 h-16', index: 1 },
     { name: 'Transport', dotSize: 'w-14 h-14', index: 2 },
     { name: 'Starfighter', dotSize: 'w-12 h-12', index: 3 },
     { name: 'Walker', dotSize: 'w-10 h-10', index: 4 },

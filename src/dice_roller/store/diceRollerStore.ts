@@ -1,12 +1,13 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { handleRollEvent } from '../utils/events';
-import type { RollOptions } from '../utils/events';
-import { DEFAULT_SETTINGS } from '../utils/constants';
-import type { HistoryEntry, FavoriteNotation, MixedRollConfig } from '../utils/types-ext';
 import type { StateCreator } from 'zustand';
-import { onRollResult } from '../dice-logic';
-import { takeStatLabels, clearStatLabels, getCharacterName } from '../utils/sessionStorage';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
+
+import { onRollResult } from '../dice-logic/dice-roller';
+import { DEFAULT_SETTINGS } from '../utils/constants';
+import type { RollOptions } from '../utils/events';
+import { handleRollEvent } from '../utils/events';
+import { clearStatLabels, getCharacterName, takeStatLabels } from '../utils/sessionStorage';
+import type { FavoriteNotation, HistoryEntry, MixedRollConfig } from '../utils/types-ext';
 
 function newId(): string {
     try {

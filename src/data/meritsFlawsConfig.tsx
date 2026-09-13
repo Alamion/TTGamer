@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
+
 import type { MeritFlawEntry } from './meritsFlawsData';
 
 export const MERITS_FLAWS_COLUMNS: ColumnDef<MeritFlawEntry>[] = [
@@ -29,11 +30,15 @@ export const MERITS_FLAWS_COLUMNS: ColumnDef<MeritFlawEntry>[] = [
         accessorKey: 'type',
         enableSorting: true,
         cell: ({ getValue }) => {
-            const val = getValue<'Merit' | 'Flaw'>();
+            const val = getValue<MeritFlawEntry['type']>();
             return (
                 <span
                     className={
-                        val === 'Merit' ? 'text-green-400 font-medium' : 'text-red-400 font-medium'
+                        val === 'Merit'
+                            ? 'text-green-400 font-medium'
+                            : val === 'Flaw'
+                              ? 'text-red-400 font-medium'
+                              : 'text-textSecondary font-medium'
                     }
                 >
                     {val}
@@ -70,17 +75,25 @@ export function renderMeritFlawDetail(item: MeritFlawEntry): ReactNode {
                     Cost
                 </h5>
                 <p className="text-sm text-textSecondary">
-                    <span
-                        className={
-                            item.type === 'Merit'
-                                ? 'text-green-400 font-medium'
-                                : 'text-red-400 font-medium'
-                        }
-                    >
-                        {item.type === 'Merit' ? '+' : '–'}
-                        {item.cost} {item.cost === 1 ? 'pt' : 'pts'}
-                    </span>{' '}
-                    {item.type}
+                    {item.type === 'Implant' ? (
+                        <span className="text-textSecondary font-medium">
+                            No point cost · Implant
+                        </span>
+                    ) : (
+                        <>
+                            <span
+                                className={
+                                    item.type === 'Merit'
+                                        ? 'text-green-400 font-medium'
+                                        : 'text-red-400 font-medium'
+                                }
+                            >
+                                {item.type === 'Merit' ? '+' : '–'}
+                                {item.cost} {item.cost === 1 ? 'pt' : 'pts'}
+                            </span>{' '}
+                            {item.type}
+                        </>
+                    )}
                 </p>
             </div>
             {item.tags.length > 0 && (

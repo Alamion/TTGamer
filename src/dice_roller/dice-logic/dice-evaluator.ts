@@ -1,17 +1,18 @@
+import { debug } from '@site/src/shared/utils/logging';
+
+import { MAX_EXPLOSIONS } from '../utils/constants';
 import type {
     ASTNode,
     ComparePoint,
+    DiceGroupNode,
     DiceGroupResult,
     DiceRoll,
-    FullRollResult,
-    DiceGroupNode,
     ExplodeModifier,
+    FullRollResult,
     RerollModifier,
     UniqueModifier,
 } from './types';
-import { formatModifiers, applyKeepDrop, formatRollValues, buildGroupKey } from './utils';
-import { debug } from '@site/src/shared/utils/logging';
-import { MAX_EXPLOSIONS } from '../utils/constants';
+import { applyKeepDrop, buildGroupKey, formatModifiers, formatRollValues } from './utils';
 
 function randFloat(randomFn?: () => number): number {
     if (randomFn) return randomFn();
@@ -575,13 +576,17 @@ function evaluateAST(
                     rightResult.value !== 0 ? Math.floor(leftResult.value / rightResult.value) : 0;
                 break;
             case '%':
-                value = leftResult.value % rightResult.value;
+                value = rightResult.value !== 0 ? leftResult.value % rightResult.value : 0;
                 break;
             case '^':
                 value = Math.pow(leftResult.value, rightResult.value);
                 break;
             default:
                 value = 0;
+        }
+
+        if (!Number.isFinite(value)) {
+            throw new RangeError('Dice expression produced a non-finite result');
         }
 
         return {
@@ -646,6 +651,9 @@ export function evaluateDiceAST(
     debug('DiceEvaluator: Evaluating AST for:', originalNotation, preGeneratedValues);
     const result = evaluateAST(ast, '+', preGeneratedValues, { current: 0 }, randomFn);
     const { value: total, diceGroups } = result;
+    if (!Number.isFinite(total)) {
+        throw new RangeError('Dice expression produced a non-finite result');
+    }
     let details: string;
     if (diceGroups.length === 1) {
         details = formatRollValues(diceGroups[0].rolls, ',');

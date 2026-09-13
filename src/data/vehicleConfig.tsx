@@ -1,8 +1,9 @@
+import { EraTags } from '@site/src/shared/components/EraTags';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
-import type { VehicleEntry } from './vehicleData';
+
 import { arrayIncludesAnyFilterFn } from './dataFilters';
-import { EraTags } from '@site/src/shared/components/EraTags';
+import type { VehicleEntry } from './vehicleData';
 
 function ScaleBadge({ scale }: { scale: VehicleEntry['scale'] }) {
     const colors: Record<string, string> = {

@@ -1,124 +1,69 @@
 # Dice Roller Module
 
-## File Structure
+## Scope
 
-```
+This module owns notation editing, parsing/evaluation, roll history, 2D/3D presentation, and roll-result events. Discord delivery is a consumer in `src/integrations/discord`; it is not part of the dice engine.
+
+## Structure
+
+```text
 src/dice_roller/
-├── dice-logic/               # Core dice engine (pure logic, no UI)
-│   ├── dice-lexer.ts         # Tokenizer (moo, 22 token types)
-│   ├── dice-parser.ts        # AST parser (shunting-yard)
-│   ├── dice-evaluator.ts     # AST evaluator (all modifiers)
-│   ├── dice-roller.ts        # High-level roll orchestration
-│   ├── roll-orchestrator.ts  # 3D → Roll Engine coordination
-│   ├── notation-utils.ts     # Notation manipulation (ADV/DIS, increment)
-│   ├── types.ts              # DiceNotation AST types
-│   ├── errors.ts             # Custom errors
-│   ├── utils.ts              # Internal helpers
-│   ├── renderer/             # 3D visualization (Three.js + Cannon-es)
-│   │   ├── scene.ts, physics.ts, renderer.ts, factory.ts, ...
-│   │   ├── sound-manager.ts, shapes.ts, geometries.ts, resource.ts
-│   │   └── renderer-pool.ts
-│   └── index.ts              # Public API exports
-├── components/
-│   ├── DiceRollerContext.tsx       # Provider (settings, history, roll fn)
-│   ├── DicePanel.tsx               # Main panel entry point
-│   ├── SettingsPanel.tsx           # Settings UI
-│   ├── RollHistory.tsx             # History (All/Favorites/Recent tabs)
-│   ├── DiceRollerSettingsModal.tsx # Full settings modal (Discord, colors, sound)
-│   ├── DiscordWebhookSubscription.tsx # Auto-subscribes onRollResult → Discord
-│   ├── dice-config.ts              # Die face config
-│   ├── dice_pool/                  # Tabbed dice UI
-│   │   ├── DicePool.tsx            # Tab switcher + editor + Roll/Clear
-│   │   ├── DiceButton.tsx          # Single die button
-│   │   ├── DiceTabStandard.tsx     # Standard dice grid
-│   │   ├── DiceTabDnd.tsx          # D&D dice grid + ADV/DIS
-│   │   └── DiceTabWod.tsx          # WoD difficulty slider + d10
-│   ├── 2d_dices/                   # 2D dice SVG rendering
-│   │   ├── DiceSvg.tsx, index.ts, utils.tsx
-├── utils/
-│   ├── settings.ts                 # Settings CRUD + subscriptions
-│   ├── events.ts                   # Event system (roll trigger)
-│   ├── commands.ts                 # Slash commands (/roll, /r)
-│   ├── macros.ts                   # {{ddroll::}} macro
-│   ├── function-tools.ts           # AI function tools
-│   ├── constants.ts                # Module constants
-│   ├── types-ext.ts                # Extended types (HistoryEntry, etc.)
-│   ├── sessionStorage.ts           # Discord webhook URL persistence
-│   ├── body-injection.tsx          # React root injection
-│   └── recolor_svg.ts              # SVG recoloring utility
-├── styles/                    # SCSS modules
-├── global.d.ts                # SillyTavern API types (legacy)
-├── styles.d.ts                # SCSS module declarations
-└── index.tsx                  # Module entry point
+├── dice-logic/
+│   ├── dice-lexer.ts         # moo tokenizer
+│   ├── dice-parser.ts        # strict recursive-descent AST parser
+│   ├── dice-evaluator.ts     # 2D/random evaluation and modifiers
+│   ├── dice-roller.ts        # public roll/result-event functions
+│   ├── roll-orchestrator.ts  # physics-backed roll coordination
+│   ├── notation-utils.ts     # UI notation rewrites
+│   ├── renderer/             # Three.js + cannon-es physics
+│   ├── types.ts              # AST/result types
+│   └── index.ts              # deliberately small public API
+├── components/               # panel, tabs, history, inline rolls, settings
+├── store/diceRollerStore.ts  # Zustand persistence and roll action
+└── utils/                    # limits, event adapter, session context, UI types
 ```
 
-## Component Hierarchy
+## Runtime Flow
 
-```
-DicePanel
-  └── DiceRollerProvider  (context: settings, history, favorites, notationInput)
-      ├── DicePool        (tab switcher + notation editor + Roll/Clear + favorite star)
-      │   ├── DiceTabStandard  (dice grid)
-      │   ├── DiceTabDnd      (dice grid + ADV/DIS)
-      │   └── DiceTabWod      (difficulty slider + d10, owns wodDifficulty state)
-      └── RollHistory     (3 tabs: All/Favorites/Recent, click-to-set, reroll, expand)
-```
-
-## State Management (Context/Provider)
-
-`DiceRollerProvider` wraps the panel, provides via `useDiceRoller()`:
-
-- `settings` — reactive `DiceRollerSettings`
-- `history` — `HistoryEntry[]` per-chat, persisted
-- `favorites` — `FavoriteNotation[]`, persisted
-- `notationInput` — shared between editor and history
-- `roll()`, `clearHistory()`, `toggleFavorite()`, `toggleExpand()`, `setActiveTab()`
-
-## Settings
-
-```typescript
-interface DiceRollerSettings {
-    enable3dDice: boolean;
-    injectResult: boolean;
-    sendAsChatMessage: boolean;
-    showDiceButton: boolean;
-    functionTool: boolean;
-    primaryDiceColor: string;
-    secondaryDiceColor: string;
-    enableSound: boolean;
-    soundVolume: number; // 0-100
-    timeToReact: boolean;
-    timeToReactSeconds: number; // 1-60
-    enableDiscordWebhook: boolean;
-    includeCharacterName: boolean;
-    includeCharacterStats: boolean;
-    includeRollContext: boolean;
-}
+```text
+notation → tokenize → strict AST parse
+                     ├─ 2D: evaluator generates values and applies modifiers
+                     └─ 3D: physics generates supported die values
+                            → orchestrator handles physical rerolls/explosions
+                            → evaluator applies remaining result semantics
+                     → RollResult event → history/toast/Discord subscribers
 ```
 
-## Dice-Logic Architecture (Core Engine)
+The current 3D path is physics-authoritative for supported dice. It passes those values back into the evaluator as pre-generated rolls. Unsupported dice, excessive physical dice, renderer failure, and invalid physics output fall back to a normal 2D evaluation of the entire roll.
 
-The engine follows: **Lexer → Parser → Evaluator → Orchestrator**
+All live 3D rolls share one physics field and can physically collide, but their logical lifecycle is isolated by renderer session ID. A handle may only lock, reroll, add, settle, inspect, arrange, or dismiss its own session. Initial and explosion dice share one `MAX_PHYSICAL_3D_DICE` budget per logical roll.
 
-1. `tokenize()` — moo-based lexer, 22 token types
-2. `parseToAST()` — produces AST (handles modifier precedence)
-3. `evaluateDiceAST()` — evaluates AST with all modifiers applied
-4. `roll-orchestrator.ts` — coordinates Roll Engine (source of truth) with Render Engine (3D visualization)
+Do not describe the renderer as presentation-only or claim that `swapFace()` forces evaluator-generated results; that is not the current implementation.
 
-**Key separation:** Roll Engine produces final `RollResult`; Render Engine (`renderer/`) is pure 3D visualization — never modifies results.
+## Public and Internal Imports
 
-For deep reference (modifier evaluation order, lexer/parser rules, MockRandom consumption order, Render Engine details), load:
+The public barrel exports only:
 
-```
-.opencode/skills/dice-logic/SKILL.md
-```
+- `rollDices`
+- `onRollResult`
+- `validateNotation`
+- `RollResult` and `FullRollResult` types
 
-## Key Patterns
+UI outside this module may use that barrel. Dice internals and their unit tests should import the owning file directly, so widening the public API is an explicit decision.
 
-- **Public API:** import from `./dice-logic` (barrel exports in index.ts)
-- **External roll trigger:** `triggerRoll(notation)` from `utils/events`
-- **Logging:** `debug/info/warn/error` from `utils/logging`
-- **Settings access:** `getSettings()` returns copy; `getRollConfig()` returns roll-relevant subset
-- **Roll result toast:** `onRollResult((result) => toast(...))` in `Root.tsx` — subscribes to global roll events
-- **Discord webhook:** `sendToDiscord(result, settings)` from `external_apis/discord/` — triggered by `DiscordWebhookSubscription` component mounted in `Root.tsx`
-- **Secret storage:** `SecretField` component + `useSessionStorageState` hook for Discord webhook URL (session-only, not persisted to disk)
+## Invariants
+
+- Parsing rejects lexer errors, missing operands/parentheses/comparison values, and trailing tokens.
+- Limits live in `utils/constants.ts`: notation length, AST size, numeric magnitude, logical dice, sides, custom faces, recursive modifiers, physical 3D dice, and roll duration.
+- Exponentiation is currently left-associative; changing that is a notation compatibility decision.
+- Modifier order is defined in `dice-evaluator.ts` and documented in `.agents/skills/dice-logic/references/modifiers.md`.
+- A logical d100 consumes two physical d10 values in 3D.
+- Forced `@` values are deterministic in 2D. The 3D path currently warns and uses physics values.
+- Roll context stored in session storage must be consumed or explicitly cleared when recalling context-free history entries.
+- WoD difficulty controls rewrite both per-die and parenthesized group success thresholds already present in the editor.
+
+## Testing
+
+Run `yarn test` for parser/evaluator/notation changes and `yarn verify` before handoff. Tests using a mock random function consume all initial dice first, then values required by modifiers.
+
+Load `.agents/skills/dice-logic/SKILL.md` before changing lexer, parser, evaluator, or 3D orchestration behavior.
