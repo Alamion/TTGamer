@@ -163,7 +163,6 @@ defaults:
     initiativeLightsaber: Initiative (Saber)
     maxForcePoints: Max Force Points
     resolve: Resolve
-    darkSideResistanceShort: Dark Side Res.
     body: Body
     inventory: Inventory
     implants: Implants & Cyberware
@@ -173,6 +172,7 @@ defaults:
     experienceTotal: Total XP
     experienceSpent: Spent
     experienceAvailable: Available
+    freePoints: Free points
 builtInBlocks:
     base: Character header
     attributes: Attributes

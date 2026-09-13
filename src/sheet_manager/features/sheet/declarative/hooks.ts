@@ -51,6 +51,8 @@ export interface FormulaState {
     >;
     /** Per-node computed maxima for `maxFrom` (FR-12); degraded when the source is unavailable. */
     maxima: ReadonlyMap<string, { resolvedMax?: number; degraded?: boolean }>;
+    /** Per-primitive computed minima for `minFrom` (absent when unset or unresolvable). */
+    minima: ReadonlyMap<string, number>;
 }
 
 export interface SystemListRuntime {
@@ -223,7 +225,8 @@ export function useTemplatePage(
             | { state: 'error'; reason: FormulaEvaluationError | 'parse'; coordinate?: string }
         >();
         const maxima = new Map<string, { resolvedMax?: number; degraded?: boolean }>();
-        if (!template) return { results, maxima };
+        const minima = new Map<string, number>();
+        if (!template) return { results, maxima, minima };
 
         // Base numeric resolver: bag values + system-bound coordinates (undifferentiated).
         const resolveBase = (path: string): number | undefined => {
@@ -328,42 +331,49 @@ export function useTemplatePage(
             }
         }
 
-        // maxFrom evaluation: display clamp data for rating/number fields and pool primitives.
-        walkTemplateNodes(template.children, (node) => {
-            const source =
-                (node.type === 'rating' || node.type === 'number') && node.maxFrom
-                    ? node.maxFrom
-                    : node.type === 'primitive' && node.maxFrom
-                      ? node.maxFrom
-                      : undefined;
-            if (!source) return;
+        // Bound formulas (maxFrom / minFrom): display clamps for fields and pool primitives.
+        const evaluateBound = (
+            node: { id: string },
+            source: string,
+            kind: 'maxFrom' | 'minFrom'
+        ): number | undefined => {
             const parsed = parsedFormula(source);
             if (!parsed.ok) {
-                maxima.set(node.id, { degraded: true });
                 reportSheetIssue({
                     code: 'formula-error',
-                    message: 'maxFrom formula does not parse',
+                    message: `${kind} formula does not parse`,
                     details: { templateId: template.id, nodeId: node.id, formula: source },
                 });
-                return;
+                return undefined;
             }
             const resolution = evaluateFormula(parsed.expr, (path) => {
-                const computedEntry = formulaFields.find(
-                    (candidate) => candidate.coordinate === path
-                );
-                if (computedEntry && computed.has(path)) {
+                if (computed.has(path)) {
                     const value = results.get(path);
                     return value && value.state === 'ok' ? value.value : undefined;
                 }
                 return resolveBase(path);
             });
-            maxima.set(
-                node.id,
-                resolution.ok ? { resolvedMax: resolution.value } : { degraded: true }
-            );
+            return resolution.ok ? resolution.value : undefined;
+        };
+        walkTemplateNodes(template.children, (node) => {
+            const maxSource =
+                node.type === 'rating' || node.type === 'number' || node.type === 'primitive'
+                    ? node.maxFrom
+                    : undefined;
+            if (maxSource) {
+                const resolvedMax = evaluateBound(node, maxSource, 'maxFrom');
+                maxima.set(
+                    node.id,
+                    resolvedMax === undefined ? { degraded: true } : { resolvedMax }
+                );
+            }
+            if (node.type === 'primitive' && node.minFrom) {
+                const resolvedMin = evaluateBound(node, node.minFrom, 'minFrom');
+                if (resolvedMin !== undefined) minima.set(node.id, resolvedMin);
+            }
         });
 
-        return { results, maxima };
+        return { results, maxima, minima };
     }, [template, values, documentData]);
 
     const resolveSystemList = useCallback(

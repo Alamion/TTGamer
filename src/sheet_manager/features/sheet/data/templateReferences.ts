@@ -132,6 +132,7 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
                 issues.push({ code: 'unknown-binding', nodeId: node.id, key: node.bindingKey });
             }
             checkCoordinates(node.id, node.maxFrom);
+            checkCoordinates(node.id, node.minFrom);
         } else if (node.type === 'list' && node.bindingKey !== undefined) {
             const binding = bindings.get(node.bindingKey);
             if (!binding) {

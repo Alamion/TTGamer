@@ -83,6 +83,18 @@ const hasValidBounds = (value: { min?: number; max?: number }) =>
  */
 const maxFromShape = { maxFrom: z.string().min(1).max(500).optional() };
 
+/**
+ * Proportional column widths for a multi-column container (e.g. `[2, 1]`), applied from the
+ * medium breakpoint up; narrow screens always stack in one column.
+ */
+const columnWidthsShape = {
+    columnWidths: z
+        .array(z.number().int().min(1).max(12))
+        .min(2)
+        .max(TEMPLATE_LIMITS.columnsMax)
+        .optional(),
+};
+
 const TextFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('text'),
@@ -294,6 +306,8 @@ const PrimitiveNodeSchema = z.object({
     hideLabel: z.boolean().optional(),
     /** Pool resources: edit the current value (default) or the maximum. */
     part: z.enum(['current', 'max']).optional(),
+    /** Dynamic minimum (formula): lower dots are locked and writes never go below it. */
+    minFrom: z.string().min(1).max(500).optional(),
     compact: z.boolean().default(false),
     track: PrimitiveTrackOverrideSchema.optional(),
     ...maxFromShape,
@@ -310,6 +324,10 @@ const ListNodeSchema = z.object({
     bindingKey: z.string().min(1).max(120).optional(),
     columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).default(1),
     presets: z.array(PrimitivePresetSchema).max(TEMPLATE_LIMITS.presetsPerList).optional(),
+    /** Show the list's own title (off: the enclosing group names it). */
+    showTitle: z.boolean().optional(),
+    /** Draw the list's own bordered card (off: entries sit directly in the parent). */
+    framed: z.boolean().optional(),
 });
 
 const TableNodeSchema = z.object({
@@ -334,6 +352,7 @@ export interface SectionNode {
     docsPath?: string;
     /** Column layout for direct children, 1–4 (FR-9); unset = single column stack. */
     columns?: number;
+    columnWidths?: number[];
     children: TemplateNode[];
 }
 
@@ -349,6 +368,7 @@ export interface GroupNode {
     /** Opt-in collapsibility (FR-10); state is remembered per user via a storage key. */
     collapsible: boolean;
     columns?: number;
+    columnWidths?: number[];
     children: TemplateNode[];
 }
 
@@ -427,6 +447,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 ...placementShape,
                 docsPath: z.string().max(500).optional(),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+                ...columnWidthsShape,
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
             }),
             z.object({
@@ -439,6 +460,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 docsPath: z.string().max(500).optional(),
                 collapsible: z.boolean().default(false),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+                ...columnWidthsShape,
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),
             }),
             TableNodeSchema,
@@ -597,6 +619,10 @@ export function collectFormulaDependencies(template: CustomTemplate): FormulaDep
             node.maxFrom
         ) {
             const parsed = parseFormulaSafe(node.maxFrom);
+            if (parsed) sources.push({ id: node.id, reads: parsed });
+        }
+        if (node.type === 'primitive' && node.minFrom) {
+            const parsed = parseFormulaSafe(node.minFrom);
             if (parsed) sources.push({ id: node.id, reads: parsed });
         }
     });

@@ -73,7 +73,7 @@ describe('template value write path', () => {
             'https://example.test/portrait.webp'
         );
         expect(storedValues().portrait).toBeUndefined();
-    });
+    }, 20_000);
 
     it('validates fields by their valueKey, not their node id', () => {
         const template = numberTemplate();

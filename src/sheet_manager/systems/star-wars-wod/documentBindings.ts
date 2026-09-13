@@ -66,6 +66,17 @@ const trackBindings = buildWodTrackBindings(starWarsWodProfile, {
     },
 });
 
+/**
+ * Droids are character documents whose capability exposes their mechanical damage as `health`;
+ * this binding reads the same data with the damage chart's level names and penalties.
+ */
+const droidDamageBinding: DocumentBindingDescriptor = {
+    ...trackBindings.find(({ key }) => key === 'track:vehicle-damage')!,
+    key: 'track:droid-damage',
+    documentKinds: CHARACTER_KINDS,
+    dataKey: 'health',
+} as DocumentBindingDescriptor;
+
 const listDeclarations: ReadonlyArray<{
     listId: string;
     label: string;
@@ -238,6 +249,7 @@ export const starWarsTemplateBindings: readonly DocumentBindingDescriptor[] = [
     ...traitBindings,
     ...resourceBindings,
     ...trackBindings,
+    droidDamageBinding,
     ...listBindings,
     ...equipmentBindings,
     ...fieldBindings,

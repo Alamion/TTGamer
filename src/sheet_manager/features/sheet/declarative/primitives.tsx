@@ -6,11 +6,14 @@ import { generateId } from '../../../../shared/utils/random';
 import type { CatalogEntry } from '../../../components';
 import { SectionCard } from '../../../components/sections/SectionCard';
 import {
-    CompactConditionTrack,
     CompactRating,
     CompactResource,
     CompactTextField,
 } from '../../../components/stat-fields/CompactSheetFields';
+import {
+    ConditionTrackStrip,
+    ConditionTrackTable,
+} from '../../../components/stat-fields/ConditionTrack';
 import { MeritFlawList } from '../../../components/stat-fields/MeritFlawRow';
 import {
     CustomTraitList,
@@ -55,6 +58,8 @@ const inputClasses =
 export interface PrimitiveMaxState {
     resolvedMax?: number;
     degraded?: boolean;
+    /** Resolved `minFrom`: dots up to it are locked and writes never go below it. */
+    resolvedMin?: number;
 }
 
 type DegradedReason =
@@ -206,12 +211,17 @@ function SystemListBody({
     title,
     docsPath,
     columns = 1,
+    showTitle = false,
+    framed = false,
 }: {
     binding: ListBinding;
     disabled: boolean;
     title: string;
     docsPath?: string;
     columns?: 1 | 2 | 3 | 4;
+    /** Lists sit inside titled groups: their own title and card are opt-in. */
+    showTitle?: boolean;
+    framed?: boolean;
 }) {
     const { character, updateCharacter } = useCharacter();
     const { dataKey } = binding;
@@ -234,6 +244,8 @@ function SystemListBody({
                 docsPath={docsPath}
                 isMerit={isMerit}
                 columns={columns}
+                showTitle={showTitle}
+                framed={framed}
                 onAdd={() => write([...items, { id: generateId(), points: 1, label: '' }])}
                 onRemove={(id) => write(items.filter((item) => item.id !== id))}
                 onChange={(id, points, label) =>
@@ -269,30 +281,43 @@ function SystemListBody({
         }
         return { ...(source ?? { id: entry.id, specialization: false }), ...entry };
     };
-    return (
-        <SectionCard title={title} docsPath={docsPath}>
-            <TraitListBindingView
-                binding={binding}
-                items={items}
-                disabled={disabled}
-                columns={columns}
-                onChange={(next) => write(next.map(toRaw))}
-                onCatalogSelect={(id, entry) =>
-                    write(
-                        rawItems.map((item) =>
-                            String(item.id ?? '') === id
-                                ? {
-                                      ...item,
-                                      ...(binding.entryShape === 'named-trait'
-                                          ? { name: entry.name }
-                                          : { label: entry.name }),
-                                      catalogId: entry.id,
-                                  }
-                                : item
-                        )
+    const list = (
+        <TraitListBindingView
+            binding={binding}
+            items={items}
+            disabled={disabled}
+            columns={columns}
+            onChange={(next) => write(next.map(toRaw))}
+            onCatalogSelect={(id, entry) =>
+                write(
+                    rawItems.map((item) =>
+                        String(item.id ?? '') === id
+                            ? {
+                                  ...item,
+                                  ...(binding.entryShape === 'named-trait'
+                                      ? { name: entry.name }
+                                      : { label: entry.name }),
+                                  catalogId: entry.id,
+                              }
+                            : item
                     )
-                }
-            />
+                )
+            }
+        />
+    );
+    if (!framed) {
+        return showTitle ? (
+            <div className="grid gap-1">
+                <h3 className="text-sm font-semibold text-textPrimary">{title}</h3>
+                {list}
+            </div>
+        ) : (
+            list
+        );
+    }
+    return (
+        <SectionCard title={showTitle ? title : undefined} docsPath={docsPath}>
+            {list}
         </SectionCard>
     );
 }
@@ -360,6 +385,8 @@ export function SystemListView({
             disabled={disabled}
             title={list.title ?? descriptor.label}
             columns={list.columns as 1 | 2 | 3 | 4}
+            showTitle={list.showTitle}
+            framed={list.framed}
         />
     );
 }
@@ -541,8 +568,9 @@ function PrimitiveResourceBody({
         descriptor.mode === 'pool' && !editsMax && !descriptor.currentRaisesMax
             ? Math.min(effectiveMax, Math.max(1, pair.max))
             : effectiveMax;
+    const minimum = Math.max(0, Math.min(maxState?.resolvedMin ?? 0, rowMax));
     const writeValue = (next: number) => {
-        const clamped = Math.max(0, Math.min(next, rowMax));
+        const clamped = Math.max(minimum, Math.min(next, rowMax));
         const update =
             descriptor.mode === 'rating'
                 ? clamped
@@ -598,6 +626,7 @@ function PrimitiveResourceBody({
                 label={label}
                 value={Math.min(shown, rowMax)}
                 maxValue={rowMax}
+                minimal={minimum > 0 ? minimum : undefined}
                 disabled={readOnly}
                 onChange={writeValue}
                 size={node.compact ? 'sm' : 'md'}
@@ -649,6 +678,22 @@ function PrimitiveTrackBody({
                   penalty: level?.penalty ?? null,
               };
           });
+    const writeMarks = (next: ConditionMark[]) =>
+        updateCharacter(character.id, {
+            [descriptor.dataKey]: { ...track, levels: next },
+        } as Partial<typeof character>);
+    // Brief: one line of squares; full: a table with Level / Penalty / mark columns.
+    if (node.compact) {
+        return (
+            <ConditionTrackStrip
+                disabled={readOnly}
+                label={label}
+                levels={levels}
+                marks={track.levels}
+                onChange={writeMarks}
+            />
+        );
+    }
     return (
         <div className="grid gap-1">
             {!node.hideLabel && (
@@ -656,15 +701,16 @@ function PrimitiveTrackBody({
                     {label}
                 </span>
             )}
-            <CompactConditionTrack
+            <ConditionTrackTable
                 disabled={readOnly}
                 levels={levels}
                 marks={track.levels}
-                onChange={(next) =>
-                    updateCharacter(character.id, {
-                        [descriptor.dataKey]: { ...track, levels: next },
-                    } as Partial<typeof character>)
-                }
+                onChange={writeMarks}
+                columnLabels={{
+                    level: translate(fields.conditionLevel),
+                    penalty: translate(fields.conditionPenalty),
+                    mark: translate(fields.damage),
+                }}
             />
         </div>
     );

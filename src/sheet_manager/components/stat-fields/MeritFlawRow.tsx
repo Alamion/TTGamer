@@ -23,6 +23,10 @@ interface MeritFlawListProps {
     onCatalogSelect?: (id: string, entry: CatalogEntry) => void;
     /** Column layout for the entry grid, 1–4 (feature 006 FR-17). */
     columns?: 1 | 2 | 3 | 4;
+    /** Show the title header (the title still names the add button). */
+    showTitle?: boolean;
+    /** Wrap the list in its own bordered card. */
+    framed?: boolean;
 }
 
 const meritColumns = {
@@ -44,9 +48,11 @@ export function MeritFlawList({
     catalog,
     onCatalogSelect,
     columns = 1,
+    showTitle = true,
+    framed = true,
 }: MeritFlawListProps) {
-    return (
-        <SectionCard title={title} docsPath={docsPath}>
+    const content = (
+        <>
             <div
                 className={
                     columns > 1 ? `grid gap-x-4 gap-y-2 ${meritColumns[columns]}` : 'space-y-2'
@@ -108,6 +114,12 @@ export function MeritFlawList({
                 <Plus className="w-4 h-4" />
                 Add {title.slice(0, -1)}
             </button>
+        </>
+    );
+    if (!framed) return content;
+    return (
+        <SectionCard title={showTitle ? title : undefined} docsPath={docsPath}>
+            {content}
         </SectionCard>
     );
 }

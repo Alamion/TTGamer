@@ -7,6 +7,8 @@ import {
 } from '@site/src/sheet_manager/features/sheet/declarative/formula';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
+import { starWarsWodDefaultTemplates } from '@site/src/sheet_manager/systems/star-wars-wod/defaultTemplates';
+import { resolveDocumentBinding } from '@site/src/sheet_manager/systems/templateBindings';
 import {
     collectFormulaDependencies,
     CustomTemplateSchema,
@@ -169,6 +171,107 @@ describe('template layout and presentation', () => {
             },
         ]);
         expect(screen.getByText('Jumping Distance').parentElement!.textContent).toContain('×2');
+    });
+});
+
+describe('resource minimums, proportional columns, condition tracks, droid variant', () => {
+    beforeEach(() => seed());
+    afterEach(cleanup);
+
+    it('locks resource dots below a minFrom minimum and never writes under it', () => {
+        seed({
+            virtues: {
+                Conscience: {
+                    value: 1,
+                    specialization: false,
+                    experienced: false,
+                    practiced: false,
+                },
+                Passion: { value: 2, specialization: false, experienced: false, practiced: false },
+                'Self Control': {
+                    value: 3,
+                    specialization: false,
+                    experienced: false,
+                    practiced: false,
+                },
+            },
+            willpower: { current: 6, max: 6 },
+        });
+        mount([
+            {
+                id: 'willpower',
+                type: 'primitive',
+                bindingKey: 'resource:willpower',
+                minFrom: 'min(passion + self-control, 10)',
+            },
+        ]);
+        const dots = screen.getAllByRole('radio');
+        fireEvent.click(dots[1]!); // try to set 2, below the minimum of 5
+        expect(data().willpower?.current).toBe(5);
+    });
+
+    it('applies proportional column widths from the md breakpoint', () => {
+        const { container } = mount([
+            {
+                id: 'body',
+                type: 'section',
+                title: 'Body',
+                columns: 2,
+                columnWidths: [2, 1],
+                children: [
+                    { id: 'items', type: 'group', title: 'Items', column: 1, children: [] },
+                    { id: 'health', type: 'group', title: 'Health', column: 2, children: [] },
+                ],
+            },
+        ]);
+        const grid = container.querySelector('[data-column]')!.parentElement!;
+        expect(grid.style.getPropertyValue('--template-columns')).toBe(
+            'minmax(0, 2fr) minmax(0, 1fr)'
+        );
+    });
+
+    it('renders the full health track as a table and the compact one as a single strip', () => {
+        const { unmount } = mount([
+            { id: 'health', type: 'primitive', bindingKey: 'track:health', hideLabel: true },
+        ]);
+        expect(screen.getAllByRole('columnheader').map(({ textContent }) => textContent)).toEqual([
+            'Level',
+            'Penalty',
+            'Damage',
+        ]);
+        fireEvent.click(screen.getByRole('button', { name: 'Hurt: empty' }));
+        expect(data().health.levels[1]).toBe('slash');
+        unmount();
+
+        mount([{ id: 'health', type: 'primitive', bindingKey: 'track:health', compact: true }]);
+        expect(screen.queryByRole('table')).toBeNull();
+        expect(
+            screen.getByRole('group', { name: 'Health' }).querySelectorAll('button')
+        ).toHaveLength(7);
+    });
+});
+
+describe('droid default template', () => {
+    it('drops Force content, adds free points per ability group, and uses the damage chart', () => {
+        const droid = starWarsWodDefaultTemplates.find(({ id }) => id === 'droid-sheet')!;
+        const json = JSON.stringify(droid);
+        expect(json).not.toContain('force-skills-group');
+        expect(json).not.toContain('list:forcePowers');
+        expect(json).not.toContain('resource:force-points');
+        for (const group of ['talents', 'skills', 'knowledges']) {
+            expect(json).toContain(`"valueKey":"droid-free-${group}"`);
+        }
+        expect(json).toContain('track:droid-damage');
+        const damage = resolveDocumentBinding('star-wars-wod', 'character', 'track:droid-damage');
+        expect(damage?.kind === 'track' && damage.levels.map(({ label }) => label)).toEqual([
+            'Cosmetic',
+            'Light',
+            'Moderate',
+            'Heavy',
+            'Severe',
+            'Crippled',
+            'Wrecked',
+        ]);
     });
 });
 

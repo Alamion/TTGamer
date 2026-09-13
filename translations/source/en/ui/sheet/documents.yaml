@@ -53,6 +53,8 @@ views:
     vehicleSheet: Vehicle sheet
     fodderSheet: Fodder group
 fields:
+    conditionLevel: Level
+    conditionPenalty: Penalty
     identity: Identity
     name: Name
     concept: Concept

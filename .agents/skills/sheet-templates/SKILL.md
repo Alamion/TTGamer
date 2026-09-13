@@ -55,12 +55,17 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
       multi-column container sets it, children stack inside their column instead of flowing
       row by row (unplaced children go to column 1). Renderer grids use `grid-cols-1`
       (`minmax(0,1fr)`) tracks so wide rows shrink instead of clipping.
+    - Containers: `columnWidths` (e.g. `[2, 1]`) sets proportional columns from the md
+      breakpoint via the `--template-columns` CSS variable.
     - Groups: `hideTitle` (no header, never collapsible), `docsPath` (help link), opt-in
       `collapsible`.
+    - Lists: own title (`showTitle`) and bordered card (`framed`) are off by default — the
+      enclosing group names the list.
     - Fields: `hideLabel` (kept for screen readers); text fields `placeholder` +
       `placeholderMessage`; formula fields `prefix`/`suffix`, rendered as "label … value" rows.
     - Primitives: `hideLabel`; pool resources `part: 'max'` edits the maximum (current is capped
-      to it). Compact pools render `current / max` boxes, compact ratings number boxes.
+      to it); `minFrom` (formula) locks dots below a dynamic minimum and clamps writes to it.
+      Tracks render as a Level / Penalty / Damage table, or a one-line strip when `compact`. Compact pools render `current / max` boxes, compact ratings number boxes.
 - Labels: every labelled node may carry `labelMessage` — a UI message id (`ttgamer.ui.…`) or a
   catalog entry (`catalog:<catalogId>/<entryId>`, e.g. attribute names). `DeclarativeSheetView`
   renders `localizeTemplate(template, locale)` (`features/sheet/declarative/localizeTemplate.ts`);
@@ -117,6 +122,10 @@ WoD-family systems build trait/resource/track bindings from their profile with
   (experience: spent ≤ total) and `adapter` maps split values (portrait ↔
   `metadata.portraitId`/`imageUrl`). Numeric field bindings are formula coordinates
   (`experience-total - experience-spent`). Pool resources may set `currentRaisesMax` (Willpower).
+- `track:droid-damage` reads droid damage (exposed as `health` by the droid capability) with the
+  damage chart's level names and penalties. The shipped `droid-sheet` is the `droid` variant of
+  the full sheet: no Force skills/powers or Force Points, per-group free-point fields
+  (`droid-free-<group>` bag values), Built-in equipment, and the damage chart.
 - List entry shapes: `trait` `{id,label,value}`, `named-trait` `{id,name,value}`, `merit-flaw`
   `{id,label,points}`. Preset seeding and the list molecules both follow `entryShape`.
 - Keys are persisted as plain strings, checked by `validateTemplateReferences`

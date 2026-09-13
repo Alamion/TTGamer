@@ -40,36 +40,47 @@ function seedDocument(
     });
 }
 
+/** Rendering the whole shipped sheet in jsdom is slow under a parallel suite. */
+const FULL_SHEET_RENDER_TIMEOUT = 20_000;
+
 describe('declarative default templates (feature 006, zero placements)', () => {
     beforeEach(() => seedDocument());
     afterEach(cleanup);
 
-    it('character full default covers identity, attributes, skills, advantages, force, body, other', () => {
-        const template = defaultTemplate('full-sheet');
-        expect(template).toBeDefined();
-        render(createElement(DeclarativeSheetView, { template: template! }));
-        // No degradation: every binding resolves.
-        expect(screen.queryAllByRole('alert')).toHaveLength(0);
-        // Identity fields.
-        expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(8);
-        // Attribute rows — sample labels across the three groups.
-        expect(screen.getAllByText('Strength').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Charisma').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Wits').length).toBeGreaterThan(0);
-        // Ability rows — one from each ability group.
-        expect(screen.getAllByText('Athletics').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Blaster').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Astrogation').length).toBeGreaterThan(0);
-        // System lists for custom skills.
-        expect(screen.getAllByText(/Custom talents/i).length).toBeGreaterThan(0);
-        // Condition + resources.
-        expect(screen.getAllByText('Health').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Willpower').length).toBeGreaterThan(0);
-        // Advantages / Force / Body / Other section content.
-        expect(screen.getAllByText('Advantages').length).toBeGreaterThan(0);
-        expect(screen.getAllByText('Force').length).toBeGreaterThan(0);
-        expect(screen.getAllByText(/Derived Stats/i).length).toBeGreaterThan(0);
-    });
+    it(
+        'character full default covers identity, attributes, skills, advantages, force, body, other',
+        () => {
+            const template = defaultTemplate('full-sheet');
+            expect(template).toBeDefined();
+            render(createElement(DeclarativeSheetView, { template: template! }));
+            // No degradation: every binding resolves.
+            expect(screen.queryAllByRole('alert')).toHaveLength(0);
+            // Identity fields.
+            expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(8);
+            // Attribute rows — sample labels across the three groups.
+            expect(screen.getAllByText('Strength').length).toBeGreaterThan(0);
+            expect(screen.getAllByText('Charisma').length).toBeGreaterThan(0);
+            expect(screen.getAllByText('Wits').length).toBeGreaterThan(0);
+            // Ability rows — one from each ability group.
+            expect(screen.getAllByText('Athletics').length).toBeGreaterThan(0);
+            expect(screen.getAllByText('Blaster').length).toBeGreaterThan(0);
+            expect(screen.getAllByText('Astrogation').length).toBeGreaterThan(0);
+            // System lists for custom skills sit untitled inside their ability groups.
+            expect(screen.getAllByText('Talents').length).toBeGreaterThan(0);
+            expect(screen.queryByText(/Custom talents/i)).toBeNull();
+            expect(screen.getAllByRole('button', { name: /^Add$/ }).length).toBeGreaterThanOrEqual(
+                3
+            );
+            // Condition + resources.
+            expect(screen.getAllByText('Health').length).toBeGreaterThan(0);
+            expect(screen.getAllByText('Willpower').length).toBeGreaterThan(0);
+            // Advantages / Force / Body / Other section content.
+            expect(screen.getAllByText('Advantages').length).toBeGreaterThan(0);
+            expect(screen.getAllByText('Force').length).toBeGreaterThan(0);
+            expect(screen.getAllByText(/Derived Stats/i).length).toBeGreaterThan(0);
+        },
+        FULL_SHEET_RENDER_TIMEOUT
+    );
 
     it('ships zero built-in placements across every default template', () => {
         const defaults = systemRegistry.getSystem('star-wars-wod')?.defaultTemplates ?? [];

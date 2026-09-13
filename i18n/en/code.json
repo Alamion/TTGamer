@@ -563,6 +563,12 @@
     "ttgamer.ui.sheet.documents.fields.concept": {
         "message": "Concept"
     },
+    "ttgamer.ui.sheet.documents.fields.conditionLevel": {
+        "message": "Level"
+    },
+    "ttgamer.ui.sheet.documents.fields.conditionPenalty": {
+        "message": "Penalty"
+    },
     "ttgamer.ui.sheet.documents.fields.configuration": {
         "message": "Configuration"
     },
@@ -974,9 +980,6 @@
     "ttgamer.ui.sheet.templates.defaults.darkSideResistance": {
         "message": "Dark Side Resistance"
     },
-    "ttgamer.ui.sheet.templates.defaults.darkSideResistanceShort": {
-        "message": "Dark Side Res."
-    },
     "ttgamer.ui.sheet.templates.defaults.derivedStats": {
         "message": "Derived Stats"
     },
@@ -1000,6 +1003,9 @@
     },
     "ttgamer.ui.sheet.templates.defaults.forceSkills": {
         "message": "Force Skills"
+    },
+    "ttgamer.ui.sheet.templates.defaults.freePoints": {
+        "message": "Free points"
     },
     "ttgamer.ui.sheet.templates.defaults.implants": {
         "message": "Implants & Cyberware"

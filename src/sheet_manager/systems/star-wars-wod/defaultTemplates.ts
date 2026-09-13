@@ -105,7 +105,12 @@ function resource(
     id: string,
     bindingKey: string,
     label: string,
-    options: { maxFrom?: string; compact?: boolean; part?: 'current' | 'max' } = {}
+    options: {
+        maxFrom?: string;
+        minFrom?: string;
+        compact?: boolean;
+        part?: 'current' | 'max';
+    } = {}
 ): PrimitiveNode {
     return {
         id,
@@ -114,6 +119,7 @@ function resource(
         label,
         compact: options.compact ?? false,
         ...(options.maxFrom ? { maxFrom: options.maxFrom } : {}),
+        ...(options.minFrom ? { minFrom: options.minFrom } : {}),
         ...(options.part ? { part: options.part } : {}),
     };
 }
@@ -121,7 +127,7 @@ function resource(
 function primitive(
     id: string,
     bindingKey: string,
-    options: { compact?: boolean; hideLabel?: boolean } = {}
+    options: { compact?: boolean; hideLabel?: boolean; label?: string } = {}
 ): PrimitiveNode {
     return {
         id,
@@ -129,6 +135,7 @@ function primitive(
         bindingKey,
         compact: options.compact ?? false,
         ...(options.hideLabel ? { hideLabel: true } : {}),
+        ...(options.label ? { label: options.label } : {}),
     };
 }
 
@@ -138,6 +145,7 @@ function systemList(id: string, bindingKey: string, title: string): ListNode {
 
 interface GroupOptions {
     columns?: number;
+    columnWidths?: number[];
     column?: number;
     collapsible?: boolean;
     hideTitle?: boolean;
@@ -157,6 +165,7 @@ function group(
         collapsible: options.collapsible ?? false,
         children,
         ...(options.columns ? { columns: options.columns } : {}),
+        ...(options.columnWidths ? { columnWidths: options.columnWidths } : {}),
         ...(options.column ? { column: options.column } : {}),
         ...(options.hideTitle ? { hideTitle: true } : {}),
         ...(options.docsPath ? { docsPath: options.docsPath } : {}),
@@ -168,7 +177,8 @@ function section(
     title: string,
     docsPath: string,
     children: TemplateNode[],
-    columns?: number
+    columns?: number,
+    columnWidths?: number[]
 ): SectionNode {
     return {
         id,
@@ -177,8 +187,19 @@ function section(
         docsPath,
         children,
         ...(columns ? { columns } : {}),
+        ...(columnWidths ? { columnWidths } : {}),
     };
 }
+
+/** Character sheets and droid sheets share one layout with droid-specific differences. */
+type SheetVariant = 'character' | 'droid';
+
+/** Virtue-derived minimums of the editable resources (original sheet rules). */
+const MINIMUMS = {
+    willpower: 'min(passion + self-control, 10)',
+    maxForcePoints: 'self-control',
+    darkSide: 'max(0, min(5 + conscience - passion, 10))',
+} as const;
 
 const ATTRIBUTE_GROUPS: ReadonlyArray<{ id: string; title: string; keys: string[] }> = [
     { id: 'attributes-physical', title: 'Physical', keys: ['Strength', 'Dexterity', 'Stamina'] },
@@ -343,7 +364,7 @@ function attributesSection(): SectionNode {
     );
 }
 
-function skillsSection(): SectionNode {
+function skillsSection(variant: SheetVariant): SectionNode {
     return section(
         'skills',
         'Skills',
@@ -352,6 +373,16 @@ function skillsSection(): SectionNode {
             group(id, title, [
                 ...keys.map((key) => trait(key)),
                 systemList(list, bindingKey, listTitle),
+                // Droids may bank ability points they have not spread yet (per group).
+                ...(variant === 'droid'
+                    ? [
+                          number(
+                              `droid-free-${list.slice(5)}`,
+                              'Free points',
+                              `droid-free-${list.slice(5)}`
+                          ),
+                      ]
+                    : []),
             ])
         ),
         3
@@ -376,7 +407,59 @@ function advantagesSection(): SectionNode {
     );
 }
 
-function forceSection(): SectionNode {
+function resourcesGroup(variant: SheetVariant, column: number): GroupNode {
+    return group(
+        'force-resources',
+        'Resources',
+        [
+            resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                minFrom: MINIMUMS.willpower,
+            }),
+            ...(variant === 'droid'
+                ? []
+                : [
+                      resource(
+                          'resource-max-force-points',
+                          'resource:force-points',
+                          'Max Force Points',
+                          {
+                              part: 'max',
+                              minFrom: MINIMUMS.maxForcePoints,
+                          }
+                      ),
+                      resource('resource-force-points', 'resource:force-points', 'Force Points'),
+                      resource(
+                          'resource-dark-side',
+                          'resource:dark-side-resistance',
+                          'Dark Side Resistance',
+                          {
+                              minFrom: MINIMUMS.darkSide,
+                          }
+                      ),
+                  ]),
+        ],
+        { column }
+    );
+}
+
+function forceSection(variant: SheetVariant): SectionNode {
+    const virtues = (column: number) =>
+        group(
+            'force-virtues',
+            'Virtues',
+            VIRTUE_KEYS.map((key) => trait(key)),
+            { column, docsPath: DOCS.virtues }
+        );
+    // Droids have no Force: virtues and Willpower only.
+    if (variant === 'droid') {
+        return section(
+            'force',
+            'Resources',
+            DOCS.virtues,
+            [virtues(1), resourcesGroup(variant, 2)],
+            2
+        );
+    }
     return section(
         'force',
         'Force',
@@ -388,34 +471,8 @@ function forceSection(): SectionNode {
                 FORCE_SKILL_KEYS.map((key) => trait(key)),
                 { column: 1, docsPath: DOCS.forceSkills }
             ),
-            group(
-                'force-virtues',
-                'Virtues',
-                VIRTUE_KEYS.map((key) => trait(key)),
-                { column: 2, docsPath: DOCS.virtues }
-            ),
-            group(
-                'force-resources',
-                'Resources',
-                [
-                    resource('resource-willpower', 'resource:willpower', 'Willpower'),
-                    resource(
-                        'resource-max-force-points',
-                        'resource:force-points',
-                        'Max Force Points',
-                        {
-                            part: 'max',
-                        }
-                    ),
-                    resource('resource-force-points', 'resource:force-points', 'Force Points'),
-                    resource(
-                        'resource-dark-side',
-                        'resource:dark-side-resistance',
-                        'Dark Side Resistance'
-                    ),
-                ],
-                { column: 2 }
-            ),
+            virtues(2),
+            resourcesGroup(variant, 2),
             group(
                 'force-powers-group',
                 'Force Powers',
@@ -427,89 +484,87 @@ function forceSection(): SectionNode {
     );
 }
 
-function bodySection(): SectionNode {
+function bodySection(variant: SheetVariant): SectionNode {
     const equipment = (id: string, title: string, bindingKey: string, docsPath: string) =>
         group(`body-${id}`, title, [primitive(`equipment-${id}`, bindingKey)], {
             column: 1,
             collapsible: true,
             docsPath,
         });
+    const isDroid = variant === 'droid';
     return section(
         'body',
         'Body',
         DOCS.equipment,
         [
-            equipment('inventory', 'Inventory', 'equipment:inventory', DOCS.inventory),
+            equipment(
+                'inventory',
+                isDroid ? 'Built-in equipment' : 'Inventory',
+                'equipment:inventory',
+                DOCS.inventory
+            ),
             equipment('weapons', 'Weapons', 'equipment:weapons', DOCS.weapons),
             equipment('armor', 'Armor', 'equipment:armor', DOCS.armor),
             equipment('implants', 'Implants & Cyberware', 'equipment:implants', DOCS.implants),
             group(
                 'body-health',
-                'Health',
-                [primitive('track-health', 'track:health', { hideLabel: true })],
+                isDroid ? 'Damage' : 'Health',
+                [
+                    primitive('track-health', isDroid ? 'track:droid-damage' : 'track:health', {
+                        hideLabel: true,
+                        label: isDroid ? 'Damage' : 'Health',
+                    }),
+                ],
                 { column: 2, docsPath: DOCS.health }
             ),
         ],
-        2
+        2,
+        [2, 1]
     );
 }
 
 const DERIVED = {
-    willpower: 'min(passion + self-control, 10)',
-    darkSide: 'max(0, min(5 + conscience - passion, 10))',
     initiative: 'wits + alertness',
     initiativeSaber: 'wits + alertness + control',
     movement: 'max(min(control, telekinesis), 1)',
 } as const;
 
-function otherSection(): SectionNode {
-    return section(
-        'other',
-        'Other',
-        DOCS.derived,
+function otherSection(variant: SheetVariant): SectionNode {
+    const derived = group(
+        'derived-stats',
+        'Derived Stats',
         [
-            group(
-                'derived-stats',
-                'Derived Stats',
-                [
-                    formula('derived-willpower', 'Willpower', DERIVED.willpower),
-                    formula('derived-dark-side', 'Dark Side Res.', DERIVED.darkSide),
-                    formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative),
-                    formula(
-                        'derived-initiative-saber',
-                        'Initiative (Saber)',
-                        DERIVED.initiativeSaber
-                    ),
-                    formula('derived-jumping', 'Jumping Distance', DERIVED.movement, {
-                        prefix: '×',
-                    }),
-                    formula('derived-running', 'Running Speed', DERIVED.movement, { prefix: '×' }),
-                ],
-                { columns: 2, docsPath: DOCS.derived }
-            ),
-            group(
-                'experience',
-                'Experience',
-                [
-                    number('field-experience-total', 'Total XP', 'experience-total'),
-                    number('field-experience-spent', 'Spent', 'experience-spent'),
-                    formula(
-                        'derived-experience-available',
-                        'Available',
-                        'experience-total - experience-spent'
-                    ),
-                ],
-                { docsPath: DOCS.experience }
-            ),
-            group('notes', 'Notes', [
-                text('field-notes', 'Notes', 'notes', { multiline: true, hideLabel: true }),
-            ]),
+            formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative),
+            formula('derived-initiative-saber', 'Initiative (Saber)', DERIVED.initiativeSaber),
+            formula('derived-jumping', 'Jumping Distance', DERIVED.movement, { prefix: '×' }),
+            formula('derived-running', 'Running Speed', DERIVED.movement, { prefix: '×' }),
         ],
-        3
+        { columns: 2, docsPath: DOCS.derived }
     );
+    const experience = group(
+        'experience',
+        'Experience',
+        [
+            number('field-experience-total', 'Total XP', 'experience-total'),
+            number('field-experience-spent', 'Spent', 'experience-spent'),
+            formula(
+                'derived-experience-available',
+                'Available',
+                'experience-total - experience-spent'
+            ),
+        ],
+        { docsPath: DOCS.experience }
+    );
+    const notes = group('notes', 'Notes', [
+        text('field-notes', 'Notes', 'notes', { multiline: true, hideLabel: true }),
+    ]);
+    // Derived stats depend on Force skills, which droids do not have.
+    return variant === 'droid'
+        ? section('other', 'Other', DOCS.experience, [experience, notes], 2)
+        : section('other', 'Other', DOCS.derived, [derived, experience, notes], 3);
 }
 
-function fullSheet(viewId: string, name: string): CustomTemplate {
+function fullSheet(viewId: string, name: string, variant: SheetVariant): CustomTemplate {
     return {
         id: viewId,
         name,
@@ -519,11 +574,11 @@ function fullSheet(viewId: string, name: string): CustomTemplate {
         children: [
             baseSection(),
             attributesSection(),
-            skillsSection(),
+            skillsSection(variant),
             advantagesSection(),
-            forceSection(),
-            bodySection(),
-            otherSection(),
+            forceSection(variant),
+            bodySection(variant),
+            otherSection(variant),
         ],
     };
 }
@@ -612,9 +667,12 @@ function briefSheet(viewId: string, name: string): CustomTemplate {
                 ],
                 { columns: 3 }
             ),
-            group('brief-health', 'Health', [
-                primitive('track-health', 'track:health', { compact: true, hideLabel: true }),
-            ]),
+            group(
+                'brief-health',
+                'Health',
+                [primitive('track-health', 'track:health', { compact: true, label: 'Health' })],
+                { hideTitle: true }
+            ),
             group(
                 'brief-weapons',
                 'Weapons',
@@ -677,7 +735,9 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Resolve: defaultMessages.resolve,
     Willpower: documentFields.willpower,
     'Dark Side Resistance': defaultMessages.darkSideResistance,
-    'Dark Side Res.': defaultMessages.darkSideResistanceShort,
+    'Free points': defaultMessages.freePoints,
+    'Built-in equipment': documentFields.builtInEquipment,
+    Damage: documentFields.damage,
     Body: defaultMessages.body,
     Inventory: defaultMessages.inventory,
     Weapons: documentFields.weapons,
@@ -728,7 +788,7 @@ function translatable(template: CustomTemplate): CustomTemplate {
 
 /** All default templates for the setup: pure declarative trees. */
 export const starWarsWodDefaultTemplates: readonly CustomTemplate[] = [
-    translatable(fullSheet('full-sheet', 'Full sheet')),
-    translatable(fullSheet('droid-sheet', 'Droid sheet')),
+    translatable(fullSheet('full-sheet', 'Full sheet', 'character')),
+    translatable(fullSheet('droid-sheet', 'Droid sheet', 'droid')),
     translatable(briefSheet('brief', 'Brief')),
 ];

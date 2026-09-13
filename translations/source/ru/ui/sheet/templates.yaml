@@ -163,7 +163,6 @@ defaults:
     initiativeLightsaber: Инициатива (свет. меч)
     maxForcePoints: Макс. Очки Силы
     resolve: Стойкость
-    darkSideResistanceShort: Сопр. Тёмной Стороне
     body: Тело
     inventory: Инвентарь
     implants: Импланты и кибернетика
@@ -173,6 +172,7 @@ defaults:
     experienceTotal: Всего опыта
     experienceSpent: Потрачено
     experienceAvailable: Доступно
+    freePoints: Свободные очки
 builtInBlocks:
     base: Шапка персонажа
     attributes: Атрибуты

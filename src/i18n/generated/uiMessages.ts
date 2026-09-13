@@ -432,6 +432,14 @@ export const uiMessages = {
                 },
             },
             fields: {
+                conditionLevel: {
+                    id: 'ttgamer.ui.sheet.documents.fields.conditionLevel',
+                    message: 'Level',
+                },
+                conditionPenalty: {
+                    id: 'ttgamer.ui.sheet.documents.fields.conditionPenalty',
+                    message: 'Penalty',
+                },
                 identity: {
                     id: 'ttgamer.ui.sheet.documents.fields.identity',
                     message: 'Identity',
@@ -1494,10 +1502,6 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.defaults.resolve',
                     message: 'Resolve',
                 },
-                darkSideResistanceShort: {
-                    id: 'ttgamer.ui.sheet.templates.defaults.darkSideResistanceShort',
-                    message: 'Dark Side Res.',
-                },
                 body: {
                     id: 'ttgamer.ui.sheet.templates.defaults.body',
                     message: 'Body',
@@ -1533,6 +1537,10 @@ export const uiMessages = {
                 experienceAvailable: {
                     id: 'ttgamer.ui.sheet.templates.defaults.experienceAvailable',
                     message: 'Available',
+                },
+                freePoints: {
+                    id: 'ttgamer.ui.sheet.templates.defaults.freePoints',
+                    message: 'Free points',
                 },
             },
             builtInBlocks: {

@@ -53,6 +53,8 @@ views:
     vehicleSheet: Лист транспорта
     fodderSheet: Группа статистов
 fields:
+    conditionLevel: Уровень
+    conditionPenalty: Штраф
     identity: Основные сведения
     name: Имя
     concept: Концепция

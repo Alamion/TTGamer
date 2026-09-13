@@ -563,6 +563,12 @@
     "ttgamer.ui.sheet.documents.fields.concept": {
         "message": "Концепция"
     },
+    "ttgamer.ui.sheet.documents.fields.conditionLevel": {
+        "message": "Уровень"
+    },
+    "ttgamer.ui.sheet.documents.fields.conditionPenalty": {
+        "message": "Штраф"
+    },
     "ttgamer.ui.sheet.documents.fields.configuration": {
         "message": "Конфигурация"
     },
@@ -974,9 +980,6 @@
     "ttgamer.ui.sheet.templates.defaults.darkSideResistance": {
         "message": "Сопротивление Тёмной Стороне"
     },
-    "ttgamer.ui.sheet.templates.defaults.darkSideResistanceShort": {
-        "message": "Сопр. Тёмной Стороне"
-    },
     "ttgamer.ui.sheet.templates.defaults.derivedStats": {
         "message": "Производные показатели"
     },
@@ -1000,6 +1003,9 @@
     },
     "ttgamer.ui.sheet.templates.defaults.forceSkills": {
         "message": "Силовые навыки"
+    },
+    "ttgamer.ui.sheet.templates.defaults.freePoints": {
+        "message": "Свободные очки"
     },
     "ttgamer.ui.sheet.templates.defaults.implants": {
         "message": "Импланты и кибернетика"

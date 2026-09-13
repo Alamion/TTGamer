@@ -514,6 +514,11 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
                 issues.push({ message: messages.invalidBounds });
             }
         }
+        if (node.type === 'primitive' && node.minFrom && !parseFormula(node.minFrom).ok) {
+            issues.push({
+                message: interpolate(messages.invalidFormula, { id: node.label ?? node.id }),
+            });
+        }
         if (
             (node.type === 'rating' || node.type === 'number' || node.type === 'primitive') &&
             node.maxFrom

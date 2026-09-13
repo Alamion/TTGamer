@@ -3,7 +3,7 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
-import { createElement, useMemo } from 'react';
+import { createElement, type CSSProperties, useMemo } from 'react';
 
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
@@ -353,7 +353,9 @@ function ListView({
         : [];
     return (
         <div className="grid grid-cols-1 gap-1" data-list-columns={node.columns}>
-            {node.title && <h3 className="text-sm font-semibold text-textPrimary">{node.title}</h3>}
+            {node.showTitle && node.title && (
+                <h3 className="text-sm font-semibold text-textPrimary">{node.title}</h3>
+            )}
             <CustomListView
                 list={node}
                 entries={entries}
@@ -385,7 +387,12 @@ function NodeView({
                 docsPath={node.docsPath}
                 accentColor={accentColor}
             >
-                <ChildrenGrid nodes={node.children} pageApi={pageApi} columns={node.columns} />
+                <ChildrenGrid
+                    nodes={node.children}
+                    pageApi={pageApi}
+                    columns={node.columns}
+                    columnWidths={node.columnWidths}
+                />
             </CollapsibleBlock>
         );
     }
@@ -403,7 +410,12 @@ function NodeView({
                         : undefined
                 }
             >
-                <ChildrenGrid nodes={node.children} pageApi={pageApi} columns={node.columns} />
+                <ChildrenGrid
+                    nodes={node.children}
+                    pageApi={pageApi}
+                    columns={node.columns}
+                    columnWidths={node.columnWidths}
+                />
             </SectionCard>
         );
     }
@@ -412,7 +424,10 @@ function NodeView({
     if (node.type === 'list') return <ListView node={node} pageApi={pageApi} />;
 
     if (node.type === 'primitive') {
-        const maxState = pageApi.formulaState.maxima.get(node.id);
+        const maxState = {
+            ...pageApi.formulaState.maxima.get(node.id),
+            resolvedMin: pageApi.formulaState.minima.get(node.id),
+        };
         return (
             <PrimitiveNodeView
                 node={node}
@@ -437,10 +452,12 @@ function ChildrenGrid({
     nodes,
     pageApi,
     columns,
+    columnWidths,
 }: {
     nodes: readonly TemplateNode[];
     pageApi: UseTemplatePageResult;
     columns?: number;
+    columnWidths?: readonly number[];
 }) {
     if (nodes.length === 0) return null;
     const renderNode = (node: TemplateNode, index: number) => (
@@ -453,6 +470,19 @@ function ChildrenGrid({
         />
     );
     const children = nodes.map(renderNode);
+    // Proportional widths (e.g. 2:1) apply from the md breakpoint; narrow screens stack.
+    const proportional =
+        columns && columns > 1 && columnWidths?.length === columns
+            ? {
+                  className:
+                      'grid grid-cols-1 gap-4 md:[grid-template-columns:var(--template-columns)]',
+                  style: {
+                      '--template-columns': columnWidths
+                          .map((width) => `minmax(0, ${width}fr)`)
+                          .join(' '),
+                  } as CSSProperties,
+              }
+            : undefined;
     // Explicit placement: children stack inside their assigned column (unplaced → column 1).
     if (columns && columns > 1 && nodes.some((node) => node.column !== undefined)) {
         const stacks = Array.from({ length: columns }, (_, columnIndex) =>
@@ -461,7 +491,13 @@ function ChildrenGrid({
                 .filter(({ node }) => Math.min(node.column ?? 1, columns) === columnIndex + 1)
         );
         return (
-            <div className={clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])}>
+            <div
+                className={
+                    proportional?.className ??
+                    clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])
+                }
+                style={proportional?.style}
+            >
                 {stacks.map((stack, columnIndex) => (
                     <div
                         key={columnIndex}
@@ -476,7 +512,13 @@ function ChildrenGrid({
     }
     if (columns && columns > 1) {
         return (
-            <div className={clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])}>
+            <div
+                className={
+                    proportional?.className ??
+                    clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])
+                }
+                style={proportional?.style}
+            >
                 {children}
             </div>
         );
