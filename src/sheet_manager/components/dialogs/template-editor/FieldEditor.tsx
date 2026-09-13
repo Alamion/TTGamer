@@ -2,11 +2,13 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Plus, Trash2 } from 'lucide-react';
 
-import type { TemplateField } from '../../../types/template';
+import type { TemplateField, TemplateNode } from '../../../types/template';
 import { TEMPLATE_FIELD_TYPES, TEMPLATE_LIMITS } from '../../../types/template';
 import { CatalogBindingEditor } from './CatalogBindingEditor';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
+import { ValueSourceSelect } from './SourceControls';
+import { currentValueSource, CUSTOM_SOURCE } from './sourceNodes';
 
 const editor = uiMessages.sheet.templates.editor;
 const fieldTypes = uiMessages.sheet.templates.fieldTypes;
@@ -36,6 +38,7 @@ export interface FieldEditorCallbacks {
         detailKey: string,
         rule: { targetFieldId: string; disabled?: boolean } | undefined
     ) => void;
+    onReplace: (next: TemplateNode) => void;
 }
 
 export function FieldEditor({
@@ -46,7 +49,13 @@ export function FieldEditor({
     field: TemplateField;
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
-    const coordinateDatalist = useEditorModel().coordinateListId;
+    const { bindings, coordinateListId: coordinateDatalist } = useEditorModel();
+    const sourceKey = currentValueSource(field, bindings);
+    const isCustom = sourceKey === CUSTOM_SOURCE;
+    // Trait values render with the sheet's own trait row: rating bounds and maxFrom do not apply.
+    const isTraitSource = bindings.some(
+        (binding) => binding.key === sourceKey && binding.kind === 'trait'
+    );
 
     return (
         <div
@@ -63,11 +72,13 @@ export function FieldEditor({
                 />
                 <select
                     value={field.type}
+                    disabled={!isCustom}
+                    title={isCustom ? undefined : t(editor.sourceTypeLocked)}
                     onChange={(event) =>
                         callbacks.onChangeType(event.target.value as TemplateField['type'])
                     }
                     aria-label={t(editor.fieldType)}
-                    className={inputClasses}
+                    className={`${inputClasses} disabled:opacity-60`}
                 >
                     {FIELD_TYPE_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -91,19 +102,26 @@ export function FieldEditor({
                 className={`${inputClasses} w-full`}
             />
 
-            <input
-                value={field.valueKey ?? ''}
-                onChange={(event) =>
-                    callbacks.onUpdate(
-                        event.target.value.length > 0
-                            ? { valueKey: event.target.value as TemplateField['valueKey'] }
-                            : { valueKey: undefined }
-                    )
-                }
-                placeholder={t(editor.valueKeyLabel)}
-                aria-label={t(editor.valueKeyLabel)}
-                className={`${inputClasses} w-full`}
-            />
+            <ValueSourceSelect node={field} onReplace={(_, next) => callbacks.onReplace(next)} />
+            {!isCustom && (
+                <p className="text-[11px] text-textSecondary">{t(editor.sourceTypeLocked)}</p>
+            )}
+
+            {isCustom && (
+                <input
+                    value={field.valueKey ?? ''}
+                    onChange={(event) =>
+                        callbacks.onUpdate(
+                            event.target.value.length > 0
+                                ? { valueKey: event.target.value as TemplateField['valueKey'] }
+                                : { valueKey: undefined }
+                        )
+                    }
+                    placeholder={t(editor.valueKeyLabel)}
+                    aria-label={t(editor.valueKeyLabel)}
+                    className={`${inputClasses} w-full`}
+                />
+            )}
 
             <label className="flex items-center gap-2 text-xs text-textSecondary">
                 <input
@@ -177,7 +195,7 @@ export function FieldEditor({
                 </div>
             )}
 
-            {(field.type === 'number' || field.type === 'rating') && (
+            {!isTraitSource && (field.type === 'number' || field.type === 'rating') && (
                 <label className="grid gap-1 text-xs text-textSecondary">
                     {t(editor.maxFrom)}
                     <input
@@ -315,7 +333,7 @@ export function FieldEditor({
                 </div>
             )}
 
-            {field.type === 'rating' && (
+            {!isTraitSource && field.type === 'rating' && (
                 <div className="flex items-center gap-2 text-xs text-textSecondary">
                     <input
                         type="number"

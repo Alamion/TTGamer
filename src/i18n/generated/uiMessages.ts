@@ -1230,33 +1230,97 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.addElement',
                     message: 'Add element',
                 },
-                paletteFields: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteFields',
-                    message: 'Fields',
+                paletteSection: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteSection',
+                    message: 'Section',
                 },
-                paletteContainers: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteContainers',
-                    message: 'Containers',
+                paletteSectionHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteSectionHint',
+                    message: 'Collapsible page block with a heading',
                 },
-                paletteData: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteData',
-                    message: 'Data and lists',
+                paletteGroup: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteGroup',
+                    message: 'Field group',
                 },
-                paletteSystemLists: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteSystemLists',
-                    message: 'System lists',
+                paletteGroupHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteGroupHint',
+                    message: 'Titled card that groups elements',
                 },
-                paletteTracks: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteTracks',
-                    message: 'Condition tracks',
+                paletteField: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteField',
+                    message: 'Field',
                 },
-                paletteEquipment: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteEquipment',
+                paletteFieldHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteFieldHint',
+                    message: 'One value: text, number, rating, choice, formula…',
+                },
+                paletteTable: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteTable',
+                    message: 'Table',
+                },
+                paletteTableHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteTableHint',
+                    message: 'Rows of values sharing the same columns',
+                },
+                paletteList: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteList',
+                    message: 'List',
+                },
+                paletteListHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteListHint',
+                    message: 'Entries added one by one: custom, skills, merits, equipment…',
+                },
+                paletteTracker: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteTracker',
+                    message: 'Tracker',
+                },
+                paletteTrackerHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.paletteTrackerHint',
+                    message: 'Health or damage levels with penalties',
+                },
+                valueSource: {
+                    id: 'ttgamer.ui.sheet.templates.editor.valueSource',
+                    message: 'Stores value in',
+                },
+                sourceCustom: {
+                    id: 'ttgamer.ui.sheet.templates.editor.sourceCustom',
+                    message: 'Custom value (this template)',
+                },
+                sourceTraits: {
+                    id: 'ttgamer.ui.sheet.templates.editor.sourceTraits',
+                    message: 'Traits',
+                },
+                sourceResources: {
+                    id: 'ttgamer.ui.sheet.templates.editor.sourceResources',
+                    message: 'Resources',
+                },
+                sourceDetails: {
+                    id: 'ttgamer.ui.sheet.templates.editor.sourceDetails',
+                    message: 'Character details',
+                },
+                sourceTypeLocked: {
+                    id: 'ttgamer.ui.sheet.templates.editor.sourceTypeLocked',
+                    message: 'The type follows the character sheet value.',
+                },
+                listSource: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listSource',
+                    message: 'Entries',
+                },
+                listSourceCustom: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listSourceCustom',
+                    message: 'Custom entries',
+                },
+                listSourceSystem: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listSourceSystem',
+                    message: 'Character lists',
+                },
+                listSourceEquipment: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listSourceEquipment',
                     message: 'Equipment',
                 },
-                paletteSystemValues: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteSystemValues',
-                    message: 'System values (bound fields)',
+                trackerSource: {
+                    id: 'ttgamer.ui.sheet.templates.editor.trackerSource',
+                    message: 'Tracks',
                 },
                 gripHandle: {
                     id: 'ttgamer.ui.sheet.templates.editor.gripHandle',
@@ -1278,25 +1342,13 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.tableTitle',
                     message: 'Table title (optional)',
                 },
+                listTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listTitle',
+                    message: 'List title (optional)',
+                },
                 tableValueKey: {
                     id: 'ttgamer.ui.sheet.templates.editor.tableValueKey',
                     message: 'Shared value key (table rows)',
-                },
-                listMode: {
-                    id: 'ttgamer.ui.sheet.templates.editor.listMode',
-                    message: 'Storage mode',
-                },
-                listModeCustom: {
-                    id: 'ttgamer.ui.sheet.templates.editor.listModeCustom',
-                    message: 'Custom list (own value key)',
-                },
-                listModeSystem: {
-                    id: 'ttgamer.ui.sheet.templates.editor.listModeSystem',
-                    message: 'System list',
-                },
-                listSystemBinding: {
-                    id: 'ttgamer.ui.sheet.templates.editor.listSystemBinding',
-                    message: 'System list',
                 },
                 listColumns: {
                     id: 'ttgamer.ui.sheet.templates.editor.listColumns',

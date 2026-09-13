@@ -32,6 +32,7 @@ import {
     removeNode,
     removeOption,
     removeTableColumn,
+    replaceNode,
     setDraftKind,
     updateField,
     updateFill,
@@ -180,6 +181,7 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
             onAddTableColumn: (tableId) => setDraft((current) => addTableColumn(current, tableId)),
             onRemoveTableColumn: (tableId, columnId) =>
                 setDraft((current) => removeTableColumn(current, tableId, columnId)),
+            onReplace: (nodeId, next) => setDraft((current) => replaceNode(current, nodeId, next)),
         }),
         [applyOp]
     );

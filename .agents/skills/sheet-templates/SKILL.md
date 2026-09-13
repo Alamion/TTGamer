@@ -212,7 +212,14 @@ The selector (`ViewModeSelect`) encodes custom templates as `tpl:<id>`; view ids
   `updateNode`, `removeNode`), node factories, and `collectDraftIssues` (limits, duplicate ids,
   bounds, formula parse errors, cycles, plus every `validateTemplateReferences` issue).
 - `ElementEditor.tsx`: recursive panels (grip = move on the left, chevron = collapse on the
-  right), palette, bridged-field factories. `FieldEditor.tsx` / `PrimitiveConfig.tsx`: config.
+  right; headers always show the element name). The add-element menu offers exactly Section,
+  Field group, Field, Table, List, and Tracker. What an element stores is chosen in its own
+  panel (`SourceControls.tsx`, pure conversions in `sourceNodes.ts`): fields "Stores value in"
+  a custom value or a sheet trait / resource / character detail (resources become primitives,
+  trait and detail fields are bridged; the type select locks to the source), lists take
+  "Entries" from custom entries, a character list, or equipment (equipment becomes a
+  primitive), trackers pick the track. Switching source replaces the node and keeps its id.
+  `FieldEditor.tsx` / `PrimitiveConfig.tsx`: config.
 - Layout controls (`LayoutControls.tsx`): column placement appears on a panel only when its
   parent has more than one column; sections/groups get column count + proportional widths with
   a preview bar; groups "Show title" (hiding it disables collapsing, with a hint) and docs
@@ -267,7 +274,8 @@ all leaf predicates derive from the canonical list).
 **New binding kind**: descriptor interface + union in `systems/templateBindings.ts` (plus
 `resolveDataBindingByCoordinate` / `listNumericCoordinates` / `readBoundNumber` if it is
 bridgeable or numeric); declarations in the system's bindings file; `PrimitiveNodeView` switch
-(`primitives.tsx`); editor palette/bridged factories (`ElementEditor.tsx`) and `PrimitiveConfig`.
+(`primitives.tsx`); editor sources (`sourceNodes.ts` conversions, `SourceControls.tsx` groups)
+and `PrimitiveConfig`.
 
 **New system**: a `SystemPlugin` with `documents`, optional `defaultTemplates`, and
 `templateBindings` (WoD-family: build from the profile with `wod-like/templateBindings.ts`).

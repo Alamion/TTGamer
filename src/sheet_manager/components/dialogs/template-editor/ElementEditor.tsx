@@ -14,11 +14,6 @@ import { memo, useState } from 'react';
 
 import { useExpandedState } from '../../../hooks';
 import type {
-    FieldBinding,
-    ResourceBinding,
-    TraitBinding,
-} from '../../../systems/templateBindings';
-import type {
     GroupNode,
     ListNode,
     SectionNode,
@@ -26,17 +21,13 @@ import type {
     TemplateField,
     TemplateNode,
 } from '../../../types/template';
-import {
-    isContainerNode,
-    isTemplateField,
-    TEMPLATE_FIELD_TYPES,
-    TEMPLATE_LIMITS,
-} from '../../../types/template';
+import { isContainerNode, isTemplateField, TEMPLATE_LIMITS } from '../../../types/template';
 import { generateDraftId, newField as newDraftField, type NodeUpdates } from './draft';
 import { useEditorModel } from './EditorModel';
 import { FieldEditor } from './FieldEditor';
 import { ColumnLayoutControl, ColumnPlacementControl, ToggleRow } from './LayoutControls';
 import { PrimitiveConfig } from './PrimitiveConfig';
+import { ListSourceSelect } from './SourceControls';
 
 const editor = uiMessages.sheet.templates.editor;
 const primitives = uiMessages.sheet.templates.primitives;
@@ -66,49 +57,12 @@ export interface ElementEditorCallbacks {
     ) => void;
     onAddTableColumn: (tableId: string) => void;
     onRemoveTableColumn: (tableId: string, columnId: string) => void;
+    /** Swaps a node for another shape (source changes), keeping its id. */
+    onReplace: (nodeId: string, next: TemplateNode) => void;
 }
 
 const isContainer = isContainerNode;
 const isFieldNode = isTemplateField;
-
-function bridgedTraitField(binding: TraitBinding): TemplateField {
-    return {
-        id: generateDraftId('f'),
-        label: binding.label,
-        required: false,
-        compact: false,
-        type: 'rating',
-        min: 0,
-        max: binding.maximum,
-        presentation: 'dots',
-        valueKey: binding.coordinate,
-    };
-}
-
-function bridgedResourceField(binding: ResourceBinding): TemplateField {
-    return {
-        id: generateDraftId('f'),
-        label: binding.label,
-        required: false,
-        compact: false,
-        type: 'resource',
-        min: 0,
-        max: binding.maximum,
-        valueKey: binding.coordinate,
-    };
-}
-
-function bridgedIdentityField(binding: FieldBinding): TemplateField {
-    return {
-        id: generateDraftId('f'),
-        label: binding.label,
-        required: false,
-        compact: false,
-        type: 'text',
-        multiline: false,
-        valueKey: binding.coordinate,
-    };
-}
 
 /**
  * Renders the ordered children of one container (or the page root): each child panel is a
@@ -201,6 +155,11 @@ export const ChildrenList = memo(function ChildrenList({
     );
 });
 
+/**
+ * The add-element menu: one entry per element kind. What an element stores (a custom value, a
+ * trait, a resource, a character list, equipment, a condition track) is chosen afterwards in
+ * the element's own panel, so the menu stays short at every depth.
+ */
 function AddElementPalette({
     disabled,
     onInsert,
@@ -214,140 +173,85 @@ function AddElementPalette({
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
     const { bindings } = useEditorModel();
+    const firstTrack = bindings.find((binding) => binding.kind === 'track');
 
-    const paletteButton = (label: string, build: () => TemplateNode) => (
-        <button
-            key={label}
-            type="button"
-            onClick={() => onInsert(build())}
-            disabled={disabled}
-            data-palette-option={label}
-            className="flex items-center gap-1 rounded px-2 py-1 text-xs text-primary hover:bg-bgSurface disabled:opacity-40"
-        >
-            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
-            {label}
-        </button>
-    );
-
-    const traitBindings = bindings.filter(
-        (binding): binding is TraitBinding => binding.kind === 'trait'
-    );
-    const resourceBindings = bindings.filter(
-        (binding): binding is ResourceBinding => binding.kind === 'resource'
-    );
-    const fieldBindings = bindings.filter(
-        (binding): binding is FieldBinding => binding.kind === 'field'
-    );
-    const listBindings = bindings.filter((binding) => binding.kind === 'list');
-    const trackBindings = bindings.filter((binding) => binding.kind === 'track');
-    const equipmentBindings = bindings.filter((binding) => binding.kind === 'equipment');
-
-    const groups: ReadonlyArray<{ title: string; entries: React.ReactNode[] }> = [
+    const options: ReadonlyArray<{
+        key: string;
+        label: string;
+        hint: string;
+        build: (() => TemplateNode) | undefined;
+    }> = [
         {
-            title: t(editor.paletteFields),
-            entries: FIELD_TYPE_OPTIONS.map((option) =>
-                paletteButton(option.label, () => newDraftField(option.value))
-            ),
+            key: 'section',
+            label: t(editor.paletteSection),
+            hint: t(editor.paletteSectionHint),
+            build: () => ({
+                id: generateDraftId('sec'),
+                type: 'section',
+                title: t(editor.paletteSection),
+                children: [],
+            }),
         },
         {
-            title: t(editor.paletteContainers),
-            entries: [
-                paletteButton(fieldTypes.section.message, () => ({
-                    id: generateDraftId('sec'),
-                    type: 'section',
-                    title: 'New section',
-                    children: [],
-                })),
-                paletteButton(fieldTypes.group.message, () => ({
-                    id: generateDraftId('grp'),
-                    type: 'group',
-                    title: 'New group',
-                    collapsible: false,
-                    children: [],
-                })),
-            ],
+            key: 'group',
+            label: t(editor.paletteGroup),
+            hint: t(editor.paletteGroupHint),
+            build: () => ({
+                id: generateDraftId('grp'),
+                type: 'group',
+                title: t(editor.paletteGroup),
+                collapsible: false,
+                children: [],
+            }),
         },
         {
-            title: t(editor.paletteData),
-            entries: [
-                paletteButton(fieldTypes.table.message, () => ({
-                    id: generateDraftId('blk'),
-                    type: 'table',
-                    minRows: 0,
-                    maxRows: 100,
-                    columns: [newDraftField('text', 'Column 1')],
-                })),
-                paletteButton(fieldTypes.list.message, () => ({
-                    id: generateDraftId('lst'),
+            key: 'field',
+            label: t(editor.paletteField),
+            hint: t(editor.paletteFieldHint),
+            build: () => newDraftField('text', t(editor.paletteField)),
+        },
+        {
+            key: 'table',
+            label: t(editor.paletteTable),
+            hint: t(editor.paletteTableHint),
+            build: () => ({
+                id: generateDraftId('blk'),
+                type: 'table',
+                title: t(editor.paletteTable),
+                minRows: 0,
+                maxRows: 100,
+                columns: [newDraftField('text', 'Column 1')],
+            }),
+        },
+        {
+            key: 'list',
+            label: t(editor.paletteList),
+            hint: t(editor.paletteListHint),
+            build: () => {
+                const id = generateDraftId('lst');
+                return {
+                    id,
                     type: 'list',
+                    title: t(editor.paletteList),
                     columns: 1,
-                    valueKey: generateDraftId('lst'),
-                })),
-            ],
+                    valueKey: `${id}-entries`,
+                };
+            },
         },
-        ...(listBindings.length > 0
-            ? [
-                  {
-                      title: t(editor.paletteSystemLists),
-                      entries: listBindings.map((binding) =>
-                          paletteButton(binding.label, () => ({
-                              id: generateDraftId('lst'),
-                              type: 'list',
-                              columns: 1,
-                              bindingKey: binding.key,
-                          }))
-                      ),
-                  },
-              ]
-            : []),
-        ...(trackBindings.length > 0
-            ? [
-                  {
-                      title: t(editor.paletteTracks),
-                      entries: trackBindings.map((binding) =>
-                          paletteButton(binding.label, () => ({
-                              id: generateDraftId('blk'),
-                              type: 'primitive',
-                              bindingKey: binding.key,
-                              compact: false,
-                          }))
-                      ),
-                  },
-              ]
-            : []),
-        ...(equipmentBindings.length > 0
-            ? [
-                  {
-                      title: t(editor.paletteEquipment),
-                      entries: equipmentBindings.map((binding) =>
-                          paletteButton(binding.label, () => ({
-                              id: generateDraftId('blk'),
-                              type: 'primitive',
-                              bindingKey: binding.key,
-                              compact: false,
-                          }))
-                      ),
-                  },
-              ]
-            : []),
-        ...(traitBindings.length > 0 || resourceBindings.length > 0 || fieldBindings.length > 0
-            ? [
-                  {
-                      title: t(editor.paletteSystemValues),
-                      entries: [
-                          ...traitBindings.map((binding) =>
-                              paletteButton(binding.label, () => bridgedTraitField(binding))
-                          ),
-                          ...resourceBindings.map((binding) =>
-                              paletteButton(binding.label, () => bridgedResourceField(binding))
-                          ),
-                          ...fieldBindings.map((binding) =>
-                              paletteButton(binding.label, () => bridgedIdentityField(binding))
-                          ),
-                      ],
-                  },
-              ]
-            : []),
+        {
+            key: 'tracker',
+            label: t(editor.paletteTracker),
+            hint: t(editor.paletteTrackerHint),
+            build: firstTrack
+                ? () => ({
+                      id: generateDraftId('blk'),
+                      type: 'primitive',
+                      bindingKey: firstTrack.key,
+                      label: firstTrack.label,
+                      compact: false,
+                  })
+                : undefined,
+        },
     ];
 
     return (
@@ -362,23 +266,37 @@ function AddElementPalette({
                 + {t(editor.addElement)}
             </button>
             {open && (
-                <div className="mt-2 space-y-2 rounded-lg border border-border bg-bgBase p-3">
-                    {groups.map((group) => (
-                        <div key={group.title}>
-                            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-textSecondary">
-                                {group.title}
-                            </p>
-                            <div className="flex flex-wrap gap-2">{group.entries}</div>
-                        </div>
+                <div className="mt-2 grid gap-2 rounded-lg border border-border bg-bgBase p-3 sm:grid-cols-2 xl:grid-cols-3">
+                    {options.map((option) => (
+                        <button
+                            key={option.key}
+                            type="button"
+                            onClick={() => {
+                                if (!option.build) return;
+                                onInsert(option.build());
+                                onOpenChange(false);
+                            }}
+                            disabled={disabled || !option.build}
+                            data-palette-option={option.key}
+                            className="flex items-start gap-2 rounded border border-border bg-bgSurface p-2 text-left hover:border-primary disabled:opacity-40"
+                        >
+                            <Plus
+                                className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+                                aria-hidden="true"
+                            />
+                            <span className="grid gap-0.5">
+                                <span className="text-sm font-medium text-textPrimary">
+                                    {option.label}
+                                </span>
+                                <span className="text-xs text-textSecondary">{option.hint}</span>
+                            </span>
+                        </button>
                     ))}
                 </div>
             )}
         </div>
     );
 }
-
-const FIELD_TYPE_OPTIONS: ReadonlyArray<{ value: TemplateField['type']; label: string }> =
-    TEMPLATE_FIELD_TYPES.map((type) => ({ value: type, label: fieldTypes[type].message }));
 
 /**
  * The recursive node editor: one panel per element at any depth. Affordances (spec FR-6/FR-7):
@@ -500,7 +418,11 @@ const ElementEditor = memo(function ElementEditor({
                     {node.type === 'table' && <TableConfig callbacks={callbacks} node={node} />}
                     {node.type === 'list' && <ListConfig callbacks={callbacks} node={node} />}
                     {node.type === 'primitive' && (
-                        <PrimitiveConfig node={node} onUpdate={callbacks.onUpdate} />
+                        <PrimitiveConfig
+                            node={node}
+                            onUpdate={callbacks.onUpdate}
+                            onReplace={callbacks.onReplace}
+                        />
                     )}
                     {isFieldNode(node) && (
                         <FieldEditor
@@ -517,6 +439,7 @@ const ElementEditor = memo(function ElementEditor({
                                 onDetachCatalog: () => callbacks.onDetachCatalog(node.id),
                                 onUpdateFill: (detailKey, rule) =>
                                     callbacks.onUpdateFill(node.id, detailKey, rule),
+                                onReplace: (next) => callbacks.onReplace(node.id, next),
                             }}
                             field={node}
                         />
@@ -744,58 +667,18 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
 
 function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; node: ListNode }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
-    const bindings = useEditorModel().bindings.filter((binding) => binding.kind === 'list');
-    const isSystemMode = node.bindingKey !== undefined;
     const listUpdate = (updates: Partial<ListNode>) =>
         callbacks.onUpdate(node.id, updates as NodeUpdates);
     return (
         <div className="space-y-2">
-            <label className="grid gap-1 text-xs text-textSecondary">
-                {t(editor.listMode)}
-                <select
-                    value={isSystemMode ? 'system' : 'custom'}
-                    onChange={(event) => {
-                        if (event.target.value === 'system') {
-                            listUpdate({
-                                valueKey: undefined,
-                                bindingKey: bindings[0]?.key ?? 'list:customTalents',
-                            });
-                        } else {
-                            listUpdate({ bindingKey: undefined });
-                        }
-                    }}
-                    aria-label={t(editor.listMode)}
-                    className={inputClasses}
-                >
-                    <option value="custom">{t(editor.listModeCustom)}</option>
-                    <option value="system">{t(editor.listModeSystem)}</option>
-                </select>
-            </label>
-            {isSystemMode ? (
-                <label className="grid gap-1 text-xs text-textSecondary">
-                    {t(editor.listSystemBinding)}
-                    <select
-                        value={node.bindingKey ?? ''}
-                        onChange={(event) => listUpdate({ bindingKey: event.target.value })}
-                        aria-label={t(editor.listSystemBinding)}
-                        className={inputClasses}
-                    >
-                        {bindings.map((binding) => (
-                            <option key={binding.key} value={binding.key}>
-                                {binding.label}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-            ) : (
-                <input
-                    value={node.valueKey ?? ''}
-                    onChange={(event) => listUpdate({ valueKey: event.target.value })}
-                    placeholder={t(editor.listCustomKey)}
-                    aria-label={t(editor.listCustomKey)}
-                    className={inputClasses}
-                />
-            )}
+            <input
+                value={node.title ?? ''}
+                onChange={(event) => listUpdate({ title: event.target.value || undefined })}
+                placeholder={t(editor.listTitle)}
+                aria-label={t(editor.listTitle)}
+                className={`${inputClasses} w-full`}
+            />
+            <ListSourceSelect node={node} onReplace={callbacks.onReplace} />
             <ColumnSelect
                 onChange={(columns) => listUpdate({ columns: columns ?? 1 })}
                 value={node.columns}

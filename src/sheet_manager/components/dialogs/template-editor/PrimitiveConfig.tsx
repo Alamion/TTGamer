@@ -1,10 +1,11 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import type { PrimitiveNode } from '../../../types/template';
+import type { PrimitiveNode, TemplateNode } from '../../../types/template';
 import type { NodeUpdates } from './draft';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
+import { ListSourceSelect, ValueSourceSelect } from './SourceControls';
 
 const primitives = uiMessages.sheet.templates.primitives;
 const editor = uiMessages.sheet.templates.editor;
@@ -22,9 +23,11 @@ const inputClasses =
 export function PrimitiveConfig({
     node,
     onUpdate,
+    onReplace,
 }: {
     node: PrimitiveNode;
     onUpdate: (nodeId: string, updates: NodeUpdates) => void;
+    onReplace: (nodeId: string, next: TemplateNode) => void;
 }) {
     const t = (descriptor: { message: string }, values?: Record<string, string | number>) =>
         translate(descriptor, values);
@@ -41,20 +44,28 @@ export function PrimitiveConfig({
                 {t(primitives.boundTo, { binding: node.bindingKey })}
             </p>
 
-            <label className="grid gap-1 text-xs text-textSecondary">
-                {t(primitives.binding)}
-                <select
-                    value={node.bindingKey}
-                    onChange={(event) => update({ bindingKey: event.target.value })}
-                    className={inputClasses}
-                >
-                    {sameKindBindings.map((binding) => (
-                        <option key={binding.key} value={binding.key}>
-                            {binding.label}
-                        </option>
-                    ))}
-                </select>
-            </label>
+            {descriptor?.kind === 'equipment' ? (
+                <ListSourceSelect node={node} onReplace={onReplace} />
+            ) : descriptor?.kind === 'track' || !descriptor ? (
+                <label className="grid gap-1 text-xs text-textSecondary">
+                    {t(descriptor ? editor.trackerSource : primitives.binding)}
+                    <select
+                        value={node.bindingKey}
+                        onChange={(event) => update({ bindingKey: event.target.value })}
+                        aria-label={t(descriptor ? editor.trackerSource : primitives.binding)}
+                        className={inputClasses}
+                    >
+                        {!descriptor && <option value={node.bindingKey}>{node.bindingKey}</option>}
+                        {sameKindBindings.map((binding) => (
+                            <option key={binding.key} value={binding.key}>
+                                {binding.label}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+            ) : (
+                <ValueSourceSelect node={node} onReplace={onReplace} />
+            )}
 
             <label className="grid gap-1 text-xs text-textSecondary">
                 {t(primitives.labelOverride)}

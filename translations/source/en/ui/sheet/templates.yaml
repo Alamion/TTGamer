@@ -94,23 +94,36 @@ editor:
     emptyName: Template name is required.
     emptyLabel: Every section and field needs a non-empty label.
     addElement: Add element
-    paletteFields: Fields
-    paletteContainers: Containers
-    paletteData: Data and lists
-    paletteSystemLists: System lists
-    paletteTracks: Condition tracks
-    paletteEquipment: Equipment
-    paletteSystemValues: System values (bound fields)
+    paletteSection: Section
+    paletteSectionHint: Collapsible page block with a heading
+    paletteGroup: Field group
+    paletteGroupHint: Titled card that groups elements
+    paletteField: Field
+    paletteFieldHint: 'One value: text, number, rating, choice, formula…'
+    paletteTable: Table
+    paletteTableHint: Rows of values sharing the same columns
+    paletteList: List
+    paletteListHint: 'Entries added one by one: custom, skills, merits, equipment…'
+    paletteTracker: Tracker
+    paletteTrackerHint: Health or damage levels with penalties
+    valueSource: Stores value in
+    sourceCustom: Custom value (this template)
+    sourceTraits: Traits
+    sourceResources: Resources
+    sourceDetails: Character details
+    sourceTypeLocked: The type follows the character sheet value.
+    listSource: Entries
+    listSourceCustom: Custom entries
+    listSourceSystem: Character lists
+    listSourceEquipment: Equipment
+    trackerSource: Tracks
     gripHandle: Drag handle — grab to move
     groupTitle: Group title
     docsLink: Documentation link (optional)
     groupCollapsible: Collapsible (expanded state is remembered)
     tableTitle: Table title (optional)
+    listTitle: List title (optional)
     tableValueKey: Shared value key (table rows)
-    listMode: Storage mode
-    listModeCustom: Custom list (own value key)
-    listModeSystem: System list
-    listSystemBinding: System list
     listColumns: Columns
     listCustomKey: List value key
     formula: Formula

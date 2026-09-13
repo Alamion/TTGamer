@@ -269,6 +269,14 @@ export function moveNode(
     );
 }
 
+/** Swaps a node for another (e.g. a field switching to a system resource); ids stay stable. */
+export function replaceNode(draft: EditorDraft, nodeId: string, next: TemplateNode): EditorDraft {
+    return withChildren(
+        draft,
+        mapNodes(draft.children, (node) => (node.id === nodeId ? next : node))
+    );
+}
+
 export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpdates): EditorDraft {
     const apply = (node: TemplateNode): TemplateNode => {
         if (node.id !== nodeId) return node;

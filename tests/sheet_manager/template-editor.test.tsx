@@ -712,3 +712,155 @@ describe('editor drag and drop, headers, and rendering health', () => {
         expect(document.querySelectorAll('datalist')).toHaveLength(1);
     }, 20_000);
 });
+
+describe('add-element menu and element sources', () => {
+    beforeEach(() => {
+        useTemplateStore.setState({ templates: [], quarantine: [] });
+    });
+
+    afterEach(() => {
+        cleanup();
+    });
+
+    const panel = (nodeId: string) =>
+        document.querySelector(`[data-node-id="${nodeId}"]`) as HTMLElement;
+    const rootIds = () =>
+        [...document.querySelectorAll('[data-children-of="root"] > div > [data-node-id]')].map(
+            (element) => element as HTMLElement
+        );
+
+    function openEmpty() {
+        const template = CustomTemplateSchema.parse({
+            id: 'menu-kit',
+            name: 'Menu Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [{ id: 'start', type: 'text', label: 'Start' }],
+        });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+    }
+
+    function addFromRootMenu(option: string): HTMLElement {
+        const menus = screen.getAllByRole('button', { name: 'Add element' });
+        fireEvent.click(menus[menus.length - 1]!);
+        fireEvent.click(document.querySelector(`[data-palette-option="${option}"]`)!);
+        const panels = rootIds();
+        return panels[panels.length - 1]!;
+    }
+
+    it('offers exactly the six element kinds with descriptions', () => {
+        openEmpty();
+        const menus = screen.getAllByRole('button', { name: 'Add element' });
+        fireEvent.click(menus[menus.length - 1]!);
+        const options = [...document.querySelectorAll('[data-palette-option]')].map((element) =>
+            element.getAttribute('data-palette-option')
+        );
+        expect(options).toEqual(['section', 'group', 'field', 'table', 'list', 'tracker']);
+        expect(screen.getByText('Health or damage levels with penalties')).not.toBeNull();
+        const menu = document.querySelector('[data-palette-option="section"]')!.parentElement!;
+        expect(menu.textContent).not.toContain('Strength');
+    });
+
+    it('adds each kind as a valid element', () => {
+        openEmpty();
+        expect(addFromRootMenu('section').getAttribute('data-node-type')).toBe('section');
+        expect(addFromRootMenu('group').getAttribute('data-node-type')).toBe('group');
+        expect(addFromRootMenu('field').getAttribute('data-node-type')).toBe('text');
+        expect(addFromRootMenu('table').getAttribute('data-node-type')).toBe('table');
+        expect(addFromRootMenu('list').getAttribute('data-node-type')).toBe('list');
+        const tracker = addFromRootMenu('tracker');
+        expect(tracker.getAttribute('data-node-type')).toBe('primitive');
+        expect((within(tracker).getByLabelText('Tracks') as HTMLSelectElement).value).toBe(
+            'track:health'
+        );
+        // Every added element passes the draft checks: saving succeeds.
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(useTemplateStore.getState().templates).toHaveLength(1);
+    });
+
+    it('switches a field between custom, trait, resource, and detail sources', () => {
+        openEmpty();
+        const source = () => within(panel('start')).getByLabelText('Stores value in');
+        fireEvent.change(source(), { target: { value: 'trait:physical:Strength' } });
+        expect(panel('start').getAttribute('data-node-type')).toBe('rating');
+        expect(
+            (within(panel('start')).getByLabelText('Field type') as HTMLSelectElement).disabled
+        ).toBe(true);
+
+        fireEvent.change(source(), { target: { value: 'resource:willpower' } });
+        expect(panel('start').getAttribute('data-node-type')).toBe('primitive');
+        expect(
+            within(panel('start')).getByLabelText('Minimum from value or formula (optional)')
+        ).not.toBeNull();
+
+        fireEvent.change(source(), { target: { value: 'field:biography' } });
+        expect(panel('start').getAttribute('data-node-type')).toBe('text');
+
+        fireEvent.change(source(), { target: { value: 'custom' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const [saved] = useTemplateStore.getState().templates;
+        expect(saved!.children[0]).toMatchObject({ id: 'start', type: 'text' });
+        expect((saved!.children[0] as { valueKey?: string }).valueKey).toBeUndefined();
+    });
+
+    it('switches a list between custom entries, character lists, and equipment', () => {
+        openEmpty();
+        const list = addFromRootMenu('list');
+        const id = list.getAttribute('data-node-id')!;
+        const entries = () => within(panel(id)).getByLabelText('Entries');
+        fireEvent.change(entries(), { target: { value: 'list:merits' } });
+        expect(panel(id).getAttribute('data-node-type')).toBe('list');
+        fireEvent.change(entries(), { target: { value: 'equipment:weapons' } });
+        expect(panel(id).getAttribute('data-node-type')).toBe('primitive');
+        expect((entries() as HTMLSelectElement).value).toBe('equipment:weapons');
+        fireEvent.change(entries(), { target: { value: 'custom' } });
+        expect(panel(id).getAttribute('data-node-type')).toBe('list');
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore
+            .getState()
+            .templates[0]!.children.find((node) => node.id === id) as {
+            valueKey?: string;
+            bindingKey?: string;
+        };
+        expect(saved.valueKey).toBeTruthy();
+        expect(saved.bindingKey).toBeUndefined();
+    });
+});
+
+describe('trait-sourced fields', () => {
+    afterEach(() => {
+        cleanup();
+    });
+
+    it('hide rating settings that the sheet trait row does not use', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'trait-kit',
+            name: 'Trait Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                { id: 'str', type: 'rating', label: 'Strength', max: 5, valueKey: 'strength' },
+                { id: 'luck', type: 'rating', label: 'Luck', max: 5 },
+            ],
+        });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+        const panelOf = (id: string) =>
+            document.querySelector(`[data-node-id="${id}"]`) as HTMLElement;
+        expect(
+            within(panelOf('str')).queryByLabelText('Maximum from value or formula (optional)')
+        ).toBeNull();
+        expect(
+            within(panelOf('luck')).getByLabelText('Maximum from value or formula (optional)')
+        ).not.toBeNull();
+    });
+});

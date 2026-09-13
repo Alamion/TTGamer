@@ -94,23 +94,36 @@ editor:
     emptyName: Требуется название шаблона.
     emptyLabel: Секции и поля требуют непустого названия.
     addElement: Добавить элемент
-    paletteFields: Поля
-    paletteContainers: Контейнеры
-    paletteData: Данные и списки
-    paletteSystemLists: Системные списки
-    paletteTracks: Треки состояний
-    paletteEquipment: Снаряжение
-    paletteSystemValues: Системные значения (привязанные поля)
+    paletteSection: Секция
+    paletteSectionHint: Сворачиваемый блок страницы с заголовком
+    paletteGroup: Группа полей
+    paletteGroupHint: Карточка с заголовком, объединяющая элементы
+    paletteField: Поле
+    paletteFieldHint: 'Одно значение: текст, число, рейтинг, выбор, формула…'
+    paletteTable: Таблица
+    paletteTableHint: Строки значений с общими колонками
+    paletteList: Список
+    paletteListHint: 'Записи добавляются по одной: свои, навыки, достоинства, снаряжение…'
+    paletteTracker: Трекер
+    paletteTrackerHint: Уровни здоровья или повреждений со штрафами
+    valueSource: Где хранится значение
+    sourceCustom: Своё значение (в шаблоне)
+    sourceTraits: Характеристики
+    sourceResources: Ресурсы
+    sourceDetails: Сведения о персонаже
+    sourceTypeLocked: Тип определяется значением листа персонажа.
+    listSource: Записи
+    listSourceCustom: Свои записи
+    listSourceSystem: Списки персонажа
+    listSourceEquipment: Снаряжение
+    trackerSource: Отслеживает
     gripHandle: Рукоять перемещения — потяните, чтобы передвинуть
     groupTitle: Название группы
     docsLink: Ссылка на документацию (необязательно)
     groupCollapsible: Сворачиваемая (состояние запоминается)
     tableTitle: Название таблицы (необязательно)
+    listTitle: Заголовок списка (необязательно)
     tableValueKey: Общий ключ значения (строки таблицы)
-    listMode: Хранилище
-    listModeCustom: Своё значение (ключ значения)
-    listModeSystem: Системный список
-    listSystemBinding: Системный список
     listColumns: Колонки
     listCustomKey: Ключ значения списка
     formula: Формула

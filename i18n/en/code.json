@@ -1205,20 +1205,23 @@
     "ttgamer.ui.sheet.templates.editor.listFramed": {
         "message": "Draw a border around the list"
     },
-    "ttgamer.ui.sheet.templates.editor.listMode": {
-        "message": "Storage mode"
-    },
-    "ttgamer.ui.sheet.templates.editor.listModeCustom": {
-        "message": "Custom list (own value key)"
-    },
-    "ttgamer.ui.sheet.templates.editor.listModeSystem": {
-        "message": "System list"
-    },
     "ttgamer.ui.sheet.templates.editor.listShowTitle": {
         "message": "Show list title"
     },
-    "ttgamer.ui.sheet.templates.editor.listSystemBinding": {
-        "message": "System list"
+    "ttgamer.ui.sheet.templates.editor.listSource": {
+        "message": "Entries"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceCustom": {
+        "message": "Custom entries"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceEquipment": {
+        "message": "Equipment"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceSystem": {
+        "message": "Character lists"
+    },
+    "ttgamer.ui.sheet.templates.editor.listTitle": {
+        "message": "List title (optional)"
     },
     "ttgamer.ui.sheet.templates.editor.maxFrom": {
         "message": "Maximum from value or formula (optional)"
@@ -1271,26 +1274,41 @@
     "ttgamer.ui.sheet.templates.editor.options": {
         "message": "Options"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteContainers": {
-        "message": "Containers"
+    "ttgamer.ui.sheet.templates.editor.paletteField": {
+        "message": "Field"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteData": {
-        "message": "Data and lists"
+    "ttgamer.ui.sheet.templates.editor.paletteFieldHint": {
+        "message": "One value: text, number, rating, choice, formula…"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteEquipment": {
-        "message": "Equipment"
+    "ttgamer.ui.sheet.templates.editor.paletteGroup": {
+        "message": "Field group"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteFields": {
-        "message": "Fields"
+    "ttgamer.ui.sheet.templates.editor.paletteGroupHint": {
+        "message": "Titled card that groups elements"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteSystemLists": {
-        "message": "System lists"
+    "ttgamer.ui.sheet.templates.editor.paletteList": {
+        "message": "List"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteSystemValues": {
-        "message": "System values (bound fields)"
+    "ttgamer.ui.sheet.templates.editor.paletteListHint": {
+        "message": "Entries added one by one: custom, skills, merits, equipment…"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteTracks": {
-        "message": "Condition tracks"
+    "ttgamer.ui.sheet.templates.editor.paletteSection": {
+        "message": "Section"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSectionHint": {
+        "message": "Collapsible page block with a heading"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTable": {
+        "message": "Table"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTableHint": {
+        "message": "Rows of values sharing the same columns"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTracker": {
+        "message": "Tracker"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTrackerHint": {
+        "message": "Health or damage levels with penalties"
     },
     "ttgamer.ui.sheet.templates.editor.partCurrent": {
         "message": "Current value"
@@ -1343,11 +1361,29 @@
     "ttgamer.ui.sheet.templates.editor.showTitle": {
         "message": "Show title"
     },
+    "ttgamer.ui.sheet.templates.editor.sourceCustom": {
+        "message": "Custom value (this template)"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceDetails": {
+        "message": "Character details"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceResources": {
+        "message": "Resources"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceTraits": {
+        "message": "Traits"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceTypeLocked": {
+        "message": "The type follows the character sheet value."
+    },
     "ttgamer.ui.sheet.templates.editor.tableTitle": {
         "message": "Table title (optional)"
     },
     "ttgamer.ui.sheet.templates.editor.tableValueKey": {
         "message": "Shared value key (table rows)"
+    },
+    "ttgamer.ui.sheet.templates.editor.trackerSource": {
+        "message": "Tracks"
     },
     "ttgamer.ui.sheet.templates.editor.unknownBinding": {
         "message": "Unknown data binding \"{id}\" for this document kind."
@@ -1369,6 +1405,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.valueKeyLabel": {
         "message": "Shared value key (fields with the same key share one value)"
+    },
+    "ttgamer.ui.sheet.templates.editor.valueSource": {
+        "message": "Stores value in"
     },
     "ttgamer.ui.sheet.templates.fieldTypes.builtIn": {
         "message": "Built-in page part"

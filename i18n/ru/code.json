@@ -1205,20 +1205,23 @@
     "ttgamer.ui.sheet.templates.editor.listFramed": {
         "message": "Рамка вокруг списка"
     },
-    "ttgamer.ui.sheet.templates.editor.listMode": {
-        "message": "Хранилище"
-    },
-    "ttgamer.ui.sheet.templates.editor.listModeCustom": {
-        "message": "Своё значение (ключ значения)"
-    },
-    "ttgamer.ui.sheet.templates.editor.listModeSystem": {
-        "message": "Системный список"
-    },
     "ttgamer.ui.sheet.templates.editor.listShowTitle": {
         "message": "Показывать заголовок списка"
     },
-    "ttgamer.ui.sheet.templates.editor.listSystemBinding": {
-        "message": "Системный список"
+    "ttgamer.ui.sheet.templates.editor.listSource": {
+        "message": "Записи"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceCustom": {
+        "message": "Свои записи"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceEquipment": {
+        "message": "Снаряжение"
+    },
+    "ttgamer.ui.sheet.templates.editor.listSourceSystem": {
+        "message": "Списки персонажа"
+    },
+    "ttgamer.ui.sheet.templates.editor.listTitle": {
+        "message": "Заголовок списка (необязательно)"
     },
     "ttgamer.ui.sheet.templates.editor.maxFrom": {
         "message": "Максимум из значения или формулы (необязательно)"
@@ -1271,26 +1274,41 @@
     "ttgamer.ui.sheet.templates.editor.options": {
         "message": "Варианты"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteContainers": {
-        "message": "Контейнеры"
+    "ttgamer.ui.sheet.templates.editor.paletteField": {
+        "message": "Поле"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteData": {
-        "message": "Данные и списки"
+    "ttgamer.ui.sheet.templates.editor.paletteFieldHint": {
+        "message": "Одно значение: текст, число, рейтинг, выбор, формула…"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteEquipment": {
-        "message": "Снаряжение"
+    "ttgamer.ui.sheet.templates.editor.paletteGroup": {
+        "message": "Группа полей"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteFields": {
-        "message": "Поля"
+    "ttgamer.ui.sheet.templates.editor.paletteGroupHint": {
+        "message": "Карточка с заголовком, объединяющая элементы"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteSystemLists": {
-        "message": "Системные списки"
+    "ttgamer.ui.sheet.templates.editor.paletteList": {
+        "message": "Список"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteSystemValues": {
-        "message": "Системные значения (привязанные поля)"
+    "ttgamer.ui.sheet.templates.editor.paletteListHint": {
+        "message": "Записи добавляются по одной: свои, навыки, достоинства, снаряжение…"
     },
-    "ttgamer.ui.sheet.templates.editor.paletteTracks": {
-        "message": "Треки состояний"
+    "ttgamer.ui.sheet.templates.editor.paletteSection": {
+        "message": "Секция"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteSectionHint": {
+        "message": "Сворачиваемый блок страницы с заголовком"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTable": {
+        "message": "Таблица"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTableHint": {
+        "message": "Строки значений с общими колонками"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTracker": {
+        "message": "Трекер"
+    },
+    "ttgamer.ui.sheet.templates.editor.paletteTrackerHint": {
+        "message": "Уровни здоровья или повреждений со штрафами"
     },
     "ttgamer.ui.sheet.templates.editor.partCurrent": {
         "message": "Текущее значение"
@@ -1343,11 +1361,29 @@
     "ttgamer.ui.sheet.templates.editor.showTitle": {
         "message": "Показывать заголовок"
     },
+    "ttgamer.ui.sheet.templates.editor.sourceCustom": {
+        "message": "Своё значение (в шаблоне)"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceDetails": {
+        "message": "Сведения о персонаже"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceResources": {
+        "message": "Ресурсы"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceTraits": {
+        "message": "Характеристики"
+    },
+    "ttgamer.ui.sheet.templates.editor.sourceTypeLocked": {
+        "message": "Тип определяется значением листа персонажа."
+    },
     "ttgamer.ui.sheet.templates.editor.tableTitle": {
         "message": "Название таблицы (необязательно)"
     },
     "ttgamer.ui.sheet.templates.editor.tableValueKey": {
         "message": "Общий ключ значения (строки таблицы)"
+    },
+    "ttgamer.ui.sheet.templates.editor.trackerSource": {
+        "message": "Отслеживает"
     },
     "ttgamer.ui.sheet.templates.editor.unknownBinding": {
         "message": "Неизвестная привязка к данным «{id}» для этого типа документа."
@@ -1369,6 +1405,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.valueKeyLabel": {
         "message": "Общий ключ значения (одинаковый ключ = одно значение между шаблонами)"
+    },
+    "ttgamer.ui.sheet.templates.editor.valueSource": {
+        "message": "Где хранится значение"
     },
     "ttgamer.ui.sheet.templates.fieldTypes.builtIn": {
         "message": "Встроенная часть страницы"
