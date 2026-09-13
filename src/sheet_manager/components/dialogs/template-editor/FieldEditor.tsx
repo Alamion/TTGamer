@@ -2,10 +2,10 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Plus, Trash2 } from 'lucide-react';
 
-import type { CustomTemplate, TemplateField } from '../../../types/template';
+import type { TemplateField } from '../../../types/template';
 import { TEMPLATE_FIELD_TYPES, TEMPLATE_LIMITS } from '../../../types/template';
 import { CatalogBindingEditor } from './CatalogBindingEditor';
-import { listNumericCoordinateOptions } from './draft';
+import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -40,16 +40,13 @@ export interface FieldEditorCallbacks {
 
 export function FieldEditor({
     callbacks,
-    draft,
     field,
 }: {
     callbacks: FieldEditorCallbacks;
-    draft: CustomTemplate;
     field: TemplateField;
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
-    const coordinates = listNumericCoordinateOptions(draft);
-    const coordinateDatalist = `coordinates-${field.id}`;
+    const coordinateDatalist = useEditorModel().coordinateListId;
 
     return (
         <div
@@ -199,14 +196,6 @@ export function FieldEditor({
                 </label>
             )}
 
-            <datalist id={coordinateDatalist}>
-                {coordinates.map((option) => (
-                    <option key={option.coordinate} value={option.coordinate}>
-                        {option.label}
-                    </option>
-                ))}
-            </datalist>
-
             {field.type === 'text' && (
                 <label className="flex items-center gap-2 text-xs text-textSecondary">
                     <input
@@ -320,7 +309,6 @@ export function FieldEditor({
                             onDetach: callbacks.onDetachCatalog,
                             onUpdateFill: callbacks.onUpdateFill,
                         }}
-                        draft={draft}
                         field={field}
                         selfId={field.id}
                     />

@@ -1322,6 +1322,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.maxFromPlaceholder',
                     message: 'e.g. willpower.max',
                 },
+                cannotMoveIntoItself: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cannotMoveIntoItself',
+                    message: 'An element cannot be moved inside itself.',
+                },
                 layoutHeading: {
                     id: 'ttgamer.ui.sheet.templates.editor.layoutHeading',
                     message: 'Layout',

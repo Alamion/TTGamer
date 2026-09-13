@@ -1,10 +1,18 @@
 import { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { listTemplateNumericCoordinates } from '../../features/sheet/data/templateReferences';
 import { useTemplateStore } from '../../store/templateStore';
-import { type CustomTemplate, CustomTemplateSchema } from '../../types/template';
+import { listDocumentBindings } from '../../systems/templateBindings';
+import {
+    collectTemplateFields,
+    collectTemplateNodes,
+    type CustomTemplate,
+    CustomTemplateSchema,
+    TEMPLATE_LIMITS,
+} from '../../types/template';
 import { ConfirmDialog } from './ConfirmDialog';
 import {
     addOption,
@@ -30,6 +38,12 @@ import {
     updateNode,
     updateOption,
 } from './template-editor/draft';
+import {
+    EditorFillTargetsContext,
+    type EditorModel,
+    EditorModelContext,
+    type FillTarget,
+} from './template-editor/EditorModel';
 import { ChildrenList, type ElementEditorCallbacks } from './template-editor/ElementEditor';
 import { isDefaultTemplateId } from './TemplateLibraryDialog';
 
@@ -71,19 +85,31 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
     const [initialJson] = useState(() => JSON.stringify(draft));
     const isDirty = JSON.stringify(draft) !== initialJson;
 
-    const applyOp = (result: DraftOpResult) => {
-        if (result.ok) {
-            setDraft(result.draft);
-            return;
-        }
-        setSaveIssues([
-            result.error === 'depth'
-                ? t(editor.depthMessage).replace('{limit}', String(result.limit ?? 0))
-                : result.error === 'count'
-                  ? t(editor.countMessage).replace('{limit}', String(result.limit ?? 0))
-                  : t(editor.duplicateId).replace('{id}', result.error),
-        ]);
-    };
+    // Callbacks must keep their identity across edits (memoized panels), so structural ops read
+    // the latest draft from a ref instead of a render-time closure.
+    const draftRef = useRef(draft);
+    useEffect(() => {
+        draftRef.current = draft;
+    }, [draft]);
+
+    const applyOp = useCallback(
+        (result: DraftOpResult) => {
+            if (result.ok) {
+                draftRef.current = result.draft;
+                setDraft(result.draft);
+                setSaveIssues([]);
+                return;
+            }
+            setSaveIssues([
+                result.error === 'depth'
+                    ? t(editor.depthMessage).replace('{limit}', String(result.limit ?? 0))
+                    : result.error === 'count'
+                      ? t(editor.countMessage).replace('{limit}', String(result.limit ?? 0))
+                      : t(editor.cannotMoveIntoItself),
+            ]);
+        },
+        [t]
+    );
 
     const issueMessages = useMemo(
         () =>
@@ -128,32 +154,74 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
         else onClose();
     };
 
-    const callbacks: ElementEditorCallbacks = {
-        onUpdate: (nodeId, updates) => setDraft((current) => updateNode(current, nodeId, updates)),
-        onInsert: (parentId, index, node) => applyOp(insertNode(draft, parentId, index, node)),
-        onRemove: (nodeId) => setDraft((current) => removeNode(current, nodeId)),
-        onMove: (nodeId, targetParentId, index) =>
-            applyOp(moveNode(draft, nodeId, targetParentId, index)),
-        onFieldUpdate: (fieldId, updates) =>
-            setDraft((current) => updateField(current, fieldId, updates)),
-        onFieldTypeChange: (fieldId, type) =>
-            setDraft((current) => changeFieldType(current, fieldId, type)),
-        onAddOption: (fieldId) => setDraft((current) => addOption(current, fieldId)),
-        onUpdateOption: (fieldId, optionId, label) =>
-            setDraft((current) => updateOption(current, fieldId, optionId, label)),
-        onRemoveOption: (fieldId, optionId) =>
-            setDraft((current) => removeOption(current, fieldId, optionId)),
-        onAttachCatalog: (fieldId, catalogId) =>
-            setDraft((current) => attachCatalog(current, fieldId, catalogId)),
-        onDetachCatalog: (fieldId) => setDraft((current) => detachCatalog(current, fieldId)),
-        onUpdateFill: (fieldId, detailKey, rule) =>
-            setDraft((current) => updateFill(current, fieldId, detailKey, rule)),
-        onAddTableColumn: (tableId) => setDraft((current) => addTableColumn(current, tableId)),
-        onRemoveTableColumn: (tableId, columnId) =>
-            setDraft((current) => removeTableColumn(current, tableId, columnId)),
-    };
+    const callbacks = useMemo<ElementEditorCallbacks>(
+        () => ({
+            onUpdate: (nodeId, updates) =>
+                setDraft((current) => updateNode(current, nodeId, updates)),
+            onInsert: (parentId, index, node) =>
+                applyOp(insertNode(draftRef.current, parentId, index, node)),
+            onRemove: (nodeId) => setDraft((current) => removeNode(current, nodeId)),
+            onMove: (nodeId, targetParentId, index) =>
+                applyOp(moveNode(draftRef.current, nodeId, targetParentId, index)),
+            onFieldUpdate: (fieldId, updates) =>
+                setDraft((current) => updateField(current, fieldId, updates)),
+            onFieldTypeChange: (fieldId, type) =>
+                setDraft((current) => changeFieldType(current, fieldId, type)),
+            onAddOption: (fieldId) => setDraft((current) => addOption(current, fieldId)),
+            onUpdateOption: (fieldId, optionId, label) =>
+                setDraft((current) => updateOption(current, fieldId, optionId, label)),
+            onRemoveOption: (fieldId, optionId) =>
+                setDraft((current) => removeOption(current, fieldId, optionId)),
+            onAttachCatalog: (fieldId, catalogId) =>
+                setDraft((current) => attachCatalog(current, fieldId, catalogId)),
+            onDetachCatalog: (fieldId) => setDraft((current) => detachCatalog(current, fieldId)),
+            onUpdateFill: (fieldId, detailKey, rule) =>
+                setDraft((current) => updateFill(current, fieldId, detailKey, rule)),
+            onAddTableColumn: (tableId) => setDraft((current) => addTableColumn(current, tableId)),
+            onRemoveTableColumn: (tableId, columnId) =>
+                setDraft((current) => removeTableColumn(current, tableId, columnId)),
+        }),
+        [applyOp]
+    );
 
     const visibleIssues = [...issueMessages, ...saveIssues];
+
+    const atNodeLimit = collectTemplateNodes(draft).length >= TEMPLATE_LIMITS.nodesPerTemplate;
+    const editorModel = useMemo<EditorModel>(
+        () => ({
+            draftId: draft.id,
+            systemId: draft.systemId,
+            documentKind: draft.documentKind,
+            bindings: listDocumentBindings(draft.systemId, draft.documentKind),
+            coordinateListId: `template-coordinates-${draft.id}`,
+            atNodeLimit,
+        }),
+        [draft.id, draft.systemId, draft.documentKind, atNodeLimit]
+    );
+
+    // Keyed by content so the context value changes only when a fill target actually changes.
+    const fillTargetsKey = JSON.stringify(
+        [...collectTemplateFields(draft).values()].map(({ id, type, label }) => [id, type, label])
+    );
+    const fillTargets = useMemo<readonly FillTarget[]>(
+        () =>
+            (JSON.parse(fillTargetsKey) as Array<[string, FillTarget['type'], string]>).map(
+                ([id, type, label]) => ({ id, type, label })
+            ),
+        [fillTargetsKey]
+    );
+    const coordinatesKey = JSON.stringify(
+        listTemplateNumericCoordinates(draft).map(({ coordinate, label }) => [coordinate, label])
+    );
+    const coordinateOptions = useMemo(
+        () =>
+            (JSON.parse(coordinatesKey) as Array<[string, string]>).map(([coordinate, label]) => (
+                <option key={coordinate} value={coordinate}>
+                    {label}
+                </option>
+            )),
+        [coordinatesKey]
+    );
 
     return (
         <Dialog.Root
@@ -211,13 +279,17 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
                     </div>
 
                     <div className="flex-1 space-y-4 overflow-y-auto p-4">
-                        <ChildrenList
-                            callbacks={callbacks}
-                            depth={1}
-                            draft={draft}
-                            nodes={draft.children}
-                            parentId={null}
-                        />
+                        <EditorModelContext.Provider value={editorModel}>
+                            <EditorFillTargetsContext.Provider value={fillTargets}>
+                                <ChildrenList
+                                    callbacks={callbacks}
+                                    depth={1}
+                                    nodes={draft.children}
+                                    parentId={null}
+                                />
+                            </EditorFillTargetsContext.Provider>
+                        </EditorModelContext.Provider>
+                        <datalist id={editorModel.coordinateListId}>{coordinateOptions}</datalist>
                     </div>
 
                     <div className="border-t border-border p-4">

@@ -117,6 +117,7 @@ editor:
     formulaPlaceholder: например, passion + self-control
     maxFrom: Максимум из значения или формулы (необязательно)
     maxFromPlaceholder: например, willpower.max
+    cannotMoveIntoItself: Элемент нельзя переместить внутрь самого себя.
     layoutHeading: Раскладка
     columnPlacement: Колонка в родителе
     columnAuto: Авто

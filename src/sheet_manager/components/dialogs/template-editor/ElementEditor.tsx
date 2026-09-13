@@ -10,7 +10,7 @@ import {
     Plus,
     Trash2,
 } from 'lucide-react';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 
 import { useExpandedState } from '../../../hooks';
 import type {
@@ -18,9 +18,7 @@ import type {
     ResourceBinding,
     TraitBinding,
 } from '../../../systems/templateBindings';
-import { listDocumentBindings } from '../../../systems/templateBindings';
 import type {
-    CustomTemplate,
     GroupNode,
     ListNode,
     SectionNode,
@@ -35,6 +33,7 @@ import {
     TEMPLATE_LIMITS,
 } from '../../../types/template';
 import { generateDraftId, newField as newDraftField, type NodeUpdates } from './draft';
+import { useEditorModel } from './EditorModel';
 import { FieldEditor } from './FieldEditor';
 import { ColumnLayoutControl, ColumnPlacementControl, ToggleRow } from './LayoutControls';
 import { PrimitiveConfig } from './PrimitiveConfig';
@@ -71,15 +70,6 @@ export interface ElementEditorCallbacks {
 
 const isContainer = isContainerNode;
 const isFieldNode = isTemplateField;
-
-function countNodes(children: readonly TemplateNode[]): number {
-    let count = 0;
-    for (const node of children) {
-        count += 1;
-        if (isContainer(node)) count += countNodes(node.children);
-    }
-    return count;
-}
 
 function bridgedTraitField(binding: TraitBinding): TemplateField {
     return {
@@ -125,38 +115,47 @@ function bridgedIdentityField(binding: FieldBinding): TemplateField {
  * drop target that inserts before it; the trailing zone appends to this container. Shared by
  * sections, groups, and the page root — one placement rule at every level (spec FR-1).
  */
-export function ChildrenList({
+export const ChildrenList = memo(function ChildrenList({
     callbacks,
     depth,
-    draft,
     nodes,
     parentId,
     parentColumns,
 }: {
     callbacks: ElementEditorCallbacks;
     depth: number;
-    draft: CustomTemplate;
     nodes: readonly TemplateNode[];
     parentId: string | null;
     /** Column count of the container these children live in (placement is offered above 1). */
     parentColumns?: number;
 }) {
     const [paletteOpen, setPaletteOpen] = useState(false);
+    const [dropIndex, setDropIndex] = useState<number | null>(null);
+    const { atNodeLimit } = useEditorModel();
 
-    const dropBefore = (event: React.DragEvent, index: number) => {
+    /**
+     * Drops land in the innermost list only: the event must not bubble to ancestor lists, which
+     * would run a second move into the outer container. `index` is the slot before which the
+     * element lands; moving an element later within the same list shifts the final position.
+     */
+    const dropAt = (event: React.DragEvent, index: number) => {
         const draggedId = event.dataTransfer.getData(NODE_MIME);
         if (!draggedId) return;
         event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
-        callbacks.onMove(draggedId, parentId, index);
+        event.stopPropagation();
+        setDropIndex(null);
+        const currentIndex = nodes.findIndex((node) => node.id === draggedId);
+        if (currentIndex !== -1 && (currentIndex === index || currentIndex === index - 1)) return;
+        const finalIndex = currentIndex !== -1 && currentIndex < index ? index - 1 : index;
+        callbacks.onMove(draggedId, parentId, finalIndex);
     };
 
-    const append = (event: React.DragEvent) => {
-        const draggedId = event.dataTransfer.getData(NODE_MIME);
-        if (!draggedId) return;
+    const dragOverAt = (event: React.DragEvent, index: number) => {
+        if (!event.dataTransfer.types.includes(NODE_MIME)) return;
         event.preventDefault();
+        event.stopPropagation();
         event.dataTransfer.dropEffect = 'move';
-        callbacks.onMove(draggedId, parentId, nodes.length);
+        if (dropIndex !== index) setDropIndex(index);
     };
 
     return (
@@ -164,15 +163,17 @@ export function ChildrenList({
             {nodes.map((node, index) => (
                 <div
                     key={node.id}
-                    onDragOver={(event) => {
-                        if (event.dataTransfer.types.includes(NODE_MIME)) event.preventDefault();
-                    }}
-                    onDrop={(event) => dropBefore(event, index)}
+                    onDragOver={(event) => dragOverAt(event, index)}
+                    onDragLeave={() => setDropIndex(null)}
+                    onDrop={(event) => dropAt(event, index)}
+                    className={clsx(
+                        'rounded-lg border-t-2 border-transparent',
+                        dropIndex === index && 'border-primary'
+                    )}
                 >
                     <ElementEditor
                         callbacks={callbacks}
                         depth={depth}
-                        draft={draft}
                         indexInParent={index}
                         node={node}
                         parentId={parentId}
@@ -181,42 +182,38 @@ export function ChildrenList({
                 </div>
             ))}
             <div
-                onDragOver={(event) => {
-                    if (event.dataTransfer.types.includes(NODE_MIME)) event.preventDefault();
-                }}
-                onDrop={append}
-                className="min-h-2"
+                onDragOver={(event) => dragOverAt(event, nodes.length)}
+                onDragLeave={() => setDropIndex(null)}
+                onDrop={(event) => dropAt(event, nodes.length)}
+                className={clsx(
+                    'min-h-3 rounded border-t-2 border-transparent',
+                    dropIndex === nodes.length && 'border-primary'
+                )}
                 data-drop-zone={parentId ?? 'root'}
             />
             <AddElementPalette
-                draft={draft}
-                disabled={
-                    depth > TEMPLATE_LIMITS.maxDepth ||
-                    countNodes(draft.children) >= TEMPLATE_LIMITS.nodesPerTemplate
-                }
+                disabled={depth > TEMPLATE_LIMITS.maxDepth || atNodeLimit}
                 onInsert={(node) => callbacks.onInsert(parentId, Number.MAX_SAFE_INTEGER, node)}
                 open={paletteOpen}
                 onOpenChange={setPaletteOpen}
             />
         </div>
     );
-}
+});
 
 function AddElementPalette({
-    draft,
     disabled,
     onInsert,
     open,
     onOpenChange,
 }: {
-    draft: CustomTemplate;
     disabled: boolean;
     onInsert: (node: TemplateNode) => void;
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
-    const bindings = listDocumentBindings(draft.systemId, draft.documentKind);
+    const { bindings } = useEditorModel();
 
     const paletteButton = (label: string, build: () => TemplateNode) => (
         <button
@@ -389,10 +386,9 @@ const FIELD_TYPE_OPTIONS: ReadonlyArray<{ value: TemplateField['type']; label: s
  * always-visible arrow buttons), the collapse chevron sits on the RIGHT edge — different
  * icons, different sides, never a shared hit area at any nesting level.
  */
-function ElementEditor({
+const ElementEditor = memo(function ElementEditor({
     callbacks,
     depth,
-    draft,
     indexInParent,
     node,
     parentId,
@@ -400,7 +396,6 @@ function ElementEditor({
 }: {
     callbacks: ElementEditorCallbacks;
     depth: number;
-    draft: CustomTemplate;
     indexInParent: number;
     node: TemplateNode;
     parentId: string | null;
@@ -408,7 +403,8 @@ function ElementEditor({
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
     const container = isContainer(node);
-    const [isExpanded, toggleExpanded] = useExpandedState(`template-editor-${draft.id}-${node.id}`);
+    const { draftId } = useEditorModel();
+    const [isExpanded, toggleExpanded] = useExpandedState(`template-editor-${draftId}-${node.id}`);
 
     const move = (offset: -1 | 1) => callbacks.onMove(node.id, parentId, indexInParent + offset);
 
@@ -502,11 +498,9 @@ function ElementEditor({
                     {node.type === 'section' && <SectionConfig callbacks={callbacks} node={node} />}
                     {node.type === 'group' && <GroupConfig callbacks={callbacks} node={node} />}
                     {node.type === 'table' && <TableConfig callbacks={callbacks} node={node} />}
-                    {node.type === 'list' && (
-                        <ListConfig callbacks={callbacks} draft={draft} node={node} />
-                    )}
+                    {node.type === 'list' && <ListConfig callbacks={callbacks} node={node} />}
                     {node.type === 'primitive' && (
-                        <PrimitiveConfig draft={draft} node={node} onUpdate={callbacks.onUpdate} />
+                        <PrimitiveConfig node={node} onUpdate={callbacks.onUpdate} />
                     )}
                     {isFieldNode(node) && (
                         <FieldEditor
@@ -524,7 +518,6 @@ function ElementEditor({
                                 onUpdateFill: (detailKey, rule) =>
                                     callbacks.onUpdateFill(node.id, detailKey, rule),
                             }}
-                            draft={draft}
                             field={node}
                         />
                     )}
@@ -533,7 +526,6 @@ function ElementEditor({
                             <ChildrenList
                                 callbacks={callbacks}
                                 depth={depth + 1}
-                                draft={draft}
                                 nodes={node.children}
                                 parentId={node.id}
                                 parentColumns={node.columns}
@@ -544,29 +536,31 @@ function ElementEditor({
             )}
         </div>
     );
-}
+});
 
+/** Header name of every panel, so collapsed containers still say what they hold. */
 function NodeTitleLabel({ node }: { node: TemplateNode }) {
-    if (node.type === 'primitive') {
-        return (
-            <span
-                className="flex-1 truncate text-sm font-medium text-textPrimary"
-                data-primitive-binding={node.bindingKey}
-            >
-                {node.label ?? node.bindingKey}
-            </span>
-        );
-    }
-    if (node.type === 'list') {
-        return (
-            <span className="flex-1 truncate text-sm font-medium text-textPrimary">
-                {node.title ?? node.bindingKey ?? node.valueKey}
-            </span>
-        );
-    }
-    if (node.type === 'table' || isContainer(node)) return null;
+    const kind = fieldTypes[node.type as keyof typeof fieldTypes]?.message;
+    const name =
+        node.type === 'primitive'
+            ? (node.label ?? node.bindingKey)
+            : node.type === 'list'
+              ? (node.title ?? node.bindingKey ?? node.valueKey)
+              : node.type === 'table' || isContainer(node)
+                ? node.title
+                : node.label;
     return (
-        <span className="flex-1 truncate text-sm font-medium text-textPrimary">{node.label}</span>
+        <span
+            className="flex min-w-0 flex-1 items-baseline gap-2"
+            data-primitive-binding={node.type === 'primitive' ? node.bindingKey : undefined}
+        >
+            <span className="truncate text-sm font-medium text-textPrimary">{name || '—'}</span>
+            {kind && isContainer(node) && (
+                <span className="shrink-0 text-[10px] uppercase tracking-wide text-textSecondary">
+                    {kind}
+                </span>
+            )}
+        </span>
     );
 }
 
@@ -748,19 +742,9 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
     );
 }
 
-function ListConfig({
-    callbacks,
-    draft,
-    node,
-}: {
-    callbacks: ElementEditorCallbacks;
-    draft: CustomTemplate;
-    node: ListNode;
-}) {
+function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; node: ListNode }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
-    const bindings = listDocumentBindings(draft.systemId, draft.documentKind).filter(
-        (binding) => binding.kind === 'list'
-    );
+    const bindings = useEditorModel().bindings.filter((binding) => binding.kind === 'list');
     const isSystemMode = node.bindingKey !== undefined;
     const listUpdate = (updates: Partial<ListNode>) =>
         callbacks.onUpdate(node.id, updates as NodeUpdates);

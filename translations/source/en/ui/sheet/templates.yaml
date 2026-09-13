@@ -117,6 +117,7 @@ editor:
     formulaPlaceholder: e.g. passion + self-control
     maxFrom: Maximum from value or formula (optional)
     maxFromPlaceholder: e.g. willpower.max
+    cannotMoveIntoItself: An element cannot be moved inside itself.
     layoutHeading: Layout
     columnPlacement: Column in parent
     columnAuto: Auto

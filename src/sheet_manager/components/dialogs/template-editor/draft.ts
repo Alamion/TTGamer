@@ -139,30 +139,48 @@ function containsNode(node: TemplateNode, nodeId: string): boolean {
     return node.children.some((child) => containsNode(child, nodeId));
 }
 
+/**
+ * Structural-sharing tree map: `visit` returns the same node when nothing changes, and only the
+ * containers (and arrays) on the path to a changed node are rebuilt. Untouched subtrees keep
+ * their identity, so memoized editor panels skip re-rendering.
+ */
+function mapNodes(
+    children: TemplateNode[],
+    visit: (node: TemplateNode) => TemplateNode
+): TemplateNode[] {
+    let changed = false;
+    const next = children.map((node) => {
+        let result = visit(node);
+        if (result === node && isContainerNode(node)) {
+            const mappedChildren = mapNodes(node.children, visit);
+            if (mappedChildren !== node.children) result = { ...node, children: mappedChildren };
+        }
+        if (result !== node) changed = true;
+        return result;
+    });
+    return changed ? next : children;
+}
+
+function withChildren(draft: EditorDraft, children: TemplateNode[]): EditorDraft {
+    return children === draft.children ? draft : { ...draft, children };
+}
+
 function replaceAt(
     children: TemplateNode[],
     parentId: string | null,
     nodeId: string,
     next: TemplateNode | undefined
 ): TemplateNode[] {
-    if (parentId === null) {
-        return next === undefined
-            ? children.filter((node) => node.id !== nodeId)
-            : children.map((node) => (node.id === nodeId ? next : node));
-    }
-    return children.map((node) => {
-        if (!isContainerNode(node)) return node;
-        if (node.id === parentId) {
-            return {
-                ...node,
-                children:
-                    next === undefined
-                        ? node.children.filter((child) => child.id !== nodeId)
-                        : node.children.map((child) => (child.id === nodeId ? next : child)),
-            };
-        }
-        return { ...node, children: replaceAt(node.children, parentId, nodeId, next) };
-    });
+    const replaceIn = (siblings: TemplateNode[]) =>
+        next === undefined
+            ? siblings.filter((node) => node.id !== nodeId)
+            : siblings.map((node) => (node.id === nodeId ? next : node));
+    if (parentId === null) return replaceIn(children);
+    return mapNodes(children, (node) =>
+        isContainerNode(node) && node.id === parentId
+            ? { ...node, children: replaceIn(node.children) }
+            : node
+    );
 }
 
 function insertInto(draft: EditorDraft, index: number, node: TemplateNode): EditorDraft {
@@ -177,17 +195,15 @@ function insertIntoContainer(
     index: number,
     node: TemplateNode
 ): EditorDraft {
-    const insert = (children: TemplateNode[]): TemplateNode[] =>
-        children.map((child) => {
-            if (!isContainerNode(child)) return child;
-            if (child.id === parentId) {
-                const next = [...child.children];
-                next.splice(Math.min(Math.max(index, 0), next.length), 0, node);
-                return { ...child, children: next };
-            }
-            return { ...child, children: insert(child.children) };
-        });
-    return { ...draft, children: insert(draft.children) };
+    return withChildren(
+        draft,
+        mapNodes(draft.children, (child) => {
+            if (!isContainerNode(child) || child.id !== parentId) return child;
+            const next = [...child.children];
+            next.splice(Math.min(Math.max(index, 0), next.length), 0, node);
+            return { ...child, children: next };
+        })
+    );
 }
 
 export function insertNode(
@@ -245,6 +261,7 @@ export function moveNode(
         ...draft,
         children: replaceAt(draft.children, location.parentId, nodeId, undefined),
     };
+    // `targetIndex` is the node's final position among its new siblings.
     return ok(
         targetParentId === null
             ? insertInto(detached, targetIndex, node)
@@ -254,9 +271,7 @@ export function moveNode(
 
 export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpdates): EditorDraft {
     const apply = (node: TemplateNode): TemplateNode => {
-        if (node.id !== nodeId) {
-            return isContainerNode(node) ? { ...node, children: node.children.map(apply) } : node;
-        }
+        if (node.id !== nodeId) return node;
         const merged = { ...node, ...updates } as TemplateNode;
         // An author-edited label replaces the shipped translation reference.
         if ('label' in updates || 'title' in updates) {
@@ -277,7 +292,7 @@ export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpda
         }
         return merged;
     };
-    return { ...draft, children: draft.children.map(apply) };
+    return withChildren(draft, mapNodes(draft.children, apply));
 }
 
 // ---------------------------------------------------------------------------
@@ -573,14 +588,14 @@ function mapTableColumns(
     tableId: string,
     map: (columns: TemplateField[]) => TemplateField[]
 ): EditorDraft {
-    const apply = (node: TemplateNode): TemplateNode => {
-        if (isContainerNode(node)) return { ...node, children: node.children.map(apply) };
-        if (node.type === 'table' && node.id === tableId) {
-            return { ...node, columns: map([...node.columns]) };
-        }
-        return node;
-    };
-    return { ...draft, children: draft.children.map(apply) };
+    return withChildren(
+        draft,
+        mapNodes(draft.children, (node) =>
+            node.type === 'table' && node.id === tableId
+                ? { ...node, columns: map([...node.columns]) }
+                : node
+        )
+    );
 }
 
 export function addTableColumn(draft: EditorDraft, tableId: string): EditorDraft {
@@ -606,22 +621,20 @@ function mapFieldItems(
     fieldId: string,
     map: (field: TemplateField) => TemplateField
 ): EditorDraft {
-    const apply = (node: TemplateNode): TemplateNode => {
-        if (isContainerNode(node)) return { ...node, children: node.children.map(apply) };
-        if (node.type === 'table') {
-            return {
-                ...node,
-                columns: node.columns.map((column) =>
-                    column.id === fieldId ? map(column) : column
-                ),
-            };
-        }
-        if (isTemplateField(node)) {
-            return node.id === fieldId ? map(node) : node;
-        }
-        return node;
-    };
-    return { ...draft, children: draft.children.map(apply) };
+    return withChildren(
+        draft,
+        mapNodes(draft.children, (node) => {
+            if (node.type === 'table' && node.columns.some((column) => column.id === fieldId)) {
+                return {
+                    ...node,
+                    columns: node.columns.map((column) =>
+                        column.id === fieldId ? map(column) : column
+                    ),
+                };
+            }
+            return isTemplateField(node) && node.id === fieldId ? map(node) : node;
+        })
+    );
 }
 
 export function addFieldToContainer(

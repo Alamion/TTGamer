@@ -219,6 +219,15 @@ The selector (`ViewModeSelect`) encodes custom templates as `tpl:<id>`; view ids
   link; fields "Show label", text placeholder, formula before/after decoration; primitives
   "Show label", pool "Edits current/maximum", "Minimum from"; lists "Show list title" and
   "Draw a border". Editing a label or placeholder drops its shipped translation reference.
+- Editor performance rules (a full sheet is ~120 panels): tree ops in `draft.ts` use structural
+  sharing (`mapNodes`) so untouched nodes keep identity; `ChildrenList`/`ElementEditor` are
+  `memo`; panels read draft-derived data from `EditorModelContext` / `EditorFillTargetsContext`
+  (never a `draft` prop); dialog callbacks are stable and read the latest draft via a ref; the
+  numeric-coordinate `<datalist>` is rendered once by the dialog. Breaking any of these makes
+  every keystroke re-render the whole tree.
+- Drag and drop: each list slot is the drop target "before this element"; handlers stop
+  propagation so ancestor lists do not run a second move, and convert the slot to the final
+  index. Moving a container into itself shows `cannotMoveIntoItself`.
 - `TemplateEditorDialog`: explicit save/discard; editing a default id saves through
   `setDefaultOverride`, everything else through `saveTemplate`. Library: reset clears the
   override; defaults cannot be deleted.

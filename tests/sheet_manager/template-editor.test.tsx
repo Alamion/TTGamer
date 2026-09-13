@@ -609,3 +609,106 @@ describe('editor layout and presentation controls', () => {
         expect(find('powers')).toMatchObject({ showTitle: true, framed: true });
     });
 });
+
+describe('editor drag and drop, headers, and rendering health', () => {
+    beforeEach(() => {
+        useTemplateStore.setState({ templates: [], quarantine: [] });
+    });
+
+    afterEach(() => {
+        cleanup();
+        vi.restoreAllMocks();
+    });
+
+    const NODE_MIME = 'application/x-ttgamer-template-node';
+    const panel = (nodeId: string) =>
+        document.querySelector(`[data-node-id="${nodeId}"]`) as HTMLElement;
+    /** The drop target wrapping a panel inside its parent list. */
+    const slot = (nodeId: string) => panel(nodeId).parentElement as HTMLElement;
+    const dataTransfer = (nodeId: string) => ({
+        types: [NODE_MIME],
+        getData: (type: string) => (type === NODE_MIME ? nodeId : ''),
+        dropEffect: 'none',
+    });
+
+    function openEditor() {
+        const template = CustomTemplateSchema.parse({
+            id: 'dnd-kit',
+            name: 'Drag Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'page',
+                    type: 'section',
+                    title: 'Page',
+                    children: [
+                        {
+                            id: 'identity',
+                            type: 'group',
+                            title: 'Identity group',
+                            children: [
+                                { id: 'first', type: 'text', label: 'First' },
+                                { id: 'second', type: 'text', label: 'Second' },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+    }
+
+    const childIds = (parentId: string) =>
+        [
+            ...document.querySelectorAll(`[data-children-of="${parentId}"] > div > [data-node-id]`),
+        ].map((element) => element.getAttribute('data-node-id'));
+
+    it('reorders a field above its upper sibling without leaving the group', () => {
+        openEditor();
+        fireEvent.dragOver(slot('first'), { dataTransfer: dataTransfer('second') });
+        fireEvent.drop(slot('first'), { dataTransfer: dataTransfer('second') });
+        expect(childIds('identity')).toEqual(['second', 'first']);
+        expect(childIds('page')).toEqual(['identity']);
+    });
+
+    it('refuses to move a group inside itself with a clear message', () => {
+        openEditor();
+        fireEvent.drop(slot('first'), { dataTransfer: dataTransfer('identity') });
+        expect(childIds('page')).toEqual(['identity']);
+        expect(childIds('identity')).toEqual(['first', 'second']);
+        expect(screen.getByRole('alert').textContent).toContain(
+            'An element cannot be moved inside itself.'
+        );
+        expect(screen.getByRole('alert').textContent).not.toContain('Duplicate identifier');
+    });
+
+    it('keeps container titles in collapsed panel headers', () => {
+        openEditor();
+        fireEvent.click(within(panel('identity')).getByTestId('collapse-identity'));
+        expect(within(panel('identity')).getByText('Identity group')).not.toBeNull();
+        expect(within(panel('identity')).queryByLabelText('Show title')).toBeNull();
+    });
+
+    it('renders the shipped sheet in the editor without duplicate React keys', async () => {
+        const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const { starWarsWodDefaultTemplates } =
+            await import('@site/src/sheet_manager/systems/star-wars-wod/defaultTemplates');
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template: starWarsWodDefaultTemplates[0]! },
+                onClose: () => {},
+            })
+        );
+        const keyWarnings = errors.mock.calls.filter((call) =>
+            String(call[0]).includes('same key')
+        );
+        expect(keyWarnings).toHaveLength(0);
+        expect(document.querySelectorAll('datalist')).toHaveLength(1);
+    }, 20_000);
+});

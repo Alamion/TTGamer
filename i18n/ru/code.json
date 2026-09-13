@@ -1088,6 +1088,9 @@
     "ttgamer.ui.sheet.templates.editor.cancel": {
         "message": "Отмена"
     },
+    "ttgamer.ui.sheet.templates.editor.cannotMoveIntoItself": {
+        "message": "Элемент нельзя переместить внутрь самого себя."
+    },
     "ttgamer.ui.sheet.templates.editor.circularDependency": {
         "message": "Обнаружена циклическая зависимость: {id}"
     },

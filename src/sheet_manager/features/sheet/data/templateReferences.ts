@@ -47,7 +47,14 @@ export function listTemplateNumericCoordinates(
             options.push({ coordinate: fieldValueKey(node), label: node.label });
         }
     });
-    return options;
+    // A template field can share a coordinate with a system binding (e.g. experience-total):
+    // one entry per coordinate, the first (system) label wins.
+    const seen = new Set<string>();
+    return options.filter(({ coordinate }) => {
+        if (seen.has(coordinate)) return false;
+        seen.add(coordinate);
+        return true;
+    });
 }
 
 export function validateTemplateReferences(template: CustomTemplate): TemplateReferenceIssue[] {

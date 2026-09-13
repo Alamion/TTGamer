@@ -1088,6 +1088,9 @@
     "ttgamer.ui.sheet.templates.editor.cancel": {
         "message": "Cancel"
     },
+    "ttgamer.ui.sheet.templates.editor.cannotMoveIntoItself": {
+        "message": "An element cannot be moved inside itself."
+    },
     "ttgamer.ui.sheet.templates.editor.circularDependency": {
         "message": "Circular dependency detected: {id}"
     },

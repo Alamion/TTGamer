@@ -6,8 +6,8 @@ import {
     CATALOG_BINDINGS,
     type CatalogFillKind,
 } from '../../../features/sheet/data/catalogBindings';
-import type { CustomTemplate, TemplateField } from '../../../types/template';
-import { collectTemplateFields } from '../../../types/template';
+import type { TemplateField } from '../../../types/template';
+import { type FillTarget, useFillTargets } from './EditorModel';
 
 const bindingMessages = uiMessages.sheet.templates.binding;
 
@@ -23,24 +23,19 @@ export interface CatalogBindingEditorCallbacks {
     ) => void;
 }
 
-function kindCompatible(detailKind: CatalogFillKind, target: TemplateField): boolean {
+function kindCompatible(detailKind: CatalogFillKind, target: FillTarget): boolean {
     if (detailKind === 'text') return target.type === 'text';
     return target.type === 'number' || target.type === 'rating' || target.type === 'resource';
 }
 
 interface CatalogBindingEditorProps {
     callbacks: CatalogBindingEditorCallbacks;
-    draft: CustomTemplate;
     field: Extract<TemplateField, { type: 'select' }>;
     selfId: string;
 }
 
-export function CatalogBindingEditor({
-    callbacks,
-    draft,
-    field,
-    selfId,
-}: CatalogBindingEditorProps) {
+export function CatalogBindingEditor({ callbacks, field, selfId }: CatalogBindingEditorProps) {
+    const fillTargets = useFillTargets();
     const t = (descriptor: { message: string }) => translate(descriptor);
     const catalogOptions = [...CATALOG_BINDINGS.values()];
 
@@ -65,7 +60,9 @@ export function CatalogBindingEditor({
     }
 
     const binding = CATALOG_BINDINGS.get(field.binding.catalogId);
-    const targets = [...collectTemplateFields(draft).entries()].filter(([id]) => id !== selfId);
+    const targets = fillTargets
+        .filter((target) => target.id !== selfId)
+        .map((target) => [target.id, target] as const);
 
     return (
         <div className="mt-2 rounded border border-border bg-bgBase p-2">

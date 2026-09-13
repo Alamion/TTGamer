@@ -1,10 +1,9 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { listDocumentBindings } from '../../../systems/templateBindings';
-import type { CustomTemplate, PrimitiveNode } from '../../../types/template';
+import type { PrimitiveNode } from '../../../types/template';
 import type { NodeUpdates } from './draft';
-import { listNumericCoordinateOptions } from './draft';
+import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
 
 const primitives = uiMessages.sheet.templates.primitives;
@@ -21,22 +20,19 @@ const inputClasses =
  * (`maxFrom`, FR-12) for pool resources. Presets live on list nodes, not primitives.
  */
 export function PrimitiveConfig({
-    draft,
     node,
     onUpdate,
 }: {
-    draft: CustomTemplate;
     node: PrimitiveNode;
     onUpdate: (nodeId: string, updates: NodeUpdates) => void;
 }) {
     const t = (descriptor: { message: string }, values?: Record<string, string | number>) =>
         translate(descriptor, values);
-    const bindings = listDocumentBindings(draft.systemId, draft.documentKind);
+    const { bindings, coordinateListId } = useEditorModel();
     const descriptor = bindings.find((binding) => binding.key === node.bindingKey);
     const sameKindBindings = descriptor
         ? bindings.filter((binding) => binding.kind === descriptor.kind)
         : bindings;
-    const coordinates = listNumericCoordinateOptions(draft);
     const update = (updates: NodeUpdates) => onUpdate(node.id, updates);
 
     return (
@@ -119,7 +115,7 @@ export function PrimitiveConfig({
                         }
                         placeholder={t(editor.minFromPlaceholder)}
                         aria-label={t(editor.minFrom)}
-                        list={`maxfrom-coordinates-${node.id}`}
+                        list={coordinateListId}
                         className={inputClasses}
                     />
                 </label>
@@ -138,16 +134,9 @@ export function PrimitiveConfig({
                         }
                         placeholder={t(editorMaxFromPlaceholder)}
                         aria-label={t(editorMaxFrom)}
-                        list={`maxfrom-coordinates-${node.id}`}
+                        list={coordinateListId}
                         className={inputClasses}
                     />
-                    <datalist id={`maxfrom-coordinates-${node.id}`}>
-                        {coordinates.map((option) => (
-                            <option key={option.coordinate} value={option.coordinate}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </datalist>
                 </label>
             )}
 
