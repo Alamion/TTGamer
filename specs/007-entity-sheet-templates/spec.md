@@ -6,7 +6,7 @@
 
 **Created**: 2026-09-13
 
-**Status**: Draft
+**Status**: Implemented (v3.5.0)
 
 **Input**: User description: "Last time we did complete the template sheets of character and droid for WoD SW. Now we have two tasks. First, to remake the whole sheets of other entities (Creature, Vehicle, Fodder group) - both full and brief versions while keeping them WoD SW specific. You can still stand on current implementation + the last pages with character sheet of context/Star_Wars_WEG_to_WoD_Conversion.pdf, but I also would like you to take advantage of digital version over pdf one and using such things as collapsibles, doc links, selects/suggests where needed and other stuff, we can extend current versions a bit and include the things GM would like to have under his hand or fill eventually. We want to stay the pages WoD SW specific, but keep in mind that we will probably add objects with the same names to other settings like DnD or cyberpunk, or not (e.g. fodder and creature may be excessive for cyberpunk, but organizations, items and events will fit this exact setting really well). Refactoring the rest of templates while keeping in mind the next step - settings expansion. And 2. of what we do want to do in the same spec - rework of docs/ inline elements to remove usage of deprecated pre-template elements (we should move these elements to context/ just in case we would like to reference them later) and use PartialTemplate from last spec instead."
 

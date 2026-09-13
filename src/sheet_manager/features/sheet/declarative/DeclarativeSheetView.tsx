@@ -199,7 +199,9 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
     const stored = binding.adapter
         ? binding.adapter.read(bound.data)
         : readDataPath(bound.data, binding.path);
-    const value = coerceStoredValue(field, stored);
+    // Document-owned images follow the portrait rules (site-relative paths allowed; the image
+    // control still checks safety), not the stricter HTTPS-only template value rules.
+    const value = binding.valueType === 'image' ? stored : coerceStoredValue(field, stored);
     const onChange = (next: unknown) => {
         if (binding.adapter) {
             bound.update(binding.adapter.update(bound.data, next));

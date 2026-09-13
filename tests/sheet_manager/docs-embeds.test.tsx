@@ -202,3 +202,19 @@ describe('health preview documents', () => {
         takeSheetIssues();
     });
 });
+
+describe('preset portraits', () => {
+    afterEach(cleanup);
+
+    it('show the bundled site-relative portrait in the preview', () => {
+        const { container } = render(
+            createElement(TemplatePreview, {
+                document: presetCharacterDocument(JAX_VORN_PRESET),
+                node: 'base',
+            })
+        );
+        expect(container.querySelector('img')?.getAttribute('src')).toBe('/img/jax_vorn.png');
+        expect(screen.queryByText(/image source is unavailable/i)).toBeNull();
+        takeSheetIssues();
+    });
+});
