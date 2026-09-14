@@ -36,6 +36,26 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [ ] 🟡 **T-011 — WoD (VtM 2e) system docs** (none) — Vampire: the Masquerade 2e gets the same table-ready documentation as the Star Wars system. (task for roadmap path `core-book-docs`)
     - Structure started: clans, disciplines, Blood Points, Humanity.
 - [ ] ⬜ **T-012 — Database + auth** (none) — players and GMs optionally sync and share sheets across devices with authenticated accounts while keeping an offline-first local cache and explicit conflict/recovery behavior. (task for roadmap path `multiplayer-groups`, `online-forum`)
+- [ ] ⬜ **T-037 — Third-party text audit & licensing notices** (none) — readers and rights holders get documentation and catalog text written in the project's own words, with each system's required notices shown where its material is used. (task for roadmap path `core-book-docs`)
+    - Verbatim 8-word overlap scan (2026-09-15): docs prose ≤10% per page; catalogs higher — `meritsFlawsData.ts` (VtM Players Guide 2nd + SW WEG→WoD conversion), `abilities.ts`, `backgroundsData.ts`, `vehicleData.ts` (WEG D6). Trait-name lists are false positives; paraphrase is not detected.
+    - Notices become system/ruleset metadata rendered automatically (Dark Pack for WoD-engine content, per-publisher policies for others); no notice on unrelated pages.
+- [ ] ⬜ **T-038 — V5 ruleset + Hunter: the Reckoning 5e player character** (none) — players create, edit, and export a validated H:tR 5e hunter sheet built on a reusable V5 ruleset layer, and can re-skin it for a homebrew setting through the template system. (task for roadmap path `multi-system-sheets`)
+    - Highest priority: a table game runs on it within 1–2 weeks of 2026-09-15; keep scope to what that session needs.
+    - Source: `context/Hunter the reckoning 5e.pdf` (image-only scan; read pages visually). Sheet structure and trait names only — no verbatim rules text.
+    - In scope: minimal ruleset/module/setting split (V5 engine as ruleset, Hunter as module) sized so VtM 5e (T-039) fits beside it; hunter full + brief templates; Dark Pack notice wherever H:tR material is shown or exported.
+    - The homebrew fantasy re-skin is a user template exported to a file, not a shipped/published template.
+    - Out of scope: V5 dice automation (T-045; counted manually for now), NPCs and other entities (T-040), H:tR documentation pages, personas (T-044).
+- [ ] ⬜ **T-039 — Vampire: the Masquerade 5e player character** (T-038) — players maintain VtM 5e vampire sheets on the shared V5 ruleset, adding only the Vampire module. (task for roadmap path `multi-system-sheets`)
+- [ ] ⬜ **T-040 — V5 non-player entities** (T-038) — GMs track H:tR/VtM 5e NPCs, creatures, and organizations as documents instead of free-form markdown notes; planned as its own spec. (task for roadmap path `gm-notes-templates`)
+- [ ] ⬜ **T-041 — Ruleset / module / setting layering for existing systems** (T-038) — the Star Wars WoD system migrates from one combined `systemId` to a ruleset (WoD-like engine) + setting (Star Wars) + module list, so settings and supernatural types compose without per-combination code. (task for roadmap path `multi-system-sheets`)
+    - A character carries one supernatural module by default; crossovers are built by extending the sheet through templates rather than stacking modules.
+    - Existing persisted documents migrate through the versioned envelope migrations; no data loss.
+- [ ] ⬜ **T-042 — Shared entity library with tags and links** (T-041) — GMs keep every entity (characters, organizations, places, lore) in one shared library connected by links, and slice the resulting graph with tags, where campaigns and worlds are tag kinds rather than containers; one entity can belong to several campaigns. (task for roadmap path `campaigns`)
+    - Must stay usable with thousands of entities: indexed IndexedDB queries instead of loading everything into memory, virtualized lists, search/filter-first navigation, and bounded graph views — there is no obvious tree to fall back on.
+    - Planned as its own spec; UI discovery is part of the work.
+- [ ] ⬜ **T-043 — Classic World of Darkness lines** (T-041) — players use sheets for the remaining classic WoD lines (VtM, W:tA, C:tD, Wraith, H:tR classic) as ruleset modules, after the V5 lines. (task for roadmap path `multi-system-sheets`)
+- [ ] ⬜ **T-044 — Personas and audience-restricted views** (T-012, T-042) — GMs give one document several faces (e.g. a vampire's mortal facade) and choose which face each player sees; until multiplayer exists, hiding sections through templates is sufficient. (task for roadmap path `multiplayer-groups`)
+    - Real secrecy requires server-side projection (`project(document, persona)`); client-side hiding is presentation only and must not be presented as protection. No client-side encryption.
 
 ### Minor
 
@@ -47,6 +67,7 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [x] ✅ **T-017 — Character context & presets** (none) — players switch between several characters with preset starting states.
 - [x] ✅ **T-018 — Empty character name placeholder** (none) — new characters start with a blank name instead of a placeholder string.
 - [x] ✅ **T-019 — Separate roll-group syntax** (none) — notation like `(3d10+1d10)>=6f=1` parses with separate roll groups before modifiers.
+- [ ] ⬜ **T-045 — V5 dice pools** (none) — players roll VtM 5e / H:tR 5e pools with automatic success, critical-pair, and Hunger/Desperation outcome handling instead of counting by hand; detail in `src/dice_roller/TODO.md` #15. (task for roadmap path `multi-system-sheets`)
 
 ### Localization
 
@@ -66,9 +87,10 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 
 - [ ] ⬜ **T-028 — Boundary check** (the integration-module convention settles) — module boundaries are enforced automatically: `shared` cannot import feature modules and direct feature-to-feature imports are flagged.
 - [ ] ⬜ **T-029 — Bundle-budget report** (T-013) — bundle-size regressions are caught against meaningful per-chunk limits once the 3D renderer is lazy-loaded.
-- [ ] ⬜ **T-030 — Dead-code/export audit** (none) — unused exports and dead code surface with explicit MDX and Docusaurus entry-point configuration; dependency removal stays human-reviewed.
+- [ ] 🟡 **T-030 — Dead-code/export audit** (none) — unused exports and dead code surface with explicit MDX and Docusaurus entry-point configuration; dependency removal stays human-reviewed.
+    - Dead files/functions removed; knip committed (`knip.json`, `yarn audit:dead-code`) and MDX imports normalized to `@site/` so it resolves them. Remaining: review the few leftover unused exports it reports, then decide whether it gates `verify`.
 - [ ] ⬜ **T-031 — AI-context validator reconsideration** (none) — decide whether the AI-context validator returns once the AGENTS/skill structure stabilizes; intentionally stalled for now.
-- [ ] ⬜ **T-032 — Store persistence tests** (none) — character data is protected by store hydration/migration fixtures, import-conflict component tests, viewer-context tests for every block, and persistence failure/recovery tests.
+- [ ] ⬜ **T-032 — Store persistence tests** (none) — character data is protected by store hydration/migration fixtures, import-conflict component tests, rendering tests for every shipped template page, and persistence failure/recovery tests.
 - [ ] ⬜ **T-033 — Playwright smoke tests** (none) — homepage, docs, sheet, and dice routes plus keyboard flows get smoke coverage.
 - [ ] ⬜ **T-034 — Axe accessibility checks** (none) — dialogs, tables, sheet controls, and the dice panel get automated accessibility checks.
 - [ ] ⬜ **T-035 — Property/fuzz tests** (none) — parser/evaluator limits and catalog filter URL round-trips get property-based coverage.

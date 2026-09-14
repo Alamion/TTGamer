@@ -15,15 +15,11 @@
 
 ---
 
-## 🟠 Critical
-
-### Discord webhook sends from client (tracks in root TOFIX.md)
-
-See root `TOFIX.md` — cross-cutting issue. Dice roller owns the UI components (`DiscordWebhookSubscription`, `DiceRollerSettingsModal`, `sessionStorage`) but the fix requires a backend proxy.
-
----
-
 ## 🟡 High
+
+### Discord webhook sends from client (tracked as root TOFIX F-001)
+
+See root `TOFIX.md` — cross-cutting issue, severity owned there. Dice roller owns the UI components (`DiscordWebhookSubscription`, `DiceRollerSettingsModal`, `sessionStorage`) but the fix requires a backend proxy.
 
 ### Three.js resource ownership and disposal
 
@@ -32,12 +28,6 @@ See root `TOFIX.md` — cross-cutting issue. Dice roller owns the UI components 
 **Files:** `dice-logic/renderer/resource.ts`, `scene.ts`, and `renderer.ts`
 
 **Fix prerequisites:** define shared-resource ownership/reference counting, route removal through one release operation, add fake disposable-resource tests, then run a manual repeated-roll/resize stress check. Do not blindly dispose shared materials while live dice still reference them.
-
-## 🟢 Medium
-
-### Nested-parenthesis notation merge
-
-`mergeDiceNotation` merges into the first nested-parenthesis group via a regex that stops at the first `)`. Deeply nested input such as `((3d10+1d10)>=6)` can become unbalanced. The dice UI currently generates single-level groups, so this is limited to manually typed notation.
 
 ## ⬜ Low
 
@@ -52,4 +42,5 @@ Dice can still disappear before settling on 165 Hz+ displays. CCD threshold/radi
 - `buildDiscordHistoryMessage` type hack (`undefined as unknown as string`) — FIXED: `details`/`formatted` made optional
 - `sessionStorage.ts` — empty catch blocks now log warnings
 - `Root.tsx` inline roll toast — extracted to `RollToastContent` component
+- Nested-parenthesis notation merge — FIXED: groups are matched by bracket depth, nested groups stay balanced and keep enclosing modifiers
 - `mergeDiceNotation` edge cases not tested — DONE: added tests for `d%`, fudge dice, custom faces, and new-die-modifier-wins behavior in `tests/dice_roller/logic/notation-utils.test.ts`

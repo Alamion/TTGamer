@@ -55,7 +55,13 @@ dependencies — they are not identifiers; slugs are.
   is usable today: sentient and droid characters, vehicle crews, and creature or
   fodder groups all have editable, validated sheets. Additional systems remain to be
   added.
-- **Open questions**: which system to support next.
+- **Open questions**: none recorded.
+- **Notes**:
+    - 2026-09-15 — next systems decided: Hunter: the Reckoning 5e first (a table game
+      depends on it), then Vampire: the Masquerade 5e on the same V5 ruleset, then the
+      classic World of Darkness lines. Systems are layered as ruleset (mechanics) +
+      setting + supernatural module; a character carries one module by default and
+      crossovers extend the sheet through templates.
 
 ### `character-creation-flow` — Interactive character creation
 
@@ -150,7 +156,13 @@ dependencies — they are not identifiers; slugs are.
   archive and imported elsewhere — a GM can back up, share, or reuse campaign
   material as one unit.
 - **Open questions**: archive format; what exactly a campaign bundles (settings,
-  images, map entities).
+  images, map entities); whether the dependency on `note-tree` still holds now that
+  campaigns are tags over a shared library rather than folders.
+- **Notes**:
+    - 2026-09-15 — direction decided: entities live in one shared library connected by
+      links; campaigns and worlds are kinds of tags that slice that graph, so one entity
+      can belong to several campaigns. The library must stay usable with thousands of
+      entities.
 
 ### `map-notes` — Map note entities
 
@@ -186,6 +198,10 @@ dependencies — they are not identifiers; slugs are.
   character, while the GM can view and manage everything in the party. Some notes
   can be shared with or hidden from players within chosen campaigns.
 - **Open questions**: how sharing and hiding interact with campaign membership.
+- **Notes**:
+    - 2026-09-15 — deception/restricted views (personas: several faces of one document,
+      chosen per audience) belong here: they are only meaningful once data is projected
+      server-side. Before multiplayer, hiding sections through templates is sufficient.
 
 ### `online-forum` — Online forum
 
