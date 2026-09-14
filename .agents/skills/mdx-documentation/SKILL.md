@@ -5,6 +5,12 @@ description: MDX documentation conventions for this project — admonition synta
 
 # MDX Documentation Conventions
 
+## Imports
+
+Import project code with the Docusaurus alias: `import { TWWrapper } from '@site/src/shared/components/TWWrapper';`.
+Never use root-absolute (`/src/...`) or relative paths into `src/` — webpack tolerates them, but TypeScript, knip,
+and IDEs cannot resolve them. `tests/docs/mdx-imports.test.ts` enforces this and checks every import resolves.
+
 ## Admonitions
 
 Use bracket syntax for titles: `:::type[Title]` NOT `:::type Title`:

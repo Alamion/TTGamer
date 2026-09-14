@@ -30,19 +30,3 @@ export function onRollResult(callback: (result: RollResult) => void): () => void
 export function notifyRollResult(result: RollResult): void {
     rollCallbacks.forEach((cb) => cb(result));
 }
-
-export function formatResultForDisplay(
-    result: RollResult,
-    mode: 'full' | 'compact' | 'chat' = 'full'
-): string {
-    switch (mode) {
-        case 'full':
-            return `${result.notation}: ${result.formatted} = ${result.total}`;
-        case 'compact':
-            return `${result.notation}: ${result.details} = ${result.total}`;
-        case 'chat':
-            return `**${result.notation}**: ${result.details} = **${result.total}**`;
-        default:
-            return `${result.notation}: ${result.formatted} = ${result.total}`;
-    }
-}

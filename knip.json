@@ -1,0 +1,13 @@
+{
+    "$schema": "https://unpkg.com/knip@5/schema.json",
+    "entry": [
+        "docs/**/*.mdx",
+        "i18n/**/*.mdx",
+        "src/pages/**/*.{ts,tsx,mdx}",
+        "src/theme/**/*.{ts,tsx}",
+        "scripts/*.ts"
+    ],
+    "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "tests/**/*.{ts,tsx}"],
+    "ignore": ["src/i18n/generated/**", "src/@types/**"],
+    "ignoreExportsUsedInFile": true
+}

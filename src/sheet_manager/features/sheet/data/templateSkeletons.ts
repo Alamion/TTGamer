@@ -76,6 +76,3 @@ export function getSkeletonsForKind(
     );
     return skeletons.length > 0 ? skeletons : [fallbackSkeleton];
 }
-
-/** Skeletons of every kind, offered when the document kind is not known yet. */
-export const ALL_TEMPLATE_SKELETONS = TEMPLATE_SKELETONS;

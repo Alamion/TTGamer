@@ -4,8 +4,6 @@ export interface VehicleWeapon {
     damage: string;
 }
 
-export { ALL_ERAS as VEHICLE_ERAS } from './speciesData';
-
 export interface VehicleEntry {
     id: string;
     name: string;

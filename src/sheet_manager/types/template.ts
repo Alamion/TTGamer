@@ -616,14 +616,6 @@ export function collectListNodes(template: CustomTemplate): ListNode[] {
     return lists;
 }
 
-export function collectPrimitiveNodes(template: CustomTemplate): PrimitiveNode[] {
-    const primitives: PrimitiveNode[] = [];
-    walkTemplateNodes(template.children, (node) => {
-        if (node.type === 'primitive') primitives.push(node);
-    });
-    return primitives;
-}
-
 export interface FormulaDependencySource {
     /** Human-facing identifier for authoring messages (node id). */
     id: string;

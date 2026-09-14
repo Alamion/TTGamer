@@ -12,7 +12,7 @@ import { validateTemplateReferences } from '../data/templateReferences';
  * templates retire rather than migrate (spec FR-4/A5).
  */
 
-export const TEMPLATE_FILE_FORMAT = 'ttgamer-template';
+const TEMPLATE_FILE_FORMAT = 'ttgamer-template';
 export const TEMPLATE_FILE_VERSION = 3;
 
 export interface TemplateFilePayload {

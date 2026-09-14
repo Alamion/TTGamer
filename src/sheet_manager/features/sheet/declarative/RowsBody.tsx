@@ -21,7 +21,7 @@ function optionLabel(option: BindingOption): string {
 }
 
 /** Closed-set select for a bound value; a stored value outside the set is shown as-is. */
-export function EnumSelect({
+function EnumSelect({
     ariaLabel,
     disabled,
     onChange,

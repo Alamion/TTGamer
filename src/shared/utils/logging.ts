@@ -12,10 +12,6 @@ function prefix(title?: string) {
     return title ? `[${MODULE_NAME}:${title}]` : `[${MODULE_NAME}]`;
 }
 
-export function info(message: string, title?: string, consoleArgs?: unknown[]): void {
-    console.log(prefix(title), message, ...(consoleArgs || []));
-}
-
 export function warn(message: string, title?: string, consoleArgs?: unknown[]): void {
     console.warn(prefix(title), message, ...(consoleArgs || []));
 }

@@ -5,7 +5,6 @@ export {
     prepareDiceGeometries,
 } from './factory';
 export {
-    clearTextureCache,
     D2DiceGeometry,
     D4DiceGeometry,
     D6DiceGeometry,

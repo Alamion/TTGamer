@@ -33,7 +33,7 @@ export function isKnownLabelMessage(reference: string): boolean {
 }
 
 /** Resolves a label reference for the locale; the stored label is the fallback. */
-export function resolveLabelMessage(reference: string, fallback: string, locale: string): string {
+function resolveLabelMessage(reference: string, fallback: string, locale: string): string {
     if (reference.startsWith(CATALOG_PREFIX)) {
         const [catalogId = '', entryId = ''] = reference.slice(CATALOG_PREFIX.length).split('/');
         const localized = localizeCatalogEntry(catalogId, entryId, locale, { name: fallback });

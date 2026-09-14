@@ -420,19 +420,3 @@ export function TemplateLibraryDialog({
         </Dialog.Root>
     );
 }
-
-export function TemplateManagerButton({ onClick }: { onClick: () => void }) {
-    const t = (descriptor: { message: string }) => translate(descriptor);
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            className="flex items-center justify-center gap-1.5 rounded border px-3 py-1.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
-            title={t(library.buttonTitle)}
-            aria-label={t(library.buttonTitle)}
-        >
-            <LayoutTemplate className="h-3.5 w-3.5" aria-hidden="true" />
-            {t(library.button)}
-        </button>
-    );
-}

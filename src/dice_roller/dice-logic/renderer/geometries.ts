@@ -41,11 +41,6 @@ export interface DiceGeometryData {
 
 const textureCache = new Map<string, Texture>();
 
-export function clearTextureCache(): void {
-    textureCache.forEach((texture) => texture.dispose());
-    textureCache.clear();
-}
-
 export default abstract class DiceGeometry {
     body!: Body;
     chamferGeometry!: { vectors: Vector3[]; faces: number[][] };

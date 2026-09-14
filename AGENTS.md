@@ -51,6 +51,7 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 | `yarn test:watch`                   | Vitest watch mode                    |
 | `yarn test:coverage`                | Vitest coverage report               |
 | `yarn validate:data`                | Validate catalogs and references     |
+| `yarn audit:dead-code`              | knip: unused files/exports/deps      |
 | `yarn validate:i18n`                | Check English/Russian docs parity    |
 | `yarn check:version`                | Check package/changelog/UI version   |
 | `yarn verify:fast`                  | Lint and typecheck                   |

@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import prettierConfig from 'eslint-config-prettier';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
@@ -61,4 +62,6 @@ export default defineConfig([
             globals: globals.node,
         },
     },
+    // Last, so Prettier owns formatting even if a preset or rule above enables a stylistic rule.
+    prettierConfig,
 ]);
