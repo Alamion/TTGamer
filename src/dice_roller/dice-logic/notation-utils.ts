@@ -156,6 +156,41 @@ export function splitTopLevel(notation: string): string[] {
     return parts;
 }
 
+function matchingParenIndex(text: string, openIndex: number): number {
+    let depth = 0;
+    for (let i = openIndex; i < text.length; i++) {
+        if (text[i] === '(') depth++;
+        else if (text[i] === ')' && --depth === 0) return i;
+    }
+    return -1;
+}
+
+/**
+ * Merges into the innermost leading group that holds a matching face; the added die's
+ * modifiers replace that group's own, while modifiers of enclosing groups are kept.
+ */
+function mergeIntoGroup(
+    part: string,
+    addedCount: number,
+    addedFace: string,
+    addedModifiers: string
+): string | null {
+    const close = matchingParenIndex(part, 0);
+    if (close === -1) return null;
+    const inner = part.slice(1, close);
+    const rest = part.slice(close + 1);
+    const innerParts = splitTopLevel(inner);
+
+    const hasMatchingFace = innerParts.some((ip) => ip.match(/^\d+(d\d+)$/)?.[1] === addedFace);
+    if (hasMatchingFace) return `(${inner}+${addedCount}${addedFace})${addedModifiers}`;
+
+    if (innerParts.length === 1 && innerParts[0].startsWith('(')) {
+        const nested = mergeIntoGroup(innerParts[0], addedCount, addedFace, addedModifiers);
+        if (nested !== null) return `(${nested})${rest}`;
+    }
+    return null;
+}
+
 export function mergeDiceNotation(existing: string, added: string): string {
     if (!existing) return added;
 
@@ -178,17 +213,11 @@ export function mergeDiceNotation(existing: string, added: string): string {
             continue;
         }
 
-        const parenMatch = part.match(/^\(([^)]+)\)([\s\S]*)$/);
-        if (parenMatch) {
-            const inner = parenMatch[1];
-            const innerParts = inner.split('+');
-            const hasMatchingFace = innerParts.some((ip) => {
-                const m = ip.match(/^(\d+)(d\d+)$/);
-                return m && m[2] === addedFace;
-            });
-            if (hasMatchingFace) {
+        if (part.startsWith('(')) {
+            const merged = mergeIntoGroup(part, addedCount, addedFace, addedModifiers);
+            if (merged !== null) {
                 foundMatch = true;
-                newParts.push(`(${inner}+${addedCount}${addedFace})${addedModifiers}`);
+                newParts.push(merged);
             } else {
                 newParts.push(part);
             }

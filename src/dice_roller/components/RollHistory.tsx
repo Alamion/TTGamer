@@ -73,6 +73,18 @@ function RollHistory() {
 
     const isFav = (notation: string) => favorites.some((f) => f.notation === notation);
 
+    const applyNotation = (item: Pick<ListItem, 'notation' | 'characterName' | 'statLabels'>) => {
+        setNotationInput(item.notation);
+        clearCharacterName();
+        clearStatLabels();
+        if (item.characterName) {
+            setCharacterName(item.characterName);
+        }
+        if (item.statLabels && item.statLabels.length > 0) {
+            item.statLabels.forEach((l) => pushStatLabel(l));
+        }
+    };
+
     const renderItemRow = (item: ListItem) => (
         <div
             key={item.key}
@@ -116,15 +128,7 @@ function RollHistory() {
                     type="button"
                     onClick={(e) => {
                         e.stopPropagation();
-                        setNotationInput(item.notation);
-                        clearCharacterName();
-                        clearStatLabels();
-                        if (item.characterName) {
-                            setCharacterName(item.characterName);
-                        }
-                        if (item.statLabels && item.statLabels.length > 0) {
-                            item.statLabels.forEach((l) => pushStatLabel(l));
-                        }
+                        applyNotation(item);
                     }}
                     onContextMenu={(e) => {
                         e.preventDefault();
@@ -232,10 +236,12 @@ function RollHistory() {
                         notation: fav.notation,
                         isStarred: true,
                         onToggleStar: () => toggleFavorite(fav.notation),
+                        onBodyClick: () => applyNotation(fav),
                     }))
                   : recentNotations.map((notation, idx) => ({
                         key: `${notation}-${idx}`,
                         notation,
+                        onBodyClick: () => applyNotation({ notation }),
                     }));
 
         return (
