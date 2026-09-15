@@ -458,6 +458,12 @@
     "ttgamer.ui.sheet.base.title": {
         "message": "Основа"
     },
+    "ttgamer.ui.sheet.catalogBrowser.name": {
+        "message": "Название"
+    },
+    "ttgamer.ui.sheet.catalogBrowser.search": {
+        "message": "Поиск по каталогу..."
+    },
     "ttgamer.ui.sheet.documents.conflict.duplicate": {
         "message": "Копировать"
     },
@@ -477,7 +483,7 @@
         "message": "Создать"
     },
     "ttgamer.ui.sheet.documents.create.prompt": {
-        "message": "Выберите формат документа Star Wars."
+        "message": "Выберите игровую систему и формат документа."
     },
     "ttgamer.ui.sheet.documents.create.title": {
         "message": "Создать документ"
@@ -818,11 +824,17 @@
     "ttgamer.ui.sheet.documents.manager.selectDocument": {
         "message": "Выбрать {title}"
     },
+    "ttgamer.ui.sheet.documents.manager.setting": {
+        "message": "Сеттинг"
+    },
     "ttgamer.ui.sheet.documents.manager.title": {
         "message": "Управление документами"
     },
     "ttgamer.ui.sheet.documents.manager.type": {
         "message": "Тип"
+    },
+    "ttgamer.ui.sheet.documents.systems.starWarsWod": {
+        "message": "Star Wars (Мир Тьмы 2e)"
     },
     "ttgamer.ui.sheet.documents.toolbar.export": {
         "message": "Экспорт"
@@ -911,6 +923,15 @@
     "ttgamer.ui.sheet.documents.views.vehicleSheet": {
         "message": "Лист транспорта"
     },
+    "ttgamer.ui.sheet.policies.darkPack.explanation": {
+        "message": "TTGamer — бесплатный фанатский инструмент. Материалы Мира Тьмы используются здесь по общественной политике Dark Pack компании Paradox Interactive; проект не одобрен Paradox и не связан с ней, и ничего здесь не продаётся."
+    },
+    "ttgamer.ui.sheet.policies.notice.label": {
+        "message": "Уведомление издателя"
+    },
+    "ttgamer.ui.sheet.policies.notice.policyLink": {
+        "message": "О политике {policy}"
+    },
     "ttgamer.ui.sheet.templates.binding.attach": {
         "message": "Привязать каталог"
     },
@@ -973,9 +994,6 @@
     },
     "ttgamer.ui.sheet.templates.cohort.shortenTitle": {
         "message": "Сократить шкалу здоровья?"
-    },
-    "ttgamer.ui.sheet.templates.cohort.trackLength": {
-        "message": "Уровни здоровья"
     },
     "ttgamer.ui.sheet.templates.defaults.advantages": {
         "message": "Преимущества"
@@ -1811,6 +1829,18 @@
     "ttgamer.ui.sheet.templates.primitives.removePreset": {
         "message": "Удалить пресет"
     },
+    "ttgamer.ui.sheet.templates.primitives.trackLayout": {
+        "message": "Вид трека"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLayoutDefault": {
+        "message": "По умолчанию"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLayoutStrip": {
+        "message": "Строка клеток"
+    },
+    "ttgamer.ui.sheet.templates.primitives.trackLayoutTable": {
+        "message": "Таблица уровней"
+    },
     "ttgamer.ui.sheet.templates.primitives.trackLevelName": {
         "message": "Название уровня {index}"
     },
@@ -1856,6 +1886,9 @@
     "ttgamer.ui.sheet.templates.transfer.importErrorSchema": {
         "message": "Не удалось импортировать «{filename}» — структура шаблона повреждена."
     },
+    "ttgamer.ui.sheet.templates.transfer.importErrorSystem": {
+        "message": "Не удалось импортировать «{filename}» — шаблон относится к игровой системе, которой нет на сайте."
+    },
     "ttgamer.ui.sheet.templates.transfer.importErrorVersion": {
         "message": "Не удалось импортировать «{filename}» — файл создан в другой версии формата шаблонов."
     },
@@ -1867,5 +1900,485 @@
     },
     "ttgamer.ui.sheet.templates.transfer.importTitle": {
         "message": "Импортировать шаблон страницы из JSON"
+    },
+    "ttgamer.ui.sheet.tracks.length.decrease": {
+        "message": "Укоротить: {track}"
+    },
+    "ttgamer.ui.sheet.tracks.length.increase": {
+        "message": "Удлинить: {track}"
+    },
+    "ttgamer.ui.sheet.tracks.rows.moveDown": {
+        "message": "Переместить строку {index} ниже"
+    },
+    "ttgamer.ui.sheet.tracks.rows.moveUp": {
+        "message": "Переместить строку {index} выше"
+    },
+    "ttgamer.ui.sheet.v5.attributes.charisma": {
+        "message": "Обаяние"
+    },
+    "ttgamer.ui.sheet.v5.attributes.composure": {
+        "message": "Самообладание"
+    },
+    "ttgamer.ui.sheet.v5.attributes.dexterity": {
+        "message": "Ловкость"
+    },
+    "ttgamer.ui.sheet.v5.attributes.intelligence": {
+        "message": "Интеллект"
+    },
+    "ttgamer.ui.sheet.v5.attributes.manipulation": {
+        "message": "Манипулирование"
+    },
+    "ttgamer.ui.sheet.v5.attributes.mental": {
+        "message": "Ментальные"
+    },
+    "ttgamer.ui.sheet.v5.attributes.physical": {
+        "message": "Физические"
+    },
+    "ttgamer.ui.sheet.v5.attributes.resolve": {
+        "message": "Решительность"
+    },
+    "ttgamer.ui.sheet.v5.attributes.social": {
+        "message": "Социальные"
+    },
+    "ttgamer.ui.sheet.v5.attributes.stamina": {
+        "message": "Выносливость"
+    },
+    "ttgamer.ui.sheet.v5.attributes.strength": {
+        "message": "Сила"
+    },
+    "ttgamer.ui.sheet.v5.attributes.wits": {
+        "message": "Смекалка"
+    },
+    "ttgamer.ui.sheet.v5.fields.age": {
+        "message": "Возраст"
+    },
+    "ttgamer.ui.sheet.v5.fields.appearance": {
+        "message": "Внешность"
+    },
+    "ttgamer.ui.sheet.v5.fields.chronicleTenets": {
+        "message": "Принципы хроники"
+    },
+    "ttgamer.ui.sheet.v5.fields.conviction": {
+        "message": "Убеждение"
+    },
+    "ttgamer.ui.sheet.v5.fields.dateOfBirth": {
+        "message": "Дата рождения"
+    },
+    "ttgamer.ui.sheet.v5.fields.distinguishingFeatures": {
+        "message": "Особые приметы"
+    },
+    "ttgamer.ui.sheet.v5.fields.experienceLeft": {
+        "message": "Осталось опыта"
+    },
+    "ttgamer.ui.sheet.v5.fields.experienceSpent": {
+        "message": "Потрачено опыта"
+    },
+    "ttgamer.ui.sheet.v5.fields.experienceTotal": {
+        "message": "Всего опыта"
+    },
+    "ttgamer.ui.sheet.v5.fields.history": {
+        "message": "История"
+    },
+    "ttgamer.ui.sheet.v5.fields.name": {
+        "message": "Имя"
+    },
+    "ttgamer.ui.sheet.v5.fields.touchstone": {
+        "message": "Опора"
+    },
+    "ttgamer.ui.sheet.v5.sections.advantages": {
+        "message": "Достоинства"
+    },
+    "ttgamer.ui.sheet.v5.sections.advantagesFlaws": {
+        "message": "Достоинства и недостатки"
+    },
+    "ttgamer.ui.sheet.v5.sections.attributes": {
+        "message": "Атрибуты"
+    },
+    "ttgamer.ui.sheet.v5.sections.biography": {
+        "message": "Биография"
+    },
+    "ttgamer.ui.sheet.v5.sections.condition": {
+        "message": "Состояние"
+    },
+    "ttgamer.ui.sheet.v5.sections.equipment": {
+        "message": "Снаряжение"
+    },
+    "ttgamer.ui.sheet.v5.sections.experience": {
+        "message": "Опыт"
+    },
+    "ttgamer.ui.sheet.v5.sections.flaws": {
+        "message": "Недостатки"
+    },
+    "ttgamer.ui.sheet.v5.sections.health": {
+        "message": "Здоровье"
+    },
+    "ttgamer.ui.sheet.v5.sections.identity": {
+        "message": "Личность"
+    },
+    "ttgamer.ui.sheet.v5.sections.inventory": {
+        "message": "Вещи"
+    },
+    "ttgamer.ui.sheet.v5.sections.notes": {
+        "message": "Заметки"
+    },
+    "ttgamer.ui.sheet.v5.sections.other": {
+        "message": "Опыт и заметки"
+    },
+    "ttgamer.ui.sheet.v5.sections.portrait": {
+        "message": "Портрет"
+    },
+    "ttgamer.ui.sheet.v5.sections.skills": {
+        "message": "Навыки"
+    },
+    "ttgamer.ui.sheet.v5.sections.touchstones": {
+        "message": "Опоры и убеждения"
+    },
+    "ttgamer.ui.sheet.v5.sections.weapons": {
+        "message": "Оружие"
+    },
+    "ttgamer.ui.sheet.v5.sections.willpower": {
+        "message": "Сила воли"
+    },
+    "ttgamer.ui.sheet.v5.skills.academics": {
+        "message": "Гуманитарные науки"
+    },
+    "ttgamer.ui.sheet.v5.skills.animalKen": {
+        "message": "Обращение с животными"
+    },
+    "ttgamer.ui.sheet.v5.skills.athletics": {
+        "message": "Атлетика"
+    },
+    "ttgamer.ui.sheet.v5.skills.awareness": {
+        "message": "Внимательность"
+    },
+    "ttgamer.ui.sheet.v5.skills.brawl": {
+        "message": "Драка"
+    },
+    "ttgamer.ui.sheet.v5.skills.craft": {
+        "message": "Ремесло"
+    },
+    "ttgamer.ui.sheet.v5.skills.driving": {
+        "message": "Вождение"
+    },
+    "ttgamer.ui.sheet.v5.skills.etiquette": {
+        "message": "Этикет"
+    },
+    "ttgamer.ui.sheet.v5.skills.finance": {
+        "message": "Финансы"
+    },
+    "ttgamer.ui.sheet.v5.skills.firearms": {
+        "message": "Стрельба"
+    },
+    "ttgamer.ui.sheet.v5.skills.insight": {
+        "message": "Проницательность"
+    },
+    "ttgamer.ui.sheet.v5.skills.intimidation": {
+        "message": "Запугивание"
+    },
+    "ttgamer.ui.sheet.v5.skills.investigation": {
+        "message": "Расследование"
+    },
+    "ttgamer.ui.sheet.v5.skills.larceny": {
+        "message": "Воровство"
+    },
+    "ttgamer.ui.sheet.v5.skills.leadership": {
+        "message": "Лидерство"
+    },
+    "ttgamer.ui.sheet.v5.skills.medicine": {
+        "message": "Медицина"
+    },
+    "ttgamer.ui.sheet.v5.skills.melee": {
+        "message": "Холодное оружие"
+    },
+    "ttgamer.ui.sheet.v5.skills.occult": {
+        "message": "Оккультизм"
+    },
+    "ttgamer.ui.sheet.v5.skills.performance": {
+        "message": "Исполнение"
+    },
+    "ttgamer.ui.sheet.v5.skills.persuasion": {
+        "message": "Убеждение"
+    },
+    "ttgamer.ui.sheet.v5.skills.politics": {
+        "message": "Политика"
+    },
+    "ttgamer.ui.sheet.v5.skills.science": {
+        "message": "Наука"
+    },
+    "ttgamer.ui.sheet.v5.skills.stealth": {
+        "message": "Скрытность"
+    },
+    "ttgamer.ui.sheet.v5.skills.streetwise": {
+        "message": "Знание улиц"
+    },
+    "ttgamer.ui.sheet.v5.skills.subterfuge": {
+        "message": "Обман"
+    },
+    "ttgamer.ui.sheet.v5.skills.survival": {
+        "message": "Выживание"
+    },
+    "ttgamer.ui.sheet.v5.skills.technology": {
+        "message": "Технологии"
+    },
+    "ttgamer.ui.sheet.v5.system": {
+        "message": "Мир Тьмы, 5-я редакция"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.allies": {
+        "message": "Союзники"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.contacts": {
+        "message": "Связи"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.fame": {
+        "message": "Слава"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.influence": {
+        "message": "Влияние"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.linguistics": {
+        "message": "Лингвистика"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.looks": {
+        "message": "Внешность"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.mask": {
+        "message": "Маска"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.mentor": {
+        "message": "Наставник"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.nutritionist": {
+        "message": "Кулинария"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.psychological": {
+        "message": "Психологические черты"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.resources": {
+        "message": "Ресурсы"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.retainers": {
+        "message": "Помощники"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.safe-house": {
+        "message": "Убежище"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.status": {
+        "message": "Статус"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.substance-abuse": {
+        "message": "Злоупотребление веществами"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageGroups.supernatural": {
+        "message": "Сверхъестественное"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageTypes.background": {
+        "message": "Предыстория"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageTypes.flaw": {
+        "message": "Недостаток"
+    },
+    "ttgamer.ui.sheet.v5Hunter.advantageTypes.merit": {
+        "message": "Достоинство"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.armor": {
+        "message": "Броня"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.damage": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.dots": {
+        "message": "Точки"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.effect": {
+        "message": "Эффект"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.examples": {
+        "message": "Примеры"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.group": {
+        "message": "Черта"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.kind": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.name": {
+        "message": "Название"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.note": {
+        "message": "Примечание"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.perks": {
+        "message": "Умения"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.summary": {
+        "message": "Кратко"
+    },
+    "ttgamer.ui.sheet.v5Hunter.catalogColumns.type": {
+        "message": "Вид"
+    },
+    "ttgamer.ui.sheet.v5Hunter.categories.aptitudes": {
+        "message": "Способности"
+    },
+    "ttgamer.ui.sheet.v5Hunter.categories.assets": {
+        "message": "Ресурсы"
+    },
+    "ttgamer.ui.sheet.v5Hunter.categories.endowments": {
+        "message": "Дары"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.ambition": {
+        "message": "Цель"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.concept": {
+        "message": "Концепция"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.creed": {
+        "message": "Кредо"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.creedFields": {
+        "message": "Поля кредо"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.danger": {
+        "message": "Опасность"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.desire": {
+        "message": "Желание"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.despair": {
+        "message": "Отчаяние"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.desperation": {
+        "message": "Безысходность"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.drive": {
+        "message": "Мотив"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.edge": {
+        "message": "Грань"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.note": {
+        "message": "Заметки"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.perk": {
+        "message": "Умение"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.perks": {
+        "message": "Умения"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.redemption": {
+        "message": "Искупление"
+    },
+    "ttgamer.ui.sheet.v5Hunter.module": {
+        "message": "Охотник: Воздаяние, 5-я редакция"
+    },
+    "ttgamer.ui.sheet.v5Hunter.newHunter": {
+        "message": "Новый охотник"
+    },
+    "ttgamer.ui.sheet.v5Hunter.sections.aims": {
+        "message": "Цели"
+    },
+    "ttgamer.ui.sheet.v5Hunter.sections.cell": {
+        "message": "Ячейка"
+    },
+    "ttgamer.ui.sheet.v5Hunter.sections.creedDrive": {
+        "message": "Кредо и Мотив"
+    },
+    "ttgamer.ui.sheet.v5Hunter.sections.edgeList": {
+        "message": "Грани"
+    },
+    "ttgamer.ui.sheet.v5Hunter.sections.edges": {
+        "message": "Грани и умения"
+    },
+    "ttgamer.ui.sheet.v5Hunter.sections.hunter": {
+        "message": "Охотник"
+    },
+    "ttgamer.ui.sheet.v5Hunter.sections.purpose": {
+        "message": "Цели и убеждения"
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.creeds.entrepreneurial": {
+        "message": "Создаёт, изобретает или покупает всё, что нужно для охоты."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.creeds.faithful": {
+        "message": "Встречает неестественное с убеждённостью, верой или обрядом."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.creeds.inquisitive": {
+        "message": "Докапывается до правды о том, что такое монстры и как они устроены."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.creeds.martial": {
+        "message": "Решает проблему планом, подготовкой и силой."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.creeds.underground": {
+        "message": "Действует через тайные связи, услуги и секреты."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.drives.atonement": {
+        "message": "Охотится, чтобы искупить ошибку прошлого."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.drives.curiosity": {
+        "message": "Должен узнать, что на самом деле скрывается во тьме."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.drives.envy": {
+        "message": "Хочет того, что есть у монстров."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.drives.greed": {
+        "message": "Видит в охоте выгоду или власть."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.drives.oath": {
+        "message": "Связан обещанием защитить кого-то или с чем-то покончить."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.drives.pride": {
+        "message": "Должен доказать, что именно он с этим справится."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.drives.vengeance": {
+        "message": "Хочет, чтобы монстр заплатил за то, что отнял."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.arsenal": {
+        "message": "Оружие, которое обычному человеку не достать."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.artifact": {
+        "message": "Предмет со странной силой против монстров."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.beast-whisperer": {
+        "message": "Животные, которые работают вместе с охотником."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.drone-jockey": {
+        "message": "Дроны для разведки и поддержки."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.fleet": {
+        "message": "Транспорт, готовый, когда ячейке нужно двигаться."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.global-access": {
+        "message": "Доступ к архивам, системам и сетям."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.improvised-gear": {
+        "message": "Полезные вещи, собранные из того, что под рукой."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.library": {
+        "message": "Растущее собрание знаний о существах."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.ordnance": {
+        "message": "Взрывчатка и хитрые способы её доставить."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.repel-the-unnatural": {
+        "message": "Сила отбросить существ назад."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.sense-the-unnatural": {
+        "message": "Чутьё на приближение нечеловеческого."
+    },
+    "ttgamer.ui.sheet.v5Hunter.summaries.edges.thwart-the-unnatural": {
+        "message": "Стойкость к силам, направленным на охотника."
+    },
+    "ttgamer.ui.sheet.v5Hunter.views.brief": {
+        "message": "Краткий"
+    },
+    "ttgamer.ui.sheet.v5Hunter.views.sheet": {
+        "message": "Полный лист"
+    },
+    "ttgamer.ui.sheet.v5Hunter.weaponKinds.melee": {
+        "message": "Ближний бой"
+    },
+    "ttgamer.ui.sheet.v5Hunter.weaponKinds.ranged": {
+        "message": "Дальний бой"
     }
 }

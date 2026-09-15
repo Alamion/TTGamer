@@ -1,5 +1,35 @@
 # Changelog
 
+## v3.6.0
+
+### Major feat
+
+- **Hunter: the Reckoning 5e (spec 008)**: create, edit, export, and import hunter characters with a full sheet in the printed sheet's order and a brief at-the-table view — Creed and Drive with suggestions, Edges and Perks tables with book suggestions (a picked Perk fills its Edge), specialization text per skill, advantages and flaws, touchstones, experience, biography, Despair, and the cell's Desperation and Danger
+- **V5 ruleset layer**: `systems/v5/ruleset` (attributes, skills, Health/Willpower, advantages, experience, shared page parts) with the Hunter line as a module, so Vampire 5e can be added as another module
+- **Hunter pages laid out for the screen**: sections of related groups (Hunter with portrait and folded biography, Condition, Attributes, Skills, Edges and Perks, Aims and Convictions, Advantages and Flaws, Equipment, Experience and Notes), rules links on group headers, and a brief view of compact groups
+- **Type and setting**: document lists show the type ("Character") and the setting ("Hunter: the Reckoning 5e", "Star Wars (World of Darkness 2e)") in separate columns; the create dialog groups by setting
+- **Equipment for any system**: equipment bindings with a `dataKey` edit a plain item array with the weapon and inventory cards (V5 hunters), sharing item rules with Star Wars
+- **Hunter catalogs**: Merits, Backgrounds, and Flaws; weapon types; armor; gear — browsable in the docs (`CatalogBrowser`, search, filters, details) and suggested on the sheet (advantage and flaw names, weapon damage and gear effects filled from the catalog)
+- **Hunter reference without repeats**: Creeds/Drives and Edges are listed once (steps 3 and 6); new reference pages for Advantages and Flaws and for Weapons, Armor, and Gear
+- **Docs polish**: two line breaks after embeds (documented and tested); doc cards use the site palette in the dark theme
+- **Docs admonitions**: fixed notes that ran to the end of the page when a paragraph followed an embed without a blank line; a test now guards every page
+- **Hunter sheets reuse the WoD elements**: dot rows for traits, Desperation, and Danger; the condition track for Health and Willpower (click a box: Superficial ╱, Aggravated ×)
+- **Condition track additions**: computed length from a formula plus a player adjustment, a −/+ length regulator (also replaces the fodder "Health levels" select), and a `trackLayout` choice (table of levels or line of boxes) in the template editor
+- **Publisher notices**: policy metadata (`systems/policies.ts`, Dark Pack) with the official Dark Pack badge in the bottom-left corner of every hunter page (including custom templates), one full statement page (`docs/v5/dark-pack`), and `notices` in document and template exports
+- **V5 and Hunter documentation (en + ru)**: shared V5 rules, a Hunter start page with three paths, a quickstart, a nine-step guided creation path for complete newcomers with the example hunter Lena Varga and live sheet embeds, and a reference (sheet map, Desperation/Danger/Despair, Creeds, Drives, Edges, glossary)
+
+### Minor feat
+
+- **Registry-driven creation**: the create dialog lists every system and document type; the template library groups templates by system and kind and creates new templates for any of them
+- **Plugin-declared catalogs**: every system (Star Wars included) declares its catalogs on its plugin; catalog entry names localize from `translations/source/<locale>/data/<catalogId>.yaml`
+- **Template building blocks**: hidden rows columns, row reordering, trait row options (no specialization input / no WoD flags), boolean and range-bound field bindings, text suggestions from catalogs, list polarity
+- **Failed imports are kept**: a readable document file that fails validation lands in the recovery collection
+- **One boundary rule for all systems**: ESLint forbids generic sheet code from importing any concrete system folder
+
+### Fix
+
+- **System-aware templates**: a custom template of another system with the same document kind is no longer applied to a document (`template-incompatible` diagnostic); documentation embeds only render against documents of their own system
+
 ## v3.5.0
 
 ### Major feat

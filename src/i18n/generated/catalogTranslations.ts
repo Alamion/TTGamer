@@ -36,6 +36,565 @@ export const catalogTranslations = {
                 name: 'Wits',
             },
         },
+        'v5-hunter-advantages': {
+            linguistics: {
+                name: 'Linguistics',
+                summary:
+                    'One more fluent language per dot, beyond your native tongue and the local one.',
+            },
+            illiterate: {
+                name: 'Illiterate',
+                summary: 'Cannot read or write; Academics and Science stay at 1 at most.',
+            },
+            beautiful: {
+                name: 'Beautiful',
+                summary: 'One extra die on Social pools where looks matter.',
+            },
+            stunning: {
+                name: 'Stunning',
+                summary: 'Two extra dice on Social pools where looks matter.',
+            },
+            ugly: {
+                name: 'Ugly',
+                summary: 'One die fewer on Social pools where looks matter.',
+            },
+            repulsive: {
+                name: 'Repulsive',
+                summary: 'Two dice fewer on Social pools where looks matter.',
+            },
+            'solo-cooking': {
+                name: 'Solo Cooking',
+                summary: 'A proper meal before the session heals one extra Superficial Health.',
+            },
+            'cell-chef': {
+                name: 'Cell Chef',
+                summary:
+                    'Cooking for the cell heals one extra Superficial Health for everyone present.',
+            },
+            'living-on-the-edge': {
+                name: 'Living on the Edge',
+                summary:
+                    'A new risky thrill in reach nags you with a penalty until you try it or the scene ends.',
+            },
+            'weak-willed': {
+                name: 'Weak-Willed',
+                summary: 'You cannot actively resist powers that sway your mind or emotions.',
+            },
+            addiction: {
+                name: 'Addiction',
+                summary: 'One die fewer on most pools after a scene without your substance.',
+            },
+            'severe-addiction': {
+                name: 'Severe Addiction',
+                summary: 'Two dice fewer on most pools after a scene without your substance.',
+            },
+            'unseemly-aura': {
+                name: 'Unseemly Aura',
+                summary:
+                    'Monsters sometimes take you for one of their own, or for something else entirely.',
+            },
+            stigmata: {
+                name: 'Stigmata',
+                summary:
+                    'You bleed from hands, feet, and brow when hurt; noticeable and hard to hide.',
+            },
+            'crones-curse': {
+                name: 'Crone’s Curse',
+                summary: 'You look much older than you are and have one Health box fewer.',
+            },
+            allies: {
+                name: 'Allies',
+                summary:
+                    'People outside the cell who help you; dots buy how capable and how dependable they are.',
+            },
+            enemy: {
+                name: 'Enemy',
+                summary:
+                    'Someone outside the cell who works against you and shows up when it hurts most.',
+            },
+            contacts: {
+                name: 'Contacts',
+                summary:
+                    'People who can find information or get you things, from cheap to hard to obtain.',
+            },
+            fame: {
+                name: 'Fame',
+                summary:
+                    'People know your name, from one subculture up to the whole world; hard to stay unnoticed.',
+            },
+            infamy: {
+                name: 'Infamy',
+                summary:
+                    'Known for something terrible; reactions go badly, and some want you caught.',
+            },
+            'dark-secret': {
+                name: 'Dark Secret',
+                summary: 'A terrible secret few people know, which could still come out.',
+            },
+            'infamous-partner': {
+                name: 'Infamous Partner',
+                summary: 'Someone close to you is notorious, and it rubs off on you.',
+            },
+            influence: {
+                name: 'Influence',
+                summary:
+                    'Pull over one group or district of the city, weaker elsewhere; using it draws attention.',
+            },
+            despised: {
+                name: 'Despised',
+                summary: 'One group or district of the city works against you and your cell.',
+            },
+            disliked: {
+                name: 'Disliked',
+                summary:
+                    'One die fewer on Social tests with city groups that are not openly on your side.',
+            },
+            mask: {
+                name: 'Mask',
+                summary: 'A false identity that survives background checks, local or national.',
+            },
+            zeroed: {
+                name: 'Zeroed',
+                summary:
+                    'Your real records were erased; officially you do not exist. Needs Mask ••.',
+            },
+            cobbler: {
+                name: 'Cobbler',
+                summary: 'You can make or source false identities for others. Needs Mask ••.',
+            },
+            'person-of-interest': {
+                name: 'Person of Interest',
+                summary:
+                    'Intelligence databases flag you as a threat; analysts can connect the dots.',
+            },
+            'serial-error': {
+                name: 'Serial Error',
+                summary: 'A records mistake makes any background check on you look alarming.',
+            },
+            mentor: {
+                name: 'Mentor',
+                summary:
+                    'An experienced hunter or group who advises and covers for you now and then.',
+            },
+            adversary: {
+                name: 'Adversary',
+                summary:
+                    'A rival hunter or group who wants you, your cell, or your mentor to fail.',
+            },
+            resources: {
+                name: 'Resources',
+                summary:
+                    'Money and property, from living paycheck to paycheck to “anything money can buy”.',
+            },
+            destitute: {
+                name: 'Destitute',
+                summary: 'No money and no home.',
+            },
+            retainers: {
+                name: 'Retainers',
+                summary:
+                    'Loyal helpers, from an eager tag-along to someone who handles problems alone.',
+            },
+            stalkers: {
+                name: 'Stalkers',
+                summary: 'People who get too attached to you keep turning up.',
+            },
+            'safe-house': {
+                name: 'Safe House',
+                summary:
+                    'A home that is more secure and private than a bare room; helps spot and resist intruders.',
+            },
+            'hidden-armory': {
+                name: 'Hidden Armory',
+                summary: 'A hidden stash of ordinary guns and ammunition in the safe house.',
+            },
+            'panic-room': {
+                name: 'Panic Room',
+                summary:
+                    'A locked room to hide people in, or to hold a captive. Not in small safe houses.',
+            },
+            watchmen: {
+                name: 'Watchmen',
+                summary: 'Guards who watch the safe house; they know nothing of the supernatural.',
+            },
+            laboratory: {
+                name: 'Laboratory',
+                summary:
+                    'Extra dice for science or technology work at home. Not in small safe houses.',
+            },
+            luxury: {
+                name: 'Luxury',
+                summary: 'Impressive decor helps Social tests with guests at home.',
+            },
+            postern: {
+                name: 'Postern',
+                summary: 'A hidden way out; extra dice to slip away from watchers nearby.',
+            },
+            'security-system': {
+                name: 'Security System',
+                summary: 'Extra dice to keep intruders out or be warned of them.',
+            },
+            surgery: {
+                name: 'Surgery',
+                summary:
+                    'A field surgery room; extra dice for Medicine at home. Not in small safe houses.',
+            },
+            compromised: {
+                name: 'Compromised',
+                summary: 'The place was raided before and is watched; intruders get extra dice.',
+            },
+            creepy: {
+                name: 'Creepy',
+                summary:
+                    'It looks like a monster’s lair; guests are ill at ease and neighbors talk.',
+            },
+            haunted: {
+                name: 'Haunted',
+                summary: 'Something supernatural lives here that you cannot control or remove.',
+            },
+            'no-safe-house': {
+                name: 'No Safe House',
+                summary: 'Nowhere to feel safe: a busy squat, a bad flat, a broken-down trailer.',
+            },
+            status: {
+                name: 'Status',
+                summary:
+                    'Standing among the local hunters of one faction, from a known name to a leader.',
+            },
+            shunned: {
+                name: 'Shunned',
+                summary: 'One faction of hunters loathes you and works against you.',
+            },
+            suspect: {
+                name: 'Suspect',
+                summary: 'You broke faith with a faction; Social tests with them are much harder.',
+            },
+        },
+        'v5-hunter-armor': {
+            'reinforced-clothing': {
+                name: 'Reinforced clothing',
+                note: 'Heavy leathers and the like; no protection against firearms.',
+                effect: 'Armor 2',
+            },
+            'ballistic-cloth': {
+                name: 'Ballistic cloth',
+                note: 'Protective fabric that passes for ordinary clothes.',
+                effect: 'Armor 2',
+            },
+            'kevlar-vest': {
+                name: 'Kevlar vest',
+                note: 'A bulletproof vest or flak jacket.',
+                effect: 'Armor 4',
+            },
+            'tactical-armor': {
+                name: 'Tactical armor',
+                note: 'Police or military gear; one die fewer on Dexterity rolls.',
+                effect: 'Armor 6',
+            },
+        },
+        'v5-hunter-creeds': {
+            entrepreneurial: {
+                name: 'Entrepreneurial',
+            },
+            faithful: {
+                name: 'Faithful',
+            },
+            inquisitive: {
+                name: 'Inquisitive',
+            },
+            martial: {
+                name: 'Martial',
+            },
+            underground: {
+                name: 'Underground',
+            },
+        },
+        'v5-hunter-drives': {
+            curiosity: {
+                name: 'Curiosity',
+            },
+            vengeance: {
+                name: 'Vengeance',
+            },
+            oath: {
+                name: 'Oath',
+            },
+            greed: {
+                name: 'Greed',
+            },
+            pride: {
+                name: 'Pride',
+            },
+            envy: {
+                name: 'Envy',
+            },
+            atonement: {
+                name: 'Atonement',
+            },
+        },
+        'v5-hunter-edges': {
+            arsenal: {
+                name: 'Arsenal',
+            },
+            fleet: {
+                name: 'Fleet',
+            },
+            ordnance: {
+                name: 'Ordnance',
+            },
+            library: {
+                name: 'Library',
+            },
+            'improvised-gear': {
+                name: 'Improvised Gear',
+            },
+            'global-access': {
+                name: 'Global Access',
+            },
+            'drone-jockey': {
+                name: 'Drone Jockey',
+            },
+            'beast-whisperer': {
+                name: 'Beast Whisperer',
+            },
+            'sense-the-unnatural': {
+                name: 'Sense the Unnatural',
+            },
+            'repel-the-unnatural': {
+                name: 'Repel the Unnatural',
+            },
+            'thwart-the-unnatural': {
+                name: 'Thwart the Unnatural',
+            },
+            artifact: {
+                name: 'Artifact',
+            },
+        },
+        'v5-hunter-gear': {
+            chaoscope: {
+                name: 'Chaoscope',
+                effect: 'Vehicle-mounted scanner: Intelligence + Awareness at Difficulty 6 finds a supernatural threat nearby; easier against a kind already detected.',
+            },
+            xscope: {
+                name: 'XScope',
+                effect: 'Tells the living from the dead at a distance by heartbeat, breath, and body heat; some monsters can fool it.',
+            },
+            'gps-tracker': {
+                name: 'GPS tracker',
+                effect: 'Four extra dice to find whoever carries it; spotting one takes Wits + Streetwise or Technology.',
+            },
+            'lockpick-gun': {
+                name: 'Lockpick gun',
+                effect: 'Four extra dice to Dexterity + Larceny when picking a lock; hard to explain if found on you.',
+            },
+            'zip-cuffs': {
+                name: 'Zip cuffs',
+                effect: 'Breaking free takes Strength at Difficulty 5; a blade cuts them easily.',
+            },
+            handcuffs: {
+                name: 'Handcuffs',
+                effect: 'Breaking free takes Strength at Difficulty 6, or Dexterity + Larceny at Difficulty 4 to slip out.',
+            },
+            'tactical-earbuds': {
+                name: 'Tactical earbuds',
+                effect: 'Hearing protection with a cell radio; one extra die to Composure in combat.',
+            },
+            'disguised-weapon': {
+                name: 'Disguised weapon',
+                effect: 'A weapon that looks like something else; one die fewer to attack unless crafted exceptionally well.',
+            },
+            incendiary: {
+                name: 'Incendiary weapon',
+                effect: 'Home-made fire weapons lose one point of damage, but the damage is Aggravated against anything that fears fire.',
+            },
+        },
+        'v5-hunter-perks': {
+            'arsenal-team-requisition': {
+                name: 'Team Requisition',
+            },
+            'arsenal-special-features': {
+                name: 'Special Features',
+            },
+            'arsenal-exotics': {
+                name: 'Exotics',
+            },
+            'arsenal-untraceable': {
+                name: 'Untraceable',
+            },
+            'fleet-armor': {
+                name: 'Armor',
+            },
+            'fleet-performance': {
+                name: 'Performance',
+            },
+            'fleet-surveillance': {
+                name: 'Surveillance',
+            },
+            'fleet-untraceable': {
+                name: 'Untraceable',
+            },
+            'ordnance-multiple-payloads': {
+                name: 'Multiple Payloads',
+            },
+            'ordnance-non-lethal-munitions': {
+                name: 'Non-Lethal Munitions',
+            },
+            'ordnance-exotics': {
+                name: 'Exotics',
+            },
+            'ordnance-disguised-delivery': {
+                name: 'Disguised Delivery',
+            },
+            'library-where-they-hide': {
+                name: 'Where They Hide',
+            },
+            'library-who-they-are': {
+                name: 'Who They Are',
+            },
+            'library-how-to-halt-them': {
+                name: 'How to Halt Them',
+            },
+            'library-how-to-harm-them': {
+                name: 'How to Harm Them',
+            },
+            'improvised-gear-frugal': {
+                name: 'Frugal',
+            },
+            'improvised-gear-mass-production': {
+                name: 'Mass Production',
+            },
+            'improvised-gear-specialization': {
+                name: 'Specialization',
+            },
+            'improvised-gear-speed-crafting': {
+                name: 'Speed Crafting',
+            },
+            'global-access-watching-big-brother': {
+                name: 'Watching Big Brother',
+            },
+            'global-access-all-access-pass': {
+                name: 'All-Access Pass',
+            },
+            'global-access-money-tap': {
+                name: 'Money Tap',
+            },
+            'global-access-the-letter-of-the-law': {
+                name: 'The Letter of the Law',
+            },
+            'drone-jockey-autonomous': {
+                name: 'Autonomous',
+            },
+            'drone-jockey-variants': {
+                name: 'Variants',
+            },
+            'drone-jockey-specialist-skill': {
+                name: 'Specialist Skill',
+            },
+            'drone-jockey-armaments': {
+                name: 'Armaments',
+            },
+            'drone-jockey-payload': {
+                name: 'Payload',
+            },
+            'beast-whisperer-incorruptible': {
+                name: 'Incorruptible',
+            },
+            'beast-whisperer-menagerie': {
+                name: 'Menagerie',
+            },
+            'beast-whisperer-complex-commands': {
+                name: 'Complex Commands',
+            },
+            'beast-whisperer-incognito': {
+                name: 'Incognito',
+            },
+            'sense-the-unnatural-creature-specialization': {
+                name: 'Creature Specialization',
+            },
+            'sense-the-unnatural-range': {
+                name: 'Range',
+            },
+            'sense-the-unnatural-precision': {
+                name: 'Precision',
+            },
+            'sense-the-unnatural-handsfree': {
+                name: 'Handsfree',
+            },
+            'repel-the-unnatural-ward': {
+                name: 'Ward',
+            },
+            'repel-the-unnatural-damage': {
+                name: 'Damage',
+            },
+            'repel-the-unnatural-creature-specialization': {
+                name: 'Creature Specialization',
+            },
+            'repel-the-unnatural-handsfree': {
+                name: 'Handsfree',
+            },
+            'thwart-the-unnatural-creature-specialization': {
+                name: 'Creature Specialization',
+            },
+            'thwart-the-unnatural-ward': {
+                name: 'Ward',
+            },
+            'thwart-the-unnatural-recognition': {
+                name: 'Recognition',
+            },
+            'thwart-the-unnatural-handsfree': {
+                name: 'Handsfree',
+            },
+            'artifact-empower': {
+                name: 'Empower',
+            },
+            'artifact-attraction': {
+                name: 'Attraction',
+            },
+            'artifact-detection': {
+                name: 'Detection',
+            },
+            'artifact-shield': {
+                name: 'Shield',
+            },
+        },
+        'v5-hunter-weapons': {
+            improvised: {
+                name: 'Improvised weapon',
+                examples: 'A bottle, a chair leg, a wooden stake (stakes matter against vampires).',
+            },
+            'light-impact': {
+                name: 'Light impact',
+                examples: 'Brass knuckles, a heavy flashlight.',
+            },
+            'heavy-impact': {
+                name: 'Heavy impact',
+                examples: 'A baton, a tire iron, a baseball bat.',
+            },
+            'light-piercing': {
+                name: 'Light piercing',
+                examples: 'A switchblade, a crossbow bolt.',
+            },
+            'light-gunshot': {
+                name: 'Light gunshot',
+                examples: 'A small-calibre pistol.',
+            },
+            'heavy-melee': {
+                name: 'Heavy melee',
+                examples: 'A sword, a fire axe.',
+            },
+            'medium-gunshot': {
+                name: 'Medium gunshot',
+                examples: 'A service pistol, a hunting rifle, a shotgun at a distance.',
+            },
+            'heavy-gunshot': {
+                name: 'Heavy gunshot',
+                examples: 'A magnum revolver, a shotgun at close range.',
+            },
+            'huge-melee': {
+                name: 'Huge melee',
+                examples: 'A two-handed sword, a length of steel beam.',
+            },
+        },
     },
     ru: {
         attributes: {
@@ -65,6 +624,571 @@ export const catalogTranslations = {
             },
             wits: {
                 name: 'Сообразительность',
+            },
+        },
+        'v5-hunter-advantages': {
+            linguistics: {
+                name: 'Лингвистика',
+                summary: 'Ещё один свободный язык за каждую точку сверх родного и местного.',
+            },
+            illiterate: {
+                name: 'Неграмотность',
+                summary: 'Не умеет читать и писать; Гуманитарные науки и Наука не выше 1.',
+            },
+            beautiful: {
+                name: 'Красота',
+                summary: 'Один дополнительный кубик в Социальных пулах, где важна внешность.',
+            },
+            stunning: {
+                name: 'Ослепительность',
+                summary: 'Два дополнительных кубика в Социальных пулах, где важна внешность.',
+            },
+            ugly: {
+                name: 'Непривлекательность',
+                summary: 'На один кубик меньше в Социальных пулах, где важна внешность.',
+            },
+            repulsive: {
+                name: 'Отталкивающая внешность',
+                summary: 'На два кубика меньше в Социальных пулах, где важна внешность.',
+            },
+            'solo-cooking': {
+                name: 'Готовка для себя',
+                summary:
+                    'Нормальная еда перед сессией лечит ещё одну клетку поверхностного урона Здоровья.',
+            },
+            'cell-chef': {
+                name: 'Повар ячейки',
+                summary:
+                    'Если накормить ячейку, каждый присутствующий лечит ещё одну клетку поверхностного урона.',
+            },
+            'living-on-the-edge': {
+                name: 'Жизнь на грани',
+                summary:
+                    'Новое рискованное искушение рядом даёт штраф, пока вы не поддадитесь или сцена не закончится.',
+            },
+            'weak-willed': {
+                name: 'Слабовольность',
+                summary:
+                    'Вы не можете активно сопротивляться силам, влияющим на разум или чувства.',
+            },
+            addiction: {
+                name: 'Зависимость',
+                summary:
+                    'На один кубик меньше в большинстве пулов после сцены без вашего вещества.',
+            },
+            'severe-addiction': {
+                name: 'Тяжёлая зависимость',
+                summary:
+                    'На два кубика меньше в большинстве пулов после сцены без вашего вещества.',
+            },
+            'unseemly-aura': {
+                name: 'Странная аура',
+                summary: 'Чудовища порой принимают вас за своего или за кого-то совсем другого.',
+            },
+            stigmata: {
+                name: 'Стигматы',
+                summary: 'Когда вам больно, кровоточат руки, ноги и лоб — заметно и трудно скрыть.',
+            },
+            'crones-curse': {
+                name: 'Проклятие старухи',
+                summary:
+                    'Вы выглядите намного старше своих лет, и у вас на одну клетку Здоровья меньше.',
+            },
+            allies: {
+                name: 'Союзники',
+                summary:
+                    'Люди вне ячейки, которые вам помогают; точки определяют, насколько они способны и надёжны.',
+            },
+            enemy: {
+                name: 'Враг',
+                summary:
+                    'Кто-то вне ячейки, кто действует против вас и появляется в самый неудобный момент.',
+            },
+            contacts: {
+                name: 'Связи',
+                summary:
+                    'Люди, которые достанут сведения или вещи — от дешёвых до труднодоступных.',
+            },
+            fame: {
+                name: 'Слава',
+                summary:
+                    'Ваше имя знают — от одной субкультуры до всего мира; оставаться незаметным трудно.',
+            },
+            infamy: {
+                name: 'Дурная слава',
+                summary:
+                    'Известны чем-то ужасным; к вам плохо относятся, а кто-то хочет вас схватить.',
+            },
+            'dark-secret': {
+                name: 'Тёмная тайна',
+                summary: 'Страшная тайна, о которой знают немногие, но она может всплыть.',
+            },
+            'infamous-partner': {
+                name: 'Скандальный партнёр',
+                summary: 'Близкий вам человек печально известен, и это бросает тень на вас.',
+            },
+            influence: {
+                name: 'Влияние',
+                summary:
+                    'Вес в одной группе или районе города, слабее в остальных; пользоваться им — привлекать внимание.',
+            },
+            despised: {
+                name: 'Ненавистный',
+                summary: 'Одна группа или район города действует против вас и вашей ячейки.',
+            },
+            disliked: {
+                name: 'Нелюбимый',
+                summary:
+                    'На один кубик меньше в Социальных проверках с группами города, которые не на вашей стороне.',
+            },
+            mask: {
+                name: 'Маска',
+                summary:
+                    'Фальшивая личность, которая выдерживает проверку — местную или общенациональную.',
+            },
+            zeroed: {
+                name: 'Обнулённый',
+                summary:
+                    'Ваши настоящие записи стёрты; официально вас не существует. Нужна Маска ••.',
+            },
+            cobbler: {
+                name: 'Сапожник',
+                summary:
+                    'Вы умеете делать или доставать фальшивые личности для других. Нужна Маска ••.',
+            },
+            'person-of-interest': {
+                name: 'Под наблюдением',
+                summary: 'Базы спецслужб отмечают вас как угрозу; аналитики могут сложить картину.',
+            },
+            'serial-error': {
+                name: 'Ошибка в записях',
+                summary: 'Ошибка в записях делает любую проверку вашей личности тревожной.',
+            },
+            mentor: {
+                name: 'Наставник',
+                summary:
+                    'Опытный охотник или группа, которые время от времени советуют и прикрывают.',
+            },
+            adversary: {
+                name: 'Соперник',
+                summary:
+                    'Охотник-соперник или группа, желающие провала вам, ячейке или наставнику.',
+            },
+            resources: {
+                name: 'Ресурсы',
+                summary:
+                    'Деньги и имущество — от жизни от зарплаты до зарплаты до «всего, что можно купить».',
+            },
+            destitute: {
+                name: 'Нищета',
+                summary: 'Ни денег, ни дома.',
+            },
+            retainers: {
+                name: 'Помощники',
+                summary:
+                    'Верные помощники — от увязавшегося энтузиаста до того, кто сам решает проблемы.',
+            },
+            stalkers: {
+                name: 'Преследователи',
+                summary: 'Вокруг вас появляются люди, которые слишком к вам привязываются.',
+            },
+            'safe-house': {
+                name: 'Убежище',
+                summary:
+                    'Жильё надёжнее и укромнее простой комнаты; помогает замечать и сдерживать чужаков.',
+            },
+            'hidden-armory': {
+                name: 'Тайный арсенал',
+                summary: 'Спрятанный в убежище запас обычного оружия и патронов.',
+            },
+            'panic-room': {
+                name: 'Комната-убежище',
+                summary:
+                    'Запертая комната, чтобы спрятать людей или держать пленника. Не в маленьком убежище.',
+            },
+            watchmen: {
+                name: 'Охрана',
+                summary: 'Охранники убежища; о сверхъестественном они ничего не знают.',
+            },
+            laboratory: {
+                name: 'Лаборатория',
+                summary:
+                    'Дополнительные кубики для научной или технической работы дома. Не в маленьком убежище.',
+            },
+            luxury: {
+                name: 'Роскошь',
+                summary: 'Впечатляющая обстановка помогает в Социальных проверках с гостями.',
+            },
+            postern: {
+                name: 'Чёрный ход',
+                summary:
+                    'Потайной выход; дополнительные кубики, чтобы уйти от наблюдения поблизости.',
+            },
+            'security-system': {
+                name: 'Охранная система',
+                summary: 'Дополнительные кубики, чтобы не пустить чужаков или узнать о них.',
+            },
+            surgery: {
+                name: 'Операционная',
+                summary:
+                    'Полевая операционная; дополнительные кубики к Медицине дома. Не в маленьком убежище.',
+            },
+            compromised: {
+                name: 'Раскрытое убежище',
+                summary:
+                    'Здесь уже был налёт, место под наблюдением; чужаки получают дополнительные кубики.',
+            },
+            creepy: {
+                name: 'Жуткое убежище',
+                summary: 'Выглядит как логово чудовища; гостям не по себе, соседи судачат.',
+            },
+            haunted: {
+                name: 'Нечистое место',
+                summary:
+                    'Здесь обитает что-то сверхъестественное, что вы не можете ни контролировать, ни изгнать.',
+            },
+            'no-safe-house': {
+                name: 'Без убежища',
+                summary:
+                    'Негде чувствовать себя в безопасности: людный сквот, плохая квартира, сломанный трейлер.',
+            },
+            status: {
+                name: 'Статус',
+                summary:
+                    'Положение среди местных охотников одной фракции — от известного имени до лидера.',
+            },
+            shunned: {
+                name: 'Изгой',
+                summary: 'Одна фракция охотников вас ненавидит и действует против вас.',
+            },
+            suspect: {
+                name: 'Под подозрением',
+                summary: 'Вы подвели фракцию; Социальные проверки с ней даются намного труднее.',
+            },
+        },
+        'v5-hunter-armor': {
+            'reinforced-clothing': {
+                name: 'Укреплённая одежда',
+                note: 'Плотная кожа и подобное; от огнестрельного оружия не защищает.',
+                effect: 'Броня 2',
+            },
+            'ballistic-cloth': {
+                name: 'Баллистическая ткань',
+                note: 'Защитная ткань, похожая на обычную одежду.',
+                effect: 'Броня 2',
+            },
+            'kevlar-vest': {
+                name: 'Кевларовый жилет',
+                note: 'Бронежилет или защитная куртка.',
+                effect: 'Броня 4',
+            },
+            'tactical-armor': {
+                name: 'Тактическая броня',
+                note: 'Полицейское или армейское снаряжение; на один кубик меньше в бросках Ловкости.',
+                effect: 'Броня 6',
+            },
+        },
+        'v5-hunter-creeds': {
+            entrepreneurial: {
+                name: 'Предприимчивые',
+            },
+            faithful: {
+                name: 'Верующие',
+            },
+            inquisitive: {
+                name: 'Пытливые',
+            },
+            martial: {
+                name: 'Воинственные',
+            },
+            underground: {
+                name: 'Подпольщики',
+            },
+        },
+        'v5-hunter-drives': {
+            curiosity: {
+                name: 'Любопытство',
+            },
+            vengeance: {
+                name: 'Месть',
+            },
+            oath: {
+                name: 'Клятва',
+            },
+            greed: {
+                name: 'Жадность',
+            },
+            pride: {
+                name: 'Гордыня',
+            },
+            envy: {
+                name: 'Зависть',
+            },
+            atonement: {
+                name: 'Искупление',
+            },
+        },
+        'v5-hunter-edges': {
+            arsenal: {
+                name: 'Арсенал',
+            },
+            fleet: {
+                name: 'Автопарк',
+            },
+            ordnance: {
+                name: 'Спецбоеприпасы',
+            },
+            library: {
+                name: 'Библиотека',
+            },
+            'improvised-gear': {
+                name: 'Самодельное снаряжение',
+            },
+            'global-access': {
+                name: 'Глобальный доступ',
+            },
+            'drone-jockey': {
+                name: 'Оператор дронов',
+            },
+            'beast-whisperer': {
+                name: 'Заклинатель зверей',
+            },
+            'sense-the-unnatural': {
+                name: 'Чутьё на неестественное',
+            },
+            'repel-the-unnatural': {
+                name: 'Отпор неестественному',
+            },
+            'thwart-the-unnatural': {
+                name: 'Защита от неестественного',
+            },
+            artifact: {
+                name: 'Артефакт',
+            },
+        },
+        'v5-hunter-gear': {
+            chaoscope: {
+                name: 'Хаоскоп',
+                effect: 'Сканер на машине: Интеллект + Внимательность со Сложностью 6 обнаруживает сверхъестественную угрозу рядом; легче против уже знакомого вида.',
+            },
+            xscope: {
+                name: 'Иксскоп',
+                effect: 'На расстоянии отличает живых от мёртвых по сердцебиению, дыханию и теплу; некоторые чудовища умеют его обмануть.',
+            },
+            'gps-tracker': {
+                name: 'GPS-трекер',
+                effect: 'Четыре дополнительных кубика, чтобы найти носителя; заметить трекер — Смекалка + Знание улиц или Технологии.',
+            },
+            'lockpick-gun': {
+                name: 'Отмычка-пистолет',
+                effect: 'Четыре дополнительных кубика к Ловкости + Воровству при вскрытии замка; трудно объяснить, если найдут.',
+            },
+            'zip-cuffs': {
+                name: 'Пластиковые стяжки',
+                effect: 'Освободиться — Сила со Сложностью 5; лезвие легко их режет.',
+            },
+            handcuffs: {
+                name: 'Наручники',
+                effect: 'Освободиться — Сила со Сложностью 6 или Ловкость + Воровство со Сложностью 4.',
+            },
+            'tactical-earbuds': {
+                name: 'Тактические наушники',
+                effect: 'Защита слуха с рацией ячейки; один дополнительный кубик к Самообладанию в бою.',
+            },
+            'disguised-weapon': {
+                name: 'Замаскированное оружие',
+                effect: 'Оружие, которое выглядит как что-то другое; на один кубик меньше в атаке, если оно не сделано исключительно хорошо.',
+            },
+            incendiary: {
+                name: 'Зажигательное оружие',
+                effect: 'Самодельное зажигательное оружие теряет единицу урона, но урон тяжёлый против всех, кто боится огня.',
+            },
+        },
+        'v5-hunter-perks': {
+            'arsenal-team-requisition': {
+                name: 'Снабжение команды',
+            },
+            'arsenal-special-features': {
+                name: 'Особые модификации',
+            },
+            'arsenal-exotics': {
+                name: 'Экзотика',
+            },
+            'arsenal-untraceable': {
+                name: 'Неотслеживаемость',
+            },
+            'fleet-armor': {
+                name: 'Броня',
+            },
+            'fleet-performance': {
+                name: 'Ходовые качества',
+            },
+            'fleet-surveillance': {
+                name: 'Слежка',
+            },
+            'fleet-untraceable': {
+                name: 'Неотслеживаемость',
+            },
+            'ordnance-multiple-payloads': {
+                name: 'Несколько зарядов',
+            },
+            'ordnance-non-lethal-munitions': {
+                name: 'Нелетальные боеприпасы',
+            },
+            'ordnance-exotics': {
+                name: 'Экзотика',
+            },
+            'ordnance-disguised-delivery': {
+                name: 'Скрытая доставка',
+            },
+            'library-where-they-hide': {
+                name: 'Где они прячутся',
+            },
+            'library-who-they-are': {
+                name: 'Кто они',
+            },
+            'library-how-to-halt-them': {
+                name: 'Как их остановить',
+            },
+            'library-how-to-harm-them': {
+                name: 'Как им навредить',
+            },
+            'improvised-gear-frugal': {
+                name: 'Экономность',
+            },
+            'improvised-gear-mass-production': {
+                name: 'Массовое производство',
+            },
+            'improvised-gear-specialization': {
+                name: 'Специализация',
+            },
+            'improvised-gear-speed-crafting': {
+                name: 'Быстрая сборка',
+            },
+            'global-access-watching-big-brother': {
+                name: 'Слежка за Большим Братом',
+            },
+            'global-access-all-access-pass': {
+                name: 'Пропуск везде',
+            },
+            'global-access-money-tap': {
+                name: 'Денежный кран',
+            },
+            'global-access-the-letter-of-the-law': {
+                name: 'Буква закона',
+            },
+            'drone-jockey-autonomous': {
+                name: 'Автономность',
+            },
+            'drone-jockey-variants': {
+                name: 'Модификации',
+            },
+            'drone-jockey-specialist-skill': {
+                name: 'Особый навык',
+            },
+            'drone-jockey-armaments': {
+                name: 'Вооружение',
+            },
+            'drone-jockey-payload': {
+                name: 'Полезная нагрузка',
+            },
+            'beast-whisperer-incorruptible': {
+                name: 'Неподкупность',
+            },
+            'beast-whisperer-menagerie': {
+                name: 'Зверинец',
+            },
+            'beast-whisperer-complex-commands': {
+                name: 'Сложные команды',
+            },
+            'beast-whisperer-incognito': {
+                name: 'Инкогнито',
+            },
+            'sense-the-unnatural-creature-specialization': {
+                name: 'Специализация на существах',
+            },
+            'sense-the-unnatural-range': {
+                name: 'Дальность',
+            },
+            'sense-the-unnatural-precision': {
+                name: 'Точность',
+            },
+            'sense-the-unnatural-handsfree': {
+                name: 'Без рук',
+            },
+            'repel-the-unnatural-ward': {
+                name: 'Оберег',
+            },
+            'repel-the-unnatural-damage': {
+                name: 'Урон',
+            },
+            'repel-the-unnatural-creature-specialization': {
+                name: 'Специализация на существах',
+            },
+            'repel-the-unnatural-handsfree': {
+                name: 'Без рук',
+            },
+            'thwart-the-unnatural-creature-specialization': {
+                name: 'Специализация на существах',
+            },
+            'thwart-the-unnatural-ward': {
+                name: 'Оберег',
+            },
+            'thwart-the-unnatural-recognition': {
+                name: 'Распознавание',
+            },
+            'thwart-the-unnatural-handsfree': {
+                name: 'Без рук',
+            },
+            'artifact-empower': {
+                name: 'Усиление',
+            },
+            'artifact-attraction': {
+                name: 'Притяжение',
+            },
+            'artifact-detection': {
+                name: 'Обнаружение',
+            },
+            'artifact-shield': {
+                name: 'Щит',
+            },
+        },
+        'v5-hunter-weapons': {
+            improvised: {
+                name: 'Подручное оружие',
+                examples: 'Бутылка, ножка стула, деревянный кол (кол важен против вампиров).',
+            },
+            'light-impact': {
+                name: 'Лёгкое ударное',
+                examples: 'Кастет, тяжёлый фонарь.',
+            },
+            'heavy-impact': {
+                name: 'Тяжёлое ударное',
+                examples: 'Дубинка, монтировка, бейсбольная бита.',
+            },
+            'light-piercing': {
+                name: 'Лёгкое колющее',
+                examples: 'Выкидной нож, арбалетный болт.',
+            },
+            'light-gunshot': {
+                name: 'Лёгкое огнестрельное',
+                examples: 'Пистолет малого калибра.',
+            },
+            'heavy-melee': {
+                name: 'Тяжёлое холодное',
+                examples: 'Меч, пожарный топор.',
+            },
+            'medium-gunshot': {
+                name: 'Среднее огнестрельное',
+                examples: 'Служебный пистолет, охотничья винтовка, дробовик на дистанции.',
+            },
+            'heavy-gunshot': {
+                name: 'Тяжёлое огнестрельное',
+                examples: 'Револьвер «магнум», дробовик в упор.',
+            },
+            'huge-melee': {
+                name: 'Огромное холодное',
+                examples: 'Двуручный меч, кусок стальной балки.',
             },
         },
     },

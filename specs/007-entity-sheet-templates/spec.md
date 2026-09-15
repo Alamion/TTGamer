@@ -1,6 +1,6 @@
 # Feature Specification: Entity Sheet Templates and Docs Embed Migration
 
-> **Change record.** Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
+> **Change record.** Partly superseded by 008 (system-aware template matching, registry-driven creation, plugin-declared catalogs). Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
 
 **Feature Branch**: `007-entity-sheet-templates`
 

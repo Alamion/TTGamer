@@ -36,10 +36,6 @@ export const UnknownDocumentEnvelopeSchema = DocumentEnvelopeBaseSchema.extend({
     data: z.unknown(),
 });
 
-export function createDocumentEnvelopeSchema<TSchema extends z.ZodTypeAny>(dataSchema: TSchema) {
-    return DocumentEnvelopeBaseSchema.extend({ data: dataSchema });
-}
-
 export type DocumentKind = z.infer<typeof DocumentKindSchema>;
 export type SystemId = z.infer<typeof SystemIdSchema>;
 export type DocumentDefinitionId = z.infer<typeof DocumentDefinitionIdSchema>;

@@ -32,6 +32,10 @@ primitives:
     compact: Компактно (формат brief)
     trackLevels: Уровни
     trackLevelName: 'Название уровня {index}'
+    trackLayout: Вид трека
+    trackLayoutDefault: По умолчанию
+    trackLayoutTable: Таблица уровней
+    trackLayoutStrip: Строка клеток
     presets: Предустановленные записи
     presetLabel: Название записи
     presetValue: Значение по умолчанию
@@ -246,6 +250,7 @@ transfer:
     importErrorFormat: Не удалось импортировать «{filename}» — это не файл шаблона TTGamer.
     importErrorVersion: Не удалось импортировать «{filename}» — файл создан в другой версии формата шаблонов.
     importErrorSchema: Не удалось импортировать «{filename}» — структура шаблона повреждена.
+    importErrorSystem: Не удалось импортировать «{filename}» — шаблон относится к игровой системе, которой нет на сайте.
     conflictTitle: Шаблон уже существует
     conflictPrompt: Заменить, импортировать копию с новым ID или отменить.
     degradedReport: 'Некоторые каталоги недоступны — поля переведены на ручные списки: {fields}'
@@ -258,7 +263,6 @@ cohort:
     defeated: Выведен из боя
     penalty: Штраф
     level: Уровень
-    trackLength: Уровни здоровья
     maxMembersReached: В группе может быть не больше {count} участников.
     removeTitle: Удалить раненого участника?
     removeDescription: У участника {label} отмечены повреждения. Удаление сотрёт их.

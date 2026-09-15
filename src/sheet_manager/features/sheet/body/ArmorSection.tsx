@@ -3,7 +3,6 @@ import { Plus } from 'lucide-react';
 import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest, CollapsibleItem } from '../../../components';
 import type { ArmorItem } from '../../../types/character';
-import { buildArmorCatalog } from '../data/bodyEquipmentCatalogs';
 
 interface ArmorSectionProps {
     items: ArmorItem[];
@@ -12,6 +11,8 @@ interface ArmorSectionProps {
     onRemove: (id: string) => void;
     onUpdate: (id: string, field: keyof ArmorItem, value: string) => void;
     onCatalogSelect: (id: string, entry: CatalogEntry) => void;
+    /** Name suggestions; picking one calls `onCatalogSelect`. Empty = free text only. */
+    catalog: CatalogEntry[];
 }
 
 export function ArmorSection({
@@ -21,9 +22,8 @@ export function ArmorSection({
     onRemove,
     onUpdate,
     onCatalogSelect,
+    catalog,
 }: ArmorSectionProps) {
-    const armorCatalog = buildArmorCatalog();
-
     return (
         <div className="px-4 pb-4 space-y-2">
             {items.length === 0 ? (
@@ -46,7 +46,7 @@ export function ArmorSection({
                                     Name
                                 </span>
                                 <CatalogSuggest
-                                    catalog={armorCatalog}
+                                    catalog={catalog}
                                     value={item.name}
                                     onChange={(val) => onUpdate(item.id, 'name', val)}
                                     onSelect={(entry) => onCatalogSelect(item.id, entry)}

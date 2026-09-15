@@ -1,0 +1,16 @@
+reinforced-clothing:
+    name: 'Reinforced clothing'
+    note: 'Heavy leathers and the like; no protection against firearms.'
+    effect: 'Armor 2'
+ballistic-cloth:
+    name: 'Ballistic cloth'
+    note: 'Protective fabric that passes for ordinary clothes.'
+    effect: 'Armor 2'
+kevlar-vest:
+    name: 'Kevlar vest'
+    note: 'A bulletproof vest or flak jacket.'
+    effect: 'Armor 4'
+tactical-armor:
+    name: 'Tactical armor'
+    note: 'Police or military gear; one die fewer on Dexterity rolls.'
+    effect: 'Armor 6'

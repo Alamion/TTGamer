@@ -1,0 +1,156 @@
+linguistics:
+    name: 'Linguistics'
+    summary: 'One more fluent language per dot, beyond your native tongue and the local one.'
+illiterate:
+    name: 'Illiterate'
+    summary: 'Cannot read or write; Academics and Science stay at 1 at most.'
+beautiful:
+    name: 'Beautiful'
+    summary: 'One extra die on Social pools where looks matter.'
+stunning:
+    name: 'Stunning'
+    summary: 'Two extra dice on Social pools where looks matter.'
+ugly:
+    name: 'Ugly'
+    summary: 'One die fewer on Social pools where looks matter.'
+repulsive:
+    name: 'Repulsive'
+    summary: 'Two dice fewer on Social pools where looks matter.'
+solo-cooking:
+    name: 'Solo Cooking'
+    summary: 'A proper meal before the session heals one extra Superficial Health.'
+cell-chef:
+    name: 'Cell Chef'
+    summary: 'Cooking for the cell heals one extra Superficial Health for everyone present.'
+living-on-the-edge:
+    name: 'Living on the Edge'
+    summary: 'A new risky thrill in reach nags you with a penalty until you try it or the scene ends.'
+weak-willed:
+    name: 'Weak-Willed'
+    summary: 'You cannot actively resist powers that sway your mind or emotions.'
+addiction:
+    name: 'Addiction'
+    summary: 'One die fewer on most pools after a scene without your substance.'
+severe-addiction:
+    name: 'Severe Addiction'
+    summary: 'Two dice fewer on most pools after a scene without your substance.'
+unseemly-aura:
+    name: 'Unseemly Aura'
+    summary: 'Monsters sometimes take you for one of their own, or for something else entirely.'
+stigmata:
+    name: 'Stigmata'
+    summary: 'You bleed from hands, feet, and brow when hurt; noticeable and hard to hide.'
+crones-curse:
+    name: 'Crone’s Curse'
+    summary: 'You look much older than you are and have one Health box fewer.'
+allies:
+    name: 'Allies'
+    summary: 'People outside the cell who help you; dots buy how capable and how dependable they are.'
+enemy:
+    name: 'Enemy'
+    summary: 'Someone outside the cell who works against you and shows up when it hurts most.'
+contacts:
+    name: 'Contacts'
+    summary: 'People who can find information or get you things, from cheap to hard to obtain.'
+fame:
+    name: 'Fame'
+    summary: 'People know your name, from one subculture up to the whole world; hard to stay unnoticed.'
+infamy:
+    name: 'Infamy'
+    summary: 'Known for something terrible; reactions go badly, and some want you caught.'
+dark-secret:
+    name: 'Dark Secret'
+    summary: 'A terrible secret few people know, which could still come out.'
+infamous-partner:
+    name: 'Infamous Partner'
+    summary: 'Someone close to you is notorious, and it rubs off on you.'
+influence:
+    name: 'Influence'
+    summary: 'Pull over one group or district of the city, weaker elsewhere; using it draws attention.'
+despised:
+    name: 'Despised'
+    summary: 'One group or district of the city works against you and your cell.'
+disliked:
+    name: 'Disliked'
+    summary: 'One die fewer on Social tests with city groups that are not openly on your side.'
+mask:
+    name: 'Mask'
+    summary: 'A false identity that survives background checks, local or national.'
+zeroed:
+    name: 'Zeroed'
+    summary: 'Your real records were erased; officially you do not exist. Needs Mask ••.'
+cobbler:
+    name: 'Cobbler'
+    summary: 'You can make or source false identities for others. Needs Mask ••.'
+person-of-interest:
+    name: 'Person of Interest'
+    summary: 'Intelligence databases flag you as a threat; analysts can connect the dots.'
+serial-error:
+    name: 'Serial Error'
+    summary: 'A records mistake makes any background check on you look alarming.'
+mentor:
+    name: 'Mentor'
+    summary: 'An experienced hunter or group who advises and covers for you now and then.'
+adversary:
+    name: 'Adversary'
+    summary: 'A rival hunter or group who wants you, your cell, or your mentor to fail.'
+resources:
+    name: 'Resources'
+    summary: 'Money and property, from living paycheck to paycheck to “anything money can buy”.'
+destitute:
+    name: 'Destitute'
+    summary: 'No money and no home.'
+retainers:
+    name: 'Retainers'
+    summary: 'Loyal helpers, from an eager tag-along to someone who handles problems alone.'
+stalkers:
+    name: 'Stalkers'
+    summary: 'People who get too attached to you keep turning up.'
+safe-house:
+    name: 'Safe House'
+    summary: 'A home that is more secure and private than a bare room; helps spot and resist intruders.'
+hidden-armory:
+    name: 'Hidden Armory'
+    summary: 'A hidden stash of ordinary guns and ammunition in the safe house.'
+panic-room:
+    name: 'Panic Room'
+    summary: 'A locked room to hide people in, or to hold a captive. Not in small safe houses.'
+watchmen:
+    name: 'Watchmen'
+    summary: 'Guards who watch the safe house; they know nothing of the supernatural.'
+laboratory:
+    name: 'Laboratory'
+    summary: 'Extra dice for science or technology work at home. Not in small safe houses.'
+luxury:
+    name: 'Luxury'
+    summary: 'Impressive decor helps Social tests with guests at home.'
+postern:
+    name: 'Postern'
+    summary: 'A hidden way out; extra dice to slip away from watchers nearby.'
+security-system:
+    name: 'Security System'
+    summary: 'Extra dice to keep intruders out or be warned of them.'
+surgery:
+    name: 'Surgery'
+    summary: 'A field surgery room; extra dice for Medicine at home. Not in small safe houses.'
+compromised:
+    name: 'Compromised'
+    summary: 'The place was raided before and is watched; intruders get extra dice.'
+creepy:
+    name: 'Creepy'
+    summary: 'It looks like a monster’s lair; guests are ill at ease and neighbors talk.'
+haunted:
+    name: 'Haunted'
+    summary: 'Something supernatural lives here that you cannot control or remove.'
+no-safe-house:
+    name: 'No Safe House'
+    summary: 'Nowhere to feel safe: a busy squat, a bad flat, a broken-down trailer.'
+status:
+    name: 'Status'
+    summary: 'Standing among the local hunters of one faction, from a known name to a leader.'
+shunned:
+    name: 'Shunned'
+    summary: 'One faction of hunters loathes you and works against you.'
+suspect:
+    name: 'Suspect'
+    summary: 'You broke faith with a faction; Social tests with them are much harder.'

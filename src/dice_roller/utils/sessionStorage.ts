@@ -1,7 +1,7 @@
 const STAT_LABELS_KEY = 'dice_roller_stat_labels';
 const CHAR_NAME_KEY = 'dice_roller_character_name';
 
-export function getStatLabels(): string[] {
+function getStatLabels(): string[] {
     try {
         return JSON.parse(sessionStorage.getItem(STAT_LABELS_KEY) || '[]');
     } catch (e) {

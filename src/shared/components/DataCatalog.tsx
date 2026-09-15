@@ -128,6 +128,15 @@ function MultiSelectDropdown({
     );
 }
 
+/** Clicks on links, buttons, or form controls inside a row keep their own behavior. */
+function isInteractiveTarget(target: EventTarget, row: Element): boolean {
+    if (!(target instanceof Element)) return false;
+    const interactive = target.closest(
+        'a, button, input, select, textarea, label, [role="button"]'
+    );
+    return interactive !== null && row.contains(interactive);
+}
+
 export function DataCatalog<T extends { id: string }>({
     data,
     columns,
@@ -531,12 +540,6 @@ export function DataCatalog<T extends { id: string }>({
                                                     )}
                                                 </th>
                                             ))}
-                                            <th
-                                                scope="col"
-                                                className="px-4 py-3 text-right text-xs font-medium text-textSecondary uppercase tracking-wider"
-                                            >
-                                                Details
-                                            </th>
                                         </tr>
                                     ))}
                                 </thead>
@@ -544,7 +547,7 @@ export function DataCatalog<T extends { id: string }>({
                                     {table.getRowModel().rows.length === 0 ? (
                                         <tr>
                                             <td
-                                                colSpan={table.getVisibleLeafColumns().length + 1}
+                                                colSpan={table.getVisibleLeafColumns().length}
                                                 className="px-4 py-12 text-center text-textSecondary"
                                             >
                                                 No results match your search.
@@ -554,8 +557,30 @@ export function DataCatalog<T extends { id: string }>({
                                         table.getRowModel().rows.map((row) => (
                                             <tr
                                                 key={row.id}
+                                                tabIndex={0}
+                                                aria-label={`${getRowLabel(row.original)} — ${
+                                                    selectedId === getRowId(row.original)
+                                                        ? 'details open'
+                                                        : 'open details'
+                                                }`}
+                                                onClick={(e) => {
+                                                    if (
+                                                        isInteractiveTarget(
+                                                            e.target,
+                                                            e.currentTarget
+                                                        )
+                                                    )
+                                                        return;
+                                                    toggleDetail(getRowId(row.original));
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.target !== e.currentTarget) return;
+                                                    if (e.key !== 'Enter' && e.key !== ' ') return;
+                                                    e.preventDefault();
+                                                    toggleDetail(getRowId(row.original));
+                                                }}
                                                 className={clsx(
-                                                    'border-b border-border last:border-0 transition-colors',
+                                                    'border-b border-border last:border-0 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40',
                                                     selectedId === getRowId(row.original)
                                                         ? 'bg-primary/10'
                                                         : 'hover:bg-bgSurface/80'
@@ -569,27 +594,6 @@ export function DataCatalog<T extends { id: string }>({
                                                         )}
                                                     </td>
                                                 ))}
-                                                <td className="px-4 py-2.5 text-right">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            toggleDetail(getRowId(row.original))
-                                                        }
-                                                        className="rounded px-2 py-1 text-xs font-medium text-primary hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary/40"
-                                                        aria-pressed={
-                                                            selectedId === getRowId(row.original)
-                                                        }
-                                                        aria-label={`${
-                                                            selectedId === getRowId(row.original)
-                                                                ? 'Close details for'
-                                                                : 'Open details for'
-                                                        } ${getRowLabel(row.original)}`}
-                                                    >
-                                                        {selectedId === getRowId(row.original)
-                                                            ? 'Close'
-                                                            : 'View'}
-                                                    </button>
-                                                </td>
                                             </tr>
                                         ))
                                     )}

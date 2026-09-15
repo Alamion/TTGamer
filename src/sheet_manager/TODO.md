@@ -10,6 +10,7 @@ Each task includes: name, description, priority, effort, impact, and dependencie
 - ✅ **DONE** — fully implemented
 - 🟡 **IN PROGRESS** — partially implemented
 - ⬜ **NOT DONE** — not started
+- 🚫 **CLOSED** — declined or superseded (description names why)
 
 ---
 
@@ -50,8 +51,8 @@ Core architecture to decouple document rendering from Star Wars WoD and support 
 | 5   | ✅     | **Update store for polymorphic documents**  | Store `documents[]` and `currentDocumentId`; CRUD validates through the definition selected by `systemId` + `definitionId`.                                                                                                     | High     | M      | Epic   | #2, #3       |
 | 6   | ✅     | **Update import/export**                    | Current envelopes dispatch to the registered schema, unsupported versions are rejected, legacy characters migrate explicitly, and unknown/invalid persisted entries are retained for recovery.                                  | High     | M      | High   | #2, #3, #4   |
 | 7   | ✅     | **Sheet renders from block registry**       | The active definition and named view select registered built-in blocks. Character, droid, creature, vehicle, and fodder full/brief layouts all use this path; the declarative custom-template renderer remains a separate task. | High     | S      | High   | #1, #4       |
-| 8   | ⬜     | **`useTraitUpdater` becomes generic**       | Replace the fixed `TraitPath` union (`attributes`, `skills`, `forceSkills`, `virtues`) with update capabilities driven by the selected system definition.                                                                       | Medium   | M      | Medium | #1, #4       |
-| 9   | ⬜     | **`StatDot` maxValue becomes configurable** | Accept `maxValue` from parent (default 5 for WoD, 18 for D&D abilities, 10 for Cyberpunk).                                                                                                                                      | Medium   | S      | Medium | —            |
+| 8   | 🚫     | **`useTraitUpdater` becomes generic**       | Closed — superseded: `useTraitUpdater` had no callers and was removed in the T-030 cleanup; template bindings (`useBoundDocument` + system binding registries) already route trait writes per system.                           | Medium   | M      | Medium | #1, #4       |
+| 9   | ✅     | **`StatDot` maxValue becomes configurable** | Done — `StatDot` and `TraitRow` accept `maxValue` (default 5); WoD-like profiles carry per-trait `maximum`.                                                                                                                     | Medium   | S      | Medium | —            |
 
 ---
 
@@ -73,13 +74,13 @@ Vehicle and droid-specific layouts within the Star Wars WoD system.
 
 Keep the UI hierarchy enforceable as new systems and document families are added.
 
-| #   | Status | Task                                     | Description                                                                                                                                                                                                                                                       | Priority | Effort | Impact | Dependencies |
-| --- | ------ | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------ | ------------ |
-| 24  | ✅     | **Define element-scale boundaries**      | Atoms are store-free controls/stat fields; molecules accept values/callbacks; blocks adapt capabilities; views compose blocks; shells own collection and active-view behavior.                                                                                    | Critical | S      | High   | #7           |
-| 25  | ✅     | **Brief view as a standard capability**  | Every built-in Star Wars definition registers `brief`; compact fields, ratings, resources, and condition tracks provide consistent styling. The retired `npc-card` ID remains a compatibility alias.                                                              | High     | M      | High   | #7, #10, #12 |
-| 26  | ✅     | **Split special full-sheet organisms**   | Creature, vehicle, and fodder organisms live in one view module per document; the retired droid implementation was removed with the monolith.                                                                                                                     | High     | M      | High   | #24          |
-| 27  | ⬜     | **Definition-owned block configuration** | Replace remaining label/track conditionals inside shared blocks with typed definition capability configuration where more than two variants need the same interaction.                                                                                            | Medium   | M      | Medium | #24          |
-| 28  | 🟡     | **Composition regression coverage**      | Add component tests for full/brief view selection, character capability adapters, custom traits embedded in groups, and organic/mechanical condition labels. Brief character composition and custom-trait embedding are covered; full-view organisms are not yet. | High     | M      | High   | #24, #25     |
+| #   | Status | Task                                     | Description                                                                                                                                                                                                | Priority | Effort | Impact | Dependencies |
+| --- | ------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------ | ------------ |
+| 24  | ✅     | **Define element-scale boundaries**      | Atoms are store-free controls/stat fields; molecules accept values/callbacks; blocks adapt capabilities; views compose blocks; shells own collection and active-view behavior.                             | Critical | S      | High   | #7           |
+| 25  | ✅     | **Brief view as a standard capability**  | Every built-in Star Wars definition registers `brief`; compact fields, ratings, resources, and condition tracks provide consistent styling. The retired `npc-card` ID remains a compatibility alias.       | High     | M      | High   | #7, #10, #12 |
+| 26  | ✅     | **Split special full-sheet organisms**   | Creature, vehicle, and fodder organisms live in one view module per document; the retired droid implementation was removed with the monolith.                                                              | High     | M      | High   | #24          |
+| 27  | 🚫     | **Definition-owned block configuration** | Closed — superseded by features 006/007: the shared React blocks this targeted were removed; per-kind variation now lives in template trees and binding registries.                                        | Medium   | M      | Medium | #24          |
+| 28  | 🚫     | **Composition regression coverage**      | Closed — superseded by feature 007: full-view organisms no longer exist; shipped template pages are covered by `default-templates`, `entity-templates`, `primitive-parity`, and `declarative-sheet` tests. | High     | M      | High   | #24, #25     |
 
 ---
 
@@ -114,7 +115,7 @@ Before the multi-system envelope migration, version the current persisted state:
 
 - [x] Add Zustand `version` and `migrate`, validate after migration, and preserve failed entries in a bounded recovery collection. Add fixtures for future released shapes as they appear.
 - [ ] Add import-conflict component tests covering Replace, Duplicate, Cancel, multiple files, malformed JSON, and blank names.
-- [ ] Add viewer-context tests for every block and persistence hydration/failure tests.
+- [ ] Add rendering tests for every shipped template page and persistence hydration/failure tests.
 - [x] Keep HTTPS portrait URLs with an explicit privacy warning and store resized local portraits as bounded IndexedDB blobs. Device-local blob IDs are omitted from JSON exports.
 - [ ] When authentication/backend storage exists, add opt-in portrait upload, ownership checks, deletion, quotas, content sniffing, and migration from device-local blobs. Never expose storage credentials or accept arbitrary server-side URL fetching.
 

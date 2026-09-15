@@ -1,5 +1,7 @@
 import { translate } from '@docusaurus/Translate';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { useMemo } from 'react';
 
 import { buildDiceNotation } from '../../../../shared/utils/diceNotation';
 import { generateId } from '../../../../shared/utils/random';
@@ -23,35 +25,55 @@ import {
 import { reportSheetIssue } from '../../../diagnostics';
 import type {
     DocumentBindingDescriptor,
+    EquipmentBinding,
     EquipmentSectionId,
     ListBinding,
 } from '../../../systems/templateBindings';
 import {
     fieldBindingUpdate,
+    readBoundNumber,
     readDataPath,
     resolveDocumentBinding,
+    trackBoxes,
 } from '../../../systems/templateBindings';
 import type {
+    ArmorItem,
     ConditionMark,
     CustomSkill,
+    ImplantItem,
+    Item,
     MeritFlawItem,
     TraitValue,
+    WeaponItem,
 } from '../../../types/character';
 import { DEFAULT_ATTRIBUTE_VALUE } from '../../../types/character';
 import type { ListNode, PrimitiveNode } from '../../../types/template';
 import { listValueKey } from '../../../types/template';
 import { ArmorSection } from '../body/ArmorSection';
+import {
+    createEquipmentItem,
+    type EquipmentItem,
+    updateEquipmentItem,
+} from '../body/equipmentItems';
 import { ImplantsSection } from '../body/ImplantsSection';
 import { InventorySection } from '../body/InventorySection';
 import { WeaponsSection } from '../body/WeaponsSection';
-import { CATALOG_BINDINGS } from '../data/catalogBindings';
+import {
+    buildArmorCatalog,
+    buildImplantsCatalog,
+    buildInventoryCatalog,
+    buildWeaponsCatalog,
+} from '../data/bodyEquipmentCatalogs';
+import { CATALOG_BINDINGS, readCatalogDetails } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { useBoundDocument } from './boundDocument';
 import { CohortTrack } from './CohortTrack';
 import { EnumField, RowsBody } from './RowsBody';
+import { mergeVisibleMarks, resolveComputedTrackLength, visibleMarks } from './trackLength';
 
 const page = uiMessages.sheet.templates.page;
 const fields = uiMessages.sheet.documents.fields;
+const tracks = uiMessages.sheet.tracks;
 
 const inputClasses =
     'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
@@ -233,7 +255,9 @@ function SystemListBody({
 
     if (binding.entryShape === 'merit-flaw') {
         const items = raw as MeritFlawItem[];
-        const isMerit = binding.catalog?.catalogFilter?.value !== 'Flaw';
+        const isMerit = binding.polarity
+            ? binding.polarity === 'positive'
+            : binding.catalog?.catalogFilter?.value !== 'Flaw';
         return (
             <MeritFlawList
                 title={title}
@@ -393,57 +417,143 @@ export function SystemListView({
 // Equipment bindings (US6): the body-section molecules with handler parity.
 // ---------------------------------------------------------------------------
 
-function EquipmentBody({ sectionId }: { sectionId: EquipmentSectionId }) {
+interface EquipmentSectionProps {
+    sectionId: EquipmentSectionId;
+    items: unknown[];
+    readOnly: boolean;
+    onAdd: () => void;
+    onRemove: (id: string) => void;
+    onUpdate: (id: string, field: string, value: string | number | boolean) => void;
+    onCatalogSelect: (id: string, entry: CatalogEntry) => void;
+    catalog: CatalogEntry[];
+}
+
+/** The body-section molecule of one equipment section. */
+function EquipmentSection({ sectionId, items, onUpdate, ...rest }: EquipmentSectionProps) {
+    const update = onUpdate as never;
+    switch (sectionId) {
+        case 'inventory':
+            return <InventorySection items={items as Item[]} onUpdate={update} {...rest} />;
+        case 'armor':
+            return <ArmorSection items={items as ArmorItem[]} onUpdate={update} {...rest} />;
+        case 'weapons':
+            return <WeaponsSection items={items as WeaponItem[]} onUpdate={update} {...rest} />;
+        case 'implants':
+            return <ImplantsSection items={items as ImplantItem[]} onUpdate={update} {...rest} />;
+    }
+}
+
+const STAR_WARS_EQUIPMENT_CATALOGS: Record<EquipmentSectionId, () => CatalogEntry[]> = {
+    inventory: buildInventoryCatalog,
+    armor: buildArmorCatalog,
+    weapons: buildWeaponsCatalog,
+    implants: buildImplantsCatalog,
+};
+
+/** Equipment edited through the character capability (Star Wars items and catalogs). */
+function CharacterEquipmentBody({ sectionId }: { sectionId: EquipmentSectionId }) {
     const handlers = useBodyHandlers();
     if (!handlers) {
         return <DegradedBinding bindingKey={`equipment:${sectionId}`} reason="no-body-handlers" />;
     }
-    switch (sectionId) {
-        case 'inventory':
-            return (
-                <InventorySection
-                    items={handlers.inventory}
-                    readOnly={handlers.readOnly}
-                    onAdd={handlers.addInventoryItem}
-                    onRemove={handlers.removeInventoryItem}
-                    onUpdate={handlers.updateInventoryItem}
-                    onCatalogSelect={handlers.handleInventoryCatalogSelect}
-                />
-            );
-        case 'armor':
-            return (
-                <ArmorSection
-                    items={handlers.armor}
-                    readOnly={handlers.readOnly}
-                    onAdd={handlers.addArmorItem}
-                    onRemove={handlers.removeArmorItem}
-                    onUpdate={handlers.updateArmorItem}
-                    onCatalogSelect={handlers.handleArmorCatalogSelect}
-                />
-            );
-        case 'weapons':
-            return (
-                <WeaponsSection
-                    items={handlers.weapons}
-                    readOnly={handlers.readOnly}
-                    onAdd={handlers.addWeaponItem}
-                    onRemove={handlers.removeWeaponItem}
-                    onUpdate={handlers.updateWeaponItem}
-                    onCatalogSelect={handlers.handleWeaponCatalogSelect}
-                />
-            );
-        case 'implants':
-            return (
-                <ImplantsSection
-                    items={handlers.implants}
-                    readOnly={handlers.readOnly}
-                    onAdd={handlers.addImplantItem}
-                    onRemove={handlers.removeImplantItem}
-                    onUpdate={handlers.updateImplantItem}
-                    onCatalogSelect={handlers.handleImplantCatalogSelect}
-                />
-            );
+    const bySection = {
+        inventory: {
+            items: handlers.inventory,
+            onAdd: handlers.addInventoryItem,
+            onRemove: handlers.removeInventoryItem,
+            onUpdate: handlers.updateInventoryItem,
+            onCatalogSelect: handlers.handleInventoryCatalogSelect,
+        },
+        armor: {
+            items: handlers.armor,
+            onAdd: handlers.addArmorItem,
+            onRemove: handlers.removeArmorItem,
+            onUpdate: handlers.updateArmorItem,
+            onCatalogSelect: handlers.handleArmorCatalogSelect,
+        },
+        weapons: {
+            items: handlers.weapons,
+            onAdd: handlers.addWeaponItem,
+            onRemove: handlers.removeWeaponItem,
+            onUpdate: handlers.updateWeaponItem,
+            onCatalogSelect: handlers.handleWeaponCatalogSelect,
+        },
+        implants: {
+            items: handlers.implants,
+            onAdd: handlers.addImplantItem,
+            onRemove: handlers.removeImplantItem,
+            onUpdate: handlers.updateImplantItem,
+            onCatalogSelect: handlers.handleImplantCatalogSelect,
+        },
+    }[sectionId];
+    return (
+        <EquipmentSection
+            sectionId={sectionId}
+            readOnly={handlers.readOnly}
+            catalog={STAR_WARS_EQUIPMENT_CATALOGS[sectionId]()}
+            {...(bySection as Omit<EquipmentSectionProps, 'sectionId' | 'readOnly' | 'catalog'>)}
+        />
+    );
+}
+
+/** Equipment stored as a plain item array in document data (any system; free-text names). */
+function BoundEquipmentBody({
+    sectionId,
+    dataKey,
+    catalog,
+}: {
+    sectionId: EquipmentSectionId;
+    dataKey: string;
+    catalog?: EquipmentBinding['catalog'];
+}) {
+    const bound = useBoundDocument();
+    const locale = useDocusaurusContext().i18n.currentLocale;
+    const suggestions = useMemo<CatalogEntry[]>(
+        () =>
+            (catalog?.catalogIds ?? []).flatMap((catalogId) => {
+                const source = CATALOG_BINDINGS.get(catalogId);
+                return (source?.entries ?? []).map((entry) => ({
+                    id: `${catalogId}/${entry.id}`,
+                    name: source!.entryLabel(entry, locale),
+                }));
+            }),
+        [catalog, locale]
+    );
+    if (!bound) {
+        return <DegradedBinding bindingKey={`equipment:${sectionId}`} reason="no-document" />;
     }
+    const stored = bound.data[dataKey];
+    const items = (Array.isArray(stored) ? stored : []) as Array<EquipmentItem<typeof sectionId>>;
+    const write = (next: unknown[]) => bound.update({ [dataKey]: next });
+    return (
+        <EquipmentSection
+            sectionId={sectionId}
+            items={items}
+            readOnly={bound.readOnly}
+            catalog={suggestions}
+            onAdd={() => write([...items, createEquipmentItem(sectionId)])}
+            onRemove={(id) => write(items.filter((item) => item.id !== id))}
+            onUpdate={(id, field, value) =>
+                write(updateEquipmentItem(sectionId, items, id, field, value))
+            }
+            onCatalogSelect={(id, suggestion) => {
+                const [catalogId = '', entryId = ''] = suggestion.id.split('/');
+                const details = readCatalogDetails(catalogId, entryId);
+                if (!catalog || !details) return;
+                let next = items;
+                for (const [detailKey, field] of Object.entries(catalog.fills)) {
+                    const source = CATALOG_BINDINGS.get(catalogId);
+                    const entry = source?.entries.find((candidate) => candidate.id === entryId);
+                    const localized = entry && source?.entryText(entry, detailKey, locale);
+                    const detail =
+                        detailKey === 'name' ? suggestion.name : (localized ?? details[detailKey]);
+                    if (typeof detail !== 'string' && typeof detail !== 'number') continue;
+                    next = updateEquipmentItem(sectionId, next, id, field, detail);
+                }
+                write(next);
+            }}
+        />
+    );
 }
 
 function EquipmentView({
@@ -456,7 +566,15 @@ function EquipmentView({
     if (descriptor.kind !== 'equipment') {
         return <DegradedBinding bindingKey={node.bindingKey} reason="wrong-binding-kind" />;
     }
-    return <EquipmentBody sectionId={descriptor.sectionId} />;
+    return descriptor.dataKey ? (
+        <BoundEquipmentBody
+            sectionId={descriptor.sectionId}
+            dataKey={descriptor.dataKey}
+            catalog={descriptor.catalog}
+        />
+    ) : (
+        <CharacterEquipmentBody sectionId={descriptor.sectionId} />
+    );
 }
 
 // ---------------------------------------------------------------------------
@@ -488,14 +606,54 @@ function PrimitiveTraitBody({
                 [descriptor.traitKey]: { ...trait, ...updates },
             },
         });
+    const showSpecialization = descriptor.row?.specialization ?? true;
+    const showFlags = descriptor.row?.flags ?? true;
     if (node.compact) {
-        return (
+        const specialization = showSpecialization ? trait.specializationText?.trim() : undefined;
+        const rating = (
             <CompactRating
                 label={label}
                 value={trait.value}
                 max={descriptor.maximum}
                 disabled={readOnly}
                 onChange={(next) => patch({ value: next })}
+            />
+        );
+        return specialization ? (
+            <div className="grid min-w-0 gap-0.5">
+                {rating}
+                <span className="truncate text-xs text-textSecondary">{specialization}</span>
+            </div>
+        ) : (
+            rating
+        );
+    }
+    if (!showSpecialization) {
+        return (
+            <TraitRow
+                label={label}
+                value={trait.value}
+                maxValue={descriptor.maximum}
+                minimal={descriptor.minimum > 0 ? descriptor.minimum : undefined}
+                disabled={readOnly}
+                onChange={(value, specialization, experienced, practiced) =>
+                    patch({
+                        value,
+                        ...(showFlags
+                            ? {
+                                  specialization: specialization ?? trait.specialization ?? false,
+                                  experienced: experienced ?? trait.experienced ?? false,
+                                  practiced: practiced ?? trait.practiced ?? false,
+                              }
+                            : {}),
+                    })
+                }
+                showFlags={showFlags}
+                specialization={trait.specialization ?? false}
+                experienced={trait.experienced ?? false}
+                practiced={trait.practiced ?? false}
+                onDiceRoll={buildDiceNotation}
+                characterName={bound.name}
             />
         );
     }
@@ -508,16 +666,20 @@ function PrimitiveTraitBody({
             onChange={(value, specialization, experienced, practiced) =>
                 patch({
                     value,
-                    specialization: specialization ?? trait.specialization ?? false,
-                    experienced: experienced ?? trait.experienced ?? false,
-                    practiced: practiced ?? trait.practiced ?? false,
+                    ...(showFlags
+                        ? {
+                              specialization: specialization ?? trait.specialization ?? false,
+                              experienced: experienced ?? trait.experienced ?? false,
+                              practiced: practiced ?? trait.practiced ?? false,
+                          }
+                        : {}),
                 })
             }
             onSpecializationTextChange={(text) => patch({ specializationText: text })}
             size="md"
             minimal={descriptor.minimum}
             maxValue={descriptor.maximum}
-            showFlags
+            showFlags={showFlags}
             specialization={trait.specialization ?? false}
             experienced={trait.experienced ?? false}
             practiced={trait.practiced ?? false}
@@ -639,9 +801,13 @@ function PrimitiveResourceBody({
 function PrimitiveTrackBody({
     node,
     descriptor,
+    systemId,
+    documentKind,
 }: {
     node: PrimitiveNode;
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'track' }>;
+    systemId: string;
+    documentKind: string;
 }) {
     const bound = useBoundDocument();
     if (bound && descriptor.members) {
@@ -653,7 +819,9 @@ function PrimitiveTrackBody({
             />
         );
     }
-    const track = bound?.data[descriptor.dataKey] as { levels: ConditionMark[] } | undefined;
+    const track = bound?.data[descriptor.dataKey] as
+        | ({ levels?: ConditionMark[] } & Record<string, unknown>)
+        | undefined;
     if (!bound || !track) {
         return (
             <DegradedBinding
@@ -664,34 +832,81 @@ function PrimitiveTrackBody({
     }
     const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
-    const levels = node.track
-        ? node.track.names.map((name, index) => ({
-              id: `level-${index}`,
-              label: name,
-              penalty: null,
+    const computed = descriptor.length
+        ? resolveComputedTrackLength(descriptor.length, track, (path) => {
+              const read = readBoundNumber(systemId, documentKind, bound.data, path);
+              return read.bound ? read.value : undefined;
+          })
+        : undefined;
+    if (computed?.failed) {
+        reportSheetIssue({
+            code: 'formula-error',
+            message: 'Track length formula could not be evaluated',
+            details: { bindingKey: descriptor.key, formula: descriptor.length?.from },
+        });
+    }
+    const levels = computed
+        ? trackBoxes(computed.length).map((level) => ({
+              ...level,
+              label: `${label} ${level.label}`,
           }))
-        : track.levels.map((_, index) => {
-              const level = descriptor.levels[Math.min(index, descriptor.levels.length - 1)];
-              return {
-                  id: level?.id ?? `level-${index}`,
-                  label: level?.translation
-                      ? translate(level.translation)
-                      : (level?.label ?? String(index)),
-                  penalty: level?.penalty ?? null,
-              };
-          });
+        : node.track
+          ? node.track.names.map((name, index) => ({
+                id: `level-${index}`,
+                label: name,
+                penalty: null,
+            }))
+          : (track.levels ?? []).map((_, index) => {
+                const level = descriptor.levels[Math.min(index, descriptor.levels.length - 1)];
+                return {
+                    id: level?.id ?? `level-${index}`,
+                    label: level?.translation
+                        ? translate(level.translation)
+                        : (level?.label ?? String(index)),
+                    penalty: level?.penalty ?? null,
+                };
+            });
+    const marks = computed ? visibleMarks(track.levels, computed.length) : (track.levels ?? []);
+    const writeTrack = (updates: Record<string, unknown>) =>
+        bound.update({ [descriptor.dataKey]: { ...track, ...updates } });
     const writeMarks = (next: ConditionMark[]) =>
-        bound.update({ [descriptor.dataKey]: { ...track, levels: next } });
-    // Brief: one line of squares; full: a table with Level / Penalty / mark columns.
-    if (node.compact) {
+        writeTrack({ levels: computed ? mergeVisibleMarks(track.levels, next) : next });
+    const adjustmentKey = descriptor.length?.adjustmentKey;
+    const lengthControl =
+        computed && adjustmentKey
+            ? {
+                  onDecrease:
+                      computed.shorter === undefined
+                          ? undefined
+                          : () => writeTrack({ [adjustmentKey]: computed.shorter }),
+                  onIncrease:
+                      computed.longer === undefined
+                          ? undefined
+                          : () => writeTrack({ [adjustmentKey]: computed.longer }),
+                  decreaseLabel: translate(tracks.length.decrease, { track: label }),
+                  increaseLabel: translate(tracks.length.increase, { track: label }),
+              }
+            : undefined;
+    const layout = node.trackLayout ?? (node.compact || computed ? 'strip' : 'table');
+    if (layout === 'strip') {
         return (
-            <ConditionTrackStrip
-                disabled={readOnly}
-                label={label}
-                levels={levels}
-                marks={track.levels}
-                onChange={writeMarks}
-            />
+            <div className="grid gap-1">
+                {!node.compact && !node.hideLabel && (
+                    <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
+                        {label}
+                    </span>
+                )}
+                <ConditionTrackStrip
+                    disabled={readOnly}
+                    label={label}
+                    hideLabel={!node.compact || node.hideLabel}
+                    size={node.compact ? 'sm' : 'md'}
+                    levels={levels}
+                    marks={marks}
+                    onChange={writeMarks}
+                    {...(node.compact ? {} : { lengthControl })}
+                />
+            </div>
         );
     }
     return (
@@ -704,8 +919,9 @@ function PrimitiveTrackBody({
             <ConditionTrackTable
                 disabled={readOnly}
                 levels={levels}
-                marks={track.levels}
+                marks={marks}
                 onChange={writeMarks}
+                lengthControl={lengthControl}
                 columnLabels={{
                     level: translate(fields.conditionLevel),
                     penalty: translate(fields.conditionPenalty),
@@ -730,6 +946,23 @@ function PrimitiveFieldBody({
     const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
     const raw = readDataPath(bound.data, descriptor.path);
+    if (descriptor.valueType === 'boolean') {
+        return (
+            <label className="flex items-center gap-2 text-sm text-textPrimary">
+                <input
+                    type="checkbox"
+                    checked={raw === true}
+                    disabled={readOnly}
+                    onChange={(event) =>
+                        bound.update(
+                            fieldBindingUpdate(descriptor, bound.data, event.target.checked)
+                        )
+                    }
+                />
+                <span className={node.hideLabel ? 'sr-only' : undefined}>{label}</span>
+            </label>
+        );
+    }
     const value = typeof raw === 'string' || typeof raw === 'number' ? String(raw) : '';
     const write = (next: string) => {
         bound.update(
@@ -792,7 +1025,14 @@ export function PrimitiveNodeView({
                 <PrimitiveResourceBody node={node} descriptor={descriptor} maxState={maxState} />
             );
         case 'track':
-            return <PrimitiveTrackBody node={node} descriptor={descriptor} />;
+            return (
+                <PrimitiveTrackBody
+                    node={node}
+                    descriptor={descriptor}
+                    systemId={systemId}
+                    documentKind={documentKind}
+                />
+            );
         case 'field':
             return <PrimitiveFieldBody node={node} descriptor={descriptor} />;
         case 'equipment':
@@ -804,7 +1044,12 @@ export function PrimitiveNodeView({
                 <SystemListBody
                     binding={descriptor}
                     disabled={readOnly}
-                    title={node.label ?? descriptor.label}
+                    title={
+                        node.label ??
+                        (descriptor.translation
+                            ? translate(descriptor.translation)
+                            : descriptor.label)
+                    }
                 />
             );
         default:

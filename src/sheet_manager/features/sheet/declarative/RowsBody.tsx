@@ -1,6 +1,7 @@
 import { translate } from '@docusaurus/Translate';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { Plus, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
 import { useMemo } from 'react';
 
 import type { CatalogEntry } from '../../../components';
@@ -12,6 +13,7 @@ import { CATALOG_BINDINGS, readCatalogDetails } from '../data/catalogBindings';
 import { useBoundDocument } from './boundDocument';
 
 const fields = uiMessages.sheet.documents.fields;
+const tracks = uiMessages.sheet.tracks;
 
 const inputClasses =
     'w-full rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60';
@@ -21,7 +23,7 @@ function optionLabel(option: BindingOption): string {
 }
 
 /** Closed-set select for a bound value; a stored value outside the set is shown as-is. */
-export function EnumSelect({
+function EnumSelect({
     ariaLabel,
     disabled,
     onChange,
@@ -98,17 +100,19 @@ function columnLabel(column: RowsColumn): string {
 /** A bound array of records edited as a table; the name column may suggest catalog entries. */
 export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor: RowsBinding }) {
     const bound = useBoundDocument();
+    const locale = useDocusaurusContext().i18n.currentLocale;
     const catalog = descriptor.catalog;
     const suggestions = useMemo<CatalogEntry[]>(
         () =>
-            (catalog?.catalogIds ?? []).flatMap((catalogId) =>
-                (CATALOG_BINDINGS.get(catalogId)?.entries ?? []).map((entry) => ({
+            (catalog?.catalogIds ?? []).flatMap((catalogId) => {
+                const binding = CATALOG_BINDINGS.get(catalogId);
+                return (binding?.entries ?? []).map((entry) => ({
                     id: `${catalogId}/${entry.id}`,
-                    name: entry.name,
+                    name: binding!.entryLabel(entry, locale),
                     subtitle: catalogId,
-                }))
-            ),
-        [catalog]
+                }));
+            }),
+        [catalog, locale]
     );
     if (!bound) return null;
     const rows = (
@@ -118,6 +122,14 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
     const label = node.label ?? descriptor.label;
     const write = (next: Array<Record<string, unknown>>) =>
         bound.update({ [descriptor.dataKey]: next });
+    const visibleColumns = descriptor.columns.filter((column) => !column.hidden);
+    const move = (index: number, offset: -1 | 1) => {
+        const target = index + offset;
+        if (target < 0 || target >= rows.length) return;
+        const next = [...rows];
+        [next[index], next[target]] = [next[target]!, next[index]!];
+        write(next);
+    };
     const setCell = (index: number, key: string, value: string) =>
         write(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, [key]: value } : row)));
     const fillFromCatalog = (index: number, suggestion: CatalogEntry) => {
@@ -125,7 +137,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
         const [catalogId, entryId] = suggestion.id.split('/') as [string, string];
         const details = readCatalogDetails(catalogId, entryId);
         if (!details) return;
-        const updates: Record<string, string> = {};
+        const updates: Record<string, string> = { [catalog.column]: suggestion.name };
         for (const [detailKey, columnKey] of Object.entries(catalog.fills)) {
             const detail = details[detailKey];
             if (detail === undefined) continue;
@@ -147,7 +159,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                 <table className="w-full text-sm">
                     <thead>
                         <tr>
-                            {descriptor.columns.map((column) => (
+                            {visibleColumns.map((column) => (
                                 <th
                                     key={column.key}
                                     scope="col"
@@ -168,7 +180,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                     <tbody>
                         {rows.map((row, index) => (
                             <tr key={String(row.id ?? index)}>
-                                {descriptor.columns.map((column) => {
+                                {visibleColumns.map((column) => {
                                     const cell =
                                         typeof row[column.key] === 'string'
                                             ? (row[column.key] as string)
@@ -226,7 +238,39 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                     );
                                 })}
                                 {!disabled && (
-                                    <td className="px-1 py-1 align-top">
+                                    <td className="whitespace-nowrap px-1 py-1 align-top">
+                                        {rows.length > 1 && (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    disabled={index === 0}
+                                                    onClick={() => move(index, -1)}
+                                                    aria-label={translate(tracks.rows.moveUp, {
+                                                        index: index + 1,
+                                                    })}
+                                                    className="rounded p-1 text-textSecondary hover:bg-bgBase disabled:opacity-30"
+                                                >
+                                                    <ChevronUp
+                                                        className="h-3.5 w-3.5"
+                                                        aria-hidden="true"
+                                                    />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={index === rows.length - 1}
+                                                    onClick={() => move(index, 1)}
+                                                    aria-label={translate(tracks.rows.moveDown, {
+                                                        index: index + 1,
+                                                    })}
+                                                    className="rounded p-1 text-textSecondary hover:bg-bgBase disabled:opacity-30"
+                                                >
+                                                    <ChevronDown
+                                                        className="h-3.5 w-3.5"
+                                                        aria-hidden="true"
+                                                    />
+                                                </button>
+                                            </>
+                                        )}
                                         <button
                                             type="button"
                                             disabled={disabled}

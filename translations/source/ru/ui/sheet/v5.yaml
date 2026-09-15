@@ -1,0 +1,74 @@
+system: Мир Тьмы, 5-я редакция
+attributes:
+    physical: Физические
+    social: Социальные
+    mental: Ментальные
+    strength: Сила
+    dexterity: Ловкость
+    stamina: Выносливость
+    charisma: Обаяние
+    manipulation: Манипулирование
+    composure: Самообладание
+    intelligence: Интеллект
+    wits: Смекалка
+    resolve: Решительность
+skills:
+    athletics: Атлетика
+    brawl: Драка
+    craft: Ремесло
+    driving: Вождение
+    firearms: Стрельба
+    larceny: Воровство
+    melee: Холодное оружие
+    stealth: Скрытность
+    survival: Выживание
+    animalKen: Обращение с животными
+    etiquette: Этикет
+    insight: Проницательность
+    intimidation: Запугивание
+    leadership: Лидерство
+    performance: Исполнение
+    persuasion: Убеждение
+    streetwise: Знание улиц
+    subterfuge: Обман
+    academics: Гуманитарные науки
+    awareness: Внимательность
+    finance: Финансы
+    investigation: Расследование
+    medicine: Медицина
+    occult: Оккультизм
+    politics: Политика
+    science: Наука
+    technology: Технологии
+sections:
+    attributes: Атрибуты
+    skills: Навыки
+    health: Здоровье
+    willpower: Сила воли
+    advantages: Достоинства
+    flaws: Недостатки
+    advantagesFlaws: Достоинства и недостатки
+    touchstones: Опоры и убеждения
+    experience: Опыт
+    equipment: Снаряжение
+    notes: Заметки
+    biography: Биография
+    portrait: Портрет
+    identity: Личность
+    condition: Состояние
+    weapons: Оружие
+    inventory: Вещи
+    other: Опыт и заметки
+fields:
+    chronicleTenets: Принципы хроники
+    name: Имя
+    touchstone: Опора
+    conviction: Убеждение
+    experienceTotal: Всего опыта
+    experienceSpent: Потрачено опыта
+    experienceLeft: Осталось опыта
+    age: Возраст
+    dateOfBirth: Дата рождения
+    appearance: Внешность
+    distinguishingFeatures: Особые приметы
+    history: История

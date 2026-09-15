@@ -126,3 +126,27 @@ describe('template file transfer', () => {
         if (node.type === 'select') expect(node.binding).toBeUndefined();
     });
 });
+
+describe('template files across systems (feature 008)', () => {
+    it('adds publisher notices only for systems that declare policies', () => {
+        const starWars = JSON.parse(serializeTemplateFile(buildTemplate()));
+        expect(starWars).not.toHaveProperty('notices');
+        const hunter = JSON.parse(
+            serializeTemplateFile({ ...buildTemplate('hunter-kit'), systemId: 'v5' as never })
+        );
+        expect(hunter.notices.map(({ policy }: { policy: string }) => policy)).toEqual([
+            'dark-pack',
+        ]);
+    });
+
+    it('ignores notices on import and rejects templates of unknown systems', () => {
+        const withNotices = JSON.parse(serializeTemplateFile(buildTemplate()));
+        withNotices.notices = [{ policy: 'dark-pack', text: ['x'], url: 'https://example.com' }];
+        const parsed = parseTemplateFile(JSON.stringify(withNotices));
+        expect(parsed.ok).toBe(true);
+
+        const foreign = JSON.parse(serializeTemplateFile(buildTemplate()));
+        foreign.template.systemId = 'pathfinder';
+        expect(parseTemplateFile(JSON.stringify(foreign))).toEqual({ ok: false, error: 'system' });
+    });
+});

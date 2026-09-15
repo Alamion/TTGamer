@@ -1,6 +1,5 @@
 import { generateId } from '../../../../shared/utils/random';
 import {
-    listTemplateNumericCoordinates,
     type TemplateReferenceIssue,
     validateTemplateReferences,
 } from '../../../features/sheet/data/templateReferences';
@@ -13,7 +12,6 @@ import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import type {
     CustomTemplate,
     GroupNode,
-    ListNode,
     PrimitivePreset,
     PrimitiveTrackOverride,
     SectionNode,
@@ -59,6 +57,7 @@ export type NodeUpdates = {
     compact?: boolean;
     multiline?: boolean;
     track?: PrimitiveTrackOverride;
+    trackLayout?: 'table' | 'strip';
     presets?: PrimitivePreset[];
 };
 
@@ -70,11 +69,6 @@ function newId(prefix: string): string {
             .replace(/[^a-z0-9]/g, '')
             .slice(0, 8) || 'node';
     return `${prefix}-${token}`;
-}
-
-/** Public id generator for callers that seed drafts outside this module. */
-export function newNodeId(prefix: Parameters<typeof generateDraftId>[0]): string {
-    return generateDraftId(prefix);
 }
 
 export function generateDraftId(
@@ -381,36 +375,13 @@ export function newTableNode(): TableNode {
     };
 }
 
-export function newListNode(storage: { valueKey?: string; bindingKey?: string }): ListNode {
-    return {
-        id: newId('lst'),
-        type: 'list',
-        columns: 1,
-        ...(storage.valueKey ? { valueKey: storage.valueKey } : {}),
-        ...(storage.bindingKey ? { bindingKey: storage.bindingKey } : {}),
-    };
-}
-
-export function newPrimitiveNode(
-    bindingKey: string,
-    defaults?: { label?: string; compact?: boolean }
-): TemplateNode {
-    return {
-        id: newId('blk'),
-        type: 'primitive',
-        bindingKey,
-        compact: defaults?.compact ?? false,
-        ...(defaults?.label ? { label: defaults.label } : {}),
-    };
-}
-
-export function createEmptyDraft(documentKind: string): EditorDraft {
+export function createEmptyDraft(documentKind: string, systemId = 'star-wars-wod'): EditorDraft {
     const section = newSectionNode();
     section.children.push(newField('text', 'New field'));
     return {
         id: newId('tpl'),
         name: '',
-        systemId: SystemIdSchema.parse('star-wars-wod'),
+        systemId: SystemIdSchema.parse(systemId),
         documentKind: documentKind as EditorDraft['documentKind'],
         schemaVersion: TEMPLATE_SCHEMA_VERSION,
         children: [section],
@@ -651,19 +622,6 @@ function mapFieldItems(
     );
 }
 
-export function addFieldToContainer(
-    draft: EditorDraft,
-    parentId: string | null,
-    type: TemplateField['type'],
-    label?: string
-): DraftOpResult {
-    return insertNode(draft, parentId, Number.MAX_SAFE_INTEGER, newField(type, label));
-}
-
-export function removeFieldNode(draft: EditorDraft, fieldId: string): EditorDraft {
-    return removeNode(draft, fieldId);
-}
-
 /** Changing the type resets type-specific settings so the field stays valid. */
 function retypeField(field: TemplateField, type: TemplateField['type']): TemplateField {
     const next = baseField(type, field.label);
@@ -735,10 +693,6 @@ export function removeOption(draft: EditorDraft, fieldId: string, optionId: stri
     });
 }
 
-export function renameDraft(draft: EditorDraft, name: string): EditorDraft {
-    return { ...draft, name };
-}
-
 export function describeDraft(draft: EditorDraft, description: string): EditorDraft {
     return { ...draft, description: description.length > 0 ? description : undefined };
 }
@@ -746,9 +700,6 @@ export function describeDraft(draft: EditorDraft, description: string): EditorDr
 export function setDraftKind(draft: EditorDraft, documentKind: string): EditorDraft {
     return { ...draft, documentKind: documentKind as EditorDraft['documentKind'] };
 }
-
-/** The unified numeric coordinate space for formula/maxFrom pickers (system + template). */
-export const listNumericCoordinateOptions = listTemplateNumericCoordinates;
 
 /** Attaches (or re-points) a catalog binding on a select field; enforces single choice. */
 export function attachCatalog(draft: EditorDraft, fieldId: string, catalogId: string): EditorDraft {

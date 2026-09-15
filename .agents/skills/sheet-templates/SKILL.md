@@ -23,11 +23,11 @@ Every rendered value lives in exactly one of two places:
 
 The template itself lives in one of three places, and **the renderer does not care which**:
 
-| Source          | Location                                                              | Identity                                    |
-| --------------- | --------------------------------------------------------------------- | ------------------------------------------- |
-| User template   | `templateStore.templates` (`universal-template-storage`, v3)          | user id                                     |
-| Shipped default | `SystemPlugin.defaultTemplates` (`systems/star-wars-wod/templates/*`) | view id (`full-sheet`, `creature-brief`, …) |
-| Edited default  | `templateStore.defaultOverrides[viewId]`                              | view id                                     |
+| Source          | Location                                                           | Identity                                     |
+| --------------- | ------------------------------------------------------------------ | -------------------------------------------- |
+| User template   | `templateStore.templates` (`universal-template-storage`, v3)       | user id                                      |
+| Shipped default | `SystemPlugin.defaultTemplates` (`systems/<system>/…/templates/*`) | view id (`full-sheet`, `v5-hunter-sheet`, …) |
+| Edited default  | `templateStore.defaultOverrides[viewId]`                           | view id                                      |
 
 Always pass the **resolved template object** around (the store write path takes it); never
 re-look a template up by id — `getTemplate(id)` only sees user templates.
@@ -56,7 +56,11 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   `isTemplateField` / `isContainerNode` are the only leaf/container predicates. Type-level
   guards (`TemplateFieldTypesAreComplete`, `TemplateNodeTypesAreComplete`) fail typecheck when a
   list and the schema disagree.
-- `systemId` defaults to `star-wars-wod`; compatibility is `systemId` + `documentKind`.
+- `systemId` defaults to `star-wars-wod` when parsing old templates; new drafts take the
+  current system. Compatibility is always `systemId` + `documentKind` (`isTemplateCompatible`):
+  custom lookups, `resolveEffectiveTemplate`, the library, and the page selector check both.
+  An assigned template of another system/kind renders the default page and reports
+  `template-incompatible`.
 - Layout and presentation:
     - `column` (1–4) on any node places it in its parent's column layout; when any child of a
       multi-column container sets it, children stack inside their column instead of flowing
@@ -132,18 +136,19 @@ always filters by `documentKind`.
 (`features/sheet/declarative/boundDocument.ts`). Documents with a `character` capability go
 through it (droids map damage/built-in equipment); every other kind reads `document.data`
 directly. Writes merge top-level keys and re-parse with the kind schema; a rejection reports
-`template-value-write-rejected` instead of throwing. Only equipment still needs the character
-capability (`useBodyHandlers`).
+`template-value-write-rejected` instead of throwing. Equipment bindings without `dataKey` still need the
+character capability (`useBodyHandlers`, Star Wars catalogs); with `dataKey` they edit a plain
+item array through the same molecules (V5 `weapons`, `inventory`).
 
-| Kind        | Key shape                                                | Star Wars data                                                        |
-| ----------- | -------------------------------------------------------- | --------------------------------------------------------------------- |
-| `trait`     | `trait:<groupId>:<TraitKey>`                             | `attributes`/`skills`/`virtues`/`forceSkills`                         |
-| `resource`  | `resource:willpower\|force-points\|dark-side-resistance` | `willpower`/`forcePoints` pools, rating number                        |
-| `track`     | `track:health`, `track:droid-damage`, `track:members-*`  | `health`; member arrays (`members[].health`/`.damage`)                |
-| `field`     | `field:<key>`                                            | any data path (`path`, `valueType`, optional `constrain` / `adapter`) |
-| `list`      | `list:<listId>`                                          | `dataKey` (`forcePowers` → `forcePowerItems`)                         |
-| `equipment` | `equipment:inventory\|armor\|weapons\|implants`          | body sections via `useBodyHandlers`                                   |
-| `rows`      | `rows:<dataKey>`                                         | arrays of string records (`attacks`, `weapons`, `configuration`)      |
+| Kind        | Key shape                                                | Star Wars data                                                                                                |
+| ----------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `trait`     | `trait:<groupId>:<TraitKey>`                             | `attributes`/`skills`/`virtues`/`forceSkills`                                                                 |
+| `resource`  | `resource:willpower\|force-points\|dark-side-resistance` | `willpower`/`forcePoints` pools, rating number                                                                |
+| `track`     | `track:health`, `track:droid-damage`, `track:members-*`  | `health`; member arrays (`members[].health`/`.damage`); V5 `track:health`/`track:willpower` (computed length) |
+| `field`     | `field:<key>`                                            | any data path (`path`, `valueType`, optional `constrain` / `adapter`)                                         |
+| `list`      | `list:<listId>`                                          | `dataKey` (`forcePowers` → `forcePowerItems`)                                                                 |
+| `equipment` | `equipment:inventory\|armor\|weapons\|implants`          | body sections via `useBodyHandlers`, or a `dataKey` item array                                                |
+| `rows`      | `rows:<dataKey>`                                         | arrays of string records (`attacks`, `weapons`, `configuration`)                                              |
 
 - Field bindings: `path` + `valueType` (`string`/`number`/`image`/`enum` with `options`);
   `numeric` gives text a formula reading (`'+3D'` → 3, empty → 0); `syncsTitle` renames the
@@ -153,11 +158,29 @@ capability (`useBodyHandlers`).
   (none for a single member), bounded add, confirmation before removing a member with marks,
   "out of the fight" once the last visible level is marked, per-member penalty. `variants`
   (`lengthPath` + `levelsByLength`) shows a subset of the 7 stored slots (visible level i =
-  slot i); the length selector lives in the track, and shortening past marks asks first and
+  slot i); the track's own −/+ regulator steps through the lengths, and shortening past marks asks first and
   collapses hidden marks into the last visible level. Fodder `trackLength` (3/5/7) parses as 7
   for pre-feature groups and is created as 3.
+- Computed-length tracks: `length: { from, adjustmentKey, adjustmentRange, maxLength }` on a
+  track binding (V5 Health = `stamina + 3`). The record stores `{ levels, [adjustmentKey] }`;
+  the primitive evaluates `from` itself (a re-skinned template cannot break it) and shows
+  `from + adjustment` unlabeled boxes with a −/+ regulator (`resolveComputedTrackLength` in
+  `declarative/trackLength.ts`); marks past the length are kept. Node `trackLayout`
+  (`table` | `strip`) picks the `ConditionTrack` molecule; default `strip` for compact nodes and
+  computed tracks.
+- Reuse before adding: new systems extend the existing elements with optional, system-neutral
+  features (layout, regulator, row options) instead of shipping new look-alike atoms.
+- Trait bindings may declare `row: { specialization?, flags? }` (default both true): hide the
+  specialization text input or the specialization/experienced/practiced flags (V5 attributes
+  hide both, V5 skills hide the flags).
+- Field bindings: `valueType` also `boolean` (toggle fields); `range` clamps numbers on write;
+  `suggestions: { catalogId }` turns a bridged text field into free text with catalog
+  suggestions (`useCatalogSuggestions`, localized names).
+- List bindings may set `polarity` (`positive`/`negative`) for merit/flaw lists without a
+  catalog filter, and `translation` for the title.
 - Rows bindings render `RowsBody` (a table over a data array; `enum` columns keep unknown
-  stored text visible). `catalog: { catalogIds, column, fills }` turns the name column into a
+  stored text visible; `hidden` columns are stored but not shown; rows reorder with labelled move
+  buttons). `catalog: { catalogIds, column, fills }` turns the name column into a
   catalog suggestion that overwrites the row's mapped columns. Bridged fields keep their own
   control (textarea, placeholder, number input); `constrain` keeps the top-level record valid
   (experience: spent ≤ total) and `adapter` maps split values (portrait ↔
@@ -180,8 +203,12 @@ capability (`useBodyHandlers`).
   fill targets, and formula/`maxFrom` coordinates against `listTemplateNumericCoordinates`.
 - An unknown key, wrong kind, missing character, or missing body handlers renders the labeled
   `DegradedBinding` notice and reports `binding-unresolved` with a `reason`.
-- Catalogs (`features/sheet/data/catalogBindings.ts`, `CATALOG_BINDINGS`) are the only path
-  from `src/data` into templates: select fields persist `catalogId` + fill mappings and system
+- Catalogs are declared by plugins (`SystemPlugin.catalogs`, built with `defineCatalog` from
+  `systems/catalogs.ts`; Star Wars in `systems/star-wars-wod/catalogs.ts`, Hunter in
+  `systems/v5/modules/hunter/catalogs.ts`). `features/sheet/data/catalogBindings.ts`
+  (`CATALOG_BINDINGS`) only aggregates them from the registry (a duplicate id throws); entry
+  names localize from `translations/source/<locale>/data/<catalogId>.yaml`. They are the only path
+  from system data into templates: select fields persist `catalogId` + fill mappings and system
   lists resolve `binding.catalog.catalogId` from the same registry. Unknown catalogs degrade to
   manual choice and report `catalog-unavailable`.
 - Fill semantics (`readCatalogDetails` + `pageApi.applyWrites`): picking an entry **overwrites**
@@ -207,7 +234,7 @@ seeding) — the seam for documentation previews.
 
 ## Formulas (`features/sheet/declarative/formula.ts`)
 
-- Grammar: numbers, coordinates (`kebab` or `pool.current`/`pool.max`), `+ - * /`, parentheses,
+- Grammar: numbers, coordinates (`kebab` or `kebab.current` / `kebab.max`), `+ - * /`, parentheses,
   unary minus, and `min(a, b, …)` / `max(a, b, …)`. Pure tokenizer → parser → evaluator.
 - One coordinate space: bag numbers plus system traits/pools (`readBoundNumber`, called from
   `resolveBase` in `hooks.ts`).
@@ -226,14 +253,18 @@ The only entry point docs import. Embeds render the **shipped** default template
 edited override) so prose and page stay in sync:
 
 - `<TemplateFragment template="full-sheet" node="attributes" />` — a subtree against the
-  reader's current document (editable); without a compatible document it shows a short prompt
-  (plus the create button for character pages).
+  reader's current document (editable). Other systems pass `systemId` and their template id
+  (`systemId="v5" template="v5-hunter-sheet"`). Without a document of the same system and kind
+  it shows a short prompt plus a create button for the definition owning that view.
 - `<TemplatePreview document={presetCharacterDocument(JAX_VORN_PRESET)} node="base" />` — a
   fixed document, read-only. Helpers: `healthPreviewDocument(levels)`,
   `vehicleDamagePreviewDocument(levels)`, `exampleDocument('<id>::preset')` (examples in
   `systems/star-wars-wod/examples.ts`, values taken from page prose: `wampa`,
   `stormtrooper-squad`, `red-five`, `lukes-landspeeder`, `millennium-falcon`), and the
-  `JAX_VORN_PRESET` re-export. MDX imports sheet content only from `docsEmbeds.tsx`.
+  `JAX_VORN_PRESET` re-export, `hunterExampleDocument()` (Lena Varga), `PolicyStatement`
+  (full policy statement, used only on the policy's own docs page; embeds show no notice), `CatalogSummaryTable` (catalog names
+  with `summary` descriptors, optional `groupBy` and child catalog), and
+  `CreateCharacterButton`. MDX imports sheet content only from `docsEmbeds.tsx`.
 - Embeds use `DeclarativeSheetView embedded` (no page chrome, no preset seeding — a partial
   render must not mark the template as seeded).
 - `tests/sheet_manager/docs-embeds.test.tsx` scans en + ru MDX and fails on any embed whose
@@ -310,8 +341,10 @@ The selector (`ViewModeSelect`) encodes custom templates as `tpl:<id>`; view ids
 ## Import / export (`features/sheet/shell/templateFile.ts`)
 
 `ttgamer-template` wrapper, format version 3 exactly (older and newer are rejected with the
-version error). Full validation before any state change; unavailable catalogs are stripped to
-manual choice and listed in the degradation report. Filenames: `ttgamer_template_<id>.json`.
+version error). Full validation before any state change; a template of an unregistered system is
+rejected (`system` error); unavailable catalogs are stripped to manual choice and listed in the
+degradation report. Files of systems with publisher policies carry a wrapper-level `notices`
+array (ignored on import). Filenames: `ttgamer_template_<id>.json`.
 
 ## Diagnostics (debug here first)
 
@@ -320,7 +353,8 @@ manual choice and listed in the degradation report. Filenames: `ttgamer_template
 - `reportSheetIssue({ code, message, details })` — codes: `template-value-write-rejected`,
   `template-value-write-skipped`, `template-quarantined`, `document-recovered`,
   `binding-unresolved`, `catalog-unavailable`, `formula-error`, `template-reference-invalid`,
-  `template-fallback`, `reference-target-missing`, `catalog-detail-out-of-range`.
+  `template-fallback`, `reference-target-missing`, `catalog-detail-out-of-range`,
+  `template-incompatible`.
 - In development each distinct issue is logged once as `[sheet_manager] <code>: …` in the
   browser console. **A silently ignored edit, an empty section, or a "degraded" card → check
   the console first.**
@@ -346,12 +380,21 @@ bridgeable or numeric); declarations in the system's bindings file; `PrimitiveNo
 (`primitives.tsx`); editor sources (`sourceNodes.ts` conversions, `SourceControls.tsx` groups)
 and `PrimitiveConfig`.
 
-**New system**: a `SystemPlugin` with `documents`, optional `defaultTemplates`, and
-`templateBindings` (WoD-family: build from the profile with `wod-like/templateBindings.ts`).
-No generic file changes are needed for data addressing.
+**New system**: a folder `systems/<system>/` with a `SystemPlugin` (translated `label`,
+`documents`, `defaultTemplates`, `templateBindings`, `catalogs`, `policies`) registered in
+`systems/index.ts`. Engines shared by several lines use `ruleset/` (schema shape, bindings
+builder, page parts) plus `modules/<line>/` (schema extension, bindings, catalogs, templates,
+definition with `module`). Prefix view ids with the system (`v5-hunter-sheet`). Strings go to
+per-layer YAML (`ui/sheet/<system>.yaml`, `ui/sheet/<system><Line>.yaml`,
+`data/<catalogId>.yaml`); tests to `tests/sheet_manager/systems/<system>/`. No generic file
+changes are needed for data addressing.
 
-**New catalog**: `defineCatalog` entry in `catalogBindings.ts` (closed fillable-detail set,
-optional system-owned `resolveDetails`); lists reference it by `catalog.catalogId`.
+**Terminology**: _full_ and _brief_ are views (shipped templates); _compact_ is a primitive
+display mode used inside brief views.
+
+**New catalog**: `defineCatalog` in the owning system's `catalogs.ts`, listed on
+`SystemPlugin.catalogs` (closed fillable-detail set, optional system-owned `resolveDetails`);
+lists, rows, and field suggestions reference it by catalog id.
 
 **New document kind page**: bindings for the kind (reuse field/trait/resource/rows/track
 shapes), a template module under the system's `templates/` built with the neutral builders,
@@ -374,8 +417,15 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 ## Known debts (as of 2026-09-13)
 
 - Primitive molecules (trait rows, merit/flaw lists, equipment sections) are WoD-family UI; a
-  non-WoD system will need its own molecules behind the same binding kinds. Equipment still
-  requires the `character` capability.
+  non-WoD system will need its own molecules behind the same binding kinds. Star Wars equipment still
+  goes through the `character` capability (catalog fills); other systems bind `dataKey` arrays.
+  Item rules (new items, counter clamps) live in `features/sheet/body/equipmentItems.ts`; the
+  section molecules take their name suggestions as a `catalog` prop.
+  `dataKey` equipment bindings may declare `catalog: { catalogIds, fills }` (detail key → item
+  field; `name` and string details are written localized).
+- Catalogs may declare `browse` (columns with header descriptors, `labels`, `filter`, optional
+  `children`) for the docs `CatalogBrowser`; `entryText(entry, key, lang)` localizes any string
+  property from `translations/source/<locale>/data/<catalogId>.yaml`.
 - Vehicle system slots are a bag table capped at 10 rows (not pre-seeded slots); crew-station
   references render placeholders in previews (static sources hold one document).
 - Binding keys are not literal types (bindings are built at runtime per system); integrity
@@ -414,4 +464,5 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 | 004  | Views as default templates, overrides, `built-in` block placements                                               | View-derived defaults, placements (→ 005/006) |
 | 005  | Binding registry, primitives, preset seeding, hybrid defaults                                                    | Hybrid defaults, placement path (→ 006)       |
 | 006  | Recursive tree v3, formulas, lists/images, pure defaults, quarantine                                             | Built-in layout path (→ 007)                  |
-| 007  | Entity templates, kind-independent bindings, member tracks, fills, `visibleWhen`, docs embeds, legacy retirement | —                                             |
+| 007  | Entity templates, kind-independent bindings, member tracks, fills, `visibleWhen`, docs embeds, legacy retirement | Kind-only matching, SW-owned catalogs (→ 008) |
+| 008  | V5 ruleset + Hunter module, computed-length tracks, trait row options, plugin catalogs, policies/badges          | —                                             |

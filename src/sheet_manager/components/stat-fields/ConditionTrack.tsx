@@ -1,4 +1,5 @@
 import { clsx } from 'clsx';
+import { Minus, Plus } from 'lucide-react';
 
 import type { ConditionMark } from '../../types/character';
 
@@ -8,11 +9,56 @@ export interface ConditionTrackLevel {
     penalty?: number | null;
 }
 
+/** Optional length regulator: shorten/extend the track (a missing handler disables the side). */
+export interface ConditionTrackLengthControl {
+    onDecrease?: () => void;
+    onIncrease?: () => void;
+    decreaseLabel: string;
+    increaseLabel: string;
+}
+
 interface ConditionTrackProps {
     disabled: boolean;
     levels: readonly ConditionTrackLevel[];
     marks: readonly ConditionMark[];
     onChange: (marks: ConditionMark[]) => void;
+    lengthControl?: ConditionTrackLengthControl;
+}
+
+/** The −/+ pair of a length regulator, for layouts that are not a condition track molecule. */
+export function ConditionTrackLengthButtons({
+    control,
+    disabled,
+}: {
+    control: ConditionTrackLengthControl;
+    disabled: boolean;
+}) {
+    const button =
+        'grid h-6 w-6 place-items-center rounded text-textSecondary hover:bg-bgBase hover:text-primary disabled:opacity-30';
+    return (
+        <span className="inline-flex items-center gap-0.5">
+            <button
+                type="button"
+                disabled={disabled || !control.onDecrease}
+                onClick={control.onDecrease}
+                aria-label={control.decreaseLabel}
+                title={control.decreaseLabel}
+                className={button}
+            >
+                <Minus className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+            <button
+                type="button"
+                disabled={disabled || !control.onIncrease}
+                onClick={control.onIncrease}
+                aria-label={control.increaseLabel}
+                title={control.increaseLabel}
+                className={button}
+            >
+                <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+        </span>
+    );
 }
 
 const nextMark: Record<ConditionMark, ConditionMark> = {
@@ -72,6 +118,7 @@ export function ConditionTrackTable({
     marks,
     onChange,
     columnLabels,
+    lengthControl,
 }: ConditionTrackProps & { columnLabels: { level: string; penalty: string; mark: string } }) {
     const row = 'grid grid-cols-[minmax(0,1fr)_4.5rem_4.5rem] items-center gap-2';
     return (
@@ -122,24 +169,40 @@ export function ConditionTrackTable({
                     </div>
                 );
             })}
+            {lengthControl && !disabled && (
+                <div className="flex justify-end border-t border-border/60 pt-1">
+                    <ConditionTrackLengthButtons control={lengthControl} disabled={disabled} />
+                </div>
+            )}
         </div>
     );
 }
 
-/** One-line condition track: the label followed by a square per level. */
+/**
+ * One-line condition track: the label followed by a square per level. `hideLabel` keeps the
+ * label for assistive technology only; `size="md"` suits a full page.
+ */
 export function ConditionTrackStrip({
     disabled,
     label,
     levels,
     marks,
     onChange,
-}: ConditionTrackProps & { label: string }) {
+    lengthControl,
+    hideLabel = false,
+    size = 'sm',
+}: ConditionTrackProps & { label: string; hideLabel?: boolean; size?: 'sm' | 'md' }) {
     return (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-            <span className="font-semibold uppercase tracking-wider text-textSecondary">
+            <span
+                className={clsx(
+                    'font-semibold uppercase tracking-wider text-textSecondary',
+                    hideLabel && 'sr-only'
+                )}
+            >
                 {label}
             </span>
-            <div className="flex flex-wrap gap-1" role="group" aria-label={label}>
+            <div className="flex flex-wrap items-center gap-1" role="group" aria-label={label}>
                 {levels.map((level, index) => (
                     <MarkButton
                         key={level.id}
@@ -147,9 +210,12 @@ export function ConditionTrackStrip({
                         label={level.penalty ? `${level.label} (${level.penalty})` : level.label}
                         mark={marks[index] ?? 'empty'}
                         onToggle={() => onChange(toggleAt(marks, index))}
-                        size="sm"
+                        size={size}
                     />
                 ))}
+                {lengthControl && !disabled && (
+                    <ConditionTrackLengthButtons control={lengthControl} disabled={disabled} />
+                )}
             </div>
         </div>
     );

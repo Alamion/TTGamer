@@ -5,25 +5,12 @@ import { Trash2, Users, X } from 'lucide-react';
 import { useState } from 'react';
 
 import { useDocumentStore } from '../../store/documentStore';
-import { systemRegistry } from '../../systems';
+import { documentSettingLabel, systemRegistry } from '../../systems';
 import { ConfirmDialog } from './ConfirmDialog';
 
 export interface DocumentManagerDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-}
-
-function documentTypeLabel(definitionId: string) {
-    const messages = uiMessages.sheet.documents.types;
-    const descriptors: Record<string, (typeof messages)[keyof typeof messages]> = {
-        character: messages.character,
-        creature: messages.creature,
-        droid: messages.droid,
-        'fodder-group': messages.fodderGroup,
-        vehicle: messages.vehicle,
-    };
-    const descriptor = descriptors[definitionId];
-    return descriptor ? translate(descriptor) : definitionId;
 }
 
 export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDialogProps) {
@@ -119,17 +106,23 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
                                         <th scope="col" className="py-2 text-left font-medium">
                                             <Translate id="ttgamer.ui.sheet.documents.manager.type" />
                                         </th>
+                                        <th scope="col" className="py-2 text-left font-medium">
+                                            <Translate id="ttgamer.ui.sheet.documents.manager.setting" />
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {documents.map((document) => {
+                                        const system = systemRegistry.getSystem(document.systemId);
                                         const definition = systemRegistry.getDocumentDefinition(
                                             document.systemId,
                                             document.definitionId
                                         );
                                         const title =
                                             document.metadata.title ||
-                                            documentTypeLabel(document.definitionId);
+                                            (definition
+                                                ? translate(definition.label)
+                                                : document.definitionId);
                                         return (
                                             <tr
                                                 key={document.id}
@@ -170,8 +163,18 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
                                                 </td>
                                                 <td className="py-2 text-textSecondary">
                                                     {definition
-                                                        ? documentTypeLabel(definition.id)
+                                                        ? translate(definition.label)
                                                         : document.definitionId}
+                                                </td>
+                                                <td className="py-2 text-textSecondary">
+                                                    {system && definition
+                                                        ? translate(
+                                                              documentSettingLabel(
+                                                                  system,
+                                                                  definition
+                                                              )
+                                                          )
+                                                        : document.systemId}
                                                 </td>
                                             </tr>
                                         );

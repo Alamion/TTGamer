@@ -1,0 +1,98 @@
+module: 'Hunter: the Reckoning 5e'
+newHunter: New Hunter
+views:
+    sheet: Full sheet
+    brief: Brief
+sections:
+    edges: Edges and Perks
+    hunter: Hunter
+    cell: Cell
+    edgeList: Edges
+    purpose: Aims and Convictions
+    aims: Aims
+    creedDrive: Creed and Drive
+fields:
+    concept: Concept
+    creed: Creed
+    drive: Drive
+    ambition: Ambition
+    desire: Desire
+    redemption: Redemption
+    creedFields: Creed Fields
+    despair: Despair
+    desperation: Desperation
+    danger: Danger
+    edge: Edge
+    perks: Perks
+    perk: Perk
+    note: Notes
+categories:
+    assets: Assets
+    aptitudes: Aptitudes
+    endowments: Endowments
+advantageTypes:
+    merit: Merit
+    background: Background
+    flaw: Flaw
+advantageGroups:
+    linguistics: 'Linguistics'
+    looks: 'Looks'
+    nutritionist: 'Nutritionist'
+    psychological: 'Psychological Traits'
+    substance-abuse: 'Substance Abuse'
+    supernatural: 'Supernatural Situations'
+    allies: 'Allies'
+    contacts: 'Contacts'
+    fame: 'Fame'
+    influence: 'Influence'
+    mask: 'Mask'
+    mentor: 'Mentor'
+    resources: 'Resources'
+    retainers: 'Retainers'
+    safe-house: 'Safe House'
+    status: 'Status'
+weaponKinds:
+    melee: Melee
+    ranged: Ranged
+catalogColumns:
+    name: Name
+    type: Type
+    group: Trait
+    dots: Dots
+    summary: Summary
+    kind: Kind
+    damage: Damage
+    examples: Examples
+    armor: Armor
+    note: Note
+    effect: Effect
+    category: Category
+    perks: Perks
+summaries:
+    creeds:
+        entrepreneurial: Builds, invents, or buys whatever the hunt needs.
+        faithful: Faces the unnatural with conviction, faith, or ritual.
+        inquisitive: Digs for the truth of what the monsters are and how they work.
+        martial: Solves the problem with planning, training, and force.
+        underground: Works through hidden networks, favors, and secrets.
+    drives:
+        curiosity: Needs to know what is really out there.
+        vengeance: Wants a monster to pay for what it took.
+        oath: Bound by a promise to protect someone or end something.
+        greed: Sees profit or power waiting in the hunt.
+        pride: Needs to prove they are the one who can do this.
+        envy: Wants what the monsters have.
+        atonement: Hunts to make up for a failure in their past.
+    edges:
+        arsenal: Weapons beyond what an ordinary person can get.
+        fleet: Vehicles ready whenever the cell needs to move.
+        ordnance: Explosives and clever ways to deliver them.
+        library: A growing collection of lore about the creatures.
+        improvised-gear: Useful tools built from whatever is at hand.
+        global-access: A way into records, systems, and networks.
+        drone-jockey: Remote drones for scouting and support.
+        beast-whisperer: Animals that work alongside the hunter.
+        sense-the-unnatural: A feeling for when something inhuman is near.
+        repel-the-unnatural: The power to drive creatures back.
+        thwart-the-unnatural: Resistance against powers aimed at the hunter.
+        artifact: An object with a strange power against monsters.

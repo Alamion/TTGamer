@@ -110,9 +110,3 @@ export function getWodTraitGroup(profile: WodSheetProfile, id: string) {
     if (!group) throw new Error(`Unknown WoD trait group: ${profile.id}/${id}`);
     return group;
 }
-
-export function getWodConditionTrack(profile: WodSheetProfile, id: string) {
-    const track = profile.conditionTracks.find((candidate) => candidate.id === id);
-    if (!track) throw new Error(`Unknown WoD condition track: ${profile.id}/${id}`);
-    return track;
-}

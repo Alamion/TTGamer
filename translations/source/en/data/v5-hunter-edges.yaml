@@ -1,0 +1,24 @@
+arsenal:
+    name: 'Arsenal'
+fleet:
+    name: 'Fleet'
+ordnance:
+    name: 'Ordnance'
+library:
+    name: 'Library'
+improvised-gear:
+    name: 'Improvised Gear'
+global-access:
+    name: 'Global Access'
+drone-jockey:
+    name: 'Drone Jockey'
+beast-whisperer:
+    name: 'Beast Whisperer'
+sense-the-unnatural:
+    name: 'Sense the Unnatural'
+repel-the-unnatural:
+    name: 'Repel the Unnatural'
+thwart-the-unnatural:
+    name: 'Thwart the Unnatural'
+artifact:
+    name: 'Artifact'

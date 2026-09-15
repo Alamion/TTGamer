@@ -18,7 +18,7 @@ export function resolveDocumentView(
 
 export type ResolvedCustomTemplate =
     | CustomTemplate
-    | { reason: 'missing' | 'kind-mismatch' }
+    | { reason: 'missing' | 'kind-mismatch' | 'system-mismatch' }
     | undefined;
 
 /**
@@ -49,8 +49,12 @@ export function resolveEffectiveTemplate(
     systemId: string,
     documentKind: DocumentKind
 ): EffectiveTemplate | undefined {
+    // A template authored for another system never renders a document, even with the same kind.
     const custom = state.templates.find(
-        (candidate) => candidate.id === id && candidate.documentKind === documentKind
+        (candidate) =>
+            candidate.id === id &&
+            candidate.documentKind === documentKind &&
+            candidate.systemId === systemId
     );
     if (custom) return { template: custom, isDefault: false, modified: false };
 
@@ -91,11 +95,23 @@ function findRegisteredView(
 export function resolveCustomTemplate(
     templateId: string | undefined,
     library: readonly CustomTemplate[],
-    documentKind: DocumentKind
+    documentKind: DocumentKind,
+    systemId?: string
 ): ResolvedCustomTemplate {
     if (!templateId) return undefined;
     const template = library.find((candidate) => candidate.id === templateId);
     if (!template) return { reason: 'missing' };
+    if (systemId !== undefined && template.systemId !== systemId) {
+        return { reason: 'system-mismatch' };
+    }
     if (template.documentKind !== documentKind) return { reason: 'kind-mismatch' };
     return template;
+}
+
+/** Whether a template may render a document (same system and document kind). */
+export function isTemplateCompatible(
+    template: Pick<CustomTemplate, 'systemId' | 'documentKind'>,
+    document: { systemId: string; kind: string }
+): boolean {
+    return template.systemId === document.systemId && template.documentKind === document.kind;
 }

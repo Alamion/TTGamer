@@ -4,7 +4,6 @@ import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest, CollapsibleItem } from '../../../components';
 import { AutoResizeTextarea } from '../../../components';
 import type { ImplantItem } from '../../../types/character';
-import { buildImplantsCatalog } from '../data/bodyEquipmentCatalogs';
 
 interface ImplantsSectionProps {
     items: ImplantItem[];
@@ -13,6 +12,8 @@ interface ImplantsSectionProps {
     onRemove: (id: string) => void;
     onUpdate: (id: string, field: keyof ImplantItem, value: string) => void;
     onCatalogSelect: (id: string, entry: CatalogEntry) => void;
+    /** Name suggestions; picking one calls `onCatalogSelect`. Empty = free text only. */
+    catalog: CatalogEntry[];
 }
 
 export function ImplantsSection({
@@ -22,9 +23,8 @@ export function ImplantsSection({
     onRemove,
     onUpdate,
     onCatalogSelect,
+    catalog,
 }: ImplantsSectionProps) {
-    const implantsCatalog = buildImplantsCatalog();
-
     return (
         <div className="px-4 pb-4 space-y-2">
             {items.length === 0 ? (
@@ -47,7 +47,7 @@ export function ImplantsSection({
                                     Name
                                 </span>
                                 <CatalogSuggest
-                                    catalog={implantsCatalog}
+                                    catalog={catalog}
                                     value={item.name}
                                     onChange={(val) => onUpdate(item.id, 'name', val)}
                                     onSelect={(entry) => onCatalogSelect(item.id, entry)}

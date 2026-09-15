@@ -3,7 +3,6 @@ import { Plus } from 'lucide-react';
 import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest, CollapsibleItem } from '../../../components';
 import type { WeaponItem } from '../../../types/character';
-import { buildWeaponsCatalog } from '../data/bodyEquipmentCatalogs';
 
 interface WeaponsSectionProps {
     items: WeaponItem[];
@@ -12,6 +11,8 @@ interface WeaponsSectionProps {
     onRemove: (id: string) => void;
     onUpdate: (id: string, field: keyof WeaponItem, value: string | number) => void;
     onCatalogSelect: (id: string, entry: CatalogEntry) => void;
+    /** Name suggestions; picking one calls `onCatalogSelect`. Empty = free text only. */
+    catalog: CatalogEntry[];
 }
 
 export function WeaponsSection({
@@ -21,9 +22,8 @@ export function WeaponsSection({
     onRemove,
     onUpdate,
     onCatalogSelect,
+    catalog,
 }: WeaponsSectionProps) {
-    const weaponsCatalog = buildWeaponsCatalog();
-
     return (
         <div className="px-4 pb-4 space-y-2">
             {items.length === 0 ? (
@@ -47,7 +47,7 @@ export function WeaponsSection({
                                     Name
                                 </span>
                                 <CatalogSuggest
-                                    catalog={weaponsCatalog}
+                                    catalog={catalog}
                                     value={item.name}
                                     onChange={(val) => onUpdate(item.id, 'name', val)}
                                     onSelect={(entry) => onCatalogSelect(item.id, entry)}

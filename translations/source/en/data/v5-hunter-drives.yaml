@@ -1,0 +1,14 @@
+curiosity:
+    name: 'Curiosity'
+vengeance:
+    name: 'Vengeance'
+oath:
+    name: 'Oath'
+greed:
+    name: 'Greed'
+pride:
+    name: 'Pride'
+envy:
+    name: 'Envy'
+atonement:
+    name: 'Atonement'

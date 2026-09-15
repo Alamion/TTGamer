@@ -67,16 +67,6 @@ export function startPhysicsRoll(
     };
 }
 
-export function updateSoundConfig(config: { enabled?: boolean; volume?: number }): void {
-    if (!sharedRenderer) return;
-    if (config.enabled !== undefined) {
-        sharedRenderer.soundManager.setEnabled(config.enabled);
-    }
-    if (config.volume !== undefined) {
-        sharedRenderer.soundManager.setVolume(config.volume);
-    }
-}
-
 export function disposeSharedRenderer(): void {
     if (disposeTimeoutId) {
         clearTimeout(disposeTimeoutId);

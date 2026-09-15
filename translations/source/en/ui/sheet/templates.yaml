@@ -32,6 +32,10 @@ primitives:
     compact: Compact (brief format)
     trackLevels: Levels
     trackLevelName: 'Level {index} name'
+    trackLayout: Track layout
+    trackLayoutDefault: Default
+    trackLayoutTable: Table of levels
+    trackLayoutStrip: Line of boxes
     presets: Preset entries
     presetLabel: Entry label
     presetValue: Default value
@@ -246,6 +250,7 @@ transfer:
     importErrorFormat: Failed to import "{filename}" — not a TTGamer template file.
     importErrorVersion: Failed to import "{filename}" — the file was made by a different template format version.
     importErrorSchema: Failed to import "{filename}" — the template structure is invalid.
+    importErrorSystem: Failed to import "{filename}" — the template belongs to a game system this site does not provide.
     conflictTitle: Template already exists
     conflictPrompt: Replace it, import a duplicate with a new ID, or cancel this file.
     degradedReport: Some catalogs are unavailable here — these fields fell back to manual lists - {fields}
@@ -258,7 +263,6 @@ cohort:
     defeated: Out of the fight
     penalty: Penalty
     level: Level
-    trackLength: Health levels
     maxMembersReached: A group can have at most {count} members.
     removeTitle: Remove damaged member?
     removeDescription: Member {label} has recorded damage. Removing it deletes that damage.

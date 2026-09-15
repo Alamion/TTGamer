@@ -1,20 +1,31 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.1.0 -> 1.2.0 (amendment: observable degradation + current-state documentation)
+Version change: 1.3.0 -> 1.3.1 (clarification: VIII notices may be one dedicated page plus
+  badges where material is used, instead of full text on every surface)
+
+Previous: 1.2.0 -> 1.3.0 (amendment: layered game systems, third-party content, library scale)
 
 Modified principles:
-  III. Pleasurable Cross-Module Interactions — graceful degradation MUST also be observable
-       (reported through the module's diagnostics channel; tests fail on unexpected reports)
+  I. Modular Semi-Autonomy — game systems are layered as ruleset + setting + module; one
+     supernatural module per character by default, crossovers extend sheets through templates
+  II. Explicit Contracts at Boundaries — persisted/imported data is validated by the document
+     envelope and the registered definition schema (BaseCharacterSchema is the legacy import
+     path only); MDX imports use `@site/` so tooling can resolve them
+  VII. Performance as a Shared Budget — entity collections must scale to thousands of documents
+
+Added principles:
+  VIII. Respectful Use of Third-Party Material — own-words rules text, publisher policies
+        tracked as system metadata with notices shown where material is used, free
+        non-commercial distribution of licensed content, honest client-side hiding
 
 Sections:
-  Expanded: Governance — "Current-state documentation" rule (specs are change records; module
-            AGENTS.md + .agents/skills hold current behavior; features close only when updated)
+  Quality & Standards Matrix — sheet_manager and docs rows updated
+  Verification Workflow — advisory `yarn audit:dead-code`
 
-Runtime guidance updated: AGENTS.md (§9 Specs vs Current State), src/sheet_manager/AGENTS.md,
-  .agents/skills/sheet-templates/SKILL.md (new), .agents/skills/sheet-manager/SKILL.md
+Runtime guidance updated: AGENTS.md (§8 Module Boundaries), .agents/skills/mdx-documentation/SKILL.md
 
-Deferred TODOs: none
+Deferred TODOs: T-037 (text audit + automatic notices) implements Principle VIII for existing content
 -->
 
 # TTGamer Constitution
@@ -35,6 +46,12 @@ tests, and an explicit public API surface. Rules:
 - New game systems integrate through explicit system boundaries (registries, schemas,
   adapters); adding a system MUST NOT introduce system conditionals inside shared or
   another module's code.
+- Game systems are layered: a **ruleset** owns mechanics (dice, trait scales, derived
+  values), a **setting** owns flavor and catalogs, and **modules** add a supernatural
+  type's traits, resources, and tracks on top of a ruleset. Rulesets that share an engine
+  (e.g. V5 for VtM 5e and H:tR 5e) MUST share one ruleset rather than duplicate it. A
+  document carries one supernatural module by default; crossovers are built by extending
+  the sheet through user templates, not by per-combination code.
 - Each module can be reasoned about, tested, and refactored without loading the whole
   application into context. If that stops being true, the boundary is broken.
 
@@ -46,8 +63,13 @@ cascading breakage.
 Data and behavior crossing a module edge MUST pass through a validated, declared
 contract. Rules:
 
-- Imported or persisted character data MUST satisfy `BaseCharacterSchema` (Zod);
-  unknown legacy fields are stripped, never silently trusted.
+- Imported or persisted documents MUST pass the document envelope schema and the Zod
+  schema of the registered definition they name; entries that fail are kept in a bounded
+  recovery collection, never silently trusted or dropped. `BaseCharacterSchema` remains
+  only the legacy-character import path, where unknown fields are stripped.
+- Documentation imports project code through the `@site/` alias only (root-absolute or
+  relative paths into `src/` resolve in webpack but not in TypeScript, knip, or IDEs);
+  `tests/docs/mdx-imports.test.ts` enforces this.
 - Catalog and data integrity is enforced by `yarn validate:data`; documentation parity
   (en ↔ ru) by `yarn validate:i18n`; UI/catalog strings come from the YAML canonical
   sources via `yarn build:translations`. Generated `ttgamer.*` entries MUST NOT be
@@ -162,12 +184,46 @@ whole. Rules:
 - Derived values in stores (derived stats, pools, computed sheets) are memoized;
   interactive components avoid unnecessary re-renders in hot paths (dice input, stat
   editing).
+- Entity collections (documents, notes, catalog-linked entities) MUST stay usable at
+  thousands of entries: query through IndexedDB indexes instead of loading every entity
+  into memory, virtualize long lists, and bound graph or relationship views. Designs
+  that only work for tens of documents need an explicit scale note in their spec.
 - A change that adds a route, dependency, generated CSS, or shared component MUST run
   `yarn verify:full` and be reviewed for its bundle impact, because these change what
   every user downloads.
 
 Rationale: modularity that ships a slow product is a failure; budgets keep autonomy
 from becoming bloat.
+
+### VIII. Respectful Use of Third-Party Material
+
+Game systems and settings belong to their publishers; the product supports play without
+republishing their books. Rules:
+
+- Rules documentation and catalog descriptions are written in the project's own words.
+  Verbatim passages, tables, or art from published books MUST NOT be copied; trait,
+  mechanic, and item names MAY be used.
+- Each ruleset and setting declares the publisher policies it relies on (e.g. Paradox
+  Dark Pack for World of Darkness engines and settings, the SRD CC-BY attribution for
+  D&D, R. Talsorian's Homebrew Content Policy for Cyberpunk RED) as machine-readable
+  metadata. Required notices and badges are rendered from that metadata, in the form the
+  policy requires: a policy's full statement MAY live on one dedicated documentation page,
+  with surfaces that use the material (sheets) showing the required badge linking to it, and
+  exports carrying the notice text. A page MUST NOT carry notices or attributions for
+  material it does not use.
+- A combination inherits every applicable policy: a setting run on another publisher's
+  engine shows both notices.
+- Content under a non-commercial policy stays free, with no purchases or monetized
+  transactions attached to it. Any future monetization MUST exclude that content or rest
+  on a separate license.
+- Hiding information on the client (templates, personas) is presentation, not
+  protection, and MUST NOT be described as secure. Real secrecy requires server-side
+  projection; client-side encryption of game data is out of scope.
+- A spec introducing a new system or setting MUST name its source material, the
+  applicable policy, and the resulting notice requirements.
+
+Rationale: staying inside publishers' community policies is what keeps a free fan tool
+online; policy-driven notices keep compliance correct as systems multiply.
 
 ## Quality & Standards Matrix
 
@@ -178,10 +234,10 @@ is perceived, the principles govern and this table clarifies application.
 | --- | --- | --- | --- | --- |
 | `dice_roller/dice-logic` | Pure, deterministic core; zero UI/DOM/store deps; limits as invariants | Exhaustive unit tests: edge cases, malformed input, deterministic randoms | Errors readable and actionable, matching documented notation | Sub-millisecond evaluation; allocation-light |
 | `dice_roller` UI | Strict TS, hooks rules, store discipline (Zustand) | Component + store tests: pool, history, roll flow, 2D/3D toggle | Consistent roll feedback, history, sound/3D preferences | 3D renderer and sounds lazy-loaded; never block input |
-| `sheet_manager` | Zod schema as single source; multi-character context via `useCharacter()` | Round-trip, import (legacy strip), persistence integration tests | Modal/collapsible a11y; consistent stat display and editing | IndexedDB async persistence; derived stats memoized |
+| `sheet_manager` | Envelope + registered definition schemas (Zod) as single source; systems via registry, ruleset/setting/module layers | Round-trip, import (legacy strip), migration, and persistence integration tests | Modal/collapsible a11y; consistent stat display and editing | IndexedDB async persistence; derived stats memoized |
 | `integrations/*` | Bounded adapters only; queue + retry + backoff for side effects | Contract tests against both sides' public APIs | Seamless handoffs; graceful, actionable failure paths | Rate-limited delivery; no unbounded retries |
 | `shared/*` | System- and feature-independent primitives; no per-system logic | Unit tests for hooks and utils | Reusable primitives (DataCatalog, EntityCard, SecretField) look and behave the same everywhere | Generic by default; no heavy assets |
-| `docs/` + `i18n/` | MDX conventions (admonitions, cross-refs, dice notation); canonical YAML sources | `validate:data`, `validate:i18n`, `build:translations` | Docs render correctly in both locales; notation examples match UI behavior | No heavy embeds without lazy loading |
+| `docs/` + `i18n/` | MDX conventions (admonitions, cross-refs, dice notation, `@site/` imports); own-words rules text; canonical YAML sources | `validate:data`, `validate:i18n`, `build:translations`, MDX import test | Docs render correctly in both locales; notation examples match UI behavior; required publisher notices shown | No heavy embeds without lazy loading |
 | Data catalogs (`data/`) | Schema-validated entries; filters and table configs typed | `validate:data` | Cards, filters, and tables follow shared catalog UX | Catalog payloads trimmed; no duplicate media |
 
 ## Verification Workflow
@@ -193,6 +249,8 @@ is perceived, the principles govern and this table clarifies application.
 - **Tier 3 — Full verification** (`yarn verify:full`): lint + typecheck + tests +
   production build. Required for config, dependency, route, generated-CSS, or
   documentation-path changes.
+- **Advisory audit** (`yarn audit:dead-code`): knip report of unused files, exports, and
+  dependencies; reviewed by a human, not a merge gate.
 - **Specialized validators**: `yarn validate:data` and `yarn validate:i18n` are required
   gates for their domains and are not substitutes for tests.
 - **Review expectations**: every change states which modules it touches; cross-module
@@ -224,4 +282,4 @@ is perceived, the principles govern and this table clarifies application.
   guidance file for day-to-day development; it must remain consistent with this
   constitution and defer to it on conflict.
 
-**Version**: 1.2.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-12
+**Version**: 1.3.1 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-15

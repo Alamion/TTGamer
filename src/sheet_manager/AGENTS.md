@@ -26,7 +26,10 @@ src/sheet_manager/
 │   ├── data/                 # sheet-local catalog adapters + catalog binding registry
 │   └── hooks/                # sheet-local behavior hooks
 ├── hooks/                    # useCharacter and update helpers
-├── systems/                  # system plugins, document definitions, bindings, shipped templates
+├── systems/                  # neutral contracts (registry, types, view, templateBindings,
+│   │                         # catalogs, policies) + one folder per system plugin:
+│   ├── star-wars-wod/        # Star Wars WoD 2e (ruleset + setting in one plugin until T-041)
+│   └── v5/                   # V5 ruleset (`ruleset/`) + supernatural modules (`modules/hunter/`)
 ├── templates/                # setting-neutral template node builders
 ├── store/                    # documentStore (polymorphic documents, v3) + templateStore (library, v3)
 └── types/                    # generic contracts, template schema, templateValues bag
@@ -43,9 +46,11 @@ Use dependency direction, not component size, to classify sheet UI:
 
 1. **Atoms** (`components/controls`, `components/stat-fields`) render one input or value.
    They receive values and callbacks, and must not read document context, stores, systems,
-   or persistence.
+   or persistence. Generic inputs live in `controls/` (e.g. `CatalogSuggest`); `stat-fields/` renders
+   one concrete stat. Extend an existing atom with an optional prop before adding a new one.
 2. **Molecules** (`components/sections`) combine atoms into one reusable interaction such
-   as a trait group, resource group, condition track, or editable table. They may accept
+   as a trait group, resource group, condition track (optional strip layout and −/+ length
+   regulator), or editable table. They may accept
    definition/profile data but must not select the current document.
 3. **Bound elements** (`features/sheet/declarative`, `features/sheet/body`) adapt document data
    to molecules through bindings (`useBoundDocument`, `useBodyHandlers`). They must not decide
@@ -70,14 +75,27 @@ blocks and views are archived for reference in `context/legacy-sheet-components/
 
 ## Character Access
 
-Bound template elements use `useBoundDocument()` (any kind); equipment and legacy-shaped
-character helpers use `useCharacter()`:
+Bound template elements use `useBoundDocument()` (any kind, including `dataKey` equipment);
+Star Wars equipment and legacy-shaped character helpers use `useCharacter()`:
 
 - viewer context wins when present;
 - otherwise the editable Zustand character is used;
 - updates are ignored in read-only context.
 
 Do not read `currentCharacter` directly inside a reusable sheet element. Direct store access is appropriate for layout/manager operations that explicitly manage the collection.
+
+## Systems, Modules, and Publisher Notices
+
+- A new game system is a `SystemPlugin` folder under `systems/`; generic code must not import
+  it (ESLint). Plugins declare catalogs, policies, templates, and bindings; nothing is
+  special-cased for Star Wars.
+- Rulesets shared by several lines keep shared mechanics in `ruleset/` and lines in
+  `modules/<line>/` (see `.agents/skills/sheet-manager/SKILL.md`). A document carries one module.
+- Publisher policies come from `systems/policies.ts`; `SheetWorkspace` renders only the badge
+  (`PolicyBadges`, linking to the policy's docs page) outside the template tree so no template
+  can remove it, and exports carry `notices`. The full text lives on one docs page.
+- Shipped view ids are unique across systems (prefix them with the system, e.g.
+  `v5-hunter-sheet`); composite keys for overrides are T-046.
 
 ## Schema and Import/Export
 

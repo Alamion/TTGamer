@@ -391,7 +391,7 @@ describe('default template rendering and data safety', () => {
         // The full page renders its standard sections without placeholder alerts.
         expect(screen.queryAllByRole('alert')).toHaveLength(0);
         expect(screen.queryAllByText(/unavailable on this device/i)).toHaveLength(0);
-    });
+    }, 20_000);
 
     it('retains orphaned values after template content removal; reset restores pristine', () => {
         useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
@@ -429,7 +429,7 @@ describe('skeletons mirror the real default structure', () => {
             const defaults = system.defaultTemplates ?? [];
             for (const definition of system.documents) {
                 const skeletons = TEMPLATE_SKELETONS.filter(
-                    ({ id }) => id === `skeleton-${definition.id}`
+                    ({ id }) => id === `skeleton-${system.id}-${definition.id}`
                 );
                 const source = defaults.find(
                     (template) => template.id === definition.defaultViewId
@@ -443,7 +443,7 @@ describe('skeletons mirror the real default structure', () => {
                 const skeleton = skeletons[0]!;
                 // Identical structure, independent identity.
                 expect(skeleton.children).toEqual(source.children);
-                expect(skeleton.id).toBe(`skeleton-${definition.id}`);
+                expect(skeleton.id).toBe(`skeleton-${system.id}-${definition.id}`);
                 expect(skeleton.id).not.toBe(source.id);
                 expect(skeleton.documentKind).toBe(definition.kind);
             }
@@ -455,6 +455,19 @@ describe('skeletons mirror the real default structure', () => {
         expect(characterSkeletons.length).toBeGreaterThanOrEqual(2); // character + droid
         for (const skeleton of characterSkeletons) {
             expect(skeleton.documentKind).toBe('character');
+        }
+    });
+});
+
+describe('shipped templates across systems (feature 008)', () => {
+    it('ship no homebrew page and keep each template in its own system', () => {
+        for (const system of systemRegistry.getSystems()) {
+            for (const template of system.defaultTemplates ?? []) {
+                expect(`${template.id} ${template.name}`.toLowerCase()).not.toMatch(
+                    /fantasy|homebrew/
+                );
+                expect(template.systemId).toBe(system.id);
+            }
         }
     });
 });

@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import prettierConfig from 'eslint-config-prettier';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
@@ -29,16 +30,16 @@ export default defineConfig([
         },
     },
     {
-        // System boundary: generic template code reaches systems only through
-        // `systems/templateBindings` and the registry, never a concrete system module.
-        files: [
-            'src/sheet_manager/features/sheet/declarative/**/*.{ts,tsx}',
-            'src/sheet_manager/components/dialogs/template-editor/**/*.{ts,tsx}',
-            'src/sheet_manager/systems/templateBindings.ts',
-            'src/sheet_manager/systems/view.ts',
-            'src/sheet_manager/systems/wod-like/**/*.ts',
-            'src/sheet_manager/types/**/*.ts',
-            'src/sheet_manager/hooks/**/*.ts',
+        // System boundary: generic sheet code reaches systems only through the registry and the
+        // neutral `systems/*.ts` contracts, never a concrete system folder (any system, current or
+        // future). Concrete systems, the registry wiring, docs embeds, and the legacy character
+        // import path are the only allowed importers.
+        files: ['src/sheet_manager/**/*.{ts,tsx}'],
+        ignores: [
+            'src/sheet_manager/systems/*/**',
+            'src/sheet_manager/systems/index.ts',
+            'src/sheet_manager/docsEmbeds.tsx',
+            'src/sheet_manager/store/documentStore.ts',
         ],
         rules: {
             'no-restricted-imports': [
@@ -46,9 +47,28 @@ export default defineConfig([
                 {
                     patterns: [
                         {
-                            group: ['**/systems/star-wars-wod', '**/systems/star-wars-wod/**'],
+                            caseSensitive: true,
+                            regex: '(^|/)systems/(?!(?:wod-like|index|registry|types|view|capabilities|catalogs|policies)(?:/|$))[a-z0-9-]+(?:/|$)',
                             message:
-                                'Generic sheet code must not import a concrete system; declare the need on SystemPlugin (e.g. templateBindings) instead.',
+                                'Generic sheet code must not import a concrete system; declare the need on SystemPlugin (templateBindings, catalogs, policies) instead.',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
+    {
+        // Neutral WoD-family helpers must not depend on a concrete system either.
+        files: ['src/sheet_manager/systems/wod-like/**/*.ts'],
+        rules: {
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            caseSensitive: true,
+                            regex: '^\\.\\./(?!(?:index|registry|types|view|capabilities|catalogs|policies|templateBindings)(?:/|$))[a-z0-9-]+(?:/|$)',
+                            message: 'WoD-family helpers must not import a concrete system.',
                         },
                     ],
                 },
@@ -61,4 +81,6 @@ export default defineConfig([
             globals: globals.node,
         },
     },
+    // Last, so Prettier owns formatting even if a preset or rule above enables a stylistic rule.
+    prettierConfig,
 ]);

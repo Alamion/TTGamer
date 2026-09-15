@@ -11,11 +11,18 @@ import {
     ImportConflictDialog,
     TemplateLibraryDialog,
 } from '../../../components';
-import { migrateDocumentStoreState, useDocumentStore } from '../../../store/documentStore';
+import { useDocumentStore } from '../../../store/documentStore';
 import { useTemplateStore } from '../../../store/templateStore';
-import { resolveCustomTemplate, resolveDocumentView, systemRegistry } from '../../../systems';
+import {
+    resolveCustomTemplate,
+    resolveDocumentPolicies,
+    resolveDocumentView,
+    systemRegistry,
+} from '../../../systems';
 import type { UnknownDocumentEnvelope } from '../../../types/document';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
+import { exportFileName, parseImportedDocument, serializeDocumentExport } from './documentFile';
+import { PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
 import { templateSelectValue, ViewModeSelect } from './ViewModeSelect';
 
@@ -23,25 +30,12 @@ interface SheetWorkspaceProps {
     children: React.ReactNode;
 }
 
-function parseImportedDocument(input: unknown): UnknownDocumentEnvelope {
-    try {
-        return systemRegistry.parseDocument(input).envelope;
-    } catch (envelopeError) {
-        const migrated = migrateDocumentStoreState({
-            characters: [input],
-            currentCharacter: input,
-        });
-        const document = migrated.documents[0];
-        if (!document) throw envelopeError;
-        return document;
-    }
-}
-
 export function SheetWorkspace({ children }: SheetWorkspaceProps) {
     const {
         currentDocumentId,
         documents,
         importDocument,
+        retainImportForRecovery,
         updateDocumentData,
         updateDocumentMetadata,
     } = useDocumentStore();
@@ -60,7 +54,8 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
         ? resolveCustomTemplate(
               currentDocument.metadata.templateId,
               templates,
-              currentDocument.kind
+              currentDocument.kind,
+              currentDocument.systemId
           )
         : undefined;
     const activeTemplateId =
@@ -85,30 +80,12 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
 
     const handleExport = () => {
         if (!currentDocument) return;
-        // Device-backed template images live in IndexedDB blobs; the JSON export strips them
-        // (URL values and document data travel) — feature 006 FR-16.
-        const values = currentDocument.templateValues ?? {};
-        const exportableValues = Object.fromEntries(
-            Object.entries(values).filter(
-                ([, value]) =>
-                    !(
-                        typeof value === 'object' &&
-                        value !== null &&
-                        !Array.isArray(value) &&
-                        (value as { source?: unknown }).source === 'device'
-                    )
-            )
-        );
-        const data = JSON.stringify(
-            { ...currentDocument, templateValues: exportableValues },
-            (key, value) => (key === 'portraitId' ? undefined : value),
-            2
-        );
+        // Device-backed images are stripped and publisher notices added (documentFile.ts).
+        const data = serializeDocumentExport(currentDocument);
         const url = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
         const link = document.createElement('a');
-        const safeName = currentDocument.metadata.title.trim().replace(/[^\p{L}\p{N}_-]+/gu, '_');
         link.href = url;
-        link.download = `ttgamer_${safeName || currentDocument.definitionId}.json`;
+        link.download = exportFileName(currentDocument);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -162,8 +139,10 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
         event.target.value = '';
 
         for (const file of Array.from(files)) {
+            let raw: unknown;
             try {
-                let imported = parseImportedDocument(JSON.parse(await file.text()));
+                raw = JSON.parse(await file.text());
+                let imported = parseImportedDocument(raw);
                 if (documents.some(({ id }) => id === imported.id)) {
                     const resolution = await requestConflictResolution(imported);
                     if (resolution === 'cancel') continue;
@@ -175,7 +154,9 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                         title: imported.metadata.title || imported.definitionId,
                     })
                 );
-            } catch {
+            } catch (error) {
+                // A readable file that fails validation is kept for recovery, never dropped.
+                if (raw !== undefined) retainImportForRecovery(raw, error);
                 toast.error(
                     translate(uiMessages.sheet.documents.toolbar.importError, {
                         filename: file.name,
@@ -245,6 +226,10 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
             <ImportConflictDialog open={importConflict !== null} onResolve={resolveConflict} />
 
             {currentDocument && children}
+            {/* Outside the template tree: no page template, shipped or custom, can remove it. */}
+            {currentDocument && (
+                <PolicyBadges policies={resolveDocumentPolicies(systemRegistry, currentDocument)} />
+            )}
         </>
     );
 }

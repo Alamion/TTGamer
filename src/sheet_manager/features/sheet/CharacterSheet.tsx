@@ -36,7 +36,12 @@ function FallbackNotice() {
     );
 }
 
-type FallbackReason = 'missing' | 'kind-mismatch' | 'unknown-view' | 'no-default';
+type FallbackReason =
+    | 'missing'
+    | 'kind-mismatch'
+    | 'system-mismatch'
+    | 'unknown-view'
+    | 'no-default';
 
 /** Reports a page fallback once per distinct document/reason (degradation stays observable). */
 function FallbackReport({
@@ -49,9 +54,12 @@ function FallbackReport({
     requested?: string;
 }) {
     useEffect(() => {
+        const incompatible = reason === 'kind-mismatch' || reason === 'system-mismatch';
         reportSheetIssue({
-            code: 'template-fallback',
-            message: 'Document rendered a fallback page instead of the requested one',
+            code: incompatible ? 'template-incompatible' : 'template-fallback',
+            message: incompatible
+                ? 'Assigned template belongs to another system or document kind; default page rendered'
+                : 'Document rendered a fallback page instead of the requested one',
             details: { documentId, reason, requested },
         });
     }, [documentId, reason, requested]);
@@ -69,7 +77,12 @@ function CurrentDocumentSheet() {
     );
     if (!definition) return null;
 
-    const resolved = resolveCustomTemplate(document.metadata.templateId, templates, document.kind);
+    const resolved = resolveCustomTemplate(
+        document.metadata.templateId,
+        templates,
+        document.kind,
+        document.systemId
+    );
 
     if (resolved && !('reason' in resolved)) {
         return <DeclarativeSheetView template={resolved} />;

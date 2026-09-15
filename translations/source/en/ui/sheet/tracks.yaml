@@ -1,0 +1,6 @@
+length:
+    decrease: 'Shorten {track}'
+    increase: 'Extend {track}'
+rows:
+    moveUp: Move row {index} up
+    moveDown: Move row {index} down

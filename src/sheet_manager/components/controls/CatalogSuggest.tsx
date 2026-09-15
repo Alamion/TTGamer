@@ -17,6 +17,8 @@ interface CatalogSuggestProps {
     disabled?: boolean;
     className?: string;
     ariaLabel?: string;
+    /** Offer every entry while the input is empty (short, closed suggestion lists). */
+    showAllWhenEmpty?: boolean;
 }
 
 export function CatalogSuggest({
@@ -28,17 +30,18 @@ export function CatalogSuggest({
     disabled,
     className,
     ariaLabel,
+    showAllWhenEmpty = false,
 }: CatalogSuggestProps) {
     const [open, setOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const filtered = useMemo(() => {
-        if (!value.trim()) return [];
+        if (!value.trim()) return showAllWhenEmpty ? catalog : [];
         const q = value.toLowerCase();
         return catalog.filter(
             (e) => e.name.toLowerCase().includes(q) || e.id.toLowerCase().includes(q)
         );
-    }, [catalog, value]);
+    }, [catalog, showAllWhenEmpty, value]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange(e.target.value);
@@ -61,7 +64,8 @@ export function CatalogSuggest({
                     value={value}
                     onChange={handleInputChange}
                     onFocus={() => {
-                        if (value.trim() && filtered.length > 0) setOpen(true);
+                        if ((value.trim() || showAllWhenEmpty) && filtered.length > 0)
+                            setOpen(true);
                     }}
                     disabled={disabled}
                     placeholder={placeholder}

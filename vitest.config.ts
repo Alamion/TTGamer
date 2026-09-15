@@ -6,6 +6,7 @@ export default defineConfig({
         alias: {
             '@site': path.resolve(__dirname),
             '@docusaurus/Translate': path.resolve(__dirname, 'tests/stubs/docusaurus.ts'),
+            '@docusaurus/router': path.resolve(__dirname, 'tests/stubs/docusaurusRouter.ts'),
             '@docusaurus/useDocusaurusContext': path.resolve(
                 __dirname,
                 'tests/stubs/docusaurusContext.ts'

@@ -329,6 +329,11 @@ const PrimitiveNodeSchema = z.object({
     minFrom: z.string().min(1).max(500).optional(),
     compact: z.boolean().default(false),
     track: PrimitiveTrackOverrideSchema.optional(),
+    /**
+     * Track bindings: `table` (a row per level with its name and penalty) or `strip` (a line of
+     * boxes, no level names). Default: `strip` for compact nodes and unlabeled tracks.
+     */
+    trackLayout: z.enum(['table', 'strip']).optional(),
     /** Member tracks (bindings with members): member cap; ignored by other bindings. */
     cohort: z.object({ maxMembers: z.number().int().min(1).max(24) }).optional(),
     ...maxFromShape,
@@ -614,14 +619,6 @@ export function collectListNodes(template: CustomTemplate): ListNode[] {
         if (node.type === 'list') lists.push(node);
     });
     return lists;
-}
-
-export function collectPrimitiveNodes(template: CustomTemplate): PrimitiveNode[] {
-    const primitives: PrimitiveNode[] = [];
-    walkTemplateNodes(template.children, (node) => {
-        if (node.type === 'primitive') primitives.push(node);
-    });
-    return primitives;
 }
 
 export interface FormulaDependencySource {

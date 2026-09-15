@@ -1,0 +1,98 @@
+module: 'Охотник: Воздаяние, 5-я редакция'
+newHunter: Новый охотник
+views:
+    sheet: Полный лист
+    brief: Краткий
+sections:
+    edges: Грани и умения
+    hunter: Охотник
+    cell: Ячейка
+    edgeList: Грани
+    purpose: Цели и убеждения
+    aims: Цели
+    creedDrive: Кредо и Мотив
+fields:
+    concept: Концепция
+    creed: Кредо
+    drive: Мотив
+    ambition: Цель
+    desire: Желание
+    redemption: Искупление
+    creedFields: Поля кредо
+    despair: Отчаяние
+    desperation: Безысходность
+    danger: Опасность
+    edge: Грань
+    perks: Умения
+    perk: Умение
+    note: Заметки
+categories:
+    assets: Ресурсы
+    aptitudes: Способности
+    endowments: Дары
+advantageTypes:
+    merit: Достоинство
+    background: Предыстория
+    flaw: Недостаток
+advantageGroups:
+    linguistics: 'Лингвистика'
+    looks: 'Внешность'
+    nutritionist: 'Кулинария'
+    psychological: 'Психологические черты'
+    substance-abuse: 'Злоупотребление веществами'
+    supernatural: 'Сверхъестественное'
+    allies: 'Союзники'
+    contacts: 'Связи'
+    fame: 'Слава'
+    influence: 'Влияние'
+    mask: 'Маска'
+    mentor: 'Наставник'
+    resources: 'Ресурсы'
+    retainers: 'Помощники'
+    safe-house: 'Убежище'
+    status: 'Статус'
+weaponKinds:
+    melee: Ближний бой
+    ranged: Дальний бой
+catalogColumns:
+    name: Название
+    type: Вид
+    group: Черта
+    dots: Точки
+    summary: Кратко
+    kind: Тип
+    damage: Урон
+    examples: Примеры
+    armor: Броня
+    note: Примечание
+    effect: Эффект
+    category: Категория
+    perks: Умения
+summaries:
+    creeds:
+        entrepreneurial: Создаёт, изобретает или покупает всё, что нужно для охоты.
+        faithful: Встречает неестественное с убеждённостью, верой или обрядом.
+        inquisitive: Докапывается до правды о том, что такое монстры и как они устроены.
+        martial: Решает проблему планом, подготовкой и силой.
+        underground: Действует через тайные связи, услуги и секреты.
+    drives:
+        curiosity: Должен узнать, что на самом деле скрывается во тьме.
+        vengeance: Хочет, чтобы монстр заплатил за то, что отнял.
+        oath: Связан обещанием защитить кого-то или с чем-то покончить.
+        greed: Видит в охоте выгоду или власть.
+        pride: Должен доказать, что именно он с этим справится.
+        envy: Хочет того, что есть у монстров.
+        atonement: Охотится, чтобы искупить ошибку прошлого.
+    edges:
+        arsenal: Оружие, которое обычному человеку не достать.
+        fleet: Транспорт, готовый, когда ячейке нужно двигаться.
+        ordnance: Взрывчатка и хитрые способы её доставить.
+        library: Растущее собрание знаний о существах.
+        improvised-gear: Полезные вещи, собранные из того, что под рукой.
+        global-access: Доступ к архивам, системам и сетям.
+        drone-jockey: Дроны для разведки и поддержки.
+        beast-whisperer: Животные, которые работают вместе с охотником.
+        sense-the-unnatural: Чутьё на приближение нечеловеческого.
+        repel-the-unnatural: Сила отбросить существ назад.
+        thwart-the-unnatural: Стойкость к силам, направленным на охотника.
+        artifact: Предмет со странной силой против монстров.

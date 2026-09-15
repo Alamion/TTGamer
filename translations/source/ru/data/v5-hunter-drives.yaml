@@ -1,0 +1,14 @@
+curiosity:
+    name: 'Любопытство'
+vengeance:
+    name: 'Месть'
+oath:
+    name: 'Клятва'
+greed:
+    name: 'Жадность'
+pride:
+    name: 'Гордыня'
+envy:
+    name: 'Зависть'
+atonement:
+    name: 'Искупление'

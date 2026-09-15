@@ -14,7 +14,7 @@ export interface CohortMember {
     marks: readonly ConditionMark[];
 }
 
-export function memberLetter(index: number): string {
+function memberLetter(index: number): string {
     return String.fromCharCode(65 + (index % 26));
 }
 

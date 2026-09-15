@@ -9,6 +9,7 @@ import {
     SystemIdSchema,
 } from '../../types/document';
 import type { DocumentDefinition, DocumentViewLabel, SystemPlugin } from '../types';
+import { starWarsCatalogs } from './catalogs';
 import { starWarsWodDefaultTemplates } from './defaultTemplates';
 import { starWarsTemplateBindings } from './documentBindings';
 import {
@@ -27,6 +28,7 @@ import {
 export const STAR_WARS_WOD_SYSTEM_ID = SystemIdSchema.parse('star-wars-wod');
 
 const viewLabels = uiMessages.sheet.documents.views;
+const typeLabels = uiMessages.sheet.documents.types;
 
 /** A view whose page is the shipped default template with the same id. */
 function templateView(id: string, label: DocumentViewLabel, legacyIds: readonly string[] = []) {
@@ -94,7 +96,7 @@ const FODDER_BRIEF_VIEW = templateView('fodder-brief', viewLabels.brief, ['brief
 export const starWarsCharacterDefinition: DocumentDefinition = {
     id: DocumentDefinitionIdSchema.parse('character'),
     kind: DocumentKindSchema.parse('character'),
-    label: 'Character',
+    label: typeLabels.character,
     schemaVersion: 1,
     schema: StarWarsCharacterDataSchema,
     createDefault: createDefaultStarWarsCharacterData,
@@ -106,7 +108,7 @@ export const starWarsCharacterDefinition: DocumentDefinition = {
 export const starWarsDroidDefinition: DocumentDefinition = {
     id: DocumentDefinitionIdSchema.parse('droid'),
     kind: DocumentKindSchema.parse('character'),
-    label: 'Droid',
+    label: typeLabels.droid,
     schemaVersion: 1,
     schema: DroidDataSchema,
     createDefault: createDefaultDroidData,
@@ -118,7 +120,7 @@ export const starWarsDroidDefinition: DocumentDefinition = {
 export const starWarsCreatureDefinition: DocumentDefinition = {
     id: DocumentDefinitionIdSchema.parse('creature'),
     kind: DocumentKindSchema.parse('creature'),
-    label: 'Creature',
+    label: typeLabels.creature,
     schemaVersion: 1,
     schema: CreatureDataSchema,
     createDefault: createDefaultCreatureData,
@@ -129,7 +131,7 @@ export const starWarsCreatureDefinition: DocumentDefinition = {
 export const starWarsVehicleDefinition: DocumentDefinition = {
     id: DocumentDefinitionIdSchema.parse('vehicle'),
     kind: DocumentKindSchema.parse('vehicle'),
-    label: 'Vehicle',
+    label: typeLabels.vehicle,
     schemaVersion: 1,
     schema: VehicleDataSchema,
     createDefault: createDefaultVehicleData,
@@ -140,7 +142,7 @@ export const starWarsVehicleDefinition: DocumentDefinition = {
 export const starWarsFodderDefinition: DocumentDefinition = {
     id: DocumentDefinitionIdSchema.parse('fodder-group'),
     kind: DocumentKindSchema.parse('group'),
-    label: 'Fodder group',
+    label: typeLabels.fodderGroup,
     schemaVersion: 1,
     schema: FodderDataSchema,
     createDefault: createDefaultFodderData,
@@ -150,7 +152,7 @@ export const starWarsFodderDefinition: DocumentDefinition = {
 
 export const starWarsWodSystem: SystemPlugin = {
     id: STAR_WARS_WOD_SYSTEM_ID,
-    label: 'Star Wars WoD 2e',
+    label: uiMessages.sheet.documents.systems.starWarsWod,
     documents: [
         starWarsCharacterDefinition,
         starWarsDroidDefinition,
@@ -160,7 +162,9 @@ export const starWarsWodSystem: SystemPlugin = {
     ],
     defaultTemplates: starWarsWodDefaultTemplates,
     templateBindings: starWarsTemplateBindings,
+    catalogs: starWarsCatalogs,
 };
 
+export * from './catalogs';
 export * from './profile';
 export * from './schema';

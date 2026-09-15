@@ -441,6 +441,15 @@ describe('mergeDiceNotation edge cases', () => {
         expect(mergeDiceNotation('2d6r1kh3', '1d6')).toBe('(2d6+1d6)');
     });
 
+    it('keeps nested groups balanced and preserves enclosing modifiers', () => {
+        expect(mergeDiceNotation('((3d10+1d10)>=6)', '1d10>=6')).toBe('((3d10+1d10+1d10)>=6)');
+        expect(mergeDiceNotation('((2d6+1d6)kh2)!', '1d6')).toBe('((2d6+1d6+1d6))!');
+    });
+
+    it('appends when a nested group has no matching face', () => {
+        expect(mergeDiceNotation('((2d8+1d8)>=6)', '1d6')).toBe('((2d8+1d8)>=6) + 1d6');
+    });
+
     it('applies the added die modifiers when the existing group has none', () => {
         expect(mergeDiceNotation('2d6', '1d6kh2')).toBe('(2d6+1d6)kh2');
     });

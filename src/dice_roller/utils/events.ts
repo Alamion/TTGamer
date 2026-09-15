@@ -59,7 +59,3 @@ export async function handleRollEvent(
         return null;
     }
 }
-
-export async function triggerRoll(notation: string): Promise<RollResult | null> {
-    return handleRollEvent(notation);
-}

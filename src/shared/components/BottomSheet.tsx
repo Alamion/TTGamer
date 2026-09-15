@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import type { ReactNode, TouchEvent } from 'react';
+import type { PointerEvent, ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 interface BottomSheetProps {
@@ -31,22 +31,24 @@ export function BottomSheet({ onClose, children }: BottomSheetProps) {
         dragBaseY.current = y;
     };
 
-    const handleTouchStart = (e: TouchEvent) => {
-        dragStartY.current = e.touches[0].clientY;
+    const handlePointerDown = (e: PointerEvent<HTMLButtonElement>) => {
+        e.currentTarget.setPointerCapture(e.pointerId);
+        dragStartY.current = e.clientY;
         dragBaseY.current = translateY;
         setIsDragging(true);
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
+    const handlePointerMove = (e: PointerEvent<HTMLButtonElement>) => {
         if (!isDragging) return;
-        const deltaY = e.touches[0].clientY - dragStartY.current;
+        const deltaY = e.clientY - dragStartY.current;
         const vh = window.innerHeight;
         const deltaPercent = (deltaY / vh) * 100;
         const newY = Math.max(FULL, Math.min(CLOSED, dragBaseY.current + deltaPercent));
         setTranslateY(newY);
     };
 
-    const handleTouchEnd = () => {
+    const handlePointerUp = () => {
+        if (!isDragging) return;
         setIsDragging(false);
         const current = translateY;
         if (current > 85) {
@@ -84,10 +86,11 @@ export function BottomSheet({ onClose, children }: BottomSheetProps) {
             <button
                 type="button"
                 aria-label="Resize details sheet"
-                className="pt-2 pb-1 flex justify-center cursor-grab active:cursor-grabbing touch-none"
-                onTouchStart={handleTouchStart}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
+                className="flex w-full justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing touch-none"
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
             >
                 <div className="w-10 h-1 rounded-full bg-textSecondary/40" />
             </button>
