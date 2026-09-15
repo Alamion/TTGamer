@@ -57,6 +57,7 @@ export type NodeUpdates = {
     compact?: boolean;
     multiline?: boolean;
     track?: PrimitiveTrackOverride;
+    trackLayout?: 'table' | 'strip';
     presets?: PrimitivePreset[];
 };
 
@@ -374,13 +375,13 @@ export function newTableNode(): TableNode {
     };
 }
 
-export function createEmptyDraft(documentKind: string): EditorDraft {
+export function createEmptyDraft(documentKind: string, systemId = 'star-wars-wod'): EditorDraft {
     const section = newSectionNode();
     section.children.push(newField('text', 'New field'));
     return {
         id: newId('tpl'),
         name: '',
-        systemId: SystemIdSchema.parse('star-wars-wod'),
+        systemId: SystemIdSchema.parse(systemId),
         documentKind: documentKind as EditorDraft['documentKind'],
         schemaVersion: TEMPLATE_SCHEMA_VERSION,
         children: [section],

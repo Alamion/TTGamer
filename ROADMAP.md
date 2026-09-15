@@ -53,8 +53,9 @@ dependencies — they are not identifiers; slugs are.
 - **Scope**: Players can create and maintain character sheets in different game
   systems, each following that system's own rules. The Star Wars WEG/WoD 2e system
   is usable today: sentient and droid characters, vehicle crews, and creature or
-  fodder groups all have editable, validated sheets. Additional systems remain to be
-  added.
+  fodder groups all have editable, validated sheets. Hunter: the Reckoning 5e player
+  characters are usable on a shared World of Darkness 5th Edition ruleset, with full and
+  brief sheets and beginner documentation. Further systems remain to be added.
 - **Open questions**: none recorded.
 - **Notes**:
     - 2026-09-15 — next systems decided: Hunter: the Reckoning 5e first (a table game
@@ -156,13 +157,18 @@ dependencies — they are not identifiers; slugs are.
   archive and imported elsewhere — a GM can back up, share, or reuse campaign
   material as one unit.
 - **Open questions**: archive format; what exactly a campaign bundles (settings,
-  images, map entities); whether the dependency on `note-tree` still holds now that
-  campaigns are tags over a shared library rather than folders.
+  images, map entities); how a campaign is delimited inside the folder structure.
 - **Notes**:
     - 2026-09-15 — direction decided: entities live in one shared library connected by
       links; campaigns and worlds are kinds of tags that slice that graph, so one entity
       can belong to several campaigns. The library must stay usable with thousands of
       entities.
+    - 2026-09-15 (later, supersedes the note above) — the tag-sliced graph is dropped:
+      entities are organized in a file system of folders holding sheets, markdown
+      documents, canvases, and further types, so `note-tree` returns as the structural
+      base for this path. Links between entities remain as cross-references, not as the
+      primary navigation structure. The thousands-of-entities scale requirement is
+      unchanged.
 
 ### `map-notes` — Map note entities
 

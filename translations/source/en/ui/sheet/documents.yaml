@@ -26,6 +26,7 @@ manager:
     empty: No documents yet. Create one to get started.
     name: Name
     type: Type
+    setting: Setting
     current: current
     selectAll: Select all documents
     selectDocument: Select {title}
@@ -35,9 +36,11 @@ manager:
     close: Close
 create:
     title: Create document
-    prompt: Choose the Star Wars document format to create.
+    prompt: Choose the game system and document format to create.
     confirm: Create
     cancel: Cancel
+systems:
+    starWarsWod: Star Wars (World of Darkness 2e)
 types:
     character: Character
     droid: Droid

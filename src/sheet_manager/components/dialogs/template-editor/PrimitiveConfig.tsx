@@ -46,7 +46,7 @@ export function PrimitiveConfig({
 
             {descriptor?.kind === 'equipment' ? (
                 <ListSourceSelect node={node} onReplace={onReplace} />
-            ) : descriptor?.kind === 'track' || !descriptor ? (
+            ) : descriptor?.kind === 'track' || descriptor?.kind === 'rows' || !descriptor ? (
                 <label className="grid gap-1 text-xs text-textSecondary">
                     {t(descriptor ? editor.trackerSource : primitives.binding)}
                     <select
@@ -152,6 +152,29 @@ export function PrimitiveConfig({
             )}
 
             {descriptor?.kind === 'track' && (
+                <label className="grid gap-1 text-xs text-textSecondary">
+                    {t(primitives.trackLayout)}
+                    <select
+                        value={node.trackLayout ?? ''}
+                        onChange={(event) =>
+                            update({
+                                trackLayout:
+                                    event.target.value === 'table' || event.target.value === 'strip'
+                                        ? event.target.value
+                                        : undefined,
+                            })
+                        }
+                        aria-label={t(primitives.trackLayout)}
+                        className={inputClasses}
+                    >
+                        <option value="">{t(primitives.trackLayoutDefault)}</option>
+                        <option value="table">{t(primitives.trackLayoutTable)}</option>
+                        <option value="strip">{t(primitives.trackLayoutStrip)}</option>
+                    </select>
+                </label>
+            )}
+
+            {descriptor?.kind === 'track' && !descriptor.length && (
                 <div className="grid gap-2">
                     <label className="grid gap-1 text-xs text-textSecondary">
                         {t(primitives.trackLevels)}

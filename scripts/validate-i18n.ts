@@ -1,10 +1,9 @@
-import { readdir, readFile } from 'node:fs/promises';
+import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-const sourceRoot = path.resolve('docs/star-wars-wod-2e');
-const translationRoot = path.resolve(
-    'i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e'
-);
+/** Documentation trees whose English pages must have Russian counterparts. */
+const documentRoots = ['star-wars-wod-2e', 'v5'] as const;
+const translationDocsRoot = 'i18n/ru/docusaurus-plugin-content-docs/current';
 const translationJsonFiles = [
     'code.json',
     'docusaurus-plugin-content-docs/current.json',
@@ -73,50 +72,73 @@ async function validateTranslationCatalog(relativePath: string, errors: string[]
     }
 }
 
-async function main() {
+async function exists(target: string) {
+    try {
+        await access(target);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+async function validateDocumentRoot(root: string, errors: string[]): Promise<number> {
+    const sourceRoot = path.resolve('docs', root);
+    const translationRoot = path.resolve(translationDocsRoot, root);
+    // A tree that has no English pages yet has nothing to mirror.
+    if (!(await exists(sourceRoot))) return 0;
     const [sourceDocuments, translatedDocuments] = await Promise.all([
         collectDocuments(sourceRoot),
-        collectDocuments(translationRoot),
+        (await exists(translationRoot)) ? collectDocuments(translationRoot) : ([] as string[]),
     ]);
-    const errors = [
+    errors.push(
         ...difference(sourceDocuments, translatedDocuments).map(
-            (document) => `Missing Russian document: ${document}`
+            (document) => `Missing Russian document: ${root}/${document}`
         ),
         ...difference(translatedDocuments, sourceDocuments).map(
-            (document) => `Russian document has no English source: ${document}`
-        ),
-    ];
-
-    await Promise.all(translationJsonFiles.map((file) => validateTranslationCatalog(file, errors)));
+            (document) => `Russian document has no English source: ${root}/${document}`
+        )
+    );
 
     for (const document of sourceDocuments.filter((item) => translatedDocuments.includes(item))) {
         const [source, translation] = await Promise.all([
             readFile(path.join(sourceRoot, document), 'utf8'),
             readFile(path.join(translationRoot, document), 'utf8'),
         ]);
+        const label = `${root}/${document}`;
         const sourceId = frontmatterId(source);
         const translationId = frontmatterId(translation);
         if (translation.trim().length === 0) {
-            errors.push(`${document}: Russian document is empty`);
+            errors.push(`${label}: Russian document is empty`);
         }
         if (sourceId !== translationId) {
             errors.push(
-                `${document}: frontmatter id differs (${sourceId ?? 'missing'} / ${translationId ?? 'missing'})`
+                `${label}: frontmatter id differs (${sourceId ?? 'missing'} / ${translationId ?? 'missing'})`
             );
         }
         const sourceImports = moduleImports(source);
         const translationImports = moduleImports(translation);
         if (JSON.stringify(sourceImports) !== JSON.stringify(translationImports)) {
-            errors.push(`${document}: MDX component imports differ between locales`);
+            errors.push(`${label}: MDX component imports differ between locales`);
         }
     }
+    return sourceDocuments.length;
+}
+
+async function main() {
+    const errors: string[] = [];
+    let documentCount = 0;
+    for (const root of documentRoots) {
+        documentCount += await validateDocumentRoot(root, errors);
+    }
+
+    await Promise.all(translationJsonFiles.map((file) => validateTranslationCatalog(file, errors)));
 
     if (errors.length > 0) {
         console.error(errors.join('\n'));
         process.exitCode = 1;
     } else {
         console.log(
-            `Validated ${sourceDocuments.length} English/Russian document pairs and ${translationJsonFiles.length} translation catalogs.`
+            `Validated ${documentCount} English/Russian document pairs and ${translationJsonFiles.length} translation catalogs.`
         );
     }
 }

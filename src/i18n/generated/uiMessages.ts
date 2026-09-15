@@ -224,6 +224,16 @@ export const uiMessages = {
                 message: 'Character biography...',
             },
         },
+        catalogBrowser: {
+            name: {
+                id: 'ttgamer.ui.sheet.catalogBrowser.name',
+                message: 'Name',
+            },
+            search: {
+                id: 'ttgamer.ui.sheet.catalogBrowser.search',
+                message: 'Search the catalog...',
+            },
+        },
         documents: {
             toolbar: {
                 export: {
@@ -331,6 +341,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.documents.manager.type',
                     message: 'Type',
                 },
+                setting: {
+                    id: 'ttgamer.ui.sheet.documents.manager.setting',
+                    message: 'Setting',
+                },
                 current: {
                     id: 'ttgamer.ui.sheet.documents.manager.current',
                     message: 'current',
@@ -368,7 +382,7 @@ export const uiMessages = {
                 },
                 prompt: {
                     id: 'ttgamer.ui.sheet.documents.create.prompt',
-                    message: 'Choose the Star Wars document format to create.',
+                    message: 'Choose the game system and document format to create.',
                 },
                 confirm: {
                     id: 'ttgamer.ui.sheet.documents.create.confirm',
@@ -377,6 +391,12 @@ export const uiMessages = {
                 cancel: {
                     id: 'ttgamer.ui.sheet.documents.create.cancel',
                     message: 'Cancel',
+                },
+            },
+            systems: {
+                starWarsWod: {
+                    id: 'ttgamer.ui.sheet.documents.systems.starWarsWod',
+                    message: 'Star Wars (World of Darkness 2e)',
                 },
             },
             types: {
@@ -852,6 +872,25 @@ export const uiMessages = {
                 },
             },
         },
+        policies: {
+            notice: {
+                label: {
+                    id: 'ttgamer.ui.sheet.policies.notice.label',
+                    message: 'Publisher notice',
+                },
+                policyLink: {
+                    id: 'ttgamer.ui.sheet.policies.notice.policyLink',
+                    message: 'About the {policy} policy',
+                },
+            },
+            darkPack: {
+                explanation: {
+                    id: 'ttgamer.ui.sheet.policies.darkPack.explanation',
+                    message:
+                        "TTGamer is a free fan-made tool. Material from the World of Darkness appears here under Paradox Interactive's Dark Pack community policy; it is not endorsed by or affiliated with Paradox, and nothing here is sold.",
+                },
+            },
+        },
         templates: {
             library: {
                 button: {
@@ -986,6 +1025,22 @@ export const uiMessages = {
                 trackLevelName: {
                     id: 'ttgamer.ui.sheet.templates.primitives.trackLevelName',
                     message: 'Level {index} name',
+                },
+                trackLayout: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayout',
+                    message: 'Track layout',
+                },
+                trackLayoutDefault: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayoutDefault',
+                    message: 'Default',
+                },
+                trackLayoutTable: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayoutTable',
+                    message: 'Table of levels',
+                },
+                trackLayoutStrip: {
+                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayoutStrip',
+                    message: 'Line of boxes',
                 },
                 presets: {
                     id: 'ttgamer.ui.sheet.templates.primitives.presets',
@@ -1832,6 +1887,11 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.transfer.importErrorSchema',
                     message: 'Failed to import "{filename}" — the template structure is invalid.',
                 },
+                importErrorSystem: {
+                    id: 'ttgamer.ui.sheet.templates.transfer.importErrorSystem',
+                    message:
+                        'Failed to import "{filename}" — the template belongs to a game system this site does not provide.',
+                },
                 conflictTitle: {
                     id: 'ttgamer.ui.sheet.templates.transfer.conflictTitle',
                     message: 'Template already exists',
@@ -1878,10 +1938,6 @@ export const uiMessages = {
                 level: {
                     id: 'ttgamer.ui.sheet.templates.cohort.level',
                     message: 'Level',
-                },
-                trackLength: {
-                    id: 'ttgamer.ui.sheet.templates.cohort.trackLength',
-                    message: 'Health levels',
                 },
                 maxMembersReached: {
                     id: 'ttgamer.ui.sheet.templates.cohort.maxMembersReached',
@@ -2160,6 +2216,688 @@ export const uiMessages = {
                 soakBashingOnly: {
                     id: 'ttgamer.ui.sheet.templates.entities.soakBashingOnly',
                     message: 'Soak (bashing only)',
+                },
+            },
+        },
+        tracks: {
+            length: {
+                decrease: {
+                    id: 'ttgamer.ui.sheet.tracks.length.decrease',
+                    message: 'Shorten {track}',
+                },
+                increase: {
+                    id: 'ttgamer.ui.sheet.tracks.length.increase',
+                    message: 'Extend {track}',
+                },
+            },
+            rows: {
+                moveUp: {
+                    id: 'ttgamer.ui.sheet.tracks.rows.moveUp',
+                    message: 'Move row {index} up',
+                },
+                moveDown: {
+                    id: 'ttgamer.ui.sheet.tracks.rows.moveDown',
+                    message: 'Move row {index} down',
+                },
+            },
+        },
+        v5: {
+            system: {
+                id: 'ttgamer.ui.sheet.v5.system',
+                message: 'World of Darkness 5th Edition',
+            },
+            attributes: {
+                physical: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.physical',
+                    message: 'Physical',
+                },
+                social: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.social',
+                    message: 'Social',
+                },
+                mental: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.mental',
+                    message: 'Mental',
+                },
+                strength: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.strength',
+                    message: 'Strength',
+                },
+                dexterity: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.dexterity',
+                    message: 'Dexterity',
+                },
+                stamina: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.stamina',
+                    message: 'Stamina',
+                },
+                charisma: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.charisma',
+                    message: 'Charisma',
+                },
+                manipulation: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.manipulation',
+                    message: 'Manipulation',
+                },
+                composure: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.composure',
+                    message: 'Composure',
+                },
+                intelligence: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.intelligence',
+                    message: 'Intelligence',
+                },
+                wits: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.wits',
+                    message: 'Wits',
+                },
+                resolve: {
+                    id: 'ttgamer.ui.sheet.v5.attributes.resolve',
+                    message: 'Resolve',
+                },
+            },
+            skills: {
+                athletics: {
+                    id: 'ttgamer.ui.sheet.v5.skills.athletics',
+                    message: 'Athletics',
+                },
+                brawl: {
+                    id: 'ttgamer.ui.sheet.v5.skills.brawl',
+                    message: 'Brawl',
+                },
+                craft: {
+                    id: 'ttgamer.ui.sheet.v5.skills.craft',
+                    message: 'Craft',
+                },
+                driving: {
+                    id: 'ttgamer.ui.sheet.v5.skills.driving',
+                    message: 'Driving',
+                },
+                firearms: {
+                    id: 'ttgamer.ui.sheet.v5.skills.firearms',
+                    message: 'Firearms',
+                },
+                larceny: {
+                    id: 'ttgamer.ui.sheet.v5.skills.larceny',
+                    message: 'Larceny',
+                },
+                melee: {
+                    id: 'ttgamer.ui.sheet.v5.skills.melee',
+                    message: 'Melee',
+                },
+                stealth: {
+                    id: 'ttgamer.ui.sheet.v5.skills.stealth',
+                    message: 'Stealth',
+                },
+                survival: {
+                    id: 'ttgamer.ui.sheet.v5.skills.survival',
+                    message: 'Survival',
+                },
+                animalKen: {
+                    id: 'ttgamer.ui.sheet.v5.skills.animalKen',
+                    message: 'Animal Ken',
+                },
+                etiquette: {
+                    id: 'ttgamer.ui.sheet.v5.skills.etiquette',
+                    message: 'Etiquette',
+                },
+                insight: {
+                    id: 'ttgamer.ui.sheet.v5.skills.insight',
+                    message: 'Insight',
+                },
+                intimidation: {
+                    id: 'ttgamer.ui.sheet.v5.skills.intimidation',
+                    message: 'Intimidation',
+                },
+                leadership: {
+                    id: 'ttgamer.ui.sheet.v5.skills.leadership',
+                    message: 'Leadership',
+                },
+                performance: {
+                    id: 'ttgamer.ui.sheet.v5.skills.performance',
+                    message: 'Performance',
+                },
+                persuasion: {
+                    id: 'ttgamer.ui.sheet.v5.skills.persuasion',
+                    message: 'Persuasion',
+                },
+                streetwise: {
+                    id: 'ttgamer.ui.sheet.v5.skills.streetwise',
+                    message: 'Streetwise',
+                },
+                subterfuge: {
+                    id: 'ttgamer.ui.sheet.v5.skills.subterfuge',
+                    message: 'Subterfuge',
+                },
+                academics: {
+                    id: 'ttgamer.ui.sheet.v5.skills.academics',
+                    message: 'Academics',
+                },
+                awareness: {
+                    id: 'ttgamer.ui.sheet.v5.skills.awareness',
+                    message: 'Awareness',
+                },
+                finance: {
+                    id: 'ttgamer.ui.sheet.v5.skills.finance',
+                    message: 'Finance',
+                },
+                investigation: {
+                    id: 'ttgamer.ui.sheet.v5.skills.investigation',
+                    message: 'Investigation',
+                },
+                medicine: {
+                    id: 'ttgamer.ui.sheet.v5.skills.medicine',
+                    message: 'Medicine',
+                },
+                occult: {
+                    id: 'ttgamer.ui.sheet.v5.skills.occult',
+                    message: 'Occult',
+                },
+                politics: {
+                    id: 'ttgamer.ui.sheet.v5.skills.politics',
+                    message: 'Politics',
+                },
+                science: {
+                    id: 'ttgamer.ui.sheet.v5.skills.science',
+                    message: 'Science',
+                },
+                technology: {
+                    id: 'ttgamer.ui.sheet.v5.skills.technology',
+                    message: 'Technology',
+                },
+            },
+            sections: {
+                attributes: {
+                    id: 'ttgamer.ui.sheet.v5.sections.attributes',
+                    message: 'Attributes',
+                },
+                skills: {
+                    id: 'ttgamer.ui.sheet.v5.sections.skills',
+                    message: 'Skills',
+                },
+                health: {
+                    id: 'ttgamer.ui.sheet.v5.sections.health',
+                    message: 'Health',
+                },
+                willpower: {
+                    id: 'ttgamer.ui.sheet.v5.sections.willpower',
+                    message: 'Willpower',
+                },
+                advantages: {
+                    id: 'ttgamer.ui.sheet.v5.sections.advantages',
+                    message: 'Advantages',
+                },
+                flaws: {
+                    id: 'ttgamer.ui.sheet.v5.sections.flaws',
+                    message: 'Flaws',
+                },
+                advantagesFlaws: {
+                    id: 'ttgamer.ui.sheet.v5.sections.advantagesFlaws',
+                    message: 'Advantages and Flaws',
+                },
+                touchstones: {
+                    id: 'ttgamer.ui.sheet.v5.sections.touchstones',
+                    message: 'Touchstones and Convictions',
+                },
+                experience: {
+                    id: 'ttgamer.ui.sheet.v5.sections.experience',
+                    message: 'Experience',
+                },
+                equipment: {
+                    id: 'ttgamer.ui.sheet.v5.sections.equipment',
+                    message: 'Equipment',
+                },
+                notes: {
+                    id: 'ttgamer.ui.sheet.v5.sections.notes',
+                    message: 'Notes',
+                },
+                biography: {
+                    id: 'ttgamer.ui.sheet.v5.sections.biography',
+                    message: 'Biography',
+                },
+                portrait: {
+                    id: 'ttgamer.ui.sheet.v5.sections.portrait',
+                    message: 'Portrait',
+                },
+                identity: {
+                    id: 'ttgamer.ui.sheet.v5.sections.identity',
+                    message: 'Identity',
+                },
+                condition: {
+                    id: 'ttgamer.ui.sheet.v5.sections.condition',
+                    message: 'Condition',
+                },
+                weapons: {
+                    id: 'ttgamer.ui.sheet.v5.sections.weapons',
+                    message: 'Weapons',
+                },
+                inventory: {
+                    id: 'ttgamer.ui.sheet.v5.sections.inventory',
+                    message: 'Inventory',
+                },
+                other: {
+                    id: 'ttgamer.ui.sheet.v5.sections.other',
+                    message: 'Experience and Notes',
+                },
+            },
+            fields: {
+                chronicleTenets: {
+                    id: 'ttgamer.ui.sheet.v5.fields.chronicleTenets',
+                    message: 'Chronicle Tenets',
+                },
+                name: {
+                    id: 'ttgamer.ui.sheet.v5.fields.name',
+                    message: 'Name',
+                },
+                touchstone: {
+                    id: 'ttgamer.ui.sheet.v5.fields.touchstone',
+                    message: 'Touchstone',
+                },
+                conviction: {
+                    id: 'ttgamer.ui.sheet.v5.fields.conviction',
+                    message: 'Conviction',
+                },
+                experienceTotal: {
+                    id: 'ttgamer.ui.sheet.v5.fields.experienceTotal',
+                    message: 'Total experience',
+                },
+                experienceSpent: {
+                    id: 'ttgamer.ui.sheet.v5.fields.experienceSpent',
+                    message: 'Spent experience',
+                },
+                experienceLeft: {
+                    id: 'ttgamer.ui.sheet.v5.fields.experienceLeft',
+                    message: 'Experience left',
+                },
+                age: {
+                    id: 'ttgamer.ui.sheet.v5.fields.age',
+                    message: 'Age',
+                },
+                dateOfBirth: {
+                    id: 'ttgamer.ui.sheet.v5.fields.dateOfBirth',
+                    message: 'Date of birth',
+                },
+                appearance: {
+                    id: 'ttgamer.ui.sheet.v5.fields.appearance',
+                    message: 'Appearance',
+                },
+                distinguishingFeatures: {
+                    id: 'ttgamer.ui.sheet.v5.fields.distinguishingFeatures',
+                    message: 'Distinguishing features',
+                },
+                history: {
+                    id: 'ttgamer.ui.sheet.v5.fields.history',
+                    message: 'History',
+                },
+            },
+        },
+        v5Hunter: {
+            module: {
+                id: 'ttgamer.ui.sheet.v5Hunter.module',
+                message: 'Hunter: the Reckoning 5e',
+            },
+            newHunter: {
+                id: 'ttgamer.ui.sheet.v5Hunter.newHunter',
+                message: 'New Hunter',
+            },
+            views: {
+                sheet: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.views.sheet',
+                    message: 'Full sheet',
+                },
+                brief: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.views.brief',
+                    message: 'Brief',
+                },
+            },
+            sections: {
+                edges: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.sections.edges',
+                    message: 'Edges and Perks',
+                },
+                hunter: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.sections.hunter',
+                    message: 'Hunter',
+                },
+                cell: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.sections.cell',
+                    message: 'Cell',
+                },
+                edgeList: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.sections.edgeList',
+                    message: 'Edges',
+                },
+                purpose: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.sections.purpose',
+                    message: 'Aims and Convictions',
+                },
+                aims: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.sections.aims',
+                    message: 'Aims',
+                },
+                creedDrive: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.sections.creedDrive',
+                    message: 'Creed and Drive',
+                },
+            },
+            fields: {
+                concept: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.concept',
+                    message: 'Concept',
+                },
+                creed: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.creed',
+                    message: 'Creed',
+                },
+                drive: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.drive',
+                    message: 'Drive',
+                },
+                ambition: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.ambition',
+                    message: 'Ambition',
+                },
+                desire: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.desire',
+                    message: 'Desire',
+                },
+                redemption: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.redemption',
+                    message: 'Redemption',
+                },
+                creedFields: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.creedFields',
+                    message: 'Creed Fields',
+                },
+                despair: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.despair',
+                    message: 'Despair',
+                },
+                desperation: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.desperation',
+                    message: 'Desperation',
+                },
+                danger: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.danger',
+                    message: 'Danger',
+                },
+                edge: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.edge',
+                    message: 'Edge',
+                },
+                perks: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.perks',
+                    message: 'Perks',
+                },
+                perk: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.perk',
+                    message: 'Perk',
+                },
+                note: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.note',
+                    message: 'Notes',
+                },
+            },
+            categories: {
+                assets: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.categories.assets',
+                    message: 'Assets',
+                },
+                aptitudes: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.categories.aptitudes',
+                    message: 'Aptitudes',
+                },
+                endowments: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.categories.endowments',
+                    message: 'Endowments',
+                },
+            },
+            advantageTypes: {
+                merit: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageTypes.merit',
+                    message: 'Merit',
+                },
+                background: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageTypes.background',
+                    message: 'Background',
+                },
+                flaw: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageTypes.flaw',
+                    message: 'Flaw',
+                },
+            },
+            advantageGroups: {
+                linguistics: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.linguistics',
+                    message: 'Linguistics',
+                },
+                looks: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.looks',
+                    message: 'Looks',
+                },
+                nutritionist: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.nutritionist',
+                    message: 'Nutritionist',
+                },
+                psychological: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.psychological',
+                    message: 'Psychological Traits',
+                },
+                'substance-abuse': {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.substance-abuse',
+                    message: 'Substance Abuse',
+                },
+                supernatural: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.supernatural',
+                    message: 'Supernatural Situations',
+                },
+                allies: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.allies',
+                    message: 'Allies',
+                },
+                contacts: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.contacts',
+                    message: 'Contacts',
+                },
+                fame: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.fame',
+                    message: 'Fame',
+                },
+                influence: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.influence',
+                    message: 'Influence',
+                },
+                mask: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.mask',
+                    message: 'Mask',
+                },
+                mentor: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.mentor',
+                    message: 'Mentor',
+                },
+                resources: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.resources',
+                    message: 'Resources',
+                },
+                retainers: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.retainers',
+                    message: 'Retainers',
+                },
+                'safe-house': {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.safe-house',
+                    message: 'Safe House',
+                },
+                status: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.advantageGroups.status',
+                    message: 'Status',
+                },
+            },
+            weaponKinds: {
+                melee: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.weaponKinds.melee',
+                    message: 'Melee',
+                },
+                ranged: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.weaponKinds.ranged',
+                    message: 'Ranged',
+                },
+            },
+            catalogColumns: {
+                name: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.name',
+                    message: 'Name',
+                },
+                type: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.type',
+                    message: 'Type',
+                },
+                group: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.group',
+                    message: 'Trait',
+                },
+                dots: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.dots',
+                    message: 'Dots',
+                },
+                summary: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.summary',
+                    message: 'Summary',
+                },
+                kind: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.kind',
+                    message: 'Kind',
+                },
+                damage: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.damage',
+                    message: 'Damage',
+                },
+                examples: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.examples',
+                    message: 'Examples',
+                },
+                armor: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.armor',
+                    message: 'Armor',
+                },
+                note: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.note',
+                    message: 'Note',
+                },
+                effect: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.effect',
+                    message: 'Effect',
+                },
+                category: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.category',
+                    message: 'Category',
+                },
+                perks: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.catalogColumns.perks',
+                    message: 'Perks',
+                },
+            },
+            summaries: {
+                creeds: {
+                    entrepreneurial: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.creeds.entrepreneurial',
+                        message: 'Builds, invents, or buys whatever the hunt needs.',
+                    },
+                    faithful: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.creeds.faithful',
+                        message: 'Faces the unnatural with conviction, faith, or ritual.',
+                    },
+                    inquisitive: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.creeds.inquisitive',
+                        message: 'Digs for the truth of what the monsters are and how they work.',
+                    },
+                    martial: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.creeds.martial',
+                        message: 'Solves the problem with planning, training, and force.',
+                    },
+                    underground: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.creeds.underground',
+                        message: 'Works through hidden networks, favors, and secrets.',
+                    },
+                },
+                drives: {
+                    curiosity: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.drives.curiosity',
+                        message: 'Needs to know what is really out there.',
+                    },
+                    vengeance: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.drives.vengeance',
+                        message: 'Wants a monster to pay for what it took.',
+                    },
+                    oath: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.drives.oath',
+                        message: 'Bound by a promise to protect someone or end something.',
+                    },
+                    greed: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.drives.greed',
+                        message: 'Sees profit or power waiting in the hunt.',
+                    },
+                    pride: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.drives.pride',
+                        message: 'Needs to prove they are the one who can do this.',
+                    },
+                    envy: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.drives.envy',
+                        message: 'Wants what the monsters have.',
+                    },
+                    atonement: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.drives.atonement',
+                        message: 'Hunts to make up for a failure in their past.',
+                    },
+                },
+                edges: {
+                    arsenal: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.arsenal',
+                        message: 'Weapons beyond what an ordinary person can get.',
+                    },
+                    fleet: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.fleet',
+                        message: 'Vehicles ready whenever the cell needs to move.',
+                    },
+                    ordnance: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.ordnance',
+                        message: 'Explosives and clever ways to deliver them.',
+                    },
+                    library: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.library',
+                        message: 'A growing collection of lore about the creatures.',
+                    },
+                    'improvised-gear': {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.improvised-gear',
+                        message: 'Useful tools built from whatever is at hand.',
+                    },
+                    'global-access': {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.global-access',
+                        message: 'A way into records, systems, and networks.',
+                    },
+                    'drone-jockey': {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.drone-jockey',
+                        message: 'Remote drones for scouting and support.',
+                    },
+                    'beast-whisperer': {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.beast-whisperer',
+                        message: 'Animals that work alongside the hunter.',
+                    },
+                    'sense-the-unnatural': {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.sense-the-unnatural',
+                        message: 'A feeling for when something inhuman is near.',
+                    },
+                    'repel-the-unnatural': {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.repel-the-unnatural',
+                        message: 'The power to drive creatures back.',
+                    },
+                    'thwart-the-unnatural': {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.thwart-the-unnatural',
+                        message: 'Resistance against powers aimed at the hunter.',
+                    },
+                    artifact: {
+                        id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.artifact',
+                        message: 'An object with a strange power against monsters.',
+                    },
                 },
             },
         },

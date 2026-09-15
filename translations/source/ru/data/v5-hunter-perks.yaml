@@ -1,0 +1,98 @@
+arsenal-team-requisition:
+    name: 'Снабжение команды'
+arsenal-special-features:
+    name: 'Особые модификации'
+arsenal-exotics:
+    name: 'Экзотика'
+arsenal-untraceable:
+    name: 'Неотслеживаемость'
+fleet-armor:
+    name: 'Броня'
+fleet-performance:
+    name: 'Ходовые качества'
+fleet-surveillance:
+    name: 'Слежка'
+fleet-untraceable:
+    name: 'Неотслеживаемость'
+ordnance-multiple-payloads:
+    name: 'Несколько зарядов'
+ordnance-non-lethal-munitions:
+    name: 'Нелетальные боеприпасы'
+ordnance-exotics:
+    name: 'Экзотика'
+ordnance-disguised-delivery:
+    name: 'Скрытая доставка'
+library-where-they-hide:
+    name: 'Где они прячутся'
+library-who-they-are:
+    name: 'Кто они'
+library-how-to-halt-them:
+    name: 'Как их остановить'
+library-how-to-harm-them:
+    name: 'Как им навредить'
+improvised-gear-frugal:
+    name: 'Экономность'
+improvised-gear-mass-production:
+    name: 'Массовое производство'
+improvised-gear-specialization:
+    name: 'Специализация'
+improvised-gear-speed-crafting:
+    name: 'Быстрая сборка'
+global-access-watching-big-brother:
+    name: 'Слежка за Большим Братом'
+global-access-all-access-pass:
+    name: 'Пропуск везде'
+global-access-money-tap:
+    name: 'Денежный кран'
+global-access-the-letter-of-the-law:
+    name: 'Буква закона'
+drone-jockey-autonomous:
+    name: 'Автономность'
+drone-jockey-variants:
+    name: 'Модификации'
+drone-jockey-specialist-skill:
+    name: 'Особый навык'
+drone-jockey-armaments:
+    name: 'Вооружение'
+drone-jockey-payload:
+    name: 'Полезная нагрузка'
+beast-whisperer-incorruptible:
+    name: 'Неподкупность'
+beast-whisperer-menagerie:
+    name: 'Зверинец'
+beast-whisperer-complex-commands:
+    name: 'Сложные команды'
+beast-whisperer-incognito:
+    name: 'Инкогнито'
+sense-the-unnatural-creature-specialization:
+    name: 'Специализация на существах'
+sense-the-unnatural-range:
+    name: 'Дальность'
+sense-the-unnatural-precision:
+    name: 'Точность'
+sense-the-unnatural-handsfree:
+    name: 'Без рук'
+repel-the-unnatural-ward:
+    name: 'Оберег'
+repel-the-unnatural-damage:
+    name: 'Урон'
+repel-the-unnatural-creature-specialization:
+    name: 'Специализация на существах'
+repel-the-unnatural-handsfree:
+    name: 'Без рук'
+thwart-the-unnatural-creature-specialization:
+    name: 'Специализация на существах'
+thwart-the-unnatural-ward:
+    name: 'Оберег'
+thwart-the-unnatural-recognition:
+    name: 'Распознавание'
+thwart-the-unnatural-handsfree:
+    name: 'Без рук'
+artifact-empower:
+    name: 'Усиление'
+artifact-attraction:
+    name: 'Притяжение'
+artifact-detection:
+    name: 'Обнаружение'
+artifact-shield:
+    name: 'Щит'

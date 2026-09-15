@@ -1,0 +1,27 @@
+chaoscope:
+    name: 'Chaoscope'
+    effect: 'Vehicle-mounted scanner: Intelligence + Awareness at Difficulty 6 finds a supernatural threat nearby; easier against a kind already detected.'
+xscope:
+    name: 'XScope'
+    effect: 'Tells the living from the dead at a distance by heartbeat, breath, and body heat; some monsters can fool it.'
+gps-tracker:
+    name: 'GPS tracker'
+    effect: 'Four extra dice to find whoever carries it; spotting one takes Wits + Streetwise or Technology.'
+lockpick-gun:
+    name: 'Lockpick gun'
+    effect: 'Four extra dice to Dexterity + Larceny when picking a lock; hard to explain if found on you.'
+zip-cuffs:
+    name: 'Zip cuffs'
+    effect: 'Breaking free takes Strength at Difficulty 5; a blade cuts them easily.'
+handcuffs:
+    name: 'Handcuffs'
+    effect: 'Breaking free takes Strength at Difficulty 6, or Dexterity + Larceny at Difficulty 4 to slip out.'
+tactical-earbuds:
+    name: 'Tactical earbuds'
+    effect: 'Hearing protection with a cell radio; one extra die to Composure in combat.'
+disguised-weapon:
+    name: 'Disguised weapon'
+    effect: 'A weapon that looks like something else; one die fewer to attack unless crafted exceptionally well.'
+incendiary:
+    name: 'Incendiary weapon'
+    effect: 'Home-made fire weapons lose one point of damage, but the damage is Aggravated against anything that fears fire.'

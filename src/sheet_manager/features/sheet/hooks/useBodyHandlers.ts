@@ -1,8 +1,11 @@
-import { generateId } from '@site/src/shared/utils/random';
-
 import type { CatalogEntry } from '../../../components';
 import { useCharacter } from '../../../hooks';
-import type { ArmorItem, ImplantItem, Item, WeaponItem } from '../../../types/character';
+import type { EquipmentSectionId } from '../../../systems/templateBindings';
+import {
+    createEquipmentItem,
+    type EquipmentItem,
+    updateEquipmentItem,
+} from '../body/equipmentItems';
 import {
     findArmorEntry,
     findImplantEntry,
@@ -19,132 +22,39 @@ export function useBodyHandlers() {
     const weapons = character.weapons || [];
     const implants = character.implants || [];
 
-    const addItem = <T>(field: string, defaultItem: T) => {
-        updateCharacter(character.id, {
-            [field]: [...((character as Record<string, unknown>)[field] as T[]), defaultItem],
-        });
+    const addItem = (section: EquipmentSectionId) => {
+        const items = (character as unknown as Record<string, unknown[]>)[section] ?? [];
+        updateCharacter(character.id, { [section]: [...items, createEquipmentItem(section)] });
     };
 
-    const removeItem = <T extends { id: string }>(field: string, id: string) => {
-        updateCharacter(character.id, {
-            [field]: ((character as Record<string, unknown>)[field] as T[]).filter(
-                (item) => item.id !== id
-            ),
-        });
+    const removeItem = (section: EquipmentSectionId, id: string) => {
+        const items =
+            (character as unknown as Record<string, Array<{ id: string }>>)[section] ?? [];
+        updateCharacter(character.id, { [section]: items.filter((item) => item.id !== id) });
     };
 
-    const updateItem = <T extends { id: string }>(
-        field: string,
-        id: string,
-        key: keyof T,
-        value: string | number | boolean
-    ) => {
-        updateCharacter(character.id, {
-            [field]: ((character as Record<string, unknown>)[field] as T[]).map((item) =>
-                item.id === id ? { ...item, [key]: value } : item
-            ),
-        });
-    };
+    const updateItem =
+        <S extends EquipmentSectionId>(section: S, items: readonly EquipmentItem<S>[]) =>
+        (id: string, field: keyof EquipmentItem<S>, value: string | number | boolean) =>
+            updateCharacter(character.id, {
+                [section]: updateEquipmentItem(section, items, id, String(field), value),
+            });
 
-    const addInventoryItem = () =>
-        addItem<Item>('inventory', {
-            id: generateId(),
-            text: '',
-            description: '',
-            effects: '',
-            weight: '',
-            price: '',
-            quantity: 1,
-            maxQuantity: 1,
-            equipped: false,
-        });
+    const addInventoryItem = () => addItem('inventory');
+    const removeInventoryItem = (id: string) => removeItem('inventory', id);
+    const updateInventoryItem = updateItem('inventory', inventory);
 
-    const removeInventoryItem = (id: string) => removeItem<Item>('inventory', id);
+    const addArmorItem = () => addItem('armor');
+    const removeArmorItem = (id: string) => removeItem('armor', id);
+    const updateArmorItem = updateItem('armor', armor);
 
-    const updateInventoryItem = (
-        id: string,
-        field: keyof Item,
-        value: string | number | boolean
-    ) => {
-        if (field !== 'quantity' && field !== 'maxQuantity') {
-            updateItem<Item>('inventory', id, field, value);
-            return;
-        }
-        const numericValue = Math.max(0, Math.trunc(Number(value) || 0));
-        updateCharacter(character.id, {
-            inventory: inventory.map((item) => {
-                if (item.id !== id) return item;
-                if (field === 'maxQuantity') {
-                    return {
-                        ...item,
-                        maxQuantity: numericValue,
-                        quantity: Math.min(item.quantity, numericValue),
-                    };
-                }
-                return { ...item, quantity: Math.min(numericValue, item.maxQuantity) };
-            }),
-        });
-    };
+    const addWeaponItem = () => addItem('weapons');
+    const removeWeaponItem = (id: string) => removeItem('weapons', id);
+    const updateWeaponItem = updateItem('weapons', weapons);
 
-    const addArmorItem = () =>
-        addItem<ArmorItem>('armor', {
-            id: generateId(),
-            name: '',
-            classVal: '',
-            ar: '',
-            dex: '',
-        });
-
-    const removeArmorItem = (id: string) => removeItem<ArmorItem>('armor', id);
-
-    const updateArmorItem = (id: string, field: keyof ArmorItem, value: string) =>
-        updateItem<ArmorItem>('armor', id, field, value);
-
-    const addWeaponItem = () =>
-        addItem<WeaponItem>('weapons', {
-            id: generateId(),
-            name: '',
-            damage: '',
-            range: '',
-            ammo: 0,
-            maxAmmo: 0,
-        });
-
-    const removeWeaponItem = (id: string) => removeItem<WeaponItem>('weapons', id);
-
-    const updateWeaponItem = (id: string, field: keyof WeaponItem, value: string | number) => {
-        if (field !== 'ammo' && field !== 'maxAmmo') {
-            updateItem<WeaponItem>('weapons', id, field, value);
-            return;
-        }
-        const numericValue = Math.max(0, Math.trunc(Number(value) || 0));
-        updateCharacter(character.id, {
-            weapons: weapons.map((item) => {
-                if (item.id !== id) return item;
-                if (field === 'maxAmmo') {
-                    return {
-                        ...item,
-                        maxAmmo: numericValue,
-                        ammo: Math.min(item.ammo, numericValue),
-                    };
-                }
-                return { ...item, ammo: Math.min(numericValue, item.maxAmmo) };
-            }),
-        });
-    };
-
-    const addImplantItem = () =>
-        addItem<ImplantItem>('implants', {
-            id: generateId(),
-            name: '',
-            type: '',
-            effect: '',
-        });
-
-    const removeImplantItem = (id: string) => removeItem<ImplantItem>('implants', id);
-
-    const updateImplantItem = (id: string, field: keyof ImplantItem, value: string) =>
-        updateItem<ImplantItem>('implants', id, field, value);
+    const addImplantItem = () => addItem('implants');
+    const removeImplantItem = (id: string) => removeItem('implants', id);
+    const updateImplantItem = updateItem('implants', implants);
 
     const handleWeaponCatalogSelect = (id: string, entry: CatalogEntry) => {
         const found = findWeaponEntry(entry);

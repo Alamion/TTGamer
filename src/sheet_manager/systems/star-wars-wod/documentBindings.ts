@@ -1,5 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
+import { portraitFieldBinding } from '../portraitBinding';
 import type {
     DocumentBindingDescriptor,
     EquipmentSectionId,
@@ -174,37 +175,8 @@ function constrainExperience(record: unknown): unknown {
     return { total, spent: Math.min(toNonNegativeInteger(experience.spent), total) };
 }
 
-/** The portrait lives in metadata as a device blob id or an HTTPS URL (never both). */
-const portraitAdapter = {
-    read: (data: unknown) => {
-        const metadata = (data as { metadata?: { portraitId?: string; imageUrl?: string } })
-            .metadata;
-        if (metadata?.portraitId) return { source: 'device', blobId: metadata.portraitId };
-        if (metadata?.imageUrl) return { source: 'url', url: metadata.imageUrl };
-        return undefined;
-    },
-    update: (data: unknown, value: unknown) => {
-        const metadata = { ...((data as { metadata?: Record<string, unknown> }).metadata ?? {}) };
-        delete metadata.portraitId;
-        delete metadata.imageUrl;
-        const image = value as { source?: string; blobId?: string; url?: string } | undefined;
-        if (image?.source === 'device' && image.blobId) metadata.portraitId = image.blobId;
-        if (image?.source === 'url' && image.url) metadata.imageUrl = image.url;
-        return { metadata };
-    },
-};
-
 const fieldBindings: DocumentBindingDescriptor[] = [
-    {
-        key: 'field:portrait',
-        kind: 'field',
-        label: 'Portrait',
-        documentKinds: CHARACTER_KINDS,
-        path: ['metadata'],
-        valueType: 'image',
-        coordinate: 'portrait',
-        adapter: portraitAdapter,
-    },
+    portraitFieldBinding(CHARACTER_KINDS),
     ...METADATA_FIELDS.map(
         ([fieldKey, label]): DocumentBindingDescriptor => ({
             key: `field:${fieldKey}`,

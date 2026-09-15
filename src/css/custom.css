@@ -23,6 +23,8 @@
     --ifm-navbar-background-color: rgb(var(--bg-surface));
     --ifm-background-color: rgb(var(--bg-base));
     --ifm-dropdown-background-color: rgb(var(--bg-surface));
+    /* Doc cards (DocCardList) follow the palette, so they stay readable in the dark theme. */
+    --ifm-card-background-color: rgb(var(--bg-surface));
 
     --bg-base: 245 245 249;
     --bg-surface: 249 249 255;

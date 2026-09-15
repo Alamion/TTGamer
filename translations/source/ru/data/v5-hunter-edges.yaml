@@ -1,0 +1,24 @@
+arsenal:
+    name: 'Арсенал'
+fleet:
+    name: 'Автопарк'
+ordnance:
+    name: 'Спецбоеприпасы'
+library:
+    name: 'Библиотека'
+improvised-gear:
+    name: 'Самодельное снаряжение'
+global-access:
+    name: 'Глобальный доступ'
+drone-jockey:
+    name: 'Оператор дронов'
+beast-whisperer:
+    name: 'Заклинатель зверей'
+sense-the-unnatural:
+    name: 'Чутьё на неестественное'
+repel-the-unnatural:
+    name: 'Отпор неестественному'
+thwart-the-unnatural:
+    name: 'Защита от неестественного'
+artifact:
+    name: 'Артефакт'

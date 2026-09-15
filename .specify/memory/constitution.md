@@ -1,7 +1,10 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.2.0 -> 1.3.0 (amendment: layered game systems, third-party content, library scale)
+Version change: 1.3.0 -> 1.3.1 (clarification: VIII notices may be one dedicated page plus
+  badges where material is used, instead of full text on every surface)
+
+Previous: 1.2.0 -> 1.3.0 (amendment: layered game systems, third-party content, library scale)
 
 Modified principles:
   I. Modular Semi-Autonomy — game systems are layered as ruleset + setting + module; one
@@ -203,9 +206,11 @@ republishing their books. Rules:
 - Each ruleset and setting declares the publisher policies it relies on (e.g. Paradox
   Dark Pack for World of Darkness engines and settings, the SRD CC-BY attribution for
   D&D, R. Talsorian's Homebrew Content Policy for Cyberpunk RED) as machine-readable
-  metadata. Required notices are rendered from that metadata wherever the material is
-  shown or exported — documentation pages, sheets, exports — and only there; a page
-  MUST NOT carry notices or attributions for material it does not use.
+  metadata. Required notices and badges are rendered from that metadata, in the form the
+  policy requires: a policy's full statement MAY live on one dedicated documentation page,
+  with surfaces that use the material (sheets) showing the required badge linking to it, and
+  exports carrying the notice text. A page MUST NOT carry notices or attributions for
+  material it does not use.
 - A combination inherits every applicable policy: a setting run on another publisher's
   engine shows both notices.
 - Content under a non-commercial policy stays free, with no purchases or monetized
@@ -277,4 +282,4 @@ is perceived, the principles govern and this table clarifies application.
   guidance file for day-to-day development; it must remain consistent with this
   constitution and defer to it on conflict.
 
-**Version**: 1.3.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-15
+**Version**: 1.3.1 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-15

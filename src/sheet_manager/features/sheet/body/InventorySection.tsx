@@ -4,7 +4,6 @@ import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest, Checkbox, CollapsibleItem } from '../../../components';
 import { AutoResizeTextarea } from '../../../components';
 import type { Item } from '../../../types/character';
-import { buildInventoryCatalog } from '../data/bodyEquipmentCatalogs';
 
 interface InventorySectionProps {
     items: Item[];
@@ -13,6 +12,8 @@ interface InventorySectionProps {
     onRemove: (id: string) => void;
     onUpdate: (id: string, field: keyof Item, value: string | number | boolean) => void;
     onCatalogSelect: (id: string, entry: CatalogEntry) => void;
+    /** Name suggestions; picking one calls `onCatalogSelect`. Empty = free text only. */
+    catalog: CatalogEntry[];
 }
 
 export function InventorySection({
@@ -22,9 +23,8 @@ export function InventorySection({
     onRemove,
     onUpdate,
     onCatalogSelect,
+    catalog,
 }: InventorySectionProps) {
-    const inventoryCatalog = buildInventoryCatalog();
-
     return (
         <div className="px-4 pb-4 space-y-2">
             {items.length === 0 ? (
@@ -52,7 +52,7 @@ export function InventorySection({
                                     Name
                                 </span>
                                 <CatalogSuggest
-                                    catalog={inventoryCatalog}
+                                    catalog={catalog}
                                     value={item.text}
                                     onChange={(val) => onUpdate(item.id, 'text', val)}
                                     onSelect={(entry) => onCatalogSelect(item.id, entry)}

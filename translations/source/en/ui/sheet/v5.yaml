@@ -1,0 +1,74 @@
+system: World of Darkness 5th Edition
+attributes:
+    physical: Physical
+    social: Social
+    mental: Mental
+    strength: Strength
+    dexterity: Dexterity
+    stamina: Stamina
+    charisma: Charisma
+    manipulation: Manipulation
+    composure: Composure
+    intelligence: Intelligence
+    wits: Wits
+    resolve: Resolve
+skills:
+    athletics: Athletics
+    brawl: Brawl
+    craft: Craft
+    driving: Driving
+    firearms: Firearms
+    larceny: Larceny
+    melee: Melee
+    stealth: Stealth
+    survival: Survival
+    animalKen: Animal Ken
+    etiquette: Etiquette
+    insight: Insight
+    intimidation: Intimidation
+    leadership: Leadership
+    performance: Performance
+    persuasion: Persuasion
+    streetwise: Streetwise
+    subterfuge: Subterfuge
+    academics: Academics
+    awareness: Awareness
+    finance: Finance
+    investigation: Investigation
+    medicine: Medicine
+    occult: Occult
+    politics: Politics
+    science: Science
+    technology: Technology
+sections:
+    attributes: Attributes
+    skills: Skills
+    health: Health
+    willpower: Willpower
+    advantages: Advantages
+    flaws: Flaws
+    advantagesFlaws: Advantages and Flaws
+    touchstones: Touchstones and Convictions
+    experience: Experience
+    equipment: Equipment
+    notes: Notes
+    biography: Biography
+    portrait: Portrait
+    identity: Identity
+    condition: Condition
+    weapons: Weapons
+    inventory: Inventory
+    other: Experience and Notes
+fields:
+    chronicleTenets: Chronicle Tenets
+    name: Name
+    touchstone: Touchstone
+    conviction: Conviction
+    experienceTotal: Total experience
+    experienceSpent: Spent experience
+    experienceLeft: Experience left
+    age: Age
+    dateOfBirth: Date of birth
+    appearance: Appearance
+    distinguishingFeatures: Distinguishing features
+    history: History

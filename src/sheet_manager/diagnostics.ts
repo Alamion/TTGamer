@@ -20,7 +20,9 @@ export type SheetIssueCode =
     /** A reference value names a document that no longer exists. */
     | 'reference-target-missing'
     /** A catalog value was clamped or dropped while filling a sheet. */
-    | 'catalog-detail-out-of-range';
+    | 'catalog-detail-out-of-range'
+    /** A template was applied to a document of another system or kind; its default page rendered. */
+    | 'template-incompatible';
 
 export interface SheetIssue {
     code: SheetIssueCode;

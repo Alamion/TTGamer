@@ -19,6 +19,14 @@ describe('catalog binding registry', () => {
                 'ranged-weapons',
                 'species',
                 'tools-gear',
+                'v5-hunter-creeds',
+                'v5-hunter-drives',
+                'v5-hunter-edges',
+                'v5-hunter-perks',
+                'v5-hunter-advantages',
+                'v5-hunter-weapons',
+                'v5-hunter-armor',
+                'v5-hunter-gear',
                 'vehicles',
             ].sort()
         );

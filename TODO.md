@@ -39,23 +39,42 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [ ] ⬜ **T-037 — Third-party text audit & licensing notices** (none) — readers and rights holders get documentation and catalog text written in the project's own words, with each system's required notices shown where its material is used. (task for roadmap path `core-book-docs`)
     - Verbatim 8-word overlap scan (2026-09-15): docs prose ≤10% per page; catalogs higher — `meritsFlawsData.ts` (VtM Players Guide 2nd + SW WEG→WoD conversion), `abilities.ts`, `backgroundsData.ts`, `vehicleData.ts` (WEG D6). Trait-name lists are false positives; paraphrase is not detected.
     - Notices become system/ruleset metadata rendered automatically (Dark Pack for WoD-engine content, per-publisher policies for others); no notice on unrelated pages.
-- [ ] ⬜ **T-038 — V5 ruleset + Hunter: the Reckoning 5e player character** (none) — players create, edit, and export a validated H:tR 5e hunter sheet built on a reusable V5 ruleset layer, and can re-skin it for a homebrew setting through the template system. (task for roadmap path `multi-system-sheets`)
+    - 2026-09-15: the metadata exists (spec 008, used by V5); the official Dark Pack badge is in `static/img/`, shown bottom-left on hunter sheets and with the full statement on `docs/v5/dark-pack`. Still open: the badge where donations are solicited; decide whether the Star Wars WoD conversion declares the Dark Pack policy.
+- [ ] 🟡 **T-038 — V5 ruleset + Hunter: the Reckoning 5e player character** (none) — players create, edit, and export a validated H:tR 5e hunter sheet built on a reusable V5 ruleset layer, and can re-skin it for a homebrew setting through the template system. (task for roadmap path `multi-system-sheets`)
     - Highest priority: a table game runs on it within 1–2 weeks of 2026-09-15; keep scope to what that session needs.
     - Source: `context/Hunter the reckoning 5e.pdf` (image-only scan; read pages visually). Sheet structure and trait names only — no verbatim rules text.
     - In scope: minimal ruleset/module/setting split (V5 engine as ruleset, Hunter as module) sized so VtM 5e (T-039) fits beside it; hunter full + brief templates; Dark Pack notice wherever H:tR material is shown or exported.
     - The homebrew fantasy re-skin is a user template exported to a file, not a shipped/published template.
-    - Out of scope: V5 dice automation (T-045; counted manually for now), NPCs and other entities (T-040), H:tR documentation pages, personas (T-044).
+    - Out of scope: V5 dice automation (T-045; counted manually for now), NPCs and other entities (T-040), personas (T-044).
+    - 2026-09-15: implemented by spec 008 (V5 ruleset + Hunter module, full/brief sheets on the existing WoD elements, Dark Pack badge, V5/Hunter docs en + ru); remaining: in-app review of the quickstart scenarios and the newcomer hallway test before marking done.
 - [ ] ⬜ **T-039 — Vampire: the Masquerade 5e player character** (T-038) — players maintain VtM 5e vampire sheets on the shared V5 ruleset, adding only the Vampire module. (task for roadmap path `multi-system-sheets`)
 - [ ] ⬜ **T-040 — V5 non-player entities** (T-038) — GMs track H:tR/VtM 5e NPCs, creatures, and organizations as documents instead of free-form markdown notes; planned as its own spec. (task for roadmap path `gm-notes-templates`)
 - [ ] ⬜ **T-041 — Ruleset / module / setting layering for existing systems** (T-038) — the Star Wars WoD system migrates from one combined `systemId` to a ruleset (WoD-like engine) + setting (Star Wars) + module list, so settings and supernatural types compose without per-combination code. (task for roadmap path `multi-system-sheets`)
     - A character carries one supernatural module by default; crossovers are built by extending the sheet through templates rather than stacking modules.
     - Existing persisted documents migrate through the versioned envelope migrations; no data loss.
-- [ ] ⬜ **T-042 — Shared entity library with tags and links** (T-041) — GMs keep every entity (characters, organizations, places, lore) in one shared library connected by links, and slice the resulting graph with tags, where campaigns and worlds are tag kinds rather than containers; one entity can belong to several campaigns. (task for roadmap path `campaigns`)
-    - Must stay usable with thousands of entities: indexed IndexedDB queries instead of loading everything into memory, virtualized lists, search/filter-first navigation, and bounded graph views — there is no obvious tree to fall back on.
-    - Planned as its own spec; UI discovery is part of the work.
+- [ ] 🚫 **T-042 — Shared entity library with tags and links** (T-041) — closed: superseded by T-052; entity organization returns to a file-system structure rather than a tag-sliced link graph.
+    - The scale requirement carries over to T-052: thousands of entities, indexed IndexedDB queries instead of loading everything into memory, virtualized lists, and search/filter-first navigation.
 - [ ] ⬜ **T-043 — Classic World of Darkness lines** (T-041) — players use sheets for the remaining classic WoD lines (VtM, W:tA, C:tD, Wraith, H:tR classic) as ruleset modules, after the V5 lines. (task for roadmap path `multi-system-sheets`)
-- [ ] ⬜ **T-044 — Personas and audience-restricted views** (T-012, T-042) — GMs give one document several faces (e.g. a vampire's mortal facade) and choose which face each player sees; until multiplayer exists, hiding sections through templates is sufficient. (task for roadmap path `multiplayer-groups`)
+- [ ] ⬜ **T-044 — Personas and audience-restricted views** (T-012, T-052) — GMs give one document several faces (e.g. a vampire's mortal facade) and choose which face each player sees; until multiplayer exists, hiding sections through templates is sufficient. (task for roadmap path `multiplayer-groups`)
     - Real secrecy requires server-side projection (`project(document, persona)`); client-side hiding is presentation only and must not be presented as protection. No client-side encryption.
+- [ ] ⬜ **T-048 — Free-form markdown document element** (none) — template authors place a large free-text element that renders markdown, inline HTML, and image embeds, with a side-by-side rendered preview on desktop. (task for roadmap path `gm-notes-templates`)
+    - A bounded set of MDX embeds reuses existing sheet elements inside the text.
+    - Security: embeddable components are an explicit allowlist registered in one place; everything else is sanitized, never evaluated. The allowlist is the contract this element declares (Principle II).
+    - Narrow screens collapse the preview to a toggle instead of a second column.
+- [ ] ⬜ **T-049 — Canvas / map document element** (T-048) — GMs build a spatial canvas inside a document: pasted images, freehand drawing, links to other entities, and embedded elements from other documents. (task for roadmap path `map-notes`)
+    - Reference behavior: the Excalidraw canvas in Obsidian.
+    - Staged: images and links first; selection, moving, scaling, and rotation after.
+    - Needs an explicit scale note (Principle VII): canvas payloads and embeds must not load eagerly with the document list.
+- [ ] ⬜ **T-050 — Initiative tracker** (none) — GMs run turn order at the table inside the tool instead of on paper.
+    - Open question: where it lives — on a character document, in a separate `group`/party document, or as part of the dice module.
+- [ ] ⬜ **T-051 — Shared entity links with brief preview cards** (T-056) — every document type links to other entities through one shared, documented mechanism, and readers see a linked entity's brief card without leaving the page. (task for roadmap path `gm-notes-templates`)
+    - The vehicle sheet already implements entity references; that implementation is promoted to a shared contract recorded in `src/sheet_manager/AGENTS.md` and the sheet skills, and reused — not reinvented per document type.
+    - Open question: the preview surface — hover popover, the currently free right-hand panel of the sheet, or elsewhere.
+    - Main risk is performance (Principle VII): previews resolve on demand and bounded, so a document with many links does not add proportional weight to the page.
+- [ ] ⬜ **T-052 — File-system organization of entities** (none) — GMs organize all documents in folders — character sheets beside markdown documents, canvases, and later types — instead of a link graph sliced by tags. (task for roadmap path `note-tree`, `campaigns`)
+    - 2026-09-15: reverses the shared-library/tag-graph direction; T-042 is closed as superseded and the `campaigns` roadmap note records the change.
+    - Entity links (T-051) remain, but they are cross-references, not the primary navigation structure.
+- [ ] ⬜ **T-053 — Guided step-by-step character creation** (none) — players build a legal character through ordered steps with the rules applied as they go: the current step highlighted, allowed ranges shown, and per-category budgets (for example skill dots) enforced instead of a blank sheet. (task for roadmap path `character-creation-flow`)
 
 ### Minor
 
@@ -68,6 +87,19 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [x] ✅ **T-018 — Empty character name placeholder** (none) — new characters start with a blank name instead of a placeholder string.
 - [x] ✅ **T-019 — Separate roll-group syntax** (none) — notation like `(3d10+1d10)>=6f=1` parses with separate roll groups before modifiers.
 - [ ] ⬜ **T-045 — V5 dice pools** (none) — players roll VtM 5e / H:tR 5e pools with automatic success, critical-pair, and Hunger/Desperation outcome handling instead of counting by hand; detail in `src/dice_roller/TODO.md` #15. (task for roadmap path `multi-system-sheets`)
+- [ ] ⬜ **T-046 — Composite template keys** (none) — edited default pages stay attached to the right system as more systems ship: default overrides and shipped-template lookups key by `systemId:viewId` with a template store migration, replacing the view-id prefix convention. (task for roadmap path `multi-system-sheets`)
+- [ ] ⬜ **T-047 — Star Wars docs in the V5 page format** (T-038) — Star Wars readers get the same page anatomy as the V5 docs (short summary first, guided creation steps with a running example and sheet embeds), if the format proves itself at the table. (task for roadmap path `core-book-docs`)
+- [ ] ⬜ **T-054 — Live template editing** (none) — template authors edit a template on the real page layout instead of an abstract tree: an optional preview of the finished sheet, blocks reordered in place, fields added and moved where they will appear. (task for roadmap path `gm-notes-templates`)
+    - Column settings add real columns inside the editor and the width control resizes them, rather than only writing configuration.
+    - Sections show their characteristic primary/secondary accent bars in the editor.
+    - Mostly an interface rework over existing template capabilities; low priority.
+- [ ] ⬜ **T-055 — Visible StatDot clear control** (none) — the optional clear cross on StatDot is noticeable: semi-transparent red by default, more opaque on hover and keyboard focus.
+- [ ] ⬜ **T-056 — Denser brief layouts** (none) — a brief sheet fits one phone screen or a quarter of a desktop screen: CompactRating labels shorten to three uppercase letters with minimal label-to-value spacing, and the other element kinds tighten the same way, so far more field groups fit without losing information or visible grouping.
+    - Prerequisite for the embedded brief cards of T-051 and T-059.
+- [ ] ⬜ **T-057 — Back navigation between linked entities** (T-051) — following a link to another entity is reversible: browser back and forward return to the previously viewed document, even though it is physically the same page.
+- [ ] ⬜ **T-058 — System/custom template field parity** (none) — system-defined fields offer exactly the same settings as custom template fields (for example a maximum on an attribute such as Strength) and are indistinguishable in the editor UI.
+    - Includes writing the parity rule into the constitution as an amendment (Sync Impact Report, version bump, mirrored into `AGENTS.md` and the sheet skills).
+- [ ] ⬜ **T-059 — Embedded documentation briefs in sheets** (T-051) — sheet hints show the chosen documentation fragment in place instead of only linking out to it, reusing the brief-embed mechanism and its on-demand loading budget. (task for roadmap path `core-book-docs`)
 
 ### Localization
 

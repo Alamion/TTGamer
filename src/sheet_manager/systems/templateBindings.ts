@@ -34,6 +34,17 @@ export interface TraitBinding extends BindingBase {
     defaultValue: number;
     /** Formula / shared value-key coordinate (kebab-case). */
     coordinate: string;
+    /**
+     * Trait row options (both default to true): the free-text specialization input and the
+     * specialization/experienced/practiced flags of WoD-like systems.
+     */
+    row?: { specialization?: boolean; flags?: boolean };
+}
+
+/** Translation descriptor as generated in `uiMessages`. */
+export interface TranslationDescriptor {
+    id: string;
+    message: string;
 }
 
 /** Entry shape of a bound list, selecting the list molecule and its raw↔entry mapping. */
@@ -55,6 +66,13 @@ export interface ListBinding extends BindingBase {
     catalog?: ListCatalogSupport;
     /** Coordinate a catalog fill can target (entries replace the whole list). */
     coordinate?: string;
+    /**
+     * Merit/flaw lists: whether entries add (`positive`) or cost (`negative`) points. Defaults
+     * to the catalog filter convention (a `Flaw` filter means negative).
+     */
+    polarity?: 'positive' | 'negative';
+    /** Translated list title (the plain `label` is the fallback). */
+    translation?: TranslationDescriptor;
 }
 
 /** Raw document-data entry for a new list item, shaped by the list's entry shape. */
@@ -117,12 +135,41 @@ export interface TrackBinding extends BindingBase {
         lengthPath: readonly string[];
         levelsByLength: Readonly<Record<number, readonly TrackLevel[]>>;
     };
+    /**
+     * Computed length of an unlabeled track (V5 Health = Stamina + 3): a formula over bound
+     * numeric coordinates plus a player adjustment stored in the track record under
+     * `adjustmentKey`. Levels are plain boxes; `levels` is ignored. Excludes `variants`.
+     */
+    length?: {
+        from: string;
+        adjustmentKey: string;
+        adjustmentRange: { min: number; max: number };
+        maxLength: number;
+    };
 }
 
 /** Visible levels of a track for a given stored length (falls back to the full track). */
 export function trackLevelsFor(binding: TrackBinding, length: unknown): readonly TrackLevel[] {
     if (!binding.variants || typeof length !== 'number') return binding.levels;
     return binding.variants.levelsByLength[length] ?? binding.levels;
+}
+
+/** Selectable lengths of a track with level variants, shortest first (empty without variants). */
+export function trackVariantLengths(binding: TrackBinding): number[] {
+    return binding.variants
+        ? Object.keys(binding.variants.levelsByLength)
+              .map(Number)
+              .sort((a, b) => a - b)
+        : [];
+}
+
+/** Unlabeled boxes of a computed-length track. */
+export function trackBoxes(length: number): TrackLevel[] {
+    return Array.from({ length: Math.max(0, length) }, (_, index) => ({
+        id: `box-${index + 1}`,
+        label: String(index + 1),
+        penalty: null,
+    }));
 }
 
 export interface BindingOption {
@@ -135,8 +182,12 @@ export interface FieldBinding extends BindingBase {
     kind: 'field';
     /** Path inside document data, e.g. `['metadata', 'name']` or `['experience', 'total']`. */
     path: readonly string[];
-    valueType: 'string' | 'number' | 'image' | 'enum';
+    valueType: 'string' | 'number' | 'boolean' | 'image' | 'enum';
     coordinate: string;
+    /** Free-text value with suggestions from a catalog (entry names; custom text allowed). */
+    suggestions?: { catalogId: string };
+    /** Numbers: inclusive bounds applied on write. */
+    range?: { min: number; max: number };
     /** Closed value set (`enum`); ids are the stored values. */
     options?: readonly BindingOption[];
     /** Numeric reading of a text value for formulas (e.g. `'+3D'` → 3). */
@@ -194,10 +245,20 @@ export function fieldBindingUpdate(
 
 export type EquipmentSectionId = 'inventory' | 'armor' | 'weapons' | 'implants';
 
-/** Catalog-backed equipment sections rendered through the body-section molecules. */
+/**
+ * Equipment sections rendered through the body-section molecules. Without `dataKey` the section
+ * edits the character capability with the Star Wars item catalogs; with it, a plain array of
+ * section items in document data (no catalog, free text).
+ */
 export interface EquipmentBinding extends BindingBase {
     kind: 'equipment';
     sectionId: EquipmentSectionId;
+    dataKey?: string;
+    /**
+     * `dataKey` sections: name suggestions from plugin catalogs; picking one writes mapped item
+     * fields (detail key → item field; the `name` detail writes the localized entry name).
+     */
+    catalog?: { catalogIds: readonly string[]; fills: Readonly<Record<string, string>> };
 }
 
 export interface RowsColumn {
@@ -207,6 +268,8 @@ export interface RowsColumn {
     /** `enum` stores option ids; an unknown stored value is shown as-is and kept until changed. */
     type: 'text' | 'enum';
     options?: readonly BindingOption[];
+    /** Stored and filled but not shown (e.g. the catalog entry id behind a name). */
+    hidden?: boolean;
 }
 
 /**
@@ -394,6 +457,12 @@ export function createRowId(): string {
 const clampInt = (value: number, minimum: number, maximum: number) =>
     Math.max(minimum, Math.min(maximum, Math.trunc(value)));
 
+/** A number written through a field binding, within the binding's range when it declares one. */
+export function clampFieldNumber(binding: FieldBinding, value: number): number {
+    if (!binding.range) return value;
+    return clampInt(Number.isFinite(value) ? value : 0, binding.range.min, binding.range.max);
+}
+
 /**
  * The top-level document-data update that stores `value` through a writable binding. `null`
  * clears (empty text, default trait, empty list); `undefined` must be filtered by the caller.
@@ -436,16 +505,16 @@ export function boundWriteUpdate(
         case 'field': {
             const typed =
                 binding.valueType === 'number'
-                    ? typeof value === 'number'
-                        ? value
-                        : 0
-                    : binding.valueType === 'enum'
-                      ? binding.options?.some((option) => option.id === value)
-                          ? value
-                          : readDataPath(data, binding.path)
-                      : value === null || value === undefined
-                        ? ''
-                        : String(value);
+                    ? clampFieldNumber(binding, typeof value === 'number' ? value : 0)
+                    : binding.valueType === 'boolean'
+                      ? value === true
+                      : binding.valueType === 'enum'
+                        ? binding.options?.some((option) => option.id === value)
+                            ? value
+                            : readDataPath(data, binding.path)
+                        : value === null || value === undefined
+                          ? ''
+                          : String(value);
             return fieldBindingUpdate(binding, data, typed);
         }
         case 'rows': {
@@ -456,7 +525,8 @@ export function boundWriteUpdate(
                     const entry: Record<string, unknown> = { id: createRowId() };
                     for (const column of binding.columns) {
                         const cell = source[column.key];
-                        if (cell !== undefined && cell !== null) entry[column.key] = String(cell);
+                        if (cell === undefined || cell === null) continue;
+                        entry[column.key] = String(cell);
                     }
                     return entry;
                 }),

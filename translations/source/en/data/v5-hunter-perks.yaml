@@ -1,0 +1,98 @@
+arsenal-team-requisition:
+    name: 'Team Requisition'
+arsenal-special-features:
+    name: 'Special Features'
+arsenal-exotics:
+    name: 'Exotics'
+arsenal-untraceable:
+    name: 'Untraceable'
+fleet-armor:
+    name: 'Armor'
+fleet-performance:
+    name: 'Performance'
+fleet-surveillance:
+    name: 'Surveillance'
+fleet-untraceable:
+    name: 'Untraceable'
+ordnance-multiple-payloads:
+    name: 'Multiple Payloads'
+ordnance-non-lethal-munitions:
+    name: 'Non-Lethal Munitions'
+ordnance-exotics:
+    name: 'Exotics'
+ordnance-disguised-delivery:
+    name: 'Disguised Delivery'
+library-where-they-hide:
+    name: 'Where They Hide'
+library-who-they-are:
+    name: 'Who They Are'
+library-how-to-halt-them:
+    name: 'How to Halt Them'
+library-how-to-harm-them:
+    name: 'How to Harm Them'
+improvised-gear-frugal:
+    name: 'Frugal'
+improvised-gear-mass-production:
+    name: 'Mass Production'
+improvised-gear-specialization:
+    name: 'Specialization'
+improvised-gear-speed-crafting:
+    name: 'Speed Crafting'
+global-access-watching-big-brother:
+    name: 'Watching Big Brother'
+global-access-all-access-pass:
+    name: 'All-Access Pass'
+global-access-money-tap:
+    name: 'Money Tap'
+global-access-the-letter-of-the-law:
+    name: 'The Letter of the Law'
+drone-jockey-autonomous:
+    name: 'Autonomous'
+drone-jockey-variants:
+    name: 'Variants'
+drone-jockey-specialist-skill:
+    name: 'Specialist Skill'
+drone-jockey-armaments:
+    name: 'Armaments'
+drone-jockey-payload:
+    name: 'Payload'
+beast-whisperer-incorruptible:
+    name: 'Incorruptible'
+beast-whisperer-menagerie:
+    name: 'Menagerie'
+beast-whisperer-complex-commands:
+    name: 'Complex Commands'
+beast-whisperer-incognito:
+    name: 'Incognito'
+sense-the-unnatural-creature-specialization:
+    name: 'Creature Specialization'
+sense-the-unnatural-range:
+    name: 'Range'
+sense-the-unnatural-precision:
+    name: 'Precision'
+sense-the-unnatural-handsfree:
+    name: 'Handsfree'
+repel-the-unnatural-ward:
+    name: 'Ward'
+repel-the-unnatural-damage:
+    name: 'Damage'
+repel-the-unnatural-creature-specialization:
+    name: 'Creature Specialization'
+repel-the-unnatural-handsfree:
+    name: 'Handsfree'
+thwart-the-unnatural-creature-specialization:
+    name: 'Creature Specialization'
+thwart-the-unnatural-ward:
+    name: 'Ward'
+thwart-the-unnatural-recognition:
+    name: 'Recognition'
+thwart-the-unnatural-handsfree:
+    name: 'Handsfree'
+artifact-empower:
+    name: 'Empower'
+artifact-attraction:
+    name: 'Attraction'
+artifact-detection:
+    name: 'Detection'
+artifact-shield:
+    name: 'Shield'

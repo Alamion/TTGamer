@@ -24,9 +24,9 @@ function skeletonFromDefaultView(
     if (!source) return undefined;
     return {
         ...source,
-        id: `skeleton-${definition.id}`,
-        name: `${definition.label} page skeleton`,
-        description: `Starts from the current structure of the built-in ${definition.label.toLowerCase()} page.`,
+        id: `skeleton-${systemId}-${definition.id}`,
+        name: `${definition.label.message} page skeleton`,
+        description: `Starts from the current structure of the built-in ${definition.label.message.toLowerCase()} page.`,
     } as CustomTemplate;
 }
 
@@ -69,10 +69,13 @@ const fallbackSkeleton = CustomTemplateSchema.parse({
 export const TEMPLATE_SKELETONS: readonly CustomTemplate[] = buildSkeletons();
 
 export function getSkeletonsForKind(
-    documentKind: CustomTemplate['documentKind']
+    documentKind: CustomTemplate['documentKind'],
+    systemId?: string
 ): readonly CustomTemplate[] {
     const skeletons = TEMPLATE_SKELETONS.filter(
-        (template) => template.documentKind === documentKind
+        (template) =>
+            template.documentKind === documentKind &&
+            (systemId === undefined || template.systemId === systemId)
     );
     return skeletons.length > 0 ? skeletons : [fallbackSkeleton];
 }

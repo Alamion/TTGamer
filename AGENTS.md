@@ -135,9 +135,10 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 - `shared/` contains system-independent UI and utilities only. Cross-feature or external-service behavior belongs in `integrations/`.
 - Bound sheet elements read through `useBoundDocument()` (character capability for characters, typed document data for other kinds); pages are shipped templates, not React blocks.
 - Imported/persisted documents must pass the envelope schema and their registered definition schema; `BaseCharacterSchema` is only the legacy-character import path (Zod strips unknown legacy fields).
-- Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by several lines (e.g. V5) are one ruleset.
-- Third-party material: rules and catalog text in our own words (no verbatim book passages); publisher notices (e.g. Dark Pack) come from system metadata and are shown only where that material is used (constitution VIII).
-- Data changes must pass `yarn validate:data`. Star Wars documentation path changes must be mirrored under Russian i18n and pass `yarn validate:i18n`.
+- Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by several lines (e.g. V5) are one ruleset. In code: `systems/v5/ruleset/` + `systems/v5/modules/<line>/`; every plugin (Star Wars included) declares its `catalogs`, `policies`, `defaultTemplates`, and `templateBindings` on `SystemPlugin`.
+- Generic sheet code never imports a concrete system folder: one ESLint `no-restricted-imports` pattern covers every `systems/<system>/` (allowed importers: `systems/index.ts`, `docsEmbeds.tsx`, the legacy path in `store/documentStore.ts`).
+- Third-party material: rules and catalog text in our own words (no verbatim book passages); publisher notices (e.g. Dark Pack) come from `systems/policies.ts` metadata declared by plugins/modules and render as a badge on sheets (`PolicyBadges`, linking to the policy's single docs page with `PolicyStatement`) and `notices` in exports — only where that material is used (constitution VIII).
+- Data changes must pass `yarn validate:data`. Documentation under `docs/star-wars-wod-2e` and `docs/v5` must be mirrored under Russian i18n and pass `yarn validate:i18n`.
 - YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`; do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.
 
 ## 9. Specs vs Current State

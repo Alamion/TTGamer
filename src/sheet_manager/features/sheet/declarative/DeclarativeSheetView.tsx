@@ -5,10 +5,12 @@ import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
 import { createElement, type CSSProperties, useMemo } from 'react';
 
+import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
 import type { FieldBinding } from '../../../systems/templateBindings';
 import {
+    clampFieldNumber,
     fieldBindingUpdate,
     readDataPath,
     resolveDataBindingByCoordinate,
@@ -20,6 +22,7 @@ import { coerceStoredValue } from '../../../types/templateValues';
 import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import { useBoundDocument } from './boundDocument';
+import { useCatalogSuggestions } from './catalogSuggestions';
 import type { FormulaEvaluationError } from './formula';
 import { useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { localizeTemplate } from './localizeTemplate';
@@ -194,6 +197,7 @@ function FieldCell({
  */
 function BoundFieldCell({ field, binding }: { field: TemplateField; binding: FieldBinding }) {
     const bound = useBoundDocument();
+    const suggestions = useCatalogSuggestions(binding.suggestions?.catalogId);
     if (!bound) return null;
     const { readOnly } = bound;
     const stored = binding.adapter
@@ -209,12 +213,12 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
         }
         const typed =
             binding.valueType === 'number'
-                ? typeof next === 'number'
+                ? clampFieldNumber(binding, typeof next === 'number' ? next : 0)
+                : binding.valueType === 'boolean'
+                  ? next === true
+                  : typeof next === 'string'
                     ? next
-                    : 0
-                : typeof next === 'string'
-                  ? next
-                  : '';
+                    : '';
         bound.update(fieldBindingUpdate(binding, bound.data, typed));
         if (binding.syncsTitle && typeof typed === 'string') bound.setTitle(typed);
     };
@@ -228,12 +232,26 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
             >
                 {field.label}
             </span>
-            {createElement(templateFieldControl(field.type), {
-                field,
-                value,
-                onChange,
-                disabled: readOnly,
-            })}
+            {binding.suggestions && field.type === 'text' ? (
+                <CatalogSuggest
+                    catalog={suggestions}
+                    value={typeof value === 'string' ? value : ''}
+                    onChange={onChange}
+                    onSelect={(entry) => onChange(entry.name)}
+                    disabled={readOnly}
+                    ariaLabel={field.label}
+                    placeholder={field.placeholder}
+                    className="w-full rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60"
+                    showAllWhenEmpty
+                />
+            ) : (
+                createElement(templateFieldControl(field.type), {
+                    field,
+                    value,
+                    onChange,
+                    disabled: readOnly,
+                })
+            )}
             {field.description && (
                 <span className="text-xs text-textSecondary">{field.description}</span>
             )}

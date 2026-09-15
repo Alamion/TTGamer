@@ -1,0 +1,59 @@
+---
+sidebar_position: 3.13
+title: Damage and Willpower
+description: Health and Willpower tracks, superficial versus aggravated harm, impairment, and recovery.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import { hunterExampleDocument, TemplatePreview } from '@site/src/sheet_manager/docsEmbeds';
+
+# Damage and Willpower
+
+:::tip[In short]
+You have two tracks of boxes: **Health** (Stamina + 3) for the body and **Willpower** (Composure + Resolve) for the mind. Harm is either **superficial** (it fades) or **aggravated** (it lingers). A full track means you are **impaired**.
+:::
+
+## Two tracks
+
+- **Health** takes physical harm: blows, bullets, falls, fire.
+- **Willpower** takes mental and social harm: terror, humiliation, pressure. You also mark it when you spend Willpower to reroll dice.
+
+The number of boxes comes from your Attributes. Some advantages add boxes; use the **−/+** buttons after the track for that.
+
+## Two kinds of harm
+
+- **Superficial** harm is bruises, scrapes, and nerves. Most ordinary attacks deal superficial Health damage, and it heals quickly.
+- **Aggravated** harm is serious: deep wounds, supernatural claws, trauma that changes you. It heals slowly.
+
+Aggravated marks always fill boxes first, followed by superficial marks.
+
+## When a track is full
+
+If you take superficial harm with no empty boxes left, one of your superficial marks becomes aggravated instead. Once every box holds a mark, you are **impaired**: the Storyteller applies a penalty to your rolls until you recover. A track completely filled with aggravated harm means you are taken out — badly hurt, broken, or worse.
+
+:::info[How the sheet helps]
+Click a box to cycle it: superficial (╱), aggravated (×), empty. You place marks yourself, so keep aggravated marks first and upgrade a superficial mark when the track is full. If your Stamina drops, marks past the last box are kept and come back when the track grows again.
+:::
+
+## Recovery
+
+Superficial Health damage heals with rest between scenes; aggravated Health damage takes days and proper care. Superficial Willpower damage returns when you rest or act on what matters to your character; aggravated Willpower damage needs something that truly restores your sense of self. Your Storyteller sets the exact pace.
+
+## Example
+
+:::note[Example: Lena]
+Lena (Stamina 3, Health 6) has taken one superficial hit. Her Willpower (Composure 4 + Resolve 2 = 6) already shows the point she spent on a reroll.
+:::
+
+<TWWrapper>
+    <TemplatePreview
+        document={hunterExampleDocument()}
+        systemId="v5"
+        template="v5-hunter-sheet"
+        node="condition"
+    />
+</TWWrapper>
+
+## Next
+
+Return to the [Hunter section](../hunter/) to see how hunters push past their limits.

@@ -20,7 +20,21 @@ import { TemplateImportDialog } from './TemplateImportDialog';
 
 const library = uiMessages.sheet.templates.library;
 
-const DOCUMENT_KINDS = ['character', 'creature', 'vehicle', 'group'] as const;
+/** Page targets a new template can be written for: every registered system + document kind. */
+function templateTargets() {
+    const seen = new Set<string>();
+    return systemRegistry.listDefinitions().flatMap(({ system, definition }) => {
+        const value = `${system.id}/${definition.kind}`;
+        if (seen.has(value)) return [];
+        seen.add(value);
+        return [{ value, systemId: system.id, kind: definition.kind, system }];
+    });
+}
+
+function groupLabel(systemId: string, kind: string) {
+    const system = systemRegistry.getSystem(systemId);
+    return `${system ? translate(system.label) : systemId}: ${kind}`;
+}
 
 const iconButton =
     'rounded p-1.5 text-textSecondary transition-colors hover:bg-bgBase hover:text-textPrimary disabled:opacity-40';
@@ -38,10 +52,14 @@ interface LibraryEntry {
     modified: boolean;
 }
 
-/** True when the id is a registered view id of any system (default template identity, FR-11). */
-export function isDefaultTemplateId(id: string): boolean {
+/**
+ * True when the id is a registered view id (default template identity, FR-11) — of the given
+ * system, or of any system when omitted (view ids are unique across systems).
+ */
+export function isDefaultTemplateId(id: string, systemId?: string): boolean {
     return systemRegistry
         .getSystems()
+        .filter((system) => systemId === undefined || system.id === systemId)
         .some((system) =>
             system.documents.some((definition) => definition.views.some((view) => view.id === id))
         );
@@ -70,19 +88,24 @@ export function TemplateLibraryDialog({
     const [deleteTarget, setDeleteTarget] = useState<CustomTemplate | null>(null);
     const [resetTarget, setResetTarget] = useState<LibraryEntry | null>(null);
     const [importOpen, setImportOpen] = useState(false);
-    const [newKind, setNewKind] = useState<string>('character');
+    const targets = useMemo(() => templateTargets(), []);
+    const [newTarget, setNewTarget] = useState<string>(
+        targets[0]?.value ?? 'star-wars-wod/character'
+    );
+    const [newSystemId, newKind = 'character'] = newTarget.split('/');
 
     // Unified listing (FR-11/12): custom templates + modified defaults (unmodified defaults
     // derive on demand and are surfaced through the page selector; the library shows them too).
     const grouped = useMemo(() => {
         const map = new Map<string, LibraryEntry[]>();
         const push = (template: CustomTemplate, isDefault: boolean, modified: boolean) => {
-            const list = map.get(template.documentKind) ?? [];
+            const key = `${template.systemId}/${template.documentKind}`;
+            const list = map.get(key) ?? [];
             list.push({ template, isDefault, modified });
-            map.set(template.documentKind, list);
+            map.set(key, list);
         };
         for (const template of templates) {
-            push(template, isDefaultTemplateId(template.id), false);
+            push(template, isDefaultTemplateId(template.id, template.systemId), false);
         }
         for (const [viewId, override] of Object.entries(defaultOverrides)) {
             if (templates.some(({ id }) => id === viewId)) continue;
@@ -137,126 +160,130 @@ export function TemplateLibraryDialog({
                         )}
 
                         <div className="space-y-4">
-                            {[...grouped.entries()].map(([kind, entries]) => (
-                                <section key={kind} aria-label={kind}>
-                                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-textSecondary">
-                                        {t(library.kind)}: {kind}
-                                    </h3>
-                                    <ul className="space-y-2">
-                                        {entries.map(({ template, isDefault, modified }) => (
-                                            <li
-                                                key={template.id}
-                                                className="flex items-center gap-3 rounded-lg border border-border bg-bgBase p-3"
-                                            >
-                                                <LayoutTemplate
-                                                    className="h-4 w-4 shrink-0 text-textSecondary"
-                                                    aria-hidden="true"
-                                                />
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="truncate text-sm font-medium text-textPrimary">
-                                                        {template.name}
-                                                        {isDefault && (
-                                                            <span className="ml-2 rounded bg-bgSurface px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-textSecondary">
-                                                                {t(library.defaultBadge)}
-                                                            </span>
-                                                        )}
-                                                        {modified && (
-                                                            <span className="ml-1 rounded bg-bgSurface px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-                                                                {t(library.modifiedBadge)}
-                                                            </span>
-                                                        )}
-                                                    </p>
-                                                    {template.description && (
-                                                        <p className="truncate text-xs text-textSecondary">
-                                                            {template.description}
+                            {[...grouped.entries()].map(([key, entries]) => {
+                                const [systemId = '', kind = ''] = key.split('/');
+                                const heading = groupLabel(systemId, kind);
+                                return (
+                                    <section key={key} aria-label={heading}>
+                                        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-textSecondary">
+                                            {heading}
+                                        </h3>
+                                        <ul className="space-y-2">
+                                            {entries.map(({ template, isDefault, modified }) => (
+                                                <li
+                                                    key={template.id}
+                                                    className="flex items-center gap-3 rounded-lg border border-border bg-bgBase p-3"
+                                                >
+                                                    <LayoutTemplate
+                                                        className="h-4 w-4 shrink-0 text-textSecondary"
+                                                        aria-hidden="true"
+                                                    />
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="truncate text-sm font-medium text-textPrimary">
+                                                            {template.name}
+                                                            {isDefault && (
+                                                                <span className="ml-2 rounded bg-bgSurface px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-textSecondary">
+                                                                    {t(library.defaultBadge)}
+                                                                </span>
+                                                            )}
+                                                            {modified && (
+                                                                <span className="ml-1 rounded bg-bgSurface px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                                                                    {t(library.modifiedBadge)}
+                                                                </span>
+                                                            )}
                                                         </p>
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            setEditorBase({
-                                                                kind: 'edit',
-                                                                template,
-                                                            })
-                                                        }
-                                                        aria-label={`${t(library.edit)}: ${template.name}`}
-                                                        className={iconButton}
-                                                    >
-                                                        <Pencil
-                                                            className="h-4 w-4"
-                                                            aria-hidden="true"
-                                                        />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            duplicateTemplate(
-                                                                template.id,
-                                                                generateDraftId('tpl')
-                                                            )
-                                                        }
-                                                        aria-label={`${t(library.duplicate)}: ${template.name}`}
-                                                        className={iconButton}
-                                                    >
-                                                        <Copy
-                                                            className="h-4 w-4"
-                                                            aria-hidden="true"
-                                                        />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => exportTemplate(template)}
-                                                        aria-label={`${t(library.export)}: ${template.name}`}
-                                                        className={iconButton}
-                                                    >
-                                                        <Download
-                                                            className="h-4 w-4"
-                                                            aria-hidden="true"
-                                                        />
-                                                    </button>
-                                                    {isDefault && (
+                                                        {template.description && (
+                                                            <p className="truncate text-xs text-textSecondary">
+                                                                {template.description}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
                                                         <button
                                                             type="button"
                                                             onClick={() =>
-                                                                setResetTarget({
+                                                                setEditorBase({
+                                                                    kind: 'edit',
                                                                     template,
-                                                                    isDefault,
-                                                                    modified,
                                                                 })
                                                             }
-                                                            disabled={!modified}
-                                                            aria-label={`${t(library.reset)}: ${template.name}`}
+                                                            aria-label={`${t(library.edit)}: ${template.name}`}
                                                             className={iconButton}
                                                         >
-                                                            <RotateCcw
+                                                            <Pencil
                                                                 className="h-4 w-4"
                                                                 aria-hidden="true"
                                                             />
                                                         </button>
-                                                    )}
-                                                    {!isDefault && (
                                                         <button
                                                             type="button"
                                                             onClick={() =>
-                                                                setDeleteTarget(template)
+                                                                duplicateTemplate(
+                                                                    template.id,
+                                                                    generateDraftId('tpl')
+                                                                )
                                                             }
-                                                            aria-label={`${t(library.delete)}: ${template.name}`}
+                                                            aria-label={`${t(library.duplicate)}: ${template.name}`}
                                                             className={iconButton}
                                                         >
-                                                            <Trash2
+                                                            <Copy
                                                                 className="h-4 w-4"
                                                                 aria-hidden="true"
                                                             />
                                                         </button>
-                                                    )}
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </section>
-                            ))}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => exportTemplate(template)}
+                                                            aria-label={`${t(library.export)}: ${template.name}`}
+                                                            className={iconButton}
+                                                        >
+                                                            <Download
+                                                                className="h-4 w-4"
+                                                                aria-hidden="true"
+                                                            />
+                                                        </button>
+                                                        {isDefault && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    setResetTarget({
+                                                                        template,
+                                                                        isDefault,
+                                                                        modified,
+                                                                    })
+                                                                }
+                                                                disabled={!modified}
+                                                                aria-label={`${t(library.reset)}: ${template.name}`}
+                                                                className={iconButton}
+                                                            >
+                                                                <RotateCcw
+                                                                    className="h-4 w-4"
+                                                                    aria-hidden="true"
+                                                                />
+                                                            </button>
+                                                        )}
+                                                        {!isDefault && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    setDeleteTarget(template)
+                                                                }
+                                                                aria-label={`${t(library.delete)}: ${template.name}`}
+                                                                className={iconButton}
+                                                            >
+                                                                <Trash2
+                                                                    className="h-4 w-4"
+                                                                    aria-hidden="true"
+                                                                />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </section>
+                                );
+                            })}
                         </div>
 
                         {quarantine.length > 0 && (
@@ -301,14 +328,14 @@ export function TemplateLibraryDialog({
                             </h3>
                             <div className="flex flex-wrap items-center gap-2">
                                 <select
-                                    value={newKind}
-                                    onChange={(event) => setNewKind(event.target.value)}
+                                    value={newTarget}
+                                    onChange={(event) => setNewTarget(event.target.value)}
                                     aria-label={t(library.kind)}
                                     className="rounded border border-border bg-bgSurface px-2 py-1 text-xs text-textPrimary"
                                 >
-                                    {DOCUMENT_KINDS.map((kind) => (
-                                        <option key={kind} value={kind}>
-                                            {kind}
+                                    {targets.map((target) => (
+                                        <option key={target.value} value={target.value}>
+                                            {groupLabel(target.systemId, target.kind)}
                                         </option>
                                     ))}
                                 </select>
@@ -327,22 +354,27 @@ export function TemplateLibraryDialog({
                                 >
                                     {t(uiMessages.sheet.templates.transfer.import)}
                                 </button>
-                                {getSkeletonsForKind(newKind as never).map((skeleton) => (
-                                    <button
-                                        key={skeleton.id}
-                                        type="button"
-                                        onClick={() =>
-                                            setEditorBase({ kind: 'skeleton', template: skeleton })
-                                        }
-                                        className={actionButton}
-                                    >
-                                        <LayoutTemplate
-                                            className="mr-1 inline h-3 w-3"
-                                            aria-hidden="true"
-                                        />
-                                        {skeleton.name}
-                                    </button>
-                                ))}
+                                {getSkeletonsForKind(newKind as never, newSystemId).map(
+                                    (skeleton) => (
+                                        <button
+                                            key={skeleton.id}
+                                            type="button"
+                                            onClick={() =>
+                                                setEditorBase({
+                                                    kind: 'skeleton',
+                                                    template: skeleton,
+                                                })
+                                            }
+                                            className={actionButton}
+                                        >
+                                            <LayoutTemplate
+                                                className="mr-1 inline h-3 w-3"
+                                                aria-hidden="true"
+                                            />
+                                            {skeleton.name}
+                                        </button>
+                                    )
+                                )}
                             </div>
                         </div>
                     </div>
@@ -350,7 +382,10 @@ export function TemplateLibraryDialog({
             </Dialog.Portal>
 
             {editorBase?.kind === 'empty' && (
-                <TemplateEditorDialog base={{ kind: 'empty' }} onClose={closeEditor} />
+                <TemplateEditorDialog
+                    base={{ kind: 'empty', documentKind: newKind, systemId: newSystemId }}
+                    onClose={closeEditor}
+                />
             )}
             {editorBase?.kind === 'skeleton' && editorBase.template && (
                 <TemplateEditorDialog

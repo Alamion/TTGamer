@@ -26,6 +26,7 @@ manager:
     empty: Документов пока нет. Создайте первый документ.
     name: Название
     type: Тип
+    setting: Сеттинг
     current: текущий
     selectAll: Выбрать все документы
     selectDocument: Выбрать {title}
@@ -35,9 +36,11 @@ manager:
     close: Закрыть
 create:
     title: Создать документ
-    prompt: Выберите формат документа Star Wars.
+    prompt: Выберите игровую систему и формат документа.
     confirm: Создать
     cancel: Отмена
+systems:
+    starWarsWod: Star Wars (Мир Тьмы 2e)
 types:
     character: Персонаж
     droid: Дроид

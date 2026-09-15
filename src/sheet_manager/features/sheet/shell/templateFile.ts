@@ -1,4 +1,5 @@
 import { reportSheetIssue } from '../../../diagnostics';
+import { exportNotices, resolveSystemPolicies, systemRegistry } from '../../../systems';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
 import { CustomTemplateSchema, isTemplateField, walkTemplateNodes } from '../../../types/template';
 import { CATALOG_BINDINGS } from '../data/catalogBindings';
@@ -23,13 +24,16 @@ export interface TemplateFilePayload {
 
 export type ParsedTemplateFile =
     | { ok: true; template: CustomTemplate; degradedCatalogFields: readonly string[] }
-    | { ok: false; error: 'parse' | 'format' | 'version' | 'schema' };
+    | { ok: false; error: 'parse' | 'format' | 'version' | 'schema' | 'system' };
 
+/** Template files carry the publisher notices of their system (informational; ignored on import). */
 export function serializeTemplateFile(template: CustomTemplate): string {
+    const policies = resolveSystemPolicies(systemRegistry, template.systemId);
     return JSON.stringify({
         format: TEMPLATE_FILE_FORMAT,
         formatVersion: TEMPLATE_FILE_VERSION,
         template,
+        ...(policies.length > 0 ? { notices: exportNotices(policies) } : {}),
     });
 }
 
@@ -112,6 +116,9 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
         template = CustomTemplateSchema.parse(payload.template);
     } catch {
         return { ok: false, error: 'schema' };
+    }
+    if (!systemRegistry.getSystem(template.systemId)) {
+        return { ok: false, error: 'system' };
     }
 
     // FR-21 (003): templates referencing unavailable catalogs still import; the affected

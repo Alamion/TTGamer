@@ -1,0 +1,27 @@
+improvised:
+    name: 'Improvised weapon'
+    examples: 'A bottle, a chair leg, a wooden stake (stakes matter against vampires).'
+light-impact:
+    name: 'Light impact'
+    examples: 'Brass knuckles, a heavy flashlight.'
+heavy-impact:
+    name: 'Heavy impact'
+    examples: 'A baton, a tire iron, a baseball bat.'
+light-piercing:
+    name: 'Light piercing'
+    examples: 'A switchblade, a crossbow bolt.'
+light-gunshot:
+    name: 'Light gunshot'
+    examples: 'A small-calibre pistol.'
+heavy-melee:
+    name: 'Heavy melee'
+    examples: 'A sword, a fire axe.'
+medium-gunshot:
+    name: 'Medium gunshot'
+    examples: 'A service pistol, a hunting rifle, a shotgun at a distance.'
+heavy-gunshot:
+    name: 'Heavy gunshot'
+    examples: 'A magnum revolver, a shotgun at close range.'
+huge-melee:
+    name: 'Huge melee'
+    examples: 'A two-handed sword, a length of steel beam.'

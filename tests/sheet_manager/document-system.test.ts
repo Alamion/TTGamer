@@ -3,7 +3,9 @@ import type { SystemPlugin } from '@site/src/sheet_manager/systems';
 import {
     createWodSheetProfileVariant,
     defineWodSheetProfile,
+    resolveDocumentPolicies,
     resolveDocumentView,
+    resolveSystemPolicies,
     starWarsCharacterDefinition,
     starWarsCreatureDefinition,
     starWarsDroidDefinition,
@@ -259,7 +261,7 @@ describe('system registry', () => {
         const registry = new SystemRegistry([
             {
                 id: SystemIdSchema.parse('star-wars-wod'),
-                label: 'Star Wars WoD 2e',
+                label: { id: 'test.label', message: 'Star Wars WoD 2e' },
                 documents: [starWarsCharacterDefinition],
             },
         ]);
@@ -282,7 +284,7 @@ describe('system registry', () => {
         const registry = new SystemRegistry([
             {
                 id: SystemIdSchema.parse('star-wars-wod'),
-                label: 'Star Wars WoD 2e',
+                label: { id: 'test.label', message: 'Star Wars WoD 2e' },
                 documents: [starWarsCharacterDefinition],
             },
         ]);
@@ -303,12 +305,12 @@ describe('system registry', () => {
     it('runs an explicit migration before validating older document data', () => {
         const plugin: SystemPlugin = {
             id: SystemIdSchema.parse('custom-system'),
-            label: 'Custom System',
+            label: { id: 'test.label', message: 'Custom System' },
             documents: [
                 {
                     id: DocumentDefinitionIdSchema.parse('event'),
                     kind: DocumentKindSchema.parse('event'),
-                    label: 'Event',
+                    label: { id: 'test.label', message: 'Event' },
                     schemaVersion: 2,
                     schema: z.object({ title: z.string() }),
                     createDefault: () => ({ title: '' }),
@@ -346,7 +348,7 @@ describe('system registry', () => {
     it('rejects duplicate system and definition IDs', () => {
         const plugin: SystemPlugin = {
             id: SystemIdSchema.parse('duplicate-system'),
-            label: 'Duplicate System',
+            label: { id: 'test.label', message: 'Duplicate System' },
             documents: [starWarsCharacterDefinition, starWarsCharacterDefinition],
         };
 
@@ -370,7 +372,7 @@ describe('system registry', () => {
                 new SystemRegistry([
                     {
                         id: SystemIdSchema.parse('view-system'),
-                        label: 'View System',
+                        label: { id: 'test.label', message: 'View System' },
                         documents: [duplicateViews],
                     },
                 ])
@@ -381,7 +383,7 @@ describe('system registry', () => {
                 new SystemRegistry([
                     {
                         id: SystemIdSchema.parse('view-system'),
-                        label: 'View System',
+                        label: { id: 'test.label', message: 'View System' },
                         documents: [
                             {
                                 ...starWarsCharacterDefinition,
@@ -391,6 +393,99 @@ describe('system registry', () => {
                     },
                 ])
         ).toThrow('Missing default document view');
+    });
+});
+
+describe('multi-system registry (feature 008)', () => {
+    const label = (message: string) => ({ id: 'test.label', message });
+
+    function fakePlugin(
+        id: string,
+        viewId: string,
+        options: { policies?: string[]; modulePolicies?: string[] } = {}
+    ): SystemPlugin {
+        return {
+            id: SystemIdSchema.parse(id),
+            label: label(id),
+            ...(options.policies ? { policies: options.policies as never } : {}),
+            documents: [
+                {
+                    id: DocumentDefinitionIdSchema.parse('hero'),
+                    kind: DocumentKindSchema.parse('character'),
+                    label: label('Hero'),
+                    schemaVersion: 1,
+                    schema: z.object({ name: z.string().default('') }),
+                    createDefault: () => ({ name: '' }),
+                    defaultViewId: DocumentViewIdSchema.parse(viewId),
+                    views: [
+                        {
+                            id: DocumentViewIdSchema.parse(viewId),
+                            label: label('Sheet'),
+                            layout: { type: 'declarative', templateId: viewId },
+                        },
+                    ],
+                    ...(options.modulePolicies
+                        ? {
+                              module: {
+                                  id: 'heroic',
+                                  label: label('Heroic'),
+                                  policies: options.modulePolicies as never,
+                              },
+                          }
+                        : {}),
+                },
+            ],
+        };
+    }
+
+    it('registers two systems side by side and lists their definitions in order', () => {
+        const registry = new SystemRegistry([starWarsWodSystem, fakePlugin('fake', 'fake-sheet')]);
+        const pairs = registry
+            .listDefinitions()
+            .map(({ system, definition }) => `${system.id}/${definition.id}`);
+        expect(pairs.at(-1)).toBe('fake/hero');
+        expect(pairs[0]).toBe('star-wars-wod/character');
+    });
+
+    it('rejects a view id declared by two systems', () => {
+        expect(
+            () =>
+                new SystemRegistry([
+                    fakePlugin('one', 'shared-sheet'),
+                    fakePlugin('two', 'shared-sheet'),
+                ])
+        ).toThrow('declared by both one and two');
+    });
+
+    it('rejects unknown publisher policies on systems and modules', () => {
+        expect(
+            () => new SystemRegistry([fakePlugin('one', 'one-sheet', { policies: ['nope'] })])
+        ).toThrow('Unknown publisher policy "nope"');
+        expect(
+            () => new SystemRegistry([fakePlugin('one', 'one-sheet', { modulePolicies: ['nope'] })])
+        ).toThrow('Unknown publisher policy "nope" in one/hero');
+    });
+
+    it('resolves document policies as the deduplicated union of system and module', () => {
+        const registry = new SystemRegistry([
+            starWarsWodSystem,
+            fakePlugin('fake', 'fake-sheet', {
+                policies: ['dark-pack'],
+                modulePolicies: ['dark-pack'],
+            }),
+        ]);
+        expect(
+            resolveDocumentPolicies(registry, { systemId: 'fake', definitionId: 'hero' }).map(
+                ({ id }) => id
+            )
+        ).toEqual(['dark-pack']);
+        expect(
+            resolveDocumentPolicies(registry, {
+                systemId: 'star-wars-wod',
+                definitionId: 'character',
+            })
+        ).toEqual([]);
+        expect(resolveSystemPolicies(registry, 'fake').map(({ id }) => id)).toEqual(['dark-pack']);
     });
 });
 

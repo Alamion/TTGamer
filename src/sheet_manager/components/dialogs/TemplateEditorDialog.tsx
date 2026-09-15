@@ -58,7 +58,7 @@ const DOCUMENT_KINDS = ['character', 'creature', 'vehicle', 'group'] as const;
 
 export interface TemplateEditorDialogProps {
     base:
-        | { kind: 'empty' }
+        | { kind: 'empty'; documentKind?: string; systemId?: string }
         | { kind: 'skeleton'; documentKind: string; template: CustomTemplate }
         | { kind: 'duplicate' | 'edit'; template: CustomTemplate };
     onClose: () => void;
@@ -71,10 +71,13 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
 
     // Feature 004: editing a default template targets its override, never the custom library.
-    const editingDefault = base.kind === 'edit' && isDefaultTemplateId(base.template.id);
+    const editingDefault =
+        base.kind === 'edit' && isDefaultTemplateId(base.template.id, base.template.systemId);
 
     const [draft, setDraft] = useState<EditorDraft>(() => {
-        if (base.kind === 'empty') return createEmptyDraft('character');
+        if (base.kind === 'empty') {
+            return createEmptyDraft(base.documentKind ?? 'character', base.systemId);
+        }
         if (base.kind === 'edit') return createDraftFromTemplate(base.template);
         if (base.kind === 'skeleton') {
             return createDraftFromTemplate(base.template, { id: generateDraftId('tpl') });

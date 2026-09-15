@@ -7,11 +7,17 @@ import { useState } from 'react';
 import { generateId } from '../../../../shared/utils/random';
 import { ConfirmDialog } from '../../../components/dialogs/ConfirmDialog';
 import {
+    ConditionTrackLengthButtons,
+    type ConditionTrackLengthControl,
     ConditionTrackStrip,
     ConditionTrackTable,
 } from '../../../components/stat-fields/ConditionTrack';
 import type { TrackBinding, TrackLevel } from '../../../systems/templateBindings';
-import { readDataPath, trackLevelsFor } from '../../../systems/templateBindings';
+import {
+    readDataPath,
+    trackLevelsFor,
+    trackVariantLengths,
+} from '../../../systems/templateBindings';
 import type { ConditionMark } from '../../../types/character';
 import type { PrimitiveNode } from '../../../types/template';
 import type { BoundDocument } from './boundDocument';
@@ -26,6 +32,7 @@ import {
 } from './cohort';
 
 const messages = uiMessages.sheet.templates.cohort;
+const trackMessages = uiMessages.sheet.tracks;
 const fields = uiMessages.sheet.documents.fields;
 
 const STORED_SLOTS = 7;
@@ -128,29 +135,28 @@ export function CohortTrack({
         }
     };
 
-    const lengths = descriptor.variants
-        ? Object.keys(descriptor.variants.levelsByLength).map(Number)
-        : [];
+    // Variant lengths are stepped through with the track's own −/+ regulator.
+    const lengths = trackVariantLengths(descriptor);
+    const lengthIndex = lengths.indexOf(visibleLength);
+    const shorter = lengthIndex > 0 ? lengths[lengthIndex - 1] : undefined;
+    const longer =
+        lengthIndex >= 0 && lengthIndex < lengths.length - 1 ? lengths[lengthIndex + 1] : undefined;
+    const lengthControl: ConditionTrackLengthControl | undefined =
+        lengths.length > 1 && !node.compact
+            ? {
+                  onDecrease: shorter === undefined ? undefined : () => requestLength(shorter),
+                  onIncrease: longer === undefined ? undefined : () => requestLength(longer),
+                  decreaseLabel: translate(trackMessages.length.decrease, { track: label }),
+                  increaseLabel: translate(trackMessages.length.increase, { track: label }),
+              }
+            : undefined;
     const lettered = rawMembers.length > 1;
     const atCap = rawMembers.length >= maxMembers;
 
     const controls = !disabled && (
         <div className="flex flex-wrap items-center gap-3">
-            {lengths.length > 1 && !node.compact && (
-                <label className="flex items-center gap-2 text-xs font-medium text-textSecondary">
-                    {translate(messages.trackLength)}
-                    <select
-                        value={visibleLength}
-                        onChange={(event) => requestLength(Number(event.target.value))}
-                        className="rounded border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary"
-                    >
-                        {lengths.map((length) => (
-                            <option key={length} value={length}>
-                                {length}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+            {lettered && lengthControl && (
+                <ConditionTrackLengthButtons control={lengthControl} disabled={disabled} />
             )}
             <button
                 type="button"
@@ -237,6 +243,7 @@ export function CohortTrack({
                     onChange={(next) =>
                         setMarks(member.id, [...next, ...marks.slice(visibleLength)])
                     }
+                    lengthControl={lengthControl}
                     columnLabels={{
                         level: translate(fields.conditionLevel),
                         penalty: translate(fields.conditionPenalty),

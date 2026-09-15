@@ -160,10 +160,11 @@ describe('member track element (feature 007)', () => {
         ];
         seed(data, 'group', 'fodder-group');
         render(createElement(DeclarativeSheetView, { template: trackOnly('fodder-sheet') }));
-        fireEvent.change(screen.getByRole('combobox', { name: /Health levels/ }), {
-            target: { value: '3' },
-        });
-        expect(storedData().trackLength).toBe(7);
+        // 7 → 5 hides no marks; 5 → 3 would, so it asks first.
+        fireEvent.click(screen.getByRole('button', { name: /^Shorten/ }));
+        expect(storedData().trackLength).toBe(5);
+        fireEvent.click(screen.getByRole('button', { name: /^Shorten/ }));
+        expect(storedData().trackLength).toBe(5);
         fireEvent.click(
             within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirm' })
         );

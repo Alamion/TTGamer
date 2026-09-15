@@ -1,0 +1,63 @@
+---
+sidebar_position: 3.11
+title: Dice Pools
+description: How a V5 roll works — build a pool, count successes, spot criticals, and reroll with Willpower.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
+
+# Dice Pools
+
+:::tip[In short]
+Add an **Attribute** and a **Skill**, roll that many ten-sided dice, and count every die showing **6 or more**. Meet the **Difficulty** to succeed. Each **pair of 10s** is worth four successes.
+:::
+
+## When you roll
+
+You only roll when the outcome is uncertain and it matters. Opening an unlocked door is not a roll; picking its lock while something scratches at the other side is.
+
+## Building the pool
+
+1. The Storyteller describes the obstacle and names what fits: usually one **Attribute** (what you are) and one **Skill** (what you know).
+2. Add their dots together. That number is your **dice pool**.
+3. Bonuses and penalties add or remove dice. A pool never drops below one die.
+
+If you have no dots in the Skill, you still roll the Attribute alone — being untrained is hard, not impossible.
+
+## Reading the dice
+
+- Every die showing **6–9** is one success.
+- Every **10** is one success too, but two 10s together form a **critical**: that pair counts as **four** successes instead of two.
+- The Storyteller sets a **Difficulty** — the number of successes you need. Two is an ordinary challenge; four or more is hard.
+- Successes beyond the Difficulty are your **margin**. A big margin means a cleaner, faster, or more impressive result.
+
+:::note[Example: Lena]
+Lena drives an ambulance through a flooded underpass, chased by something that should not swim. **Dexterity 3 + Driving 3** gives her six dice; the Difficulty is 3.
+
+<TWWrapper>
+    <InlineRoll notation={'6d10>=6@2,6,7,10,10,4'} variant="details" preroll />
+</TWWrapper>
+
+<br />
+<br />
+
+The 6 and the 7 are two successes. The two 10s form a critical and count as four. Six successes
+against Difficulty 3: a margin of three, and she loses the thing in the dark water.
+:::
+
+:::info[Counted by hand for now]
+The site roller counts 6+ results. Criticals and line-specific dice (such as a hunter's Desperation dice) are still counted by the table, as in the example above.
+:::
+
+## Spending Willpower to reroll
+
+Once per roll you may spend a point of Willpower (mark one **superficial** box on your Willpower track) to reroll **up to three** dice that did not succeed. Keep the new results, good or bad.
+
+## Tests of two sides
+
+When two characters work against each other — a chase, an argument, a struggle over a weapon — both roll, and the side with more successes wins. The difference between the two totals is the winner's margin.
+
+## Next
+
+Learn what the numbers on your sheet mean in [Attributes and Skills](./attributes-skills.mdx).

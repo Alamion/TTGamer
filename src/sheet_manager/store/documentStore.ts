@@ -87,6 +87,8 @@ export interface DocumentStoreState {
     ) => void;
     deleteDocument: (id: string) => void;
     importDocument: (document: UnknownDocumentEnvelope) => void;
+    /** Keeps an imported file that failed validation in the bounded recovery collection. */
+    retainImportForRecovery: (entry: unknown, error: unknown) => void;
 }
 
 interface PersistedDocumentState {
@@ -210,14 +212,19 @@ function preparePersistedEntry(entry: unknown): unknown {
 }
 
 /** Keeps an unparseable persisted entry in the bounded recovery collection and reports why. */
-function retainForRecovery(recoveryEntries: unknown[], entry: unknown, error: unknown) {
+function retainForRecovery(
+    recoveryEntries: unknown[],
+    entry: unknown,
+    error: unknown,
+    origin: 'Persisted' | 'Imported' = 'Persisted'
+) {
     const retained = recoveryEntries.length < MAX_RECOVERY_ENTRIES;
     if (retained) recoveryEntries.push(entry);
     reportSheetIssue({
         code: 'document-recovered',
         message: retained
-            ? 'Persisted document failed to parse and moved to recovery'
-            : 'Persisted document failed to parse and was dropped (recovery is full)',
+            ? `${origin} document failed to parse and moved to recovery`
+            : `${origin} document failed to parse and was dropped (recovery is full)`,
         details: {
             documentId: isRecord(entry) ? entry.id : undefined,
             error: describeError(error),
@@ -407,6 +414,12 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
         void deletePortrait(getPortraitId(deleted));
     },
 
+    retainImportForRecovery: (entry, error) =>
+        set((state) => {
+            const recoveryEntries = [...state.recoveryEntries];
+            retainForRecovery(recoveryEntries, entry, error, 'Imported');
+            return { recoveryEntries };
+        }),
     importDocument: (document) => {
         if (isPresetId(document.id)) return;
         const parsed = systemRegistry.parseDocument(document).envelope;

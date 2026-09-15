@@ -52,6 +52,7 @@ export function TemplateImportDialog({ onClose, open }: TemplateImportDialogProp
                     format: transfer.importErrorFormat,
                     version: transfer.importErrorVersion,
                     schema: transfer.importErrorSchema,
+                    system: transfer.importErrorSystem,
                 }[parsed.error];
                 toast.error(translate(reasonMessage, { filename: file.name }));
                 continue;
