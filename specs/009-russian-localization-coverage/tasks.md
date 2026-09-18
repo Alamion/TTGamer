@@ -44,10 +44,10 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 **Purpose**: create empty homes for the new sources and scripts, and wire commands
 
-- [ ] T001 Create `translations/i18n-exceptions.yaml` with a header comment describing the entry shape `{rule, file?, match, reason}` from data-model §7 and an empty list
-- [ ] T002 [P] Create `translations/glossary/star-wars-wod.yaml`, `translations/glossary/v5.yaml`, and `translations/glossary/v5-hunter.yaml`, each with a header comment describing the term shape from data-model §3 and an empty list
-- [ ] T003 [P] Create the empty module skeleton `scripts/i18n-verifier/{config.ts,positions.ts,report.ts,types.ts}` and `scripts/i18n-verifier/rules/index.ts`, exporting a `Rule` type `{ id, area, run(context): Finding[] }` and `Finding`/`AreaSummary` types exactly as in data-model §8
-- [ ] T004 Add scripts to `package.json`: `"i18n:verify": "node --import tsx scripts/verify-i18n.ts"`; leave `validate:i18n` and `verify:fast` unchanged for now (the verifier is added to `validate:i18n` in T023 and `verify:fast` is wired in T024, so `prebuild` never references a missing script)
+- [x] T001 Create `translations/i18n-exceptions.yaml` with a header comment describing the entry shape `{rule, file?, match, reason}` from data-model §7 and an empty list
+- [x] T002 [P] Create `translations/glossary/star-wars-wod.yaml`, `translations/glossary/v5.yaml`, and `translations/glossary/v5-hunter.yaml`, each with a header comment describing the term shape from data-model §3 and an empty list
+- [x] T003 [P] Create the empty module skeleton `scripts/i18n-verifier/{config.ts,positions.ts,report.ts,types.ts}` and `scripts/i18n-verifier/rules/index.ts`, exporting a `Rule` type `{ id, area, run(context): Finding[] }` and `Finding`/`AreaSummary` types exactly as in data-model §8
+- [x] T004 Add scripts to `package.json`: `"i18n:verify": "node --import tsx scripts/verify-i18n.ts"`; leave `validate:i18n` and `verify:fast` unchanged for now (the verifier is added to `validate:i18n` in T023 and `verify:fast` is wired in T024, so `prebuild` never references a missing script)
 
 ---
 
@@ -59,41 +59,41 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 ### Tests for Foundation
 
-- [ ] T005 [P] Write `tests/scripts/translation-source.test.ts`. Use temporary fixture trees under `tests/scripts/fixtures/sources/` and cover:
+- [x] T005 [P] Write `tests/scripts/translation-source.test.ts`. Use temporary fixture trees under `tests/scripts/fixtures/sources/` and cover:
     - a plural message: `plural: true`, en with 2 `|` forms, ru with 3 forms;
     - string arrays in data YAML;
     - the reserved `_labels` key;
     - glossary loading with duplicate-ref rejection;
     - exceptions loading, where a missing `reason` is an error.
-- [ ] T006 [P] Write `tests/scripts/build-translations-check.test.ts`: with fixture sources, `--check` exits 1 and lists stale files when the generated output would change; it exits 0 and writes nothing when the output is current
-- [ ] T007 [P] Write `tests/shared/normalize-search-text.test.ts`:
+- [x] T006 [P] Write `tests/scripts/build-translations-check.test.ts`: with fixture sources, `--check` exits 1 and lists stale files when the generated output would change; it exits 0 and writes nothing when the output is current
+- [x] T007 [P] Write `tests/shared/normalize-search-text.test.ts`:
     - `"Ёж"` and `"еж"` normalize equal;
     - case-insensitive;
     - diacritics are stripped (`"Twi'lek"` still matches `"twi'lek"`);
     - surrounding whitespace is trimmed.
-- [ ] T008 [P] Write `tests/sheet_manager/catalog-text.test.ts` for the new helpers in `systems/catalogs.ts`:
+- [x] T008 [P] Write `tests/sheet_manager/catalog-text.test.ts` for the new helpers in `systems/catalogs.ts`:
     - `entryList` returns the localized array or falls back to English;
     - `entryEnumLabel` returns the `_labels` value or falls back to the raw value;
     - `pickSearchText` contains both the localized and the English name.
 
 ### Implementation for Foundation
 
-- [ ] T009 Extend `scripts/translation-source.ts`:
+- [x] T009 Extend `scripts/translation-source.ts`:
     - accept `{message, description?, plural?: boolean}` UI leaves and `string[]` data leaves;
     - reserve the `_labels` key in data files, shaped as field → value → text;
     - add `loadGlossary()`, which reads `translations/glossary/*.yaml`, validates `id` uniqueness per file and ref uniqueness across files, and returns terms tagged with their system;
     - add `loadExceptions()`, which reads `translations/i18n-exceptions.yaml` and fails when an entry has no `reason`;
     - export the new shapes as types.
-- [ ] T010 Extend `scripts/build-translations.ts`:
+- [x] T010 Extend `scripts/build-translations.ts`:
     - add a `--check` flag that compares every generated output with disk, exits 1 listing stale files, and never writes;
     - generate `src/i18n/generated/bookTerms.ts` (`Record<string, { en: string; ruShort?: string }>` keyed by glossary refs, `en` resolved from the English message or catalog name);
     - emit `_labels` and arrays into `catalogTranslations.ts`;
     - keep plural messages as the raw `|`-joined string in `code.json`.
-- [ ] T011 Generalize the catalog id check in `scripts/validate-translations.ts` from `attributes` only to every `data/<catalogId>.yaml`. Resolve ids from the plugin catalogs (`src/sheet_manager/systems/star-wars-wod/catalogs.ts`, `src/sheet_manager/systems/v5/modules/hunter/catalogs.ts`) and from the unregistered data arrays listed in research D11 (`abilities`, `forceSkills`, `terminology`). Virtues have no data file yet: T092 first adds `src/data/virtues.ts` (ids, English names, and short descriptions taken from the virtue traits of `src/sheet_manager/systems/star-wars-wod/profile.ts`), and this check resolves `virtues` ids from it. Also check that each array field has the same length as the English array.
-- [ ] T012 [P] Create `src/shared/utils/normalizeSearchText.ts` (`toLocaleLowerCase`, `ё→е`, NFKD with combining marks removed, trim) so that T007 passes
-- [ ] T013 Add `entryList(entry, key, lang)`, `entryEnumLabel(catalogId, field, value, lang)`, and `pickSearchText(entry, lang)` to `src/sheet_manager/systems/catalogs.ts`, next to `entryText`; extend `src/data/localizeCatalogEntry.ts` to return arrays and to expose `_labels` lookup so that T008 passes
-- [ ] T014 [P] Add a plural helper `src/shared/hooks/usePluralMessage.ts`: `usePluralMessage()` returns `(descriptor, count, values?) => string` using Docusaurus `usePluralForm().selectMessage(count, translate(descriptor, { count, ...values }))`
-- [ ] T015 Run `yarn build:translations` and `yarn test tests/scripts tests/shared tests/sheet_manager/catalog-text.test.ts`; commit the regenerated `src/i18n/generated/*` (bookTerms is still empty)
+- [x] T011 Generalize the catalog id check in `scripts/validate-translations.ts` from `attributes` only to every `data/<catalogId>.yaml`. Resolve ids from the plugin catalogs (`src/sheet_manager/systems/star-wars-wod/catalogs.ts`, `src/sheet_manager/systems/v5/modules/hunter/catalogs.ts`) and from the unregistered data arrays listed in research D11 (`abilities`, `forceSkills`, `terminology`). Virtues have no data file yet: T092 first adds `src/data/virtues.ts` (ids, English names, and short descriptions taken from the virtue traits of `src/sheet_manager/systems/star-wars-wod/profile.ts`), and this check resolves `virtues` ids from it. Also check that each array field has the same length as the English array.
+- [x] T012 [P] Create `src/shared/utils/normalizeSearchText.ts` (`toLocaleLowerCase`, `ё→е`, NFKD with combining marks removed, trim) so that T007 passes
+- [x] T013 Add `entryList(entry, key, lang)`, `entryEnumLabel(catalogId, field, value, lang)`, and `pickSearchText(entry, lang)` to `src/sheet_manager/systems/catalogs.ts`, next to `entryText`; extend `src/data/localizeCatalogEntry.ts` to return arrays and to expose `_labels` lookup so that T008 passes
+- [x] T014 [P] Add a plural helper `src/shared/hooks/usePluralMessage.ts`: `usePluralMessage()` returns `(descriptor, count, values?) => string` using Docusaurus `usePluralForm().selectMessage(count, translate(descriptor, { count, ...values }))`
+- [x] T015 Run `yarn build:translations` and `yarn test tests/scripts tests/shared tests/sheet_manager/catalog-text.test.ts`; commit the regenerated `src/i18n/generated/*` (bookTerms is still empty)
 
 **Checkpoint**: sources accept plurals, arrays, labels, glossary, and exceptions; `--check` works; helpers exist
 
@@ -107,14 +107,14 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 ### Tests for User Story 2
 
-- [ ] T016 [P] [US2] Create the fixture project `tests/scripts/fixtures/i18n-project/`. It needs `src/` with one component per position kind from research D2: JSX text, a user-facing prop, an ignored `className`, a `toast` sink, an object `label` with a `labelMessage` sibling, and a dice-notation literal. It also needs `translations/source/{en,ru}`, `translations/glossary`, `translations/i18n-exceptions.yaml`, and `docs/` plus `i18n/ru/.../current` with one page each. The fixtures should hold one planted gap per rule from contracts/verifier-cli.md.
-- [ ] T017 [P] [US2] Write `tests/scripts/i18n-verifier/interface.test.ts`:
+- [x] T016 [P] [US2] Create the fixture project `tests/scripts/fixtures/i18n-project/`. It needs `src/` with one component per position kind from research D2: JSX text, a user-facing prop, an ignored `className`, a `toast` sink, an object `label` with a `labelMessage` sibling, and a dice-notation literal. It also needs `translations/source/{en,ru}`, `translations/glossary`, `translations/i18n-exceptions.yaml`, and `docs/` plus `i18n/ru/.../current` with one page each. The fixtures should hold one planted gap per rule from contracts/verifier-cli.md.
+- [x] T017 [P] [US2] Write `tests/scripts/i18n-verifier/interface.test.ts`:
     - each user-facing position is reported with file and line;
     - each ignored position is not;
     - an object `label` with a sibling `labelMessage` is not reported.
-- [ ] T018 [P] [US2] Write `tests/scripts/i18n-verifier/sources.test.ts` for the `keys`, `unused`, `identical`, and `plural` rules against the fixture, including placeholder-only messages and exceptions for proper names.
-- [ ] T019 [P] [US2] Write `tests/scripts/i18n-verifier/content.test.ts` for the `catalog`, `pickers`, `docs`, `docs-terms`, `glossary`, `overflow`, and `exceptions` rules against the fixture.
-- [ ] T020 [P] [US2] Write `tests/scripts/i18n-verifier/cli.test.ts`:
+- [x] T018 [P] [US2] Write `tests/scripts/i18n-verifier/sources.test.ts` for the `keys`, `unused`, `identical`, and `plural` rules against the fixture, including placeholder-only messages and exceptions for proper names.
+- [x] T019 [P] [US2] Write `tests/scripts/i18n-verifier/content.test.ts` for the `catalog`, `pickers`, `docs`, `docs-terms`, `glossary`, `overflow`, and `exceptions` rules against the fixture.
+- [x] T020 [P] [US2] Write `tests/scripts/i18n-verifier/cli.test.ts`:
     - exit codes 0, 1, and 2;
     - a `report`-level area never causes exit 1;
     - `--area`, `--rule`, and `--json` output shapes;
@@ -123,42 +123,42 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 ### Implementation for User Story 2
 
-- [ ] T021 [US2] Implement `scripts/i18n-verifier/config.ts`:
+- [x] T021 [US2] Implement `scripts/i18n-verifier/config.ts`:
     - the per-area level map with every area at `report`;
     - the user-facing prop list and sink list from research D2;
     - scanned globs (`src/**/*.{ts,tsx}` minus `src/i18n/generated/**` and tests);
     - overflow budgets `{ traitWithSpecialty: 14, trait: 18 }`, marked "calibrate in T074";
     - docs roots including the root `docs/index.mdx`.
-- [ ] T022 [US2] Implement `scripts/i18n-verifier/positions.ts`, the position classifier for research D2. It takes a `ts.Node` and returns `user-facing | ignored`, with the literal-text heuristics (Latin word ≥ 2 letters, notation regex, URL, CSS value, short all-caps abbreviation).
-- [ ] T023 [US2] Implement `scripts/i18n-verifier/report.ts` (human and `--json` output, area summary, exit code) and `scripts/verify-i18n.ts`. The entry parses flags, loads sources/glossary/exceptions once, parses each file with `ts.createSourceFile`, runs the rules, applies exceptions, and reports unmatched exceptions as warnings. Then change `validate:i18n` in `package.json` to also run `scripts/verify-i18n.ts` after the two existing scripts.
-- [ ] T024 [US2] Implement rule `scripts/i18n-verifier/rules/interface.ts` using `positions.ts`, and rule `rules/keys.ts`:
+- [x] T022 [US2] Implement `scripts/i18n-verifier/positions.ts`, the position classifier for research D2. It takes a `ts.Node` and returns `user-facing | ignored`, with the literal-text heuristics (Latin word ≥ 2 letters, notation regex, URL, CSS value, short all-caps abbreviation).
+- [x] T023 [US2] Implement `scripts/i18n-verifier/report.ts` (human and `--json` output, area summary, exit code) and `scripts/verify-i18n.ts`. The entry parses flags, loads sources/glossary/exceptions once, parses each file with `ts.createSourceFile`, runs the rules, applies exceptions, and reports unmatched exceptions as warnings. Then change `validate:i18n` in `package.json` to also run `scripts/verify-i18n.ts` after the two existing scripts.
+- [x] T024 [US2] Implement rule `scripts/i18n-verifier/rules/interface.ts` using `positions.ts`, and rule `rules/keys.ts`:
     - `keys` collects `uiMessages.<path>` member chains, `<Translate id>` literals, and `translate({id})` literals;
     - it reports ids missing in any locale and keys present in one locale only.
     - Then wire `verify:fast` in `package.json` to `yarn lint && yarn typecheck && yarn validate:backlog && yarn build:translations --check && yarn validate:i18n`.
-- [ ] T025 [P] [US2] Implement `scripts/i18n-verifier/rules/unused.ts` (warning only) and `rules/identical.ts`, which flags a ru value equal to the en value for both UI and catalog data unless excepted.
-- [ ] T026 [P] [US2] Implement `scripts/i18n-verifier/rules/plural.ts`: form counts per locale for `plural: true` messages (en 2, ru 3), the same placeholders in every form, and `(s)` in English messages
-- [ ] T027 [P] [US2] Implement `scripts/i18n-verifier/rules/catalog.ts`:
+- [x] T025 [P] [US2] Implement `scripts/i18n-verifier/rules/unused.ts` (warning only) and `rules/identical.ts`, which flags a ru value equal to the en value for both UI and catalog data unless excepted.
+- [x] T026 [P] [US2] Implement `scripts/i18n-verifier/rules/plural.ts`: form counts per locale for `plural: true` messages (en 2, ru 3), the same placeholders in every form, and `(s)` in English messages
+- [x] T027 [P] [US2] Implement `scripts/i18n-verifier/rules/catalog.ts`:
     - missing ru `name` is an error; each missing `shortDescription` or `description` is a warning;
     - a catalog whose ru `shortDescription` coverage is below 90% is an error (FR-024, SC-006);
     - array length mismatch;
     - enumerated values used by entries but missing from `_labels`;
     - unknown ids;
     - per-catalog coverage counts for the summary.
-- [ ] T028 [P] [US2] Implement the structural rule `scripts/i18n-verifier/rules/pickers.ts`:
+- [x] T028 [P] [US2] Implement the structural rule `scripts/i18n-verifier/rules/pickers.ts`:
     - in `src/sheet_manager/**` and `src/data/**`, an object literal with `name` or `label` whose value reads `.name` of a catalog entry, inside a `.map` over catalog entries, must use `pickLabel`/`entryLabel`/`entryText`;
     - a `.filter` whose callback compares option names must call `normalizeSearchText`.
-- [ ] T029 [P] [US2] Implement `scripts/i18n-verifier/rules/docs.ts`:
+- [x] T029 [P] [US2] Implement `scripts/i18n-verifier/rules/docs.ts`:
     - reuse the page-parity helpers from `scripts/validate-i18n.ts` (export them there);
     - add English-prose detection for ru pages and frontmatter `title`/`sidebar_label`/`description` (Latin words > 50% of the words and ≥ 4 Latin words, outside code fences, imports, and JSX attribute values).
-- [ ] T030 [P] [US2] Implement `scripts/i18n-verifier/rules/docsTerms.ts` (warning level): for each glossary term with a `ru` form, its first occurrence on a ru page must be followed by ` (<en>)`
-- [ ] T031 [P] [US2] Implement `scripts/i18n-verifier/rules/glossary.ts`:
+- [x] T030 [P] [US2] Implement `scripts/i18n-verifier/rules/docsTerms.ts` (warning level): for each glossary term with a `ru` form, its first occurrence on a ru page must be followed by ` (<en>)`
+- [x] T031 [P] [US2] Implement `scripts/i18n-verifier/rules/glossary.ts`:
     - unresolved refs;
     - `en` ≠ the English text at a ref;
     - the ru text at a ref ≠ `ru` (or ≠ `ruShort` when the ref is a short-form slot);
     - `ruShort` not shorter than `ru`.
-- [ ] T032 [P] [US2] Implement `scripts/i18n-verifier/rules/overflow.ts`: for each glossary term, find the row kinds where its refs are shown by walking the shipped templates from the plugin registry (`src/sheet_manager/systems/index.ts`): a primitive trait node whose binding has specialties (rendered by `TraitRowWithInput` in `PrimitiveTraitBody`, `src/sheet_manager/features/sheet/declarative/primitives.tsx` around :670) is `traitWithSpecialty`; any other trait or rating node is `trait`. Export this classification as `rowKindOf(node, binding)` from `primitives.tsx`'s pure helpers, or a new `src/sheet_manager/features/sheet/declarative/rowKind.ts`, so the renderer and the rule share it; if `ru.length` exceeds that row kind's budget and `ruShort` is absent, report it
-- [ ] T033 [US2] Extend `scripts/translation-status.ts` to print the verifier's area summary table after the existing per-locale counts
-- [ ] T034 [US2] Run `yarn test tests/scripts` until T016–T020 pass. Then run `yarn i18n:verify` on the real repository, tune `positions.ts` against false positives (add fixture cases for each tuned pattern), and save the baseline report to `specs/009-russian-localization-coverage/baseline-report.txt` as the worklist for US1, US3, and US6.
+- [x] T032 [P] [US2] Implement `scripts/i18n-verifier/rules/overflow.ts`: for each glossary term, find the row kinds where its refs are shown by walking the shipped templates from the plugin registry (`src/sheet_manager/systems/index.ts`): a primitive trait node whose binding has specialties (rendered by `TraitRowWithInput` in `PrimitiveTraitBody`, `src/sheet_manager/features/sheet/declarative/primitives.tsx` around :670) is `traitWithSpecialty`; any other trait or rating node is `trait`. Export this classification as `rowKindOf(node, binding)` from `primitives.tsx`'s pure helpers, or a new `src/sheet_manager/features/sheet/declarative/rowKind.ts`, so the renderer and the rule share it; if `ru.length` exceeds that row kind's budget and `ruShort` is absent, report it
+- [x] T033 [US2] Extend `scripts/translation-status.ts` to print the verifier's area summary table after the existing per-locale counts
+- [x] T034 [US2] Run `yarn test tests/scripts` until T016–T020 pass. Then run `yarn i18n:verify` on the real repository, tune `positions.ts` against false positives (add fixture cases for each tuned pattern), and save the baseline report to `specs/009-russian-localization-coverage/baseline-report.txt` as the worklist for US1, US3, and US6.
 
 **Checkpoint**: `yarn i18n:verify` prints a full per-area worklist; `verify:fast` runs it in report mode
 

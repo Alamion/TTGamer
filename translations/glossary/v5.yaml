@@ -1,0 +1,12 @@
+# Book-term glossary (spec 009). One entry per game term:
+#
+#   - id: larceny                                  # unique in this file, kebab-case
+#     en: Larceny                                  # English book name (must match the English text at every ref)
+#     ru: Воровство                                # approved Russian form (must match the Russian text at every ref)
+#     ruShort: Воровство                           # optional; shown when a sheet row is narrow
+#     note: why this translation was chosen        # optional
+#     refs:                                        # UI message ids or catalog:<catalogId>/<entryId>
+#       - ttgamer.ui.sheet.v5.skills.larceny
+#
+# A label is a book term exactly when its ref is listed here: it then gets the English-name hint.
+[]

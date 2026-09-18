@@ -72,6 +72,7 @@ import {
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { useBoundDocument } from './boundDocument';
 import { CohortTrack } from './CohortTrack';
+import { traitRowKind } from './rowKind';
 import { EnumField, RowsBody } from './RowsBody';
 import { mergeVisibleMarks, resolveComputedTrackLength, visibleMarks } from './trackLength';
 
@@ -615,9 +616,10 @@ function PrimitiveTraitBody({
                 [descriptor.traitKey]: { ...trait, ...updates },
             },
         });
+    const rowKind = traitRowKind(node.compact, descriptor);
     const showSpecialization = descriptor.row?.specialization ?? true;
     const showFlags = descriptor.row?.flags ?? true;
-    if (node.compact) {
+    if (rowKind === 'compact') {
         const specialization = showSpecialization ? trait.specializationText?.trim() : undefined;
         const rating = (
             <CompactRating
@@ -637,7 +639,7 @@ function PrimitiveTraitBody({
             rating
         );
     }
-    if (!showSpecialization) {
+    if (rowKind === 'trait') {
         return (
             <TraitRow
                 label={label}

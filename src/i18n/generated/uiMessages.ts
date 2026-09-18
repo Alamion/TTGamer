@@ -4,6 +4,8 @@ export interface UiMessageDescriptor {
     readonly id: string;
     readonly message: string;
     readonly description?: string;
+    /** Plural forms separated by `|`; render with usePluralMessage. */
+    readonly plural?: boolean;
 }
 
 export type UiMessageTree = {

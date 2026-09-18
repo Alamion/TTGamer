@@ -1,5 +1,6 @@
-import { ATTRIBUTES } from '../src/data/attributes';
+import { codeCatalogs } from './catalogSources.ts';
 import {
+    CATALOG_LABELS_KEY,
     flattenStringLeaves,
     flattenUiMessages,
     interpolationNames,
@@ -54,16 +55,26 @@ async function main() {
         }
     }
 
-    const attributeIds = new Set(ATTRIBUTES.map((attribute) => attribute.id));
-    const translatedAttributeIds = Object.keys((sources.data.en.attributes ?? {}) as object);
-    for (const id of attributeIds) {
-        if (!translatedAttributeIds.includes(id)) {
-            errors.push('data: attributes is missing catalog id "' + id + '"');
+    // Every English catalog source mirrors the code-owned entries it localizes.
+    const catalogs = codeCatalogs();
+    for (const [catalogId, source] of Object.entries(sources.data.en)) {
+        const entries = catalogs.get(catalogId);
+        if (!entries) {
+            errors.push('data: ' + catalogId + ' is not a known catalog');
+            continue;
         }
-    }
-    for (const id of translatedAttributeIds) {
-        if (!attributeIds.has(id))
-            errors.push('data: attributes contains unknown catalog id "' + id + '"');
+        const codeIds = new Set(entries.map((entry) => entry.id));
+        const sourceIds = Object.keys(source as object).filter((id) => id !== CATALOG_LABELS_KEY);
+        for (const id of codeIds) {
+            if (!sourceIds.includes(id)) {
+                errors.push('data: ' + catalogId + ' is missing catalog id "' + id + '"');
+            }
+        }
+        for (const id of sourceIds) {
+            if (!codeIds.has(id)) {
+                errors.push('data: ' + catalogId + ' contains unknown catalog id "' + id + '"');
+            }
+        }
     }
 
     if (errors.length > 0) {

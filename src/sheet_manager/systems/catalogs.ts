@@ -1,4 +1,4 @@
-import { localizeCatalogEntry } from '@site/src/data/localizeCatalogEntry';
+import { localizeCatalogLabel, localizedCatalogField } from '@site/src/data/localizeCatalogEntry';
 
 /**
  * Catalog definition primitives (system-neutral). A catalog is a code-owned list of entries a
@@ -70,6 +70,10 @@ export interface CatalogBindingEntry<TEntry extends CatalogLike = CatalogLike> {
     resolveDetails?: (entry: TEntry) => Readonly<Record<string, CatalogDetailValue | undefined>>;
     /** Localized value of a string property (English falls back to the entry's own value). */
     entryText: (entry: TEntry, key: string, lang: string) => string | undefined;
+    /** Localized string list (specialties, scale…); falls back when lengths differ. */
+    entryList: (entry: TEntry, key: string, lang: string) => readonly string[] | undefined;
+    /** Text matched by picker search: the localized and the English name. */
+    pickSearchText: (entry: TEntry, lang: string) => string;
     browse?: CatalogBrowse;
 }
 
@@ -103,6 +107,49 @@ export function bookNameOf(label: string): string | undefined {
 }
 
 /**
+ * Localized value of an entry's string property from `<catalogId>.yaml`; English, a missing
+ * translation, or an empty one fall back to the entry's own value.
+ */
+export function catalogEntryText(
+    catalogId: string,
+    entry: CatalogLike,
+    key: string,
+    lang: string
+): string | undefined {
+    const own = (entry as unknown as Record<string, unknown>)[key];
+    const fallback = typeof own === 'string' ? own : undefined;
+    if (lang === 'en') return fallback;
+    const localized = localizedCatalogField(catalogId, entry.id, lang, key);
+    return typeof localized === 'string' && localized.length > 0 ? localized : fallback;
+}
+
+/** Localized string list of an entry; falls back to the entry's own list when lengths differ. */
+export function catalogEntryList(
+    catalogId: string,
+    entry: CatalogLike,
+    key: string,
+    lang: string
+): readonly string[] | undefined {
+    const own = (entry as unknown as Record<string, unknown>)[key];
+    const fallback = Array.isArray(own) ? (own as string[]) : undefined;
+    if (lang === 'en') return fallback;
+    const localized = localizedCatalogField(catalogId, entry.id, lang, key);
+    return Array.isArray(localized) && (!fallback || localized.length === fallback.length)
+        ? (localized as readonly string[])
+        : fallback;
+}
+
+/** Label of an enumerated value (`_labels.<field>.<value>`), falling back to the value. */
+export function entryEnumLabel(
+    catalogId: string,
+    field: string,
+    value: string,
+    lang: string
+): string {
+    return lang === 'en' ? value : localizeCatalogLabel(catalogId, field, value, lang);
+}
+
+/**
  * Declares a catalog. Entry names localize through the catalog translations generated from
  * `translations/source/<locale>/data/<catalogId>.yaml` (`<entryId>.name`); English falls back to
  * the entry's own name.
@@ -114,21 +161,17 @@ export function defineCatalog<TEntry extends CatalogLike>(
     resolveDetails?: CatalogBindingEntry<TEntry>['resolveDetails'],
     browse?: CatalogBrowse
 ): CatalogBindingEntry<TEntry> {
-    const entryText = (entry: TEntry, key: string, lang: string) => {
-        const own = (entry as unknown as Record<string, unknown>)[key];
-        const fallback = typeof own === 'string' ? own : undefined;
-        if (lang === 'en') return fallback;
-        const localized = localizeCatalogEntry<Record<string, unknown>>(catalogId, entry.id, lang, {
-            [key]: fallback,
-        })[key];
-        return typeof localized === 'string' && localized.length > 0 ? localized : fallback;
-    };
+    const entryText = (entry: TEntry, key: string, lang: string) =>
+        catalogEntryText(catalogId, entry, key, lang);
     return {
         ...(resolveDetails ? { resolveDetails } : {}),
         ...(browse ? { browse } : {}),
         catalogId,
         entries,
         entryText,
+        entryList: (entry, key, lang) => catalogEntryList(catalogId, entry, key, lang),
+        pickSearchText: (entry, lang) =>
+            [entryText(entry, 'name', lang), entry.name].filter(Boolean).join(' '),
         entryLabel: (entry, lang) => entryText(entry, 'name', lang) ?? entry.name,
         pickLabel: (entry, lang) => bookNameLabel(entryText(entry, 'name', lang), entry.name),
         fillableDetails,

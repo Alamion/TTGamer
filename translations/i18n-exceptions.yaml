@@ -1,0 +1,12 @@
+# Reviewed exceptions for the translation coverage verifier (`yarn i18n:verify`).
+#
+# Each entry silences findings of one rule and MUST explain why:
+#
+#   - rule: interface          # interface | keys | unused | identical | plural | catalog | pickers
+#                              # | docs | docs-terms | glossary | overflow
+#     file: src/some/path/*.tsx # optional glob, relative to the repository root
+#     match: 'd100'            # exact finding text, or /regex/ for a pattern
+#     reason: dice notation shown verbatim
+#
+# Treat a new entry like a new lint disable: prefer translating the text.
+[]
