@@ -55,6 +55,11 @@ export interface CatalogBindingEntry<TEntry extends CatalogLike = CatalogLike> {
     catalogId: string;
     entries: readonly TEntry[];
     entryLabel: (entry: TEntry, lang: string) => string;
+    /**
+     * Name offered and written by sheet pickers: outside English it keeps the book name in
+     * parentheses ("Арсенал (Arsenal)") so players can match it to the English books.
+     */
+    pickLabel: (entry: TEntry, lang: string) => string;
     fillableDetails: readonly CatalogFillableDetail[];
     /** Suggested default: every declared detail starts offered; `''` = author picks a target. */
     defaultMapping: Readonly<Record<string, string>>;
@@ -82,6 +87,19 @@ export function textDetail(key: string, label: string): CatalogFillableDetail {
 
 export function numberDetail(key: string, label: string): CatalogFillableDetail {
     return { key, kind: 'number', label };
+}
+
+/** `localized (English)`, or just the English name when there is no distinct translation. */
+export function bookNameLabel(localized: string | undefined, english: string): string {
+    return localized && localized !== english ? `${localized} (${english})` : english;
+}
+
+/**
+ * The book name inside a picked label: `"Арсенал (Arsenal)"` → `"Arsenal"`; `undefined` when the
+ * label has no trailing parentheses.
+ */
+export function bookNameOf(label: string): string | undefined {
+    return /\(([^()]+)\)\s*$/.exec(label)?.[1]?.trim() || undefined;
 }
 
 /**
@@ -112,6 +130,7 @@ export function defineCatalog<TEntry extends CatalogLike>(
         entries,
         entryText,
         entryLabel: (entry, lang) => entryText(entry, 'name', lang) ?? entry.name,
+        pickLabel: (entry, lang) => bookNameLabel(entryText(entry, 'name', lang), entry.name),
         fillableDetails,
         defaultMapping: Object.fromEntries(fillableDetails.map((detail) => [detail.key, ''])),
     };

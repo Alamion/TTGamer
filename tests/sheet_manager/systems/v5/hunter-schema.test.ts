@@ -16,7 +16,7 @@ import { currentHunter, hunterData, seedHunter } from './hunterFixtures';
 const envelope = (data: unknown, definitionId = 'hunter') => ({
     id: 'hunter-1',
     kind: 'character',
-    systemId: 'v5',
+    systemId: 'wod-v5',
     definitionId,
     schemaVersion: 1,
     metadata: { title: 'Lena Varga' },
@@ -27,7 +27,7 @@ describe('hunter document definition', () => {
     it('belongs to the hunter module under the Dark Pack policy', () => {
         expect(hunterDefinition.module).toMatchObject({ id: 'hunter', policies: ['dark-pack'] });
         expect(hunterDefinition.module?.label.message).toBe('Hunter: the Reckoning 5e');
-        expect(systemRegistry.getDocumentDefinition('v5', 'hunter')).toBe(hunterDefinition);
+        expect(systemRegistry.getDocumentDefinition('wod-v5', 'hunter')).toBe(hunterDefinition);
     });
 
     it('creates a blank hunter with empty module fields and cell values at 0', () => {

@@ -64,7 +64,11 @@ import {
     buildInventoryCatalog,
     buildWeaponsCatalog,
 } from '../data/bodyEquipmentCatalogs';
-import { CATALOG_BINDINGS, readCatalogDetails } from '../data/catalogBindings';
+import {
+    CATALOG_BINDINGS,
+    type CatalogBindingEntry,
+    readCatalogDetails,
+} from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { useBoundDocument } from './boundDocument';
 import { CohortTrack } from './CohortTrack';
@@ -142,22 +146,25 @@ function IdentityField({
 type TraitListEntry = { id: string; label: string; value: number };
 
 function toCatalogEntries(
-    source: ReadonlyArray<{ id: string; name: string; shortDescription?: string }>,
+    catalog: CatalogBindingEntry,
+    locale: string,
     filter?: { key: string; value: string }
 ): CatalogEntry[] {
-    return source
+    return catalog.entries
         .filter(
-            (entry) => !filter || (entry as Record<string, unknown>)[filter.key] === filter.value
+            (entry) =>
+                !filter ||
+                (entry as unknown as Record<string, unknown>)[filter.key] === filter.value
         )
         .map((entry) => ({
             id: entry.id,
-            name: entry.name,
-            subtitle: entry.shortDescription,
+            name: catalog.pickLabel(entry, locale),
+            subtitle: catalog.entryText(entry, 'shortDescription', locale),
         }));
 }
 
-/** Catalog entries for a bound list (registry-declared catalog + filter). */
-function listCatalog(binding: ListBinding): CatalogEntry[] | undefined {
+/** Catalog entries for a bound list (registry-declared catalog + filter), localized. */
+function listCatalog(binding: ListBinding, locale: string): CatalogEntry[] | undefined {
     if (!binding.catalog) return undefined;
     const { catalogId, catalogFilter } = binding.catalog;
     const catalog = CATALOG_BINDINGS.get(catalogId);
@@ -169,7 +176,7 @@ function listCatalog(binding: ListBinding): CatalogEntry[] | undefined {
         });
         return undefined;
     }
-    return toCatalogEntries(catalog.entries, catalogFilter);
+    return toCatalogEntries(catalog, locale, catalogFilter);
 }
 
 /**
@@ -193,6 +200,7 @@ function TraitListBindingView({
     placeholder?: string;
     columns?: 1 | 2 | 3 | 4;
 }) {
+    const locale = useDocusaurusContext().i18n.currentLocale;
     return (
         <CustomTraitList
             items={items as CustomSkill[]}
@@ -221,7 +229,7 @@ function TraitListBindingView({
             size="md"
             showFlags
             placeholder={placeholder}
-            catalog={listCatalog(binding)}
+            catalog={listCatalog(binding, locale)}
             onCatalogSelect={onCatalogSelect}
             onDiceRoll={buildDiceNotation}
         />
@@ -247,6 +255,7 @@ function SystemListBody({
     showTitle?: boolean;
     framed?: boolean;
 }) {
+    const locale = useDocusaurusContext().i18n.currentLocale;
     const bound = useBoundDocument();
     const { dataKey } = binding;
     const raw = (bound?.data[dataKey] as unknown[] | undefined) ?? [];
@@ -273,7 +282,7 @@ function SystemListBody({
                 onChange={(id, points, label) =>
                     write(items.map((item) => (item.id === id ? { ...item, points, label } : item)))
                 }
-                catalog={listCatalog(binding)}
+                catalog={listCatalog(binding, locale)}
                 onCatalogSelect={(id, entry) =>
                     write(
                         items.map((item) =>
@@ -514,7 +523,7 @@ function BoundEquipmentBody({
                 const source = CATALOG_BINDINGS.get(catalogId);
                 return (source?.entries ?? []).map((entry) => ({
                     id: `${catalogId}/${entry.id}`,
-                    name: source!.entryLabel(entry, locale),
+                    name: source!.pickLabel(entry, locale),
                 }));
             }),
         [catalog, locale]

@@ -16,7 +16,7 @@ yarn start            # http://localhost:3000, sheet at /universal_sheet
 ```bash
 yarn test tests/sheet_manager     # registry, schema, condition tracks, catalogs, bindings, templates, notices, import/export
 yarn test tests/docs              # MDX imports, docs embeds, v5 docs anatomy
-yarn validate:i18n                # en ↔ ru parity incl. docs/v5
+yarn validate:i18n                # en ↔ ru parity incl. docs/wod-v5
 yarn validate:data
 yarn verify:full                  # lint + typecheck + tests + production build (new route tree, shared components)
 ```
@@ -25,23 +25,31 @@ Expected: all pass, and `tests/setup/sheetIssues.ts` reports no unexpected diagn
 
 ## Scenario 1 — Create and play (US1, US2)
 
-1. `/universal_sheet` → create → choose **Hunter: the Reckoning 5e — Hunter**.
-2. Expect: all attributes 1, skills 0, Health 4 boxes, Willpower 2 boxes, small Dark Pack badge bottom-left under the sheet (links to the Dark Pack docs page).
+1. `/universal_sheet` → create → under **Hunter: the Reckoning 5e** choose **Character**; Manage
+   documents shows type "Character" and the setting in its own column.
+2. Expect: all attributes 1, skills 0, Health 4 boxes, Willpower 2 boxes, small Dark Pack badge
+   bottom-left under the sheet (links to the Dark Pack docs page).
 3. Set Stamina 3, Composure 2, Resolve 3 → Health 6, Willpower 5.
-4. Health: click box 1 twice (×) and box 2 once (╱) → `× ╱ _ _ _ _`; press **+** after the track → 7 boxes.
-5. Lower Stamina to 1 (length 4), then back to 3 → marks unchanged.
-6. Lower Stamina → fewer boxes, marks kept; raise it back → marks reappear.
-7. Creed: pick _Faithful_ from suggestions; Drive: type a custom value → both saved.
-8. Edges: add _Sense the Unnatural_; Perks cell suggests only its four perks; add _Range_; rename the Edge text to _Second Sight_ → perk suggestions still shown; move the Edge down and up.
-9. Medicine 3 with specialization `Trauma, Triage` typed next to the skill; no S/P/E flags on V5 traits.
+4. Health: click box 1 twice (×) and box 2 once (╱) → `× ╱ _ _ _ _`; press **+** after the track
+   → 7 boxes, **−** → 6.
+5. Lower Stamina to 1 (fewer boxes), then back to 3 → marks unchanged.
+6. Creed: pick _Faithful_ from suggestions; Drive: type a custom value → both saved. Toggle
+   Despair; change Desperation and Danger.
+7. Edges: add _Sense the Unnatural_. Perks: add a row → suggestions list only its four Perks (all
+   Perks while no book Edge is on the sheet); picking one fills the Edge column in the reader's
+   language. Move rows up and down.
+8. Medicine 3 with specialization `Trauma, Triage` typed next to the skill; no S/P/E flags on V5
+   traits.
+9. Advantages/Flaws suggest only their own polarity; a weapon picked from the catalog fills name and
+   damage (V5 has no magazine capacity, ammo counters stay 0); inventory items add, edit, remove.
 10. Try Strength 6 via import or devtools write → rejected, diagnostic reported.
-11. Switch to **Brief**: attributes, skills, Edges, tracks, Despair, Desperation/Danger visible; toggle
-    Despair and add Willpower damage → switch back, same values.
+11. Switch to **Brief**: identity, condition, attributes, skills, Edges, weapons visible; change
+    Willpower/Despair → switch back, same values.
 12. Reload page → everything persists.
 
 ## Scenario 2 — Export/import (US3)
 
-1. Export → `ttgamer_<name>.json` contains `"systemId": "v5"`, `"definitionId": "hunter"`, `notices`.
+1. Export → `ttgamer_<name>.json` contains `"systemId": "wod-v5"`, `"definitionId": "hunter"`, `notices`.
 2. Delete, import → identical sheet; import again → Replace / Duplicate / Cancel.
 3. Edit file: `"strength": { "value": 9 }` → import shows error; entry appears in recovery.
 4. Export a Star Wars character → file has no `notices`; re-import unchanged.

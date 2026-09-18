@@ -1,6 +1,6 @@
 # Contract: V5 and Hunter Documentation Structure and Page Format
 
-Boundary: documentation (`docs/v5/**`, `i18n/ru/.../current/v5/**`) ↔ readers and the sheet
+Boundary: documentation (`docs/wod-v5/**`, `i18n/ru/.../current/wod-v5/**`) ↔ readers and the sheet
 (embeds). Research D9–D11. The format is new and deliberately looser than the Star Wars section; if
 it proves itself, the Star Wars docs can be reworked to match in a later task.
 
@@ -20,7 +20,7 @@ it proves itself, the Star Wars docs can be reworked to match in a later task.
 ## Tree
 
 ```text
-docs/v5/                                   sidebar: "World of Darkness 5th Edition" (position 3)
+docs/wod-v5/                                   sidebar: "World of Darkness 5th Edition" (position 3)
 ├── index.mdx                              What V5 is, which lines are available (Hunter now)
 ├── rules/                                 Shared V5 mechanics (linked by every V5 line)
 │   ├── index.mdx
@@ -56,7 +56,7 @@ duplicate reference pages were removed, 2026-09-16). Embeds followed by content 
 two `<br />`.
 
 Russian mirror: identical paths and component imports under
-`i18n/ru/docusaurus-plugin-content-docs/current/v5/`; category labels in `current.json`.
+`i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/`; category labels in `current.json`.
 `scripts/validate-i18n.ts` checks both roots.
 
 ## Front matter
@@ -84,18 +84,18 @@ No page carries a policy notice; the Dark Pack statement lives only on `dark-pac
 
 ## Page anatomy — newcomer step (`first-hunter/0N-*.mdx`)
 
-| Block                       | Form                                                                           | Purpose                                          |
-| --------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------ |
-| Progress                    | `Step N of 9` line under the title                                             | the reader knows where they are                  |
-| In short                    | `:::tip[In short]`                                                             | the decision in one sentence                     |
-| Why it matters at the table | `##` section, ≤ 2 short paragraphs                                             | concrete play moment where this choice shows up  |
-| Decide                      | `##` with 2–4 guiding questions                                                | turns rules into questions a newcomer can answer |
-| Options at a glance         | compact table or list (own words)                                              | only where the book offers named choices         |
-| On your sheet               | `##` + `<TemplateFragment systemId="v5" template="v5-hunter-sheet" node="…"/>` | fill it now; create-hunter prompt if none        |
-| Lena's choice               | `:::note[Example: Lena]`                                                       | the running example makes the same decision      |
-| Common questions            | `<details>` blocks, optional                                                   | newcomer doubts without cluttering the flow      |
-| Checkpoint                  | `:::info[Checkpoint]` checklist                                                | what should be on the sheet before moving on     |
-| Next                        | link to step N+1                                                               |                                                  |
+| Block                       | Form                                                                               | Purpose                                          |
+| --------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Progress                    | `Step N of 9` line under the title                                                 | the reader knows where they are                  |
+| In short                    | `:::tip[In short]`                                                                 | the decision in one sentence                     |
+| Why it matters at the table | `##` section, ≤ 2 short paragraphs                                                 | concrete play moment where this choice shows up  |
+| Decide                      | `##` with 2–4 guiding questions                                                    | turns rules into questions a newcomer can answer |
+| Options at a glance         | compact table or list (own words)                                                  | only where the book offers named choices         |
+| On your sheet               | `##` + `<TemplateFragment systemId="wod-v5" template="v5-hunter-sheet" node="…"/>` | fill it now; create-hunter prompt if none        |
+| Lena's choice               | `:::note[Example: Lena]`                                                           | the running example makes the same decision      |
+| Common questions            | `<details>` blocks, optional                                                       | newcomer doubts without cluttering the flow      |
+| Checkpoint                  | `:::info[Checkpoint]` checklist                                                    | what should be on the sheet before moving on     |
+| Next                        | link to step N+1                                                                   |                                                  |
 
 Budget numbers (e.g. attribute spread, skill spreads, Edge/Perk picks) are shown as **our own**
 compact tables with the numbers only, never as copies of book tables.
@@ -119,19 +119,19 @@ compact tables with the numbers only, never as copies of book tables.
 - 3 short paragraphs: who hunters are, what a session looks like, what makes it different.
 - Three "doors" as cards: _I've never played a tabletop RPG_ → `first-hunter/`; _I know tabletop
   games_ → `quick-start`; _I'm running the game_ → `reference/` + `rules/`.
-- `<CreateCharacterButton systemId="v5" definitionId="hunter" />`.
+- `<CreateCharacterButton systemId="wod-v5" definitionId="hunter" />`.
 
 ## Components allowed
 
 `TWWrapper`, `InlineRoll` (fixed results only), `CatalogSummaryTable` (catalog names + own-words
 summaries), `TemplateFragment` / `TemplatePreview` (never render their own notice)
-(`systemId="v5"`), `CreateCharacterButton`, `PolicyStatement` (Dark Pack page only), `@theme/DocCardList`. All imports via
+(`systemId="wod-v5"`), `CreateCharacterButton`, `PolicyStatement` (Dark Pack page only), `@theme/DocCardList`. All imports via
 `@site/`. No `CharRoll` (Star Wars shape; T-045).
 
 ## Enforcement
 
-- `tests/docs/v5-docs.test.ts`: every `.mdx` under `docs/v5` and the RU mirror has front-matter
+- `tests/docs/wod-v5-docs.test.ts`: every `.mdx` under `docs/wod-v5` and the RU mirror has front-matter
   `description` and a `:::tip[In short]` block; only `dark-pack.mdx` has a `<PolicyStatement`; every `first-hunter`
   step has a `TemplateFragment` whose `node` exists in `v5-hunter-sheet` (extends
   `docs-embeds.test`).
-- `yarn validate:i18n` covers `docs/v5`; `tests/docs/mdx-imports.test.ts` already covers imports.
+- `yarn validate:i18n` covers `docs/wod-v5`; `tests/docs/mdx-imports.test.ts` already covers imports.

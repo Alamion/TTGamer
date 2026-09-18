@@ -12,8 +12,9 @@ import { CustomTemplateSchema } from '../types/template';
  * Pre-feature shapes (fixed `sections` hierarchy) fail the v3 parse and retire into the
  * bounded quarantine — no migration while there is no permanent user base (spec FR-4/A5);
  * documents pointing at retired ids fall back to the built-in page via `resolveCustomTemplate`.
+ * Version 4: a re-parse that rewrites renamed system ids (`v5` → `wod-v5`).
  */
-const STORE_VERSION = 3;
+const STORE_VERSION = 4;
 const MAX_QUARANTINE_ENTRIES = 100;
 
 export interface TemplateStoreState {

@@ -16,7 +16,7 @@ export type {
     CatalogLike,
     CatalogMessage,
 } from './catalogs';
-export { anyCatalog, defineCatalog } from './catalogs';
+export { anyCatalog, bookNameLabel, bookNameOf, defineCatalog } from './catalogs';
 export type { PolicyId, PublisherPolicy } from './policies';
 export {
     exportNotices,

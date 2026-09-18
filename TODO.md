@@ -33,13 +33,12 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [x] ✅ **T-008 — Vehicle catalog** (none) — players browse 200+ vehicle entries with scale badges, stat display, and weapon details.
 - [x] ✅ **T-009 — Creature catalog** (none) — GMs look up creature stat blocks with scale classification.
 - [x] ✅ **T-010 — i18n docs translation** (none) — Russian-reading players and GMs use the full documentation in their language.
-- [ ] 🟡 **T-011 — WoD (VtM 2e) system docs** (none) — Vampire: the Masquerade 2e gets the same table-ready documentation as the Star Wars system. (task for roadmap path `core-book-docs`)
-    - Structure started: clans, disciplines, Blood Points, Humanity.
+- [ ] 🚫 **T-011 — WoD (VtM 2e) system docs** (none) — closed 2026-09-19: the unfinished `docs/wod` drafts (core rules, VtM 2e character pages) duplicated the V5 section visually and were removed; classic VtM returns with T-043. (task for roadmap path `core-book-docs`)
 - [ ] ⬜ **T-012 — Database + auth** (none) — players and GMs optionally sync and share sheets across devices with authenticated accounts while keeping an offline-first local cache and explicit conflict/recovery behavior. (task for roadmap path `multiplayer-groups`, `online-forum`)
 - [ ] ⬜ **T-037 — Third-party text audit & licensing notices** (none) — readers and rights holders get documentation and catalog text written in the project's own words, with each system's required notices shown where its material is used. (task for roadmap path `core-book-docs`)
     - Verbatim 8-word overlap scan (2026-09-15): docs prose ≤10% per page; catalogs higher — `meritsFlawsData.ts` (VtM Players Guide 2nd + SW WEG→WoD conversion), `abilities.ts`, `backgroundsData.ts`, `vehicleData.ts` (WEG D6). Trait-name lists are false positives; paraphrase is not detected.
     - Notices become system/ruleset metadata rendered automatically (Dark Pack for WoD-engine content, per-publisher policies for others); no notice on unrelated pages.
-    - 2026-09-15: the metadata exists (spec 008, used by V5); the official Dark Pack badge is in `static/img/`, shown bottom-left on hunter sheets and with the full statement on `docs/v5/dark-pack`. Still open: the badge where donations are solicited; decide whether the Star Wars WoD conversion declares the Dark Pack policy.
+    - 2026-09-15: the metadata exists (spec 008, used by V5); the official Dark Pack badge is in `static/img/`, shown bottom-left on hunter sheets and with the full statement on `docs/wod-v5/dark-pack`. Still open: the badge where donations are solicited; decide whether the Star Wars WoD conversion declares the Dark Pack policy.
 - [ ] 🟡 **T-038 — V5 ruleset + Hunter: the Reckoning 5e player character** (none) — players create, edit, and export a validated H:tR 5e hunter sheet built on a reusable V5 ruleset layer, and can re-skin it for a homebrew setting through the template system. (task for roadmap path `multi-system-sheets`)
     - Highest priority: a table game runs on it within 1–2 weeks of 2026-09-15; keep scope to what that session needs.
     - Source: `context/Hunter the reckoning 5e.pdf` (image-only scan; read pages visually). Sheet structure and trait names only — no verbatim rules text.
@@ -105,7 +104,14 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 
 - [x] ✅ **T-020 — YAML i18n foundation** (none) — contributors edit canonical English/Russian YAML sources that generate typed adapters with locale/key/placeholder validation and a status command; the Base-sheet/attribute-name pilot is done.
 - [ ] 🟡 **T-021 — UI i18n migration** (T-020) — the whole interface becomes translatable: the remaining sheet, dice, shared, site-shell, catalog, and integration strings migrate in small domain batches using generated descriptors and `<Translate>` where suitable; no second locale runtime.
+    - 2026-09-18 review: the home page is still English in the Russian build.
 - [ ] ⬜ **T-022 — Catalog data i18n migration** (T-021) — catalog entries display in the reader's language: user-facing fields of each catalog localize, then DataCatalog detail/search/filter configurations use localized values with English fallback.
+    - 2026-09-18 review: Star Wars docs pages still show English catalog content in Russian — skills, Force powers, virtues, and smaller embedded lists; the V5/Hunter catalogs are already localized and can serve as the pattern.
+- [ ] ⬜ **T-060 — Localized equipment item cards** (T-021) — Russian readers see translated buttons and field labels inside weapon, armor, and inventory item cards on every sheet (Star Wars and V5 share the card molecules); the strings move to the YAML UI sources.
+- [ ] ⬜ **T-061 — V5/Hunter Russian terminology review** (none) — Russian readers get consistent, reviewed H:tR 5e terms (module name, Storyteller, Touchstones, Edges/Perks, Creed/Drive, Advantage and gear names) across the sheet UI, catalogs, and `docs/wod-v5`; one glossary decides each term and every source follows it.
+    - Terms were chosen during spec 008 without a review; check `translations/source/ru/ui/sheet/v5*.yaml`, `translations/source/ru/data/v5-hunter-*.yaml`, and the Russian `v5/` docs.
+- [ ] ⬜ **T-062 — Star Wars pickers with book names** (T-022) — Russian readers pick Star Wars catalog entries (species, merits/flaws, abilities, Force powers, equipment, vehicles, creatures) by names shown and written as "localized (English)", the same way V5 hunter pickers already do (`pickLabel` in `systems/catalogs.ts`); search matches both names.
+    - The Star Wars pickers that bypass `defineCatalog` labels (equipment suggestions through `useBodyHandlers`, trait dialogs, DataCatalog-based selectors) move onto `pickLabel` first; names appear bilingual as soon as T-022 localizes each catalog.
 - [ ] ⬜ **T-023 — Translation source audit** (T-021, T-022) — literal string IDs and generated-descriptor imports get a static audit once at least two further domains establish the usage patterns; deliberately not a brittle regex scanner.
 
 ### LLM Support

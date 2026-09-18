@@ -28,7 +28,7 @@ const starWars = {
 describe('hunter document files', () => {
     it('exports system, module, and the Dark Pack notice', () => {
         const exported = JSON.parse(serializeDocumentExport(hunter));
-        expect(exported).toMatchObject({ systemId: 'v5', definitionId: 'hunter' });
+        expect(exported).toMatchObject({ systemId: 'wod-v5', definitionId: 'hunter' });
         expect(exported.notices).toEqual([
             {
                 policy: 'dark-pack',

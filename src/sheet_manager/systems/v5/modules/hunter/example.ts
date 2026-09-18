@@ -151,7 +151,7 @@ export const LENA_VARGA_DATA = HunterSchema.parse({
 export const LENA_VARGA_DOCUMENT: UnknownDocumentEnvelope = {
     id: 'lena-varga::example',
     kind: 'character' as UnknownDocumentEnvelope['kind'],
-    systemId: 'v5' as UnknownDocumentEnvelope['systemId'],
+    systemId: 'wod-v5' as UnknownDocumentEnvelope['systemId'],
     definitionId: 'hunter' as UnknownDocumentEnvelope['definitionId'],
     schemaVersion: 1,
     metadata: { title: 'Lena Varga', tags: [] },

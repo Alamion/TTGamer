@@ -26,9 +26,9 @@ type Message = { id: string; message: string };
 
 /** Rules pages linked from section and group headers. */
 export const V5_DOCS = {
-    attributes: '/docs/v5/rules/attributes-skills',
-    skills: '/docs/v5/rules/attributes-skills#specialties',
-    damage: '/docs/v5/rules/damage-willpower',
+    attributes: '/docs/wod-v5/rules/attributes-skills',
+    skills: '/docs/wod-v5/rules/attributes-skills#specialties',
+    damage: '/docs/wod-v5/rules/damage-willpower',
 } as const;
 
 export const v5Text = (

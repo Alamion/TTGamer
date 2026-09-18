@@ -29,7 +29,8 @@ import {
 } from '../types/templateValues';
 import { useTemplateStore } from './templateStore';
 
-const STORE_VERSION = 3;
+/** Version 4: a re-parse that rewrites renamed system ids (`v5` → `wod-v5`). */
+const STORE_VERSION = 4;
 
 /**
  * v2 → v3: per-template nested value bags flatten into one document-global bag keyed by

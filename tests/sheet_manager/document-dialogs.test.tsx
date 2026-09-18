@@ -28,7 +28,7 @@ describe('document dialogs', () => {
         useDocumentStore.setState({
             documents: [
                 envelope('Jax', 'star-wars-wod', 'character', createDefaultStarWarsCharacterData()),
-                envelope('Lena', 'v5', 'hunter', createHunterDefault()),
+                envelope('Lena', 'wod-v5', 'hunter', createHunterDefault()),
             ],
             currentDocumentId: 'Jax',
         });

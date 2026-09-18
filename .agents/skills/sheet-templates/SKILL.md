@@ -254,7 +254,7 @@ edited override) so prose and page stay in sync:
 
 - `<TemplateFragment template="full-sheet" node="attributes" />` — a subtree against the
   reader's current document (editable). Other systems pass `systemId` and their template id
-  (`systemId="v5" template="v5-hunter-sheet"`). Without a document of the same system and kind
+  (`systemId="wod-v5" template="v5-hunter-sheet"`). Without a document of the same system and kind
   it shows a short prompt plus a create button for the definition owning that view.
 - `<TemplatePreview document={presetCharacterDocument(JAX_VORN_PRESET)} node="base" />` — a
   fixed document, read-only. Helpers: `healthPreviewDocument(levels)`,

@@ -18,6 +18,16 @@ export function BottomSheet({ onClose, children }: BottomSheetProps) {
     const dragStartY = useRef(0);
     const dragBaseY = useRef(CLOSED);
 
+    // Room at the end of the page so the last content can scroll above the peeking sheet.
+    useEffect(() => {
+        const { body } = document;
+        const previous = body.style.paddingBottom;
+        body.style.paddingBottom = `${100 - PEEK + 6}dvh`;
+        return () => {
+            body.style.paddingBottom = previous;
+        };
+    }, []);
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setTranslateY(PEEK);

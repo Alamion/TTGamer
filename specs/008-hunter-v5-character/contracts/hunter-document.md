@@ -8,7 +8,7 @@ Boundary: `sheet_manager` import/export ↔ user files. Field ranges: [data-mode
 {
     "id": "…",
     "kind": "character",
-    "systemId": "v5",
+    "systemId": "wod-v5",
     "definitionId": "hunter",
     "schemaVersion": 1,
     "metadata": { "title": "Lena Varga", "templateId": "v5-hunter-sheet", "tags": [] },
@@ -64,7 +64,7 @@ Existing wrapper, `formatVersion` unchanged (3):
     "template": {
         "id": "…",
         "name": "Hollow Crown hunters",
-        "systemId": "v5",
+        "systemId": "wod-v5",
         "documentKind": "character",
         "schemaVersion": 3,
         "children": [],

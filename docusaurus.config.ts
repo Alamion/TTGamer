@@ -131,6 +131,12 @@ const config: Config = {
                         to: '/docs/star-wars-wod-2e/vehicles-mechanisms/durability-damage-repair',
                     },
                 ],
+                // The V5 docs moved from /docs/v5 (ambiguous next to other 5th editions).
+                createRedirects(existingPath: string) {
+                    return existingPath.startsWith('/docs/wod-v5')
+                        ? existingPath.replace('/docs/wod-v5', '/docs/v5')
+                        : undefined;
+                },
             },
         ],
         // function myNavbarPlugin() {

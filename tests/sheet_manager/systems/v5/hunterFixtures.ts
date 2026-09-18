@@ -17,7 +17,7 @@ export function seedHunter(data: HunterData = hunterData(), extra: unknown[] = [
             {
                 id: HUNTER_DOCUMENT_ID,
                 kind: 'character',
-                systemId: 'v5',
+                systemId: 'wod-v5',
                 definitionId: 'hunter',
                 schemaVersion: 1,
                 metadata: { title: 'Lena', tags: [] },

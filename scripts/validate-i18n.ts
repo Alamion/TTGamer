@@ -2,7 +2,7 @@ import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 /** Documentation trees whose English pages must have Russian counterparts. */
-const documentRoots = ['star-wars-wod-2e', 'v5'] as const;
+const documentRoots = ['star-wars-wod-2e', 'wod-v5'] as const;
 const translationDocsRoot = 'i18n/ru/docusaurus-plugin-content-docs/current';
 const translationJsonFiles = [
     'code.json',

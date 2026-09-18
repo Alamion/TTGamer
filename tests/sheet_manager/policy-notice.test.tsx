@@ -65,7 +65,7 @@ describe('policy notice on sheets', () => {
             unmount();
 
             const shipped = systemRegistry
-                .getSystem('v5')!
+                .getSystem('wod-v5')!
                 .defaultTemplates!.find(({ id }) => id === 'v5-hunter-sheet')!;
             useTemplateStore.setState({
                 templates: [{ ...shipped, id: 'my-hunter-page', name: 'Mine', children: [] }],

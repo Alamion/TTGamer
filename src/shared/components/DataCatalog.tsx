@@ -478,153 +478,145 @@ export function DataCatalog<T extends { id: string }>({
             </div>
 
             <div className="relative">
-                <div style={{ paddingBottom: isMobile && selectedId ? '36dvh' : undefined }}>
-                    <div className="border border-border rounded-lg overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-sm table">
-                                <thead>
-                                    {table.getHeaderGroups().map((headerGroup) => (
-                                        <tr
-                                            key={headerGroup.id}
-                                            className="border-b border-border bg-bgSurface/50"
-                                        >
-                                            {headerGroup.headers.map((header) => (
-                                                <th
-                                                    key={header.id}
-                                                    scope="col"
-                                                    className={clsx(
-                                                        'px-4 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider'
-                                                    )}
-                                                    aria-sort={
-                                                        header.column.getIsSorted() === 'asc'
-                                                            ? 'ascending'
-                                                            : header.column.getIsSorted() === 'desc'
-                                                              ? 'descending'
-                                                              : header.column.getCanSort()
-                                                                ? 'none'
-                                                                : undefined
-                                                    }
-                                                >
-                                                    {header.column.getCanSort() ? (
-                                                        <button
-                                                            type="button"
-                                                            onClick={header.column.getToggleSortingHandler()}
-                                                            className="inline-flex items-center gap-1 select-none hover:text-textPrimary transition-colors"
-                                                        >
-                                                            {flexRender(
-                                                                header.column.columnDef.header,
-                                                                header.getContext()
-                                                            )}
-                                                            {{
-                                                                asc: (
-                                                                    <ChevronUp
-                                                                        className="w-3.5 h-3.5"
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                ),
-                                                                desc: (
-                                                                    <ChevronDown
-                                                                        className="w-3.5 h-3.5"
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                ),
-                                                            }[
-                                                                header.column.getIsSorted() as string
-                                                            ] ?? null}
-                                                        </button>
-                                                    ) : (
-                                                        flexRender(
+                <div className="border border-border rounded-lg overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm table">
+                            <thead>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                    <tr
+                                        key={headerGroup.id}
+                                        className="border-b border-border bg-bgSurface/50"
+                                    >
+                                        {headerGroup.headers.map((header) => (
+                                            <th
+                                                key={header.id}
+                                                scope="col"
+                                                className={clsx(
+                                                    'px-4 py-3 text-left text-xs font-medium text-textSecondary uppercase tracking-wider'
+                                                )}
+                                                aria-sort={
+                                                    header.column.getIsSorted() === 'asc'
+                                                        ? 'ascending'
+                                                        : header.column.getIsSorted() === 'desc'
+                                                          ? 'descending'
+                                                          : header.column.getCanSort()
+                                                            ? 'none'
+                                                            : undefined
+                                                }
+                                            >
+                                                {header.column.getCanSort() ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={header.column.getToggleSortingHandler()}
+                                                        className="inline-flex items-center gap-1 select-none hover:text-textPrimary transition-colors"
+                                                    >
+                                                        {flexRender(
                                                             header.column.columnDef.header,
                                                             header.getContext()
-                                                        )
+                                                        )}
+                                                        {{
+                                                            asc: (
+                                                                <ChevronUp
+                                                                    className="w-3.5 h-3.5"
+                                                                    aria-hidden="true"
+                                                                />
+                                                            ),
+                                                            desc: (
+                                                                <ChevronDown
+                                                                    className="w-3.5 h-3.5"
+                                                                    aria-hidden="true"
+                                                                />
+                                                            ),
+                                                        }[header.column.getIsSorted() as string] ??
+                                                            null}
+                                                    </button>
+                                                ) : (
+                                                    flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )
+                                                )}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </thead>
+                            <tbody>
+                                {table.getRowModel().rows.length === 0 ? (
+                                    <tr>
+                                        <td
+                                            colSpan={table.getVisibleLeafColumns().length}
+                                            className="px-4 py-12 text-center text-textSecondary"
+                                        >
+                                            No results match your search.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    table.getRowModel().rows.map((row) => (
+                                        <tr
+                                            key={row.id}
+                                            tabIndex={0}
+                                            aria-label={`${getRowLabel(row.original)} — ${
+                                                selectedId === getRowId(row.original)
+                                                    ? 'details open'
+                                                    : 'open details'
+                                            }`}
+                                            onClick={(e) => {
+                                                if (isInteractiveTarget(e.target, e.currentTarget))
+                                                    return;
+                                                toggleDetail(getRowId(row.original));
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.target !== e.currentTarget) return;
+                                                if (e.key !== 'Enter' && e.key !== ' ') return;
+                                                e.preventDefault();
+                                                toggleDetail(getRowId(row.original));
+                                            }}
+                                            className={clsx(
+                                                'border-b border-border last:border-0 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40',
+                                                selectedId === getRowId(row.original)
+                                                    ? 'bg-primary/10'
+                                                    : 'hover:bg-bgSurface/80'
+                                            )}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <td key={cell.id} className="px-4 py-2.5">
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
                                                     )}
-                                                </th>
+                                                </td>
                                             ))}
                                         </tr>
-                                    ))}
-                                </thead>
-                                <tbody>
-                                    {table.getRowModel().rows.length === 0 ? (
-                                        <tr>
-                                            <td
-                                                colSpan={table.getVisibleLeafColumns().length}
-                                                className="px-4 py-12 text-center text-textSecondary"
-                                            >
-                                                No results match your search.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        table.getRowModel().rows.map((row) => (
-                                            <tr
-                                                key={row.id}
-                                                tabIndex={0}
-                                                aria-label={`${getRowLabel(row.original)} — ${
-                                                    selectedId === getRowId(row.original)
-                                                        ? 'details open'
-                                                        : 'open details'
-                                                }`}
-                                                onClick={(e) => {
-                                                    if (
-                                                        isInteractiveTarget(
-                                                            e.target,
-                                                            e.currentTarget
-                                                        )
-                                                    )
-                                                        return;
-                                                    toggleDetail(getRowId(row.original));
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.target !== e.currentTarget) return;
-                                                    if (e.key !== 'Enter' && e.key !== ' ') return;
-                                                    e.preventDefault();
-                                                    toggleDetail(getRowId(row.original));
-                                                }}
-                                                className={clsx(
-                                                    'border-b border-border last:border-0 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40',
-                                                    selectedId === getRowId(row.original)
-                                                        ? 'bg-primary/10'
-                                                        : 'hover:bg-bgSurface/80'
-                                                )}
-                                            >
-                                                {row.getVisibleCells().map((cell) => (
-                                                    <td key={cell.id} className="px-4 py-2.5">
-                                                        {flexRender(
-                                                            cell.column.columnDef.cell,
-                                                            cell.getContext()
-                                                        )}
-                                                    </td>
-                                                ))}
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-bgSurface/30">
-                            <span className="text-sm text-textSecondary">
-                                Page {pagination.pageIndex + 1} of {table.getPageCount()}
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-bgSurface/30">
+                        <span className="text-sm text-textSecondary">
+                            Page {pagination.pageIndex + 1} of {table.getPageCount()}
+                        </span>
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={() => table.previousPage()}
+                                disabled={!table.getCanPreviousPage()}
+                                className="p-1.5 rounded text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                aria-label="Previous page"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <span className="text-sm text-textSecondary tabular-nums min-w-[2ch] text-center">
+                                {pagination.pageIndex + 1}
                             </span>
-                            <div className="flex items-center gap-1">
-                                <button
-                                    onClick={() => table.previousPage()}
-                                    disabled={!table.getCanPreviousPage()}
-                                    className="p-1.5 rounded text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                                    aria-label="Previous page"
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                </button>
-                                <span className="text-sm text-textSecondary tabular-nums min-w-[2ch] text-center">
-                                    {pagination.pageIndex + 1}
-                                </span>
-                                <button
-                                    onClick={() => table.nextPage()}
-                                    disabled={!table.getCanNextPage()}
-                                    className="p-1.5 rounded text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                                    aria-label="Next page"
-                                >
-                                    <ChevronRight className="w-4 h-4" />
-                                </button>
-                            </div>
+                            <button
+                                onClick={() => table.nextPage()}
+                                disabled={!table.getCanNextPage()}
+                                className="p-1.5 rounded text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                aria-label="Next page"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
                         </div>
                     </div>
                 </div>

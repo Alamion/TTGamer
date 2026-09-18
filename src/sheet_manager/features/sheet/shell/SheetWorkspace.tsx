@@ -134,11 +134,12 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
     };
 
     const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (!files?.length) return;
+        // Capture files before resetting the input — clearing the value empties the live FileList.
+        const files = Array.from(event.target.files ?? []);
+        if (files.length === 0) return;
         event.target.value = '';
 
-        for (const file of Array.from(files)) {
+        for (const file of files) {
             let raw: unknown;
             try {
                 raw = JSON.parse(await file.text());

@@ -117,8 +117,8 @@ Names are translated through `translations/source/{en,ru}/data/` YAML; summaries
 
 ### Templates
 
-- Shipped: `v5-hunter-sheet`, `v5-hunter-brief` (`systemId: 'v5'`, `documentKind: 'character'`).
-- User copies keep `systemId: 'v5'`; compatibility requires matching `systemId` and `documentKind`
+- Shipped: `v5-hunter-sheet`, `v5-hunter-brief` (`systemId: 'wod-v5'`, `documentKind: 'character'`).
+- User copies keep `systemId: 'wod-v5'`; compatibility requires matching `systemId` and `documentKind`
   (D2). Binding coordinates are listed in
   [contracts/template-bindings.md](contracts/template-bindings.md).
 
@@ -151,7 +151,7 @@ Deviations from the model above, decided during implementation:
   catalog localization is keyed by catalog id; UI strings for the Hunter module are in
   `ui/sheet/v5Hunter.yaml`, shared V5 strings in `ui/sheet/v5.yaml`, generic ones in
   `ui/sheet/policies.yaml` and `ui/sheet/tracks.yaml`.
-- **Dark Pack** badge: shown bottom-left on sheets, full statement on `docs/v5/dark-pack` (revised 2026-09-15).
+- **Dark Pack** badge: shown bottom-left on sheets, full statement on `docs/wod-v5/dark-pack` (revised 2026-09-15).
 - **Reuse of existing elements** (revised 2026-09-15): Health/Willpower are condition tracks,
   Desperation/Danger resource ratings, skills keep the WoD specialization text; the severity
   track, tag-list input, and `tags` column were removed.

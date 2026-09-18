@@ -14,7 +14,7 @@ formula-derived length) built from new atoms, a **tags** rows column with id-fil
 a list mode for trait specialties, catalogs declared by every plugin (Star Wars included) in a
 neutral `systems/catalogs.ts`, system-aware template matching, a
 registry-driven create dialog, and metadata-driven **publisher policy notices** (Dark Pack) on
-views, docs, and exports. Documentation adds `docs/v5/` with shared V5 rules and a Hunter section
+views, docs, and exports. Documentation adds `docs/wod-v5/` with shared V5 rules and a Hunter section
 that has a quickstart and a guided newcomer creation path in a new page format, mirrored in Russian.
 
 ## Technical Context
@@ -131,8 +131,8 @@ src/sheet_manager/
 translations/source/{en,ru}/ui/sheet/{policies,tracks,v5,v5-hunter}.yaml
 translations/source/{en,ru}/data/v5-hunter.yaml
 
-docs/v5/**                                NEW (tree in contracts/docs-structure.md)
-i18n/ru/docusaurus-plugin-content-docs/current/v5/**   NEW mirror; current.json category labels
+docs/wod-v5/**                                NEW (tree in contracts/docs-structure.md)
+i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/**   NEW mirror; current.json category labels
 scripts/validate-i18n.ts                  multiple doc roots
 eslint.config.mjs                         one generic "no concrete system imports" pattern
 
@@ -145,7 +145,7 @@ tests/sheet_manager/
 ├── document-system.test.ts, view-resolution.test.ts, import-export.test.ts,
 │   template-file.test.ts, docs-embeds.test.tsx, built-in-templates.test.ts   extended
 └── systems/v5/                          NEW system-specific tests (schema, sheet coverage, re-skin, boundaries)
-tests/docs/v5-docs.test.ts               NEW page anatomy + notice enforcement
+tests/docs/wod-v5-docs.test.ts               NEW page anatomy + notice enforcement
 
 AGENTS.md, src/sheet_manager/AGENTS.md, .agents/skills/{sheet-templates,sheet-manager,mdx-documentation}/SKILL.md
 specs/003-custom-sheet-templates/spec.md, specs/007-entity-sheet-templates/spec.md, this spec   banners
@@ -154,7 +154,7 @@ specs/003-custom-sheet-templates/spec.md, specs/007-entity-sheet-templates/spec.
 **Structure Decision**: single Docusaurus web project. Game-system code stays inside
 `src/sheet_manager/systems/v5/` split into `ruleset/` and `modules/hunter/`; generic capabilities go
 to their existing layers (`systems/`, `components/sections/`, `features/sheet/`). Documentation is a
-new top-level `docs/v5/` tree with shared `rules/` and a `hunter/` line.
+new top-level `docs/wod-v5/` tree with shared `rules/` and a `hunter/` line.
 
 ## Delivery Slices (D12)
 
@@ -162,7 +162,7 @@ new top-level `docs/v5/` tree with shared `rules/` and a `hunter/` line.
    catalogs, severity track, full + brief templates, create dialog, notice on views, export notices,
    tests. → Quickstart scenarios 1, 2.
 2. **Re-skin and quickstart** : system-aware template matching and library, tags column in editor,
-   template-file notices; `docs/v5/index`, `rules/*`, `hunter/index`, `hunter/quick-start` (en).
+   template-file notices; `docs/wod-v5/index`, `rules/*`, `hunter/index`, `hunter/quick-start` (en).
    → Scenarios 3, 4.
 3. **Newcomer path and polish** (target 2026-09-29): `first-hunter/*`, `reference/*`, Lena example,
    Russian mirror, `validate-i18n` roots, docs anatomy test, skills/AGENTS updates, TODO/ROADMAP
