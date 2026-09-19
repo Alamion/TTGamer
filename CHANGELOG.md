@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.7.0
+
+### Major feat
+
+- **Russian interface without English leftovers (spec 009)**: the home page, dice roller (panel, settings, history, sharing), Discord delivery messages, shared components (catalog tables, panels, difficulty and scale charts), docs catalog columns and filters, sheet controls, and the weapon, armor, inventory, and implant cards are translated; counts use Russian plural forms («1 документ / 3 документа / 5 документов»)
+- **Translation coverage verifier**: `yarn i18n:verify` parses the code (TypeScript AST) and checks user-facing literals, missing or copied translations, plurals, catalog coverage, bilingual pickers, glossary consistency, label overflow, and Russian docs; runs in `verify:fast`, with reviewed exceptions in `translations/i18n-exceptions.yaml` and a coverage table in `yarn i18n:status`
+- **Book-term hints for players who learned from the English books**: hover, focus, or tap a trait name to see its English book name (one delegated popover per sheet, no persistent marker, a one-time tip); a "Game terms" preference switches between Russian with hints, English book names, and Russian without hints
+- **Term links survive re-skins**: renaming a trait in the template editor keeps its book term, with a per-field "Show book name hint" switch; exported templates keep both
+- **Bilingual pickers**: every catalog picker shows «Русский (English)» and finds entries by either name, ignoring case, ё/е, and diacritics; picked equipment keeps a catalog reference and shows its name in the reader's language until renamed
+- **Star Wars catalogs in Russian**: names, short descriptions, specialties, rating scales, and enumerated labels of every Star Wars catalog (species, merits and flaws, abilities, Force powers and skills, backgrounds, weapons, armor, gear, vehicles, creatures, virtues); abilities, Force skills, and virtues on the sheet read Russian
+- **Glossary**: `translations/glossary/` records the English and Russian form of every sheet term (Star Wars, V5, Hunter) with proposals for review
+
+### Minor feat
+
+- **Long labels fit their rows**: the specialization input keeps room for 8 characters, narrow columns move it to its own line, and long Russian terms switch to glossary short forms on phones
+- **Docs terms**: Russian docs write a game term's first mention as «Русский (English)»
+
 ## v3.6.0
 
 ### Major feat

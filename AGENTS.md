@@ -140,6 +140,7 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 - Third-party material: rules and catalog text in our own words (no verbatim book passages); publisher notices (e.g. Dark Pack) come from `systems/policies.ts` metadata declared by plugins/modules and render as a badge on sheets (`PolicyBadges`, linking to the policy's single docs page with `PolicyStatement`) and `notices` in exports — only where that material is used (constitution VIII).
 - Data changes must pass `yarn validate:data`. Documentation under `docs/star-wars-wod-2e` and `docs/wod-v5` must be mirrored under Russian i18n and pass `yarn validate:i18n`.
 - YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`; do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.
+- `yarn verify:fast` runs the translation coverage verifier (`yarn i18n:verify`): user-facing literals, missing keys, plurals, catalog and docs coverage, glossary consistency. New UI text goes through YAML; exceptions need a reason in `translations/i18n-exceptions.yaml`.
 
 ## 9. Specs vs Current State
 

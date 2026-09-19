@@ -69,6 +69,14 @@ detail panel, localized from the catalog translations. The catalog must declare 
 (columns, filters, optional child catalog) in its plugin; a list lives on one page only — link
 to it from other pages instead of repeating it.
 
+## Russian terminology
+
+- The first mention of a glossary game term on a Russian page reads «Русский (English)»
+  (`Воровство (Larceny)`); later mentions are Russian only. The verifier's `docs-terms` rule
+  checks it (terms come from `translations/glossary/`, scoped to the system's docs tree).
+- Catalog embeds (`DataCatalog` filters, `EntityGrid` getters) use the exported descriptor-based
+  configs from `src/data/*Config.tsx`, never literal labels.
+
 ## Cross-References
 
 Use relative links: `[Dice Pools](../core-rules/dice-pools.mdx)` — never absolute.

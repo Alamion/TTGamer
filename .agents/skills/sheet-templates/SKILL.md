@@ -82,10 +82,21 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   catalog entry (`catalog:<catalogId>/<entryId>`, e.g. attribute names). `DeclarativeSheetView`
   renders `localizeTemplate(template, locale)` (`features/sheet/declarative/localizeTemplate.ts`);
   the stored `label`/`title` is the fallback. Editing a label or title in the editor drops the
-  reference. Character/droid defaults attach references in one pass (`withLabelMessages` in
-  `templates/character.ts`); entity templates pass `labelMessage` explicitly through the
-  builders (keys under `ui.sheet.templates.entities` / `defaults`). Unknown references are
+  reference; on fields and primitives it is kept as `termRef` (spec 009) so the book-term hint
+  survives renaming (`keepTermOnRename` in `template-editor/draft.ts`); switching a field to a
+  custom source clears both. `termHint: false` turns the hint off (editor: "Show book name
+  hint" via `TermHintControl`). Character/droid defaults attach references in one pass
+  (`withLabelMessages` in `templates/character.ts`: attributes, abilities, Force skills, and
+  virtues point at their data catalogs); entity templates pass `labelMessage` explicitly through
+  the builders (keys under `ui.sheet.templates.entities` / `defaults`). Unknown references are
   `unknown-label-message` reference issues.
+- Book terms (spec 009): a label is a book term when its effective ref (`termRef ??
+labelMessage`) is listed in `translations/glossary/*.yaml` (generated `bookTerms`). Trait rows,
+  compact ratings, and field labels render through `components/terms/TermLabel`; each
+  `DeclarativeSheetView` wraps its tree in one `TermHintProvider` (delegated listeners, one
+  popover). The reader's "Game terms" preference (`src/shared/store/readerPrefsStore.ts`) and
+  `resolveTerm` decide label and hint. Trait row layout is classified by
+  `declarative/rowKind.ts` (`traitRowKind`), shared with the verifier's overflow budgets.
 - Authoring: `src/sheet_manager/templates/builders.ts` holds setting-neutral node builders
   (`text`, `number`, `toggle`, `formula`, `select`, `reference`, `primitive`, `list`, `table`,
   `group`, `section`); WoD-family helpers (`dotsTrait`, `traitCoordinate`) live in

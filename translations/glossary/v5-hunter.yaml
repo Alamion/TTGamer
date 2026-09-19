@@ -12,11 +12,13 @@
 - id: creed
   en: Creed
   ru: Кредо
+  note: 'T-061 proposal: keep «Кредо»; «Убеждение» is taken by Conviction'
   refs:
       - ttgamer.ui.sheet.v5Hunter.fields.creed
 - id: drive
   en: Drive
   ru: Мотив
+  note: 'T-061 proposal: «Мотив»; alternatives «Побуждение», «Движущая сила»'
   refs:
       - ttgamer.ui.sheet.v5Hunter.fields.drive
 - id: ambition
@@ -37,11 +39,13 @@
 - id: despair
   en: Despair
   ru: Отчаяние
+  note: 'T-061 proposal: «Отчаяние»'
   refs:
       - ttgamer.ui.sheet.v5Hunter.fields.despair
 - id: desperation
   en: Desperation
   ru: Безысходность
+  note: 'T-061 proposal: «Безысходность» (pool that can turn into Despair); alternative «Отчаянность»'
   refs:
       - ttgamer.ui.sheet.v5Hunter.fields.desperation
 - id: danger
@@ -52,11 +56,13 @@
 - id: edge
   en: Edge
   ru: Грань
+  note: 'T-061 proposal: «Грань» (spec 008 choice); alternatives «Козырь», «Преимущество» (the latter clashes with Advantages)'
   refs:
       - ttgamer.ui.sheet.v5Hunter.fields.edge
 - id: perk
   en: Perk
   ru: Умение
+  note: 'T-061 proposal: «Умение»; alternatives «Приём», «Бонус»'
   refs:
       - ttgamer.ui.sheet.v5Hunter.fields.perk
 - id: assets
@@ -67,10 +73,18 @@
 - id: aptitudes
   en: Aptitudes
   ru: Способности
+  note: 'T-061 review: «Способности» also names Star Wars Abilities in other docs; alternative «Склонности»'
   refs:
       - ttgamer.ui.sheet.v5Hunter.categories.aptitudes
 - id: endowments
   en: Endowments
   ru: Дары
+  note: 'T-061 review: «Дары»; alternative «Наделения»'
   refs:
       - ttgamer.ui.sheet.v5Hunter.categories.endowments
+- id: merit
+  en: Merit
+  ru: Достоинство
+  note: 'T-061 review: see v5.yaml#advantages (same Russian word for Advantages and Merit)'
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.advantageTypes.merit

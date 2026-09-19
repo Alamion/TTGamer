@@ -210,11 +210,13 @@
 - id: touchstone
   en: Touchstone
   ru: Опора
+  note: 'T-061 proposal: «Опора»; alternatives «Якорь», «Ориентир»'
   refs:
       - ttgamer.ui.sheet.v5.fields.touchstone
 - id: conviction
   en: Conviction
   ru: Убеждение
+  note: 'T-061 proposal: «Убеждение»'
   refs:
       - ttgamer.ui.sheet.v5.fields.conviction
 - id: chronicle-tenets
@@ -222,3 +224,9 @@
   ru: Принципы хроники
   refs:
       - ttgamer.ui.sheet.v5.fields.chronicleTenets
+- id: advantages
+  en: Advantages
+  ru: Достоинства
+  note: 'T-061 review: collides with Merit («Достоинство», Hunter advantage type); alternatives for Advantages «Преимущества», «Качества»'
+  refs:
+      - ttgamer.ui.sheet.v5.sections.advantages

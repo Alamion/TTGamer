@@ -60,6 +60,11 @@ Use dependency direction, not component size, to classify sheet UI:
 5. **Shells** (`features/sheet/shell`) own collection, import/export, toolbar, and active-view
    concerns. They do not contain system mechanics.
 
+Book-term labels (spec 009) live in `components/terms/`: `TermLabel` is an atom-level renderer
+with no state or listeners of its own; `TermHintProvider` (one per sheet view) owns the
+delegated listeners and the single hint popover. Whether a label is a book term is glossary
+data, never a system conditional.
+
 Document definitions own the available views, each backed by a shipped template of the same id
 and kind. A brief is a representation, not a document kind: every definition registers its own
 brief view (aliases `brief`/`npc-card` where older data may use them). Keep obsolete persisted view

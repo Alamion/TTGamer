@@ -66,6 +66,10 @@ updates)` for writes. The droid capability maps persisted `damage` ↔ `health` 
   `advantages` / `flaws` (merit-flaw entries `{ id, label, points 1–5 }`), `touchstones`
   (`{ id, name, conviction }`), `experience`, `chronicleTenets`, `weapons` / `inventory`
   (the shared `WeaponItem` / `Item` schemas; draft `equipment` text migrates to one item),
+- Equipment items may carry `entryRef` (`<catalogId>/<entryId>`, spec 009): pickers store the
+  English entry name plus the reference, and `features/sheet/data/itemDisplay.ts`
+  (`resolveItemName` / `useItemName`) shows the localized name until the user renames the item.
+  Star Wars picker options use `<catalogId>/<entryId>` ids (`bodyEquipmentCatalogs.ts`).
   `metadata` (portrait: `portraitId` / `imageUrl`, as every system), `notes`,
   `biography`. Limits in `V5_LIMITS`.
 - `systems/v5/modules/hunter/schema.ts` — `HunterSchema` = core + `concept`, `creed`, `drive`,

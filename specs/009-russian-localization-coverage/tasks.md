@@ -329,7 +329,7 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 - [x] T096 [P] [US6] Create `translations/source/{en,ru}/data/{vehicles,creatures}.yaml` with `name`, the short text fields (`model`, `category`, `crew`, `passengers`, `cargo`, `consumables`, `type`, `size`, `movement`), nested weapon, attack, and trait names under dotted keys, and `_labels.era`
 - [x] T097 [US6] Give abilities, virtues, and Force skills in `src/sheet_manager/systems/star-wars-wod/templates/character.ts` a `labelMessage` of `catalog:<catalog>/<id>` (extend `withLabelMessages` around :651-669 and `ABILITY_GROUPS` around :77-130). Do the same in `creature.ts`, `fodder.ts`, and `vehicle.ts` where they show these traits.
 - [x] T098 [US6] Fill `translations/glossary/star-wars-wod.yaml`: seed it from `src/data/terminologyData.ts` (81 pairs), add attributes, abilities, virtues, Force skills, and Force powers with refs to their catalog entries, and fill every ref the `glossary` rule reports as unresolved
-- [ ] T099 [US6] Draft the V5/Hunter terminology proposals (T-061) in `translations/glossary/v5.yaml` and `v5-hunter.yaml`: module name, Storyteller, Touchstones, Edges/Perks, Creed/Drive, Advantages, gear names. Each proposal gets a `note` with the reasoning, and alternatives are listed in the note.
+- [x] T099 [US6] Draft the V5/Hunter terminology proposals (T-061) in `translations/glossary/v5.yaml` and `v5-hunter.yaml`: module name, Storyteller, Touchstones, Edges/Perks, Creed/Drive, Advantages, gear names. Each proposal gets a `note` with the reasoning, and alternatives are listed in the note.
 - [ ] T100 [US6] **Maintainer review** of all three glossary files: go through each term and its `note`, decide `ru` and `ruShort`, remove the notes that were only proposals, and update every ref the `glossary` rule reports so that the sources match the decisions. Then set `glossary` and `catalog` to `error` in `scripts/i18n-verifier/config.ts`.
 - [ ] T101 [US6] Russian docs first mentions: fix every `docs-terms` warning in `i18n/ru/docusaurus-plugin-content-docs/current/**` by writing the first mention as "ru (en)"; resolve every `docs` finding; set `docs` and `docs-terms` to `error`
 - [ ] T102 [US6] Run `yarn test`, `yarn i18n:status` (catalog coverage: 100% names, ≥ 90% short descriptions), and quickstart §7
@@ -340,7 +340,7 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T103 [P] Update `.agents/skills/ui-i18n/SKILL.md`:
+- [x] T103 [P] Update `.agents/skills/ui-i18n/SKILL.md`:
     - the verifier and its rules;
     - exception list governance;
     - plurals with `usePluralMessage`;
@@ -348,22 +348,22 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
     - the glossary and `bookTerms`;
     - `normalizeSearchText`;
     - "never read `entry.name` for display".
-- [ ] T104 [P] Update `.agents/skills/sheet-templates/SKILL.md` and `src/sheet_manager/AGENTS.md`: `termRef`/`termHint`, `TermLabel`/`TermHintProvider`, and the rule that book-term status comes from glossary refs. Also update `.agents/skills/sheet-manager/SKILL.md`: item `entryRef` and `resolveItemName`.
-- [ ] T105 [P] Update `.agents/skills/mdx-documentation/SKILL.md` (first-mention "ru (en)" rule, descriptor-based catalog embeds) and root `AGENTS.md` (the `verify:fast` now includes i18n checks)
-- [ ] T106 [P] Update `TODO.md`:
+- [x] T104 [P] Update `.agents/skills/sheet-templates/SKILL.md` and `src/sheet_manager/AGENTS.md`: `termRef`/`termHint`, `TermLabel`/`TermHintProvider`, and the rule that book-term status comes from glossary refs. Also update `.agents/skills/sheet-manager/SKILL.md`: item `entryRef` and `resolveItemName`.
+- [x] T105 [P] Update `.agents/skills/mdx-documentation/SKILL.md` (first-mention "ru (en)" rule, descriptor-based catalog embeds) and root `AGENTS.md` (the `verify:fast` now includes i18n checks)
+- [x] T106 [P] Update `TODO.md`:
     - mark T-021, T-060, T-062, and T-023 done;
     - mark T-022 done, with a sub-note that long descriptions are tracked in `yarn i18n:status`, or keep it 🟡 with that note if coverage < 100%;
     - mark T-061 done after T100;
     - add a follow-up entry for long catalog descriptions if any remain.
     - Then run `yarn validate:backlog`.
-- [ ] T107 [P] Bump the `package.json` minor version and add a `CHANGELOG.md` entry covering:
+- [x] T107 [P] Bump the `package.json` minor version and add a `CHANGELOG.md` entry covering:
     - the Russian interface;
     - the translation verifier;
     - bilingual pickers;
     - book-term hints and the "Game terms" preference;
     - short forms;
     - the Star Wars catalogs in Russian.
-- [ ] T108 Own-words audit of the new Russian catalog text in `translations/source/ru/data/*.yaml` against the Star Wars sources in `context/` (Principle VIII): rewrite any sentence that follows book wording
+- [x] T108 Own-words audit of the new Russian catalog text in `translations/source/ru/data/*.yaml` against the Star Wars sources in `context/` (Principle VIII): rewrite any sentence that follows book wording
 - [ ] T109 Run `yarn prettier --write` on changed files, then `yarn validate:data`, `yarn validate:i18n`, `yarn audit:dead-code` (review only), and `yarn verify:full`
 - [ ] T110 Run the full quickstart.md (§1–§8) in both locales and record the results at the bottom of `specs/009-russian-localization-coverage/quickstart.md`; delete `baseline-report.txt`
 
