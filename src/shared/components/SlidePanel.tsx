@@ -1,6 +1,10 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { X } from 'lucide-react';
 import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
+
+const messages = uiMessages.shared.slidePanel;
 
 interface SlidePanelProps {
     open: boolean;
@@ -30,7 +34,7 @@ export function SlidePanel({
     showBackdrop = true,
     className,
     style,
-    closeAriaLabel = 'Close panel',
+    closeAriaLabel,
     ariaLabel,
 }: SlidePanelProps) {
     const widthRef = useRef(width ?? 380);
@@ -84,21 +88,21 @@ export function SlidePanel({
             {showBackdrop && (
                 <button
                     type="button"
-                    aria-label="Close panel"
+                    aria-label={translate(messages.close)}
                     className="fixed inset-0 bg-black/40 z-40"
                     onClick={onClose}
                 />
             )}
             <div
                 role="complementary"
-                aria-label={ariaLabel ?? title ?? 'Side panel'}
+                aria-label={ariaLabel ?? title ?? translate(messages.label)}
                 className={`fixed top-0 right-0 bottom-0 z-50 bg-bgSurface border-l border-border shadow-xl flex flex-col overflow-hidden ${className ?? ''}`}
                 style={{ width: width ?? undefined, ...style }}
             >
                 {onWidthChange && (
                     <button
                         type="button"
-                        aria-label="Resize panel"
+                        aria-label={translate(messages.resize)}
                         className="absolute left-0 top-0 bottom-0 w-1.5 cursor-col-resize group z-10"
                         onMouseDown={handleResizeStart}
                         onKeyDown={handleResizeKeyDown}
@@ -115,7 +119,7 @@ export function SlidePanel({
                             type="button"
                             onClick={onClose}
                             className="flex items-center justify-center w-7 h-7 rounded hover:bg-bgBase/50 transition-colors text-textSecondary hover:text-textPrimary"
-                            aria-label={closeAriaLabel}
+                            aria-label={closeAriaLabel ?? translate(messages.close)}
                         >
                             <X className="w-4 h-4" />
                         </button>

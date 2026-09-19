@@ -13,6 +13,874 @@ export type UiMessageTree = {
 };
 
 export const uiMessages = {
+    catalogs: {
+        abilities: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.abilities.columns.name',
+                    message: 'Ability',
+                },
+                shortDescription: {
+                    id: 'ttgamer.ui.catalogs.abilities.columns.shortDescription',
+                    message: 'Short Description',
+                },
+                category: {
+                    id: 'ttgamer.ui.catalogs.abilities.columns.category',
+                    message: 'Category',
+                },
+            },
+        },
+        armor: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.armor.columns.name',
+                    message: 'Armor',
+                },
+                classVal: {
+                    id: 'ttgamer.ui.catalogs.armor.columns.classVal',
+                    message: 'Class',
+                },
+                ar: {
+                    id: 'ttgamer.ui.catalogs.armor.columns.ar',
+                    message: 'AR',
+                },
+                dexPenalty: {
+                    id: 'ttgamer.ui.catalogs.armor.columns.dexPenalty',
+                    message: 'Dex Penalty',
+                },
+                cost: {
+                    id: 'ttgamer.ui.catalogs.armor.columns.cost',
+                    message: 'Cost',
+                },
+            },
+            detail: {
+                classVal: {
+                    id: 'ttgamer.ui.catalogs.armor.detail.classVal',
+                    message: 'Class',
+                },
+                ar: {
+                    id: 'ttgamer.ui.catalogs.armor.detail.ar',
+                    message: 'AR (Soak Dice)',
+                },
+                dexPenalty: {
+                    id: 'ttgamer.ui.catalogs.armor.detail.dexPenalty',
+                    message: 'Dex Penalty',
+                },
+                cost: {
+                    id: 'ttgamer.ui.catalogs.armor.detail.cost',
+                    message: 'Cost',
+                },
+                notes: {
+                    id: 'ttgamer.ui.catalogs.armor.detail.notes',
+                    message: 'Notes',
+                },
+            },
+        },
+        attributes: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.attributes.columns.name',
+                    message: 'Attribute',
+                },
+                category: {
+                    id: 'ttgamer.ui.catalogs.attributes.columns.category',
+                    message: 'Category',
+                },
+            },
+        },
+        backgrounds: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.backgrounds.columns.name',
+                    message: 'Background',
+                },
+                shortDescription: {
+                    id: 'ttgamer.ui.catalogs.backgrounds.columns.shortDescription',
+                    message: 'Description',
+                },
+                category: {
+                    id: 'ttgamer.ui.catalogs.backgrounds.columns.category',
+                    message: 'Category',
+                },
+            },
+            detail: {
+                dotRank: {
+                    id: 'ttgamer.ui.catalogs.backgrounds.detail.dotRank',
+                    message: 'Dot Rank',
+                },
+            },
+        },
+        consumableWeapons: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.columns.name',
+                    message: 'Name',
+                },
+                type: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.columns.type',
+                    message: 'Type',
+                },
+                damage: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.columns.damage',
+                    message: 'Damage',
+                },
+                damageType: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.columns.damageType',
+                    message: 'Dmg Type',
+                },
+                falloff: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.columns.falloff',
+                    message: 'Falloff',
+                },
+                cost: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.columns.cost',
+                    message: 'Cost',
+                },
+            },
+            detail: {
+                type: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.detail.type',
+                    message: 'Type',
+                },
+                damage: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.detail.damage',
+                    message: 'Damage',
+                },
+                falloff: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.detail.falloff',
+                    message: 'Falloff',
+                },
+                cost: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.detail.cost',
+                    message: 'Cost',
+                },
+                notes: {
+                    id: 'ttgamer.ui.catalogs.consumableWeapons.detail.notes',
+                    message: 'Notes',
+                },
+            },
+        },
+        creatures: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.creatures.columns.name',
+                    message: 'Name',
+                },
+                type: {
+                    id: 'ttgamer.ui.catalogs.creatures.columns.type',
+                    message: 'Type',
+                },
+                scale: {
+                    id: 'ttgamer.ui.catalogs.creatures.columns.scale',
+                    message: 'Scale',
+                },
+                attacks: {
+                    id: 'ttgamer.ui.catalogs.creatures.columns.attacks',
+                    message: 'Attacks',
+                },
+            },
+            detail: {
+                physical: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.physical',
+                    message: 'Physical',
+                },
+                mental: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.mental',
+                    message: 'Mental',
+                },
+                other: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.other',
+                    message: 'Other',
+                },
+                strength: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.strength',
+                    message: 'STR',
+                },
+                dexterity: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.dexterity',
+                    message: 'DEX',
+                },
+                stamina: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.stamina',
+                    message: 'STA',
+                },
+                perception: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.perception',
+                    message: 'PER',
+                },
+                intelligence: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.intelligence',
+                    message: 'INT',
+                },
+                wits: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.wits',
+                    message: 'WITS',
+                },
+                willpower: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.willpower',
+                    message: 'WIL',
+                },
+                movement: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.movement',
+                    message: 'MVMT',
+                },
+                scale: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.scale',
+                    message: 'Scale',
+                },
+                size: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.size',
+                    message: 'Size',
+                },
+                armor: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.armor',
+                    message: 'Armor',
+                },
+                abilities: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.abilities',
+                    message: 'Abilities',
+                },
+                attacks: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.attacks',
+                    message: 'Attacks',
+                },
+                merits: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.merits',
+                    message: 'Merits',
+                },
+                flaws: {
+                    id: 'ttgamer.ui.catalogs.creatures.detail.flaws',
+                    message: 'Flaws',
+                },
+            },
+        },
+        forcePowers: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.columns.name',
+                    message: 'Power',
+                },
+                shortDescription: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.columns.shortDescription',
+                    message: 'Effect',
+                },
+                skills: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.columns.skills',
+                    message: 'Skills',
+                },
+                forcePointCost: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.columns.forcePointCost',
+                    message: 'FP Cost',
+                },
+            },
+            detail: {
+                requiredSkills: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.detail.requiredSkills',
+                    message: 'Required Skills',
+                },
+                forcePointCost: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.detail.forcePointCost',
+                    message: 'Force Point Cost',
+                },
+                spendOne: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.detail.spendOne',
+                    message: 'Spend 1 Force Point',
+                },
+                noCost: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.detail.noCost',
+                    message: 'No Force Point cost',
+                },
+            },
+            filters: {
+                costsFp: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.filters.costsFp',
+                    message: 'Costs FP',
+                },
+                free: {
+                    id: 'ttgamer.ui.catalogs.forcePowers.filters.free',
+                    message: 'Free',
+                },
+            },
+        },
+        meleeWeapons: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.meleeWeapons.columns.name',
+                    message: 'Weapon',
+                },
+                difficulty: {
+                    id: 'ttgamer.ui.catalogs.meleeWeapons.columns.difficulty',
+                    message: 'Diff',
+                },
+                damage: {
+                    id: 'ttgamer.ui.catalogs.meleeWeapons.columns.damage',
+                    message: 'Damage',
+                },
+                conceal: {
+                    id: 'ttgamer.ui.catalogs.meleeWeapons.columns.conceal',
+                    message: 'Conceal',
+                },
+            },
+            detail: {
+                damage: {
+                    id: 'ttgamer.ui.catalogs.meleeWeapons.detail.damage',
+                    message: 'Damage',
+                },
+                difficulty: {
+                    id: 'ttgamer.ui.catalogs.meleeWeapons.detail.difficulty',
+                    message: 'Difficulty',
+                },
+                conceal: {
+                    id: 'ttgamer.ui.catalogs.meleeWeapons.detail.conceal',
+                    message: 'Conceal',
+                },
+                notes: {
+                    id: 'ttgamer.ui.catalogs.meleeWeapons.detail.notes',
+                    message: 'Notes',
+                },
+            },
+        },
+        meritsFlaws: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.meritsFlaws.columns.name',
+                    message: 'Merit / Flaw',
+                },
+                cost: {
+                    id: 'ttgamer.ui.catalogs.meritsFlaws.columns.cost',
+                    message: 'Cost',
+                },
+                type: {
+                    id: 'ttgamer.ui.catalogs.meritsFlaws.columns.type',
+                    message: 'Type',
+                },
+                shortDescription: {
+                    id: 'ttgamer.ui.catalogs.meritsFlaws.columns.shortDescription',
+                    message: 'Description',
+                },
+                category: {
+                    id: 'ttgamer.ui.catalogs.meritsFlaws.columns.category',
+                    message: 'Category',
+                },
+            },
+            detail: {
+                cost: {
+                    id: 'ttgamer.ui.catalogs.meritsFlaws.detail.cost',
+                    message: 'Cost',
+                },
+                implantNoCost: {
+                    id: 'ttgamer.ui.catalogs.meritsFlaws.detail.implantNoCost',
+                    message: 'No point cost · Implant',
+                },
+                tags: {
+                    id: 'ttgamer.ui.catalogs.meritsFlaws.detail.tags',
+                    message: 'Tags',
+                },
+            },
+            points: {
+                id: 'ttgamer.ui.catalogs.meritsFlaws.points',
+                message: '{count} pt|{count} pts',
+                plural: true,
+            },
+            filters: {
+                severity: {
+                    id: 'ttgamer.ui.catalogs.meritsFlaws.filters.severity',
+                    message: 'Severity',
+                },
+            },
+        },
+        rangedWeapons: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.columns.name',
+                    message: 'Weapon',
+                },
+                damage: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.columns.damage',
+                    message: 'Dmg',
+                },
+                range: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.columns.range',
+                    message: 'Range',
+                },
+                ammo: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.columns.ammo',
+                    message: 'Ammo',
+                },
+                difficulty: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.columns.difficulty',
+                    message: 'Diff',
+                },
+                conceal: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.columns.conceal',
+                    message: 'Conceal',
+                },
+            },
+            detail: {
+                damage: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.detail.damage',
+                    message: 'Damage',
+                },
+                range: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.detail.range',
+                    message: 'Range',
+                },
+                rangeValue: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.detail.rangeValue',
+                    message: '{range}m',
+                },
+                ammo: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.detail.ammo',
+                    message: 'Ammo',
+                },
+                difficulty: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.detail.difficulty',
+                    message: 'Difficulty',
+                },
+                conceal: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.detail.conceal',
+                    message: 'Conceal',
+                },
+                notes: {
+                    id: 'ttgamer.ui.catalogs.rangedWeapons.detail.notes',
+                    message: 'Notes',
+                },
+            },
+        },
+        species: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.species.columns.name',
+                    message: 'Species',
+                },
+                freebieAdjustment: {
+                    id: 'ttgamer.ui.catalogs.species.columns.freebieAdjustment',
+                    message: 'Freebie Adj.',
+                },
+                category: {
+                    id: 'ttgamer.ui.catalogs.species.columns.category',
+                    message: 'Category',
+                },
+                eras: {
+                    id: 'ttgamer.ui.catalogs.species.columns.eras',
+                    message: 'Era',
+                },
+            },
+            detail: {
+                none: {
+                    id: 'ttgamer.ui.catalogs.species.detail.none',
+                    message: 'None',
+                },
+                freebieAdjustment: {
+                    id: 'ttgamer.ui.catalogs.species.detail.freebieAdjustment',
+                    message: 'Freebie Adjustment',
+                },
+                eras: {
+                    id: 'ttgamer.ui.catalogs.species.detail.eras',
+                    message: 'Eras',
+                },
+                merits: {
+                    id: 'ttgamer.ui.catalogs.species.detail.merits',
+                    message: 'Merits',
+                },
+                flaws: {
+                    id: 'ttgamer.ui.catalogs.species.detail.flaws',
+                    message: 'Flaws',
+                },
+            },
+        },
+        terminology: {
+            columns: {
+                english: {
+                    id: 'ttgamer.ui.catalogs.terminology.columns.english',
+                    message: 'English',
+                },
+                russian: {
+                    id: 'ttgamer.ui.catalogs.terminology.columns.russian',
+                    message: 'Russian',
+                },
+                category: {
+                    id: 'ttgamer.ui.catalogs.terminology.columns.category',
+                    message: 'Section',
+                },
+            },
+        },
+        toolsGear: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.toolsGear.columns.name',
+                    message: 'Item',
+                },
+                category: {
+                    id: 'ttgamer.ui.catalogs.toolsGear.columns.category',
+                    message: 'Category',
+                },
+                effect: {
+                    id: 'ttgamer.ui.catalogs.toolsGear.columns.effect',
+                    message: 'Effect',
+                },
+                cost: {
+                    id: 'ttgamer.ui.catalogs.toolsGear.columns.cost',
+                    message: 'Cost',
+                },
+            },
+            detail: {
+                category: {
+                    id: 'ttgamer.ui.catalogs.toolsGear.detail.category',
+                    message: 'Category',
+                },
+                cost: {
+                    id: 'ttgamer.ui.catalogs.toolsGear.detail.cost',
+                    message: 'Cost',
+                },
+                effect: {
+                    id: 'ttgamer.ui.catalogs.toolsGear.detail.effect',
+                    message: 'Effect',
+                },
+            },
+        },
+        vehicles: {
+            columns: {
+                name: {
+                    id: 'ttgamer.ui.catalogs.vehicles.columns.name',
+                    message: 'Vehicle',
+                },
+                scale: {
+                    id: 'ttgamer.ui.catalogs.vehicles.columns.scale',
+                    message: 'Scale',
+                },
+                maneuverability: {
+                    id: 'ttgamer.ui.catalogs.vehicles.columns.maneuverability',
+                    message: 'Maneuver',
+                },
+                durability: {
+                    id: 'ttgamer.ui.catalogs.vehicles.columns.durability',
+                    message: 'Durability',
+                },
+                speed: {
+                    id: 'ttgamer.ui.catalogs.vehicles.columns.speed',
+                    message: 'Speed',
+                },
+                hyperdrive: {
+                    id: 'ttgamer.ui.catalogs.vehicles.columns.hyperdrive',
+                    message: 'Hyper',
+                },
+                shields: {
+                    id: 'ttgamer.ui.catalogs.vehicles.columns.shields',
+                    message: 'Shields',
+                },
+                eras: {
+                    id: 'ttgamer.ui.catalogs.vehicles.columns.eras',
+                    message: 'Era',
+                },
+            },
+            detail: {
+                reroll: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.reroll',
+                    message: 'Reroll 10s',
+                },
+                configuration: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.configuration',
+                    message: 'Configuration',
+                },
+                maneuverability: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.maneuverability',
+                    message: 'Maneuver',
+                },
+                durability: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.durability',
+                    message: 'Durability',
+                },
+                speed: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.speed',
+                    message: 'Speed',
+                },
+                altitude: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.altitude',
+                    message: 'Altitude',
+                },
+                ground: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.ground',
+                    message: 'Ground',
+                },
+                shields: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.shields',
+                    message: 'Shields',
+                },
+                none: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.none',
+                    message: 'None',
+                },
+                astrogation: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.astrogation',
+                    message: 'Astrogation',
+                },
+                hyperdrive: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.hyperdrive',
+                    message: 'Hyperdrive',
+                },
+                navComputer: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.navComputer',
+                    message: 'Nav Computer',
+                },
+                commSensors: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.commSensors',
+                    message: 'Comm/Sensors',
+                },
+                sensorRange: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.sensorRange',
+                    message: 'Sensor Range',
+                },
+                crewCapacity: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.crewCapacity',
+                    message: 'Crew & Capacity',
+                },
+                crew: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.crew',
+                    message: 'Crew',
+                },
+                passengers: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.passengers',
+                    message: 'Passengers',
+                },
+                cargo: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.cargo',
+                    message: 'Cargo',
+                },
+                consumables: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.consumables',
+                    message: 'Consumables',
+                },
+                physical: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.physical',
+                    message: 'Physical',
+                },
+                type: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.type',
+                    message: 'Type',
+                },
+                length: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.length',
+                    message: 'Length',
+                },
+                era: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.era',
+                    message: 'Era',
+                },
+                weapons: {
+                    id: 'ttgamer.ui.catalogs.vehicles.detail.weapons',
+                    message: 'Weapons',
+                },
+            },
+        },
+    },
+    shared: {
+        bottomSheet: {
+            label: {
+                id: 'ttgamer.ui.shared.bottomSheet.label',
+                message: 'Catalog item details',
+            },
+            close: {
+                id: 'ttgamer.ui.shared.bottomSheet.close',
+                message: 'Close details',
+            },
+            resize: {
+                id: 'ttgamer.ui.shared.bottomSheet.resize',
+                message: 'Resize details sheet',
+            },
+        },
+        dataCatalog: {
+            search: {
+                id: 'ttgamer.ui.shared.dataCatalog.search',
+                message: 'Search...',
+            },
+            selected: {
+                id: 'ttgamer.ui.shared.dataCatalog.selected',
+                message: '{count} selected|{count} selected',
+                plural: true,
+            },
+            clearSearch: {
+                id: 'ttgamer.ui.shared.dataCatalog.clearSearch',
+                message: 'Clear search',
+            },
+            empty: {
+                id: 'ttgamer.ui.shared.dataCatalog.empty',
+                message: 'No results match your search.',
+            },
+            page: {
+                id: 'ttgamer.ui.shared.dataCatalog.page',
+                message: 'Page {page} of {pages}',
+            },
+            previousPage: {
+                id: 'ttgamer.ui.shared.dataCatalog.previousPage',
+                message: 'Previous page',
+            },
+            nextPage: {
+                id: 'ttgamer.ui.shared.dataCatalog.nextPage',
+                message: 'Next page',
+            },
+            closeDetail: {
+                id: 'ttgamer.ui.shared.dataCatalog.closeDetail',
+                message: 'Close detail',
+            },
+            itemDetails: {
+                id: 'ttgamer.ui.shared.dataCatalog.itemDetails',
+                message: 'Catalog item details',
+            },
+            openDetails: {
+                id: 'ttgamer.ui.shared.dataCatalog.openDetails',
+                message: '{name} — open details',
+            },
+            detailsOpen: {
+                id: 'ttgamer.ui.shared.dataCatalog.detailsOpen',
+                message: '{name} — details open',
+            },
+        },
+        detailSections: {
+            specialties: {
+                id: 'ttgamer.ui.shared.detailSections.specialties',
+                message: 'Specialties',
+            },
+            ratingScale: {
+                id: 'ttgamer.ui.shared.detailSections.ratingScale',
+                message: 'Rating Scale',
+            },
+        },
+        difficultyTable: {
+            pool: {
+                id: 'ttgamer.ui.shared.difficultyTable.pool',
+                message: 'Current dice in pool',
+            },
+            cancelOnes: {
+                id: 'ttgamer.ui.shared.difficultyTable.cancelOnes',
+                message: '1s cancel successes',
+            },
+            corner: {
+                id: 'ttgamer.ui.shared.difficultyTable.corner',
+                message: 'Net Suc. \\ Diff',
+            },
+            difficulty: {
+                easy: {
+                    id: 'ttgamer.ui.shared.difficultyTable.difficulty.easy',
+                    message: 'Easy',
+                },
+                routine: {
+                    id: 'ttgamer.ui.shared.difficultyTable.difficulty.routine',
+                    message: 'Routine',
+                },
+                straightforward: {
+                    id: 'ttgamer.ui.shared.difficultyTable.difficulty.straightforward',
+                    message: 'Straightforward',
+                },
+                standard: {
+                    id: 'ttgamer.ui.shared.difficultyTable.difficulty.standard',
+                    message: 'Standard',
+                },
+                challenging: {
+                    id: 'ttgamer.ui.shared.difficultyTable.difficulty.challenging',
+                    message: 'Challenging',
+                },
+                difficult: {
+                    id: 'ttgamer.ui.shared.difficultyTable.difficulty.difficult',
+                    message: 'Difficult',
+                },
+                extremelyDifficult: {
+                    id: 'ttgamer.ui.shared.difficultyTable.difficulty.extremelyDifficult',
+                    message: 'Extremely Difficult',
+                },
+                nearlyImpossible: {
+                    id: 'ttgamer.ui.shared.difficultyTable.difficulty.nearlyImpossible',
+                    message: 'Nearly Impossible',
+                },
+            },
+            summary: {
+                id: 'ttgamer.ui.shared.difficultyTable.summary',
+                message:
+                    'Rows show the chance of rolling at least N net successes with {count} die.|Rows show the chance of rolling at least N net successes with {count} dice.',
+                plural: true,
+            },
+            cancelEach: {
+                id: 'ttgamer.ui.shared.difficultyTable.cancelEach',
+                message: 'Each 1 cancels one success.',
+            },
+            onesIgnored: {
+                id: 'ttgamer.ui.shared.difficultyTable.onesIgnored',
+                message: 'Ones are ignored (no cancelation).',
+            },
+            liveUpdate: {
+                id: 'ttgamer.ui.shared.difficultyTable.liveUpdate',
+                message: 'Values update immediately when inputs change.',
+            },
+        },
+        scaleChart: {
+            scales: {
+                deathStar: {
+                    id: 'ttgamer.ui.shared.scaleChart.scales.deathStar',
+                    message: 'Death Star',
+                },
+                capital: {
+                    id: 'ttgamer.ui.shared.scaleChart.scales.capital',
+                    message: 'Capital',
+                },
+                transport: {
+                    id: 'ttgamer.ui.shared.scaleChart.scales.transport',
+                    message: 'Transport',
+                },
+                starfighter: {
+                    id: 'ttgamer.ui.shared.scaleChart.scales.starfighter',
+                    message: 'Starfighter',
+                },
+                walker: {
+                    id: 'ttgamer.ui.shared.scaleChart.scales.walker',
+                    message: 'Walker',
+                },
+                speeder: {
+                    id: 'ttgamer.ui.shared.scaleChart.scales.speeder',
+                    message: 'Speeder',
+                },
+                character: {
+                    id: 'ttgamer.ui.shared.scaleChart.scales.character',
+                    message: 'Character',
+                },
+                vermin: {
+                    id: 'ttgamer.ui.shared.scaleChart.scales.vermin',
+                    message: 'Vermin',
+                },
+            },
+            largest: {
+                id: 'ttgamer.ui.shared.scaleChart.largest',
+                message: 'largest',
+            },
+            smallest: {
+                id: 'ttgamer.ui.shared.scaleChart.smallest',
+                message: 'smallest',
+            },
+        },
+        secretField: {
+            show: {
+                id: 'ttgamer.ui.shared.secretField.show',
+                message: 'Show secret field',
+            },
+            hide: {
+                id: 'ttgamer.ui.shared.secretField.hide',
+                message: 'Hide secret field',
+            },
+        },
+        slidePanel: {
+            label: {
+                id: 'ttgamer.ui.shared.slidePanel.label',
+                message: 'Side panel',
+            },
+            close: {
+                id: 'ttgamer.ui.shared.slidePanel.close',
+                message: 'Close panel',
+            },
+            resize: {
+                id: 'ttgamer.ui.shared.slidePanel.resize',
+                message: 'Resize panel',
+            },
+        },
+    },
     sheet: {
         base: {
             title: {

@@ -1,0 +1,12 @@
+columns:
+    name: Броня
+    classVal: Класс
+    ar: АР
+    dexPenalty: Штр. Лов.
+    cost: Цена
+detail:
+    classVal: Класс
+    ar: АР (кости поглощения)
+    dexPenalty: Штраф Ловкости
+    cost: Цена
+    notes: Примечания

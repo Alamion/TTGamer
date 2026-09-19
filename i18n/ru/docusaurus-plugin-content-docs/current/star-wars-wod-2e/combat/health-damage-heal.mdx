@@ -9,7 +9,11 @@ import { CharRoll } from '@site/src/integrations/docs-character-rolls/CharRoll';
 import { TemplatePreview, healthPreviewDocument } from '@site/src/sheet_manager/docsEmbeds';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
-import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meritsFlawsConfig';
+import {
+    MERITS_FLAWS_COLUMNS,
+    MERITS_FLAWS_SEVERITY_FILTERS,
+    renderMeritFlawDetail,
+} from '@site/src/data/meritsFlawsConfig';
 
 # Здоровье, урон и исцеление
 
@@ -306,7 +310,7 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meri
         )}
         columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
-        filters={[{ columnId: 'cost', label: 'Серьёзность' }]}
+        filters={MERITS_FLAWS_SEVERITY_FILTERS}
         searchPlaceholder="Поиск недостатков ампутации..."
         id="amputation-flaws"
     />

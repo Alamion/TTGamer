@@ -1,11 +1,15 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import type { ReactNode } from 'react';
 
-export function SpecialtiesList({ specialties }: { specialties: string[] }): ReactNode {
+const messages = uiMessages.shared.detailSections;
+
+export function SpecialtiesList({ specialties }: { specialties: readonly string[] }): ReactNode {
     if (specialties.length === 0) return null;
     return (
         <div className="mb-4">
             <h5 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-1.5">
-                Specialties
+                {translate(messages.specialties)}
             </h5>
             <div className="flex flex-wrap gap-1">
                 {specialties.map((s) => (
@@ -23,16 +27,16 @@ export function SpecialtiesList({ specialties }: { specialties: string[] }): Rea
 
 export function ScaleList({
     scale,
-    title = 'Rating Scale',
+    title,
 }: {
-    scale: string[];
+    scale: readonly string[];
     title?: string;
 }): ReactNode {
     if (scale.length === 0) return null;
     return (
         <div>
             <h5 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-1.5">
-                {title}
+                {title ?? translate(messages.ratingScale)}
             </h5>
             <ul className="space-y-1">
                 {scale.map((s, i) => (

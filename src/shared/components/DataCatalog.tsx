@@ -1,8 +1,12 @@
 import { useHistory, useLocation } from '@docusaurus/router';
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import type {
     ColumnDef,
     ColumnFiltersState,
+    FilterFn,
     PaginationState,
+    RowData,
     SortingState,
 } from '@tanstack/react-table';
 import {
@@ -26,20 +30,83 @@ import {
     X,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
+import { useLocale } from '../hooks/useLocale';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { usePluralMessage } from '../hooks/usePluralMessage';
+import { matchesSearch } from '../utils/normalizeSearchText';
 import { deserializeStringList, serializeStringList } from '../utils/stringList';
 import { BottomSheet } from './BottomSheet';
 import { SlidePanel } from './SlidePanel';
 
+declare module '@tanstack/react-table' {
+    // `TValue` is required by the declaration merge.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface ColumnMeta<TData extends RowData, TValue> {
+        /**
+         * Text of the cell in the reader's locale (e.g. through `catalogEntryText`). The table
+         * displays, sorts, and searches it instead of the raw property.
+         */
+        localizedText?: (row: TData, locale: string) => string | undefined;
+        /** Label of an enumerated value, used by the default cell, filter options, and search. */
+        valueLabel?: (value: string, locale: string) => string;
+    }
+}
+
+const messages = uiMessages.shared.dataCatalog;
+
 type FilterMode = 'single' | 'multi';
 
-interface FilterConfig {
+/** A generated translation descriptor (`uiMessages…`). */
+export interface CatalogMessageDescriptor {
+    id: string;
+    message: string;
+}
+
+/** Literal text (already in the reader's language) or a descriptor translated on render. */
+export type CatalogText = string | CatalogMessageDescriptor;
+
+export interface FilterConfig {
     columnId: string;
-    label: string;
+    label: CatalogText;
     mode?: FilterMode;
-    optionsMap?: Record<string, string>;
+    /** Option labels by raw value; defaults to the column's `meta.valueLabel`, then the value. */
+    optionsMap?: Record<string, CatalogText>;
+}
+
+interface FilterOption {
+    value: string;
+    label: string;
+}
+
+function resolveText(text: CatalogText): string {
+    return typeof text === 'string' ? text : translate(text);
+}
+
+/** Applies `meta.localizedText` / `meta.valueLabel` of a column for `locale`. */
+function localizeColumn<T>(column: ColumnDef<T>, locale: string): ColumnDef<T> {
+    const text = column.meta?.localizedText;
+    if (text) {
+        const localized = { ...column } as Record<string, unknown>;
+        delete localized.accessorKey;
+        return {
+            ...localized,
+            id: column.id,
+            accessorFn: (row: T) => text(row, locale) ?? '',
+        } as ColumnDef<T>;
+    }
+    const valueLabel = column.meta?.valueLabel;
+    if (valueLabel && !column.cell) {
+        return {
+            ...column,
+            cell: ({ getValue }) => {
+                const value = getValue();
+                return typeof value === 'string' ? valueLabel(value, locale) : String(value ?? '');
+            },
+        };
+    }
+    return column;
 }
 
 export interface DataCatalogProps<T> {
@@ -61,12 +128,13 @@ function MultiSelectDropdown({
     onToggle,
 }: {
     label: string;
-    options: string[];
+    options: FilterOption[];
     selected: string[];
     onToggle: (value: string) => void;
 }) {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
+    const plural = usePluralMessage();
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
@@ -78,7 +146,7 @@ function MultiSelectDropdown({
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    const displayText = selected.length > 0 ? `${selected.length} selected` : label;
+    const displayText = selected.length > 0 ? plural(messages.selected, selected.length) : label;
 
     return (
         <div ref={ref} className="relative">
@@ -101,10 +169,10 @@ function MultiSelectDropdown({
             {open && (
                 <div className="absolute top-full left-0 mt-1 z-50 min-w-[180px] rounded-lg border border-border bg-bgSurface shadow-lg py-1">
                     {options.map((option) => {
-                        const isSelected = selected.includes(option);
+                        const isSelected = selected.includes(option.value);
                         return (
                             <label
-                                key={option}
+                                key={option.value}
                                 className={clsx(
                                     'flex items-center gap-2 px-3 py-1.5 text-sm cursor-pointer transition-colors',
                                     isSelected
@@ -115,10 +183,10 @@ function MultiSelectDropdown({
                                 <input
                                     type="checkbox"
                                     checked={isSelected}
-                                    onChange={() => onToggle(option)}
+                                    onChange={() => onToggle(option.value)}
                                     className="rounded border-border text-primary focus:ring-primary/30"
                                 />
-                                {option}
+                                {option.label}
                             </label>
                         );
                     })}
@@ -142,12 +210,13 @@ export function DataCatalog<T extends { id: string }>({
     columns,
     renderDetail,
     getRowId = (item: T) => item.id,
-    searchPlaceholder = 'Search...',
+    searchPlaceholder,
     filters,
     pageSize = 15,
     id,
     defaultHiddenColumnIds,
 }: DataCatalogProps<T>) {
+    const locale = useLocale();
     const location = useLocation();
     const history = useHistory();
     const firstRender = useRef(true);
@@ -186,10 +255,43 @@ export function DataCatalog<T extends { id: string }>({
         [filters]
     );
 
+    const localizedColumns = useMemo(
+        () => columns.map((column) => localizeColumn(column, locale)),
+        [columns, locale]
+    );
+
+    const valueLabels = useMemo(
+        () =>
+            new Map(
+                localizedColumns.flatMap((column) =>
+                    column.id && column.meta?.valueLabel
+                        ? [[column.id, column.meta.valueLabel] as const]
+                        : []
+                )
+            ),
+        [localizedColumns]
+    );
+
+    /** Matches the shown text, value labels, and the raw (English) value of a cell. */
+    const globalFilterFn = useCallback<FilterFn<T>>(
+        (row, columnId, query: string) => {
+            const value = row.getValue<unknown>(columnId);
+            const text = value === null || value === undefined ? '' : String(value);
+            const own = (row.original as Record<string, unknown>)[columnId];
+            return matchesSearch(
+                query,
+                text,
+                valueLabels.get(columnId)?.(text, locale),
+                typeof own === 'string' ? own : undefined
+            );
+        },
+        [valueLabels, locale]
+    );
+
     // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         data,
-        columns,
+        columns: localizedColumns,
         state: { sorting, columnFilters, globalFilter, pagination, columnVisibility },
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -202,7 +304,7 @@ export function DataCatalog<T extends { id: string }>({
         getPaginationRowModel: getPaginationRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
-        globalFilterFn: 'includesString',
+        globalFilterFn,
         autoResetPageIndex: false,
     });
 
@@ -222,8 +324,8 @@ export function DataCatalog<T extends { id: string }>({
         return () => document.removeEventListener('keydown', handler);
     }, [selectedId]);
 
-    const filterValues = useMemo(() => {
-        const result: Record<string, string[]> = {};
+    const filterOptions = useMemo(() => {
+        const result: Record<string, FilterOption[]> = {};
         for (const fc of filterConfigs) {
             const col = table.getColumn(fc.columnId);
             if (!col) continue;
@@ -238,34 +340,36 @@ export function DataCatalog<T extends { id: string }>({
                     flat.add(String(v));
                 }
             }
-            const sorted = Array.from(flat).sort();
-            if (fc.optionsMap) {
-                result[fc.columnId] = sorted.map((k) => fc.optionsMap![k] ?? k);
-            } else {
-                result[fc.columnId] = sorted;
-            }
+            const valueLabel = valueLabels.get(fc.columnId);
+            result[fc.columnId] = Array.from(flat)
+                .map((value) => {
+                    const mapped = fc.optionsMap?.[value];
+                    const label =
+                        mapped !== undefined
+                            ? resolveText(mapped)
+                            : (valueLabel?.(value, locale) ?? value);
+                    return { value, label };
+                })
+                .sort((a, b) => a.label.localeCompare(b.label, locale, { numeric: true }));
         }
         return result;
-    }, [table, filterConfigs]);
+    }, [table, filterConfigs, valueLabels, locale]);
 
     const toggleDetail = (id: string) => {
         setSelectedId((prev) => (prev === id ? null : id));
     };
 
+    const nameText = localizedColumns.find((column) => column.id === 'name')?.meta?.localizedText;
+
     const getRowLabel = (item: T) => {
+        const localized = nameText?.(item, locale);
+        if (localized) return localized;
         if ('name' in item && typeof item.name === 'string') return item.name;
         return getRowId(item);
     };
 
     const getFilterValue = (id: string): string =>
         (columnFilters.find((f) => f.id === id)?.value as string) ?? '';
-
-    const getFilterDisplayValue = (fc: FilterConfig): string => {
-        const raw = getFilterValue(fc.columnId);
-        if (!raw) return '';
-        if (fc.optionsMap) return fc.optionsMap[raw] ?? raw;
-        return raw;
-    };
 
     const getSelectedValues = (id: string): string[] => {
         const raw = getFilterValue(id);
@@ -290,12 +394,6 @@ export function DataCatalog<T extends { id: string }>({
 
     const handleSingleFilterChange = (id: string, value: string) => {
         upsertColumnFilter(id, value);
-    };
-
-    const reverseMap = (fc: FilterConfig, displayValue: string): string => {
-        if (!fc.optionsMap) return displayValue;
-        const entry = Object.entries(fc.optionsMap).find(([, v]) => v === displayValue);
-        return entry ? entry[0] : displayValue;
     };
 
     function buildSearchString() {
@@ -420,14 +518,14 @@ export function DataCatalog<T extends { id: string }>({
                         type="text"
                         value={globalFilter}
                         onChange={(e) => handleSearchChange(e.target.value)}
-                        placeholder={searchPlaceholder}
+                        placeholder={searchPlaceholder ?? translate(messages.search)}
                         className="w-full pl-9 pr-8 py-2 text-sm rounded-lg border border-border bg-bgSurface text-textPrimary placeholder-textSecondary/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                     />
                     {globalFilter && (
                         <button
                             onClick={() => handleSearchChange('')}
                             className="absolute right-2 top-1/2 -translate-y-1/2 text-textSecondary hover:text-textPrimary transition-colors"
-                            aria-label="Clear search"
+                            aria-label={translate(messages.clearSearch)}
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -435,37 +533,32 @@ export function DataCatalog<T extends { id: string }>({
                 </div>
 
                 {filterConfigs.map((fc) => {
-                    const vals = filterValues[fc.columnId] ?? [];
+                    const options = filterOptions[fc.columnId] ?? [];
+                    const label = resolveText(fc.label);
                     if (fc.mode === 'multi') {
                         const selected = getSelectedValues(fc.columnId);
                         return (
                             <MultiSelectDropdown
                                 key={fc.columnId}
-                                label={fc.label}
-                                options={vals}
+                                label={label}
+                                options={options}
                                 selected={selected}
-                                onToggle={(displayValue) => {
-                                    const raw = reverseMap(fc, displayValue);
-                                    toggleMultiFilter(fc.columnId, raw);
-                                }}
+                                onToggle={(value) => toggleMultiFilter(fc.columnId, value)}
                             />
                         );
                     }
                     return (
                         <select
                             key={fc.columnId}
-                            value={getFilterDisplayValue(fc)}
-                            onChange={(e) => {
-                                const raw = reverseMap(fc, e.target.value);
-                                handleSingleFilterChange(fc.columnId, raw);
-                            }}
+                            value={getFilterValue(fc.columnId)}
+                            onChange={(e) => handleSingleFilterChange(fc.columnId, e.target.value)}
                             className="px-3 py-2 text-sm rounded-lg border border-border bg-bgSurface text-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-                            aria-label={fc.label}
+                            aria-label={label}
                         >
-                            <option value="">{fc.label}</option>
-                            {vals.map((displayVal) => (
-                                <option key={displayVal} value={displayVal}>
-                                    {displayVal}
+                            <option value="">{label}</option>
+                            {options.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
                                 </option>
                             ))}
                         </select>
@@ -548,7 +641,7 @@ export function DataCatalog<T extends { id: string }>({
                                             colSpan={table.getVisibleLeafColumns().length}
                                             className="px-4 py-12 text-center text-textSecondary"
                                         >
-                                            No results match your search.
+                                            {translate(messages.empty)}
                                         </td>
                                     </tr>
                                 ) : (
@@ -556,11 +649,12 @@ export function DataCatalog<T extends { id: string }>({
                                         <tr
                                             key={row.id}
                                             tabIndex={0}
-                                            aria-label={`${getRowLabel(row.original)} — ${
+                                            aria-label={translate(
                                                 selectedId === getRowId(row.original)
-                                                    ? 'details open'
-                                                    : 'open details'
-                                            }`}
+                                                    ? messages.detailsOpen
+                                                    : messages.openDetails,
+                                                { name: getRowLabel(row.original) }
+                                            )}
                                             onClick={(e) => {
                                                 if (isInteractiveTarget(e.target, e.currentTarget))
                                                     return;
@@ -595,14 +689,17 @@ export function DataCatalog<T extends { id: string }>({
                     </div>
                     <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-bgSurface/30">
                         <span className="text-sm text-textSecondary">
-                            Page {pagination.pageIndex + 1} of {table.getPageCount()}
+                            {translate(messages.page, {
+                                page: pagination.pageIndex + 1,
+                                pages: table.getPageCount(),
+                            })}
                         </span>
                         <div className="flex items-center gap-1">
                             <button
                                 onClick={() => table.previousPage()}
                                 disabled={!table.getCanPreviousPage()}
                                 className="p-1.5 rounded text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                                aria-label="Previous page"
+                                aria-label={translate(messages.previousPage)}
                             >
                                 <ChevronLeft className="w-4 h-4" />
                             </button>
@@ -613,7 +710,7 @@ export function DataCatalog<T extends { id: string }>({
                                 onClick={() => table.nextPage()}
                                 disabled={!table.getCanNextPage()}
                                 className="p-1.5 rounded text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
-                                aria-label="Next page"
+                                aria-label={translate(messages.nextPage)}
                             >
                                 <ChevronRight className="w-4 h-4" />
                             </button>
@@ -630,20 +727,18 @@ export function DataCatalog<T extends { id: string }>({
                         minWidth={280}
                         maxWidth={800}
                         showBackdrop={false}
-                        ariaLabel="Catalog item details"
+                        ariaLabel={translate(messages.itemDetails)}
                         style={{ top: 'var(--ifm-navbar-height, 4rem)' }}
                     >
                         <div className="pl-3 pr-5 py-5">
                             <div className="flex items-start justify-between mb-2">
                                 <h2 className="text-lg font-bold text-textPrimary">
-                                    {'name' in selectedItem
-                                        ? (selectedItem as { name: string }).name
-                                        : selectedItem.id}
+                                    {getRowLabel(selectedItem)}
                                 </h2>
                                 <button
                                     onClick={() => setSelectedId(null)}
                                     className="text-textSecondary hover:text-textPrimary transition-colors"
-                                    aria-label="Close detail"
+                                    aria-label={translate(messages.closeDetail)}
                                 >
                                     <X className="w-4 h-4" />
                                 </button>
@@ -658,9 +753,7 @@ export function DataCatalog<T extends { id: string }>({
                 <BottomSheet onClose={() => setSelectedId(null)}>
                     <div className="flex items-start justify-between mb-2">
                         <h2 className="text-lg font-bold text-textPrimary">
-                            {'name' in selectedItem
-                                ? (selectedItem as { name: string }).name
-                                : selectedItem.id}
+                            {getRowLabel(selectedItem)}
                         </h2>
                     </div>
                     {renderDetail(selectedItem)}

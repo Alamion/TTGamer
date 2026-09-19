@@ -1,0 +1,18 @@
+pool: Current dice in pool
+cancelOnes: 1s cancel successes
+corner: Net Suc. \ Diff
+difficulty:
+    easy: Easy
+    routine: Routine
+    straightforward: Straightforward
+    standard: Standard
+    challenging: Challenging
+    difficult: Difficult
+    extremelyDifficult: Extremely Difficult
+    nearlyImpossible: Nearly Impossible
+summary:
+    message: Rows show the chance of rolling at least N net successes with {count} die.|Rows show the chance of rolling at least N net successes with {count} dice.
+    plural: true
+cancelEach: Each 1 cancels one success.
+onesIgnored: Ones are ignored (no cancelation).
+liveUpdate: Values update immediately when inputs change.

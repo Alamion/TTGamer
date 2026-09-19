@@ -19,10 +19,15 @@ import { ARMOR_COLUMNS, renderArmorDetail } from '@site/src/data/armorConfig';
 import { CONSUMABLE_WEAPONS } from '@site/src/data/consumableWeaponsData';
 import {
     CONSUMABLE_WEAPONS_COLUMNS,
+    CONSUMABLE_WEAPONS_FILTERS,
     renderConsumableWeaponDetail,
 } from '@site/src/data/consumableWeaponsConfig';
 import { TOOLS_GEAR } from '@site/src/data/toolsGearData';
-import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGearConfig';
+import {
+    TOOLS_GEAR_COLUMNS,
+    TOOLS_GEAR_FILTERS,
+    renderToolGearDetail,
+} from '@site/src/data/toolsGearConfig';
 
 # Снаряжение
 
@@ -94,7 +99,7 @@ import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGe
         columns={CONSUMABLE_WEAPONS_COLUMNS}
         renderDetail={renderConsumableWeaponDetail}
         searchPlaceholder="Поиск расходного оружия..."
-        filters={[{ columnId: 'type', label: 'Тип' }]}
+        filters={CONSUMABLE_WEAPONS_FILTERS}
         id="consumable-weapons"
     />
 </TWWrapper>
@@ -170,7 +175,7 @@ import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGe
         columns={TOOLS_GEAR_COLUMNS}
         renderDetail={renderToolGearDetail}
         searchPlaceholder="Поиск инструментов и снаряжения..."
-        filters={[{ columnId: 'category', label: 'Категория' }]}
+        filters={TOOLS_GEAR_FILTERS}
         id="tools-gear"
     />
 </TWWrapper>

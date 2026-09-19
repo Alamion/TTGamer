@@ -1,0 +1,11 @@
+scales:
+    deathStar: Звезда Смерти
+    capital: Капитальный
+    transport: Транспорт
+    starfighter: Звездолёт
+    walker: Шагающий
+    speeder: Спидер
+    character: Персонаж
+    vermin: Вредитель
+largest: самый крупный
+smallest: самый мелкий

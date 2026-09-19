@@ -1,0 +1,24 @@
+columns:
+    name: Name
+    type: Type
+    scale: Scale
+    attacks: Attacks
+detail:
+    physical: Physical
+    mental: Mental
+    other: Other
+    strength: STR
+    dexterity: DEX
+    stamina: STA
+    perception: PER
+    intelligence: INT
+    wits: WITS
+    willpower: WIL
+    movement: MVMT
+    scale: Scale
+    size: Size
+    armor: Armor
+    abilities: Abilities
+    attacks: Attacks
+    merits: Merits
+    flaws: Flaws

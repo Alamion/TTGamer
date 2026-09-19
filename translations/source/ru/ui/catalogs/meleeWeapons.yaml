@@ -1,0 +1,10 @@
+columns:
+    name: Оружие
+    difficulty: Сл.
+    damage: Урон
+    conceal: Скрытн.
+detail:
+    damage: Урон
+    difficulty: Сложность
+    conceal: Скрытность
+    notes: Примечания

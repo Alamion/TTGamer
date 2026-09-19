@@ -1,0 +1,6 @@
+columns:
+    name: Бэкграунд
+    shortDescription: Описание
+    category: Категория
+detail:
+    dotRank: Уровни

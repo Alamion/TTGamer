@@ -4,7 +4,11 @@ title: Достоинства и недостатки
 ---
 
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
-import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meritsFlawsConfig';
+import {
+    MERITS_FLAWS_COLUMNS,
+    MERITS_FLAWS_FILTERS,
+    renderMeritFlawDetail,
+} from '@site/src/data/meritsFlawsConfig';
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 
@@ -30,10 +34,7 @@ import { DataCatalog } from '@site/src/shared/components/DataCatalog';
         data={MERITS_FLAWS}
         columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
-        filters={[
-            { columnId: 'type', label: 'Type' },
-            { columnId: 'category', label: 'Category' },
-        ]}
+        filters={MERITS_FLAWS_FILTERS}
         searchPlaceholder="Поиск достоинств и недостатков..."
         id="merits-flaws"
     />
