@@ -25,6 +25,8 @@ export interface VerifierConfig {
     objectPropFiles: readonly string[];
     /** Files where catalog option lists and search filters are built. */
     pickerFiles: readonly string[];
+    /** Glossary file → documentation trees whose pages use its terms (docs-terms rule). */
+    glossaryDocs: Readonly<Record<string, readonly string[]>>;
     /** Plural form count per locale. */
     pluralForms: Readonly<Record<string, number>>;
     /** Minimum share of Russian short descriptions per catalog (FR-024). */
@@ -109,6 +111,11 @@ export const DEFAULT_CONFIG: VerifierConfig = {
         'src/data/*Config.tsx',
         'src/dice_roller/components/**',
     ],
+    glossaryDocs: {
+        'star-wars-wod': ['star-wars-wod-2e'],
+        v5: ['wod-v5'],
+        'v5-hunter': ['wod-v5'],
+    },
     pluralForms: { en: 2, ru: 3 },
     shortDescriptionCoverage: 0.9,
     overflowBudgets: { compact: 22, trait: 20, traitWithSpecialty: 14 },

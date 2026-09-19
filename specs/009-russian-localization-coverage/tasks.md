@@ -295,7 +295,7 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 ### Tests for User Story 5
 
 - [x] T083 [P] [US5] Write `tests/sheet_manager/term-short-form.test.tsx`: `TermLabel` renders both `.term-full` and `.term-short` when `ruShort` exists, the short span is `aria-hidden`, and the hint then includes the full Russian name
-- [ ] T084 [P] [US5] Extend `tests/sheet_manager/template-labels.test.ts`: every shipped trait node in the Star Wars and V5 templates has an effective ref listed in the glossary, and `yarn i18n:verify --rule overflow` logic (imported from `scripts/i18n-verifier/rules/overflow.ts`) reports nothing for the shipped templates
+- [x] T084 [P] [US5] Extend `tests/sheet_manager/template-labels.test.ts`: every shipped trait node in the Star Wars and V5 templates has an effective ref listed in the glossary, and `yarn i18n:verify --rule overflow` logic (imported from `scripts/i18n-verifier/rules/overflow.ts`) reports nothing for the shipped templates
 
 ### Implementation for User Story 5
 
@@ -317,18 +317,18 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 ### Tests for User Story 6
 
-- [ ] T090 [P] [US6] Write `tests/sheet_manager/star-wars-catalog-i18n.test.ts`: every registered Star Wars catalog, plus `abilities`, `force-skills`, `virtues`, and `terminology`, has a ru `name` for every entry, and ru `shortDescription` coverage ≥ 90% (compute it from `catalogTranslations`)
-- [ ] T091 [P] [US6] Write `tests/sheet_manager/star-wars-trait-labels.test.ts`: the Star Wars character template gives abilities, virtues, and Force skills catalog `labelMessage` refs, and they render Russian in the `ru` locale
+- [x] T090 [P] [US6] Write `tests/sheet_manager/star-wars-catalog-i18n.test.ts`: every registered Star Wars catalog, plus `abilities`, `force-skills`, `virtues`, and `terminology`, has a ru `name` for every entry, and ru `shortDescription` coverage ≥ 90% (compute it from `catalogTranslations`)
+- [x] T091 [P] [US6] Write `tests/sheet_manager/star-wars-trait-labels.test.ts`: the Star Wars character template gives abilities, virtues, and Force skills catalog `labelMessage` refs, and they render Russian in the `ru` locale
 
 ### Implementation for User Story 6
 
-- [ ] T092 [P] [US6] Create `src/data/virtues.ts` (see T011) and `translations/source/{en,ru}/data/{abilities,force-skills,virtues}.yaml` (`name`, `shortDescription`, `specialties[]`, `scale[]`), and `attributes.yaml` short descriptions. The en files mirror the English data in `src/data/abilities.ts` and `src/data/forceSkills.ts` and the virtue list in the Star Wars profile.
-- [ ] T093 [P] [US6] Create `translations/source/{en,ru}/data/{species,backgrounds}.yaml` with `name`, `shortDescription`, `_labels.category`, and `_labels.era`. Where a reviewed own-words paraphrase is ready, include `description`.
-- [ ] T094 [P] [US6] Create `translations/source/{en,ru}/data/merits-flaws.yaml` with `name`, `shortDescription`, `_labels.category`, `_labels.tags`, `restriction`, and `implantType` for all ~134 entries; `description` and `implantEffect` only where paraphrased
-- [ ] T095 [P] [US6] Create `translations/source/{en,ru}/data/{force-powers,melee-weapons,ranged-weapons,consumable-weapons,armor,tools-gear}.yaml` with `name`, `shortDescription`/`notes`, `effect`, and `_labels` for `category`/`type`
-- [ ] T096 [P] [US6] Create `translations/source/{en,ru}/data/{vehicles,creatures}.yaml` with `name`, the short text fields (`model`, `category`, `crew`, `passengers`, `cargo`, `consumables`, `type`, `size`, `movement`), nested weapon, attack, and trait names under dotted keys, and `_labels.era`
-- [ ] T097 [US6] Give abilities, virtues, and Force skills in `src/sheet_manager/systems/star-wars-wod/templates/character.ts` a `labelMessage` of `catalog:<catalog>/<id>` (extend `withLabelMessages` around :651-669 and `ABILITY_GROUPS` around :77-130). Do the same in `creature.ts`, `fodder.ts`, and `vehicle.ts` where they show these traits.
-- [ ] T098 [US6] Fill `translations/glossary/star-wars-wod.yaml`: seed it from `src/data/terminologyData.ts` (81 pairs), add attributes, abilities, virtues, Force skills, and Force powers with refs to their catalog entries, and fill every ref the `glossary` rule reports as unresolved
+- [x] T092 [P] [US6] Create `src/data/virtues.ts` (see T011) and `translations/source/{en,ru}/data/{abilities,force-skills,virtues}.yaml` (`name`, `shortDescription`, `specialties[]`, `scale[]`), and `attributes.yaml` short descriptions. The en files mirror the English data in `src/data/abilities.ts` and `src/data/forceSkills.ts` and the virtue list in the Star Wars profile.
+- [x] T093 [P] [US6] Create `translations/source/{en,ru}/data/{species,backgrounds}.yaml` with `name`, `shortDescription`, `_labels.category`, and `_labels.era`. Where a reviewed own-words paraphrase is ready, include `description`.
+- [x] T094 [P] [US6] Create `translations/source/{en,ru}/data/merits-flaws.yaml` with `name`, `shortDescription`, `_labels.category`, `_labels.tags`, `restriction`, and `implantType` for all ~134 entries; `description` and `implantEffect` only where paraphrased
+- [x] T095 [P] [US6] Create `translations/source/{en,ru}/data/{force-powers,melee-weapons,ranged-weapons,consumable-weapons,armor,tools-gear}.yaml` with `name`, `shortDescription`/`notes`, `effect`, and `_labels` for `category`/`type`
+- [x] T096 [P] [US6] Create `translations/source/{en,ru}/data/{vehicles,creatures}.yaml` with `name`, the short text fields (`model`, `category`, `crew`, `passengers`, `cargo`, `consumables`, `type`, `size`, `movement`), nested weapon, attack, and trait names under dotted keys, and `_labels.era`
+- [x] T097 [US6] Give abilities, virtues, and Force skills in `src/sheet_manager/systems/star-wars-wod/templates/character.ts` a `labelMessage` of `catalog:<catalog>/<id>` (extend `withLabelMessages` around :651-669 and `ABILITY_GROUPS` around :77-130). Do the same in `creature.ts`, `fodder.ts`, and `vehicle.ts` where they show these traits.
+- [x] T098 [US6] Fill `translations/glossary/star-wars-wod.yaml`: seed it from `src/data/terminologyData.ts` (81 pairs), add attributes, abilities, virtues, Force skills, and Force powers with refs to their catalog entries, and fill every ref the `glossary` rule reports as unresolved
 - [ ] T099 [US6] Draft the V5/Hunter terminology proposals (T-061) in `translations/glossary/v5.yaml` and `v5-hunter.yaml`: module name, Storyteller, Touchstones, Edges/Perks, Creed/Drive, Advantages, gear names. Each proposal gets a `note` with the reasoning, and alternatives are listed in the note.
 - [ ] T100 [US6] **Maintainer review** of all three glossary files: go through each term and its `note`, decide `ru` and `ruShort`, remove the notes that were only proposals, and update every ref the `glossary` rule reports so that the sources match the decisions. Then set `glossary` and `catalog` to `error` in `scripts/i18n-verifier/config.ts`.
 - [ ] T101 [US6] Russian docs first mentions: fix every `docs-terms` warning in `i18n/ru/docusaurus-plugin-content-docs/current/**` by writing the first mention as "ru (en)"; resolve every `docs` finding; set `docs` and `docs-terms` to `error`

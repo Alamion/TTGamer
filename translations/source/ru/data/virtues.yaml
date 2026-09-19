@@ -1,0 +1,9 @@
+conscience:
+    name: Совесть
+    shortDescription: Моральный компас; бросается, чтобы не потерять Сопротивление Тёмной Стороне
+passion:
+    name: Страсть
+    shortDescription: Эмоциональная сила, связывающая персонажа с Силой
+self-control:
+    name: Самообладание
+    shortDescription: Власть над порывами, гневом и страхом

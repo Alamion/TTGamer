@@ -1,6 +1,7 @@
 import { ABILITIES } from '../src/data/abilities';
 import { ATTRIBUTES } from '../src/data/attributes';
 import { CONSUMABLE_WEAPONS } from '../src/data/consumableWeaponsData';
+import { VIRTUES } from '../src/data/virtues';
 import { systemRegistry } from '../src/sheet_manager/systems/index';
 
 export interface CodeCatalogEntry {
@@ -17,6 +18,7 @@ export function codeCatalogs(): Map<string, readonly CodeCatalogEntry[]> {
         ['attributes', ATTRIBUTES],
         ['abilities', ABILITIES],
         ['consumable-weapons', CONSUMABLE_WEAPONS],
+        ['virtues', VIRTUES],
     ]);
     for (const system of systemRegistry.getSystems()) {
         for (const catalog of system.catalogs ?? []) {

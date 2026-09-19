@@ -15,11 +15,17 @@ export const docsTermsRule: Rule = {
         const terms = context.glossary.map((term) => ({
             term,
             pattern: new RegExp('(?<![\\p{L}])' + escape(term.ru) + '(?![\\p{L}])', 'iu'),
-            english: new RegExp('^\\s*\\(\\s*' + escape(term.en) + '\\s*\\)', 'i'),
+            // Closing emphasis or link text may sit between the term and "(English)".
+            english: new RegExp(
+                '^[*_\\]]*\\s*\\(\\s*(?:[*_]*)' + escape(term.en) + '(?:[*_]*)\\s*\\)',
+                'i'
+            ),
         }));
         for (const page of pages) {
             const lines = proseLines(page.content);
+            const tree = page.page.split('/')[0];
             for (const { term, pattern, english } of terms) {
+                if (!(context.config.glossaryDocs[term.system] ?? []).includes(tree)) continue;
                 for (const line of lines) {
                     const match = pattern.exec(line.text);
                     if (!match) continue;

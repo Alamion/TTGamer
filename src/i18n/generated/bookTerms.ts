@@ -9,6 +9,149 @@ export interface BookTerm {
 
 /** Glossary refs (`ttgamer.ui.*` or `catalog:<catalogId>/<entryId>`) that are book terms. */
 export const bookTerms: Readonly<Record<string, BookTerm>> = {
+    'catalog:abilities/alertness': {
+        en: 'Alertness',
+    },
+    'catalog:abilities/astrogation': {
+        en: 'Astrogation',
+    },
+    'catalog:abilities/athletics': {
+        en: 'Athletics',
+    },
+    'catalog:abilities/blaster': {
+        en: 'Blaster',
+    },
+    'catalog:abilities/brawl': {
+        en: 'Brawl',
+    },
+    'catalog:abilities/bureaucracy': {
+        en: 'Bureaucracy',
+    },
+    'catalog:abilities/command': {
+        en: 'Command',
+    },
+    'catalog:abilities/cultures': {
+        en: 'Cultures',
+    },
+    'catalog:abilities/diplomacy': {
+        en: 'Diplomacy',
+    },
+    'catalog:abilities/dodge': {
+        en: 'Dodge',
+    },
+    'catalog:abilities/empathy': {
+        en: 'Empathy',
+    },
+    'catalog:abilities/gunnery': {
+        en: 'Gunnery',
+    },
+    'catalog:abilities/interfaces': {
+        en: 'Interfaces',
+    },
+    'catalog:abilities/intimidation': {
+        en: 'Intimidation',
+    },
+    'catalog:abilities/investigation': {
+        en: 'Investigation',
+    },
+    'catalog:abilities/languages': {
+        en: 'Languages',
+    },
+    'catalog:abilities/medicine': {
+        en: 'Medicine',
+    },
+    'catalog:abilities/melee': {
+        en: 'Melee',
+        ruShort: 'Рукоп. оружие',
+    },
+    'catalog:abilities/pilot': {
+        en: 'Pilot',
+    },
+    'catalog:abilities/politics': {
+        en: 'Politics',
+    },
+    'catalog:abilities/programming': {
+        en: 'Programming',
+        ruShort: 'Программир.',
+    },
+    'catalog:abilities/repair': {
+        en: 'Repair',
+    },
+    'catalog:abilities/ride': {
+        en: 'Ride',
+    },
+    'catalog:abilities/security': {
+        en: 'Security',
+    },
+    'catalog:abilities/stealth': {
+        en: 'Stealth',
+    },
+    'catalog:abilities/streetwise': {
+        en: 'Streetwise',
+    },
+    'catalog:abilities/subterfuge': {
+        en: 'Subterfuge',
+    },
+    'catalog:abilities/survival': {
+        en: 'Survival',
+    },
+    'catalog:abilities/tech': {
+        en: 'Tech',
+    },
+    'catalog:abilities/trade': {
+        en: 'Trade',
+    },
+    'catalog:attributes/appearance': {
+        en: 'Appearance',
+    },
+    'catalog:attributes/charisma': {
+        en: 'Charisma',
+    },
+    'catalog:attributes/dexterity': {
+        en: 'Dexterity',
+    },
+    'catalog:attributes/intelligence': {
+        en: 'Intelligence',
+    },
+    'catalog:attributes/manipulation': {
+        en: 'Manipulation',
+    },
+    'catalog:attributes/perception': {
+        en: 'Perception',
+    },
+    'catalog:attributes/stamina': {
+        en: 'Stamina',
+    },
+    'catalog:attributes/strength': {
+        en: 'Strength',
+    },
+    'catalog:attributes/wits': {
+        en: 'Wits',
+    },
+    'catalog:force-skills/control': {
+        en: 'Control',
+    },
+    'catalog:force-skills/dynamism': {
+        en: 'Dynamism',
+    },
+    'catalog:force-skills/rapport': {
+        en: 'Rapport',
+    },
+    'catalog:force-skills/sense': {
+        en: 'Sense',
+    },
+    'catalog:force-skills/telekinesis': {
+        en: 'Telekinesis',
+    },
+    'catalog:virtues/conscience': {
+        en: 'Conscience',
+    },
+    'catalog:virtues/passion': {
+        en: 'Passion',
+    },
+    'catalog:virtues/self-control': {
+        en: 'Self Control',
+    },
     'ttgamer.ui.sheet.v5.attributes.charisma': {
         en: 'Charisma',
     },

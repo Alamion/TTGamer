@@ -1647,6 +1647,17 @@ export const catalogTranslations = {
                 name: 'Nebulon-B Frigate',
             },
         },
+        virtues: {
+            conscience: {
+                name: 'Conscience',
+            },
+            passion: {
+                name: 'Passion',
+            },
+            'self-control': {
+                name: 'Self Control',
+            },
+        },
     },
     ru: {
         abilities: {
@@ -2317,7 +2328,7 @@ export const catalogTranslations = {
                 ],
             },
             manipulation: {
-                name: 'Манипулирование',
+                name: 'Манипуляция',
                 shortDescription: 'Хитрость, убеждение и коварство',
                 specialties: [
                     'Бойкий',
@@ -2412,7 +2423,7 @@ export const catalogTranslations = {
                 ],
             },
             wits: {
-                name: 'Сообразительность',
+                name: 'Смекалка',
                 shortDescription: 'Быстрота мысли и находчивость',
                 specialties: [
                     'Смышлёный',
@@ -4927,6 +4938,21 @@ export const catalogTranslations = {
                     'The Age of Rebellion': 'Эпоха Восстания',
                     'The New Republic': 'Новая Республика',
                 },
+            },
+        },
+        virtues: {
+            conscience: {
+                name: 'Совесть',
+                shortDescription:
+                    'Моральный компас; бросается, чтобы не потерять Сопротивление Тёмной Стороне',
+            },
+            passion: {
+                name: 'Страсть',
+                shortDescription: 'Эмоциональная сила, связывающая персонажа с Силой',
+            },
+            'self-control': {
+                name: 'Самообладание',
+                shortDescription: 'Власть над порывами, гневом и страхом',
             },
         },
     },
