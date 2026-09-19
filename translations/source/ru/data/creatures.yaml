@@ -1,0 +1,145 @@
+wampa:
+    name: Вампа
+    movement: Выслеживание, ходьба
+tauntaun:
+    name: Таунтаун
+    movement: Бег
+rancor:
+    name: Ранкор
+    movement: Ходьба, натиск
+nexu:
+    name: Нексу
+    movement: Прыжок на добычу, лазание, спринт
+acklay:
+    name: Аклэй
+    movement: Ходьба, плавание
+reek:
+    name: Рик
+    movement: Ходьба, натиск
+mynock:
+    name: Майнок
+    movement: Полёт (в космосе), цепляние
+dianoga:
+    name: Дианога
+    movement: Плавание, цепляние
+sarlacc:
+    name: Сарлакк
+    movement: Неподвижен (зарыт в грунт)
+krayt-dragon:
+    name: Крайт-дракон
+    movement: Рытьё, ходьба
+dewback:
+    name: Дьюбек
+    movement: Ходьба, бег
+bantha:
+    name: Банта
+    movement: Ходьба, миграция стадом
+ronto:
+    name: Ронто
+    movement: Ходьба, медленный бег
+fathier:
+    name: Фатьер
+    movement: Галоп (спринт)
+eopie:
+    name: Эопи
+    movement: Ходьба, рысь
+massiff:
+    name: Массиф
+    movement: Ходьба, спринт
+gundark:
+    name: Гундарк
+    movement: Лазание, ходьба, натиск
+hssiss:
+    name: Хссисс
+    movement: Скольжение ползком, лазание
+vornskr:
+    name: Ворнскр
+    movement: Прыжок на добычу, лазание, выслеживание
+terentatek:
+    name: Терентатек
+    movement: Ходьба, натиск
+tukata:
+    name: Тук'ата
+    movement: Прыжок на добычу, выслеживание, спринт
+blurrg:
+    name: Блёрг
+    movement: Ходьба, галоп
+varactyl:
+    name: Варактиль
+    movement: Ходьба, спринт, лазание
+bogwing:
+    name: Болотокрыл
+    movement: Полёт, планирование
+spinewolf:
+    name: Шиповолк
+    movement: Прыжок на добычу, спринт, выслеживание
+womp-rat:
+    name: Крыса-вумп
+    movement: Быстрые перебежки, рытьё
+rathtar:
+    name: Раттар
+    movement: Перекатывание, скольжение ползком
+loth-cat:
+    name: Лот-кот
+    movement: Прыжок на добычу, лазание
+sleen:
+    name: Слин
+    movement: Плавание, скольжение ползком
+gutkurr:
+    name: Гуткурр
+    movement: Рытьё, семенящий бег
+_labels:
+    type:
+        Snow predator: Снежный хищник
+        Arctic climate omnivore: Всеядное животное арктического климата
+        Subterranean carnivore: Подземный плотоядный хищник
+        Apex feline predator: Высший кошачий хищник
+        Aquatic crustacean predator: Водный хищник-ракообразное
+        Herbivorous bovine: Травоядное копытное
+        Space-dwelling parasite: Космический паразит
+        Trash-compactor scavenger: Падальщик мусоропрессов
+        Subterranean pit dweller: Подземный обитатель ям
+        Apex desert predator: Высший пустынный хищник
+        Desert reptile mount: Пустынная ездовая рептилия
+        Desert pack animal: Пустынное вьючное животное
+        Large pack animal: Крупное вьючное животное
+        Racing mount: Скаковое ездовое животное
+        Guard reptile: Сторожевая рептилия
+        Aggressive primate predator: Агрессивный хищник-примат
+        Dark side corrupted reptile: Рептилия, искажённая Тёмной Стороной
+        Force-sensitive predator: Чувствительный к Силе хищник
+        Sith temple guardian: Страж храма ситхов
+        Sith hound: Ситхская гончая
+        Swamp mount: Болотное ездовое животное
+        Lizard-like mount: Ящероподобное ездовое животное
+        Swamp aerial predator: Болотный летающий хищник
+        Pack predator: Стайный хищник
+        Desert vermin: Пустынный вредитель
+        Spiny omnivorous predator: Шипастый всеядный хищник
+        Small feline predator: Мелкий кошачий хищник
+        Swamp reptile predator: Болотный хищник-рептилия
+        Desert burrowing predator: Пустынный роющий хищник
+    size:
+        3m tall: рост 3 м
+        1.2–3m at the shoulder: 1,2–3 м в холке
+        5–10m tall: рост 5–10 м
+        1.5m at the shoulder: 1,5 м в холке
+        3–4m tall: рост 3–4 м
+        2.5m at the shoulder: 2,5 м в холке
+        0.5–1m wingspan: размах крыльев 0,5–1 м
+        3–8m long: длина 3–8 м
+        100m+ deep: глубина 100+ м
+        20–50m long: длина 20–50 м
+        1.5m at the shoulder, 3m long: 1,5 м в холке, длина 3 м
+        2–3m at the shoulder: 2–3 м в холке
+        5m at the shoulder: 5 м в холке
+        2m at the shoulder: 2 м в холке
+        1m at the shoulder: 1 м в холке
+        2m tall: рост 2 м
+        2–3m long: длина 2–3 м
+        1.5m long: длина 1,5 м
+        4–6m tall: рост 4–6 м
+        1.2m at the shoulder: 1,2 м в холке
+        2–3m wingspan: размах крыльев 2–3 м
+        0.5m long: длина 0,5 м
+        3–4m diameter: диаметр 3–4 м
