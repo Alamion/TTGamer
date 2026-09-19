@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useSheetDiceActions } from '@site/src/integrations/sheet-dice/useSheetDiceActions';
 import { clsx } from 'clsx';
 import { Dices, X } from 'lucide-react';
@@ -115,7 +117,11 @@ export function StatDot({
     const dotPixel = size === 'sm' ? 12 : size === 'lg' ? 20 : 16;
 
     return (
-        <div className="flex flex-col items-center gap-1" role="radiogroup" aria-label="Stat value">
+        <div
+            className="flex flex-col items-center gap-1"
+            role="radiogroup"
+            aria-label={translate(uiMessages.sheet.controls.statDot.group)}
+        >
             {(showFlags || onRemove || onDiceRoll) && (
                 <div className="flex w-full">
                     {onDiceRoll ? (
@@ -130,7 +136,7 @@ export function StatDot({
                                 'text-textSecondary opacity-40 hover:opacity-70',
                                 disabled && 'cursor-not-allowed'
                             )}
-                            title="Left-click: set notation | Right-click: roll)"
+                            title={translate(uiMessages.sheet.controls.statDot.diceTitle)}
                         >
                             <Dices size={dotPixel - 2} />
                         </button>
@@ -151,7 +157,7 @@ export function StatDot({
                                         : 'text-textSecondary opacity-40 hover:opacity-70',
                                     disabled && 'cursor-not-allowed'
                                 )}
-                                title="Specialization"
+                                title={translate(uiMessages.sheet.controls.statDot.specialization)}
                             >
                                 S
                             </button>
@@ -167,7 +173,7 @@ export function StatDot({
                                         : 'text-textSecondary opacity-40 hover:opacity-70',
                                     disabled && 'cursor-not-allowed'
                                 )}
-                                title="Practiced"
+                                title={translate(uiMessages.sheet.controls.statDot.practiced)}
                             >
                                 P
                             </button>
@@ -183,7 +189,7 @@ export function StatDot({
                                         : 'text-textSecondary opacity-40 hover:opacity-70',
                                     disabled && 'cursor-not-allowed'
                                 )}
-                                title="Experienced"
+                                title={translate(uiMessages.sheet.controls.statDot.experienced)}
                             >
                                 E
                             </button>
@@ -200,7 +206,7 @@ export function StatDot({
                                 'text-textSecondary opacity-40 hover:opacity-70 hover:text-error',
                                 disabled && 'cursor-not-allowed'
                             )}
-                            title="Remove"
+                            title={translate(uiMessages.sheet.controls.statDot.remove)}
                         >
                             <X size={dotPixel - 2} />
                         </button>

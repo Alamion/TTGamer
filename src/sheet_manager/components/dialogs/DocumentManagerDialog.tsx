@@ -1,6 +1,7 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { Trash2, Users, X } from 'lucide-react';
 import { useState } from 'react';
 
@@ -17,6 +18,7 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
     const { currentDocumentId, deleteDocument, documents, setCurrentDocument } = useDocumentStore();
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const pluralMessage = usePluralMessage();
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
 
@@ -202,9 +204,9 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
                         onOpenChange={setDeleteDialogOpen}
                         onConfirm={handleDeleteSelected}
                         title={translate(uiMessages.sheet.documents.manager.deleteTitle)}
-                        description={translate(
+                        description={pluralMessage(
                             uiMessages.sheet.documents.manager.deleteDescription,
-                            { count: selectedIds.size }
+                            selectedIds.size
                         )}
                         confirmLabel={translate(uiMessages.sheet.documents.manager.deleteSelected)}
                         cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}

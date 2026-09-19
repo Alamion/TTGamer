@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useEffect, useRef } from 'react';
 
 export function AutoResizeTextarea({
@@ -31,7 +33,9 @@ export function AutoResizeTextarea({
             disabled={readOnly}
             className="w-full bg-bgSurface border rounded px-3 py-2 text-sm text-textPrimary disabled:opacity-60 disabled:cursor-default resize-none overflow-hidden min-h-[80px]"
             placeholder={placeholder}
-            aria-label={ariaLabel ?? placeholder ?? 'Text'}
+            aria-label={
+                ariaLabel ?? placeholder ?? translate(uiMessages.sheet.controls.textFallbackLabel)
+            }
         />
     );
 }

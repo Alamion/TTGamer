@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { HelpCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -25,7 +27,9 @@ export function StatLabel({ label, tooltip, className, required = false }: StatL
                         onFocus={() => setShowTooltip(true)}
                         onBlur={() => setShowTooltip(false)}
                         className="text-textSecondary hover:text-textPrimary transition-colors"
-                        aria-label={`${label} information`}
+                        aria-label={translate(uiMessages.sheet.controls.labelInformation, {
+                            label,
+                        })}
                     >
                         <HelpCircle className="w-4 h-4" />
                     </button>

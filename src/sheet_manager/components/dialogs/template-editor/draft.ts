@@ -1,3 +1,6 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+
 import { generateId } from '../../../../shared/utils/random';
 import {
     type TemplateReferenceIssue,
@@ -331,7 +334,12 @@ function baseField(type: TemplateField['type'], label: string): TemplateField {
                 ...base,
                 type: 'select',
                 multiple: false,
-                options: [{ id: newId('opt'), label: 'Option 1' }],
+                options: [
+                    {
+                        id: newId('opt'),
+                        label: translate(uiMessages.sheet.templates.editor.newOption, { index: 1 }),
+                    },
+                ],
             };
         case 'rating':
             return { ...base, type: 'rating', min: 0, max: 5, presentation: 'dots' };
@@ -352,14 +360,19 @@ export function newField(type: TemplateField['type'], label?: string): TemplateF
 }
 
 export function newSectionNode(): SectionNode {
-    return { id: newId('sec'), type: 'section', title: 'New section', children: [] };
+    return {
+        id: newId('sec'),
+        type: 'section',
+        title: translate(uiMessages.sheet.templates.editor.newSection),
+        children: [],
+    };
 }
 
 export function newGroupNode(): GroupNode {
     return {
         id: newId('grp'),
         type: 'group',
-        title: 'New group',
+        title: translate(uiMessages.sheet.templates.editor.newGroup),
         collapsible: false,
         children: [],
     };
@@ -663,7 +676,12 @@ export function addOption(draft: EditorDraft, fieldId: string): EditorDraft {
             ...field,
             options: [
                 ...field.options,
-                { id: newId('opt'), label: `Option ${field.options.length + 1}` },
+                {
+                    id: newId('opt'),
+                    label: translate(uiMessages.sheet.templates.editor.newOption, {
+                        index: field.options.length + 1,
+                    }),
+                },
             ],
         };
     });

@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useState } from 'react';
@@ -29,7 +31,11 @@ export function CollapsibleItem({
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-bgBase/30 transition-colors"
                 aria-expanded={isExpanded}
-                aria-label={isExpanded ? 'Collapse item details' : 'Expand item details'}
+                aria-label={translate(
+                    isExpanded
+                        ? uiMessages.sheet.items.card.collapse
+                        : uiMessages.sheet.items.card.expand
+                )}
             >
                 <span className="text-sm font-medium text-textPrimary truncate flex-1 min-w-0">
                     {title}
@@ -59,7 +65,7 @@ export function CollapsibleItem({
                                     onRemove();
                                 }}
                                 className="flex items-center gap-1 text-xs text-textSecondary hover:text-error transition-colors px-1 py-1 rounded hover:bg-bgBase/20"
-                                aria-label="Remove item"
+                                aria-label={translate(uiMessages.sheet.items.card.remove)}
                             >
                                 <X className="w-5 h-5" />
                             </button>

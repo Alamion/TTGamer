@@ -1,10 +1,28 @@
-import { systemRegistry } from '../../../systems';
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+
+import { type DocumentViewLabel, systemRegistry } from '../../../systems';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import {
     type CustomTemplate,
     CustomTemplateSchema,
     TEMPLATE_SCHEMA_VERSION,
 } from '../../../types/template';
+
+const libraryMessages = uiMessages.sheet.templates.library;
+
+/** Definition label of each skeleton, so its name and description follow the active locale. */
+const skeletonLabels = new Map<string, DocumentViewLabel>();
+
+function skeletonText(label: DocumentViewLabel): Pick<CustomTemplate, 'name' | 'description'> {
+    const pageLabel = translate(label);
+    return {
+        name: translate(libraryMessages.skeletonName, { label: pageLabel }),
+        description: translate(libraryMessages.skeletonDescription, {
+            label: pageLabel.toLowerCase(),
+        }),
+    };
+}
 
 /**
  * Starter skeletons offered as "copy of a built-in page layout" bases. Each skeleton mirrors the
@@ -22,11 +40,12 @@ function skeletonFromDefaultView(
         .getSystem(systemId)
         ?.defaultTemplates?.find((template) => template.id === definition.defaultViewId);
     if (!source) return undefined;
+    const id = `skeleton-${systemId}-${definition.id}`;
+    skeletonLabels.set(id, definition.label);
     return {
         ...source,
-        id: `skeleton-${systemId}-${definition.id}`,
-        name: `${definition.label.message} page skeleton`,
-        description: `Starts from the current structure of the built-in ${definition.label.message.toLowerCase()} page.`,
+        id,
+        ...skeletonText(definition.label),
     } as CustomTemplate;
 }
 
@@ -41,30 +60,33 @@ function buildSkeletons(): readonly CustomTemplate[] {
     return skeletons;
 }
 
-const fallbackSkeleton = CustomTemplateSchema.parse({
-    id: 'skeleton-blank',
-    name: 'Blank page skeleton',
-    systemId: SystemIdSchema.parse('star-wars-wod'),
-    documentKind: DocumentKindSchema.parse('character'),
-    schemaVersion: TEMPLATE_SCHEMA_VERSION,
-    children: [
-        {
-            id: 'identity',
-            type: 'section',
-            title: 'Identity',
-            children: [
-                {
-                    id: 'name',
-                    type: 'text',
-                    label: 'Name',
-                    required: true,
-                    compact: false,
-                    multiline: false,
-                },
-            ],
-        },
-    ],
-});
+/** Built when offered: its titles become authored template text in the active locale. */
+function buildFallbackSkeleton(): CustomTemplate {
+    return CustomTemplateSchema.parse({
+        id: 'skeleton-blank',
+        name: translate(libraryMessages.blankSkeletonName),
+        systemId: SystemIdSchema.parse('star-wars-wod'),
+        documentKind: DocumentKindSchema.parse('character'),
+        schemaVersion: TEMPLATE_SCHEMA_VERSION,
+        children: [
+            {
+                id: 'identity',
+                type: 'section',
+                title: translate(libraryMessages.skeletonIdentity),
+                children: [
+                    {
+                        id: 'name',
+                        type: 'text',
+                        label: translate(libraryMessages.skeletonNameField),
+                        required: true,
+                        compact: false,
+                        multiline: false,
+                    },
+                ],
+            },
+        ],
+    });
+}
 
 export const TEMPLATE_SKELETONS: readonly CustomTemplate[] = buildSkeletons();
 
@@ -76,6 +98,9 @@ export function getSkeletonsForKind(
         (template) =>
             template.documentKind === documentKind &&
             (systemId === undefined || template.systemId === systemId)
-    );
-    return skeletons.length > 0 ? skeletons : [fallbackSkeleton];
+    ).map((template) => {
+        const label = skeletonLabels.get(template.id);
+        return label ? { ...template, ...skeletonText(label) } : template;
+    });
+    return skeletons.length > 0 ? skeletons : [buildFallbackSkeleton()];
 }

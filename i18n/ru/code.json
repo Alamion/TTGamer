@@ -647,6 +647,63 @@
     "ttgamer.ui.sheet.catalogBrowser.search": {
         "message": "Поиск по каталогу..."
     },
+    "ttgamer.ui.sheet.controls.add": {
+        "message": "Добавить"
+    },
+    "ttgamer.ui.sheet.controls.documentationFor": {
+        "message": "Документация: {title}"
+    },
+    "ttgamer.ui.sheet.controls.labelInformation": {
+        "message": "Подсказка: {label}"
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.addFlaw": {
+        "message": "Добавить недостаток"
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.addMerit": {
+        "message": "Добавить достоинство"
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.flawPlaceholder": {
+        "message": "Название недостатка..."
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.meritPlaceholder": {
+        "message": "Название достоинства..."
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.remove": {
+        "message": "Удалить запись"
+    },
+    "ttgamer.ui.sheet.controls.noMatches": {
+        "message": "Совпадений не найдено"
+    },
+    "ttgamer.ui.sheet.controls.resourceCurrent": {
+        "message": "{label} — текущее"
+    },
+    "ttgamer.ui.sheet.controls.resourceMax": {
+        "message": "{label} — максимум"
+    },
+    "ttgamer.ui.sheet.controls.statDot.diceTitle": {
+        "message": "Левый клик: подставить формулу | Правый клик: бросить"
+    },
+    "ttgamer.ui.sheet.controls.statDot.experienced": {
+        "message": "Опытность"
+    },
+    "ttgamer.ui.sheet.controls.statDot.group": {
+        "message": "Значение характеристики"
+    },
+    "ttgamer.ui.sheet.controls.statDot.practiced": {
+        "message": "Натренированность"
+    },
+    "ttgamer.ui.sheet.controls.statDot.remove": {
+        "message": "Удалить"
+    },
+    "ttgamer.ui.sheet.controls.statDot.specialization": {
+        "message": "Специализация"
+    },
+    "ttgamer.ui.sheet.controls.textFallbackLabel": {
+        "message": "Текст"
+    },
+    "ttgamer.ui.sheet.controls.toggleSection": {
+        "message": "Свернуть или развернуть раздел «{title}»"
+    },
     "ttgamer.ui.sheet.documents.conflict.duplicate": {
         "message": "Копировать"
     },
@@ -987,7 +1044,7 @@
         "message": "текущий"
     },
     "ttgamer.ui.sheet.documents.manager.deleteDescription": {
-        "message": "Удалить документов — {count}? Это действие нельзя отменить."
+        "message": "Удалить {count} документ? Это действие нельзя отменить.|Удалить {count} документа? Это действие нельзя отменить.|Удалить {count} документов? Это действие нельзя отменить."
     },
     "ttgamer.ui.sheet.documents.manager.deleteSelected": {
         "message": "Удалить выбранные"
@@ -1105,6 +1162,240 @@
     },
     "ttgamer.ui.sheet.documents.views.vehicleSheet": {
         "message": "Лист транспорта"
+    },
+    "ttgamer.ui.sheet.items.armor.add": {
+        "message": "Добавить броню"
+    },
+    "ttgamer.ui.sheet.items.armor.addLabel": {
+        "message": "Добавить броню"
+    },
+    "ttgamer.ui.sheet.items.armor.class": {
+        "message": "Класс"
+    },
+    "ttgamer.ui.sheet.items.armor.classLabel": {
+        "message": "Класс брони"
+    },
+    "ttgamer.ui.sheet.items.armor.classPlaceholder": {
+        "message": "Класс..."
+    },
+    "ttgamer.ui.sheet.items.armor.dexPenalty": {
+        "message": "Штраф Ловк."
+    },
+    "ttgamer.ui.sheet.items.armor.dexPenaltyLabel": {
+        "message": "Штраф к Ловкости"
+    },
+    "ttgamer.ui.sheet.items.armor.dexPenaltyPlaceholder": {
+        "message": "Штраф Ловкости..."
+    },
+    "ttgamer.ui.sheet.items.armor.empty": {
+        "message": "Брони пока нет..."
+    },
+    "ttgamer.ui.sheet.items.armor.nameLabel": {
+        "message": "Название брони"
+    },
+    "ttgamer.ui.sheet.items.armor.namePlaceholder": {
+        "message": "Название брони..."
+    },
+    "ttgamer.ui.sheet.items.armor.rating": {
+        "message": "Защита"
+    },
+    "ttgamer.ui.sheet.items.armor.ratingLabel": {
+        "message": "Показатель защиты брони"
+    },
+    "ttgamer.ui.sheet.items.armor.ratingPlaceholder": {
+        "message": "Защита..."
+    },
+    "ttgamer.ui.sheet.items.armor.untitled": {
+        "message": "Новая броня"
+    },
+    "ttgamer.ui.sheet.items.card.collapse": {
+        "message": "Свернуть подробности"
+    },
+    "ttgamer.ui.sheet.items.card.expand": {
+        "message": "Развернуть подробности"
+    },
+    "ttgamer.ui.sheet.items.card.remove": {
+        "message": "Удалить предмет"
+    },
+    "ttgamer.ui.sheet.items.catalog.armor": {
+        "message": "Класс {classVal} | Защита {ar} | Ловк. {dexPenalty}"
+    },
+    "ttgamer.ui.sheet.items.catalog.armorShort": {
+        "message": "Класс {classVal} | Защита {ar}"
+    },
+    "ttgamer.ui.sheet.items.catalog.rangedWeapon": {
+        "message": "{damage} | {range} м | {ammo} выстр."
+    },
+    "ttgamer.ui.sheet.items.catalog.rangedWeaponShort": {
+        "message": "{damage} | {range} м"
+    },
+    "ttgamer.ui.sheet.items.implants.add": {
+        "message": "Добавить имплант"
+    },
+    "ttgamer.ui.sheet.items.implants.addLabel": {
+        "message": "Добавить имплант"
+    },
+    "ttgamer.ui.sheet.items.implants.effect": {
+        "message": "Эффект"
+    },
+    "ttgamer.ui.sheet.items.implants.effectLabel": {
+        "message": "Эффект импланта"
+    },
+    "ttgamer.ui.sheet.items.implants.effectPlaceholder": {
+        "message": "Игровой эффект..."
+    },
+    "ttgamer.ui.sheet.items.implants.empty": {
+        "message": "Имплантов пока нет..."
+    },
+    "ttgamer.ui.sheet.items.implants.nameLabel": {
+        "message": "Название импланта"
+    },
+    "ttgamer.ui.sheet.items.implants.namePlaceholder": {
+        "message": "Название импланта..."
+    },
+    "ttgamer.ui.sheet.items.implants.type": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.sheet.items.implants.typeLabel": {
+        "message": "Тип импланта"
+    },
+    "ttgamer.ui.sheet.items.implants.typePlaceholder": {
+        "message": "Конечность, сенсор, интерфейс..."
+    },
+    "ttgamer.ui.sheet.items.implants.untitled": {
+        "message": "Новый имплант"
+    },
+    "ttgamer.ui.sheet.items.inventory.add": {
+        "message": "Добавить предмет"
+    },
+    "ttgamer.ui.sheet.items.inventory.addLabel": {
+        "message": "Добавить предмет в снаряжение"
+    },
+    "ttgamer.ui.sheet.items.inventory.descriptionLabel": {
+        "message": "Описание предмета"
+    },
+    "ttgamer.ui.sheet.items.inventory.descriptionPlaceholder": {
+        "message": "Описание..."
+    },
+    "ttgamer.ui.sheet.items.inventory.descriptionTitle": {
+        "message": "Описание"
+    },
+    "ttgamer.ui.sheet.items.inventory.effects": {
+        "message": "Эффекты"
+    },
+    "ttgamer.ui.sheet.items.inventory.effectsLabel": {
+        "message": "Эффекты предмета"
+    },
+    "ttgamer.ui.sheet.items.inventory.effectsPlaceholder": {
+        "message": "Эффекты..."
+    },
+    "ttgamer.ui.sheet.items.inventory.empty": {
+        "message": "Предметов пока нет..."
+    },
+    "ttgamer.ui.sheet.items.inventory.equipped": {
+        "message": "Экипировано"
+    },
+    "ttgamer.ui.sheet.items.inventory.maxQuantity": {
+        "message": "Макс. кол-во"
+    },
+    "ttgamer.ui.sheet.items.inventory.maxQuantityLabel": {
+        "message": "Максимальное количество"
+    },
+    "ttgamer.ui.sheet.items.inventory.maxQuantityPlaceholder": {
+        "message": "Макс. кол-во..."
+    },
+    "ttgamer.ui.sheet.items.inventory.nameLabel": {
+        "message": "Название предмета"
+    },
+    "ttgamer.ui.sheet.items.inventory.namePlaceholder": {
+        "message": "Название предмета..."
+    },
+    "ttgamer.ui.sheet.items.inventory.price": {
+        "message": "Цена"
+    },
+    "ttgamer.ui.sheet.items.inventory.priceLabel": {
+        "message": "Цена предмета"
+    },
+    "ttgamer.ui.sheet.items.inventory.pricePlaceholder": {
+        "message": "Цена..."
+    },
+    "ttgamer.ui.sheet.items.inventory.quantity": {
+        "message": "Кол-во"
+    },
+    "ttgamer.ui.sheet.items.inventory.quantityLabel": {
+        "message": "Количество"
+    },
+    "ttgamer.ui.sheet.items.inventory.quantityPlaceholder": {
+        "message": "Кол-во..."
+    },
+    "ttgamer.ui.sheet.items.inventory.untitled": {
+        "message": "Новый предмет"
+    },
+    "ttgamer.ui.sheet.items.inventory.weight": {
+        "message": "Вес"
+    },
+    "ttgamer.ui.sheet.items.inventory.weightLabel": {
+        "message": "Вес предмета"
+    },
+    "ttgamer.ui.sheet.items.inventory.weightPlaceholder": {
+        "message": "Вес..."
+    },
+    "ttgamer.ui.sheet.items.name": {
+        "message": "Название"
+    },
+    "ttgamer.ui.sheet.items.weapons.add": {
+        "message": "Добавить оружие"
+    },
+    "ttgamer.ui.sheet.items.weapons.addLabel": {
+        "message": "Добавить оружие"
+    },
+    "ttgamer.ui.sheet.items.weapons.ammo": {
+        "message": "Боезапас"
+    },
+    "ttgamer.ui.sheet.items.weapons.ammoLabel": {
+        "message": "Текущий боезапас"
+    },
+    "ttgamer.ui.sheet.items.weapons.ammoPlaceholder": {
+        "message": "Боезапас..."
+    },
+    "ttgamer.ui.sheet.items.weapons.capacity": {
+        "message": "Ёмкость"
+    },
+    "ttgamer.ui.sheet.items.weapons.capacityLabel": {
+        "message": "Максимальный боезапас"
+    },
+    "ttgamer.ui.sheet.items.weapons.capacityPlaceholder": {
+        "message": "Ёмкость..."
+    },
+    "ttgamer.ui.sheet.items.weapons.damage": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.sheet.items.weapons.damageLabel": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.sheet.items.weapons.damagePlaceholder": {
+        "message": "Урон..."
+    },
+    "ttgamer.ui.sheet.items.weapons.empty": {
+        "message": "Оружия пока нет..."
+    },
+    "ttgamer.ui.sheet.items.weapons.nameLabel": {
+        "message": "Название оружия"
+    },
+    "ttgamer.ui.sheet.items.weapons.namePlaceholder": {
+        "message": "Название оружия..."
+    },
+    "ttgamer.ui.sheet.items.weapons.range": {
+        "message": "Дальность"
+    },
+    "ttgamer.ui.sheet.items.weapons.rangeLabel": {
+        "message": "Дальность"
+    },
+    "ttgamer.ui.sheet.items.weapons.rangePlaceholder": {
+        "message": "Дальн..."
+    },
+    "ttgamer.ui.sheet.items.weapons.untitled": {
+        "message": "Новое оружие"
     },
     "ttgamer.ui.sheet.policies.darkPack.explanation": {
         "message": "TTGamer — бесплатный фанатский инструмент. Материалы Мира Тьмы используются здесь по общественной политике Dark Pack компании Paradox Interactive; проект не одобрен Paradox и не связан с ней, и ничего здесь не продаётся."
@@ -1331,6 +1622,12 @@
     "ttgamer.ui.sheet.templates.editor.columnWidthsHint": {
         "message": "Ширины пропорциональны: 2 и 1 делают первую колонку вдвое шире."
     },
+    "ttgamer.ui.sheet.templates.editor.coordinateCurrent": {
+        "message": "{label} (текущее)"
+    },
+    "ttgamer.ui.sheet.templates.editor.coordinateMax": {
+        "message": "{label} (максимум)"
+    },
     "ttgamer.ui.sheet.templates.editor.countMessage": {
         "message": "Достигнут предел элементов — максимум {limit}."
     },
@@ -1477,6 +1774,15 @@
     },
     "ttgamer.ui.sheet.templates.editor.namePlaceholder": {
         "message": "Название шаблона"
+    },
+    "ttgamer.ui.sheet.templates.editor.newGroup": {
+        "message": "Новая группа"
+    },
+    "ttgamer.ui.sheet.templates.editor.newOption": {
+        "message": "Вариант {index}"
+    },
+    "ttgamer.ui.sheet.templates.editor.newSection": {
+        "message": "Новая секция"
     },
     "ttgamer.ui.sheet.templates.editor.numberMax": {
         "message": "Максимум"
@@ -1856,6 +2162,9 @@
     "ttgamer.ui.sheet.templates.fieldTypes.toggle": {
         "message": "Переключатель"
     },
+    "ttgamer.ui.sheet.templates.library.blankSkeletonName": {
+        "message": "Пустой каркас страницы"
+    },
     "ttgamer.ui.sheet.templates.library.button": {
         "message": "Шаблоны"
     },
@@ -1910,6 +2219,18 @@
     "ttgamer.ui.sheet.templates.library.resetConfirmTitle": {
         "message": "Вернуть стандартный шаблон к оригиналу?"
     },
+    "ttgamer.ui.sheet.templates.library.skeletonDescription": {
+        "message": "Начинается с текущей структуры встроенной страницы «{label}»."
+    },
+    "ttgamer.ui.sheet.templates.library.skeletonIdentity": {
+        "message": "Основные сведения"
+    },
+    "ttgamer.ui.sheet.templates.library.skeletonName": {
+        "message": "Каркас страницы: {label}"
+    },
+    "ttgamer.ui.sheet.templates.library.skeletonNameField": {
+        "message": "Имя"
+    },
     "ttgamer.ui.sheet.templates.library.title": {
         "message": "Шаблоны страниц"
     },
@@ -1962,7 +2283,7 @@
         "message": "Привязка «{binding}» недоступна на этом устройстве."
     },
     "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
-        "message": "Не заполнено обязательных полей: {count}."
+        "message": "{count} обязательное поле ещё не заполнено.|{count} обязательных поля ещё не заполнены.|{count} обязательных полей ещё не заполнено."
     },
     "ttgamer.ui.sheet.templates.primitives.addPreset": {
         "message": "Добавить пресет"
