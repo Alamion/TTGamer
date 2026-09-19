@@ -1,0 +1,131 @@
+first-aid-medpac:
+    name: First Aid Medpac
+    description: A standard-issue emergency medical kit containing bacta spray, bandages, antiseptic, and basic surgical tools. Found in every military kit and civilian medbay across the galaxy. One-use — after the supplies are exhausted, the medpac is empty.
+    effect: -1 difficulty to Medicine rolls
+advanced-medpac:
+    name: Advanced Medpac
+    description: A professional-grade medical kit with enhanced bacta compounds, diagnostic scanner, and micro-surgical tools. Used by field medics and shipboard surgeons. Contains enough supplies for three serious treatments before replacement is needed.
+    effect: -2 difficulty to Medicine rolls
+surgical-kit:
+    name: Surgical Kit
+    description: A complete set of precision surgical instruments, bone fusers, and tissue regenerators. Required for any surgical procedure. Without a surgical kit, the difficulty of surgery increases by +3.
+    effect: -2 difficulty to Surgery rolls; required for surgery
+bacta-tank:
+    name: Bacta Tank
+    description: A full immersion bacta tank that accelerates healing dramatically. The patient is suspended in bacta fluid while the tank monitors and regulates their recovery. Requires Medicine Knowledge of at least 3D to operate. Only one patient at a time. Once installed, it cannot be transported without complete disassembly.
+    effect: Converts recovery time from days to hours
+infirmary:
+    name: Infirmary
+    description: A stationary medical facility stocked with diagnostic equipment, surgical tools, and a pharmacy. Found on starships, military bases, and in settled communities. More comprehensive than a medpac but not portable.
+    effect: -2 difficulty to Medicine rolls
+hospital:
+    name: Hospital
+    description: A full medical facility with operating theatres, intensive care, Bacta tanks, and specialist equipment. Found on developed worlds and major space stations. Provides the best possible environment for medical treatment outside of extraordinary circumstances.
+    effect: -3 difficulty to Medicine rolls
+basic-tool-set:
+    name: Basic Tool Set
+    description: A general-purpose toolkit containing spanners, hydrospanners, fusers, and diagnostic sensors. Enough for basic repairs on common equipment. Without a tool set, Repair and Tech rolls suffer a +2 difficulty penalty at the Storyteller's discretion.
+    effect: -1 difficulty to Repair/Tech rolls
+advanced-tool-set-structural:
+    name: Advanced Tool Set (Structural)
+    description: A professional toolkit specialized for structural repairs — hull plating, load-bearing frames, construction materials. One of six advanced specialties. Each advanced set covers only its specialty; using it outside its field grants no bonus.
+    effect: -2 difficulty to Repair/Tech rolls (structural specialty)
+advanced-tool-set-propulsion:
+    name: Advanced Tool Set (Propulsion)
+    description: A professional toolkit specialized for propulsion systems — ion engines, hyperdrives, repulsorlifts, thruster assemblies. One of six advanced specialties.
+    effect: -2 difficulty to Repair/Tech rolls (propulsion specialty)
+advanced-tool-set-droid-cybernetic:
+    name: Advanced Tool Set (Droid & Cybernetic)
+    description: A professional toolkit specialized for droid repair and cybernetic installation. Contains micro-manipulators, logic probe, and interface cables. One of six advanced specialties.
+    effect: -2 difficulty to Repair/Tech rolls (droid/cybernetic specialty)
+advanced-tool-set-computer:
+    name: Advanced Tool Set (Computer)
+    description: A professional toolkit specialized for computer systems, slicing, and datacore repairs. Contains diagnostic software suites, interface splices, and code-breaking modules. One of six advanced specialties.
+    effect: -2 difficulty to Repair/Tech rolls (computer specialty)
+advanced-tool-set-energy-field:
+    name: Advanced Tool Set (Energy Field)
+    description: A professional toolkit specialized for shields, power generators, and energy field projectors. Contains field calibrators and emission scanners. One of six advanced specialties.
+    effect: -2 difficulty to Repair/Tech rolls (energy field specialty)
+advanced-tool-set-weapons:
+    name: Advanced Tool Set (Weapons)
+    description: A professional toolkit specialized for blasters, missile launchers, and mounted weapons. Contains barrel alignment tools, power cell testers, and calibration targets. One of six advanced specialties.
+    effect: -2 difficulty to Repair/Tech rolls (weapons specialty)
+complete-workshop:
+    name: Complete Workshop
+    description: A fully equipped workshop covering all six specialties — structural, propulsion, droid & cybernetic, computer, energy field, and weapons. Stationary. Can fabricate simple parts if raw materials are available.
+    effect: -3 difficulty to all Repair/Tech rolls
+security-kit:
+    name: Security Kit
+    description: A lockpick set, codebreaker, and electronic bypass tools. Allows a character to attempt to open locked doors, disable alarms, and slice security systems. Without a security kit, the difficulty of such tasks increases by +2.
+    effect: -1 difficulty to Security/Slicing rolls
+slicer-kit:
+    name: Slicer Kit
+    description: An advanced computer slicing rig with decryption modules, code-breaking algorithms, and a dedicated processing unit. Can interface with most standard computer systems. Requires Computer Knowledge to operate effectively.
+    effect: -2 difficulty to Slicing rolls; requires Computer specialty
+comlink-short-range:
+    name: Comlink (Short-Range)
+    description: A compact wrist- or belt-mounted communication device capable of transmitting voice and basic data across a planet's surface. Standard galaxy-issue — almost every traveler carries one. Can be tapped or jammed with appropriate equipment.
+    effect: Planetary-range communication
+comlink-long-range:
+    name: Comlink (Long-Range)
+    description: A larger, more powerful comlink with a boosted transmitter and directional antenna. Can reach low orbit, allowing communication with ships in a planet's vicinity. Often built into starships, bases, and ground vehicles.
+    effect: System-wide communication; can reach orbiting ships
+holoprojector:
+    name: Holoprojector
+    description: A device that captures and projects three-dimensional holographic images. Used for communication (holographic calls), navigation (terrain projection), and tactical planning. Portable versions are briefcase-sized.
+    effect: Projects 3D holographic images and communications
+glow-rod:
+    name: Glow Rod
+    description: A simple handheld light source. Emits a steady, adjustable glow that illuminates a 10-meter radius. Powered by a small energy cell that lasts for 6 hours of continuous use. Waterproof and durable.
+    effect: Illuminates 10m radius for 6 hours
+macrobinoculars:
+    name: Macrobinoculars
+    description: Electro-optical binoculars with 50× magnification, integrated range-finder, and low-light amplification. Standard equipment for scouts, rangers, and anyone who needs to see a long way. Can record still images and short video clips.
+    effect: ×50 magnification; includes range-finder and low-light mode
+datapad:
+    name: Datapad
+    description: A ubiquitous personal computing device used for data storage, communication, navigation, and entertainment. Most datapads are touch-screen tablets with wireless connectivity. Found in every corner of the galaxy from Core Worlds to the Outer Rim.
+    effect: Personal computing device; stores and processes data
+climbing-gear:
+    name: Climbing Gear
+    description: A harness, grapnel, 30m of durasteel cable, and pitons. Essential equipment for scaling cliffs, buildings, or starship hulls. Without climbing gear, the difficulty of climbing tasks increases by +2.
+    effect: -1 difficulty to Athletics (climbing) rolls
+liquid-cable-dispenser:
+    name: Liquid Cable Dispenser
+    description: A wrist-mounted device that fires a quick-hardening liquid cable. The cable adheres to most surfaces and can support up to 200kg. Useful for rappelling, securing equipment, or creating emergency restraints. The dispenser holds enough liquid for 5 uses.
+    effect: Fires adhesive cable up to 20m; supports 200kg
+breath-mask:
+    name: Breath Mask / Filter
+    description: A compact respiratory aid that filters airborne toxins, smoke, and particulate matter. Provides 2 hours of emergency oxygen in vacuum or thin atmospheres. Standard in emergency kits and on ships not equipped with full life support.
+    effect: Filters toxins, smoke, and particulate. 2 hours of oxygen.
+power-pack-spare:
+    name: Power Pack (Spare)
+    description: A standard blaster power pack. Used as a replacement for depleted power cells in blaster pistols and rifles. Always carry spares — a blaster without power is just a very expensive club.
+    effect: Replacement blaster power cell
+tool-kit-parts:
+    name: Tool Kit (Misc. Spare Parts)
+    description: A collection of common spare parts — capacitors, fuses, wiring, connectors, and fasteners. Used as consumable materials for Repair and Tech rolls. One kit provides enough parts for one week of field repairs. Without spare parts, the Storyteller may increase repair difficulty.
+    effect: Consumable parts for field repairs
+fusion-lantern:
+    name: Fusion Lantern
+    description: A portable fusion-powered area light producing enough illumination to light a small camp. Output is adjustable from dim night-vision-safe to bright work-light. Powers small tools via integrated power socket. Rugged and reliable.
+    effect: Powerful area light; 50m radius. Lasts 200 hours.
+electrobinoculars:
+    name: Electrobinoculars
+    description: Advanced electro-optical binoculars with 100× magnification, multi-spectrum imaging (thermal, night-vision, electromagnetic), target tracking, and integrated range-finder. Military-grade optics used by scouts, snipers, and forward observers.
+    effect: ×100 magnification; thermal, night-vision, and tracking modes
+scanner-detector:
+    name: Multi-Scanner
+    description: A handheld sensor suite that detects energy emissions, life form bio-signs, and movement within a 100m radius. Can be tuned to filter out specific signatures or search for particular energy types. Essential equipment for scouts, bounty hunters, and salvage operators.
+    effect: Detects energy signatures, life forms, and movement (100m range)
+binders:
+    name: Binders / Stun Cuffs
+    description: Standard restraining cuffs used by law enforcement and military across the galaxy. Made of durasteel alloy with a magnetic lock. Escaping requires a Dexterity + Athletics roll at difficulty 8 (or a Security Tools roll at difficulty 6).
+    effect: Restrains humanoid targets; diff 8 to escape
+_labels:
+    category:
+        Medical: Medical
+        Tool Set: Tool Set
+        Security: Security
+        Communication: Communication
+        Utility: Utility

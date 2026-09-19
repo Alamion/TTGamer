@@ -1,0 +1,48 @@
+hold-out-blaster:
+    name: Hold-out Blaster
+    description: A compact blaster designed for concealed carry. Small enough to fit in a boot or sleeve holster, the hold-out blaster is the weapon of choice for smugglers, spies, and anyone who needs a backup piece. Its compact power cell limits both range and stopping power, but a blaster in hand beats a rifle in the locker.
+    notes: Easy to hide. Lowest stopping power of any blaster.
+light-blaster-pistol:
+    name: Light Blaster Pistol
+    description: The standard sidearm across the galaxy — reliable, easy to maintain, and powerful enough for most situations. Used by civilian self-defenders, sector rangers, and anyone who needs a no-nonsense blaster. The DH-17 and its countless knock-offs are found on every settled world.
+    notes: Standard sidearm. Most common blaster in the galaxy.
+heavy-blaster-pistol:
+    name: Heavy Blaster Pistol
+    description: A large-frame blaster pistol trading concealability for stopping power. Favored by bounty hunters and officers who want to end a fight with a single shot. The hefty power pack and reinforced emitter produce a bolt that punches through light cover.
+    notes: Powerful sidearm. Highest damage of any one-handed blaster.
+sporting-blaster-rifle:
+    name: Sporting Blaster Rifle
+    description: A civilian-grade blaster rifle designed for sport hunting and vermin control on colony worlds. Less robust than military hardware but still deadly — a tusken raider's cycler rifle is functionally identical. Common on frontier worlds where predators threaten livestock and settlements.
+    notes: Civilian hunting rifle. Less rugged than military grade.
+blaster-carbine:
+    name: Blaster Carbine
+    description: A compact shoulder-braced blaster that bridges the gap between pistol and rifle. Used by scout troopers, naval security, and anyone needing a full-power weapon without the bulk of a long rifle. Easier to maneuver in tight corridors than a full-length blaster rifle.
+    notes: Compact rifle. Shorter barrel than a full rifle but still braced.
+blaster-rifle:
+    name: Blaster Rifle
+    description: The standard-issue long arm of the Imperial military and most planetary defense forces. The E-11 and its contemporaries pack a heavy punch at long range and can sustain extended firefights. Carried openly — too large to conceal on a person.
+    notes: Standard military long arm. Power pack sustains extended engagements.
+heavy-blaster-rifle:
+    name: Heavy Blaster Rifle
+    description: A heavier military-grade blaster rifle trading portability for raw stopping power. The DLT-19 and similar models are used by heavy weapon specialists and elite stormtroopers. Its reinforced emitter assembly produces a bolt that can punch through light vehicle armor.
+    notes: High-powered military rifle. Heavy recoil but devastating damage.
+blaster-sniper-rifle:
+    name: Blaster Sniper Rifle
+    description: A precision long-arm with an enhanced targeting scope and focused emitter for extreme accuracy at range. The sniper rifle can be disassembled into a compact carrying case, requiring a full action to assemble. Adds +2 dice to Perception-based aiming rolls when the target is stationary or unaware.
+    notes: Long-range precision weapon. Can be broken down for transport.
+light-repeating-blaster:
+    name: Light Repeating Blaster
+    description: 'A crew-served or bipod-braced automatic blaster that lays down sustained suppressing fire. Uses Full-Auto rules: can spray an area, hitting multiple targets. Standard issue for heavy weapon troopers, E-Web emplacements, and shipboard security. The belt-fed power magazine allows extended fire.'
+    notes: Full-Auto capable. Belt-fed power pack.
+slugthrower-pistol:
+    name: Slugthrower Pistol
+    description: A primitive projectile weapon that fires solid metal slugs rather than plasma bolts. Common on backwater worlds where power packs are scarce. Slugthrowers are less damaging and carry fewer shots than blasters, but their ammunition can be manufactured locally. The projectiles can penetrate some materials that dissipate blaster bolts.
+    notes: Primitive projectile weapon. -1D damage vs equivalent blaster.
+slugthrower-rifle:
+    name: Slugthrower Rifle
+    description: A long-barreled projectile rifle firing metal-jacketed slugs. Used by militia forces, primitive cultures, and anyone who needs a weapon that can be maintained with a basic tool kit. The crack of a slugthrower echoes across countless Outer Rim worlds where blaster tech is a luxury.
+    notes: Kinetic long arm. -1D damage vs equivalent blaster rifle.
+bowcaster:
+    name: Bowcaster
+    description: A traditional Wookiee weapon that fires explosive quarrels wrapped in an energy cocoon. On impact the quarrel deals 4D Lethal damage to the target and 4D Bashing damage to the target and anyone nearby — the bowcaster is effectively a grenade launcher. Must be manually cocked between shots (Feat of Strength, pool 4). Uses the Blaster skill.
+    notes: Explosive quarrel. Cock action requires Feat of Strength (pool 4).

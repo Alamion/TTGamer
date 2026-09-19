@@ -13,6 +13,133 @@ export type CatalogTranslations = Record<
 
 export const catalogTranslations = {
     en: {
+        abilities: {
+            alertness: {
+                name: 'Alertness',
+            },
+            athletics: {
+                name: 'Athletics',
+            },
+            brawl: {
+                name: 'Brawl',
+            },
+            command: {
+                name: 'Command',
+            },
+            diplomacy: {
+                name: 'Diplomacy',
+            },
+            dodge: {
+                name: 'Dodge',
+            },
+            empathy: {
+                name: 'Empathy',
+            },
+            intimidation: {
+                name: 'Intimidation',
+            },
+            streetwise: {
+                name: 'Streetwise',
+            },
+            subterfuge: {
+                name: 'Subterfuge',
+            },
+            blaster: {
+                name: 'Blaster',
+            },
+            gunnery: {
+                name: 'Gunnery',
+            },
+            melee: {
+                name: 'Melee',
+            },
+            pilot: {
+                name: 'Pilot',
+            },
+            programming: {
+                name: 'Programming',
+            },
+            repair: {
+                name: 'Repair',
+            },
+            ride: {
+                name: 'Ride',
+            },
+            security: {
+                name: 'Security',
+            },
+            stealth: {
+                name: 'Stealth',
+            },
+            survival: {
+                name: 'Survival',
+            },
+            astrogation: {
+                name: 'Astrogation',
+            },
+            bureaucracy: {
+                name: 'Bureaucracy',
+            },
+            cultures: {
+                name: 'Cultures',
+            },
+            interfaces: {
+                name: 'Interfaces',
+            },
+            investigation: {
+                name: 'Investigation',
+            },
+            languages: {
+                name: 'Languages',
+            },
+            medicine: {
+                name: 'Medicine',
+            },
+            politics: {
+                name: 'Politics',
+            },
+            tech: {
+                name: 'Tech',
+            },
+            trade: {
+                name: 'Trade',
+            },
+        },
+        armor: {
+            'armored-clothing': {
+                name: 'Armored Clothing',
+            },
+            'blast-vest-helmet': {
+                name: 'Blast Vest & Helmet',
+            },
+            'flight-suit': {
+                name: 'Flight Suit',
+            },
+            'combat-jumpsuit': {
+                name: 'Combat Jumpsuit',
+            },
+            'bounty-hunter-armor': {
+                name: 'Bounty Hunter Armor',
+            },
+            'armored-flightsuit': {
+                name: 'Armored Flightsuit',
+            },
+            'light-combat-armor': {
+                name: 'Light Combat Armor',
+            },
+            'stormtrooper-armor': {
+                name: 'Stormtrooper Armor',
+            },
+            'heavy-combat-armor': {
+                name: 'Heavy Combat Armor',
+            },
+            'mandalorian-armor': {
+                name: 'Mandalorian Armor',
+            },
+            'jedi-robes': {
+                name: 'Jedi Robes',
+            },
+        },
         attributes: {
             strength: {
                 name: 'Strength',
@@ -42,260 +169,1117 @@ export const catalogTranslations = {
                 name: 'Wits',
             },
         },
-        'v5-hunter-advantages': {
-            linguistics: {
-                name: 'Linguistics',
-                summary:
-                    'One more fluent language per dot, beyond your native tongue and the local one.',
-            },
-            illiterate: {
-                name: 'Illiterate',
-                summary: 'Cannot read or write; Academics and Science stay at 1 at most.',
-            },
-            beautiful: {
-                name: 'Beautiful',
-                summary: 'One extra die on Social pools where looks matter.',
-            },
-            stunning: {
-                name: 'Stunning',
-                summary: 'Two extra dice on Social pools where looks matter.',
-            },
-            ugly: {
-                name: 'Ugly',
-                summary: 'One die fewer on Social pools where looks matter.',
-            },
-            repulsive: {
-                name: 'Repulsive',
-                summary: 'Two dice fewer on Social pools where looks matter.',
-            },
-            'solo-cooking': {
-                name: 'Solo Cooking',
-                summary: 'A proper meal before the session heals one extra Superficial Health.',
-            },
-            'cell-chef': {
-                name: 'Cell Chef',
-                summary:
-                    'Cooking for the cell heals one extra Superficial Health for everyone present.',
-            },
-            'living-on-the-edge': {
-                name: 'Living on the Edge',
-                summary:
-                    'A new risky thrill in reach nags you with a penalty until you try it or the scene ends.',
-            },
-            'weak-willed': {
-                name: 'Weak-Willed',
-                summary: 'You cannot actively resist powers that sway your mind or emotions.',
-            },
-            addiction: {
-                name: 'Addiction',
-                summary: 'One die fewer on most pools after a scene without your substance.',
-            },
-            'severe-addiction': {
-                name: 'Severe Addiction',
-                summary: 'Two dice fewer on most pools after a scene without your substance.',
-            },
-            'unseemly-aura': {
-                name: 'Unseemly Aura',
-                summary:
-                    'Monsters sometimes take you for one of their own, or for something else entirely.',
-            },
-            stigmata: {
-                name: 'Stigmata',
-                summary:
-                    'You bleed from hands, feet, and brow when hurt; noticeable and hard to hide.',
-            },
-            'crones-curse': {
-                name: 'Crone’s Curse',
-                summary: 'You look much older than you are and have one Health box fewer.',
-            },
+        backgrounds: {
             allies: {
                 name: 'Allies',
-                summary:
-                    'People outside the cell who help you; dots buy how capable and how dependable they are.',
-            },
-            enemy: {
-                name: 'Enemy',
-                summary:
-                    'Someone outside the cell who works against you and shows up when it hurts most.',
             },
             contacts: {
                 name: 'Contacts',
-                summary:
-                    'People who can find information or get you things, from cheap to hard to obtain.',
             },
-            fame: {
-                name: 'Fame',
-                summary:
-                    'People know your name, from one subculture up to the whole world; hard to stay unnoticed.',
+            customization: {
+                name: 'Customization',
             },
-            infamy: {
-                name: 'Infamy',
-                summary:
-                    'Known for something terrible; reactions go badly, and some want you caught.',
-            },
-            'dark-secret': {
-                name: 'Dark Secret',
-                summary: 'A terrible secret few people know, which could still come out.',
-            },
-            'infamous-partner': {
-                name: 'Infamous Partner',
-                summary: 'Someone close to you is notorious, and it rubs off on you.',
+            droid: {
+                name: 'Droid',
             },
             influence: {
                 name: 'Influence',
-                summary:
-                    'Pull over one group or district of the city, weaker elsewhere; using it draws attention.',
-            },
-            despised: {
-                name: 'Despised',
-                summary: 'One group or district of the city works against you and your cell.',
-            },
-            disliked: {
-                name: 'Disliked',
-                summary:
-                    'One die fewer on Social tests with city groups that are not openly on your side.',
-            },
-            mask: {
-                name: 'Mask',
-                summary: 'A false identity that survives background checks, local or national.',
-            },
-            zeroed: {
-                name: 'Zeroed',
-                summary:
-                    'Your real records were erased; officially you do not exist. Needs Mask ••.',
-            },
-            cobbler: {
-                name: 'Cobbler',
-                summary: 'You can make or source false identities for others. Needs Mask ••.',
-            },
-            'person-of-interest': {
-                name: 'Person of Interest',
-                summary:
-                    'Intelligence databases flag you as a threat; analysts can connect the dots.',
-            },
-            'serial-error': {
-                name: 'Serial Error',
-                summary: 'A records mistake makes any background check on you look alarming.',
             },
             mentor: {
                 name: 'Mentor',
-                summary:
-                    'An experienced hunter or group who advises and covers for you now and then.',
             },
-            adversary: {
-                name: 'Adversary',
-                summary:
-                    'A rival hunter or group who wants you, your cell, or your mentor to fail.',
+            'military-rank': {
+                name: 'Military Rank',
+            },
+            'noble-status': {
+                name: 'Noble Status',
+            },
+            reputation: {
+                name: 'Reputation',
             },
             resources: {
                 name: 'Resources',
-                summary:
-                    'Money and property, from living paycheck to paycheck to “anything money can buy”.',
-            },
-            destitute: {
-                name: 'Destitute',
-                summary: 'No money and no home.',
             },
             retainers: {
                 name: 'Retainers',
-                summary:
-                    'Loyal helpers, from an eager tag-along to someone who handles problems alone.',
+            },
+            vehicle: {
+                name: 'Vehicle',
+            },
+        },
+        'consumable-weapons': {
+            'fragmentation-grenade': {
+                name: 'Fragmentation Grenade',
+            },
+            'concussion-grenade': {
+                name: 'Concussion Grenade',
+            },
+            'thermal-detonator': {
+                name: 'Thermal Detonator',
+            },
+            'smoke-grenade': {
+                name: 'Smoke Grenade',
+            },
+            'ion-grenade': {
+                name: 'Ion Grenade',
+            },
+            'proton-grenade': {
+                name: 'Proton Grenade',
+            },
+            'anti-vehicle-mine': {
+                name: 'Anti-Vehicle Mine',
+            },
+            'proton-missile': {
+                name: 'Proton Missile',
+            },
+            'concussion-missile': {
+                name: 'Concussion Missile',
+            },
+            'explosive-charge': {
+                name: 'Explosive Charge',
+            },
+        },
+        creatures: {
+            wampa: {
+                name: 'Wampa',
+            },
+            tauntaun: {
+                name: 'Tauntaun',
+            },
+            rancor: {
+                name: 'Rancor',
+            },
+            nexu: {
+                name: 'Nexu',
+            },
+            acklay: {
+                name: 'Acklay',
+            },
+            reek: {
+                name: 'Reek',
+            },
+            mynock: {
+                name: 'Mynock',
+            },
+            dianoga: {
+                name: 'Dianoga',
+            },
+            sarlacc: {
+                name: 'Sarlacc',
+            },
+            'krayt-dragon': {
+                name: 'Krayt Dragon',
+            },
+            dewback: {
+                name: 'Dewback',
+            },
+            bantha: {
+                name: 'Bantha',
+            },
+            ronto: {
+                name: 'Ronto',
+            },
+            fathier: {
+                name: 'Fathier',
+            },
+            eopie: {
+                name: 'Eopie',
+            },
+            massiff: {
+                name: 'Massiff',
+            },
+            gundark: {
+                name: 'Gundark',
+            },
+            hssiss: {
+                name: 'Hssiss',
+            },
+            vornskr: {
+                name: 'Vornskr',
+            },
+            terentatek: {
+                name: 'Terentatek',
+            },
+            tukata: {
+                name: "Tuk'ata",
+            },
+            blurrg: {
+                name: 'Blurrg',
+            },
+            varactyl: {
+                name: 'Varactyl',
+            },
+            bogwing: {
+                name: 'Bogwing',
+            },
+            spinewolf: {
+                name: 'Spinewolf',
+            },
+            'womp-rat': {
+                name: 'Womp Rat',
+            },
+            rathtar: {
+                name: 'Rathtar',
+            },
+            'loth-cat': {
+                name: 'Loth-cat',
+            },
+            sleen: {
+                name: 'Sleen',
+            },
+            gutkurr: {
+                name: 'Gutkurr',
+            },
+        },
+        'force-powers': {
+            awareness: {
+                name: 'Awareness',
+            },
+            'bridge-minds': {
+                name: 'Bridge Minds',
+            },
+            'calm-beast': {
+                name: 'Calm Beast',
+            },
+            clairvoyance: {
+                name: 'Clairvoyance',
+            },
+            concealment: {
+                name: 'Concealment',
+            },
+            'contain-energy': {
+                name: 'Contain Energy',
+            },
+            crush: {
+                name: 'Crush (Force Choke)',
+            },
+            'energy-burst': {
+                name: 'Energy Burst (Sith Lightning)',
+            },
+            focus: {
+                name: 'Focus',
+            },
+            'force-feats': {
+                name: 'Force Feats',
+            },
+            healing: {
+                name: 'Healing',
+            },
+            heave: {
+                name: 'Heave',
+            },
+            'ignore-pain': {
+                name: 'Ignore Pain',
+            },
+            'lightsaber-combat': {
+                name: 'Lightsaber Combat',
+            },
+            'lightsaber-creation': {
+                name: 'Lightsaber Creation',
+            },
+            'lightsaber-empower': {
+                name: 'Lightsaber Empower',
+            },
+            'manipulate-object': {
+                name: 'Manipulate Object',
+            },
+            meditate: {
+                name: 'Meditate',
+            },
+            'meld-with-force': {
+                name: 'Meld with Force',
+            },
+            operate: {
+                name: 'Operate',
+            },
+            'physical-prowess': {
+                name: 'Physical Prowess',
+            },
+            'probe-memories': {
+                name: 'Probe Memories',
+            },
+            proficiency: {
+                name: 'Proficiency',
+            },
+            'project-thoughts': {
+                name: 'Project Thoughts',
+            },
+            'read-surface-thoughts': {
+                name: 'Read Surface Thoughts',
+            },
+            repel: {
+                name: 'Repel',
+            },
+            somnolence: {
+                name: 'Somnolence',
+            },
+            subjugate: {
+                name: 'Subjugate',
+            },
+            suggestion: {
+                name: 'Suggestion (Jedi Mind Trick)',
+            },
+            'summon-object': {
+                name: 'Summon Object',
+            },
+            'transfer-life': {
+                name: 'Transfer Life',
+            },
+            vanquish: {
+                name: 'Vanquish',
+            },
+            ventriloquism: {
+                name: 'Ventriloquism',
+            },
+        },
+        'force-skills': {
+            control: {
+                name: 'Control',
+            },
+            dynamism: {
+                name: 'Dynamism',
+            },
+            rapport: {
+                name: 'Rapport',
+            },
+            sense: {
+                name: 'Sense',
+            },
+            telekinesis: {
+                name: 'Telekinesis',
+            },
+        },
+        'melee-weapons': {
+            knife: {
+                name: 'Knife',
+            },
+            vibroblade: {
+                name: 'Vibroblade',
+            },
+            'club-baton': {
+                name: 'Club / Baton',
+            },
+            sword: {
+                name: 'Sword',
+            },
+            'force-pike': {
+                name: 'Force Pike',
+            },
+            electrostaff: {
+                name: 'Electrostaff',
+            },
+            staff: {
+                name: 'Staff',
+            },
+            'training-lightsaber': {
+                name: 'Training Lightsaber',
+            },
+            lightsaber: {
+                name: 'Lightsaber',
+            },
+        },
+        'merits-flaws': {
+            'higher-purpose': {
+                name: 'Higher Purpose',
+            },
+            berserker: {
+                name: 'Berserker',
+            },
+            'dual-nature': {
+                name: 'Dual Nature',
+            },
+            compulsion: {
+                name: 'Compulsion',
+            },
+            'dark-secret': {
+                name: 'Dark Secret',
+            },
+            intolerance: {
+                name: 'Intolerance',
+            },
+            phobia: {
+                name: 'Phobia',
+            },
+            shy: {
+                name: 'Shy',
+            },
+            'soft-hearted': {
+                name: 'Soft-Hearted',
+            },
+            'speech-impediment': {
+                name: 'Speech Impediment',
+            },
+            'low-self-image': {
+                name: 'Low Self-Image',
+            },
+            'driving-goal': {
+                name: 'Driving Goal',
+            },
+            addict: {
+                name: 'Addict',
+            },
+            'common-sense': {
+                name: 'Common Sense',
+            },
+            concentration: {
+                name: 'Concentration',
+            },
+            'lightning-calculator': {
+                name: 'Lightning Calculator',
+            },
+            'time-sense': {
+                name: 'Time Sense',
+            },
+            'eidetic-memory': {
+                name: 'Eidetic Memory',
+            },
+            'direction-sense': {
+                name: 'Direction Sense',
+            },
+            'pig-headed': {
+                name: 'Pig-Headed',
+            },
+            'well-prepared': {
+                name: 'Well Prepared',
+            },
+            amnesia: {
+                name: 'Amnesia',
+            },
+            confused: {
+                name: 'Confused',
+            },
+            'absent-minded': {
+                name: 'Absent-Minded',
+            },
+            'acute-hearing': {
+                name: 'Acute Hearing',
+            },
+            'acute-smell': {
+                name: 'Acute Sense of Smell',
+            },
+            'acute-taste': {
+                name: 'Acute Taste',
+            },
+            'acute-vision': {
+                name: 'Acute Vision',
+            },
+            'color-blind': {
+                name: 'Color Blind',
+            },
+            'hard-of-hearing': {
+                name: 'Hard of Hearing',
+            },
+            'bad-sight': {
+                name: 'Bad Sight',
+            },
+            'missing-eye': {
+                name: 'Missing Eye',
+            },
+            deaf: {
+                name: 'Deaf',
+            },
+            blind: {
+                name: 'Blind',
+            },
+            ambidextrous: {
+                name: 'Ambidextrous',
+            },
+            pitiable: {
+                name: 'Pitiable',
+            },
+            'natural-linguist': {
+                name: 'Natural Linguist',
+            },
+            'dare-devil': {
+                name: 'Dare Devil',
+            },
+            'fast-learner': {
+                name: 'Fast Learner',
+            },
+            'jack-of-all-trades': {
+                name: 'Jack-of-All-Trades',
+            },
+            'droid-aptitude': {
+                name: 'Droid Aptitude',
+            },
+            experienced: {
+                name: 'Experienced',
+            },
+            practiced: {
+                name: 'Practiced',
+            },
+            illiterate: {
+                name: 'Illiterate',
+            },
+            inept: {
+                name: 'Inept',
+            },
+            uneducated: {
+                name: 'Uneducated',
+            },
+            unskilled: {
+                name: 'Unskilled',
+            },
+            boon: {
+                name: 'Boon',
+            },
+            'underworld-ties': {
+                name: 'Underworld Ties',
+            },
+            'organizational-ties': {
+                name: 'Organizational Ties',
+            },
+            enemy: {
+                name: 'Enemy',
+            },
+            'mistaken-identity': {
+                name: 'Mistaken Identity',
+            },
+            ward: {
+                name: 'Ward',
+            },
+            wanted: {
+                name: 'Wanted',
+            },
+            'slave-race': {
+                name: 'Slave Race',
+            },
+            stereotyped: {
+                name: 'Stereotyped',
+            },
+            'double-jointed': {
+                name: 'Double Jointed',
+            },
+            disfigured: {
+                name: 'Disfigured',
+            },
+            deformity: {
+                name: 'Deformity',
+            },
+            lame: {
+                name: 'Lame',
+            },
+            'missing-arm': {
+                name: 'Missing Arm',
+            },
+            mute: {
+                name: 'Mute',
+            },
+            'hay-fever': {
+                name: 'Hay Fever',
+            },
+            'all-thumbs': {
+                name: 'All Thumbs',
+            },
+            'two-left-feet': {
+                name: 'Two Left Feet',
+            },
+            paraplegic: {
+                name: 'Paraplegic',
+            },
+            'cybernetic-limb': {
+                name: 'Cybernetic Limb',
+            },
+            'cybernetic-sensory-organ': {
+                name: 'Cybernetic Sensory Organ',
+            },
+            'cybernetic-uplink': {
+                name: 'Cybernetic Uplink',
+            },
+            'cybernetic-life-support': {
+                name: 'Cybernetic Life Support',
+            },
+            'clunky-cybernetics': {
+                name: 'Clunky Cybernetics',
+            },
+            'cybernetic-arm': {
+                name: 'Cybernetic Arm',
+            },
+            'cybernetic-leg': {
+                name: 'Cybernetic Leg',
+            },
+            'cybernetic-hand': {
+                name: 'Cybernetic Hand',
+            },
+            'cybernetic-eye': {
+                name: 'Cybernetic Eye',
+            },
+            'cybernetic-ear': {
+                name: 'Cybernetic Ear',
+            },
+            'neural-uplink-implant': {
+                name: 'Neural Uplink',
+            },
+            'subdermal-armor': {
+                name: 'Subdermal Armor',
+            },
+            'respiratory-implant': {
+                name: 'Respiratory Implant',
+            },
+            'targeting-computer': {
+                name: 'Targeting Computer',
+            },
+            'combat-reflex-enhancer': {
+                name: 'Combat Reflex Enhancer',
+            },
+            'comlink-implant': {
+                name: 'Comlink Implant',
+            },
+            'recording-implant': {
+                name: 'Recording Implant',
+            },
+            'adrenal-booster': {
+                name: 'Adrenal Booster',
+            },
+            'dart-launcher': {
+                name: 'Wrist Dart Launcher',
+            },
+            'cardio-enhancer': {
+                name: 'Cardio Enhancement',
+            },
+            'bio-monitor': {
+                name: 'Bio-Monitor',
+            },
+            luck: {
+                name: 'Luck',
+            },
+            'force-sensitive': {
+                name: 'Force Sensitive',
+            },
+            'strong-in-the-force': {
+                name: 'Strong in the Force',
+            },
+            'force-spirit-mentor': {
+                name: 'Force Spirit Mentor',
+            },
+            'natural-force-power': {
+                name: 'Natural Force Power',
+            },
+            master: {
+                name: 'Master',
+            },
+            apprentice: {
+                name: 'Apprentice',
+            },
+            'force-negator': {
+                name: 'Force Negator',
+            },
+            'dark-side-curse': {
+                name: 'Dark Side Curse',
+            },
+            'weak-in-the-force': {
+                name: 'Weak in the Force',
+            },
+            'desired-by-dark-side': {
+                name: 'Desired by the Dark Side',
+            },
+            'dark-fate': {
+                name: 'Dark Fate',
+            },
+            'ap-amphibious': {
+                name: 'Amphibious',
+            },
+            'ap-appendages-extra': {
+                name: 'Appendages, Extra',
+            },
+            'ap-appendages-flight': {
+                name: 'Appendages, Flight',
+            },
+            'ap-appendages-prehensile': {
+                name: 'Appendages, Prehensile',
+            },
+            'ap-catlike-reflexes': {
+                name: 'Cat-like Reflexes',
+            },
+            'ap-deliberate': {
+                name: 'Deliberate',
+            },
+            'ap-enhanced-vision': {
+                name: 'Enhanced Vision',
+            },
+            'ap-enhanced-hearing': {
+                name: 'Enhanced Hearing',
+            },
+            'ap-enhanced-olfactory': {
+                name: 'Enhanced Olfactory Sense',
+            },
+            'ap-environmental-sensitivity': {
+                name: 'Environmental Sensitivity',
+            },
+            'ap-environmental-tolerance': {
+                name: 'Environmental Tolerance',
+            },
+            'ap-fast': {
+                name: 'Fast',
+            },
+            'ap-feeble': {
+                name: 'Feeble',
+            },
+            'ap-frail': {
+                name: 'Frail',
+            },
+            'ap-immune-jedi-mind-tricks': {
+                name: 'Immune to Jedi Mind Tricks',
+            },
+            'ap-light-touch': {
+                name: 'Light Touch',
+            },
+            'ap-limited-vocal-range': {
+                name: 'Limited Vocal Range',
+            },
+            'ap-massive': {
+                name: 'Massive',
+            },
+            'ap-natural-weapons': {
+                name: 'Natural Weapons',
+            },
+            'ap-non-verbal-language': {
+                name: 'Non-Verbal Language',
+            },
+            'ap-powerful': {
+                name: 'Powerful',
+            },
+            'ap-short': {
+                name: 'Short',
+            },
+            'ap-huge-size': {
+                name: 'Huge Size',
+            },
+            'ap-sixth-sense': {
+                name: 'Sixth Sense',
+            },
+            'ap-slow': {
+                name: 'Slow',
+            },
+            'ap-strict-diet': {
+                name: 'Strict Diet',
+            },
+            'ap-tall': {
+                name: 'Tall',
+            },
+            'ap-thick-skinned': {
+                name: 'Thick Skinned',
+            },
+            'ap-unique-atmosphere': {
+                name: 'Unique Atmosphere',
+            },
+            'ap-hardy': {
+                name: 'Hardy',
+            },
+            'ap-heightened-awareness': {
+                name: 'Heightened Awareness',
+            },
+            'ap-binary-mind': {
+                name: 'Binary Mind',
+            },
+            'ap-four-arms': {
+                name: 'Extra Arms (four)',
+            },
+            'ap-flight-wings': {
+                name: 'Flight (wings)',
+            },
+        },
+        'ranged-weapons': {
+            'hold-out-blaster': {
+                name: 'Hold-out Blaster',
+            },
+            'light-blaster-pistol': {
+                name: 'Light Blaster Pistol',
+            },
+            'heavy-blaster-pistol': {
+                name: 'Heavy Blaster Pistol',
+            },
+            'sporting-blaster-rifle': {
+                name: 'Sporting Blaster Rifle',
+            },
+            'blaster-carbine': {
+                name: 'Blaster Carbine',
+            },
+            'blaster-rifle': {
+                name: 'Blaster Rifle',
+            },
+            'heavy-blaster-rifle': {
+                name: 'Heavy Blaster Rifle',
+            },
+            'blaster-sniper-rifle': {
+                name: 'Blaster Sniper Rifle',
+            },
+            'light-repeating-blaster': {
+                name: 'Light Repeating Blaster',
+            },
+            'slugthrower-pistol': {
+                name: 'Slugthrower Pistol',
+            },
+            'slugthrower-rifle': {
+                name: 'Slugthrower Rifle',
+            },
+            bowcaster: {
+                name: 'Bowcaster',
+            },
+        },
+        species: {
+            ewok: {
+                name: 'Ewok',
+            },
+            'gamorrean-slavery': {
+                name: 'Gamorrean',
+            },
+            'gamorrean-free': {
+                name: 'Gamorrean',
+            },
+            ithorian: {
+                name: 'Ithorian',
+            },
+            'mon-calamari-slavery': {
+                name: 'Mon Calamari',
+            },
+            'mon-calamari-free': {
+                name: 'Mon Calamari',
+            },
+            rodian: {
+                name: 'Rodian',
+            },
+            sullustan: {
+                name: 'Sullustan',
+            },
+            twilek: {
+                name: "Twi'lek",
+            },
+            'wookiee-slavery': {
+                name: 'Wookiee',
+            },
+            'wookiee-free': {
+                name: 'Wookiee',
+            },
+            human: {
+                name: 'Human',
+            },
+            zabrak: {
+                name: 'Zabrak',
+            },
+            duros: {
+                name: 'Duros',
+            },
+            bothan: {
+                name: 'Bothan',
+            },
+            cerean: {
+                name: 'Cerean',
+            },
+            nautolan: {
+                name: 'Nautolan',
+            },
+            togruta: {
+                name: 'Togruta',
+            },
+            'kel-dor': {
+                name: 'Kel Dor',
+            },
+            chiss: {
+                name: 'Chiss',
+            },
+            neimoidian: {
+                name: 'Neimoidian',
+            },
+            weequay: {
+                name: 'Weequay',
+            },
+            aqualish: {
+                name: 'Aqualish',
+            },
+            trandoshan: {
+                name: 'Trandoshan',
+            },
+            quarren: {
+                name: 'Quarren',
+            },
+            bith: {
+                name: 'Bith',
+            },
+            noghri: {
+                name: 'Noghri',
+            },
+            selkath: {
+                name: 'Selkath',
+            },
+            barabel: {
+                name: 'Barabel',
+            },
+            pauan: {
+                name: "Pau'an",
+            },
+            toydarian: {
+                name: 'Toydarian',
+            },
+            besalisk: {
+                name: 'Besalisk',
+            },
+        },
+        'tools-gear': {
+            'first-aid-medpac': {
+                name: 'First Aid Medpac',
+            },
+            'advanced-medpac': {
+                name: 'Advanced Medpac',
+            },
+            'surgical-kit': {
+                name: 'Surgical Kit',
+            },
+            'bacta-tank': {
+                name: 'Bacta Tank',
+            },
+            infirmary: {
+                name: 'Infirmary',
+            },
+            hospital: {
+                name: 'Hospital',
+            },
+            'basic-tool-set': {
+                name: 'Basic Tool Set',
+            },
+            'advanced-tool-set-structural': {
+                name: 'Advanced Tool Set (Structural)',
+            },
+            'advanced-tool-set-propulsion': {
+                name: 'Advanced Tool Set (Propulsion)',
+            },
+            'advanced-tool-set-droid-cybernetic': {
+                name: 'Advanced Tool Set (Droid & Cybernetic)',
+            },
+            'advanced-tool-set-computer': {
+                name: 'Advanced Tool Set (Computer)',
+            },
+            'advanced-tool-set-energy-field': {
+                name: 'Advanced Tool Set (Energy Field)',
+            },
+            'advanced-tool-set-weapons': {
+                name: 'Advanced Tool Set (Weapons)',
+            },
+            'complete-workshop': {
+                name: 'Complete Workshop',
+            },
+            'security-kit': {
+                name: 'Security Kit',
+            },
+            'slicer-kit': {
+                name: 'Slicer Kit',
+            },
+            'comlink-short-range': {
+                name: 'Comlink (Short-Range)',
+            },
+            'comlink-long-range': {
+                name: 'Comlink (Long-Range)',
+            },
+            holoprojector: {
+                name: 'Holoprojector',
+            },
+            'glow-rod': {
+                name: 'Glow Rod',
+            },
+            macrobinoculars: {
+                name: 'Macrobinoculars',
+            },
+            datapad: {
+                name: 'Datapad',
+            },
+            'climbing-gear': {
+                name: 'Climbing Gear',
+            },
+            'liquid-cable-dispenser': {
+                name: 'Liquid Cable Dispenser',
+            },
+            'breath-mask': {
+                name: 'Breath Mask / Filter',
+            },
+            'power-pack-spare': {
+                name: 'Power Pack (Spare)',
+            },
+            'tool-kit-parts': {
+                name: 'Tool Kit (Misc. Spare Parts)',
+            },
+            'fusion-lantern': {
+                name: 'Fusion Lantern',
+            },
+            electrobinoculars: {
+                name: 'Electrobinoculars',
+            },
+            'scanner-detector': {
+                name: 'Multi-Scanner',
+            },
+            binders: {
+                name: 'Binders / Stun Cuffs',
+            },
+        },
+        'v5-hunter-advantages': {
+            linguistics: {
+                name: 'Linguistics',
+            },
+            illiterate: {
+                name: 'Illiterate',
+            },
+            beautiful: {
+                name: 'Beautiful',
+            },
+            stunning: {
+                name: 'Stunning',
+            },
+            ugly: {
+                name: 'Ugly',
+            },
+            repulsive: {
+                name: 'Repulsive',
+            },
+            'solo-cooking': {
+                name: 'Solo Cooking',
+            },
+            'cell-chef': {
+                name: 'Cell Chef',
+            },
+            'living-on-the-edge': {
+                name: 'Living on the Edge',
+            },
+            'weak-willed': {
+                name: 'Weak-Willed',
+            },
+            addiction: {
+                name: 'Addiction',
+            },
+            'severe-addiction': {
+                name: 'Severe Addiction',
+            },
+            'unseemly-aura': {
+                name: 'Unseemly Aura',
+            },
+            stigmata: {
+                name: 'Stigmata',
+            },
+            'crones-curse': {
+                name: 'Crone’s Curse',
+            },
+            allies: {
+                name: 'Allies',
+            },
+            enemy: {
+                name: 'Enemy',
+            },
+            contacts: {
+                name: 'Contacts',
+            },
+            fame: {
+                name: 'Fame',
+            },
+            infamy: {
+                name: 'Infamy',
+            },
+            'dark-secret': {
+                name: 'Dark Secret',
+            },
+            'infamous-partner': {
+                name: 'Infamous Partner',
+            },
+            influence: {
+                name: 'Influence',
+            },
+            despised: {
+                name: 'Despised',
+            },
+            disliked: {
+                name: 'Disliked',
+            },
+            mask: {
+                name: 'Mask',
+            },
+            zeroed: {
+                name: 'Zeroed',
+            },
+            cobbler: {
+                name: 'Cobbler',
+            },
+            'person-of-interest': {
+                name: 'Person of Interest',
+            },
+            'serial-error': {
+                name: 'Serial Error',
+            },
+            mentor: {
+                name: 'Mentor',
+            },
+            adversary: {
+                name: 'Adversary',
+            },
+            resources: {
+                name: 'Resources',
+            },
+            destitute: {
+                name: 'Destitute',
+            },
+            retainers: {
+                name: 'Retainers',
             },
             stalkers: {
                 name: 'Stalkers',
-                summary: 'People who get too attached to you keep turning up.',
             },
             'safe-house': {
                 name: 'Safe House',
-                summary:
-                    'A home that is more secure and private than a bare room; helps spot and resist intruders.',
             },
             'hidden-armory': {
                 name: 'Hidden Armory',
-                summary: 'A hidden stash of ordinary guns and ammunition in the safe house.',
             },
             'panic-room': {
                 name: 'Panic Room',
-                summary:
-                    'A locked room to hide people in, or to hold a captive. Not in small safe houses.',
             },
             watchmen: {
                 name: 'Watchmen',
-                summary: 'Guards who watch the safe house; they know nothing of the supernatural.',
             },
             laboratory: {
                 name: 'Laboratory',
-                summary:
-                    'Extra dice for science or technology work at home. Not in small safe houses.',
             },
             luxury: {
                 name: 'Luxury',
-                summary: 'Impressive decor helps Social tests with guests at home.',
             },
             postern: {
                 name: 'Postern',
-                summary: 'A hidden way out; extra dice to slip away from watchers nearby.',
             },
             'security-system': {
                 name: 'Security System',
-                summary: 'Extra dice to keep intruders out or be warned of them.',
             },
             surgery: {
                 name: 'Surgery',
-                summary:
-                    'A field surgery room; extra dice for Medicine at home. Not in small safe houses.',
             },
             compromised: {
                 name: 'Compromised',
-                summary: 'The place was raided before and is watched; intruders get extra dice.',
             },
             creepy: {
                 name: 'Creepy',
-                summary:
-                    'It looks like a monster’s lair; guests are ill at ease and neighbors talk.',
             },
             haunted: {
                 name: 'Haunted',
-                summary: 'Something supernatural lives here that you cannot control or remove.',
             },
             'no-safe-house': {
                 name: 'No Safe House',
-                summary: 'Nowhere to feel safe: a busy squat, a bad flat, a broken-down trailer.',
             },
             status: {
                 name: 'Status',
-                summary:
-                    'Standing among the local hunters of one faction, from a known name to a leader.',
             },
             shunned: {
                 name: 'Shunned',
-                summary: 'One faction of hunters loathes you and works against you.',
             },
             suspect: {
                 name: 'Suspect',
-                summary: 'You broke faith with a faction; Social tests with them are much harder.',
             },
         },
         'v5-hunter-armor': {
             'reinforced-clothing': {
                 name: 'Reinforced clothing',
-                note: 'Heavy leathers and the like; no protection against firearms.',
-                effect: 'Armor 2',
             },
             'ballistic-cloth': {
                 name: 'Ballistic cloth',
-                note: 'Protective fabric that passes for ordinary clothes.',
-                effect: 'Armor 2',
             },
             'kevlar-vest': {
                 name: 'Kevlar vest',
-                note: 'A bulletproof vest or flak jacket.',
-                effect: 'Armor 4',
             },
             'tactical-armor': {
                 name: 'Tactical armor',
-                note: 'Police or military gear; one die fewer on Dexterity rolls.',
-                effect: 'Armor 6',
             },
         },
         'v5-hunter-creeds': {
@@ -379,39 +1363,30 @@ export const catalogTranslations = {
         'v5-hunter-gear': {
             chaoscope: {
                 name: 'Chaoscope',
-                effect: 'Vehicle-mounted scanner: Intelligence + Awareness at Difficulty 6 finds a supernatural threat nearby; easier against a kind already detected.',
             },
             xscope: {
                 name: 'XScope',
-                effect: 'Tells the living from the dead at a distance by heartbeat, breath, and body heat; some monsters can fool it.',
             },
             'gps-tracker': {
                 name: 'GPS tracker',
-                effect: 'Four extra dice to find whoever carries it; spotting one takes Wits + Streetwise or Technology.',
             },
             'lockpick-gun': {
                 name: 'Lockpick gun',
-                effect: 'Four extra dice to Dexterity + Larceny when picking a lock; hard to explain if found on you.',
             },
             'zip-cuffs': {
                 name: 'Zip cuffs',
-                effect: 'Breaking free takes Strength at Difficulty 5; a blade cuts them easily.',
             },
             handcuffs: {
                 name: 'Handcuffs',
-                effect: 'Breaking free takes Strength at Difficulty 6, or Dexterity + Larceny at Difficulty 4 to slip out.',
             },
             'tactical-earbuds': {
                 name: 'Tactical earbuds',
-                effect: 'Hearing protection with a cell radio; one extra die to Composure in combat.',
             },
             'disguised-weapon': {
                 name: 'Disguised weapon',
-                effect: 'A weapon that looks like something else; one die fewer to attack unless crafted exceptionally well.',
             },
             incendiary: {
                 name: 'Incendiary weapon',
-                effect: 'Home-made fire weapons lose one point of damage, but the damage is Aggravated against anything that fears fire.',
             },
         },
         'v5-hunter-perks': {
@@ -566,39 +1541,110 @@ export const catalogTranslations = {
         'v5-hunter-weapons': {
             improvised: {
                 name: 'Improvised weapon',
-                examples: 'A bottle, a chair leg, a wooden stake (stakes matter against vampires).',
             },
             'light-impact': {
                 name: 'Light impact',
-                examples: 'Brass knuckles, a heavy flashlight.',
             },
             'heavy-impact': {
                 name: 'Heavy impact',
-                examples: 'A baton, a tire iron, a baseball bat.',
             },
             'light-piercing': {
                 name: 'Light piercing',
-                examples: 'A switchblade, a crossbow bolt.',
             },
             'light-gunshot': {
                 name: 'Light gunshot',
-                examples: 'A small-calibre pistol.',
             },
             'heavy-melee': {
                 name: 'Heavy melee',
-                examples: 'A sword, a fire axe.',
             },
             'medium-gunshot': {
                 name: 'Medium gunshot',
-                examples: 'A service pistol, a hunting rifle, a shotgun at a distance.',
             },
             'heavy-gunshot': {
                 name: 'Heavy gunshot',
-                examples: 'A magnum revolver, a shotgun at close range.',
             },
             'huge-melee': {
                 name: 'Huge melee',
-                examples: 'A two-handed sword, a length of steel beam.',
+            },
+        },
+        vehicles: {
+            'ubrikkian-9000-z004': {
+                name: 'Ubrikkian 9000 Z004',
+            },
+            'ikas-adno-nightfalcon': {
+                name: 'Ikas-Adno 22-B Nightfalcon',
+            },
+            'skybird-swoop': {
+                name: 'Skybird Swoop',
+            },
+            'incom-t47-airspeeder': {
+                name: 'Incom T-47I Airspeeder',
+            },
+            'rebel-combat-snowspeeder': {
+                name: 'Rebel Combat Snowspeeder',
+            },
+            'bespin-storm-iv': {
+                name: 'Bespin Motors Storm IV',
+            },
+            'eclipse-sail-barge': {
+                name: 'Gefferon Eclipse Sail Barge',
+            },
+            'superhaul-cargo-skiff': {
+                name: 'Ubrikkian SuperHaul Model II',
+            },
+            'at-st': {
+                name: 'AT-ST',
+            },
+            'at-at': {
+                name: 'AT-AT',
+            },
+            'a-wing': {
+                name: 'A-wing Starfighter',
+            },
+            'b-wing': {
+                name: 'B-wing Starfighter',
+            },
+            'x-wing': {
+                name: 'T-65B X-wing',
+            },
+            'y-wing': {
+                name: 'BTL-S3 Y-wing',
+            },
+            'tie-ln': {
+                name: 'TIE/ln',
+            },
+            'tie-interceptor': {
+                name: 'TIE Interceptor',
+            },
+            'z-95-headhunter': {
+                name: 'Z-95 Headhunter',
+            },
+            'yt-1300-stock': {
+                name: 'YT-1300 Transport',
+            },
+            'millennium-falcon': {
+                name: 'Millennium Falcon',
+            },
+            'ghtroc-720': {
+                name: 'Ghtroc 720 Freighter',
+            },
+            'guardian-light-cruiser': {
+                name: 'Guardian-class Light Cruiser',
+            },
+            'lone-scout-a': {
+                name: 'Lone Scout-A',
+            },
+            'imperial-star-destroyer': {
+                name: 'Imperial I Star Destroyer',
+            },
+            'mon-cal-mc80': {
+                name: 'Mon Calamari MC80 Star Cruiser',
+            },
+            'corellian-corvette': {
+                name: 'Corellian Corvette',
+            },
+            'nebulon-b': {
+                name: 'Nebulon-B Frigate',
             },
         },
     },

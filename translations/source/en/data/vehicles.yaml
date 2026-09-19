@@ -1,0 +1,231 @@
+ubrikkian-9000-z004:
+    name: Ubrikkian 9000 Z004
+    description: A sleek two-seater sport speeder popular with young adults across the galaxy. Features holographic displays, computer-assisted navigation, and counter-balancers for a stable ride over rough terrain. One of the most popular personal speeder models on the market.
+    model: Ubrikkian 9000 Z004
+    crew: '1'
+    passengers: '1'
+    cargo: 30 kg
+ikas-adno-nightfalcon:
+    name: Ikas-Adno 22-B Nightfalcon
+    description: A fast, nimble speeder bike designed for personal transportation and military reconnaissance. Emphasizes speed and maneuverability over protection. The single laser cannon provides limited offensive capability.
+    model: Ikas-Adno 22-B Nightfalcon
+    crew: '1'
+    passengers: '1'
+    cargo: 4 kg
+skybird-swoop:
+    name: Skybird Swoop
+    description: A high-performance swoop bike that sacrifices all protection for extreme speed. Uses a combination of repulsorlift and ion engine power. Much more difficult to pilot than a standard speeder bike, but devastating in the hands of an expert — especially in high-speed chase situations.
+    model: Skybird
+    crew: '1'
+    passengers: '0'
+    cargo: 1 kg
+incom-t47-airspeeder:
+    name: Incom T-47I Airspeeder
+    description: An aging but popular civilian airspeeder noted for speed and maneuverability. Out of production for nearly a decade but remains a favorite because it is easy to maintain, spare parts are readily available, and it can easily be modified for greater speed.
+    model: Incom T-47I Airspeeder
+    crew: '1'
+    passengers: '0'
+    cargo: 10 kg
+rebel-combat-snowspeeder:
+    name: Rebel Combat Snowspeeder
+    description: A heavily modified combat airspeeder used by the Rebel Alliance. Cheap to manufacture, reliable, and sturdy with excellent speed and firepower. Variants exist for cold (snowspeeder), hot/dry (sand-speeder), and humid (swampspeeder) environments. Famous for the Battle of Hoth where tow cables brought down AT-AT walkers.
+    model: Rebel Alliance Combat Snowspeeder
+    crew: 1 + 1 gunner
+    passengers: '0'
+    cargo: 10 kg
+bespin-storm-iv:
+    name: Bespin Motors Storm IV
+    description: A twin-pod cloud car designed for high-altitude patrol and defense. Capable of speeds exceeding 1,500 kmh with cruising heights from a few kilometers up to near-space. Common on Bespin where the gas giant atmosphere requires specialized vehicles. Used for law enforcement, customs, and atmospheric patrol.
+    model: Bespin Motors Storm IV
+    crew: 1 + 1 gunner
+    passengers: '0'
+    cargo: 10 kg
+eclipse-sail-barge:
+    name: Gefferon Eclipse Sail Barge
+    description: A massive luxury pleasure craft featuring ornamental sails as a throwback to early planetary explorers. Long on luxury and short on practicality — slow and cumbersome, seldom exceeding 100 kmh. Used as touring vehicles, vacation vessels, and for lavish events across the galaxy.
+    model: Gefferon Pleasure Craft Eclipse
+    crew: '5, skeleton: 2/+10'
+    passengers: '225'
+    cargo: 250 metric tons
+superhaul-cargo-skiff:
+    name: Ubrikkian SuperHaul Model II
+    description: A slow but dependable cargo skiff designed for bulk transportation at low speeds and low altitudes. Easy to operate, even by low-intelligence labor droids. Commonly used for moving heavy cargo at spaceports, construction sites, and industrial facilities.
+    model: Ubrikkian SuperHaul Model II
+    crew: '1'
+    passengers: '3'
+    cargo: 135 metric tons
+at-st:
+    name: AT-ST
+    description: A nimble scout walker used by the Imperial military for reconnaissance and support duty. More agile than the AT-AT but still heavily armed. The two-person crew consists of a pilot and a co-pilot who operates the secondary weapons. Deadly on the battlefield despite its lighter armor.
+    model: All Terrain Scout Transport
+    crew: '2, skeleton: 1/+15'
+    passengers: '0'
+    cargo: 200 kg
+at-at:
+    name: AT-AT
+    description: A four-legged behemoth that shakes the ground as it ploddingly advances on enemy fortifications. The most visible symbol of Imperial ground power. Carries up to 40 fully-equipped troops or a pair of AT-STs. The head mounts on a pivoting neck that can turn to face left, front, and right arcs. Virtually unstoppable by standard infantry weapons.
+    model: All Terrain Armored Transport
+    crew: '5, skeleton: 3/+10'
+    passengers: 40 troops (or 2 AT-STs)
+    cargo: 1 metric ton
+a-wing:
+    name: A-wing Starfighter
+    description: One of the fastest fighters in production, designed as a fast-moving interceptor to counter TIE fighters. Has the agility to match the most maneuverable Imperial starfighters. Suffers from breakdowns if not properly maintained due to stress on the chassis and power systems from the massive thruster package.
+    model: Alliance A-wing Starfighter
+    crew: '1'
+    passengers: '0'
+    cargo: 40 kg
+    consumables: 1 week
+b-wing:
+    name: B-wing Starfighter
+    description: A heavily-armed escort starfighter designed to engage capital-scale ships. Features extremely powerful weaponry and a gyroscopically balanced cockpit. Despite heavy armor, it is not terribly maneuverable and can be outflown by skilled TIE pilots. The stabilization system is fragile — heavy damage may reduce fire control and speed.
+    model: Slayn & Korpil B-wing
+    crew: '1'
+    passengers: '0'
+    cargo: 45 kg
+    consumables: 1 week
+x-wing:
+    name: T-65B X-wing
+    description: The backbone of the Rebel Alliance starfighter fleet. Durable, reliable, and well-armed with four laser cannons and proton torpedoes. The astromech droid socket provides navigation, repair, and tactical support. Luke Skywalker piloted an X-wing when he destroyed the first Death Star.
+    model: Incom T-65B X-wing
+    crew: 1 + astromech droid
+    passengers: '0'
+    cargo: 110 kg
+    consumables: 1 week
+y-wing:
+    name: BTL-S3 Y-wing
+    description: An aging but versatile attack starfighter adopted at the inception of the Rebel Alliance. Remains popular due to readily available parts. Heavily armed with laser cannons, ion cannons, and proton torpedoes. The two-person crew (pilot and gunner) allows coordinated fire, and the astromech droid provides navigation support.
+    model: Koensayr BTL-S3 Y-wing
+    crew: 1 + 1 gunner + astromech droid
+    passengers: '0'
+    cargo: 110 kg
+    consumables: 1 week
+tie-ln:
+    name: TIE/ln
+    description: The most visible symbol of Imperial power after the Star Destroyer. Designed to be fast and produced in vast numbers. Light and fragile — the Empire never hesitated to sacrifice scores of them to accomplish goals. No shields, no hyperdrive, and minimal consumables, but cheap and effective in swarms.
+    model: Sienar Fleet Systems TIE/ln
+    crew: '1'
+    passengers: '0'
+    cargo: 65 kg
+    consumables: 2 days
+tie-interceptor:
+    name: TIE Interceptor
+    description: An enhanced TIE fighter introduced to counter the Rebel Alliance X-wing advantage. Features larger engines, more powerful energy converters, and four laser cannons instead of two. Faster and more maneuverable than the standard TIE/ln, but still lacks shields and hyperdrive.
+    model: Sienar Fleet Systems TIE Interceptor
+    crew: '1'
+    passengers: '0'
+    cargo: 75 kg
+    consumables: 2 days
+z-95-headhunter:
+    name: Z-95 Headhunter
+    description: Among the oldest fighter designs still in active use. Has a reputation for taking a beating in battle. Neither fast nor maneuverable by modern standards, but its weapons complement makes it a formidable opponent. Commonly found in planetary navies and private space fleets.
+    model: Incom/Subpro Z-95 Headhunter
+    crew: '1'
+    passengers: '0'
+    cargo: 85 kg
+    consumables: 1 day
+yt-1300-stock:
+    name: YT-1300 Transport
+    description: A reliable, durable, and easy-to-modify light freighter that is representative of the thousands of freighters travelling the galaxy. So popular that there is truly no such thing as a "stock" freighter — every pilot makes modifications to increase cargo space, speed, or combat capability.
+    model: Corellian Engineering Corporation YT-1300 Transport
+    crew: 1 (1 can coordinate) + 1 gunner
+    passengers: '6'
+    cargo: 100 metric tons
+    consumables: 2 months
+millennium-falcon:
+    name: Millennium Falcon
+    description: "The fastest hunk of junk in the galaxy. Han Solo's extensively modified YT-1300 has been upgraded far beyond stock specifications: military-grade shields, quad laser cannons, concussion missile launchers, a hidden retractable blaster, and a class 0.5 hyperdrive that rivals military vessels. Contains smuggling compartments holding 10% of its cargo capacity."
+    model: Modified Corellian Engineering Corporation YT-1300 Transport
+    crew: '2 + 2 gunners, skeleton: 1/+5'
+    passengers: '6'
+    cargo: 100 metric tons (10% hidden compartments)
+    consumables: 2 months
+ghtroc-720:
+    name: Ghtroc 720 Freighter
+    description: A less popular but no less durable freighter design that became popular in the Outer Rim Territories where the manufacturer was based. Ghtroc Industries has since gone out of business, but several thousand of these freighters remain in service, especially for simple cargo runs where combat is not expected.
+    model: Ghtroc Industries class 720 freighter
+    crew: 1 + 1 gunner
+    passengers: '10'
+    cargo: 135 metric tons
+    consumables: 2 months
+guardian-light-cruiser:
+    name: Guardian-class Light Cruiser
+    description: A common Imperial system patrol craft capable of handling freighter and smuggler traffic. Totally outclassed against capital ships. Common in lightly populated, isolated systems where the Empire needs a presence without the expense of a larger vessel.
+    model: Sienar Fleet Systems Guardian-class light cruiser
+    crew: '16 (3 can coordinate) + 4 gunners, skeleton: 8/+10'
+    passengers: 6 (prisoners)
+    cargo: 200 metric tons
+    consumables: 3 months
+lone-scout-a:
+    name: Lone Scout-A
+    description: A scout vessel designed for a crew of one, intended for long-duration exploration missions in uncharted regions. Carries enough consumables for a full year of independent operation. Lightly armed and armored, relying on stealth and sensors rather than combat capability.
+    model: Sienar Fleet Systems "Lone Scout-A"
+    crew: '1'
+    passengers: '3'
+    cargo: 150 metric tons
+    consumables: 1 year
+imperial-star-destroyer:
+    name: Imperial I Star Destroyer
+    description: Among the most fearsome weapons of the Imperial war machine. Over 25,000 of these vessels enforced the Emperor's will across the galaxy. Carries a full wing of 72 TIE fighters, a stormtrooper division, 20 AT-ATs, and 30 AT-ST walkers. A mobile fortress capable of planetary bombardment and fleet actions.
+    model: Kuat Drive Yards' Imperial I Star Destroyer
+    crew: '36,810 + 275 gunners, skeleton: 5,000/+20'
+    passengers: 9,700 troops
+    cargo: 36,000 metric tons
+    consumables: 6 years
+mon-cal-mc80:
+    name: Mon Calamari MC80 Star Cruiser
+    description: Cobbled together from Mon Calamari exploration vessels, these star cruisers proved surprisingly effective in combat. Configured to provide Mon Calamari crews with their species bonus in moist environments. Features redundant shield systems — 6D of backup shields can be brought online when primary shields are depleted.
+    model: Mon Calamari MC80 Star Cruiser
+    crew: '5,156 + 246 gunners, skeleton: 1,230/+10'
+    passengers: 1,200 troops
+    cargo: 20,000 metric tons
+    consumables: 2 years
+corellian-corvette:
+    name: Corellian Corvette
+    description: A versatile mid-sized vessel used by private corporations, pirates, and the Rebel Alliance. Can be configured for blockade running, heavy combat, troop transport, or cargo hauling. The Rebel Alliance captured the first Death Star plans using a Corellian Corvette (the Tantive IV).
+    model: Corellian Engineering Corporation Corvette
+    crew: 30–165, skeleton varies
+    passengers: Up to 600
+    cargo: 3,000 metric tons
+    consumables: 1 year
+nebulon-b:
+    name: Nebulon-B Frigate
+    description: The Rebel Alliance's best all-around close support vessel, capable of escort duty for convoys and engaging larger ships in capital combat. Its distinctive cylindrical hull design features a forward command section and rear engine section connected by a long spar. Often seen providing medical and repair support to smaller vessels.
+    model: Kuat Drive Yards' Nebulon-B Frigate
+    crew: '854 + 66 gunners, skeleton: 307/+10'
+    passengers: 75 troops
+    cargo: 6,000 metric tons
+    consumables: 2 years
+_labels:
+    category:
+        Sport speeder: Sport speeder
+        Speeder bike: Speeder bike
+        Racing swoop: Racing swoop
+        Airspeeder: Airspeeder
+        Modified combat airspeeder: Modified combat airspeeder
+        Twin-Pod Cloud Car: Twin-Pod Cloud Car
+        Sail barge: Sail barge
+        Cargo skiff: Cargo skiff
+        Medium walker: Medium walker
+        Assault walker: Assault walker
+        Interceptor: Interceptor
+        Heavy assault starfighter: Heavy assault starfighter
+        Space superiority fighter: Space superiority fighter
+        Attack starfighter: Attack starfighter
+        Space superiority starfighter: Space superiority starfighter
+        Multi-purpose starfighter: Multi-purpose starfighter
+        Stock light freighter: Stock light freighter
+        Modified light freighter: Modified light freighter
+        Inter-system customs vessel: Inter-system customs vessel
+        Stock scout vessel: Stock scout vessel
+        Star Destroyer: Star Destroyer
+        Star Cruiser: Star Cruiser
+        Mid-sized multi-purpose vessel: Mid-sized multi-purpose vessel
+        Escort starship: Escort starship
+    eras:
+        The Old Republic: The Old Republic
+        The High Republic: The High Republic
+        The Fall of the Jedi: The Fall of the Jedi
+        The Reign of the Empire: The Reign of the Empire
+        The Age of Rebellion: The Age of Rebellion
+        The New Republic: The New Republic

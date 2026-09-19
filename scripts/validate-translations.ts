@@ -12,6 +12,10 @@ function difference(left: string[], right: string[]): string[] {
     return left.filter((item) => !rightSet.has(item));
 }
 
+/**
+ * UI messages mirror English exactly. Catalog data may lag behind (the English code value is the
+ * fallback; the i18n verifier's catalog rule tracks coverage), but may not invent keys.
+ */
 function validateMirror(
     domain: 'ui' | 'data',
     reference: Record<string, string>,
@@ -19,8 +23,10 @@ function validateMirror(
     localized: Record<string, string>,
     errors: string[]
 ): void {
-    for (const key of difference(Object.keys(reference), Object.keys(localized))) {
-        errors.push(domain + ': ' + locale + ' is missing "' + key + '"');
+    if (domain === 'ui') {
+        for (const key of difference(Object.keys(reference), Object.keys(localized))) {
+            errors.push(domain + ': ' + locale + ' is missing "' + key + '"');
+        }
     }
     for (const key of difference(Object.keys(localized), Object.keys(reference))) {
         errors.push(domain + ': ' + locale + ' has no English source for "' + key + '"');

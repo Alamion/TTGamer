@@ -4,6 +4,7 @@ import path from 'node:path';
 import { format } from 'prettier';
 
 import {
+    CATALOG_LABELS_KEY,
     flattenUiMessages,
     GLOSSARY_ROOT,
     type GlossaryTerm,
@@ -124,6 +125,31 @@ async function buildCatalogModule(data: Record<string, Record<string, unknown>>)
     );
 }
 
+/**
+ * Catalog data shipped to the browser. English text already lives in the code-owned entries, so
+ * the English map keeps only entry names (label references resolve against it); other locales
+ * ship every localized field.
+ */
+function runtimeCatalogData(
+    data: Record<string, Record<string, unknown>>
+): Record<string, Record<string, unknown>> {
+    const english = Object.fromEntries(
+        Object.entries(data.en ?? {}).map(([catalogId, catalog]) => [
+            catalogId,
+            Object.fromEntries(
+                Object.entries(catalog as Record<string, unknown>)
+                    .filter(([entryId]) => entryId !== CATALOG_LABELS_KEY)
+                    .map(([entryId, fields]) => [
+                        entryId,
+                        { name: (fields as Record<string, unknown>).name },
+                    ])
+                    .filter(([, fields]) => (fields as { name?: unknown }).name !== undefined)
+            ),
+        ])
+    );
+    return { ...data, en: english };
+}
+
 /** Runtime map of glossary refs: the English book name and the optional Russian short form. */
 async function buildBookTermsModule(glossary: GlossaryTerm[]): Promise<string> {
     const terms: Record<string, { en: string; ruShort?: string }> = {};
@@ -177,7 +203,7 @@ export async function buildTranslationOutputs(
     );
     outputs.set(
         path.join(paths.generatedRoot, 'catalogTranslations.ts'),
-        await buildCatalogModule(sources.data)
+        await buildCatalogModule(runtimeCatalogData(sources.data))
     );
     outputs.set(
         path.join(paths.generatedRoot, 'bookTerms.ts'),

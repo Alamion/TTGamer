@@ -1,0 +1,673 @@
+higher-purpose:
+    name: Higher Purpose
+    shortDescription: Driven by a guiding goal or ideal
+    description: You have a goal that drives and directs you in everything. When acting directly in service of this higher purpose, you gain two extra dice to your dice pools. The Storyteller must approve your Higher Purpose and may call on you to uphold it even when inconvenient.
+berserker:
+    name: Berserker
+    shortDescription: Enter a rage that ignores wound penalties
+    description: 'You can channel your rage to fight through pain. Once per scene, you may enter a berserker state: ignore all wound penalties for the duration of the combat. You cannot use Abilities requiring calm or precision (Stealth, Security, Medicine) while berserk, and you must make a Self-Control roll (difficulty 6) to stop attacking.'
+dual-nature:
+    name: Dual Nature
+    shortDescription: Two distinct Natures — regain Force Points from both
+    description: You have two distinct Natures, both of which influence your personality and behavior. When you pick these Natures, choose Archetypes that are somewhat compatible. This Merit allows you to regain Force Points using both Natures. You may still choose a Demeanor, and it can be as different from your Natures as you desire.
+compulsion:
+    name: Compulsion
+    shortDescription: An uncontrollable habitual behavior
+    description: You have a compulsive behavior you cannot easily resist — counting objects, checking locks repeatedly, hoarding trivial items, or similar. Your compulsion can be temporarily avoided at the cost of a Force Point, but is in effect at all other times. The Storyteller determines when your compulsion is triggered.
+dark-secret:
+    name: Dark Secret
+    shortDescription: A secret that could ruin you if revealed
+    description: You have a secret that, if revealed, would destroy your reputation, career, or relationships. This might be a past crime, a hidden allegiance, or a shameful truth about your past. The Storyteller will create situations where your secret is at risk of exposure.
+intolerance:
+    name: Intolerance
+    shortDescription: Strong prejudice against a group
+    description: You have an unreasoning dislike of a certain thing — a species, a type of being, a situation, or just about anything. The difficulties of all dice rolls involving the subject of your intolerance are increased by two. The Storyteller is the final arbiter on what qualifies.
+phobia:
+    name: Phobia
+    shortDescription: Mild to severe irrational fear (1–3 pts)
+    description: You have an irrational fear of something — heights, enclosed spaces, aliens, droids, the dark, etc. For a 1-point phobia, you suffer a one-die penalty when confronting the fear. For 2 points, you must make a Willpower roll (difficulty 6) to act. For 3 points, you cannot act at all without a Willpower roll (difficulty 8).
+shy:
+    name: Shy
+    shortDescription: Uncomfortable in social situations
+    description: You are distinctly ill at ease when dealing with people and try to avoid social situations whenever possible. The difficulties of all Social rolls are increased by one; the difficulties of any rolls made while you are the center of attention are increased by two.
+soft-hearted:
+    name: Soft-Hearted
+    shortDescription: Cannot turn away those in need
+    description: You cannot stand to watch others suffer — not necessarily because you care about what happens to them, but simply because you dislike the intensity of emotion. If you witness suffering, difficulties of all rolls are increased by two for the next hour. You avoid situations where you might witness suffering and will do anything you can to protect others from it.
+speech-impediment:
+    name: Speech Impediment
+    shortDescription: A difficulty with speech
+    description: You have a stutter, lisp, or other speech impediment that makes verbal communication difficult. Social rolls involving spoken communication (Diplomacy, Intimidation, Command) suffer a one-die penalty. Written communication and non-verbal forms are unaffected.
+low-self-image:
+    name: Low Self-Image
+    shortDescription: Chronically undervalues own abilities
+    description: You lack self-confidence and do not believe in yourself. You have two fewer dice in situations where you do not expect to succeed (at the Storyteller’s discretion). At the Storyteller’s option, you may be required to make Willpower rolls to do things that require self-confidence.
+driving-goal:
+    name: Driving Goal
+    shortDescription: A single goal dominates your life
+    description: You have a personal goal that sometimes compels and directs you in startling ways. The goal is always limitless in depth, and you can never truly achieve it. Because you must work toward your goal throughout the chronicle (though you can avoid it for short periods by spending a Force Point), it will get you into trouble and may jeopardize other actions.
+addict:
+    name: Addict
+    shortDescription: Addicted to a substance (1–5 pts)
+    description: You are addicted to alcohol, death sticks, glitterstim, or another appropriate drug. For each point of this flaw, you must spend that many hundred credits per week to satisfy your habit. If you cannot obtain the substance, you suffer the number of points of the flaw in lost dice to all dice pools.
+common-sense:
+    name: Common Sense
+    shortDescription: Innate practical wisdom
+    description: You possess an abundance of common sense. Whenever you are about to do something foolish, the Storyteller may hint that it is a bad idea. This merit is most useful for new players or characters who should know better than their players do.
+concentration:
+    name: Concentration
+    shortDescription: Exceptional ability to focus
+    description: You can shut out distractions and focus on the task at hand. Any penalty to your dice pools from a distracting environment (noise, chaos, pain) is limited to a maximum of two dice. This applies to Force Power concentration as well.
+lightning-calculator:
+    name: Lightning Calculator
+    shortDescription: Rapid mental arithmetic
+    description: You can perform complex mathematical calculations in your head almost instantly. This includes astrogation calculations, trajectory estimates, financial accounting, and any numeric problem. Reduce the difficulty of any roll involving mathematics by two.
+time-sense:
+    name: Time Sense
+    shortDescription: Always know the exact time
+    description: You have an internal clock that always knows the exact time, accurate to the second. You always know how long you have been doing something, how long until an event, and can wake up at a chosen time without an alarm.
+eidetic-memory:
+    name: Eidetic Memory
+    shortDescription: Perfect recall of everything you experience
+    description: You can remember things seen and heard with perfect detail. By gaining at least one success on an Intelligence + Alertness roll (difficulty determined by the Storyteller), you can recall any desired sight or sound accurately, even if you experienced it only once.
+direction-sense:
+    name: Direction Sense
+    shortDescription: Innate sense of direction
+    description: You have an innate sense of direction and can keep track of how you got to where you are without a map or navigation aid. You never get lost and can always find your way back to someplace you have been before.
+pig-headed:
+    name: Pig-Headed
+    shortDescription: Cannot let failure go
+    description: You just cannot let it go. Any time you fail a roll, you must try the same thing again and again until you succeed. Giving up causes you such anxiety that it costs you a Force Point to live with the failure.
+well-prepared:
+    name: Well Prepared
+    shortDescription: Always have the right mundane item handy
+    description: You habitually carry odds and ends in case they might come in handy. Once per session, with the Storyteller's approval, you can produce a mundane item that you had tucked away even if it was not previously listed in your equipment. A key to a private quarters is too specific, but a set of lock picks would be appropriate. Droid characters may have these items built in.
+amnesia:
+    name: Amnesia
+    shortDescription: Lost memories of your past
+    description: You have no memory of your life before a certain point. This might be the result of trauma, a head injury, or deliberate memory wiping (common for droids). The Storyteller knows your true past and may reveal it over time — for good or ill.
+confused:
+    name: Confused
+    shortDescription: Easily disoriented and muddled
+    description: You are often confused, and the world seems to be a very distorted and twisted place. Sometimes you are simply unable to make sense of things. You need to roleplay this behavior at all times to a small degree, but your confusion becomes especially strong whenever stimuli surround you. You may spend a Force Point to override the effects of your confusion, but only temporarily.
+absent-minded:
+    name: Absent-Minded
+    shortDescription: Distracted and forgetful
+    description: Though you do not forget Abilities or Knowledges, you do forget names, addresses, and when you last ate. In order to remember anything more than your own name and the location of your ship or home, you need to make a Wits roll or, as a last resort, spend a Force Point.
+acute-hearing:
+    name: Acute Hearing
+    shortDescription: Supernaturally sharp hearing
+    description: Your hearing is exceptionally sharp. You can hear sounds at greater distances and at lower volumes than normal humans. This grants a two-dice bonus to any Perception-based roll that involves hearing.
+acute-smell:
+    name: Acute Sense of Smell
+    shortDescription: Supernaturally sharp sense of smell
+    description: Your sense of smell is exceptionally keen. You can identify individuals, track scents, and detect hidden substances by smell. This grants a two-dice bonus to any Perception-based roll involving smell, and may allow tracking without visual contact.
+acute-taste:
+    name: Acute Taste
+    shortDescription: Supernaturally sharp sense of taste
+    description: Your sense of taste is exceptionally refined. You can identify ingredients, poisons, and contaminants in food or drink with a simple taste test. The difficulty to detect tampering via taste is reduced by two.
+acute-vision:
+    name: Acute Vision
+    shortDescription: Supernaturally sharp eyesight
+    description: Your eyesight is exceptionally sharp. The difficulties of all Perception rolls that relate to vision are reduced by one.
+color-blind:
+    name: Color Blind
+    shortDescription: Can only see in black and white
+    description: You cannot distinguish color — you perceive the world only in shades of gray. This may cause issues with reading displays, identifying status lights, or spotting color-coded objects. You cannot use any Ability or Force Power that requires distinguishing color.
+hard-of-hearing:
+    name: Hard of Hearing
+    shortDescription: Reduced hearing ability
+    description: Your hearing is diminished. You suffer a two-dice penalty on any roll that depends on hearing — eavesdropping, detecting someone sneaking up, noticing a whispered conversation, etc.
+bad-sight:
+    name: Bad Sight
+    shortDescription: Defective, non-correctable eyesight
+    description: Your sight is defective. The difficulties of all dice rolls related to vision are increased by two. This Flaw is neither nearsightedness nor farsightedness — it is not correctable by lenses or implants.
+missing-eye:
+    name: Missing Eye
+    shortDescription: Lost an eye
+    description: You have lost one eye. Your depth perception and peripheral vision are impaired. All rolls requiring depth perception (ranged combat, piloting, catching objects) suffer a two-dice penalty.
+deaf:
+    name: Deaf
+    shortDescription: Cannot hear at all
+    description: You are completely deaf. You cannot hear speech, alarms, or any auditory cues. Communication must be through sign language, writing, or lip-reading (which requires a Perception roll at difficulty 7 to understand). You are immune to sound-based attacks or effects.
+blind:
+    name: Blind
+    shortDescription: Completely without sight
+    description: You are completely blind. You cannot see at all. All actions requiring sight are effectively impossible. You rely on other senses and must make Perception rolls (difficulty 6 or higher) to navigate unfamiliar environments. Combat is extremely difficult — all attack difficulties are increased by 3, and you cannot target specific body parts.
+ambidextrous:
+    name: Ambidextrous
+    shortDescription: Equal proficiency with both hands
+    description: You are equally proficient with both hands. You suffer no off-hand penalty when performing actions with your non-dominant hand. When wielding two weapons, you reduce the multiple-action penalty by one die.
+pitiable:
+    name: Pitiable
+    shortDescription: Others want to care for you
+    description: There is something about you that makes others want to care for and protect you. Social rolls with sympathetic NPCs may gain an edge — they are less likely to suspect you and more likely to help. Certain Natures (Autocrat, Fanatic, Monster) are unaffected.
+natural-linguist:
+    name: Natural Linguist
+    shortDescription: Gift for learning languages
+    description: You have a flair for languages. You add three dice to any dice pool involving languages, both written and spoken.
+dare-devil:
+    name: Dare Devil
+    shortDescription: Thrive on risk and danger
+    description: You are good at taking risks, and are even better at surviving them. All difficulties are one less whenever you try something particularly dangerous, and you can ignore a single botch result when you roll ones on such actions (one die showing 1 is set aside, as if you had an extra success).
+fast-learner:
+    name: Fast Learner
+    shortDescription: Acquire new skills more quickly
+    description: You learn very quickly, and pick up on new things faster than most do. You gain one extra experience point at the conclusion of each story (not each game session).
+jack-of-all-trades:
+    name: Jack-of-All-Trades
+    shortDescription: Can attempt any Ability untrained
+    description: You have a knack for picking up skills on the fly. You may attempt any Ability roll untrained, even Knowledges that would normally be forbidden without training. You roll your raw Attribute at no additional penalty.
+droid-aptitude:
+    name: Droid Aptitude
+    shortDescription: Natural affinity with droids
+    description: You have a natural affinity for droids. You like them and they respond well to you. The difficulty for all non-combat interactions with droids, including Programming and Repairing, is reduced by two.
+experienced:
+    name: Experienced
+    shortDescription: Ignore one 1 on a specific Ability
+    description: You have made enough mistakes that you can recognize them in time. Pick an Ability. When you roll that Ability, you may ignore a single 1 result — one die showing 1 is set aside and does not trigger the Rule of One. This merit can be taken multiple times for different Abilities.
+practiced:
+    name: Practiced
+    shortDescription: Round up when splitting dice pool
+    description: You have spent thousands of hours honing a particular Ability until it becomes second nature. Pick an Ability. Any time you split your dice pool while performing this Ability, you can round your dice pool up for that Ability roll instead of down. This merit can be taken multiple times for different Abilities.
+illiterate:
+    name: Illiterate
+    shortDescription: Cannot read or write
+    description: You cannot read or write any language. You can speak normally, but all written communication is inaccessible. You cannot use datapads, read signs, or send written messages without assistance.
+inept:
+    name: Inept
+    shortDescription: Struggle with all Ability rolls
+    description: You are not very good at learning. The cost to raise any Ability with Experience Points is doubled. This flaw represents a genuine difficulty with acquiring new skills, whether from lack of aptitude, poor teaching, or psychological blocks.
+uneducated:
+    name: Uneducated
+    shortDescription: No formal education in Knowledges
+    description: You have little to no formal education. You cannot attempt any Knowledge roll untrained — even with the Jack-of-All-Trades merit. You must have at least one dot in a Knowledge to attempt it at all.
+unskilled:
+    name: Unskilled
+    shortDescription: Poor with Skills
+    description: You lack coordination or training for most Skills. You suffer a +2 difficulty penalty when attempting any Skill roll untrained (instead of the standard +1). This represents a general clumsiness or lack of practical ability.
+boon:
+    name: Boon
+    shortDescription: Someone powerful owes you a favor (1–3 pts)
+    description: 'Someone powerful owes you a favor. The value of the boon depends on how many points you invest: 1 point is a minor favor from a local figure, 2 points is a significant debt from a sector-level power, and 3 points is a life-debt from a truly influential individual. The Storyteller determines who owes you and when they call it in.'
+underworld-ties:
+    name: Underworld Ties
+    shortDescription: Connected to the criminal underworld
+    description: You have connections in the criminal underworld — smugglers, bounty hunters, thieves, and information brokers. You know how to find black markets, fence stolen goods, and locate people who do not want to be found. You can make a Streetwise roll to call in a favor from the underworld once per story.
+organizational-ties:
+    name: Organizational Ties
+    shortDescription: Know people inside a large organization
+    description: Pick a large organization — the Empire, the New Republic, the Trade Federation, the Corporate Sector, etc. You know people within that organization. These are not necessarily high-ranking, but they are people who can get things done. You can ask them for favors, information, or assistance, but each time you call them, the ties weaken. This merit can be taken multiple times for different organizations.
+enemy:
+    name: Enemy
+    shortDescription: Someone wants to harm you (1–5 pts)
+    description: 'You have an enemy — someone who actively works against you. The power and reach of the enemy depends on the point value: 1 point is a local thug, 3 points is a crime syndicate or Imperial Moff, 5 points is Darth Vader or the Emperor himself. The enemy may not be actively hunting you at all times, but they will act when your paths cross or when they see an opportunity.'
+mistaken-identity:
+    name: Mistaken Identity
+    shortDescription: Frequently mistaken for someone else
+    description: You are frequently mistaken for someone else — a criminal, a celebrity, an Imperial officer, or another notable figure. This happens at least once per story and can lead to awkward situations, unwanted attention, or genuine danger depending on who you are mistaken for.
+ward:
+    name: Ward
+    shortDescription: Responsible for someone who cannot care for themselves
+    description: You are responsible for the care and safety of someone — a child, an elderly relative, a damaged droid with a preserved personality, or a fragile individual who depends on you. This person requires regular attention and cannot be left alone for long. They may accompany you or require you to check in regularly.
+wanted:
+    name: Wanted
+    shortDescription: Price on your head (1–5 pts)
+    description: There is a price on your head. Someone wants you brought in — dead or alive. The bounty equals the square of your points × 10,000 credits (1 pt = 10,000, 3 pts = 90,000, 5 pts = 250,000). Bounty hunters will periodically track you, and even friends may be tempted by the reward.
+slave-race:
+    name: Slave Race
+    shortDescription: Your species is systemically enslaved
+    description: Your people are enslaved by the Empire or another civilization. While you personally may not be a slave, there are always those willing to change that. Slavers are a constant threat, and trusted friends may be tempted by a reward. You live with the knowledge that there is an open market for your freedom, and always a buyer.
+stereotyped:
+    name: Stereotyped
+    shortDescription: Your species is judged by prejudice
+    description: Your species has been stereotyped by the rest of the galaxy. Whenever you encounter someone, they judge you with a preconceived notion about your species — good or bad. You may struggle all your life to overcome this stereotype, or you may choose to foster it.
+double-jointed:
+    name: Double Jointed
+    shortDescription: Unusually flexible joints
+    description: Your joints are unusually flexible, allowing you to contort your body in ways that seem impossible. You gain a two-dice bonus to escape bonds, squeeze through tight spaces, and any roll involving flexibility. You may also impress or unsettle others with your capabilities.
+disfigured:
+    name: Disfigured
+    shortDescription: A visible disfigurement
+    description: You have a visible disfigurement — scarring, a missing feature, a birthmark, or other noticeable physical abnormality. Your Appearance is considered one dot lower for purposes of first impressions and social interactions. Some may react with fear, disgust, or pity.
+deformity:
+    name: Deformity
+    shortDescription: A significant physical deformity
+    description: You have a significant physical deformity — a twisted spine, missing limbs, or other major structural deviation. Your Appearance is effectively reduced by two dots for social purposes, and some physical actions may be more difficult depending on the nature of the deformity.
+lame:
+    name: Lame
+    shortDescription: Permanently injured leg or hip
+    description: One of your legs or your hip is permanently injured. Your walking speed is reduced, and you cannot run at full speed. All rolls involving running, jumping, or physical pursuit suffer a two-dice penalty. You may also require a cane or crutch.
+missing-arm:
+    name: Missing Arm
+    shortDescription: Missing an arm or equivalent appendage
+    description: You are missing an arm (or equivalent manipulatory appendage). You cannot perform actions requiring two hands. Climbing, using two-handed weapons, and similar tasks are at a two-dice penalty or impossible. You may eventually acquire a cybernetic replacement.
+mute:
+    name: Mute
+    shortDescription: Unable to speak
+    description: You cannot speak. You must communicate through sign language, writing, gestures, or a electronic voice synthesizer. Verbal Social rolls (Diplomacy, Command, Intimidation) are at a two-dice penalty unless you have a functional substitute.
+hay-fever:
+    name: Hay Fever
+    shortDescription: Allergic reaction to certain atmospheres (1–3 pts)
+    description: The flora and fauna of certain worlds do not agree with you. Roll a die when exposed to a new atmosphere; on a result of 1–3 (depending on flaw points), you have an allergic reaction — sneezing, itchy skin, watery eyes, sinus headaches. You lose 1–3 dice from all pools while in that environment. Breath masks are insufficient; vacuum suits must be donned in a sterile environment.
+all-thumbs:
+    name: All Thumbs
+    shortDescription: Poor fine motor control
+    description: You are not very good at manipulating small objects. You drop things and your fingers always seem to be in the way. The difficulty for any roll that requires fine manipulation, such as Repair or Medicine, is increased by two.
+two-left-feet:
+    name: Two Left Feet
+    shortDescription: Clumsy and ungraceful
+    description: No one would ever call you graceful. You step on things, trip over your own feet, and stub your toes. The difficulty for any roll made while walking, running, or otherwise in motion is increased by two. The Storyteller may ask for Dexterity rolls on rough terrain.
+paraplegic:
+    name: Paraplegic
+    shortDescription: Paralyzed from the waist down
+    description: You are paralyzed from the waist down. You cannot walk or stand without assistance. You require a hoverchair, repulsor sled, or similar mobility aid to move. Climbing, running, and any action requiring leg use is impossible. Your movement speed is effectively zero without your mobility aid. You may be able to acquire a cybernetic exoskeleton or advanced prosthetics through gameplay.
+cybernetic-limb:
+    name: Cybernetic Limb
+    shortDescription: Replaced limb with cybernetic prosthesis (1–2 pts)
+    description: One of your limbs has been replaced with a cybernetic prosthesis. A partial limb (hand or foot) costs 1 point; a whole limb costs 2 points. Without additional customization, it functions exactly as your natural limb. Damage to the limb is tracked separately from your regular Health. Assign each prosthesis a number from 1 to 10. When you take untargeted damage, roll a d10 — on the limb's number, it takes the damage instead. You can take this merit multiple times for multiple limbs.
+    implantEffect: Replaced limb with standard functionality
+cybernetic-sensory-organ:
+    name: Cybernetic Sensory Organ
+    shortDescription: Replaced sensory organ with cybernetic
+    description: One of your primary sensory organs (an eye or ear) has been replaced with a cybernetic. Without additional customization, it functions exactly as your natural organ. With the proper equipment, you can connect recorders or transmitters to its external mount. You can take this merit multiple times for multiple organs.
+    implantEffect: Replaced sensory organ with standard functionality
+cybernetic-uplink:
+    name: Cybernetic Uplink
+    shortDescription: Direct mental interface with computers
+    description: You have an implant in your brain that allows you to mentally interface with computer networks. The difficulty for any Interface roll using computers on the network is reduced by two, as you process data at the speed of thought. With a Programming roll, you can query any information available on the system. However, while connected, others on the network have access to your thoughts and memories as well.
+    implantEffect: Direct mental interface with computer networks
+cybernetic-life-support:
+    name: Cybernetic Life Support
+    shortDescription: Vital organs replaced with cybernetics (1–5 pts)
+    description: One or more vital organs have been replaced with a cybernetic implant keeping you alive. If you ever botch a Soak roll, your cybernetic organs malfunction — you immediately suffer Lethal damage equal to the flaw points. If this reduces you to Wounded or below, you require medical attention or you will lose additional Health every hour. You cannot recover until the damaged cybernetics are repaired.
+    implantEffect: Vital organs replaced with cybernetic systems
+clunky-cybernetics:
+    name: Clunky Cybernetics
+    shortDescription: Poor-quality cybernetics reduce attributes (1–5 pts)
+    description: 'One or more of your cybernetics are of poor quality or do not integrate well with your body. This reduces appropriate attributes by the flaw points: a clunky limb reduces Dexterity, a clunky sensory organ reduces Perception, a clunky uplink reduces Wits, clunky life support reduces Stamina. You can apportion this flaw across multiple cybernetics. No attribute can be reduced below 1.'
+    implantEffect: Poor-quality cybernetics reduce attributes
+cybernetic-arm:
+    name: Cybernetic Arm
+    shortDescription: Full arm replacement with standard functionality
+    description: A full arm replacement from shoulder to hand. Standard models match natural limb functionality. Can be upgraded with concealed weapons, tools, or enhanced strength servos.
+    implantEffect: Full arm replacement with standard functionality
+cybernetic-leg:
+    name: Cybernetic Leg
+    shortDescription: Full leg replacement with standard functionality
+    description: A full leg replacement from hip to foot. Standard models match natural limb functionality. Upgrades include enhanced running speed, jump assists, and concealed storage compartments.
+    implantEffect: Full leg replacement with standard functionality
+cybernetic-hand:
+    name: Cybernetic Hand
+    shortDescription: Hand replacement with standard grip and manipulation
+    description: A partial limb replacement from wrist down. Offers standard grip strength and fine manipulation. Can be upgraded with finger tools, concealed lockpicks, or data-spike interfaces.
+    implantEffect: Hand replacement with standard grip and manipulation
+cybernetic-eye:
+    name: Cybernetic Eye
+    shortDescription: Replaces natural eye with multi-spectrum optics
+    description: 'A prosthetic eye with multi-spectrum vision modes: low-light, thermal, and electromagnetic. Can zoom up to 10x magnification. Higher-end models include targeting reticles and recording capabilities.'
+    implantEffect: Multi-spectrum optics with 10x zoom
+cybernetic-ear:
+    name: Cybernetic Ear
+    shortDescription: Enhanced hearing with frequency range extension
+    description: An auditory implant that extends hearing range beyond natural limitations. Includes volume dampening to protect against sonic attacks, selective filtering to isolate specific sounds, and a recording buffer.
+    implantEffect: Enhanced hearing with frequency range extension
+neural-uplink-implant:
+    name: Neural Uplink
+    shortDescription: Direct mental interface with computer networks
+    description: A brain-computer interface implant that allows direct mental connection to computer networks and datapads. Reduces Interface difficulty by 2 when connected. Can query databases at the speed of thought.
+    implantEffect: Direct mental interface with computer networks
+subdermal-armor:
+    name: Subdermal Armor
+    shortDescription: Armor mesh implanted beneath the skin
+    description: Flexible armor mesh implanted beneath the skin. Provides +1D Soak against physical attacks without impeding movement. Usually undetectable without a medical scanner.
+    implantEffect: +1D Soak bonus against physical damage
+respiratory-implant:
+    name: Respiratory Implant
+    shortDescription: Filters toxins and provides emergency oxygen
+    description: An implant that filters airborne toxins, smoke, and chemical agents from inhaled air. Includes emergency oxygen reserves for 4 hours in vacuum or thin atmospheres. Replaces the need for external breath masks.
+    implantEffect: Filters toxins and provides 4 hours of emergency oxygen
+targeting-computer:
+    name: Targeting Computer
+    shortDescription: Neural-linked targeting system
+    description: A neural-linked targeting system that provides real-time trajectory calculations and aiming assistance. Reduces the difficulty of all ranged combat attacks by 1. Does not stack with other targeting aids.
+    implantEffect: -1 difficulty to ranged combat attacks
+combat-reflex-enhancer:
+    name: Combat Reflex Enhancer
+    shortDescription: Spinal implant that improves reaction time
+    description: A spinal implant that accelerates neural signal transmission, improving reaction time. Adds 1D to Initiative rolls in combat situations. May cause jitteriness as a side effect.
+    implantEffect: +1D to Initiative
+comlink-implant:
+    name: Comlink Implant
+    shortDescription: Built-in subdermal comlink
+    description: A subdermal communication implant with a bone-conduction speaker and throat microphone. Provides hands-free communication on a dedicated encrypted channel. Range limited to 50 km planetary.
+    implantEffect: Built-in subdermal comlink with encrypted channel
+recording-implant:
+    name: Recording Implant
+    shortDescription: Records audio and visual data to internal storage
+    description: An implant connected to optic and auditory nerves that records everything the user sees and hears. Stores up to 48 hours of high-definition footage. Data can be wirelessly downloaded or extracted via physical port.
+    implantEffect: Records audio and visual data to internal storage
+adrenal-booster:
+    name: Adrenal Booster
+    shortDescription: Synthetic adrenaline release implant
+    description: An implant that releases synthetic adrenaline into the bloodstream on command. Can be activated 3 times per day. Each activation grants +1D to Strength and Stamina pools for 1 round, followed by fatigue.
+    implantEffect: Temporary +1D to Strength and Stamina (3x/day)
+dart-launcher:
+    name: Wrist Dart Launcher
+    shortDescription: Concealed dart launcher in forearm
+    description: A concealed single-shot projectile launcher built into the forearm. Can fire tranquilizer darts, tracking beacons, or micro-explosives. Reloading requires a full action. Usually undetectable without a weapons scanner.
+    implantEffect: Concealed dart launcher in forearm
+cardio-enhancer:
+    name: Cardio Enhancement
+    shortDescription: Cybernetic heart and lung enhancement
+    description: A cybernetic heart and lung enhancement that improves cardiovascular performance. Adds 1D to Stamina for endurance-based tests such as running, swimming, and holding breath.
+    implantEffect: +1D to Stamina for endurance tests
+bio-monitor:
+    name: Bio-Monitor
+    shortDescription: Real-time health monitoring implant
+    description: An internal sensor suite that monitors vital signs, toxin levels, and overall health status. Can transmit data to a medic's datapad and automatically alerts preset contacts when the user is incapacitated.
+    implantEffect: Real-time health monitoring with emergency alert
+luck:
+    name: Luck
+    shortDescription: The Force favors you with luck
+    description: You are luckier than most. Once per session, you may reroll any single roll. You must accept the second result, even if it is worse. This represents the Force subtly influencing events in your favor at critical moments.
+force-sensitive:
+    name: Force Sensitive
+    shortDescription: Potential to learn Force Skills and Powers
+    description: You have the potential to learn Force Skills and Powers. Add the higher of your Passion or Conscience to your total Force Points. The Force may occasionally reach out with relevant information — foreshadowing, warnings, clues, or directions. These visions come unbidden and can range from a vague sense of disturbance to vivid visions difficult to distinguish from reality.
+strong-in-the-force:
+    name: Strong in the Force
+    shortDescription: The Force is exceptionally strong in you
+    description: You are exceptionally strong in the Force. You gain the benefits of the Force Sensitive merit. In addition, you may ignore a single natural 1 on every roll you make — one die showing 1 is set aside and does not trigger the Rule of One. You are a beacon in the Force — other Force users can sense your presence from afar.
+force-spirit-mentor:
+    name: Force Spirit Mentor
+    shortDescription: Guided by a Force spirit
+    description: A Force spirit — a deceased Jedi or other Force user who has retained their identity after death — guides you. You gain the benefits of the Force Sensitive merit. The spirit can offer advice, warnings, and knowledge from beyond. However, the spirit has its own perspective and may not always be correct or helpful.
+natural-force-power:
+    name: Natural Force Power
+    shortDescription: Born with a natural Force talent
+    description: You have a natural aptitude for using the Force. Upon character creation, you gain one dot in one Force Skill and one Force Power of your choosing (Storyteller must approve). You also gain the benefits of the Force Sensitive merit.
+master:
+    name: Master
+    shortDescription: You have a Force apprentice
+    description: You have taken an apprentice with less mastery of the Force. Through your tutelage, they have become an extension of your will. In conflicts between you, the apprentice's Willpower is halved. When the apprentice regains Force Points while following your instructions, you gain an equal number. You may dismiss your apprentice at any time.
+apprentice:
+    name: Apprentice
+    shortDescription: Pledged to a Force Master
+    description: You have pledged obedience to a Master with greater Force knowledge and mastery. You gain one extra Experience Point at the end of each story to spend on Force Skills or Powers. You can regain Force Points based on your Master's Nature when following their instructions. However, you must obey — in conflicts with your Master, your Willpower is halved. Betrayal costs you all current Force Points.
+force-negator:
+    name: Force Negator
+    shortDescription: A bubble where the Force cannot reach
+    description: There is a void around you where the Force cannot reach. You may use Force Points normally, but you may never learn Force Skills. Force powers cannot penetrate or be used within a bubble roughly your own height in radius — though effects with momentum (e.g., an object hurled via Telekinesis) are unaffected. This merit is incompatible with any Force Sensitive merit.
+dark-side-curse:
+    name: Dark Side Curse
+    shortDescription: Cursed by the dark side (1–5 pts)
+    description: You are cursed — perhaps by a dark side user you crossed, a Sith artifact you touched, or a crime against the Force itself. The curse manifests at the Storyteller's discretion, typically as bad luck, recurring nightmares, or dark side visions. The severity and frequency of the curse's effects scale with the point value.
+weak-in-the-force:
+    name: Weak in the Force
+    shortDescription: The Force actively works against you
+    description: The Force is weak in you — or actively works against you. You must ignore a single natural 10 on every roll (do not reroll it, even with a specialty). This flaw cannot be taken with Force Sensitive or any merit granting its benefits.
+desired-by-dark-side:
+    name: Desired by the Dark Side
+    shortDescription: The dark side actively tempts you
+    description: The dark side of the Force sees in you the potential for great evil. It actively works to seduce you and erode your Dark Side Resistance. The Storyteller will employ their own methods to tempt you down the path of evil.
+dark-fate:
+    name: Dark Fate
+    shortDescription: A dark destiny awaits you
+    description: A dark fate awaits you — a prophecy, a curse, or an inevitability that hangs over your future. The Storyteller determines the nature of your fate, which typically involves death, corruption, or a terrible choice. You cannot avoid your fate, but you may be able to change its shape.
+ap-amphibious:
+    name: Amphibious
+    shortDescription: Breathe both air and water equally
+    description: Your species is capable of breathing water as well as air. You are equally at home in both and suffer no penalties in either environment. This is the primary adaptation of aquatic or amphibious species such as the Mon Calamari and the Gungan.
+    restriction: Species-specific — non-human only
+ap-appendages-extra:
+    name: Appendages, Extra
+    shortDescription: Additional limbs beyond the human norm
+    description: 'Your body has more than four appendages — legs, wings, a tail, or any other body part not found on humans. Each appendage costs 1 point. With extra appendages, you reduce the difficulty by 1 per point of the merit to all rolls involving balance. Note: Extra arms require Prehensile Appendages; wings require Flight Appendages.'
+    restriction: Species-specific — non-human only
+ap-appendages-flight:
+    name: Appendages, Flight
+    shortDescription: Wings or other flight mechanism (1–3 pts)
+    description: 'Your body allows you to fly or hover. You may have wings in place of arms, or in addition to them. Flight capability depends on points spent: 1 pt — altitude 3m, difficulty 7, half falling damage; 2 pts — altitude 30m, difficulty 6, quarter falling damage; 3 pts — altitude 300m, difficulty 5, no falling damage. Characters carrying their own body weight or more fly one level higher on the chart.'
+    restriction: Species-specific — non-human only
+ap-appendages-prehensile:
+    name: Appendages, Prehensile
+    shortDescription: Manipulate objects with non-hand appendages
+    description: You have appendages that would not normally be prehensile on a human — feet, a tail, wings, or similar — which you can use to pick up and manipulate objects as if they were human hands. Twi'leks use their lekku this way; many tailed species use their tails.
+    restriction: Species-specific — non-human only
+ap-catlike-reflexes:
+    name: Cat-like Reflexes
+    shortDescription: Superior reaction time
+    description: Your body is a coiled spring, ready to act in an instant. Whether from evolution on a predator-rich world or an overcharged nervous system, you gain two additional dice to Initiative rolls.
+    restriction: Species-specific — non-human only
+ap-deliberate:
+    name: Deliberate
+    shortDescription: Slow, methodical reflexes
+    description: Your species has particularly slow reflexes. You do everything deliberately and without haste. The difficulty on all initiative rolls is increased by two. This does not affect your coordination, aim, or fine manipulation — only your reaction time.
+    restriction: Species-specific — non-human only
+ap-enhanced-vision:
+    name: Enhanced Vision
+    shortDescription: See beyond the normal visual spectrum
+    description: You see a spectrum of energy that humans cannot — heat, air currents, ultra-violet, infra-red, microscopic, etc. This does not mean you see better than other species, only that you see more. Sullustans and many nocturnal species have this adaptation.
+    restriction: Species-specific — non-human only
+ap-enhanced-hearing:
+    name: Enhanced Hearing
+    shortDescription: Detect ultrasonic and infrasonic sounds
+    description: You detect a range of sound outside normal human hearing — ultrasonic, sub-sonic, high-frequency. This does not mean you hear better, only that you hear more. You may notice sounds that are completely undetectable to humans.
+    restriction: Species-specific — non-human only
+ap-enhanced-olfactory:
+    name: Enhanced Olfactory Sense
+    shortDescription: Keen sense of smell and tracking
+    description: Your sense of smell is extraordinarily keen. You can identify creatures by scent, track lingering odors, and detect approaches before they are visible. Ewoks have this adaptation, relying on smell as much as sight.
+    restriction: Species-specific — non-human only
+ap-environmental-sensitivity:
+    name: Environmental Sensitivity
+    shortDescription: Vulnerable to opposite environments
+    description: Your species evolved in a specific environment, and you are miserable in the opposite — a wet-world native on an arid planet, or a dark-world native in bright sunlight. You suffer a 1-die penalty to all dice pools while in that environment. Mon Calamari have this flaw (arid sensitivity).
+    restriction: Species-specific — non-human only
+ap-environmental-tolerance:
+    name: Environmental Tolerance
+    shortDescription: Protected against one hostile environment
+    description: Your species is adapted to survive an environment hazardous to most beings — extreme cold, radiation, poison atmospheres, etc. When in such an environment, you can ignore a single 1 in your Soak roll against damage from exposure.
+    restriction: Species-specific — non-human only
+ap-fast:
+    name: Fast
+    shortDescription: Superior ground speed
+    description: Your species covers ground faster than most — long legs, lightweight body, or four-legged locomotion. The difficulty of all rolls related to running (sprinting, long-distance running) is decreased by two.
+    restriction: Species-specific — non-human only
+ap-feeble:
+    name: Feeble
+    shortDescription: Poor muscle structure for strength
+    description: Your species evolved on a low-gravity world or adapted for speed over power. The difficulty of all Strength rolls, including Damage rolls, is increased by two.
+    restriction: Species-specific — non-human only
+ap-frail:
+    name: Frail
+    shortDescription: Delicate constitution, poor damage soak
+    description: Your species has a particularly delicate constitution and does not soak damage well. The difficulty for your species to soak damage is increased by two.
+    restriction: Species-specific — non-human only
+ap-immune-jedi-mind-tricks:
+    name: Immune to Jedi Mind Tricks
+    shortDescription: Natural immunity to mental domination
+    description: Your species is immune to the mental influence of the Force — Jedi mind tricks simply do not work on you. Certain species with unusual neural structures (e.g., Hutts, Toydarians) possess this immunity.
+    restriction: Species-specific — non-human only
+ap-light-touch:
+    name: Light Touch
+    shortDescription: Steady hands for delicate work
+    description: Your species has nimble fingers or steady nerves. You gain a two-dice bonus to any delicate task requiring a light touch, such as Repair or Medicine rolls. Rodians have this adaptation.
+    restriction: Species-specific — non-human only
+ap-limited-vocal-range:
+    name: Limited Vocal Range
+    shortDescription: Cannot speak Galactic Basic
+    description: Your vocal cords cannot form the sounds of Galactic Basic. You must rely on gestures, translators, or companions who understand your language. Wookiees and Gamorreans have this limitation.
+    restriction: Species-specific — non-human only
+ap-massive:
+    name: Massive
+    shortDescription: Immense bulk hinders movement
+    description: Your body is much larger and heavier than a human. The difficulty increases by two for any action where your bulk is a hindrance — climbing, squeezing through tight spaces, balancing on narrow ledges. This is often taken with Huge Size.
+    restriction: Species-specific — non-human only
+ap-natural-weapons:
+    name: Natural Weapons
+    shortDescription: Body has natural weapons (fangs, claws, etc.)
+    description: Your species has evolved natural weapons — fangs, claws, a barbed tail, or something more exotic. These weapons do Strength + 2 levels of lethal damage in unarmed combat. Wookiees and many predators have natural weapons.
+    restriction: Species-specific — non-human only
+ap-non-verbal-language:
+    name: Non-Verbal Language
+    shortDescription: Communicate through pheromones, telepathy, etc.
+    description: You communicate with your own species through non-verbal means — sign language, telepathy, pheromone release, or similar. Outsiders may learn to interpret it but cannot produce it themselves. Twi'leks communicate subtly through their lekku in this way.
+    restriction: Species-specific — non-human only
+ap-powerful:
+    name: Powerful
+    shortDescription: Naturally strong musculature
+    description: Your species is naturally powerful. Even the scrawniest specimen is as strong as most other beings. You gain two additional dice to Feats of Strength rolls and to any Brawling or Melee Damage rolls that include Strength. Wookiees have this merit.
+    restriction: Species-specific — non-human only
+ap-short:
+    name: Short
+    shortDescription: Below average height
+    description: You stand well below average height. You suffer a two-dice penalty to all pursuit rolls. However, your small size may grant concealment bonuses in appropriate circumstances. Ewoks have this flaw.
+    restriction: Species-specific — non-human only
+ap-huge-size:
+    name: Huge Size
+    shortDescription: Abnormally large — extra Health Level
+    description: You are abnormally large in size, possibly over seven feet tall and 400 pounds in weight. You have one additional Health Level — an extra Hurt Level with no wound penalty — allowing you to suffer more harm before being incapacitated.
+    restriction: Species-specific — non-human only
+ap-sixth-sense:
+    name: Sixth Sense
+    shortDescription: Extra sensory perception beyond human ability
+    description: You have a sensory perception humans lack — echo-location, air current sensitivity, or innate Force sense. When blinded, you can function normally. However, you cannot read screens or distinguish colors with this sense, so it is not a complete replacement for sight.
+    restriction: Species-specific — non-human only
+ap-slow:
+    name: Slow
+    shortDescription: Poor running speed
+    description: Your species is not built for speed — you slither, have limited joint flexibility, or evolved on a low-gravity world. The difficulty of all rolls related to running is increased by two.
+    restriction: Species-specific — non-human only
+ap-strict-diet:
+    name: Strict Diet
+    shortDescription: Requires a specific diet to function
+    description: Your physiology requires a very specific diet — only vegetable matter, live insects, or some other restriction. If you do not meet your dietary needs, you lose two dice from every pool due to fatigue and hunger.
+    restriction: Species-specific — non-human only
+ap-tall:
+    name: Tall
+    shortDescription: Well above average height
+    description: You are well above average height with a long stride. You gain a two-dice bonus to all pursuit rolls when chasing on foot. Your height may also help or hinder in other situations at the Storyteller's discretion. Ithorians have this merit.
+    restriction: Species-specific — non-human only
+ap-thick-skinned:
+    name: Thick Skinned
+    shortDescription: Naturally tough hide
+    description: Your hide is much tougher than most species — scales, a natural exoskeleton, or thick leathery skin. You gain two additional dice when rolling to Soak damage. Gamorreans have this merit.
+    restriction: Species-specific — non-human only
+ap-unique-atmosphere:
+    name: Unique Atmosphere
+    shortDescription: Requires special atmosphere to breathe
+    description: The gas mixtures found in most natural atmospheres are harmful to you. You must carry a supply of your native air and wear a breathing apparatus at all times away from home. Without it, you can hold your breath for one turn per Stamina point, then lose one Lethal Health level per turn from asphyxiation.
+    restriction: Species-specific — non-human only
+ap-hardy:
+    name: Hardy
+    shortDescription: Exceptionally resilient physiology
+    description: Your physiology is exceptionally resilient against poison, disease, torture, and environmental extremes. You gain two additional dice to resist such effects. Zabraks and many rugged species have this merit.
+    restriction: Species-specific — non-human only
+ap-heightened-awareness:
+    name: Heightened Awareness
+    shortDescription: Passive echolocation or ambient sense
+    description: Your species possesses a passive sensory ability — echolocation, air-current sensitivity, or similar — that grants awareness of your surroundings beyond normal sight. You gain a two-dice bonus to Perception checks involving ambient awareness, such as sensing hidden threats or noticing subtle changes in your environment. Togruta have this adaptation.
+    restriction: Species-specific — non-human only
+ap-binary-mind:
+    name: Binary Mind
+    shortDescription: Process two independent streams of thought
+    description: Your brain can process two independent streams of thought simultaneously, allowing true multitasking. You gain a two-dice bonus to mental tasks such as Analysis, Investigation, or multitasking under pressure. Cereans have this adaptation.
+    restriction: Species-specific — non-human only
+ap-four-arms:
+    name: Extra Arms (four)
+    shortDescription: Four fully functional arms
+    description: You have four fully functional arms, allowing you to wield multiple weapons, perform complex tasks simultaneously, and gain a two-dice bonus to grappling or tasks requiring extra limbs. Besalisks have this adaptation.
+    restriction: Species-specific — non-human only
+ap-flight-wings:
+    name: Flight (wings)
+    shortDescription: Natural wings capable of sustained flight
+    description: You possess natural wings capable of sustained flight, allowing an altitude of up to 30 meters. Flight-related rolls have a difficulty of 6, and you take only quarter damage from falls. Toydarians have this adaptation.
+    restriction: Species-specific — non-human only
+_labels:
+    category:
+        Psychological: Psychological
+        Mental: Mental
+        Awareness: Awareness
+        Aptitudes: Aptitudes
+        Galactic Connections: Galactic Connections
+        Physical: Physical
+        Cybernetic: Cybernetic
+        Force Connections: Force Connections
+        Alien Physiology: Alien Physiology
+    type:
+        Merit: Merit
+        Flaw: Flaw
+        Implant: Implant
+    tags:
+        Motivation: Motivation
+        Roleplay: Roleplay
+        Combat: Combat
+        Rage: Rage
+        Unique: Unique
+        Behavioral: Behavioral
+        Social: Social
+        Fear: Fear
+        Compassion: Compassion
+        Communication: Communication
+        Physiology: Physiology
+        Perception: Perception
+        Utility: Utility
+        Focus: Focus
+        Intelligence: Intelligence
+        Memory: Memory
+        Navigation: Navigation
+        Compulsion: Compulsion
+        Preparation: Preparation
+        Senses: Senses
+        Tracking: Tracking
+        Physical: Physical
+        Dexterity: Dexterity
+        Experience: Experience
+        Versatility: Versatility
+        Technology: Technology
+        Knowledge: Knowledge
+        Skills: Skills
+        Favors: Favors
+        Underworld: Underworld
+        Conflict: Conflict
+        Species: Species
+        Appearance: Appearance
+        Movement: Movement
+        Mobility: Mobility
+        Survival: Survival
+        Craft: Craft
+        Injury: Injury
+        Cybernetics: Cybernetics
+        Force: Force
+        Luck: Luck
+        Sensitive: Sensitive
+        Powerful: Powerful
+        Mentor: Mentor
+        Power: Power
+        Apprentice: Apprentice
+        Curse: Curse
+        Unlucky: Unlucky
+        Dark Side: Dark Side
+        Aquatic: Aquatic
+        Balance: Balance
+        Flight: Flight
+        Initiative: Initiative
+        Environment: Environment
+        Speed: Speed
+        Strength: Strength
+        Durability: Durability
+        Mental: Mental
+        Size: Size
+        Unarmed: Unarmed
+        Cognition: Cognition
+    implantType:
+        Limb: Limb
+        Sensory: Sensory
+        Neural: Neural
+        Life Support: Life Support
+        Dermal: Dermal
+        Respiratory: Respiratory
+        Combat: Combat
+        Communication: Communication
