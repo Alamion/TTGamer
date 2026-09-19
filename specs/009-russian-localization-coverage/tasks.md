@@ -248,19 +248,19 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
     - a custom trait without a ref has no attributes;
     - the `en` preference swaps label and hint.
 - [x] T065 [P] [US4] Write `tests/shared/reader-prefs-store.test.ts`: defaults, persistence round-trip, corrupt storage falls back to defaults, a throwing `localStorage` does not crash
-- [ ] T066 [P] [US4] Write `tests/sheet_manager/template-term-link.test.ts`:
+- [x] T066 [P] [US4] Write `tests/sheet_manager/template-term-link.test.ts`:
     - a rename through `updateField`/`updateNode` in `draft.ts` moves `labelMessage` into `termRef`;
     - a second rename keeps it;
     - switching to a custom source in `sourceNodes.ts` clears both;
     - the `termHint` toggle persists;
     - `serializeTemplateFile` → import round-trip keeps `termRef` and `termHint`;
     - old templates without the fields still parse.
-- [ ] T067 [P] [US4] Write `tests/sheet_manager/term-hint-notice.test.tsx`:
+- [x] T067 [P] [US4] Write `tests/sheet_manager/term-hint-notice.test.tsx`:
     - the notice shows once in `ru` with hints on;
     - dismissing it persists the flag;
     - "Show tip again" clears the flag;
     - it never shows in `en` or `ru-plain`.
-- [ ] T068 [P] [US4] Write `tests/sheet_manager/term-hint.perf.test.tsx`: render the largest shipped sheet (Star Wars character full view) 20 times with hints on and off under React Profiler and log the ratio (assert < 1.5 to catch gross regressions; the 1.05 target is checked manually in quickstart §5)
+- [x] T068 [P] [US4] Write `tests/sheet_manager/term-hint.perf.test.tsx`: render the largest shipped sheet (Star Wars character full view) 20 times with hints on and off under React Profiler and log the ratio (assert < 1.5 to catch gross regressions; the 1.05 target is checked manually in quickstart §5)
 
 ### Implementation for User Story 4
 
@@ -271,14 +271,14 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
     - delegated `pointerover`/`pointerout`/`focusin`/`focusout`/`click`/`keydown(Escape)` listeners on its root, matching only `[data-term-ref]`;
     - a single lazily mounted Radix `Popover` with a virtual anchor, styled like the `CatalogSuggest.tsx` content (`z-50 bg-bgSurface border border-border rounded-lg shadow-xl`);
     - a context that provides `{ gameTerms, locale }` to `TermLabel`.
-- [ ] T073 [US4] Pass the preference into `src/sheet_manager/features/sheet/declarative/localizeTemplate.ts`: `localizeTemplate(template, locale, gameTerms)` keeps the English label for nodes whose effective ref (`termRef ?? labelMessage`) is in `bookTerms` when `gameTerms === 'en'`, and keeps the ref on the localized node so that `TermLabel` can resolve the hint. Update the call in `DeclarativeSheetView.tsx:598-600`.
-- [ ] T074 [US4] Fix the bridge in `src/sheet_manager/features/sheet/declarative/DeclarativeSheetView.tsx:78-87` so that `labelMessage`, `termRef`, and `termHint` are forwarded to the `PrimitiveNodeView`. Render the plain field label (around :163-179) through `TermLabel`.
-- [ ] T075 [US4] Render labels through `TermLabel` in `src/sheet_manager/components/stat-fields/StatLabel.tsx` (replace the `<span>` at :17), in `CompactRating` in `src/sheet_manager/components/stat-fields/CompactSheetFields.tsx`, and in the resource rows in `src/sheet_manager/features/sheet/declarative/primitives.tsx` (around :778, :792). Thread `termRef`/`termHint` from `PrimitiveTraitBody` (around :593-693).
-- [ ] T076 [US4] Wrap every sheet view in `TermHintProvider`: the full and brief views in `src/sheet_manager/features/sheet/shell/SheetWorkspace.tsx`, and the docs embeds (`TemplateFragment`, `TemplatePreview`) in `src/sheet_manager/docsEmbeds.tsx`
-- [ ] T077 [US4] Create `src/sheet_manager/components/terms/TermHintNotice.tsx` and `src/sheet_manager/features/sheet/shell/GameTermsMenu.tsx` (Radix popover menu with the three options and "Show tip again"). Add the menu to `SheetToolbar.tsx`/`SheetWorkspace.tsx` next to `ViewModeSelect`. Show the notice above the first sheet view. Put the strings in `translations/source/{en,ru}/ui/sheet/terms.yaml`.
-- [ ] T078 [US4] Keep the term link in the template editor. In `src/sheet_manager/components/dialogs/template-editor/draft.ts` (`updateNode` around :277-285, `updateField` around :647-654), set `termRef = node.termRef ?? node.labelMessage` before deleting `labelMessage`. In `sourceNodes.ts:67`, also delete `termRef` and `termHint`.
-- [ ] T079 [US4] Add to `src/sheet_manager/components/dialogs/template-editor/FieldEditor.tsx` (after the "Show label" `ToggleRow` at :136-142) and `PrimitiveConfig.tsx` (after the label override at :70-80): a read-only "Book term: <en>" line and a "Show book name hint" toggle bound to `termHint`, both visible only when the effective ref is in `bookTerms`. Put the strings in `translations/source/{en,ru}/ui/sheet/templates.yaml`.
-- [ ] T080 [US4] Add the `.term-label` styles to `src/css/set_tailwind_styles.scss`: `cursor: help` under `@media (hover: hover)` only when `[data-term-ref]` is present, a focus-visible ring using the palette variables, and no underline or color change. Run `yarn build:styles`.
+- [x] T073 [US4] Pass the preference into `src/sheet_manager/features/sheet/declarative/localizeTemplate.ts`: `localizeTemplate(template, locale, gameTerms)` keeps the English label for nodes whose effective ref (`termRef ?? labelMessage`) is in `bookTerms` when `gameTerms === 'en'`, and keeps the ref on the localized node so that `TermLabel` can resolve the hint. Update the call in `DeclarativeSheetView.tsx:598-600`.
+- [x] T074 [US4] Fix the bridge in `src/sheet_manager/features/sheet/declarative/DeclarativeSheetView.tsx:78-87` so that `labelMessage`, `termRef`, and `termHint` are forwarded to the `PrimitiveNodeView`. Render the plain field label (around :163-179) through `TermLabel`.
+- [x] T075 [US4] Render labels through `TermLabel` in `src/sheet_manager/components/stat-fields/StatLabel.tsx` (replace the `<span>` at :17), in `CompactRating` in `src/sheet_manager/components/stat-fields/CompactSheetFields.tsx`, and in the resource rows in `src/sheet_manager/features/sheet/declarative/primitives.tsx` (around :778, :792). Thread `termRef`/`termHint` from `PrimitiveTraitBody` (around :593-693).
+- [x] T076 [US4] Wrap every sheet view in `TermHintProvider`: the full and brief views in `src/sheet_manager/features/sheet/shell/SheetWorkspace.tsx`, and the docs embeds (`TemplateFragment`, `TemplatePreview`) in `src/sheet_manager/docsEmbeds.tsx`
+- [x] T077 [US4] Create `src/sheet_manager/components/terms/TermHintNotice.tsx` and `src/sheet_manager/features/sheet/shell/GameTermsMenu.tsx` (Radix popover menu with the three options and "Show tip again"). Add the menu to `SheetToolbar.tsx`/`SheetWorkspace.tsx` next to `ViewModeSelect`. Show the notice above the first sheet view. Put the strings in `translations/source/{en,ru}/ui/sheet/terms.yaml`.
+- [x] T078 [US4] Keep the term link in the template editor. In `src/sheet_manager/components/dialogs/template-editor/draft.ts` (`updateNode` around :277-285, `updateField` around :647-654), set `termRef = node.termRef ?? node.labelMessage` before deleting `labelMessage`. In `sourceNodes.ts:67`, also delete `termRef` and `termHint`.
+- [x] T079 [US4] Add to `src/sheet_manager/components/dialogs/template-editor/FieldEditor.tsx` (after the "Show label" `ToggleRow` at :136-142) and `PrimitiveConfig.tsx` (after the label override at :70-80): a read-only "Book term: <en>" line and a "Show book name hint" toggle bound to `termHint`, both visible only when the effective ref is in `bookTerms`. Put the strings in `translations/source/{en,ru}/ui/sheet/templates.yaml`.
+- [x] T080 [US4] Add the `.term-label` styles to `src/css/set_tailwind_styles.scss`: `cursor: help` under `@media (hover: hover)` only when `[data-term-ref]` is present, a focus-visible ring using the palette variables, and no underline or color change. Run `yarn build:styles`.
 - [x] T081 [US4] Seed the glossary refs needed for hints. Fill `translations/glossary/v5.yaml` (attributes and skills from `src/sheet_manager/systems/v5/ruleset/profile.ts`) and `translations/glossary/v5-hunter.yaml` (Hunter trait labels) with `id`, `en`, `ru` (copied from the current ru YAML), and `refs`. Run `yarn build:translations` so that `bookTerms.ts` is filled.
 - [ ] T082 [US4] Run `yarn test` and quickstart §4–§5, including the Network check and the manual performance comparison; record the measured ratio in `specs/009-russian-localization-coverage/quickstart.md` under a "Results" heading
 

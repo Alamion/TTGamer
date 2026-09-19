@@ -175,6 +175,9 @@ editor:
     countMessage: Element limit reached — {limit} elements maximum.
     newSection: New section
     newGroup: New group
+    newField: New field
+    bookTerm: 'Book term: {term}'
+    showTermHint: Show book name hint
     newOption: Option {index}
     coordinateCurrent: '{label} (current)'
     coordinateMax: '{label} (max)'

@@ -1,0 +1,8 @@
+menu: Game terms
+modes:
+    ru: With English hints
+    en: English book names
+    ruPlain: Without hints
+notice: Hover over or tap a trait name to see its name in the English rulebook.
+dismiss: Got it
+showTipAgain: Show the tip again

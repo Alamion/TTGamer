@@ -239,3 +239,42 @@
 .tailwind-root th {
     @apply border-borderMoreContrast;
 }
+
+/*
+ * Spec 009 book-term labels. No persistent marker: pointer devices only get a help cursor,
+ * keyboard focus gets the usual ring. Rows are size containers so a long Russian label swaps
+ * to its glossary short form on narrow rows (thresholds match the i18n verifier's overflow
+ * budgets in scripts/i18n-verifier/config.ts; calibrated at 360 px, spec 009 T087).
+ */
+@layer components {
+    .term-row {
+        container-type: inline-size;
+    }
+    @media (hover: hover) {
+        .term-label[data-term-ref] {
+            cursor: help;
+        }
+    }
+    .term-label[data-term-ref]:focus-visible {
+        @apply rounded-sm outline-none ring-2 ring-primary;
+    }
+    .term-label .term-short {
+        display: none;
+    }
+    @container (max-width: 22rem) {
+        .term-row-specialty .term-label .term-full {
+            display: none;
+        }
+        .term-row-specialty .term-label .term-short {
+            display: inline;
+        }
+    }
+    @container (max-width: 16rem) {
+        .term-label .term-full {
+            display: none;
+        }
+        .term-label .term-short {
+            display: inline;
+        }
+    }
+}

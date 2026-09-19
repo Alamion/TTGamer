@@ -44,6 +44,8 @@ export type NodeUpdates = {
     column?: number;
     hideTitle?: boolean;
     hideLabel?: boolean;
+    /** `false` turns the book-term hint off (spec 009); `undefined` restores it. */
+    termHint?: false;
     part?: 'current' | 'max';
     minFrom?: string;
     showTitle?: boolean;
@@ -277,13 +279,31 @@ export function replaceNode(draft: EditorDraft, nodeId: string, next: TemplateNo
     );
 }
 
+interface TermCarrier {
+    type?: string;
+    labelMessage?: string;
+    termRef?: string;
+}
+
+/** Containers carry titles, not book terms (only fields and primitives accept `termRef`). */
+const NO_TERM_TYPES = new Set(['section', 'group', 'list', 'table']);
+
+/** Drops the label translation of a renamed node but keeps its book term as `termRef`. */
+function keepTermOnRename(node: TermCarrier): void {
+    if (node.labelMessage && !node.termRef && !NO_TERM_TYPES.has(node.type ?? '')) {
+        node.termRef = node.labelMessage;
+    }
+    delete node.labelMessage;
+}
+
 export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpdates): EditorDraft {
     const apply = (node: TemplateNode): TemplateNode => {
         if (node.id !== nodeId) return node;
         const merged = { ...node, ...updates } as TemplateNode;
-        // An author-edited label replaces the shipped translation reference.
+        // An author-edited label replaces the shipped translation reference; the book term it
+        // stood for is kept as termRef (spec 009) so the English-name hint survives renaming.
         if ('label' in updates || 'title' in updates) {
-            delete (merged as { labelMessage?: string }).labelMessage;
+            keepTermOnRename(merged as TermCarrier);
         }
         // Clearing optional strings normalizes to absent instead of empty strings.
         for (const key of [
@@ -661,8 +681,8 @@ export function updateField(
 ): EditorDraft {
     return mapFieldItems(draft, fieldId, (field) => {
         const next = { ...field, ...updates } as TemplateField;
-        // An author-edited label replaces the shipped translation reference.
-        if ('label' in updates) delete next.labelMessage;
+        // An author-edited label replaces the shipped translation reference (term kept, above).
+        if ('label' in updates) keepTermOnRename(next as TermCarrier);
         return next;
     });
 }

@@ -175,6 +175,9 @@ editor:
     countMessage: Достигнут предел элементов — максимум {limit}.
     newSection: Новая секция
     newGroup: Новая группа
+    newField: Новое поле
+    bookTerm: 'Книжный термин: {term}'
+    showTermHint: Показывать книжное название
     newOption: Вариант {index}
     coordinateCurrent: '{label} (текущее)'
     coordinateMax: '{label} (максимум)'

@@ -1,3 +1,6 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+
 import type {
     DocumentBindingDescriptor,
     EquipmentBinding,
@@ -60,11 +63,22 @@ export function fieldFromSource(
     source: ValueSourceBinding | undefined
 ): TemplateNode {
     const base = carried(node);
-    const label = source?.label ?? ('label' in node && node.label ? node.label : 'New field');
+    const label =
+        source?.label ??
+        ('label' in node && node.label
+            ? node.label
+            : translate(uiMessages.sheet.templates.editor.newField));
     if (!source) {
         return node.type === 'primitive'
             ? { ...base, type: 'number', label, required: false, compact: base.compact ?? false }
-            : { ...node, ...base, valueKey: undefined, labelMessage: undefined };
+            : {
+                  ...node,
+                  ...base,
+                  valueKey: undefined,
+                  labelMessage: undefined,
+                  termRef: undefined,
+                  termHint: undefined,
+              };
     }
     switch (source.kind) {
         case 'trait':

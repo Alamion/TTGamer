@@ -2171,6 +2171,9 @@
     "ttgamer.ui.sheet.templates.editor.blockTitle": {
         "message": "Заголовок блока (необязательно)"
     },
+    "ttgamer.ui.sheet.templates.editor.bookTerm": {
+        "message": "Книжный термин: {term}"
+    },
     "ttgamer.ui.sheet.templates.editor.cancel": {
         "message": "Отмена"
     },
@@ -2351,6 +2354,9 @@
     "ttgamer.ui.sheet.templates.editor.namePlaceholder": {
         "message": "Название шаблона"
     },
+    "ttgamer.ui.sheet.templates.editor.newField": {
+        "message": "Новое поле"
+    },
     "ttgamer.ui.sheet.templates.editor.newGroup": {
         "message": "Новая группа"
     },
@@ -2458,6 +2464,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.showLabel": {
         "message": "Показывать подпись"
+    },
+    "ttgamer.ui.sheet.templates.editor.showTermHint": {
+        "message": "Показывать книжное название"
     },
     "ttgamer.ui.sheet.templates.editor.showTitle": {
         "message": "Показывать заголовок"
@@ -2980,6 +2989,27 @@
     },
     "ttgamer.ui.sheet.templates.transfer.importTitle": {
         "message": "Импортировать шаблон страницы из JSON"
+    },
+    "ttgamer.ui.sheet.terms.dismiss": {
+        "message": "Понятно"
+    },
+    "ttgamer.ui.sheet.terms.menu": {
+        "message": "Игровые термины"
+    },
+    "ttgamer.ui.sheet.terms.modes.en": {
+        "message": "Английские названия из книги"
+    },
+    "ttgamer.ui.sheet.terms.modes.ru": {
+        "message": "С подсказками на английском"
+    },
+    "ttgamer.ui.sheet.terms.modes.ruPlain": {
+        "message": "Без подсказок"
+    },
+    "ttgamer.ui.sheet.terms.notice": {
+        "message": "Наведите курсор на название черты или нажмите на него, чтобы увидеть название из английской книги правил."
+    },
+    "ttgamer.ui.sheet.terms.showTipAgain": {
+        "message": "Показать подсказку снова"
     },
     "ttgamer.ui.sheet.tracks.length.decrease": {
         "message": "Укоротить: {track}"

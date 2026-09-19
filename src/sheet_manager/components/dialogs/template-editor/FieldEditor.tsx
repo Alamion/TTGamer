@@ -9,6 +9,7 @@ import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
 import { ValueSourceSelect } from './SourceControls';
 import { currentValueSource, CUSTOM_SOURCE } from './sourceNodes';
+import { TermHintControl } from './TermHintControl';
 
 const editor = uiMessages.sheet.templates.editor;
 const fieldTypes = uiMessages.sheet.templates.fieldTypes;
@@ -139,6 +140,10 @@ export function FieldEditor({
                 onChange={(checked) =>
                     callbacks.onUpdate({ hideLabel: checked ? undefined : true })
                 }
+            />
+            <TermHintControl
+                node={field}
+                onChange={(termHint) => callbacks.onUpdate({ termHint })}
             />
 
             {field.type === 'text' && (

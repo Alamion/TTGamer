@@ -3165,6 +3165,18 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.newGroup',
                     message: 'New group',
                 },
+                newField: {
+                    id: 'ttgamer.ui.sheet.templates.editor.newField',
+                    message: 'New field',
+                },
+                bookTerm: {
+                    id: 'ttgamer.ui.sheet.templates.editor.bookTerm',
+                    message: 'Book term: {term}',
+                },
+                showTermHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.showTermHint',
+                    message: 'Show book name hint',
+                },
                 newOption: {
                     id: 'ttgamer.ui.sheet.templates.editor.newOption',
                     message: 'Option {index}',
@@ -3830,6 +3842,38 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.entities.soakBashingOnly',
                     message: 'Soak (bashing only)',
                 },
+            },
+        },
+        terms: {
+            menu: {
+                id: 'ttgamer.ui.sheet.terms.menu',
+                message: 'Game terms',
+            },
+            modes: {
+                ru: {
+                    id: 'ttgamer.ui.sheet.terms.modes.ru',
+                    message: 'With English hints',
+                },
+                en: {
+                    id: 'ttgamer.ui.sheet.terms.modes.en',
+                    message: 'English book names',
+                },
+                ruPlain: {
+                    id: 'ttgamer.ui.sheet.terms.modes.ruPlain',
+                    message: 'Without hints',
+                },
+            },
+            notice: {
+                id: 'ttgamer.ui.sheet.terms.notice',
+                message: 'Hover over or tap a trait name to see its name in the English rulebook.',
+            },
+            dismiss: {
+                id: 'ttgamer.ui.sheet.terms.dismiss',
+                message: 'Got it',
+            },
+            showTipAgain: {
+                id: 'ttgamer.ui.sheet.terms.showTipAgain',
+                message: 'Show the tip again',
             },
         },
         tracks: {

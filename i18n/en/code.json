@@ -2171,6 +2171,9 @@
     "ttgamer.ui.sheet.templates.editor.blockTitle": {
         "message": "Block title (optional)"
     },
+    "ttgamer.ui.sheet.templates.editor.bookTerm": {
+        "message": "Book term: {term}"
+    },
     "ttgamer.ui.sheet.templates.editor.cancel": {
         "message": "Cancel"
     },
@@ -2351,6 +2354,9 @@
     "ttgamer.ui.sheet.templates.editor.namePlaceholder": {
         "message": "Template name"
     },
+    "ttgamer.ui.sheet.templates.editor.newField": {
+        "message": "New field"
+    },
     "ttgamer.ui.sheet.templates.editor.newGroup": {
         "message": "New group"
     },
@@ -2458,6 +2464,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.showLabel": {
         "message": "Show label"
+    },
+    "ttgamer.ui.sheet.templates.editor.showTermHint": {
+        "message": "Show book name hint"
     },
     "ttgamer.ui.sheet.templates.editor.showTitle": {
         "message": "Show title"
@@ -2980,6 +2989,27 @@
     },
     "ttgamer.ui.sheet.templates.transfer.importTitle": {
         "message": "Import a page template from JSON"
+    },
+    "ttgamer.ui.sheet.terms.dismiss": {
+        "message": "Got it"
+    },
+    "ttgamer.ui.sheet.terms.menu": {
+        "message": "Game terms"
+    },
+    "ttgamer.ui.sheet.terms.modes.en": {
+        "message": "English book names"
+    },
+    "ttgamer.ui.sheet.terms.modes.ru": {
+        "message": "With English hints"
+    },
+    "ttgamer.ui.sheet.terms.modes.ruPlain": {
+        "message": "Without hints"
+    },
+    "ttgamer.ui.sheet.terms.notice": {
+        "message": "Hover over or tap a trait name to see its name in the English rulebook."
+    },
+    "ttgamer.ui.sheet.terms.showTipAgain": {
+        "message": "Show the tip again"
     },
     "ttgamer.ui.sheet.tracks.length.decrease": {
         "message": "Shorten {track}"

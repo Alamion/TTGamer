@@ -23,6 +23,7 @@ import {
 import type { UnknownDocumentEnvelope } from '../../../types/document';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
 import { exportFileName, parseImportedDocument, serializeDocumentExport } from './documentFile';
+import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
 import { templateSelectValue, ViewModeSelect } from './ViewModeSelect';
@@ -180,22 +181,28 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                     onManageTemplates={() => setTemplatesDialogOpen(true)}
                     viewMode={
                         currentDocument && currentDefinition && currentView ? (
-                            <ViewModeSelect
-                                definition={currentDefinition}
-                                value={templateSelectValue(activeTemplateId, currentView.id)}
-                                onChangeTemplate={(templateId) =>
-                                    updateDocumentMetadata(currentDocument.id, {
-                                        templateId: templateId ?? undefined,
-                                    })
-                                }
-                                onChangeView={(preferredViewId) =>
-                                    updateDocumentMetadata(currentDocument.id, { preferredViewId })
-                                }
-                                templateOptions={templateOptions}
-                            />
+                            <>
+                                <ViewModeSelect
+                                    definition={currentDefinition}
+                                    value={templateSelectValue(activeTemplateId, currentView.id)}
+                                    onChangeTemplate={(templateId) =>
+                                        updateDocumentMetadata(currentDocument.id, {
+                                            templateId: templateId ?? undefined,
+                                        })
+                                    }
+                                    onChangeView={(preferredViewId) =>
+                                        updateDocumentMetadata(currentDocument.id, {
+                                            preferredViewId,
+                                        })
+                                    }
+                                    templateOptions={templateOptions}
+                                />
+                                <GameTermsMenu />
+                            </>
                         ) : undefined
                     }
                 />
+                {currentDocument && <TermHintNotice />}
                 {!currentDocument && (
                     <div className="py-6 text-center">
                         <h2 className="mb-2 text-xl font-bold text-textPrimary">
