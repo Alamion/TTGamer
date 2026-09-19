@@ -222,7 +222,7 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 - [x] T058 [P] [US3] Use `normalizeSearchText` in `src/sheet_manager/features/sheet/declarative/rowsCatalog.ts` (replace the local `trim().toLocaleLowerCase()` at :14)
 - [x] T059 [P] [US3] Make `src/sheet_manager/features/docs/CatalogBrowser.tsx` and the `entryLabel` list in `src/sheet_manager/docsEmbeds.tsx` (around :254) search on `pickSearchText`, and in the Russian locale show `pickLabel` in picker contexts while keeping `entryLabel` for the table name column
 - [x] T060 [P] [US3] Give `src/shared/components/DataCatalog.tsx` a custom `globalFilterFn`: it applies `normalizeSearchText` and also matches an optional `searchText(item)` prop, which callers fill with both names. Pass `searchText` from each `src/data/*Config.tsx` catalog.
-- [ ] T061 [US3] Replace the plain select used for catalog selects in `src/sheet_manager/features/sheet/declarative/fieldControls.tsx:180` with the searchable `CatalogSuggest` when an option list has more than 12 entries (bilingual labels already come from `declarative/hooks.ts:549-555`)
+- [ ] T061 [US3] Replace the plain select used for catalog selects in `src/sheet_manager/features/sheet/declarative/fieldControls.tsx:180` with the searchable `CatalogSuggest` when an option list has more than 12 entries (bilingual labels already come from `declarative/hooks.ts:549-555`) — deferred to backlog T-064
 - [x] T062 [US3] Run `yarn i18n:verify --rule pickers` until it reports 0 errors, then set `pickers` to `error` in `scripts/i18n-verifier/config.ts`. Run `yarn test` and quickstart §3.
 
 **Checkpoint**: all pickers are bilingual and searchable by both names; picked items follow the locale

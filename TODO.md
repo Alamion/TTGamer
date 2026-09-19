@@ -110,11 +110,20 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [x] ✅ **T-060 — Localized equipment item cards** (T-021) — Russian readers see translated buttons and field labels inside weapon, armor, and inventory item cards on every sheet (Star Wars and V5 share the card molecules); the strings move to the YAML UI sources.
 - [ ] 🟡 **T-061 — V5/Hunter Russian terminology review** (none) — Russian readers get consistent, reviewed H:tR 5e terms (module name, Storyteller, Touchstones, Edges/Perks, Creed/Drive, Advantage and gear names) across the sheet UI, catalogs, and `docs/wod-v5`; one glossary decides each term and every source follows it.
     - 2026-09-19: the glossary (`translations/glossary/*.yaml`) holds every sheet term with `note` proposals and known collisions (Advantages vs. Merit «Достоинство», Aptitudes vs. Star Wars Abilities); remaining: the maintainer review (spec 009 T100), after which the `glossary` and `catalog` verifier rules are gated.
+    - Review checklist (spec 009 T100):
+        - Collisions: «Убеждение» for both Persuasion and Conviction; «Достоинство» for both Advantages and Merit; «Сила» vs. Strength / the Force / «Сила воли»; «Восприятие» for both the Perception attribute and the Awareness merit category; «Способности» for Aptitudes vs. Star Wars Abilities.
+        - Star Wars attributes changed to the docs forms «Манипуляция» (Manipulation) and «Смекалка» (Wits), while some docs pages still use «Хитроумие».
+        - Docs vs. glossary: «Драка» vs. «Рукопашный бой», «Безопасность» vs. «Взлом», «Бластеры», «Уличное чутьё», «Техника».
+        - Proposed `ruShort`: «Хол. оружие», «Обр. с живот.», «Проницат.», «Гуманит. науки», «Рукоп. оружие», «Программир.».
+        - Agent-chosen Russian names with no docs precedent: species, Force powers, merits/flaws, creatures, vehicles; «Бакта-танк» vs. «Бакта-ванна».
+        - After the decisions: drop proposal-only `note`s, fix every ref the `glossary` rule reports, set `glossary` and `catalog` to `error` in `scripts/i18n-verifier/config.ts`.
 - [x] ✅ **T-062 — Star Wars pickers with book names** (T-022) — Russian readers pick Star Wars catalog entries (species, merits/flaws, abilities, Force powers, equipment, vehicles, creatures) by names shown and written as "localized (English)", the same way V5 hunter pickers already do (`pickLabel` in `systems/catalogs.ts`); search matches both names.
     - 2026-09-19: equipment pickers moved onto `pickLabel`; picked items keep an `entryRef` and show the localized name until renamed; search folds case, ё, and diacritics.
 - [x] ✅ **T-023 — Translation source audit** (T-021, T-022) — literal string IDs and generated-descriptor imports get a static audit once at least two further domains establish the usage patterns; deliberately not a brittle regex scanner.
     - 2026-09-19: delivered as the spec 009 translation coverage verifier (`yarn i18n:verify`, TypeScript AST), part of `verify:fast`.
 - [ ] ⬜ **T-063 — Russian catalog descriptions** (T-022) — Russian readers get the long `description` texts of the Star Wars catalogs in Russian, written as own-words paraphrases (Principle VIII); `yarn i18n:status` lists the entries still falling back to English. (task for roadmap path `core-book-docs`)
+- [ ] ⬜ **T-064 — Searchable long catalog selects** (T-022) — template fields whose catalog select has more than 12 options use the searchable `CatalogSuggest` (bilingual labels, case/ё-insensitive search) instead of a plain select in `declarative/fieldControls.tsx`; deferred from spec 009 (task T061).
+- [ ] ⬜ **T-065 — Manual check of book-term hints** (none) — the English-name hints (spec 009) are confirmed on real devices: a screen reader (Orca/NVDA) announces the English name once per label, and on a real phone the tap-to-show hint, the one-time notice, and the short forms in narrow trait/specialty rows work without covering the inputs.
 
 ### LLM Support
 
