@@ -48,6 +48,8 @@ function expressionLiterals(node: ts.Expression): string[] {
 }
 
 const LETTERS = /\p{L}{2,}/u;
+/** Component props named like `closeAriaLabel`, `emptyTitle`, `searchPlaceholder`, `helpText`. */
+const USER_FACING_PROP_SUFFIX = /[a-z](Label|Title|Placeholder|Text|Message)$/;
 const NOT_TEXT: readonly RegExp[] = [
     /^(https?:|mailto:|\/|\.\.?\/|#|@site\/)/, // URLs and paths
     /^[\d\s+\-*/<>=()!.,%:dDfFkKhHlLxX]+$/, // dice notation and arithmetic
@@ -114,7 +116,7 @@ export function userFacingLiterals(
         } else if (ts.isJsxAttribute(node)) {
             const name = node.name.getText(source);
             const initializer = node.initializer;
-            if (props.has(name) && initializer) {
+            if ((props.has(name) || USER_FACING_PROP_SUFFIX.test(name)) && initializer) {
                 if (ts.isStringLiteral(initializer)) {
                     add(initializer, initializer.text, 'jsx-attribute', name);
                 } else if (ts.isJsxExpression(initializer) && initializer.expression) {

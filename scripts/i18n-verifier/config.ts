@@ -38,10 +38,10 @@ export interface VerifierConfig {
 
 export const DEFAULT_CONFIG: VerifierConfig = {
     levels: {
-        interface: 'report',
-        keys: 'report',
-        identical: 'report',
-        plural: 'report',
+        interface: 'error',
+        keys: 'error',
+        identical: 'error',
+        plural: 'error',
         catalog: 'report',
         pickers: 'report',
         docs: 'report',

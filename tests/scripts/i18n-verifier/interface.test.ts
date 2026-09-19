@@ -37,6 +37,12 @@ describe('interface rule', () => {
         ).toEqual([]);
     });
 
+    it('treats label-like component props as user-facing', () => {
+        expect(
+            literals(`const panel = <SlidePanel closeAriaLabel="Close panel" labelKey="name" />;`)
+        ).toEqual(['Close panel']);
+    });
+
     it('treats a label next to labelMessage as a translated fallback', () => {
         expect(
             literals(

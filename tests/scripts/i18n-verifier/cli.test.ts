@@ -3,17 +3,16 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { verifierMain } from '../../../scripts/i18n-verifier/cli';
-import { DEFAULT_CONFIG } from '../../../scripts/i18n-verifier/config';
 import { formatReport } from '../../../scripts/i18n-verifier/report';
 import { runVerifier } from '../../../scripts/i18n-verifier/run';
 import { writeFixture } from '../fixtureFiles';
-import { FIXTURE_FILES, fixtureOptions } from './fixture';
+import { FIXTURE_FILES, fixtureOptions, REPORT_CONFIG } from './fixture';
 
 describe('verifier run and report', () => {
     it('fails only on error findings of gated rules', async () => {
         const gated = await runVerifier(await fixtureOptions());
         expect(gated.exitCode).toBe(1);
-        const reported = await runVerifier(await fixtureOptions(FIXTURE_FILES, DEFAULT_CONFIG));
+        const reported = await runVerifier(await fixtureOptions(FIXTURE_FILES, REPORT_CONFIG));
         expect(reported.findings.length).toBe(gated.findings.length);
         expect(reported.exitCode).toBe(0);
     });
@@ -28,7 +27,7 @@ describe('verifier run and report', () => {
     });
 
     it('prints findings of gated rules and a covered/missing/excepted table', async () => {
-        const run = await runVerifier(await fixtureOptions(FIXTURE_FILES, DEFAULT_CONFIG));
+        const run = await runVerifier(await fixtureOptions(FIXTURE_FILES, REPORT_CONFIG));
         const report = formatReport(run);
         expect(report).toContain('Report-mode findings');
         expect(report).toMatch(/Area\s+covered\s+missing\s+excepted/);

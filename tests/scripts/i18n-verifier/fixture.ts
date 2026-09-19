@@ -172,6 +172,14 @@ export const GATED_CONFIG: VerifierConfig = {
     ) as VerifierConfig['levels'],
 };
 
+/** Every rule in report mode: findings are listed but never fail the run. */
+export const REPORT_CONFIG: VerifierConfig = {
+    ...DEFAULT_CONFIG,
+    levels: Object.fromEntries(
+        Object.keys(DEFAULT_CONFIG.levels).map((rule) => [rule, 'report'])
+    ) as VerifierConfig['levels'],
+};
+
 export async function fixtureOptions(
     files: Record<string, string> = FIXTURE_FILES,
     config: VerifierConfig = GATED_CONFIG

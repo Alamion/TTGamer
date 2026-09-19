@@ -9,4 +9,18 @@
 #     reason: dice notation shown verbatim
 #
 # Treat a new entry like a new lint disable: prefer translating the text.
-[]
+- rule: interface
+  file: src/dice_roller/components/dice_pool/DicePool.tsx
+  match: WoD
+  reason: World of Darkness system abbreviation, the dice tab name in every locale
+- rule: interface
+  file: src/pages/index.tsx
+  match: Star Wars WEG
+  reason: product name (the West End Games Star Wars RPG)
+- rule: interface
+  file: src/pages/index.tsx
+  match: React 19 + Docusaurus 3.10
+  reason: technology names and versions
+- rule: identical
+  match: https://example.com/portrait.webp
+  reason: example URL shown as an input placeholder
