@@ -3530,6 +3530,9 @@
     "ttgamer.ui.site.home.hero.status": {
         "message": "Active Development — v{version}"
     },
+    "ttgamer.ui.site.home.hero.tagline": {
+        "message": "TTRPG Sheets and Docs"
+    },
     "ttgamer.ui.site.home.meta.pageDescription": {
         "message": "TTGamer - Star Wars WEG/WoD Hybrid TTRPG Character Sheet Manager & Documentation"
     },

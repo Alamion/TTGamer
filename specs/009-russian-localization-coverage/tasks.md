@@ -189,7 +189,7 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 - [x] T046 [US1] Create `translations/source/{en,ru}/ui/catalogs/<catalog>.yaml` for each `src/data/*Config.tsx`. Replace column headers, filter labels, and detail-section labels with descriptors, and render cell values through `entryText`/`entryEnumLabel` (T013) with `currentLocale`. The files are `abilityConfig`, `armorConfig`, `attributeConfig`, `backgroundsConfig`, `consumableWeaponsConfig`, `creatureConfig`, `forcePowersConfig`, `forceSkillsConfig`, `meleeWeaponsConfig`, `meritsFlawsConfig`, `rangedWeaponsConfig`, `speciesConfig`, `terminologyConfig`, `toolsGearConfig`, and `vehicleConfig`.
 - [x] T047 [US1] Update the Star Wars docs pages that pass literal `DataCatalog` filter labels or placeholders, in both `docs/star-wars-wod-2e/**` and `i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/**` (e.g. `character/merits-flaws.mdx`), to use exported descriptor-based filter configs from the `*Config.tsx` files instead of literals
 - [x] T048 [US1] Record the genuine exceptions (proper names such as Discord and Dark Pack, dice notation examples, brand strings) in `translations/i18n-exceptions.yaml`, each with a reason. Run `yarn build:translations && yarn i18n:verify --area interface` until it reports 0 errors. Then set `interface`, `keys`, `identical`, and `plural` to `error` in `scripts/i18n-verifier/config.ts`.
-- [ ] T049 [US1] Run `yarn test` and quickstart §2 in both locales; fix regressions
+- [x] T049 [US1] Run `yarn test` and quickstart §2 in both locales; fix regressions
 
 **Checkpoint**: the Russian interface is complete and the interface gate fails on any new literal
 
@@ -280,7 +280,7 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 - [x] T079 [US4] Add to `src/sheet_manager/components/dialogs/template-editor/FieldEditor.tsx` (after the "Show label" `ToggleRow` at :136-142) and `PrimitiveConfig.tsx` (after the label override at :70-80): a read-only "Book term: <en>" line and a "Show book name hint" toggle bound to `termHint`, both visible only when the effective ref is in `bookTerms`. Put the strings in `translations/source/{en,ru}/ui/sheet/templates.yaml`.
 - [x] T080 [US4] Add the `.term-label` styles to `src/css/set_tailwind_styles.scss`: `cursor: help` under `@media (hover: hover)` only when `[data-term-ref]` is present, a focus-visible ring using the palette variables, and no underline or color change. Run `yarn build:styles`.
 - [x] T081 [US4] Seed the glossary refs needed for hints. Fill `translations/glossary/v5.yaml` (attributes and skills from `src/sheet_manager/systems/v5/ruleset/profile.ts`) and `translations/glossary/v5-hunter.yaml` (Hunter trait labels) with `id`, `en`, `ru` (copied from the current ru YAML), and `refs`. Run `yarn build:translations` so that `bookTerms.ts` is filled.
-- [ ] T082 [US4] Run `yarn test` and quickstart §4–§5, including the Network check and the manual performance comparison; record the measured ratio in `specs/009-russian-localization-coverage/quickstart.md` under a "Results" heading
+- [x] T082 [US4] Run `yarn test` and quickstart §4–§5, including the Network check and the manual performance comparison; record the measured ratio in `specs/009-russian-localization-coverage/quickstart.md` under a "Results" heading
 
 **Checkpoint**: Hunter sheets show hints; renaming keeps them; the preference and notice work
 
@@ -364,8 +364,8 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
     - short forms;
     - the Star Wars catalogs in Russian.
 - [x] T108 Own-words audit of the new Russian catalog text in `translations/source/ru/data/*.yaml` against the Star Wars sources in `context/` (Principle VIII): rewrite any sentence that follows book wording
-- [ ] T109 Run `yarn prettier --write` on changed files, then `yarn validate:data`, `yarn validate:i18n`, `yarn audit:dead-code` (review only), and `yarn verify:full`
-- [ ] T110 Run the full quickstart.md (§1–§8) in both locales and record the results at the bottom of `specs/009-russian-localization-coverage/quickstart.md`; delete `baseline-report.txt`
+- [x] T109 Run `yarn prettier --write` on changed files, then `yarn validate:data`, `yarn validate:i18n`, `yarn audit:dead-code` (review only), and `yarn verify:full`
+- [x] T110 Run the full quickstart.md (§1–§8) in both locales and record the results at the bottom of `specs/009-russian-localization-coverage/quickstart.md`; delete `baseline-report.txt`
 
 ---
 

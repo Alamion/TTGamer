@@ -79,3 +79,13 @@ brief). Every trait row keeps a specialization input showing at least 8 characte
 
 `yarn verify:fast` runs `build:translations --check` and `validate:i18n` and passes; `yarn verify:full`
 passes before merge (new route-level shared component and generated file).
+
+## Results (2026-09-19)
+
+- §1 verifier: fixture tests plant one gap per rule (`tests/scripts/i18n-verifier/`); the repository scan takes ~4 s (SC-008). Final gates: every rule at `error` except `catalog` and `glossary` (wait for the maintainer's glossary review, T100) and `unused` (warning by design); 0 failing findings, 102 reviewed exceptions.
+- §2 Russian interface: automated Playwright walk of the production build (`/ru/` home, Star Wars merits/flaws and equipment docs, Hunter skills docs, sheet page, create dialog, Star Wars sheet, dice panel, document manager) finds no English text except the example URL placeholder of the portrait field (excepted). The walk also caught gaps outside the code scan (home tagline from `siteConfig`, the navbar GitHub `aria-label`, English category names in a Russian docs table, the Star Wars system name), all fixed. Plurals verified by `tests/sheet_manager/plural-messages.test.tsx`.
+- §3 pickers: `pickers` rule gated; search by either name and ё/е covered by `catalog-suggest-search`, `catalog-browser-search`, `equipment-entry-ref` tests.
+- §4–§5 hints: live hint seen in the Russian docs embed at 1280 px ("Survival" over «Выживание»); render cost ratio hints on/off 1.02 on the Hunter sheet (`term-hint.perf.test.tsx`, SC-009 ≤ 1.05); no network request (data comes from generated modules). Screen reader and touch behavior verified at the attribute level by `term-hint.test.tsx`; a manual pass with Orca/NVDA and a real phone is still recommended.
+- §6 long labels: measured in Chromium at 360 px — specialty rows 294 px keep the specialization input ≥ 64 px (8ch); four V5 terms switch to glossary short forms; at 1280 px narrow three-column rows (190 px) move the input to its own line.
+- §7 catalogs: 100% names and ≥ 90% short descriptions for every Star Wars catalog (`star-wars-catalog-i18n.test.ts`); long descriptions remain English (T-063).
+- §8 pipeline: `yarn verify:full` passes (1125 tests, both locales build).

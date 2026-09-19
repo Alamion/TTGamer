@@ -2,6 +2,7 @@ meta:
     pageTitle: Home
     pageDescription: TTGamer - Star Wars WEG/WoD Hybrid TTRPG Character Sheet Manager & Documentation
 hero:
+    tagline: TTRPG Sheets and Docs
     status: Active Development — v{version}
     characterSheet: Character Sheet
     quickStart: Quick Start

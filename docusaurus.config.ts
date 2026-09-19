@@ -80,7 +80,7 @@ const config: Config = {
                     href: 'https://github.com/Alamion/TTGamer',
                     position: 'right',
                     className: 'header-github-link',
-                    'aria-label': 'GitHub repository',
+                    'aria-label': 'GitHub',
                 },
                 // { // Заготовка под search https://docusaurus.io/docs/search - откладываем до момента релиза из-за технических трудностей
                 //     type: 'search',

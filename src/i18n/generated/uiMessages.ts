@@ -4573,6 +4573,10 @@ export const uiMessages = {
                 },
             },
             hero: {
+                tagline: {
+                    id: 'ttgamer.ui.site.home.hero.tagline',
+                    message: 'TTRPG Sheets and Docs',
+                },
                 status: {
                     id: 'ttgamer.ui.site.home.hero.status',
                     message: 'Active Development — v{version}',

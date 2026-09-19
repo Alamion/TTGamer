@@ -2,6 +2,7 @@ meta:
     pageTitle: Главная
     pageDescription: TTGamer — менеджер листов персонажей и документация гибридной НРИ Star Wars WEG/WoD
 hero:
+    tagline: Листы персонажей и документация для НРИ
     status: Активная разработка — v{version}
     characterSheet: Лист персонажа
     quickStart: Быстрый старт

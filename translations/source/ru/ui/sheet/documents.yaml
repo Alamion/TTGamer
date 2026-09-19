@@ -42,7 +42,7 @@ create:
     confirm: Создать
     cancel: Отмена
 systems:
-    starWarsWod: Star Wars (Мир Тьмы 2e)
+    starWarsWod: Звёздные Войны (Мир Тьмы 2e)
 types:
     character: Персонаж
     droid: Дроид

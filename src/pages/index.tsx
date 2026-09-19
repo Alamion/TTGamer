@@ -34,7 +34,7 @@ function HomepageHeader() {
                         {siteConfig.title}
                     </Heading>
                     <p className="mb-8 max-w-2xl text-lg font-medium text-textSecondary md:text-xl">
-                        {siteConfig.tagline}
+                        {translate(uiMessages.site.home.hero.tagline)}
                     </p>
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <Link

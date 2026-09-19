@@ -399,3 +399,7 @@
   match: '/Hunter: the Reckoning/'
   reason: 'product names (World of Darkness, Hunter: the Reckoning) in the Dark
       Pack notice, kept in English'
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/merits-flaws.mdx
+  match: perception
+  reason: «Восприятие» here is the Awareness merit category, not the Perception attribute (same Russian word; glossary review)

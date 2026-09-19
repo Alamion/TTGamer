@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-19
 
-**Status**: Draft
+**Status**: Implemented (v3.7.0) — glossary review (T100) pending
 
 **Input**: User description: "Let's take on T-021, T-060, and the other translation tasks. The main goal is to validate the existing translations, fill the gaps, and confirm that every interface element, data entry, and documentation page has a Russian translation. Per one of the tasks, most selectable fields use the 'Russian (English)' format. A verifier script, similar to the one in `context/`, should parse the whole codebase to find these gaps. Also consider this case: a Russian-speaking player who has always played from the English core book wants to try Russian. A skill such as 'Воровство' means nothing to them, because they know it by its English name. Duplicating both names the way pickers do is a bad fit: the specialization inputs between skill names and dots would no longer fit. The Russian WoD Animal Ken label already leaves very little room. Find an intuitive way for the player to understand and remember what they are looking at without cluttering the interface."
 
