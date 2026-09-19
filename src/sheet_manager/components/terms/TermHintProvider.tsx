@@ -15,6 +15,15 @@ interface ActiveHint {
     detail?: string;
 }
 
+/** Events already handled by an inner provider (nested sheet views, e.g. embedded previews). */
+const handledEvents = new WeakSet<Event>();
+
+function claim(event: React.SyntheticEvent): boolean {
+    if (handledEvents.has(event.nativeEvent)) return false;
+    handledEvents.add(event.nativeEvent);
+    return true;
+}
+
 function termElement(target: EventTarget | null, root: HTMLElement | null): HTMLElement | null {
     if (!(target instanceof Element) || !root) return null;
     const element = target.closest<HTMLElement>(TERM_SELECTOR);
@@ -62,27 +71,30 @@ export function TermHintProvider({ children }: { children: ReactNode }) {
     const onPointerOver = (event: React.PointerEvent) => {
         if (event.pointerType === 'touch') return;
         const element = termElement(event.target, rootRef.current);
-        if (element && element !== active?.anchor) schedule(hintOf(element), OPEN_DELAY_MS);
+        if (!element || !claim(event)) return;
+        if (element !== active?.anchor) schedule(hintOf(element), OPEN_DELAY_MS);
     };
     const onPointerOut = (event: React.PointerEvent) => {
         if (event.pointerType === 'touch') return;
         const from = termElement(event.target, rootRef.current);
         const to = termElement(event.relatedTarget, rootRef.current);
-        if (from && from !== to) schedule(null, CLOSE_DELAY_MS);
+        if (from && from !== to && claim(event)) schedule(null, CLOSE_DELAY_MS);
     };
     const onFocus = (event: React.FocusEvent) => {
         const element = termElement(event.target, rootRef.current);
-        if (element) schedule(hintOf(element), 0);
+        if (element && claim(event)) schedule(hintOf(element), 0);
     };
     const onBlur = (event: React.FocusEvent) => {
-        if (termElement(event.target, rootRef.current)) schedule(null, 0);
+        if (termElement(event.target, rootRef.current) && claim(event)) schedule(null, 0);
     };
     const onClick = (event: React.MouseEvent) => {
         const element = termElement(event.target, rootRef.current);
-        if (element) schedule(active?.anchor === element ? null : hintOf(element), 0);
+        if (element && claim(event)) {
+            schedule(active?.anchor === element ? null : hintOf(element), 0);
+        }
     };
     const onKeyDown = (event: React.KeyboardEvent) => {
-        if (event.key === 'Escape' && active) schedule(null, 0);
+        if (event.key === 'Escape' && active && claim(event)) schedule(null, 0);
     };
 
     return (

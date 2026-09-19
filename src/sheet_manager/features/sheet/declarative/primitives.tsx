@@ -22,6 +22,7 @@ import {
     TraitRow,
     TraitRowWithInput,
 } from '../../../components/stat-fields/TraitRow';
+import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
 import type {
     DocumentBindingDescriptor,
@@ -624,6 +625,7 @@ function PrimitiveTraitBody({
         const rating = (
             <CompactRating
                 label={label}
+                term={termLinkOf(node)}
                 value={trait.value}
                 max={descriptor.maximum}
                 disabled={readOnly}
@@ -643,6 +645,7 @@ function PrimitiveTraitBody({
         return (
             <TraitRow
                 label={label}
+                term={termLinkOf(node)}
                 value={trait.value}
                 maxValue={descriptor.maximum}
                 minimal={descriptor.minimum > 0 ? descriptor.minimum : undefined}
@@ -671,6 +674,7 @@ function PrimitiveTraitBody({
     return (
         <TraitRowWithInput
             name={label}
+            term={termLinkOf(node)}
             specializationText={trait.specializationText}
             value={trait.value}
             disabled={readOnly}
@@ -779,6 +783,7 @@ function PrimitiveResourceBody({
                 ) : (
                     <CompactRating
                         label={label}
+                        term={termLinkOf(node)}
                         value={Math.min(shown, rowMax)}
                         max={rowMax}
                         disabled={readOnly}
@@ -793,6 +798,7 @@ function PrimitiveResourceBody({
         <div className="grid gap-1">
             <TraitRow
                 label={label}
+                term={termLinkOf(node)}
                 value={Math.min(shown, rowMax)}
                 maxValue={rowMax}
                 minimal={minimum > 0 ? minimum : undefined}

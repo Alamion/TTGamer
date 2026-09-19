@@ -5,11 +5,14 @@ import { Plus } from 'lucide-react';
 
 import type { CatalogEntry } from '../controls/CatalogSuggest.tsx';
 import { CatalogSuggest } from '../controls/CatalogSuggest.tsx';
+import type { TermLink } from '../terms/termLink';
 import { StatDot } from './StatDot.tsx';
 import { StatLabel } from './StatLabel.tsx';
 
 interface TraitRowProps {
     label: string;
+    /** Book term of the label (spec 009). */
+    term?: TermLink;
     value: number;
     maxValue?: number;
     onChange?: (
@@ -38,6 +41,7 @@ interface TraitRowProps {
 
 export function TraitRow({
     label,
+    term,
     value,
     maxValue = 5,
     onChange,
@@ -54,8 +58,8 @@ export function TraitRow({
     characterName,
 }: TraitRowProps) {
     return (
-        <div className={clsx('flex items-end justify-between py-1', className)}>
-            <StatLabel label={label} tooltip={tooltip} />
+        <div className={clsx('term-row flex items-end justify-between gap-2 py-1', className)}>
+            <StatLabel label={label} tooltip={tooltip} term={term} />
             <StatDot
                 value={value}
                 maxValue={maxValue}
@@ -77,6 +81,8 @@ export function TraitRow({
 
 interface TraitRowWithInputProps {
     name: string;
+    /** Book term of the label (spec 009). */
+    term?: TermLink;
     specializationText?: string;
     value: number;
     maxValue?: number;
@@ -107,6 +113,7 @@ interface TraitRowWithInputProps {
 
 export function TraitRowWithInput({
     name,
+    term,
     specializationText = '',
     value,
     maxValue = 5,
@@ -135,8 +142,8 @@ export function TraitRowWithInput({
     };
 
     return (
-        <div className={clsx('flex items-end gap-2 py-1.5', className)}>
-            <StatLabel label={name} tooltip={tooltip} />
+        <div className={clsx('term-row term-row-specialty flex items-end gap-2 py-1.5', className)}>
+            <StatLabel label={name} tooltip={tooltip} term={term} />
             <input
                 type="text"
                 value={specializationText}
@@ -144,7 +151,7 @@ export function TraitRowWithInput({
                 onKeyDown={handleKeyDown}
                 disabled={disabled}
                 className={clsx(
-                    'flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors min-w-5',
+                    'flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors min-w-[8ch]',
                     disabled && 'opacity-50 cursor-not-allowed'
                 )}
             />
