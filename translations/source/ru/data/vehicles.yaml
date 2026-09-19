@@ -1,0 +1,205 @@
+ubrikkian-9000-z004:
+    name: Убриккиан 9000 Z004
+    model: Убриккиан 9000 Z004
+    crew: '1'
+    passengers: '1'
+    cargo: 30 кг
+ikas-adno-nightfalcon:
+    name: Икас-Адно 22-B «Ночной сокол»
+    model: Икас-Адно 22-B «Ночной сокол»
+    crew: '1'
+    passengers: '1'
+    cargo: 4 кг
+skybird-swoop:
+    name: Свуп «Небесная птица»
+    model: «Небесная птица»
+    crew: '1'
+    passengers: '0'
+    cargo: 1 кг
+incom-t47-airspeeder:
+    name: Аэроспидер Инком T-47I
+    model: Аэроспидер Инком T-47I
+    crew: '1'
+    passengers: '0'
+    cargo: 10 кг
+rebel-combat-snowspeeder:
+    name: Боевой снежный спидер повстанцев
+    model: Боевой снежный спидер Альянса повстанцев
+    crew: 1 + 1 стрелок
+    passengers: '0'
+    cargo: 10 кг
+bespin-storm-iv:
+    name: Беспин Моторс «Шторм IV»
+    model: Беспин Моторс «Шторм IV»
+    crew: 1 + 1 стрелок
+    passengers: '0'
+    cargo: 10 кг
+eclipse-sail-barge:
+    name: Парусная баржа Гефферон «Затмение»
+    model: Прогулочное судно Гефферон «Затмение»
+    crew: '5, минимальный: 2/+10'
+    passengers: '225'
+    cargo: 250 т
+superhaul-cargo-skiff:
+    name: Убриккиан «СуперХол» модель II
+    model: Убриккиан «СуперХол» модель II
+    crew: '1'
+    passengers: '3'
+    cargo: 135 т
+at-st:
+    name: Шагоход AT-ST
+    model: Вездеходный разведывательный транспорт
+    crew: '2, минимальный: 1/+15'
+    passengers: '0'
+    cargo: 200 кг
+at-at:
+    name: Шагоход AT-AT
+    model: Вездеходный бронированный транспорт
+    crew: '5, минимальный: 3/+10'
+    passengers: 40 солдат (или 2 AT-ST)
+    cargo: 1 т
+a-wing:
+    name: Истребитель A-wing
+    model: Истребитель Альянса A-wing
+    crew: '1'
+    passengers: '0'
+    cargo: 40 кг
+    consumables: 1 неделя
+b-wing:
+    name: Истребитель B-wing
+    model: Слейн и Корпил B-wing
+    crew: '1'
+    passengers: '0'
+    cargo: 45 кг
+    consumables: 1 неделя
+x-wing:
+    name: Истребитель X-wing T-65B
+    model: Инком T-65B X-wing
+    crew: 1 + дроид-астромеханик
+    passengers: '0'
+    cargo: 110 кг
+    consumables: 1 неделя
+y-wing:
+    name: Истребитель Y-wing BTL-S3
+    model: Коенсайр BTL-S3 Y-wing
+    crew: 1 + 1 стрелок + дроид-астромеханик
+    passengers: '0'
+    cargo: 110 кг
+    consumables: 1 неделя
+tie-ln:
+    name: Истребитель TIE/ln
+    model: TIE/ln производства «Сиенар Флит Системс»
+    crew: '1'
+    passengers: '0'
+    cargo: 65 кг
+    consumables: 2 дня
+tie-interceptor:
+    name: Перехватчик TIE
+    model: Перехватчик TIE производства «Сиенар Флит Системс»
+    crew: '1'
+    passengers: '0'
+    cargo: 75 кг
+    consumables: 2 дня
+z-95-headhunter:
+    name: Z-95 «Охотник за головами»
+    model: Инком/Субпро Z-95 «Охотник за головами»
+    crew: '1'
+    passengers: '0'
+    cargo: 85 кг
+    consumables: 1 день
+yt-1300-stock:
+    name: Транспорт YT-1300
+    model: Транспорт YT-1300 Кореллианской инженерной корпорации
+    crew: 1 (1 может координировать) + 1 стрелок
+    passengers: '6'
+    cargo: 100 т
+    consumables: 2 месяца
+millennium-falcon:
+    name: Тысячелетний Сокол
+    model: Модифицированный транспорт YT-1300 Кореллианской инженерной корпорации
+    crew: '2 + 2 стрелка, минимальный: 1/+5'
+    passengers: '6'
+    cargo: 100 т (10% — тайники)
+    consumables: 2 месяца
+ghtroc-720:
+    name: Грузовой корабль Гтрок 720
+    model: Грузовой корабль класса 720 «Гтрок Индастриз»
+    crew: 1 + 1 стрелок
+    passengers: '10'
+    cargo: 135 т
+    consumables: 2 месяца
+guardian-light-cruiser:
+    name: Лёгкий крейсер класса «Страж»
+    model: Лёгкий крейсер класса «Страж» производства «Сиенар Флит Системс»
+    crew: '16 (3 могут координировать) + 4 стрелка, минимальный: 8/+10'
+    passengers: 6 (заключённые)
+    cargo: 200 т
+    consumables: 3 месяца
+lone-scout-a:
+    name: Одинокий разведчик-А
+    model: «Одинокий разведчик-А» производства «Сиенар Флит Системс»
+    crew: '1'
+    passengers: '3'
+    cargo: 150 т
+    consumables: 1 год
+imperial-star-destroyer:
+    name: Звёздный Разрушитель класса «Империал I»
+    model: Звёздный Разрушитель класса «Империал I» производства «Верфей Куата»
+    crew: '36 810 + 275 стрелков, минимальный: 5 000/+20'
+    passengers: 9 700 солдат
+    cargo: 36 000 т
+    consumables: 6 лет
+mon-cal-mc80:
+    name: Звёздный крейсер Мон Каламари MC80
+    model: Звёздный крейсер Мон Каламари MC80
+    crew: '5 156 + 246 стрелков, минимальный: 1 230/+10'
+    passengers: 1 200 солдат
+    cargo: 20 000 т
+    consumables: 2 года
+corellian-corvette:
+    name: Кореллианский корвет
+    model: Корвет Кореллианской инженерной корпорации
+    crew: 30–165, минимальный — по-разному
+    passengers: До 600
+    cargo: 3 000 т
+    consumables: 1 год
+nebulon-b:
+    name: Фрегат «Небьюлон-B»
+    model: Фрегат «Небьюлон-B» производства «Верфей Куата»
+    crew: '854 + 66 стрелков, минимальный: 307/+10'
+    passengers: 75 солдат
+    cargo: 6 000 т
+    consumables: 2 года
+_labels:
+    category:
+        Sport speeder: Спортивный спидер
+        Speeder bike: Спидер-байк
+        Racing swoop: Гоночный свуп
+        Airspeeder: Аэроспидер
+        Modified combat airspeeder: Модифицированный боевой аэроспидер
+        Twin-Pod Cloud Car: Двухкабинный облачный автомобиль
+        Sail barge: Парусная баржа
+        Cargo skiff: Грузовой скиф
+        Medium walker: Средний шагоход
+        Assault walker: Штурмовой шагоход
+        Interceptor: Перехватчик
+        Heavy assault starfighter: Тяжёлый штурмовой истребитель
+        Space superiority fighter: Истребитель завоевания господства в космосе
+        Attack starfighter: Ударный истребитель
+        Space superiority starfighter: Звёздный истребитель завоевания господства в космосе
+        Multi-purpose starfighter: Многоцелевой истребитель
+        Stock light freighter: Серийный лёгкий грузовой корабль
+        Modified light freighter: Модифицированный лёгкий грузовой корабль
+        Inter-system customs vessel: Межсистемное таможенное судно
+        Stock scout vessel: Серийный корабль-разведчик
+        Star Destroyer: Звёздный Разрушитель
+        Star Cruiser: Звёздный крейсер
+        Mid-sized multi-purpose vessel: Многоцелевой корабль среднего размера
+        Escort starship: Корабль сопровождения
+    eras:
+        The Old Republic: Старая Республика
+        The High Republic: Расцвет Республики
+        The Fall of the Jedi: Падение джедаев
+        The Reign of the Empire: Правление Империи
+        The Age of Rebellion: Эпоха Восстания
+        The New Republic: Новая Республика
