@@ -82,9 +82,3 @@
   note: 'T-061 review: «Дары»; alternative «Наделения»'
   refs:
       - ttgamer.ui.sheet.v5Hunter.categories.endowments
-- id: merit
-  en: Merit
-  ru: Достоинство
-  note: 'T-061 review: see v5.yaml#advantages (same Russian word for Advantages and Merit)'
-  refs:
-      - ttgamer.ui.sheet.v5Hunter.advantageTypes.merit

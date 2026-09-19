@@ -188,9 +188,6 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     'ttgamer.ui.sheet.v5.fields.touchstone': {
         en: 'Touchstone',
     },
-    'ttgamer.ui.sheet.v5.sections.advantages': {
-        en: 'Advantages',
-    },
     'ttgamer.ui.sheet.v5.sections.health': {
         en: 'Health',
     },
@@ -281,9 +278,6 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     },
     'ttgamer.ui.sheet.v5.skills.technology': {
         en: 'Technology',
-    },
-    'ttgamer.ui.sheet.v5Hunter.advantageTypes.merit': {
-        en: 'Merit',
     },
     'ttgamer.ui.sheet.v5Hunter.categories.aptitudes': {
         en: 'Aptitudes',

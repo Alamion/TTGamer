@@ -331,8 +331,8 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 - [x] T098 [US6] Fill `translations/glossary/star-wars-wod.yaml`: seed it from `src/data/terminologyData.ts` (81 pairs), add attributes, abilities, virtues, Force skills, and Force powers with refs to their catalog entries, and fill every ref the `glossary` rule reports as unresolved
 - [x] T099 [US6] Draft the V5/Hunter terminology proposals (T-061) in `translations/glossary/v5.yaml` and `v5-hunter.yaml`: module name, Storyteller, Touchstones, Edges/Perks, Creed/Drive, Advantages, gear names. Each proposal gets a `note` with the reasoning, and alternatives are listed in the note.
 - [ ] T100 [US6] **Maintainer review** of all three glossary files: go through each term and its `note`, decide `ru` and `ruShort`, remove the notes that were only proposals, and update every ref the `glossary` rule reports so that the sources match the decisions. Then set `glossary` and `catalog` to `error` in `scripts/i18n-verifier/config.ts`.
-- [ ] T101 [US6] Russian docs first mentions: fix every `docs-terms` warning in `i18n/ru/docusaurus-plugin-content-docs/current/**` by writing the first mention as "ru (en)"; resolve every `docs` finding; set `docs` and `docs-terms` to `error`
-- [ ] T102 [US6] Run `yarn test`, `yarn i18n:status` (catalog coverage: 100% names, ≥ 90% short descriptions), and quickstart §7
+- [x] T101 [US6] Russian docs first mentions: fix every `docs-terms` warning in `i18n/ru/docusaurus-plugin-content-docs/current/**` by writing the first mention as "ru (en)"; resolve every `docs` finding; set `docs` and `docs-terms` to `error`
+- [x] T102 [US6] Run `yarn test`, `yarn i18n:status` (catalog coverage: 100% names, ≥ 90% short descriptions), and quickstart §7
 
 **Checkpoint**: every area in `scripts/i18n-verifier/config.ts` is at `error`, except `unused` (warnings by design)
 

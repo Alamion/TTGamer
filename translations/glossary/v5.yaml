@@ -224,9 +224,3 @@
   ru: Принципы хроники
   refs:
       - ttgamer.ui.sheet.v5.fields.chronicleTenets
-- id: advantages
-  en: Advantages
-  ru: Достоинства
-  note: 'T-061 review: collides with Merit («Достоинство», Hunter advantage type); alternatives for Advantages «Преимущества», «Качества»'
-  refs:
-      - ttgamer.ui.sheet.v5.sections.advantages
