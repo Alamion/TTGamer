@@ -237,8 +237,8 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 ### Tests for User Story 4
 
-- [ ] T063 [P] [US4] Write `tests/sheet_manager/resolve-term.test.ts` covering every row of the truth table in contracts/term-hint.md, plus the `en` locale
-- [ ] T064 [P] [US4] Write `tests/sheet_manager/term-hint.test.tsx`:
+- [x] T063 [P] [US4] Write `tests/sheet_manager/resolve-term.test.ts` covering every row of the truth table in contracts/term-hint.md, plus the `en` locale
+- [x] T064 [P] [US4] Write `tests/sheet_manager/term-hint.test.tsx`:
     - a hover with 300 ms dwell opens the popover showing the English name;
     - focus opens it and Escape closes it;
     - a tap toggles it;
@@ -247,7 +247,7 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
     - labels have `tabindex="0"` and `aria-describedby` pointing to their visually hidden English name only when hints are on;
     - a custom trait without a ref has no attributes;
     - the `en` preference swaps label and hint.
-- [ ] T065 [P] [US4] Write `tests/shared/reader-prefs-store.test.ts`: defaults, persistence round-trip, corrupt storage falls back to defaults, a throwing `localStorage` does not crash
+- [x] T065 [P] [US4] Write `tests/shared/reader-prefs-store.test.ts`: defaults, persistence round-trip, corrupt storage falls back to defaults, a throwing `localStorage` does not crash
 - [ ] T066 [P] [US4] Write `tests/sheet_manager/template-term-link.test.ts`:
     - a rename through `updateField`/`updateNode` in `draft.ts` moves `labelMessage` into `termRef`;
     - a second rename keeps it;
@@ -264,10 +264,10 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 ### Implementation for User Story 4
 
-- [ ] T069 [US4] Create `src/shared/store/readerPrefsStore.ts` per data-model §6: zustand `persist` with `createJSONStorage(() => localStorage)`, key `ttgamer-reader-prefs`, version 1, and try/catch-safe storage. Add a `useGameTerms()` selector hook.
-- [ ] T070 [US4] Add `termRef` (reuse `LabelMessageSchema`) and `termHint: z.literal(false).optional()` to `fieldBaseShape` and `PrimitiveNode` (TS interface and zod) in `src/sheet_manager/types/template.ts`; keep `TEMPLATE_SCHEMA_VERSION` at 3
-- [ ] T071 [US4] Create `src/sheet_manager/components/terms/resolveTerm.ts` (pure, per the truth table, reading `bookTerms` from `@site/src/i18n/generated/bookTerms`) and `src/sheet_manager/components/terms/TermLabel.tsx` (DOM contract from contracts/term-hint.md: `data-term-ref`, `tabIndex`, `aria-describedby` + visually hidden English-name span with an id from `useId`, `.term-full`/`.term-short` spans, no hooks except reading the preference from context)
-- [ ] T072 [US4] Create `src/sheet_manager/components/terms/TermHintProvider.tsx`:
+- [x] T069 [US4] Create `src/shared/store/readerPrefsStore.ts` per data-model §6: zustand `persist` with `createJSONStorage(() => localStorage)`, key `ttgamer-reader-prefs`, version 1, and try/catch-safe storage. Add a `useGameTerms()` selector hook.
+- [x] T070 [US4] Add `termRef` (reuse `LabelMessageSchema`) and `termHint: z.literal(false).optional()` to `fieldBaseShape` and `PrimitiveNode` (TS interface and zod) in `src/sheet_manager/types/template.ts`; keep `TEMPLATE_SCHEMA_VERSION` at 3
+- [x] T071 [US4] Create `src/sheet_manager/components/terms/resolveTerm.ts` (pure, per the truth table, reading `bookTerms` from `@site/src/i18n/generated/bookTerms`) and `src/sheet_manager/components/terms/TermLabel.tsx` (DOM contract from contracts/term-hint.md: `data-term-ref`, `tabIndex`, `aria-describedby` + visually hidden English-name span with an id from `useId`, `.term-full`/`.term-short` spans, no hooks except reading the preference from context)
+- [x] T072 [US4] Create `src/sheet_manager/components/terms/TermHintProvider.tsx`:
     - delegated `pointerover`/`pointerout`/`focusin`/`focusout`/`click`/`keydown(Escape)` listeners on its root, matching only `[data-term-ref]`;
     - a single lazily mounted Radix `Popover` with a virtual anchor, styled like the `CatalogSuggest.tsx` content (`z-50 bg-bgSurface border border-border rounded-lg shadow-xl`);
     - a context that provides `{ gameTerms, locale }` to `TermLabel`.
@@ -279,7 +279,7 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 - [ ] T078 [US4] Keep the term link in the template editor. In `src/sheet_manager/components/dialogs/template-editor/draft.ts` (`updateNode` around :277-285, `updateField` around :647-654), set `termRef = node.termRef ?? node.labelMessage` before deleting `labelMessage`. In `sourceNodes.ts:67`, also delete `termRef` and `termHint`.
 - [ ] T079 [US4] Add to `src/sheet_manager/components/dialogs/template-editor/FieldEditor.tsx` (after the "Show label" `ToggleRow` at :136-142) and `PrimitiveConfig.tsx` (after the label override at :70-80): a read-only "Book term: <en>" line and a "Show book name hint" toggle bound to `termHint`, both visible only when the effective ref is in `bookTerms`. Put the strings in `translations/source/{en,ru}/ui/sheet/templates.yaml`.
 - [ ] T080 [US4] Add the `.term-label` styles to `src/css/set_tailwind_styles.scss`: `cursor: help` under `@media (hover: hover)` only when `[data-term-ref]` is present, a focus-visible ring using the palette variables, and no underline or color change. Run `yarn build:styles`.
-- [ ] T081 [US4] Seed the glossary refs needed for hints. Fill `translations/glossary/v5.yaml` (attributes and skills from `src/sheet_manager/systems/v5/ruleset/profile.ts`) and `translations/glossary/v5-hunter.yaml` (Hunter trait labels) with `id`, `en`, `ru` (copied from the current ru YAML), and `refs`. Run `yarn build:translations` so that `bookTerms.ts` is filled.
+- [x] T081 [US4] Seed the glossary refs needed for hints. Fill `translations/glossary/v5.yaml` (attributes and skills from `src/sheet_manager/systems/v5/ruleset/profile.ts`) and `translations/glossary/v5-hunter.yaml` (Hunter trait labels) with `id`, `en`, `ru` (copied from the current ru YAML), and `refs`. Run `yarn build:translations` so that `bookTerms.ts` is filled.
 - [ ] T082 [US4] Run `yarn test` and quickstart §4–§5, including the Network check and the manual performance comparison; record the measured ratio in `specs/009-russian-localization-coverage/quickstart.md` under a "Results" heading
 
 **Checkpoint**: Hunter sheets show hints; renaming keeps them; the preference and notice work

@@ -8,4 +8,167 @@ export interface BookTerm {
 }
 
 /** Glossary refs (`ttgamer.ui.*` or `catalog:<catalogId>/<entryId>`) that are book terms. */
-export const bookTerms: Readonly<Record<string, BookTerm>> = {};
+export const bookTerms: Readonly<Record<string, BookTerm>> = {
+    'ttgamer.ui.sheet.v5.attributes.charisma': {
+        en: 'Charisma',
+    },
+    'ttgamer.ui.sheet.v5.attributes.composure': {
+        en: 'Composure',
+    },
+    'ttgamer.ui.sheet.v5.attributes.dexterity': {
+        en: 'Dexterity',
+    },
+    'ttgamer.ui.sheet.v5.attributes.intelligence': {
+        en: 'Intelligence',
+    },
+    'ttgamer.ui.sheet.v5.attributes.manipulation': {
+        en: 'Manipulation',
+    },
+    'ttgamer.ui.sheet.v5.attributes.resolve': {
+        en: 'Resolve',
+    },
+    'ttgamer.ui.sheet.v5.attributes.stamina': {
+        en: 'Stamina',
+    },
+    'ttgamer.ui.sheet.v5.attributes.strength': {
+        en: 'Strength',
+    },
+    'ttgamer.ui.sheet.v5.attributes.wits': {
+        en: 'Wits',
+    },
+    'ttgamer.ui.sheet.v5.fields.chronicleTenets': {
+        en: 'Chronicle Tenets',
+    },
+    'ttgamer.ui.sheet.v5.fields.conviction': {
+        en: 'Conviction',
+    },
+    'ttgamer.ui.sheet.v5.fields.touchstone': {
+        en: 'Touchstone',
+    },
+    'ttgamer.ui.sheet.v5.sections.health': {
+        en: 'Health',
+    },
+    'ttgamer.ui.sheet.v5.sections.willpower': {
+        en: 'Willpower',
+    },
+    'ttgamer.ui.sheet.v5.skills.academics': {
+        en: 'Academics',
+    },
+    'ttgamer.ui.sheet.v5.skills.animalKen': {
+        en: 'Animal Ken',
+    },
+    'ttgamer.ui.sheet.v5.skills.athletics': {
+        en: 'Athletics',
+    },
+    'ttgamer.ui.sheet.v5.skills.awareness': {
+        en: 'Awareness',
+    },
+    'ttgamer.ui.sheet.v5.skills.brawl': {
+        en: 'Brawl',
+    },
+    'ttgamer.ui.sheet.v5.skills.craft': {
+        en: 'Craft',
+    },
+    'ttgamer.ui.sheet.v5.skills.driving': {
+        en: 'Driving',
+    },
+    'ttgamer.ui.sheet.v5.skills.etiquette': {
+        en: 'Etiquette',
+    },
+    'ttgamer.ui.sheet.v5.skills.finance': {
+        en: 'Finance',
+    },
+    'ttgamer.ui.sheet.v5.skills.firearms': {
+        en: 'Firearms',
+    },
+    'ttgamer.ui.sheet.v5.skills.insight': {
+        en: 'Insight',
+    },
+    'ttgamer.ui.sheet.v5.skills.intimidation': {
+        en: 'Intimidation',
+    },
+    'ttgamer.ui.sheet.v5.skills.investigation': {
+        en: 'Investigation',
+    },
+    'ttgamer.ui.sheet.v5.skills.larceny': {
+        en: 'Larceny',
+    },
+    'ttgamer.ui.sheet.v5.skills.leadership': {
+        en: 'Leadership',
+    },
+    'ttgamer.ui.sheet.v5.skills.medicine': {
+        en: 'Medicine',
+    },
+    'ttgamer.ui.sheet.v5.skills.melee': {
+        en: 'Melee',
+    },
+    'ttgamer.ui.sheet.v5.skills.occult': {
+        en: 'Occult',
+    },
+    'ttgamer.ui.sheet.v5.skills.performance': {
+        en: 'Performance',
+    },
+    'ttgamer.ui.sheet.v5.skills.persuasion': {
+        en: 'Persuasion',
+    },
+    'ttgamer.ui.sheet.v5.skills.politics': {
+        en: 'Politics',
+    },
+    'ttgamer.ui.sheet.v5.skills.science': {
+        en: 'Science',
+    },
+    'ttgamer.ui.sheet.v5.skills.stealth': {
+        en: 'Stealth',
+    },
+    'ttgamer.ui.sheet.v5.skills.streetwise': {
+        en: 'Streetwise',
+    },
+    'ttgamer.ui.sheet.v5.skills.subterfuge': {
+        en: 'Subterfuge',
+    },
+    'ttgamer.ui.sheet.v5.skills.survival': {
+        en: 'Survival',
+    },
+    'ttgamer.ui.sheet.v5.skills.technology': {
+        en: 'Technology',
+    },
+    'ttgamer.ui.sheet.v5Hunter.categories.aptitudes': {
+        en: 'Aptitudes',
+    },
+    'ttgamer.ui.sheet.v5Hunter.categories.assets': {
+        en: 'Assets',
+    },
+    'ttgamer.ui.sheet.v5Hunter.categories.endowments': {
+        en: 'Endowments',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.ambition': {
+        en: 'Ambition',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.creed': {
+        en: 'Creed',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.danger': {
+        en: 'Danger',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.desire': {
+        en: 'Desire',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.despair': {
+        en: 'Despair',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.desperation': {
+        en: 'Desperation',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.drive': {
+        en: 'Drive',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.edge': {
+        en: 'Edge',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.perk': {
+        en: 'Perk',
+    },
+    'ttgamer.ui.sheet.v5Hunter.fields.redemption': {
+        en: 'Redemption',
+    },
+};

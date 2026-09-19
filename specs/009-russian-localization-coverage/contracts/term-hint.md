@@ -24,6 +24,7 @@ their label through `TermLabel`. `TermLabel` receives `termRef` (effective ref, 
 | `ru-plain`  | yes                              | any        | Russian                          | none                                                          |
 | `en`        | yes                              | on         | English book name                | Russian name                                                  |
 | `en`        | yes                              | off        | English book name                | none                                                          |
+| `en`        | yes, label renamed by the author | on         | author's label                   | English book name                                             |
 | any         | no (custom, renamed without ref) | any        | stored/localized label           | none                                                          |
 
 Locale `en`: label as today, no hint, no notice, no tab stop.
@@ -57,7 +58,7 @@ Locale `en`: label as today, no hint, no notice, no tab stop.
 | `pointerout`                                   | close after 100 ms unless the pointer is over the popover         |
 | `focusin`                                      | open immediately                                                  |
 | `focusout`                                     | close                                                             |
-| `click` / tap (touch)                          | toggle; does not change any value; tap outside or `Escape` closes |
+| `click` / tap (any pointer)                    | toggle; does not change any value; tap outside or `Escape` closes |
 | events on inputs, dots, buttons inside the row | ignored (the delegated handler only matches `[data-term-ref]`)    |
 
 Only one popover exists per provider, created on first open. Popover content: English book name as the

@@ -9,4 +9,68 @@
 #       - ttgamer.ui.sheet.v5.skills.larceny
 #
 # A label is a book term exactly when its ref is listed here: it then gets the English-name hint.
-[]
+- id: creed
+  en: Creed
+  ru: Кредо
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.creed
+- id: drive
+  en: Drive
+  ru: Мотив
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.drive
+- id: ambition
+  en: Ambition
+  ru: Цель
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.ambition
+- id: desire
+  en: Desire
+  ru: Желание
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.desire
+- id: redemption
+  en: Redemption
+  ru: Искупление
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.redemption
+- id: despair
+  en: Despair
+  ru: Отчаяние
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.despair
+- id: desperation
+  en: Desperation
+  ru: Безысходность
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.desperation
+- id: danger
+  en: Danger
+  ru: Опасность
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.danger
+- id: edge
+  en: Edge
+  ru: Грань
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.edge
+- id: perk
+  en: Perk
+  ru: Умение
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.fields.perk
+- id: assets
+  en: Assets
+  ru: Ресурсы
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.categories.assets
+- id: aptitudes
+  en: Aptitudes
+  ru: Способности
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.categories.aptitudes
+- id: endowments
+  en: Endowments
+  ru: Дары
+  refs:
+      - ttgamer.ui.sheet.v5Hunter.categories.endowments

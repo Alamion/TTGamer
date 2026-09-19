@@ -9,4 +9,208 @@
 #       - ttgamer.ui.sheet.v5.skills.larceny
 #
 # A label is a book term exactly when its ref is listed here: it then gets the English-name hint.
-[]
+- id: strength
+  en: Strength
+  ru: Сила
+  refs:
+      - ttgamer.ui.sheet.v5.attributes.strength
+- id: dexterity
+  en: Dexterity
+  ru: Ловкость
+  refs:
+      - ttgamer.ui.sheet.v5.attributes.dexterity
+- id: stamina
+  en: Stamina
+  ru: Выносливость
+  refs:
+      - ttgamer.ui.sheet.v5.attributes.stamina
+- id: charisma
+  en: Charisma
+  ru: Обаяние
+  refs:
+      - ttgamer.ui.sheet.v5.attributes.charisma
+- id: manipulation
+  en: Manipulation
+  ru: Манипулирование
+  refs:
+      - ttgamer.ui.sheet.v5.attributes.manipulation
+- id: composure
+  en: Composure
+  ru: Самообладание
+  refs:
+      - ttgamer.ui.sheet.v5.attributes.composure
+- id: intelligence
+  en: Intelligence
+  ru: Интеллект
+  refs:
+      - ttgamer.ui.sheet.v5.attributes.intelligence
+- id: wits
+  en: Wits
+  ru: Смекалка
+  refs:
+      - ttgamer.ui.sheet.v5.attributes.wits
+- id: resolve
+  en: Resolve
+  ru: Решительность
+  refs:
+      - ttgamer.ui.sheet.v5.attributes.resolve
+- id: athletics
+  en: Athletics
+  ru: Атлетика
+  refs:
+      - ttgamer.ui.sheet.v5.skills.athletics
+- id: brawl
+  en: Brawl
+  ru: Драка
+  refs:
+      - ttgamer.ui.sheet.v5.skills.brawl
+- id: craft
+  en: Craft
+  ru: Ремесло
+  refs:
+      - ttgamer.ui.sheet.v5.skills.craft
+- id: driving
+  en: Driving
+  ru: Вождение
+  refs:
+      - ttgamer.ui.sheet.v5.skills.driving
+- id: firearms
+  en: Firearms
+  ru: Стрельба
+  refs:
+      - ttgamer.ui.sheet.v5.skills.firearms
+- id: larceny
+  en: Larceny
+  ru: Воровство
+  refs:
+      - ttgamer.ui.sheet.v5.skills.larceny
+- id: melee
+  en: Melee
+  ru: Холодное оружие
+  refs:
+      - ttgamer.ui.sheet.v5.skills.melee
+- id: stealth
+  en: Stealth
+  ru: Скрытность
+  refs:
+      - ttgamer.ui.sheet.v5.skills.stealth
+- id: survival
+  en: Survival
+  ru: Выживание
+  refs:
+      - ttgamer.ui.sheet.v5.skills.survival
+- id: animal-ken
+  en: Animal Ken
+  ru: Обращение с животными
+  refs:
+      - ttgamer.ui.sheet.v5.skills.animalKen
+- id: etiquette
+  en: Etiquette
+  ru: Этикет
+  refs:
+      - ttgamer.ui.sheet.v5.skills.etiquette
+- id: insight
+  en: Insight
+  ru: Проницательность
+  refs:
+      - ttgamer.ui.sheet.v5.skills.insight
+- id: intimidation
+  en: Intimidation
+  ru: Запугивание
+  refs:
+      - ttgamer.ui.sheet.v5.skills.intimidation
+- id: leadership
+  en: Leadership
+  ru: Лидерство
+  refs:
+      - ttgamer.ui.sheet.v5.skills.leadership
+- id: performance
+  en: Performance
+  ru: Исполнение
+  refs:
+      - ttgamer.ui.sheet.v5.skills.performance
+- id: persuasion
+  en: Persuasion
+  ru: Убеждение
+  refs:
+      - ttgamer.ui.sheet.v5.skills.persuasion
+- id: streetwise
+  en: Streetwise
+  ru: Знание улиц
+  refs:
+      - ttgamer.ui.sheet.v5.skills.streetwise
+- id: subterfuge
+  en: Subterfuge
+  ru: Обман
+  refs:
+      - ttgamer.ui.sheet.v5.skills.subterfuge
+- id: academics
+  en: Academics
+  ru: Гуманитарные науки
+  refs:
+      - ttgamer.ui.sheet.v5.skills.academics
+- id: awareness
+  en: Awareness
+  ru: Внимательность
+  refs:
+      - ttgamer.ui.sheet.v5.skills.awareness
+- id: finance
+  en: Finance
+  ru: Финансы
+  refs:
+      - ttgamer.ui.sheet.v5.skills.finance
+- id: investigation
+  en: Investigation
+  ru: Расследование
+  refs:
+      - ttgamer.ui.sheet.v5.skills.investigation
+- id: medicine
+  en: Medicine
+  ru: Медицина
+  refs:
+      - ttgamer.ui.sheet.v5.skills.medicine
+- id: occult
+  en: Occult
+  ru: Оккультизм
+  refs:
+      - ttgamer.ui.sheet.v5.skills.occult
+- id: politics
+  en: Politics
+  ru: Политика
+  refs:
+      - ttgamer.ui.sheet.v5.skills.politics
+- id: science
+  en: Science
+  ru: Наука
+  refs:
+      - ttgamer.ui.sheet.v5.skills.science
+- id: technology
+  en: Technology
+  ru: Технологии
+  refs:
+      - ttgamer.ui.sheet.v5.skills.technology
+- id: health
+  en: Health
+  ru: Здоровье
+  refs:
+      - ttgamer.ui.sheet.v5.sections.health
+- id: willpower
+  en: Willpower
+  ru: Сила воли
+  refs:
+      - ttgamer.ui.sheet.v5.sections.willpower
+- id: touchstone
+  en: Touchstone
+  ru: Опора
+  refs:
+      - ttgamer.ui.sheet.v5.fields.touchstone
+- id: conviction
+  en: Conviction
+  ru: Убеждение
+  refs:
+      - ttgamer.ui.sheet.v5.fields.conviction
+- id: chronicle-tenets
+  en: Chronicle Tenets
+  ru: Принципы хроники
+  refs:
+      - ttgamer.ui.sheet.v5.fields.chronicleTenets
