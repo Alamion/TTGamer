@@ -191,8 +191,9 @@ export function flattenStringLeaves(
     return entries;
 }
 
+/** Distinct placeholder names of a message (plural forms repeat them). */
 export function interpolationNames(message: string): string[] {
-    return Array.from(message.matchAll(/\{([\w-]+)\}/g), ([, name]) => name).sort();
+    return [...new Set(Array.from(message.matchAll(/\{([\w-]+)\}/g), ([, name]) => name))].sort();
 }
 
 export async function loadTranslationSources(
