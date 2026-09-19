@@ -4,9 +4,17 @@ title: Species
 ---
 
 import { SPECIES } from '@site/src/data/speciesData';
-import { SPECIES_COLUMNS, renderSpeciesDetail } from '@site/src/data/speciesConfig';
+import {
+    SPECIES_COLUMNS,
+    SPECIES_FILTERS,
+    renderSpeciesDetail,
+} from '@site/src/data/speciesConfig';
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
-import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meritsFlawsConfig';
+import {
+    MERITS_FLAWS_COLUMNS,
+    MERITS_FLAWS_TYPE_FILTERS,
+    renderMeritFlawDetail,
+} from '@site/src/data/meritsFlawsConfig';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
 
@@ -43,10 +51,7 @@ Search by species name, era, or category. Click a row to see full details includ
         data={SPECIES}
         columns={SPECIES_COLUMNS}
         renderDetail={renderSpeciesDetail}
-        filters={[
-            { columnId: 'category', label: 'Category' },
-            { columnId: 'eras', label: 'Era', mode: 'multi' },
-        ]}
+        filters={SPECIES_FILTERS}
         searchPlaceholder="Search species, era, or type..."
         id="species"
     />
@@ -88,7 +93,7 @@ The following merits and flaws are available **only** to non-human species and r
         data={MERITS_FLAWS.filter((m) => m.category === 'Alien Physiology')}
         columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
-        filters={[{ columnId: 'type', label: 'Type' }]}
+        filters={MERITS_FLAWS_TYPE_FILTERS}
         searchPlaceholder="Search merits & flaws..."
         id="alien-physiology"
     />

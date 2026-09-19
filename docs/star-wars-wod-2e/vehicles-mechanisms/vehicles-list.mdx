@@ -6,7 +6,11 @@ title: Vehicle Catalog
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 import { VEHICLES } from '@site/src/data/vehicleData';
-import { VEHICLE_COLUMNS, renderVehicleDetail } from '@site/src/data/vehicleConfig';
+import {
+    VEHICLE_COLUMNS,
+    VEHICLE_FILTERS,
+    renderVehicleDetail,
+} from '@site/src/data/vehicleConfig';
 
 # Vehicle Catalog
 
@@ -22,10 +26,7 @@ The catalog covers ground vehicles, walkers, speeders, starfighters, space trans
         columns={VEHICLE_COLUMNS}
         renderDetail={renderVehicleDetail}
         searchPlaceholder="Search vehicles..."
-        filters={[
-            { columnId: 'scale', label: 'Scale' },
-            { columnId: 'eras', label: 'Era', mode: 'multi' },
-        ]}
+        filters={VEHICLE_FILTERS}
         id="vehicle-catalog"
     />
 </TWWrapper>

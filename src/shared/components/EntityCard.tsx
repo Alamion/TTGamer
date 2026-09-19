@@ -2,10 +2,12 @@ import clsx from 'clsx';
 import type { ReactNode } from 'react';
 import { forwardRef, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
+import { useLocale } from '../hooks/useLocale';
+
 export interface EntityCardProps {
     name: string;
     description: string;
-    tags: string[];
+    tags: readonly string[];
     expanded: boolean;
     onToggle: () => void;
     renderDetail: () => ReactNode;
@@ -78,9 +80,10 @@ export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(function E
 export interface EntityGridProps<T> {
     entities: T[];
     renderDetail: (entity: T) => ReactNode;
-    getName: (entity: T) => string;
-    getDescription: (entity: T) => string;
-    getTags: (entity: T) => string[];
+    /** Text getters receive the reader's locale (for catalog translations). */
+    getName: (entity: T, locale: string) => string;
+    getDescription: (entity: T, locale: string) => string;
+    getTags: (entity: T, locale: string) => readonly string[];
     getKey: (entity: T) => string;
     cols?: number;
 }
@@ -94,6 +97,7 @@ export function EntityGrid<T>({
     getKey,
     cols = 3,
 }: EntityGridProps<T>) {
+    const locale = useLocale();
     const [expandedKey, setExpandedKey] = useState<string | null>(null);
     const gridRef = useRef<HTMLDivElement>(null);
     const cardRefs = useRef(new Map<string, HTMLDivElement | null>());
@@ -149,9 +153,9 @@ export function EntityGrid<T>({
                         ref={(el) => {
                             cardRefs.current.set(key, el);
                         }}
-                        name={getName(entity)}
-                        description={getDescription(entity)}
-                        tags={getTags(entity)}
+                        name={getName(entity, locale)}
+                        description={getDescription(entity, locale)}
+                        tags={getTags(entity, locale)}
                         expanded={isExpanded}
                         onToggle={() => setExpandedKey(isExpanded ? null : key)}
                         renderDetail={() => renderDetail(entity)}

@@ -1,0 +1,13 @@
+columns:
+    name: Power
+    shortDescription: Effect
+    skills: Skills
+    forcePointCost: FP Cost
+detail:
+    requiredSkills: Required Skills
+    forcePointCost: Force Point Cost
+    spendOne: Spend 1 Force Point
+    noCost: No Force Point cost
+filters:
+    costsFp: Costs FP
+    free: Free

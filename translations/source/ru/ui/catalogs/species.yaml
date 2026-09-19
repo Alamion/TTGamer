@@ -1,0 +1,11 @@
+columns:
+    name: Раса
+    freebieAdjustment: ± Очки Свободы
+    category: Категория
+    eras: Эпоха
+detail:
+    none: Нет
+    freebieAdjustment: Корректировка Очков Свободы
+    eras: Эпохи
+    merits: Достоинства
+    flaws: Недостатки

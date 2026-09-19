@@ -1,0 +1,13 @@
+columns:
+    name: Сила
+    shortDescription: Эффект
+    skills: Навыки
+    forcePointCost: Цена ОС
+detail:
+    requiredSkills: Требуемые навыки
+    forcePointCost: Цена в Очках Силы
+    spendOne: Тратится 1 Очко Силы
+    noCost: Очки Силы не тратятся
+filters:
+    costsFp: Тратит ОС
+    free: Бесплатно

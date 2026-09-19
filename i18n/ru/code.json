@@ -326,6 +326,438 @@
         "message": "Содержание этой страницы",
         "description": "The label used by the button on the collapsible TOC component"
     },
+    "ttgamer.ui.catalogs.abilities.columns.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.catalogs.abilities.columns.name": {
+        "message": "Способность"
+    },
+    "ttgamer.ui.catalogs.abilities.columns.shortDescription": {
+        "message": "Краткое описание"
+    },
+    "ttgamer.ui.catalogs.armor.columns.ar": {
+        "message": "АР"
+    },
+    "ttgamer.ui.catalogs.armor.columns.classVal": {
+        "message": "Класс"
+    },
+    "ttgamer.ui.catalogs.armor.columns.cost": {
+        "message": "Цена"
+    },
+    "ttgamer.ui.catalogs.armor.columns.dexPenalty": {
+        "message": "Штр. Лов."
+    },
+    "ttgamer.ui.catalogs.armor.columns.name": {
+        "message": "Броня"
+    },
+    "ttgamer.ui.catalogs.armor.detail.ar": {
+        "message": "АР (кости поглощения)"
+    },
+    "ttgamer.ui.catalogs.armor.detail.classVal": {
+        "message": "Класс"
+    },
+    "ttgamer.ui.catalogs.armor.detail.cost": {
+        "message": "Цена"
+    },
+    "ttgamer.ui.catalogs.armor.detail.dexPenalty": {
+        "message": "Штраф Ловкости"
+    },
+    "ttgamer.ui.catalogs.armor.detail.notes": {
+        "message": "Примечания"
+    },
+    "ttgamer.ui.catalogs.attributes.columns.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.catalogs.attributes.columns.name": {
+        "message": "Атрибут"
+    },
+    "ttgamer.ui.catalogs.backgrounds.columns.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.catalogs.backgrounds.columns.name": {
+        "message": "Бэкграунд"
+    },
+    "ttgamer.ui.catalogs.backgrounds.columns.shortDescription": {
+        "message": "Описание"
+    },
+    "ttgamer.ui.catalogs.backgrounds.detail.dotRank": {
+        "message": "Уровни"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.columns.cost": {
+        "message": "Цена"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.columns.damage": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.columns.damageType": {
+        "message": "Тип урона"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.columns.falloff": {
+        "message": "Ослабление"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.columns.name": {
+        "message": "Название"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.columns.type": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.detail.cost": {
+        "message": "Цена"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.detail.damage": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.detail.falloff": {
+        "message": "Ослабление"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.detail.notes": {
+        "message": "Примечания"
+    },
+    "ttgamer.ui.catalogs.consumableWeapons.detail.type": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.catalogs.creatures.columns.attacks": {
+        "message": "Атаки"
+    },
+    "ttgamer.ui.catalogs.creatures.columns.name": {
+        "message": "Название"
+    },
+    "ttgamer.ui.catalogs.creatures.columns.scale": {
+        "message": "Масштаб"
+    },
+    "ttgamer.ui.catalogs.creatures.columns.type": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.abilities": {
+        "message": "Способности"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.armor": {
+        "message": "Броня"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.attacks": {
+        "message": "Атаки"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.dexterity": {
+        "message": "ЛОВ"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.flaws": {
+        "message": "Недостатки"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.intelligence": {
+        "message": "ИНТ"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.mental": {
+        "message": "Ментальные"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.merits": {
+        "message": "Достоинства"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.movement": {
+        "message": "ДВИЖ"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.other": {
+        "message": "Прочее"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.perception": {
+        "message": "ВОС"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.physical": {
+        "message": "Физические"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.scale": {
+        "message": "Масштаб"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.size": {
+        "message": "Размер"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.stamina": {
+        "message": "ВЫН"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.strength": {
+        "message": "СИЛ"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.willpower": {
+        "message": "ВОЛ"
+    },
+    "ttgamer.ui.catalogs.creatures.detail.wits": {
+        "message": "СМК"
+    },
+    "ttgamer.ui.catalogs.forcePowers.columns.forcePointCost": {
+        "message": "Цена ОС"
+    },
+    "ttgamer.ui.catalogs.forcePowers.columns.name": {
+        "message": "Сила"
+    },
+    "ttgamer.ui.catalogs.forcePowers.columns.shortDescription": {
+        "message": "Эффект"
+    },
+    "ttgamer.ui.catalogs.forcePowers.columns.skills": {
+        "message": "Навыки"
+    },
+    "ttgamer.ui.catalogs.forcePowers.detail.forcePointCost": {
+        "message": "Цена в Очках Силы"
+    },
+    "ttgamer.ui.catalogs.forcePowers.detail.noCost": {
+        "message": "Очки Силы не тратятся"
+    },
+    "ttgamer.ui.catalogs.forcePowers.detail.requiredSkills": {
+        "message": "Требуемые навыки"
+    },
+    "ttgamer.ui.catalogs.forcePowers.detail.spendOne": {
+        "message": "Тратится 1 Очко Силы"
+    },
+    "ttgamer.ui.catalogs.forcePowers.filters.costsFp": {
+        "message": "Тратит ОС"
+    },
+    "ttgamer.ui.catalogs.forcePowers.filters.free": {
+        "message": "Бесплатно"
+    },
+    "ttgamer.ui.catalogs.meleeWeapons.columns.conceal": {
+        "message": "Скрытн."
+    },
+    "ttgamer.ui.catalogs.meleeWeapons.columns.damage": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.catalogs.meleeWeapons.columns.difficulty": {
+        "message": "Сл."
+    },
+    "ttgamer.ui.catalogs.meleeWeapons.columns.name": {
+        "message": "Оружие"
+    },
+    "ttgamer.ui.catalogs.meleeWeapons.detail.conceal": {
+        "message": "Скрытность"
+    },
+    "ttgamer.ui.catalogs.meleeWeapons.detail.damage": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.catalogs.meleeWeapons.detail.difficulty": {
+        "message": "Сложность"
+    },
+    "ttgamer.ui.catalogs.meleeWeapons.detail.notes": {
+        "message": "Примечания"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.columns.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.columns.cost": {
+        "message": "Цена"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.columns.name": {
+        "message": "Достоинство / недостаток"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.columns.shortDescription": {
+        "message": "Описание"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.columns.type": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.detail.cost": {
+        "message": "Цена"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.detail.implantNoCost": {
+        "message": "Без цены в очках · Имплант"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.detail.tags": {
+        "message": "Теги"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.filters.severity": {
+        "message": "Серьёзность"
+    },
+    "ttgamer.ui.catalogs.meritsFlaws.points": {
+        "message": "{count} очко|{count} очка|{count} очков"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.columns.ammo": {
+        "message": "Боезапас"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.columns.conceal": {
+        "message": "Скрытн."
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.columns.damage": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.columns.difficulty": {
+        "message": "Сл."
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.columns.name": {
+        "message": "Оружие"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.columns.range": {
+        "message": "Дальн."
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.detail.ammo": {
+        "message": "Боеприпасы"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.detail.conceal": {
+        "message": "Скрытность"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.detail.damage": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.detail.difficulty": {
+        "message": "Сложность"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.detail.notes": {
+        "message": "Примечания"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.detail.range": {
+        "message": "Дальность"
+    },
+    "ttgamer.ui.catalogs.rangedWeapons.detail.rangeValue": {
+        "message": "{range} м"
+    },
+    "ttgamer.ui.catalogs.species.columns.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.catalogs.species.columns.eras": {
+        "message": "Эпоха"
+    },
+    "ttgamer.ui.catalogs.species.columns.freebieAdjustment": {
+        "message": "± Очки Свободы"
+    },
+    "ttgamer.ui.catalogs.species.columns.name": {
+        "message": "Раса"
+    },
+    "ttgamer.ui.catalogs.species.detail.eras": {
+        "message": "Эпохи"
+    },
+    "ttgamer.ui.catalogs.species.detail.flaws": {
+        "message": "Недостатки"
+    },
+    "ttgamer.ui.catalogs.species.detail.freebieAdjustment": {
+        "message": "Корректировка Очков Свободы"
+    },
+    "ttgamer.ui.catalogs.species.detail.merits": {
+        "message": "Достоинства"
+    },
+    "ttgamer.ui.catalogs.species.detail.none": {
+        "message": "Нет"
+    },
+    "ttgamer.ui.catalogs.terminology.columns.category": {
+        "message": "Раздел"
+    },
+    "ttgamer.ui.catalogs.terminology.columns.english": {
+        "message": "Английский"
+    },
+    "ttgamer.ui.catalogs.terminology.columns.russian": {
+        "message": "Русский"
+    },
+    "ttgamer.ui.catalogs.toolsGear.columns.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.catalogs.toolsGear.columns.cost": {
+        "message": "Цена"
+    },
+    "ttgamer.ui.catalogs.toolsGear.columns.effect": {
+        "message": "Эффект"
+    },
+    "ttgamer.ui.catalogs.toolsGear.columns.name": {
+        "message": "Предмет"
+    },
+    "ttgamer.ui.catalogs.toolsGear.detail.category": {
+        "message": "Категория"
+    },
+    "ttgamer.ui.catalogs.toolsGear.detail.cost": {
+        "message": "Цена"
+    },
+    "ttgamer.ui.catalogs.toolsGear.detail.effect": {
+        "message": "Эффект"
+    },
+    "ttgamer.ui.catalogs.vehicles.columns.durability": {
+        "message": "Прочность"
+    },
+    "ttgamer.ui.catalogs.vehicles.columns.eras": {
+        "message": "Эпоха"
+    },
+    "ttgamer.ui.catalogs.vehicles.columns.hyperdrive": {
+        "message": "Гипер"
+    },
+    "ttgamer.ui.catalogs.vehicles.columns.maneuverability": {
+        "message": "Манёвр."
+    },
+    "ttgamer.ui.catalogs.vehicles.columns.name": {
+        "message": "Транспорт"
+    },
+    "ttgamer.ui.catalogs.vehicles.columns.scale": {
+        "message": "Масштаб"
+    },
+    "ttgamer.ui.catalogs.vehicles.columns.shields": {
+        "message": "Щиты"
+    },
+    "ttgamer.ui.catalogs.vehicles.columns.speed": {
+        "message": "Скорость"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.altitude": {
+        "message": "Высота"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.astrogation": {
+        "message": "Астрогация"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.cargo": {
+        "message": "Грузоподъёмность"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.commSensors": {
+        "message": "Связь/Сенсоры"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.configuration": {
+        "message": "Характеристики"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.consumables": {
+        "message": "Автономность"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.crew": {
+        "message": "Экипаж"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.crewCapacity": {
+        "message": "Экипаж и вместимость"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.durability": {
+        "message": "Прочность"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.era": {
+        "message": "Эпоха"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.ground": {
+        "message": "Наземный"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.hyperdrive": {
+        "message": "Гипердвигатель"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.length": {
+        "message": "Длина"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.maneuverability": {
+        "message": "Манёвренность"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.navComputer": {
+        "message": "Навкомпьютер"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.none": {
+        "message": "Нет"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.passengers": {
+        "message": "Пассажиры"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.physical": {
+        "message": "Корпус"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.reroll": {
+        "message": "Переброс десяток"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.sensorRange": {
+        "message": "Дальность сенсоров"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.shields": {
+        "message": "Щиты"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.speed": {
+        "message": "Скорость"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.type": {
+        "message": "Тип"
+    },
+    "ttgamer.ui.catalogs.vehicles.detail.weapons": {
+        "message": "Вооружение"
+    },
     "ttgamer.ui.dice.history.addFavorite": {
         "message": "Добавить в избранное"
     },
@@ -508,6 +940,144 @@
     },
     "ttgamer.ui.integrations.discord.errors.rejected": {
         "message": "Discord отклонил бросок. Проверьте настройки вебхука."
+    },
+    "ttgamer.ui.shared.bottomSheet.close": {
+        "message": "Закрыть подробности"
+    },
+    "ttgamer.ui.shared.bottomSheet.label": {
+        "message": "Подробности записи каталога"
+    },
+    "ttgamer.ui.shared.bottomSheet.resize": {
+        "message": "Изменить высоту панели подробностей"
+    },
+    "ttgamer.ui.shared.dataCatalog.clearSearch": {
+        "message": "Очистить поиск"
+    },
+    "ttgamer.ui.shared.dataCatalog.closeDetail": {
+        "message": "Закрыть подробности"
+    },
+    "ttgamer.ui.shared.dataCatalog.detailsOpen": {
+        "message": "{name} — подробности открыты"
+    },
+    "ttgamer.ui.shared.dataCatalog.empty": {
+        "message": "Ничего не найдено."
+    },
+    "ttgamer.ui.shared.dataCatalog.itemDetails": {
+        "message": "Подробности записи каталога"
+    },
+    "ttgamer.ui.shared.dataCatalog.nextPage": {
+        "message": "Следующая страница"
+    },
+    "ttgamer.ui.shared.dataCatalog.openDetails": {
+        "message": "{name} — открыть подробности"
+    },
+    "ttgamer.ui.shared.dataCatalog.page": {
+        "message": "Страница {page} из {pages}"
+    },
+    "ttgamer.ui.shared.dataCatalog.previousPage": {
+        "message": "Предыдущая страница"
+    },
+    "ttgamer.ui.shared.dataCatalog.search": {
+        "message": "Поиск..."
+    },
+    "ttgamer.ui.shared.dataCatalog.selected": {
+        "message": "Выбран {count}|Выбрано {count}|Выбрано {count}"
+    },
+    "ttgamer.ui.shared.detailSections.ratingScale": {
+        "message": "Шкала значений"
+    },
+    "ttgamer.ui.shared.detailSections.specialties": {
+        "message": "Специализации"
+    },
+    "ttgamer.ui.shared.difficultyTable.cancelEach": {
+        "message": "Каждая единица отменяет один успех."
+    },
+    "ttgamer.ui.shared.difficultyTable.cancelOnes": {
+        "message": "Единицы отменяют успехи"
+    },
+    "ttgamer.ui.shared.difficultyTable.corner": {
+        "message": "Чист. усп. \\ Сл."
+    },
+    "ttgamer.ui.shared.difficultyTable.difficulty.challenging": {
+        "message": "Сложно"
+    },
+    "ttgamer.ui.shared.difficultyTable.difficulty.difficult": {
+        "message": "Трудно"
+    },
+    "ttgamer.ui.shared.difficultyTable.difficulty.easy": {
+        "message": "Легко"
+    },
+    "ttgamer.ui.shared.difficultyTable.difficulty.extremelyDifficult": {
+        "message": "Чрезвычайно сложно"
+    },
+    "ttgamer.ui.shared.difficultyTable.difficulty.nearlyImpossible": {
+        "message": "Почти невозможно"
+    },
+    "ttgamer.ui.shared.difficultyTable.difficulty.routine": {
+        "message": "Обыденно"
+    },
+    "ttgamer.ui.shared.difficultyTable.difficulty.standard": {
+        "message": "Стандартно"
+    },
+    "ttgamer.ui.shared.difficultyTable.difficulty.straightforward": {
+        "message": "Просто"
+    },
+    "ttgamer.ui.shared.difficultyTable.liveUpdate": {
+        "message": "Значения обновляются сразу при изменении параметров."
+    },
+    "ttgamer.ui.shared.difficultyTable.onesIgnored": {
+        "message": "Единицы не учитываются (без отмены)."
+    },
+    "ttgamer.ui.shared.difficultyTable.pool": {
+        "message": "Кубов в запасе"
+    },
+    "ttgamer.ui.shared.difficultyTable.summary": {
+        "message": "Строки показывают вероятность выбросить не менее N чистых успехов при {count} кубе.|Строки показывают вероятность выбросить не менее N чистых успехов при {count} кубах.|Строки показывают вероятность выбросить не менее N чистых успехов при {count} кубах."
+    },
+    "ttgamer.ui.shared.scaleChart.largest": {
+        "message": "самый крупный"
+    },
+    "ttgamer.ui.shared.scaleChart.scales.capital": {
+        "message": "Капитальный"
+    },
+    "ttgamer.ui.shared.scaleChart.scales.character": {
+        "message": "Персонаж"
+    },
+    "ttgamer.ui.shared.scaleChart.scales.deathStar": {
+        "message": "Звезда Смерти"
+    },
+    "ttgamer.ui.shared.scaleChart.scales.speeder": {
+        "message": "Спидер"
+    },
+    "ttgamer.ui.shared.scaleChart.scales.starfighter": {
+        "message": "Звездолёт"
+    },
+    "ttgamer.ui.shared.scaleChart.scales.transport": {
+        "message": "Транспорт"
+    },
+    "ttgamer.ui.shared.scaleChart.scales.vermin": {
+        "message": "Вредитель"
+    },
+    "ttgamer.ui.shared.scaleChart.scales.walker": {
+        "message": "Шагающий"
+    },
+    "ttgamer.ui.shared.scaleChart.smallest": {
+        "message": "самый мелкий"
+    },
+    "ttgamer.ui.shared.secretField.hide": {
+        "message": "Скрыть поле"
+    },
+    "ttgamer.ui.shared.secretField.show": {
+        "message": "Показать скрытое поле"
+    },
+    "ttgamer.ui.shared.slidePanel.close": {
+        "message": "Закрыть панель"
+    },
+    "ttgamer.ui.shared.slidePanel.label": {
+        "message": "Боковая панель"
+    },
+    "ttgamer.ui.shared.slidePanel.resize": {
+        "message": "Изменить ширину панели"
     },
     "ttgamer.ui.sheet.base.appearance": {
         "message": "Внешность"

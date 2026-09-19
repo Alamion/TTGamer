@@ -1,0 +1,11 @@
+columns:
+    name: Species
+    freebieAdjustment: Freebie Adj.
+    category: Category
+    eras: Era
+detail:
+    none: None
+    freebieAdjustment: Freebie Adjustment
+    eras: Eras
+    merits: Merits
+    flaws: Flaws

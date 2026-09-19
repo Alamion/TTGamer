@@ -9,7 +9,11 @@ import { CharRoll } from '@site/src/integrations/docs-character-rolls/CharRoll';
 import { TemplatePreview, healthPreviewDocument } from '@site/src/sheet_manager/docsEmbeds';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
-import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meritsFlawsConfig';
+import {
+    MERITS_FLAWS_COLUMNS,
+    MERITS_FLAWS_SEVERITY_FILTERS,
+    renderMeritFlawDetail,
+} from '@site/src/data/meritsFlawsConfig';
 
 # Health, Damage & Healing
 
@@ -306,7 +310,7 @@ Amputations are a real threat in the Star Wars galaxy — lightsabers, explosion
         )}
         columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
-        filters={[{ columnId: 'cost', label: 'Severity' }]}
+        filters={MERITS_FLAWS_SEVERITY_FILTERS}
         searchPlaceholder="Search amputation flaws..."
         id="amputation-flaws"
     />

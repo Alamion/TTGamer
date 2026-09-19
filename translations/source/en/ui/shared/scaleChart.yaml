@@ -1,0 +1,11 @@
+scales:
+    deathStar: Death Star
+    capital: Capital
+    transport: Transport
+    starfighter: Starfighter
+    walker: Walker
+    speeder: Speeder
+    character: Character
+    vermin: Vermin
+largest: largest
+smallest: smallest

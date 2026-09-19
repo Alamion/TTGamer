@@ -1,0 +1,10 @@
+columns:
+    name: Weapon
+    difficulty: Diff
+    damage: Damage
+    conceal: Conceal
+detail:
+    damage: Damage
+    difficulty: Difficulty
+    conceal: Conceal
+    notes: Notes

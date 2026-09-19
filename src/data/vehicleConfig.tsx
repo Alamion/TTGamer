@@ -1,11 +1,20 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { FilterConfig } from '@site/src/shared/components/DataCatalog';
 import { EraTags } from '@site/src/shared/components/EraTags';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
+import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from './catalogI18n';
 import { arrayIncludesAnyFilterFn } from './dataFilters';
 import type { VehicleEntry } from './vehicleData';
 
+const CATALOG_ID = 'vehicles';
+const messages = uiMessages.catalogs.vehicles;
+const detail = messages.detail;
+
 function ScaleBadge({ scale }: { scale: VehicleEntry['scale'] }) {
+    const t = useCatalogText(CATALOG_ID);
     const colors: Record<string, string> = {
         Speeder: 'bg-blue-500/20 text-blue-300',
         Walker: 'bg-green-500/20 text-green-300',
@@ -15,7 +24,22 @@ function ScaleBadge({ scale }: { scale: VehicleEntry['scale'] }) {
     };
     return (
         <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors[scale] ?? ''}`}>
-            {scale}
+            {t.label('scale', scale)}
+        </span>
+    );
+}
+
+function FirstEra({ eras }: { eras: string[] }) {
+    const t = useCatalogText(CATALOG_ID);
+    if (!eras || eras.length === 0) return <span className="text-textSecondary">—</span>;
+    return (
+        <span className="text-xs text-textSecondary whitespace-nowrap">
+            {t.label('eras', eras[0])}
+            {eras.length > 1 && (
+                <span className="ml-1 px-1 py-0.5 rounded bg-bgSurface text-textTertiary text-[10px]">
+                    +{eras.length - 1}
+                </span>
+            )}
         </span>
     );
 }
@@ -30,27 +54,29 @@ function Stat({ value }: { value: number | string | null | undefined }) {
 export const VEHICLE_COLUMNS: ColumnDef<VehicleEntry>[] = [
     {
         id: 'name',
-        header: 'Vehicle',
+        header: columnHeader(messages.columns.name),
         accessorKey: 'name',
         enableSorting: true,
+        meta: localizedTextMeta(CATALOG_ID, 'name'),
     },
     {
         id: 'scale',
-        header: 'Scale',
+        header: columnHeader(messages.columns.scale),
         accessorKey: 'scale',
         enableSorting: true,
+        meta: enumLabelMeta(CATALOG_ID, 'scale'),
         cell: ({ getValue }) => <ScaleBadge scale={getValue<VehicleEntry['scale']>()} />,
     },
     {
         id: 'maneuverability',
-        header: 'Maneuver',
+        header: columnHeader(messages.columns.maneuverability),
         accessorKey: 'maneuverability',
         enableSorting: true,
         cell: ({ getValue }) => <Stat value={getValue<number>()} />,
     },
     {
         id: 'durability',
-        header: 'Durability',
+        header: columnHeader(messages.columns.durability),
         accessorKey: 'durability',
         enableSorting: true,
         cell: ({ getValue, row }) => {
@@ -64,7 +90,10 @@ export const VEHICLE_COLUMNS: ColumnDef<VehicleEntry>[] = [
                         <>
                             {val}D
                             {reroll ? (
-                                <span className="text-xs text-yellow-400 ml-1" title="Reroll 10s">
+                                <span
+                                    className="text-xs text-yellow-400 ml-1"
+                                    title={translate(detail.reroll)}
+                                >
                                     ⟳
                                 </span>
                             ) : (
@@ -78,46 +107,39 @@ export const VEHICLE_COLUMNS: ColumnDef<VehicleEntry>[] = [
     },
     {
         id: 'speed',
-        header: 'Speed',
+        header: columnHeader(messages.columns.speed),
         accessorKey: 'speed',
         enableSorting: true,
         cell: ({ getValue }) => <Stat value={getValue<number | string>()} />,
     },
     {
         id: 'hyperdrive',
-        header: 'Hyper',
+        header: columnHeader(messages.columns.hyperdrive),
         accessorKey: 'hyperdrive',
         enableSorting: true,
         cell: ({ getValue }) => <Stat value={getValue<number | null>()} />,
     },
     {
         id: 'shields',
-        header: 'Shields',
+        header: columnHeader(messages.columns.shields),
         accessorKey: 'shields',
         enableSorting: true,
         cell: ({ getValue }) => <Stat value={getValue<number>()} />,
     },
     {
         id: 'eras',
-        header: 'Era',
+        header: columnHeader(messages.columns.eras),
         accessorKey: 'eras',
         enableSorting: false,
         filterFn: arrayIncludesAnyFilterFn,
-        cell: ({ getValue }) => {
-            const eras = getValue<string[]>();
-            if (!eras || eras.length === 0) return <span className="text-textSecondary">—</span>;
-            return (
-                <span className="text-xs text-textSecondary whitespace-nowrap">
-                    {eras[0]}
-                    {eras.length > 1 && (
-                        <span className="ml-1 px-1 py-0.5 rounded bg-bgSurface text-textTertiary text-[10px]">
-                            +{eras.length - 1}
-                        </span>
-                    )}
-                </span>
-            );
-        },
+        meta: enumLabelMeta(CATALOG_ID, 'eras'),
+        cell: ({ getValue }) => <FirstEra eras={getValue<string[]>()} />,
     },
+];
+
+export const VEHICLE_FILTERS: FilterConfig[] = [
+    { columnId: 'scale', label: messages.columns.scale },
+    { columnId: 'eras', label: messages.columns.eras, mode: 'multi' },
 ];
 
 function DetailStatRow({ label, value }: { label: string; value: ReactNode }) {
@@ -131,29 +153,33 @@ function DetailStatRow({ label, value }: { label: string; value: ReactNode }) {
     );
 }
 
-export function renderVehicleDetail(vehicle: VehicleEntry): ReactNode {
+function VehicleDetail({ vehicle }: { vehicle: VehicleEntry }) {
+    const t = useCatalogText(CATALOG_ID);
+    const none = <span className="text-textSecondary">{translate(detail.none)}</span>;
     return (
         <>
-            <p className="text-sm text-textSecondary leading-relaxed mb-4">{vehicle.description}</p>
+            <p className="text-sm text-textSecondary leading-relaxed mb-4">
+                {t.text(vehicle, 'description')}
+            </p>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                     <h5 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-1">
-                        Configuration
+                        {translate(detail.configuration)}
                     </h5>
                     <DetailStatRow
-                        label="Maneuver"
+                        label={translate(detail.maneuverability)}
                         value={<span className="font-mono">{vehicle.maneuverability}D</span>}
                     />
                     <DetailStatRow
-                        label="Durability"
+                        label={translate(detail.durability)}
                         value={
                             <span className="font-mono">
                                 {vehicle.durability}D
                                 {vehicle.durabilityReroll && (
                                     <span
                                         className="text-xs text-yellow-400 ml-1"
-                                        title="Reroll 10s"
+                                        title={translate(detail.reroll)}
                                     >
                                         ⟳
                                     </span>
@@ -161,46 +187,63 @@ export function renderVehicleDetail(vehicle: VehicleEntry): ReactNode {
                             </span>
                         }
                     />
-                    <DetailStatRow label="Speed" value={<Stat value={vehicle.speed} />} />
-                    <DetailStatRow label="Altitude" value={vehicle.altitude || 'Ground'} />
                     <DetailStatRow
-                        label="Shields"
+                        label={translate(detail.speed)}
+                        value={
+                            <Stat
+                                value={
+                                    typeof vehicle.speed === 'string'
+                                        ? t.text(vehicle, 'speed')
+                                        : vehicle.speed
+                                }
+                            />
+                        }
+                    />
+                    <DetailStatRow
+                        label={translate(detail.altitude)}
+                        value={t.text(vehicle, 'altitude') || translate(detail.ground)}
+                    />
+                    <DetailStatRow
+                        label={translate(detail.shields)}
                         value={
                             vehicle.shields > 0 ? (
                                 <span className="font-mono">{vehicle.shields}D</span>
                             ) : (
-                                <span className="text-textSecondary">None</span>
+                                none
                             )
                         }
                     />
                 </div>
                 <div>
                     <h5 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-1">
-                        Astrogation
+                        {translate(detail.astrogation)}
                     </h5>
                     <DetailStatRow
-                        label="Hyperdrive"
+                        label={translate(detail.hyperdrive)}
                         value={
                             vehicle.hyperdrive !== null ? (
                                 <span className="font-mono">{vehicle.hyperdrive}</span>
                             ) : (
-                                <span className="text-textSecondary">None</span>
+                                none
                             )
                         }
                     />
-                    <DetailStatRow label="Nav Computer" value={vehicle.navComputer} />
                     <DetailStatRow
-                        label="Comm/Sensors"
+                        label={translate(detail.navComputer)}
+                        value={t.text(vehicle, 'navComputer')}
+                    />
+                    <DetailStatRow
+                        label={translate(detail.commSensors)}
                         value={
                             vehicle.commSensors > 0 ? (
                                 <span className="font-mono">{vehicle.commSensors}D</span>
                             ) : (
-                                <span className="text-textSecondary">None</span>
+                                none
                             )
                         }
                     />
                     <DetailStatRow
-                        label="Sensor Range"
+                        label={translate(detail.sensorRange)}
                         value={
                             vehicle.sensorRange !== null ? (
                                 <span className="font-mono">{vehicle.sensorRange}</span>
@@ -215,29 +258,49 @@ export function renderVehicleDetail(vehicle: VehicleEntry): ReactNode {
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                     <h5 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-1">
-                        Crew & Capacity
+                        {translate(detail.crewCapacity)}
                     </h5>
-                    <DetailStatRow label="Crew" value={vehicle.crew} />
-                    <DetailStatRow label="Passengers" value={vehicle.passengers} />
-                    <DetailStatRow label="Cargo" value={vehicle.cargo} />
+                    <DetailStatRow label={translate(detail.crew)} value={t.text(vehicle, 'crew')} />
+                    <DetailStatRow
+                        label={translate(detail.passengers)}
+                        value={t.text(vehicle, 'passengers')}
+                    />
+                    <DetailStatRow
+                        label={translate(detail.cargo)}
+                        value={t.text(vehicle, 'cargo')}
+                    />
                     {vehicle.consumables && (
-                        <DetailStatRow label="Consumables" value={vehicle.consumables} />
+                        <DetailStatRow
+                            label={translate(detail.consumables)}
+                            value={t.text(vehicle, 'consumables')}
+                        />
                     )}
                 </div>
                 <div>
                     <h5 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-1">
-                        Physical
+                        {translate(detail.physical)}
                     </h5>
-                    <DetailStatRow label="Type" value={vehicle.category} />
-                    <DetailStatRow label="Length" value={vehicle.length} />
-                    <DetailStatRow label="Era" value={<EraTags eras={vehicle.eras} />} />
+                    <DetailStatRow
+                        label={translate(detail.type)}
+                        value={t.label('category', vehicle.category)}
+                    />
+                    <DetailStatRow
+                        label={translate(detail.length)}
+                        value={t.text(vehicle, 'length')}
+                    />
+                    <DetailStatRow
+                        label={translate(detail.era)}
+                        value={
+                            <EraTags eras={vehicle.eras} getLabel={(era) => t.label('eras', era)} />
+                        }
+                    />
                 </div>
             </div>
 
             {vehicle.weapons.length > 0 && (
                 <div>
                     <h5 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-1">
-                        Weapons
+                        {translate(detail.weapons)}
                     </h5>
                     <div className="space-y-1">
                         {vehicle.weapons.map((w) => (
@@ -252,4 +315,8 @@ export function renderVehicleDetail(vehicle: VehicleEntry): ReactNode {
             )}
         </>
     );
+}
+
+export function renderVehicleDetail(vehicle: VehicleEntry): ReactNode {
+    return <VehicleDetail vehicle={vehicle} />;
 }

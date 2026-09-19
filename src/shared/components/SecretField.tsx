@@ -1,5 +1,9 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Eye, EyeOff } from 'lucide-react';
 import { useId, useState } from 'react';
+
+const messages = uiMessages.shared.secretField;
 
 interface SecretFieldProps {
     value: string;
@@ -48,7 +52,7 @@ export function SecretField({
                 />
                 <button
                     type="button"
-                    aria-label={visible ? 'Hide secret field' : 'Show secret field'}
+                    aria-label={translate(visible ? messages.hide : messages.show)}
                     onClick={() => setVisible((v) => !v)}
                     className="absolute right-1 top-1/2 -translate-y-1/2
                         w-6 h-6 flex items-center justify-center

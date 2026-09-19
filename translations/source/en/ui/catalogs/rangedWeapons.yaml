@@ -1,0 +1,15 @@
+columns:
+    name: Weapon
+    damage: Dmg
+    range: Range
+    ammo: Ammo
+    difficulty: Diff
+    conceal: Conceal
+detail:
+    damage: Damage
+    range: Range
+    rangeValue: '{range}m'
+    ammo: Ammo
+    difficulty: Difficulty
+    conceal: Conceal
+    notes: Notes

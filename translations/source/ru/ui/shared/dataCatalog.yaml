@@ -1,0 +1,13 @@
+search: Поиск...
+selected:
+    message: Выбран {count}|Выбрано {count}|Выбрано {count}
+    plural: true
+clearSearch: Очистить поиск
+empty: Ничего не найдено.
+page: Страница {page} из {pages}
+previousPage: Предыдущая страница
+nextPage: Следующая страница
+closeDetail: Закрыть подробности
+itemDetails: Подробности записи каталога
+openDetails: '{name} — открыть подробности'
+detailsOpen: '{name} — подробности открыты'

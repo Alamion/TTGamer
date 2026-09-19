@@ -1,0 +1,34 @@
+columns:
+    name: Vehicle
+    scale: Scale
+    maneuverability: Maneuver
+    durability: Durability
+    speed: Speed
+    hyperdrive: Hyper
+    shields: Shields
+    eras: Era
+detail:
+    reroll: Reroll 10s
+    configuration: Configuration
+    maneuverability: Maneuver
+    durability: Durability
+    speed: Speed
+    altitude: Altitude
+    ground: Ground
+    shields: Shields
+    none: None
+    astrogation: Astrogation
+    hyperdrive: Hyperdrive
+    navComputer: Nav Computer
+    commSensors: Comm/Sensors
+    sensorRange: Sensor Range
+    crewCapacity: Crew & Capacity
+    crew: Crew
+    passengers: Passengers
+    cargo: Cargo
+    consumables: Consumables
+    physical: Physical
+    type: Type
+    length: Length
+    era: Era
+    weapons: Weapons

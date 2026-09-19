@@ -1,0 +1,15 @@
+columns:
+    name: Merit / Flaw
+    cost: Cost
+    type: Type
+    shortDescription: Description
+    category: Category
+detail:
+    cost: Cost
+    implantNoCost: No point cost · Implant
+    tags: Tags
+points:
+    message: '{count} pt|{count} pts'
+    plural: true
+filters:
+    severity: Severity
