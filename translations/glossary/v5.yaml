@@ -87,6 +87,8 @@
 - id: melee
   en: Melee
   ru: Холодное оружие
+  ruShort: Хол. оружие
+  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
   refs:
       - ttgamer.ui.sheet.v5.skills.melee
 - id: stealth
@@ -102,6 +104,8 @@
 - id: animal-ken
   en: Animal Ken
   ru: Обращение с животными
+  ruShort: Обр. с живот.
+  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
   refs:
       - ttgamer.ui.sheet.v5.skills.animalKen
 - id: etiquette
@@ -112,6 +116,8 @@
 - id: insight
   en: Insight
   ru: Проницательность
+  ruShort: Проницат.
+  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
   refs:
       - ttgamer.ui.sheet.v5.skills.insight
 - id: intimidation
@@ -147,6 +153,8 @@
 - id: academics
   en: Academics
   ru: Гуманитарные науки
+  ruShort: Гуманит. науки
+  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
   refs:
       - ttgamer.ui.sheet.v5.skills.academics
 - id: awareness

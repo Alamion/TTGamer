@@ -30,8 +30,11 @@ export interface VerifierConfig {
     /** Minimum share of Russian short descriptions per catalog (FR-024). */
     shortDescriptionCoverage: number;
     /**
-     * Longest label (characters) that fits each row kind at 360 px without squeezing the
-     * specialization input below 8 characters. Calibrated in spec 009 T087.
+     * Longest label (characters) that fits each row kind on one line without squeezing the
+     * specialization input below 8 characters. Measured in the Russian build (spec 009 T087):
+     * specialty rows 294 px wide at a 360 px viewport leave ~118 px for the label (14 chars at
+     * 8.25 px); plain trait rows ~170 px (20); compact rows in a desktop brief column ~160 px
+     * at 6.94 px (22). Narrower desktop columns move the specialization input to its own line.
      */
     overflowBudgets: Readonly<Record<TraitRowKind, number>>;
 }
@@ -47,7 +50,7 @@ export const DEFAULT_CONFIG: VerifierConfig = {
         docs: 'report',
         'docs-terms': 'report',
         glossary: 'report',
-        overflow: 'report',
+        overflow: 'error',
     },
     paths: {
         sources: 'translations/source',
@@ -108,7 +111,7 @@ export const DEFAULT_CONFIG: VerifierConfig = {
     ],
     pluralForms: { en: 2, ru: 3 },
     shortDescriptionCoverage: 0.9,
-    overflowBudgets: { compact: 12, trait: 18, traitWithSpecialty: 14 },
+    overflowBudgets: { compact: 22, trait: 20, traitWithSpecialty: 14 },
 };
 
 /** Converts a glob (`**`, `*`, `?`) to an anchored regular expression. */

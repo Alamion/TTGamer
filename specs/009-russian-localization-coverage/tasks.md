@@ -294,16 +294,16 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 ### Tests for User Story 5
 
-- [ ] T083 [P] [US5] Write `tests/sheet_manager/term-short-form.test.tsx`: `TermLabel` renders both `.term-full` and `.term-short` when `ruShort` exists, the short span is `aria-hidden`, and the hint then includes the full Russian name
+- [x] T083 [P] [US5] Write `tests/sheet_manager/term-short-form.test.tsx`: `TermLabel` renders both `.term-full` and `.term-short` when `ruShort` exists, the short span is `aria-hidden`, and the hint then includes the full Russian name
 - [ ] T084 [P] [US5] Extend `tests/sheet_manager/template-labels.test.ts`: every shipped trait node in the Star Wars and V5 templates has an effective ref listed in the glossary, and `yarn i18n:verify --rule overflow` logic (imported from `scripts/i18n-verifier/rules/overflow.ts`) reports nothing for the shipped templates
 
 ### Implementation for User Story 5
 
-- [ ] T085 [US5] Change the row layout in `src/sheet_manager/components/stat-fields/TraitRow.tsx`: the label container gets `min-w-0` and wraps at most 2 lines; `TraitRowWithInput` (around :136-161) makes the specialization input `min-w-[8ch]` instead of `min-w-5`; the rows become `@container` elements (class `term-row`)
-- [ ] T086 [US5] Add container-query rules to `src/css/set_tailwind_styles.scss`: `.term-row` shows `.term-short` and hides `.term-full` below the threshold width for each row kind (thresholds derived from the budgets in `scripts/i18n-verifier/config.ts`; document the numbers in a comment). Run `yarn build:styles`.
-- [ ] T087 [US5] Calibrate the budgets. At 360 px width open every shipped sheet: Star Wars character, creature, fodder, and vehicle, and Hunter full and brief. Find the longest label that still keeps 8 visible characters in the specialization input, then update `overflow` budgets in `scripts/i18n-verifier/config.ts` and the thresholds from T086.
-- [ ] T088 [US5] Add `ruShort` in `translations/glossary/*.yaml` for every term the `overflow` rule reports (including `animal-ken`). Propose each short form with a `note` for the maintainer review in T100. Rebuild translations, then set `overflow` to `error` in `scripts/i18n-verifier/config.ts`.
-- [ ] T089 [US5] Run quickstart §6 on a real phone or in devtools at 360 px and fix any row that still squeezes the input
+- [x] T085 [US5] Change the row layout in `src/sheet_manager/components/stat-fields/TraitRow.tsx`: the label container gets `min-w-0` and wraps at most 2 lines; `TraitRowWithInput` (around :136-161) makes the specialization input `min-w-[8ch]` instead of `min-w-5`; the rows become `@container` elements (class `term-row`)
+- [x] T086 [US5] Add container-query rules to `src/css/set_tailwind_styles.scss`: `.term-row` shows `.term-short` and hides `.term-full` below the threshold width for each row kind (thresholds derived from the budgets in `scripts/i18n-verifier/config.ts`; document the numbers in a comment). Run `yarn build:styles`.
+- [x] T087 [US5] Calibrate the budgets. At 360 px width open every shipped sheet: Star Wars character, creature, fodder, and vehicle, and Hunter full and brief. Find the longest label that still keeps 8 visible characters in the specialization input, then update `overflow` budgets in `scripts/i18n-verifier/config.ts` and the thresholds from T086.
+- [x] T088 [US5] Add `ruShort` in `translations/glossary/*.yaml` for every term the `overflow` rule reports (including `animal-ken`). Propose each short form with a `note` for the maintainer review in T100. Rebuild translations, then set `overflow` to `error` in `scripts/i18n-verifier/config.ts`.
+- [x] T089 [US5] Run quickstart §6 on a real phone or in devtools at 360 px and fix any row that still squeezes the input
 
 **Checkpoint**: no trait row squeezes its specialization input; "Обращение с животными" shows its short form with the full name in the hint
 

@@ -53,9 +53,11 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     },
     'ttgamer.ui.sheet.v5.skills.academics': {
         en: 'Academics',
+        ruShort: 'Гуманит. науки',
     },
     'ttgamer.ui.sheet.v5.skills.animalKen': {
         en: 'Animal Ken',
+        ruShort: 'Обр. с живот.',
     },
     'ttgamer.ui.sheet.v5.skills.athletics': {
         en: 'Athletics',
@@ -83,6 +85,7 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     },
     'ttgamer.ui.sheet.v5.skills.insight': {
         en: 'Insight',
+        ruShort: 'Проницат.',
     },
     'ttgamer.ui.sheet.v5.skills.intimidation': {
         en: 'Intimidation',
@@ -101,6 +104,7 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     },
     'ttgamer.ui.sheet.v5.skills.melee': {
         en: 'Melee',
+        ruShort: 'Хол. оружие',
     },
     'ttgamer.ui.sheet.v5.skills.occult': {
         en: 'Occult',

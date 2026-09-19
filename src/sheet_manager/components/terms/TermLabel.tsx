@@ -21,7 +21,7 @@ export function TermLabel({ className, ...input }: TermLabelProps) {
     const { hint, detail, short, display } = resolved;
     return (
         <span
-            className={clsx('term-label', className)}
+            className={clsx('term-label', short && 'term-has-short', className)}
             {...(hint
                 ? {
                       'data-term-ref': resolved.ref,

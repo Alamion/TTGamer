@@ -54,42 +54,56 @@
  * to its glossary short form on narrow rows (thresholds match the i18n verifier's overflow
  * budgets in scripts/i18n-verifier/config.ts; calibrated at 360 px, spec 009 T087).
  */
-@layer components {
-    .term-row {
-        container-type: inline-size;
-    }
+.term-row {
+    container-type: inline-size;
+}
 
-    @media (hover: hover) {
-        .term-label[data-term-ref] {
-            cursor: help;
-        }
+@media (hover: hover) {
+    .term-label[data-term-ref] {
+        cursor: help;
     }
+}
 
-    .term-label[data-term-ref]:focus-visible {
-        @apply rounded-sm outline-none ring-2 ring-primary;
-    }
+.term-label[data-term-ref]:focus-visible {
+    border-radius: 0.125rem;
+    outline: 2px solid rgb(var(--primary) / 1);
+    outline-offset: 1px;
+}
 
-    .term-label .term-short {
+.term-label .term-short {
+    display: none;
+}
+
+@container (max-width: 22rem) {
+    .term-row-specialty .term-has-short .term-full {
         display: none;
     }
 
-    @container (max-width: 22rem) {
-        .term-row-specialty .term-label .term-full {
-            display: none;
-        }
+    .term-row-specialty .term-has-short .term-short {
+        display: inline;
+    }
+}
 
-        .term-row-specialty .term-label .term-short {
-            display: inline;
-        }
+@container (max-width: 16rem) {
+    /* Too narrow for label, 8-character input, and dots on one line: input goes below. */
+    .term-row-specialty .term-row-inner {
+        flex-wrap: wrap;
     }
 
-    @container (max-width: 16rem) {
-        .term-label .term-full {
-            display: none;
-        }
+    .term-row-specialty .term-row-inner > :first-child {
+        flex: 1 1 0%;
+    }
 
-        .term-label .term-short {
-            display: inline;
-        }
+    .term-row-specialty .term-row-inner > input {
+        order: 2;
+        flex-basis: 100%;
+    }
+
+    .term-has-short .term-full {
+        display: none;
+    }
+
+    .term-has-short .term-short {
+        display: inline;
     }
 }

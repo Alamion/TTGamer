@@ -142,34 +142,38 @@ export function TraitRowWithInput({
     };
 
     return (
-        <div className={clsx('term-row term-row-specialty flex items-end gap-2 py-1.5', className)}>
-            <StatLabel label={name} tooltip={tooltip} term={term} />
-            <input
-                type="text"
-                value={specializationText}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                disabled={disabled}
-                className={clsx(
-                    'flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors min-w-[8ch]',
-                    disabled && 'opacity-50 cursor-not-allowed'
-                )}
-            />
-            <StatDot
-                value={value}
-                maxValue={maxValue}
-                onChange={onChange}
-                disabled={disabled}
-                size={size}
-                minimal={minimal}
-                showFlags={showFlags}
-                specialization={specialization}
-                experienced={experienced}
-                practiced={practiced}
-                onDiceRoll={onDiceRoll}
-                statLabel={name}
-                characterName={characterName}
-            />
+        // The outer div is the size container; the inner row wraps the specialization input
+        // onto its own line when the row is too narrow for label, input, and dots together.
+        <div className={clsx('term-row term-row-specialty py-1.5', className)}>
+            <div className="term-row-inner flex items-end gap-2">
+                <StatLabel label={name} tooltip={tooltip} term={term} />
+                <input
+                    type="text"
+                    value={specializationText}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    disabled={disabled}
+                    className={clsx(
+                        'w-0 flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors min-w-[8ch]',
+                        disabled && 'opacity-50 cursor-not-allowed'
+                    )}
+                />
+                <StatDot
+                    value={value}
+                    maxValue={maxValue}
+                    onChange={onChange}
+                    disabled={disabled}
+                    size={size}
+                    minimal={minimal}
+                    showFlags={showFlags}
+                    specialization={specialization}
+                    experienced={experienced}
+                    practiced={practiced}
+                    onDiceRoll={onDiceRoll}
+                    statLabel={name}
+                    characterName={characterName}
+                />
+            </div>
         </div>
     );
 }
