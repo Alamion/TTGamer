@@ -1,0 +1,19 @@
+tabs:
+    standard: Стандарт
+    dnd: D&D
+dnd:
+    advantage: ПРЕИМ
+    disadvantage: ПОМЕХА
+wod:
+    difficulty: 'Сложность:'
+diceButtonTitle: 'ЛКМ: добавить {notation} | ПКМ: убрать {notation}'
+diceAlt: Кубик {type}
+notation:
+    placeholder: Нотация броска (например, 2d6+3 или 4d20kh3)
+    reference: Открыть справку по нотации кубиков
+    saveFavorite: Сохранить в избранное
+    removeFavorite: Убрать из избранного
+    invalid: Неверная нотация
+controls:
+    clear: Очистить
+    roll: Бросить

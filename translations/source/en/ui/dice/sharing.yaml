@@ -1,0 +1,5 @@
+enableDiscordWebhook: Enable Discord webhook
+webhookUrl: Discord Webhook URL
+webhookValid: Valid Discord webhook
+webhookInvalid: Invalid Discord webhook URL format
+discordToggleTitle: 'Left-click: toggle Discord webhook | Right-click: anonymize rolls (hide character data)'

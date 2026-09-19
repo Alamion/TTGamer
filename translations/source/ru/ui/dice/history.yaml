@@ -1,0 +1,21 @@
+tabs:
+    history: История
+    favorites: Избранное
+    recent: Недавние
+addFavorite: Добавить в избранное
+removeFavorite: Убрать из избранного
+setNotationTitle: Подставить нотацию | ПКМ — бросить
+stats: 'Характеристики: {stats}'
+rolls: 'Броски: {details}'
+formatted: 'Формат: {formatted}'
+manuallyRerolled: Переброшено вручную
+empty:
+    history: Бросков пока нет
+    favorites: В избранном пусто
+    recent: Недавних нотаций нет
+clear:
+    button: Очистить
+    history: Очистить историю
+    favorites: Очистить избранное
+    recent: Очистить недавние
+    default: Очистить

@@ -1,0 +1,21 @@
+tabs:
+    history: History
+    favorites: Favorites
+    recent: Recent
+addFavorite: Add to favorites
+removeFavorite: Remove from favorites
+setNotationTitle: Set notation | Right-click to roll
+stats: 'Stats: {stats}'
+rolls: 'Rolls: {details}'
+formatted: 'Formatted: {formatted}'
+manuallyRerolled: Manually Rerolled
+empty:
+    history: No rolls yet
+    favorites: No favorites saved
+    recent: No recent notations
+clear:
+    button: Clear
+    history: Clear history
+    favorites: Clear favorites
+    recent: Clear recent
+    default: Clear

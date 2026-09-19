@@ -1,0 +1,14 @@
+open: Открыть настройки бросков
+title: Настройки бросков
+close: Закрыть настройки
+enable3dDicePanel: 3D-кубики в панели
+diceFaceColor: Цвет граней
+diceTextColor: Цвет символов
+sound: Звук бросков
+volume: Громкость
+timeToReact: Время на реакцию
+reactWindow: Окно реакции (секунды)
+reactWindowValue: '{seconds} с'
+includeRollContext: Добавлять подробности броска
+includeCharacterName: Добавлять имя персонажа
+includeCharacterStats: Добавлять характеристики персонажа

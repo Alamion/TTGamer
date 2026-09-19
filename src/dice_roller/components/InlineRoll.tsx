@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { ChevronDown, ChevronUp, Dices } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -146,7 +148,11 @@ function InlineRollState({
                 type="button"
                 onClick={toggleExpand}
                 className="inline-flex items-center bg-transparent border-none p-0 opacity-50 hover:opacity-100 self-center"
-                aria-label={expanded ? 'Collapse roll details' : 'Expand roll details'}
+                aria-label={translate(
+                    expanded
+                        ? uiMessages.dice.inlineRoll.collapse
+                        : uiMessages.dice.inlineRoll.expand
+                )}
                 aria-expanded={expanded}
             >
                 {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -156,10 +162,16 @@ function InlineRollState({
     const expandedContent =
         isExpanded && result ? (
             <span className="text-xs opacity-80 leading-relaxed pt-0.5">
-                {(variant === 'details' || variant === 'full') && <>Rolls: {result.details}</>}
+                {(variant === 'details' || variant === 'full') && (
+                    <>{translate(uiMessages.dice.inlineRoll.rolls, { details: result.details })}</>
+                )}
                 {variant === 'full' && <br />}
                 {(variant === 'formatted' || variant === 'full') && (
-                    <>Formatted: {result.formatted}</>
+                    <>
+                        {translate(uiMessages.dice.inlineRoll.formatted, {
+                            formatted: result.formatted,
+                        })}
+                    </>
                 )}
             </span>
         ) : null;

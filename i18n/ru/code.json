@@ -326,6 +326,189 @@
         "message": "Содержание этой страницы",
         "description": "The label used by the button on the collapsible TOC component"
     },
+    "ttgamer.ui.dice.history.addFavorite": {
+        "message": "Добавить в избранное"
+    },
+    "ttgamer.ui.dice.history.clear.button": {
+        "message": "Очистить"
+    },
+    "ttgamer.ui.dice.history.clear.default": {
+        "message": "Очистить"
+    },
+    "ttgamer.ui.dice.history.clear.favorites": {
+        "message": "Очистить избранное"
+    },
+    "ttgamer.ui.dice.history.clear.history": {
+        "message": "Очистить историю"
+    },
+    "ttgamer.ui.dice.history.clear.recent": {
+        "message": "Очистить недавние"
+    },
+    "ttgamer.ui.dice.history.empty.favorites": {
+        "message": "В избранном пусто"
+    },
+    "ttgamer.ui.dice.history.empty.history": {
+        "message": "Бросков пока нет"
+    },
+    "ttgamer.ui.dice.history.empty.recent": {
+        "message": "Недавних нотаций нет"
+    },
+    "ttgamer.ui.dice.history.formatted": {
+        "message": "Формат: {formatted}"
+    },
+    "ttgamer.ui.dice.history.manuallyRerolled": {
+        "message": "Переброшено вручную"
+    },
+    "ttgamer.ui.dice.history.removeFavorite": {
+        "message": "Убрать из избранного"
+    },
+    "ttgamer.ui.dice.history.rolls": {
+        "message": "Броски: {details}"
+    },
+    "ttgamer.ui.dice.history.setNotationTitle": {
+        "message": "Подставить нотацию | ПКМ — бросить"
+    },
+    "ttgamer.ui.dice.history.stats": {
+        "message": "Характеристики: {stats}"
+    },
+    "ttgamer.ui.dice.history.tabs.favorites": {
+        "message": "Избранное"
+    },
+    "ttgamer.ui.dice.history.tabs.history": {
+        "message": "История"
+    },
+    "ttgamer.ui.dice.history.tabs.recent": {
+        "message": "Недавние"
+    },
+    "ttgamer.ui.dice.inlineRoll.collapse": {
+        "message": "Свернуть подробности броска"
+    },
+    "ttgamer.ui.dice.inlineRoll.expand": {
+        "message": "Развернуть подробности броска"
+    },
+    "ttgamer.ui.dice.inlineRoll.formatted": {
+        "message": "Формат: {formatted}"
+    },
+    "ttgamer.ui.dice.inlineRoll.rolls": {
+        "message": "Броски: {details}"
+    },
+    "ttgamer.ui.dice.panel.close": {
+        "message": "Закрыть панель бросков"
+    },
+    "ttgamer.ui.dice.panel.title": {
+        "message": "Броски кубиков"
+    },
+    "ttgamer.ui.dice.pool.controls.clear": {
+        "message": "Очистить"
+    },
+    "ttgamer.ui.dice.pool.controls.roll": {
+        "message": "Бросить"
+    },
+    "ttgamer.ui.dice.pool.diceAlt": {
+        "message": "Кубик {type}"
+    },
+    "ttgamer.ui.dice.pool.diceButtonTitle": {
+        "message": "ЛКМ: добавить {notation} | ПКМ: убрать {notation}"
+    },
+    "ttgamer.ui.dice.pool.dnd.advantage": {
+        "message": "ПРЕИМ"
+    },
+    "ttgamer.ui.dice.pool.dnd.disadvantage": {
+        "message": "ПОМЕХА"
+    },
+    "ttgamer.ui.dice.pool.notation.invalid": {
+        "message": "Неверная нотация"
+    },
+    "ttgamer.ui.dice.pool.notation.placeholder": {
+        "message": "Нотация броска (например, 2d6+3 или 4d20kh3)"
+    },
+    "ttgamer.ui.dice.pool.notation.reference": {
+        "message": "Открыть справку по нотации кубиков"
+    },
+    "ttgamer.ui.dice.pool.notation.removeFavorite": {
+        "message": "Убрать из избранного"
+    },
+    "ttgamer.ui.dice.pool.notation.saveFavorite": {
+        "message": "Сохранить в избранное"
+    },
+    "ttgamer.ui.dice.pool.tabs.dnd": {
+        "message": "D&D"
+    },
+    "ttgamer.ui.dice.pool.tabs.standard": {
+        "message": "Стандарт"
+    },
+    "ttgamer.ui.dice.pool.wod.difficulty": {
+        "message": "Сложность:"
+    },
+    "ttgamer.ui.dice.settings.close": {
+        "message": "Закрыть настройки"
+    },
+    "ttgamer.ui.dice.settings.diceFaceColor": {
+        "message": "Цвет граней"
+    },
+    "ttgamer.ui.dice.settings.diceTextColor": {
+        "message": "Цвет символов"
+    },
+    "ttgamer.ui.dice.settings.enable3dDicePanel": {
+        "message": "3D-кубики в панели"
+    },
+    "ttgamer.ui.dice.settings.includeCharacterName": {
+        "message": "Добавлять имя персонажа"
+    },
+    "ttgamer.ui.dice.settings.includeCharacterStats": {
+        "message": "Добавлять характеристики персонажа"
+    },
+    "ttgamer.ui.dice.settings.includeRollContext": {
+        "message": "Добавлять подробности броска"
+    },
+    "ttgamer.ui.dice.settings.open": {
+        "message": "Открыть настройки бросков"
+    },
+    "ttgamer.ui.dice.settings.reactWindow": {
+        "message": "Окно реакции (секунды)"
+    },
+    "ttgamer.ui.dice.settings.reactWindowValue": {
+        "message": "{seconds} с"
+    },
+    "ttgamer.ui.dice.settings.sound": {
+        "message": "Звук бросков"
+    },
+    "ttgamer.ui.dice.settings.timeToReact": {
+        "message": "Время на реакцию"
+    },
+    "ttgamer.ui.dice.settings.title": {
+        "message": "Настройки бросков"
+    },
+    "ttgamer.ui.dice.settings.volume": {
+        "message": "Громкость"
+    },
+    "ttgamer.ui.dice.sharing.discordToggleTitle": {
+        "message": "ЛКМ: включить или выключить вебхук Discord | ПКМ: анонимные броски (скрыть данные персонажа)"
+    },
+    "ttgamer.ui.dice.sharing.enableDiscordWebhook": {
+        "message": "Включить вебхук Discord"
+    },
+    "ttgamer.ui.dice.sharing.webhookInvalid": {
+        "message": "Неверный формат URL вебхука Discord"
+    },
+    "ttgamer.ui.dice.sharing.webhookUrl": {
+        "message": "URL вебхука Discord"
+    },
+    "ttgamer.ui.dice.sharing.webhookValid": {
+        "message": "Вебхук Discord указан верно"
+    },
+    "ttgamer.ui.integrations.discord.errors.network": {
+        "message": "Не удалось связаться с Discord. Проверьте подключение."
+    },
+    "ttgamer.ui.integrations.discord.errors.rateLimited": {
+        "message": "Discord ограничивает частоту бросков. Повторите чуть позже."
+    },
+    "ttgamer.ui.integrations.discord.errors.rateLimitedRetry": {
+        "message": "Discord ограничивает частоту бросков. Повторите примерно через {seconds} с."
+    },
+    "ttgamer.ui.integrations.discord.errors.rejected": {
+        "message": "Discord отклонил бросок. Проверьте настройки вебхука."
+    },
     "ttgamer.ui.sheet.base.appearance": {
         "message": "Внешность"
     },
@@ -2380,5 +2563,68 @@
     },
     "ttgamer.ui.sheet.v5Hunter.weaponKinds.ranged": {
         "message": "Дальний бой"
+    },
+    "ttgamer.ui.site.home.about.body": {
+        "message": "Гибридная НРИ, сочетающая повествовательную простоту {weg} с механической глубиной системы пулов d10 из {wod}. Создавайте персонажей с 9 основными атрибутами, 30 способностями, специализациями навыков, силами Силы и отслеживайте ударный и летальный урон на двойной шкале здоровья."
+    },
+    "ttgamer.ui.site.home.about.title": {
+        "message": "О системе"
+    },
+    "ttgamer.ui.site.home.about.worldOfDarkness": {
+        "message": "«Мира Тьмы»"
+    },
+    "ttgamer.ui.site.home.features.characterSheet.summary": {
+        "message": "Полноценный менеджер с 9 атрибутами, 30 способностями, силами Силы, инвентарём, учётом здоровья и многим другим. Поддерживает разумных персонажей и дроидов; листы транспорта в планах."
+    },
+    "ttgamer.ui.site.home.features.characterSheet.title": {
+        "message": "Лист персонажа"
+    },
+    "ttgamer.ui.site.home.features.diceRoller.summary": {
+        "message": "Физика 3D-кубиков в реальном времени на WebGL, звуковые эффекты, физика поверхностей, история бросков и поддержка любой нотации кубиков. Есть запасной 2D-режим."
+    },
+    "ttgamer.ui.site.home.features.diceRoller.title": {
+        "message": "3D-кубики"
+    },
+    "ttgamer.ui.site.home.features.documentation.summary": {
+        "message": "Полное описание правил — создание персонажа, бой, транспорт, инструменты мастера, бестиарий, снаряжение и полный разобранный пример."
+    },
+    "ttgamer.ui.site.home.features.documentation.title": {
+        "message": "Полная документация"
+    },
+    "ttgamer.ui.site.home.features.heading": {
+        "message": "Что доступно"
+    },
+    "ttgamer.ui.site.home.hero.characterSheet": {
+        "message": "Лист персонажа"
+    },
+    "ttgamer.ui.site.home.hero.quickStart": {
+        "message": "Быстрый старт"
+    },
+    "ttgamer.ui.site.home.hero.status": {
+        "message": "Активная разработка — v{version}"
+    },
+    "ttgamer.ui.site.home.meta.pageDescription": {
+        "message": "TTGamer — менеджер листов персонажей и документация гибридной НРИ Star Wars WEG/WoD"
+    },
+    "ttgamer.ui.site.home.meta.pageTitle": {
+        "message": "Главная"
+    },
+    "ttgamer.ui.site.home.status.docsComplete": {
+        "message": "Готово документов: {count}"
+    },
+    "ttgamer.ui.site.home.status.live": {
+        "message": "ОНЛАЙН:"
+    },
+    "ttgamer.ui.site.navbar.pendingRollTitle": {
+        "message": "ЛКМ: бросить | ПКМ: очистить"
+    },
+    "ttgamer.ui.site.navbar.toggleDiceRoller": {
+        "message": "Показать или скрыть панель бросков"
+    },
+    "ttgamer.ui.site.sheetPage.pageDescription": {
+        "message": "Универсальный менеджер листов персонажей"
+    },
+    "ttgamer.ui.site.sheetPage.pageTitle": {
+        "message": "Менеджер листов"
     }
 }

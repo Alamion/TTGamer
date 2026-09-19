@@ -1,4 +1,6 @@
+import { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { isValidDiscordWebhook, SESSION_STORAGE_KEY } from '@site/src/integrations/discord';
 import { SecretField } from '@site/src/shared/components/SecretField';
 import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
@@ -18,7 +20,7 @@ export default function DiceRollerSettingsModal() {
             <Dialog.Trigger asChild>
                 <button
                     type="button"
-                    aria-label="Open dice roller settings"
+                    aria-label={translate(uiMessages.dice.settings.open)}
                     className="inline-flex items-center justify-center w-8 h-8 rounded-md
                         hover:bg-bgBase/50 transition-colors"
                 >
@@ -34,12 +36,12 @@ export default function DiceRollerSettingsModal() {
             >
                 <div className="flex items-center justify-between mb-4">
                     <Dialog.Title className="text-lg font-bold text-textPrimary">
-                        Dice Roller Settings
+                        {translate(uiMessages.dice.settings.title)}
                     </Dialog.Title>
                     <Dialog.Close asChild>
                         <button
                             type="button"
-                            aria-label="Close settings"
+                            aria-label={translate(uiMessages.dice.settings.close)}
                             className="inline-flex items-center justify-center w-8 h-8 rounded-md
                                 hover:bg-bgBase/50 transition-colors"
                         >
@@ -58,12 +60,16 @@ export default function DiceRollerSettingsModal() {
                             }
                             className="w-4 h-4 accent-primary"
                         />
-                        <span className="text-sm text-textPrimary">3D Dice in Panel</span>
+                        <span className="text-sm text-textPrimary">
+                            {translate(uiMessages.dice.settings.enable3dDicePanel)}
+                        </span>
                     </label>
 
                     <div className="flex gap-4">
                         <label className="flex-1 space-y-1">
-                            <span className="text-xs text-textSecondary">Dice face color</span>
+                            <span className="text-xs text-textSecondary">
+                                {translate(uiMessages.dice.settings.diceFaceColor)}
+                            </span>
                             <input
                                 type="color"
                                 value={settings.primaryDiceColor}
@@ -74,7 +80,9 @@ export default function DiceRollerSettingsModal() {
                             />
                         </label>
                         <label className="flex-1 space-y-1">
-                            <span className="text-xs text-textSecondary">Dice text color</span>
+                            <span className="text-xs text-textSecondary">
+                                {translate(uiMessages.dice.settings.diceTextColor)}
+                            </span>
                             <input
                                 type="color"
                                 value={settings.secondaryDiceColor}
@@ -93,12 +101,16 @@ export default function DiceRollerSettingsModal() {
                             onChange={(e) => updateSettings({ enableSound: e.target.checked })}
                             className="w-4 h-4 accent-primary"
                         />
-                        <span className="text-sm text-textPrimary">Roll sound effects</span>
+                        <span className="text-sm text-textPrimary">
+                            {translate(uiMessages.dice.settings.sound)}
+                        </span>
                     </label>
 
                     {settings.enableSound && (
                         <div className="pl-7 space-y-1">
-                            <span className="text-xs text-textSecondary">Volume</span>
+                            <span className="text-xs text-textSecondary">
+                                {translate(uiMessages.dice.settings.volume)}
+                            </span>
                             <input
                                 type="range"
                                 min={0}
@@ -123,13 +135,15 @@ export default function DiceRollerSettingsModal() {
                             onChange={(e) => updateSettings({ timeToReact: e.target.checked })}
                             className="w-4 h-4 accent-primary"
                         />
-                        <span className="text-sm text-textPrimary">Time to react</span>
+                        <span className="text-sm text-textPrimary">
+                            {translate(uiMessages.dice.settings.timeToReact)}
+                        </span>
                     </label>
 
                     {settings.timeToReact && (
                         <div className="pl-7 space-y-1">
                             <span className="text-xs text-textSecondary">
-                                React window (seconds)
+                                {translate(uiMessages.dice.settings.reactWindow)}
                             </span>
                             <input
                                 type="range"
@@ -145,7 +159,9 @@ export default function DiceRollerSettingsModal() {
                                 className="w-full accent-primary"
                             />
                             <span className="text-xs text-textSecondary">
-                                {settings.timeToReactSeconds}s
+                                {translate(uiMessages.dice.settings.reactWindowValue, {
+                                    seconds: settings.timeToReactSeconds,
+                                })}
                             </span>
                         </div>
                     )}
@@ -159,7 +175,9 @@ export default function DiceRollerSettingsModal() {
                             }
                             className="w-4 h-4 accent-primary"
                         />
-                        <span className="text-sm text-textPrimary">Include roll context</span>
+                        <span className="text-sm text-textPrimary">
+                            {translate(uiMessages.dice.settings.includeRollContext)}
+                        </span>
                     </label>
 
                     <label className="flex items-center gap-3 cursor-pointer">
@@ -171,7 +189,9 @@ export default function DiceRollerSettingsModal() {
                             }
                             className="w-4 h-4 accent-primary"
                         />
-                        <span className="text-sm text-textPrimary">Include character name</span>
+                        <span className="text-sm text-textPrimary">
+                            {translate(uiMessages.dice.settings.includeCharacterName)}
+                        </span>
                     </label>
 
                     <label className="flex items-center gap-3 cursor-pointer">
@@ -183,7 +203,9 @@ export default function DiceRollerSettingsModal() {
                             }
                             className="w-4 h-4 accent-primary"
                         />
-                        <span className="text-sm text-textPrimary">Include character stats</span>
+                        <span className="text-sm text-textPrimary">
+                            {translate(uiMessages.dice.settings.includeCharacterStats)}
+                        </span>
                     </label>
 
                     <label className="flex items-center gap-3 cursor-pointer">
@@ -195,7 +217,9 @@ export default function DiceRollerSettingsModal() {
                             }
                             className="w-4 h-4 accent-primary"
                         />
-                        <span className="text-sm text-textPrimary">Enable Discord webhook</span>
+                        <span className="text-sm text-textPrimary">
+                            {translate(uiMessages.dice.sharing.enableDiscordWebhook)}
+                        </span>
                     </label>
 
                     <div className="border-t border-border pt-4">
@@ -203,12 +227,12 @@ export default function DiceRollerSettingsModal() {
                             value={webhookUrl}
                             onChange={setWebhookUrl}
                             placeholder="https://discord.com/api/webhooks/..."
-                            label="Discord Webhook URL"
+                            label={translate(uiMessages.dice.sharing.webhookUrl)}
                             validationMessage={
                                 webhookUrl.length > 0
                                     ? isWebhookValid
-                                        ? 'Valid Discord webhook'
-                                        : 'Invalid Discord webhook URL format'
+                                        ? translate(uiMessages.dice.sharing.webhookValid)
+                                        : translate(uiMessages.dice.sharing.webhookInvalid)
                                     : undefined
                             }
                             isValid={isWebhookValid}
