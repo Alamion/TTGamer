@@ -236,6 +236,88 @@ export const uiMessages = {
                 message: 'Search the catalog...',
             },
         },
+        controls: {
+            textFallbackLabel: {
+                id: 'ttgamer.ui.sheet.controls.textFallbackLabel',
+                message: 'Text',
+            },
+            noMatches: {
+                id: 'ttgamer.ui.sheet.controls.noMatches',
+                message: 'No matches found',
+            },
+            documentationFor: {
+                id: 'ttgamer.ui.sheet.controls.documentationFor',
+                message: 'Documentation for {title}',
+            },
+            toggleSection: {
+                id: 'ttgamer.ui.sheet.controls.toggleSection',
+                message: 'Toggle {title} section',
+            },
+            labelInformation: {
+                id: 'ttgamer.ui.sheet.controls.labelInformation',
+                message: '{label} information',
+            },
+            add: {
+                id: 'ttgamer.ui.sheet.controls.add',
+                message: 'Add',
+            },
+            resourceCurrent: {
+                id: 'ttgamer.ui.sheet.controls.resourceCurrent',
+                message: '{label} — current',
+            },
+            resourceMax: {
+                id: 'ttgamer.ui.sheet.controls.resourceMax',
+                message: '{label} — max',
+            },
+            statDot: {
+                group: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.group',
+                    message: 'Stat value',
+                },
+                diceTitle: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.diceTitle',
+                    message: 'Left-click: set notation | Right-click: roll',
+                },
+                specialization: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.specialization',
+                    message: 'Specialization',
+                },
+                practiced: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.practiced',
+                    message: 'Practiced',
+                },
+                experienced: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.experienced',
+                    message: 'Experienced',
+                },
+                remove: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.remove',
+                    message: 'Remove',
+                },
+            },
+            meritFlaw: {
+                meritPlaceholder: {
+                    id: 'ttgamer.ui.sheet.controls.meritFlaw.meritPlaceholder',
+                    message: 'Merit name...',
+                },
+                flawPlaceholder: {
+                    id: 'ttgamer.ui.sheet.controls.meritFlaw.flawPlaceholder',
+                    message: 'Flaw name...',
+                },
+                addMerit: {
+                    id: 'ttgamer.ui.sheet.controls.meritFlaw.addMerit',
+                    message: 'Add Merit',
+                },
+                addFlaw: {
+                    id: 'ttgamer.ui.sheet.controls.meritFlaw.addFlaw',
+                    message: 'Add Flaw',
+                },
+                remove: {
+                    id: 'ttgamer.ui.sheet.controls.meritFlaw.remove',
+                    message: 'Remove entry',
+                },
+            },
+        },
         documents: {
             toolbar: {
                 export: {
@@ -370,7 +452,8 @@ export const uiMessages = {
                 deleteDescription: {
                     id: 'ttgamer.ui.sheet.documents.manager.deleteDescription',
                     message:
-                        'Are you sure you want to delete {count} document(s)? This cannot be undone.',
+                        'Are you sure you want to delete {count} document? This cannot be undone.|Are you sure you want to delete {count} documents? This cannot be undone.',
+                    plural: true,
                 },
                 close: {
                     id: 'ttgamer.ui.sheet.documents.manager.close',
@@ -874,6 +957,332 @@ export const uiMessages = {
                 },
             },
         },
+        items: {
+            name: {
+                id: 'ttgamer.ui.sheet.items.name',
+                message: 'Name',
+            },
+            card: {
+                expand: {
+                    id: 'ttgamer.ui.sheet.items.card.expand',
+                    message: 'Expand item details',
+                },
+                collapse: {
+                    id: 'ttgamer.ui.sheet.items.card.collapse',
+                    message: 'Collapse item details',
+                },
+                remove: {
+                    id: 'ttgamer.ui.sheet.items.card.remove',
+                    message: 'Remove item',
+                },
+            },
+            weapons: {
+                empty: {
+                    id: 'ttgamer.ui.sheet.items.weapons.empty',
+                    message: 'No weapons yet...',
+                },
+                untitled: {
+                    id: 'ttgamer.ui.sheet.items.weapons.untitled',
+                    message: 'New Weapon',
+                },
+                namePlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.weapons.namePlaceholder',
+                    message: 'Weapon name...',
+                },
+                nameLabel: {
+                    id: 'ttgamer.ui.sheet.items.weapons.nameLabel',
+                    message: 'Weapon name',
+                },
+                damage: {
+                    id: 'ttgamer.ui.sheet.items.weapons.damage',
+                    message: 'Damage',
+                },
+                damagePlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.weapons.damagePlaceholder',
+                    message: 'Dmg...',
+                },
+                damageLabel: {
+                    id: 'ttgamer.ui.sheet.items.weapons.damageLabel',
+                    message: 'Damage',
+                },
+                range: {
+                    id: 'ttgamer.ui.sheet.items.weapons.range',
+                    message: 'Range',
+                },
+                rangePlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.weapons.rangePlaceholder',
+                    message: 'Rng...',
+                },
+                rangeLabel: {
+                    id: 'ttgamer.ui.sheet.items.weapons.rangeLabel',
+                    message: 'Range',
+                },
+                ammo: {
+                    id: 'ttgamer.ui.sheet.items.weapons.ammo',
+                    message: 'Ammo',
+                },
+                ammoPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.weapons.ammoPlaceholder',
+                    message: 'Ammo...',
+                },
+                ammoLabel: {
+                    id: 'ttgamer.ui.sheet.items.weapons.ammoLabel',
+                    message: 'Ammunition',
+                },
+                capacity: {
+                    id: 'ttgamer.ui.sheet.items.weapons.capacity',
+                    message: 'Capacity',
+                },
+                capacityPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.weapons.capacityPlaceholder',
+                    message: 'Capacity...',
+                },
+                capacityLabel: {
+                    id: 'ttgamer.ui.sheet.items.weapons.capacityLabel',
+                    message: 'Maximum ammo',
+                },
+                add: {
+                    id: 'ttgamer.ui.sheet.items.weapons.add',
+                    message: 'Add Weapon',
+                },
+                addLabel: {
+                    id: 'ttgamer.ui.sheet.items.weapons.addLabel',
+                    message: 'Add weapon',
+                },
+            },
+            armor: {
+                empty: {
+                    id: 'ttgamer.ui.sheet.items.armor.empty',
+                    message: 'No armor yet...',
+                },
+                untitled: {
+                    id: 'ttgamer.ui.sheet.items.armor.untitled',
+                    message: 'New Armor',
+                },
+                namePlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.armor.namePlaceholder',
+                    message: 'Armor name...',
+                },
+                nameLabel: {
+                    id: 'ttgamer.ui.sheet.items.armor.nameLabel',
+                    message: 'Armor name',
+                },
+                class: {
+                    id: 'ttgamer.ui.sheet.items.armor.class',
+                    message: 'Class',
+                },
+                classPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.armor.classPlaceholder',
+                    message: 'Class...',
+                },
+                classLabel: {
+                    id: 'ttgamer.ui.sheet.items.armor.classLabel',
+                    message: 'Armor class',
+                },
+                rating: {
+                    id: 'ttgamer.ui.sheet.items.armor.rating',
+                    message: 'AR',
+                },
+                ratingPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.armor.ratingPlaceholder',
+                    message: 'AR...',
+                },
+                ratingLabel: {
+                    id: 'ttgamer.ui.sheet.items.armor.ratingLabel',
+                    message: 'Armor rating',
+                },
+                dexPenalty: {
+                    id: 'ttgamer.ui.sheet.items.armor.dexPenalty',
+                    message: 'Dex pen',
+                },
+                dexPenaltyPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.armor.dexPenaltyPlaceholder',
+                    message: 'Dex penalty...',
+                },
+                dexPenaltyLabel: {
+                    id: 'ttgamer.ui.sheet.items.armor.dexPenaltyLabel',
+                    message: 'Dexterity penalty',
+                },
+                add: {
+                    id: 'ttgamer.ui.sheet.items.armor.add',
+                    message: 'Add Armor',
+                },
+                addLabel: {
+                    id: 'ttgamer.ui.sheet.items.armor.addLabel',
+                    message: 'Add armor',
+                },
+            },
+            inventory: {
+                empty: {
+                    id: 'ttgamer.ui.sheet.items.inventory.empty',
+                    message: 'No items yet...',
+                },
+                untitled: {
+                    id: 'ttgamer.ui.sheet.items.inventory.untitled',
+                    message: 'New Item',
+                },
+                namePlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.inventory.namePlaceholder',
+                    message: 'Item name...',
+                },
+                nameLabel: {
+                    id: 'ttgamer.ui.sheet.items.inventory.nameLabel',
+                    message: 'Item name',
+                },
+                descriptionTitle: {
+                    id: 'ttgamer.ui.sheet.items.inventory.descriptionTitle',
+                    message: 'Description',
+                },
+                descriptionPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.inventory.descriptionPlaceholder',
+                    message: 'Description...',
+                },
+                descriptionLabel: {
+                    id: 'ttgamer.ui.sheet.items.inventory.descriptionLabel',
+                    message: 'Item description',
+                },
+                effects: {
+                    id: 'ttgamer.ui.sheet.items.inventory.effects',
+                    message: 'Effects',
+                },
+                effectsPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.inventory.effectsPlaceholder',
+                    message: 'Effects...',
+                },
+                effectsLabel: {
+                    id: 'ttgamer.ui.sheet.items.inventory.effectsLabel',
+                    message: 'Item effects',
+                },
+                weight: {
+                    id: 'ttgamer.ui.sheet.items.inventory.weight',
+                    message: 'Weight',
+                },
+                weightPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.inventory.weightPlaceholder',
+                    message: 'Weight...',
+                },
+                weightLabel: {
+                    id: 'ttgamer.ui.sheet.items.inventory.weightLabel',
+                    message: 'Item weight',
+                },
+                price: {
+                    id: 'ttgamer.ui.sheet.items.inventory.price',
+                    message: 'Price',
+                },
+                pricePlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.inventory.pricePlaceholder',
+                    message: 'Price...',
+                },
+                priceLabel: {
+                    id: 'ttgamer.ui.sheet.items.inventory.priceLabel',
+                    message: 'Item price',
+                },
+                quantity: {
+                    id: 'ttgamer.ui.sheet.items.inventory.quantity',
+                    message: 'Quantity',
+                },
+                quantityPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.inventory.quantityPlaceholder',
+                    message: 'Quantity...',
+                },
+                quantityLabel: {
+                    id: 'ttgamer.ui.sheet.items.inventory.quantityLabel',
+                    message: 'Quantity',
+                },
+                maxQuantity: {
+                    id: 'ttgamer.ui.sheet.items.inventory.maxQuantity',
+                    message: 'Max qty',
+                },
+                maxQuantityPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.inventory.maxQuantityPlaceholder',
+                    message: 'Max qty...',
+                },
+                maxQuantityLabel: {
+                    id: 'ttgamer.ui.sheet.items.inventory.maxQuantityLabel',
+                    message: 'Maximum quantity',
+                },
+                equipped: {
+                    id: 'ttgamer.ui.sheet.items.inventory.equipped',
+                    message: 'Equipped',
+                },
+                add: {
+                    id: 'ttgamer.ui.sheet.items.inventory.add',
+                    message: 'Add Item',
+                },
+                addLabel: {
+                    id: 'ttgamer.ui.sheet.items.inventory.addLabel',
+                    message: 'Add inventory item',
+                },
+            },
+            implants: {
+                empty: {
+                    id: 'ttgamer.ui.sheet.items.implants.empty',
+                    message: 'No implants yet...',
+                },
+                untitled: {
+                    id: 'ttgamer.ui.sheet.items.implants.untitled',
+                    message: 'New Implant',
+                },
+                namePlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.implants.namePlaceholder',
+                    message: 'Implant name...',
+                },
+                nameLabel: {
+                    id: 'ttgamer.ui.sheet.items.implants.nameLabel',
+                    message: 'Implant name',
+                },
+                type: {
+                    id: 'ttgamer.ui.sheet.items.implants.type',
+                    message: 'Type',
+                },
+                typePlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.implants.typePlaceholder',
+                    message: 'Limb, Sensory, Uplink...',
+                },
+                typeLabel: {
+                    id: 'ttgamer.ui.sheet.items.implants.typeLabel',
+                    message: 'Implant type',
+                },
+                effect: {
+                    id: 'ttgamer.ui.sheet.items.implants.effect',
+                    message: 'Effect',
+                },
+                effectPlaceholder: {
+                    id: 'ttgamer.ui.sheet.items.implants.effectPlaceholder',
+                    message: 'Mechanical effect...',
+                },
+                effectLabel: {
+                    id: 'ttgamer.ui.sheet.items.implants.effectLabel',
+                    message: 'Implant effect',
+                },
+                add: {
+                    id: 'ttgamer.ui.sheet.items.implants.add',
+                    message: 'Add Implant',
+                },
+                addLabel: {
+                    id: 'ttgamer.ui.sheet.items.implants.addLabel',
+                    message: 'Add implant',
+                },
+            },
+            catalog: {
+                rangedWeapon: {
+                    id: 'ttgamer.ui.sheet.items.catalog.rangedWeapon',
+                    message: '{damage} | {range}m | {ammo} shots',
+                },
+                rangedWeaponShort: {
+                    id: 'ttgamer.ui.sheet.items.catalog.rangedWeaponShort',
+                    message: '{damage} | {range}m',
+                },
+                armor: {
+                    id: 'ttgamer.ui.sheet.items.catalog.armor',
+                    message: 'Class {classVal} | AR {ar} | Dex {dexPenalty}',
+                },
+                armorShort: {
+                    id: 'ttgamer.ui.sheet.items.catalog.armorShort',
+                    message: 'Class {classVal} | AR {ar}',
+                },
+            },
+        },
         policies: {
             notice: {
                 label: {
@@ -977,6 +1386,26 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.library.incompatibleHint',
                     message:
                         'Saved in a previous template format. Kept for recovery only — recreate it with the new editor.',
+                },
+                skeletonName: {
+                    id: 'ttgamer.ui.sheet.templates.library.skeletonName',
+                    message: '{label} page skeleton',
+                },
+                skeletonDescription: {
+                    id: 'ttgamer.ui.sheet.templates.library.skeletonDescription',
+                    message: 'Starts from the current structure of the built-in {label} page.',
+                },
+                blankSkeletonName: {
+                    id: 'ttgamer.ui.sheet.templates.library.blankSkeletonName',
+                    message: 'Blank page skeleton',
+                },
+                skeletonIdentity: {
+                    id: 'ttgamer.ui.sheet.templates.library.skeletonIdentity',
+                    message: 'Identity',
+                },
+                skeletonNameField: {
+                    id: 'ttgamer.ui.sheet.templates.library.skeletonNameField',
+                    message: 'Name',
                 },
             },
             primitives: {
@@ -1568,6 +1997,26 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.countMessage',
                     message: 'Element limit reached — {limit} elements maximum.',
                 },
+                newSection: {
+                    id: 'ttgamer.ui.sheet.templates.editor.newSection',
+                    message: 'New section',
+                },
+                newGroup: {
+                    id: 'ttgamer.ui.sheet.templates.editor.newGroup',
+                    message: 'New group',
+                },
+                newOption: {
+                    id: 'ttgamer.ui.sheet.templates.editor.newOption',
+                    message: 'Option {index}',
+                },
+                coordinateCurrent: {
+                    id: 'ttgamer.ui.sheet.templates.editor.coordinateCurrent',
+                    message: '{label} (current)',
+                },
+                coordinateMax: {
+                    id: 'ttgamer.ui.sheet.templates.editor.coordinateMax',
+                    message: '{label} (max)',
+                },
             },
             fieldTypes: {
                 builtIn: {
@@ -1773,7 +2222,9 @@ export const uiMessages = {
                 },
                 requiredUnfilled: {
                     id: 'ttgamer.ui.sheet.templates.page.requiredUnfilled',
-                    message: '{count} required field(s) are still empty.',
+                    message:
+                        '{count} required field is still empty.|{count} required fields are still empty.',
+                    plural: true,
                 },
                 primitiveDegraded: {
                     id: 'ttgamer.ui.sheet.templates.page.primitiveDegraded',

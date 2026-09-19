@@ -1,3 +1,4 @@
+import { translate } from '@docusaurus/Translate';
 import type { ArmorEntry } from '@site/src/data/armorData';
 import { ARMOR } from '@site/src/data/armorData';
 import type { ConsumableWeaponEntry } from '@site/src/data/consumableWeaponsData';
@@ -10,6 +11,7 @@ import type { RangedWeaponEntry } from '@site/src/data/rangedWeaponsData';
 import { RANGED_WEAPONS } from '@site/src/data/rangedWeaponsData';
 import type { ToolGearEntry } from '@site/src/data/toolsGearData';
 import { TOOLS_GEAR } from '@site/src/data/toolsGearData';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import type { CatalogEntry } from '../../../components';
 
@@ -18,7 +20,11 @@ export function buildWeaponsCatalog(): CatalogEntry[] {
         ...RANGED_WEAPONS.map((w: RangedWeaponEntry) => ({
             id: w.id,
             name: w.name,
-            subtitle: `${w.damage} | ${w.range}m | ${w.ammo} shots`,
+            subtitle: translate(uiMessages.sheet.items.catalog.rangedWeapon, {
+                damage: w.damage,
+                range: w.range,
+                ammo: w.ammo,
+            }),
         })),
         ...MELEE_WEAPONS.map((w: MeleeWeaponEntry) => ({
             id: w.id,
@@ -32,7 +38,11 @@ export function buildArmorCatalog(): CatalogEntry[] {
     return ARMOR.map((a: ArmorEntry) => ({
         id: a.id,
         name: a.name,
-        subtitle: `Class ${a.classVal} | AR ${a.ar} | Dex ${a.dexPenalty}`,
+        subtitle: translate(uiMessages.sheet.items.catalog.armor, {
+            classVal: a.classVal,
+            ar: a.ar,
+            dexPenalty: a.dexPenalty,
+        }),
     }));
 }
 
@@ -51,12 +61,18 @@ export function buildInventoryCatalog(): CatalogEntry[] {
         ...ARMOR.map((a: ArmorEntry) => ({
             id: a.id,
             name: a.name,
-            subtitle: `Class ${a.classVal} | AR ${a.ar}`,
+            subtitle: translate(uiMessages.sheet.items.catalog.armorShort, {
+                classVal: a.classVal,
+                ar: a.ar,
+            }),
         })),
         ...RANGED_WEAPONS.map((w: RangedWeaponEntry) => ({
             id: w.id,
             name: w.name,
-            subtitle: `${w.damage} | ${w.range}m`,
+            subtitle: translate(uiMessages.sheet.items.catalog.rangedWeaponShort, {
+                damage: w.damage,
+                range: w.range,
+            }),
         })),
         ...MELEE_WEAPONS.map((w: MeleeWeaponEntry) => ({
             id: w.id,

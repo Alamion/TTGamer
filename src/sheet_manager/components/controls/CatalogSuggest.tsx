@@ -1,4 +1,6 @@
+import { translate } from '@docusaurus/Translate';
 import * as Popover from '@radix-ui/react-popover';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Command } from 'cmdk';
 import { useMemo, useRef, useState } from 'react';
 
@@ -82,7 +84,7 @@ export function CatalogSuggest({
                 <Command shouldFilter={false}>
                     <Command.List>
                         <Command.Empty className="px-3 py-2 text-sm text-textSecondary">
-                            No matches found
+                            {translate(uiMessages.sheet.controls.noMatches)}
                         </Command.Empty>
                         {filtered.map((entry) => (
                             <Command.Item

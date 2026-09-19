@@ -464,6 +464,63 @@
     "ttgamer.ui.sheet.catalogBrowser.search": {
         "message": "Search the catalog..."
     },
+    "ttgamer.ui.sheet.controls.add": {
+        "message": "Add"
+    },
+    "ttgamer.ui.sheet.controls.documentationFor": {
+        "message": "Documentation for {title}"
+    },
+    "ttgamer.ui.sheet.controls.labelInformation": {
+        "message": "{label} information"
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.addFlaw": {
+        "message": "Add Flaw"
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.addMerit": {
+        "message": "Add Merit"
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.flawPlaceholder": {
+        "message": "Flaw name..."
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.meritPlaceholder": {
+        "message": "Merit name..."
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.remove": {
+        "message": "Remove entry"
+    },
+    "ttgamer.ui.sheet.controls.noMatches": {
+        "message": "No matches found"
+    },
+    "ttgamer.ui.sheet.controls.resourceCurrent": {
+        "message": "{label} — current"
+    },
+    "ttgamer.ui.sheet.controls.resourceMax": {
+        "message": "{label} — max"
+    },
+    "ttgamer.ui.sheet.controls.statDot.diceTitle": {
+        "message": "Left-click: set notation | Right-click: roll"
+    },
+    "ttgamer.ui.sheet.controls.statDot.experienced": {
+        "message": "Experienced"
+    },
+    "ttgamer.ui.sheet.controls.statDot.group": {
+        "message": "Stat value"
+    },
+    "ttgamer.ui.sheet.controls.statDot.practiced": {
+        "message": "Practiced"
+    },
+    "ttgamer.ui.sheet.controls.statDot.remove": {
+        "message": "Remove"
+    },
+    "ttgamer.ui.sheet.controls.statDot.specialization": {
+        "message": "Specialization"
+    },
+    "ttgamer.ui.sheet.controls.textFallbackLabel": {
+        "message": "Text"
+    },
+    "ttgamer.ui.sheet.controls.toggleSection": {
+        "message": "Toggle {title} section"
+    },
     "ttgamer.ui.sheet.documents.conflict.duplicate": {
         "message": "Duplicate"
     },
@@ -804,7 +861,7 @@
         "message": "current"
     },
     "ttgamer.ui.sheet.documents.manager.deleteDescription": {
-        "message": "Are you sure you want to delete {count} document(s)? This cannot be undone."
+        "message": "Are you sure you want to delete {count} document? This cannot be undone.|Are you sure you want to delete {count} documents? This cannot be undone."
     },
     "ttgamer.ui.sheet.documents.manager.deleteSelected": {
         "message": "Delete selected"
@@ -922,6 +979,240 @@
     },
     "ttgamer.ui.sheet.documents.views.vehicleSheet": {
         "message": "Vehicle sheet"
+    },
+    "ttgamer.ui.sheet.items.armor.add": {
+        "message": "Add Armor"
+    },
+    "ttgamer.ui.sheet.items.armor.addLabel": {
+        "message": "Add armor"
+    },
+    "ttgamer.ui.sheet.items.armor.class": {
+        "message": "Class"
+    },
+    "ttgamer.ui.sheet.items.armor.classLabel": {
+        "message": "Armor class"
+    },
+    "ttgamer.ui.sheet.items.armor.classPlaceholder": {
+        "message": "Class..."
+    },
+    "ttgamer.ui.sheet.items.armor.dexPenalty": {
+        "message": "Dex pen"
+    },
+    "ttgamer.ui.sheet.items.armor.dexPenaltyLabel": {
+        "message": "Dexterity penalty"
+    },
+    "ttgamer.ui.sheet.items.armor.dexPenaltyPlaceholder": {
+        "message": "Dex penalty..."
+    },
+    "ttgamer.ui.sheet.items.armor.empty": {
+        "message": "No armor yet..."
+    },
+    "ttgamer.ui.sheet.items.armor.nameLabel": {
+        "message": "Armor name"
+    },
+    "ttgamer.ui.sheet.items.armor.namePlaceholder": {
+        "message": "Armor name..."
+    },
+    "ttgamer.ui.sheet.items.armor.rating": {
+        "message": "AR"
+    },
+    "ttgamer.ui.sheet.items.armor.ratingLabel": {
+        "message": "Armor rating"
+    },
+    "ttgamer.ui.sheet.items.armor.ratingPlaceholder": {
+        "message": "AR..."
+    },
+    "ttgamer.ui.sheet.items.armor.untitled": {
+        "message": "New Armor"
+    },
+    "ttgamer.ui.sheet.items.card.collapse": {
+        "message": "Collapse item details"
+    },
+    "ttgamer.ui.sheet.items.card.expand": {
+        "message": "Expand item details"
+    },
+    "ttgamer.ui.sheet.items.card.remove": {
+        "message": "Remove item"
+    },
+    "ttgamer.ui.sheet.items.catalog.armor": {
+        "message": "Class {classVal} | AR {ar} | Dex {dexPenalty}"
+    },
+    "ttgamer.ui.sheet.items.catalog.armorShort": {
+        "message": "Class {classVal} | AR {ar}"
+    },
+    "ttgamer.ui.sheet.items.catalog.rangedWeapon": {
+        "message": "{damage} | {range}m | {ammo} shots"
+    },
+    "ttgamer.ui.sheet.items.catalog.rangedWeaponShort": {
+        "message": "{damage} | {range}m"
+    },
+    "ttgamer.ui.sheet.items.implants.add": {
+        "message": "Add Implant"
+    },
+    "ttgamer.ui.sheet.items.implants.addLabel": {
+        "message": "Add implant"
+    },
+    "ttgamer.ui.sheet.items.implants.effect": {
+        "message": "Effect"
+    },
+    "ttgamer.ui.sheet.items.implants.effectLabel": {
+        "message": "Implant effect"
+    },
+    "ttgamer.ui.sheet.items.implants.effectPlaceholder": {
+        "message": "Mechanical effect..."
+    },
+    "ttgamer.ui.sheet.items.implants.empty": {
+        "message": "No implants yet..."
+    },
+    "ttgamer.ui.sheet.items.implants.nameLabel": {
+        "message": "Implant name"
+    },
+    "ttgamer.ui.sheet.items.implants.namePlaceholder": {
+        "message": "Implant name..."
+    },
+    "ttgamer.ui.sheet.items.implants.type": {
+        "message": "Type"
+    },
+    "ttgamer.ui.sheet.items.implants.typeLabel": {
+        "message": "Implant type"
+    },
+    "ttgamer.ui.sheet.items.implants.typePlaceholder": {
+        "message": "Limb, Sensory, Uplink..."
+    },
+    "ttgamer.ui.sheet.items.implants.untitled": {
+        "message": "New Implant"
+    },
+    "ttgamer.ui.sheet.items.inventory.add": {
+        "message": "Add Item"
+    },
+    "ttgamer.ui.sheet.items.inventory.addLabel": {
+        "message": "Add inventory item"
+    },
+    "ttgamer.ui.sheet.items.inventory.descriptionLabel": {
+        "message": "Item description"
+    },
+    "ttgamer.ui.sheet.items.inventory.descriptionPlaceholder": {
+        "message": "Description..."
+    },
+    "ttgamer.ui.sheet.items.inventory.descriptionTitle": {
+        "message": "Description"
+    },
+    "ttgamer.ui.sheet.items.inventory.effects": {
+        "message": "Effects"
+    },
+    "ttgamer.ui.sheet.items.inventory.effectsLabel": {
+        "message": "Item effects"
+    },
+    "ttgamer.ui.sheet.items.inventory.effectsPlaceholder": {
+        "message": "Effects..."
+    },
+    "ttgamer.ui.sheet.items.inventory.empty": {
+        "message": "No items yet..."
+    },
+    "ttgamer.ui.sheet.items.inventory.equipped": {
+        "message": "Equipped"
+    },
+    "ttgamer.ui.sheet.items.inventory.maxQuantity": {
+        "message": "Max qty"
+    },
+    "ttgamer.ui.sheet.items.inventory.maxQuantityLabel": {
+        "message": "Maximum quantity"
+    },
+    "ttgamer.ui.sheet.items.inventory.maxQuantityPlaceholder": {
+        "message": "Max qty..."
+    },
+    "ttgamer.ui.sheet.items.inventory.nameLabel": {
+        "message": "Item name"
+    },
+    "ttgamer.ui.sheet.items.inventory.namePlaceholder": {
+        "message": "Item name..."
+    },
+    "ttgamer.ui.sheet.items.inventory.price": {
+        "message": "Price"
+    },
+    "ttgamer.ui.sheet.items.inventory.priceLabel": {
+        "message": "Item price"
+    },
+    "ttgamer.ui.sheet.items.inventory.pricePlaceholder": {
+        "message": "Price..."
+    },
+    "ttgamer.ui.sheet.items.inventory.quantity": {
+        "message": "Quantity"
+    },
+    "ttgamer.ui.sheet.items.inventory.quantityLabel": {
+        "message": "Quantity"
+    },
+    "ttgamer.ui.sheet.items.inventory.quantityPlaceholder": {
+        "message": "Quantity..."
+    },
+    "ttgamer.ui.sheet.items.inventory.untitled": {
+        "message": "New Item"
+    },
+    "ttgamer.ui.sheet.items.inventory.weight": {
+        "message": "Weight"
+    },
+    "ttgamer.ui.sheet.items.inventory.weightLabel": {
+        "message": "Item weight"
+    },
+    "ttgamer.ui.sheet.items.inventory.weightPlaceholder": {
+        "message": "Weight..."
+    },
+    "ttgamer.ui.sheet.items.name": {
+        "message": "Name"
+    },
+    "ttgamer.ui.sheet.items.weapons.add": {
+        "message": "Add Weapon"
+    },
+    "ttgamer.ui.sheet.items.weapons.addLabel": {
+        "message": "Add weapon"
+    },
+    "ttgamer.ui.sheet.items.weapons.ammo": {
+        "message": "Ammo"
+    },
+    "ttgamer.ui.sheet.items.weapons.ammoLabel": {
+        "message": "Ammunition"
+    },
+    "ttgamer.ui.sheet.items.weapons.ammoPlaceholder": {
+        "message": "Ammo..."
+    },
+    "ttgamer.ui.sheet.items.weapons.capacity": {
+        "message": "Capacity"
+    },
+    "ttgamer.ui.sheet.items.weapons.capacityLabel": {
+        "message": "Maximum ammo"
+    },
+    "ttgamer.ui.sheet.items.weapons.capacityPlaceholder": {
+        "message": "Capacity..."
+    },
+    "ttgamer.ui.sheet.items.weapons.damage": {
+        "message": "Damage"
+    },
+    "ttgamer.ui.sheet.items.weapons.damageLabel": {
+        "message": "Damage"
+    },
+    "ttgamer.ui.sheet.items.weapons.damagePlaceholder": {
+        "message": "Dmg..."
+    },
+    "ttgamer.ui.sheet.items.weapons.empty": {
+        "message": "No weapons yet..."
+    },
+    "ttgamer.ui.sheet.items.weapons.nameLabel": {
+        "message": "Weapon name"
+    },
+    "ttgamer.ui.sheet.items.weapons.namePlaceholder": {
+        "message": "Weapon name..."
+    },
+    "ttgamer.ui.sheet.items.weapons.range": {
+        "message": "Range"
+    },
+    "ttgamer.ui.sheet.items.weapons.rangeLabel": {
+        "message": "Range"
+    },
+    "ttgamer.ui.sheet.items.weapons.rangePlaceholder": {
+        "message": "Rng..."
+    },
+    "ttgamer.ui.sheet.items.weapons.untitled": {
+        "message": "New Weapon"
     },
     "ttgamer.ui.sheet.policies.darkPack.explanation": {
         "message": "TTGamer is a free fan-made tool. Material from the World of Darkness appears here under Paradox Interactive's Dark Pack community policy; it is not endorsed by or affiliated with Paradox, and nothing here is sold."
@@ -1148,6 +1439,12 @@
     "ttgamer.ui.sheet.templates.editor.columnWidthsHint": {
         "message": "Widths are proportional: 2 and 1 make the first column twice as wide."
     },
+    "ttgamer.ui.sheet.templates.editor.coordinateCurrent": {
+        "message": "{label} (current)"
+    },
+    "ttgamer.ui.sheet.templates.editor.coordinateMax": {
+        "message": "{label} (max)"
+    },
     "ttgamer.ui.sheet.templates.editor.countMessage": {
         "message": "Element limit reached — {limit} elements maximum."
     },
@@ -1294,6 +1591,15 @@
     },
     "ttgamer.ui.sheet.templates.editor.namePlaceholder": {
         "message": "Template name"
+    },
+    "ttgamer.ui.sheet.templates.editor.newGroup": {
+        "message": "New group"
+    },
+    "ttgamer.ui.sheet.templates.editor.newOption": {
+        "message": "Option {index}"
+    },
+    "ttgamer.ui.sheet.templates.editor.newSection": {
+        "message": "New section"
     },
     "ttgamer.ui.sheet.templates.editor.numberMax": {
         "message": "Max"
@@ -1673,6 +1979,9 @@
     "ttgamer.ui.sheet.templates.fieldTypes.toggle": {
         "message": "Toggle"
     },
+    "ttgamer.ui.sheet.templates.library.blankSkeletonName": {
+        "message": "Blank page skeleton"
+    },
     "ttgamer.ui.sheet.templates.library.button": {
         "message": "Templates"
     },
@@ -1727,6 +2036,18 @@
     "ttgamer.ui.sheet.templates.library.resetConfirmTitle": {
         "message": "Reset this default template?"
     },
+    "ttgamer.ui.sheet.templates.library.skeletonDescription": {
+        "message": "Starts from the current structure of the built-in {label} page."
+    },
+    "ttgamer.ui.sheet.templates.library.skeletonIdentity": {
+        "message": "Identity"
+    },
+    "ttgamer.ui.sheet.templates.library.skeletonName": {
+        "message": "{label} page skeleton"
+    },
+    "ttgamer.ui.sheet.templates.library.skeletonNameField": {
+        "message": "Name"
+    },
     "ttgamer.ui.sheet.templates.library.title": {
         "message": "Page templates"
     },
@@ -1779,7 +2100,7 @@
         "message": "Data binding \"{binding}\" is unavailable on this device."
     },
     "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
-        "message": "{count} required field(s) are still empty."
+        "message": "{count} required field is still empty.|{count} required fields are still empty."
     },
     "ttgamer.ui.sheet.templates.primitives.addPreset": {
         "message": "Add preset"

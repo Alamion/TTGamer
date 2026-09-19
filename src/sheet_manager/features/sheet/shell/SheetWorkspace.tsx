@@ -1,5 +1,6 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { generateId } from '@site/src/shared/utils/random';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -70,6 +71,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
               .map((template) => ({ id: template.id, name: template.name }))
         : [];
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
+    const pluralMessage = usePluralMessage();
     const [managerDialogOpen, setManagerDialogOpen] = useState(false);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [templatesDialogOpen, setTemplatesDialogOpen] = useState(false);
@@ -102,9 +104,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                 ? countUnfilledRequired(template, currentDocument.templateValues ?? {})
                 : 0;
             if (unfilled > 0) {
-                toast(
-                    translate(uiMessages.sheet.templates.page.requiredUnfilled, { count: unfilled })
-                );
+                toast(pluralMessage(uiMessages.sheet.templates.page.requiredUnfilled, unfilled));
             }
         }
     };

@@ -1,0 +1,21 @@
+textFallbackLabel: Текст
+noMatches: Совпадений не найдено
+documentationFor: 'Документация: {title}'
+toggleSection: 'Свернуть или развернуть раздел «{title}»'
+labelInformation: 'Подсказка: {label}'
+add: Добавить
+resourceCurrent: '{label} — текущее'
+resourceMax: '{label} — максимум'
+statDot:
+    group: Значение характеристики
+    diceTitle: 'Левый клик: подставить формулу | Правый клик: бросить'
+    specialization: Специализация
+    practiced: Натренированность
+    experienced: Опытность
+    remove: Удалить
+meritFlaw:
+    meritPlaceholder: Название достоинства...
+    flawPlaceholder: Название недостатка...
+    addMerit: Добавить достоинство
+    addFlaw: Добавить недостаток
+    remove: Удалить запись

@@ -1,0 +1,84 @@
+name: Name
+card:
+    expand: Expand item details
+    collapse: Collapse item details
+    remove: Remove item
+weapons:
+    empty: No weapons yet...
+    untitled: New Weapon
+    namePlaceholder: Weapon name...
+    nameLabel: Weapon name
+    damage: Damage
+    damagePlaceholder: Dmg...
+    damageLabel: Damage
+    range: Range
+    rangePlaceholder: Rng...
+    rangeLabel: Range
+    ammo: Ammo
+    ammoPlaceholder: Ammo...
+    ammoLabel: Ammunition
+    capacity: Capacity
+    capacityPlaceholder: Capacity...
+    capacityLabel: Maximum ammo
+    add: Add Weapon
+    addLabel: Add weapon
+armor:
+    empty: No armor yet...
+    untitled: New Armor
+    namePlaceholder: Armor name...
+    nameLabel: Armor name
+    class: Class
+    classPlaceholder: Class...
+    classLabel: Armor class
+    rating: AR
+    ratingPlaceholder: AR...
+    ratingLabel: Armor rating
+    dexPenalty: Dex pen
+    dexPenaltyPlaceholder: Dex penalty...
+    dexPenaltyLabel: Dexterity penalty
+    add: Add Armor
+    addLabel: Add armor
+inventory:
+    empty: No items yet...
+    untitled: New Item
+    namePlaceholder: Item name...
+    nameLabel: Item name
+    descriptionTitle: Description
+    descriptionPlaceholder: Description...
+    descriptionLabel: Item description
+    effects: Effects
+    effectsPlaceholder: Effects...
+    effectsLabel: Item effects
+    weight: Weight
+    weightPlaceholder: Weight...
+    weightLabel: Item weight
+    price: Price
+    pricePlaceholder: Price...
+    priceLabel: Item price
+    quantity: Quantity
+    quantityPlaceholder: Quantity...
+    quantityLabel: Quantity
+    maxQuantity: Max qty
+    maxQuantityPlaceholder: Max qty...
+    maxQuantityLabel: Maximum quantity
+    equipped: Equipped
+    add: Add Item
+    addLabel: Add inventory item
+implants:
+    empty: No implants yet...
+    untitled: New Implant
+    namePlaceholder: Implant name...
+    nameLabel: Implant name
+    type: Type
+    typePlaceholder: Limb, Sensory, Uplink...
+    typeLabel: Implant type
+    effect: Effect
+    effectPlaceholder: Mechanical effect...
+    effectLabel: Implant effect
+    add: Add Implant
+    addLabel: Add implant
+catalog:
+    rangedWeapon: '{damage} | {range}m | {ammo} shots'
+    rangedWeaponShort: '{damage} | {range}m'
+    armor: 'Class {classVal} | AR {ar} | Dex {dexPenalty}'
+    armorShort: 'Class {classVal} | AR {ar}'

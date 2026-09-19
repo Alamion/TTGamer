@@ -1,0 +1,21 @@
+textFallbackLabel: Text
+noMatches: No matches found
+documentationFor: Documentation for {title}
+toggleSection: Toggle {title} section
+labelInformation: '{label} information'
+add: Add
+resourceCurrent: '{label} — current'
+resourceMax: '{label} — max'
+statDot:
+    group: Stat value
+    diceTitle: 'Left-click: set notation | Right-click: roll'
+    specialization: Specialization
+    practiced: Practiced
+    experienced: Experienced
+    remove: Remove
+meritFlaw:
+    meritPlaceholder: Merit name...
+    flawPlaceholder: Flaw name...
+    addMerit: Add Merit
+    addFlaw: Add Flaw
+    remove: Remove entry

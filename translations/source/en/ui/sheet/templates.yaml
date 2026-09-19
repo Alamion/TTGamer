@@ -19,6 +19,11 @@ library:
     duplicateId: '"{id}" is a built-in page — templates need their own identifier.'
     incompatibleBadge: Incompatible format
     incompatibleHint: Saved in a previous template format. Kept for recovery only — recreate it with the new editor.
+    skeletonName: '{label} page skeleton'
+    skeletonDescription: Starts from the current structure of the built-in {label} page.
+    blankSkeletonName: Blank page skeleton
+    skeletonIdentity: Identity
+    skeletonNameField: Name
 primitives:
     groupIdentity: Identity fields
     groupTrait: Traits
@@ -168,6 +173,11 @@ editor:
     unknownLabelMessage: Unknown translation reference "{id}".
     depthMessage: Nesting limit reached — {limit} levels maximum.
     countMessage: Element limit reached — {limit} elements maximum.
+    newSection: New section
+    newGroup: New group
+    newOption: Option {index}
+    coordinateCurrent: '{label} (current)'
+    coordinateMax: '{label} (max)'
 fieldTypes:
     builtIn: Built-in page part
     text: Text
@@ -220,7 +230,9 @@ page:
     embedNoDocument: Create or open a character to fill in this part of the sheet here.
     fallbackTitle: Template page unavailable
     fallbackDescription: The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.
-    requiredUnfilled: '{count} required field(s) are still empty.'
+    requiredUnfilled:
+        message: '{count} required field is still empty.|{count} required fields are still empty.'
+        plural: true
     primitiveDegraded: 'Data binding "{binding}" is unavailable on this device.'
     formulaDegraded: 'Cannot compute "{field}": {reason}.'
     formulaReasonUnknown: value "{coordinate}" is unavailable

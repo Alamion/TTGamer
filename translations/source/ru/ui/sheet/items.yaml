@@ -1,0 +1,84 @@
+name: Название
+card:
+    expand: Развернуть подробности
+    collapse: Свернуть подробности
+    remove: Удалить предмет
+weapons:
+    empty: Оружия пока нет...
+    untitled: Новое оружие
+    namePlaceholder: Название оружия...
+    nameLabel: Название оружия
+    damage: Урон
+    damagePlaceholder: Урон...
+    damageLabel: Урон
+    range: Дальность
+    rangePlaceholder: Дальн...
+    rangeLabel: Дальность
+    ammo: Боезапас
+    ammoPlaceholder: Боезапас...
+    ammoLabel: Текущий боезапас
+    capacity: Ёмкость
+    capacityPlaceholder: Ёмкость...
+    capacityLabel: Максимальный боезапас
+    add: Добавить оружие
+    addLabel: Добавить оружие
+armor:
+    empty: Брони пока нет...
+    untitled: Новая броня
+    namePlaceholder: Название брони...
+    nameLabel: Название брони
+    class: Класс
+    classPlaceholder: Класс...
+    classLabel: Класс брони
+    rating: Защита
+    ratingPlaceholder: Защита...
+    ratingLabel: Показатель защиты брони
+    dexPenalty: Штраф Ловк.
+    dexPenaltyPlaceholder: Штраф Ловкости...
+    dexPenaltyLabel: Штраф к Ловкости
+    add: Добавить броню
+    addLabel: Добавить броню
+inventory:
+    empty: Предметов пока нет...
+    untitled: Новый предмет
+    namePlaceholder: Название предмета...
+    nameLabel: Название предмета
+    descriptionTitle: Описание
+    descriptionPlaceholder: Описание...
+    descriptionLabel: Описание предмета
+    effects: Эффекты
+    effectsPlaceholder: Эффекты...
+    effectsLabel: Эффекты предмета
+    weight: Вес
+    weightPlaceholder: Вес...
+    weightLabel: Вес предмета
+    price: Цена
+    pricePlaceholder: Цена...
+    priceLabel: Цена предмета
+    quantity: Кол-во
+    quantityPlaceholder: Кол-во...
+    quantityLabel: Количество
+    maxQuantity: Макс. кол-во
+    maxQuantityPlaceholder: Макс. кол-во...
+    maxQuantityLabel: Максимальное количество
+    equipped: Экипировано
+    add: Добавить предмет
+    addLabel: Добавить предмет в снаряжение
+implants:
+    empty: Имплантов пока нет...
+    untitled: Новый имплант
+    namePlaceholder: Название импланта...
+    nameLabel: Название импланта
+    type: Тип
+    typePlaceholder: Конечность, сенсор, интерфейс...
+    typeLabel: Тип импланта
+    effect: Эффект
+    effectPlaceholder: Игровой эффект...
+    effectLabel: Эффект импланта
+    add: Добавить имплант
+    addLabel: Добавить имплант
+catalog:
+    rangedWeapon: '{damage} | {range} м | {ammo} выстр.'
+    rangedWeaponShort: '{damage} | {range} м'
+    armor: 'Класс {classVal} | Защита {ar} | Ловк. {dexPenalty}'
+    armorShort: 'Класс {classVal} | Защита {ar}'

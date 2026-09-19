@@ -358,7 +358,9 @@ function ResourceFieldControlRender({
                 max={field.max}
                 onChange={(event) => onChange({ ...resource, current: Number(event.target.value) })}
                 disabled={disabled}
-                aria-label={`${field.label} — current`}
+                aria-label={translate(uiMessages.sheet.controls.resourceCurrent, {
+                    label: field.label,
+                })}
                 className={`${inputClasses} w-20`}
             />
             <span className="text-xs text-textSecondary">/</span>
@@ -369,7 +371,9 @@ function ResourceFieldControlRender({
                 max={field.max}
                 onChange={(event) => onChange({ ...resource, max: Number(event.target.value) })}
                 disabled={disabled}
-                aria-label={`${field.label} — max`}
+                aria-label={translate(uiMessages.sheet.controls.resourceMax, {
+                    label: field.label,
+                })}
                 className={`${inputClasses} w-20`}
             />
         </div>

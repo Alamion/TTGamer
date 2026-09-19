@@ -19,6 +19,11 @@ library:
     duplicateId: '«{id}» — встроенная страница; шаблонам нужен собственный идентификатор.'
     incompatibleBadge: Несовместимый формат
     incompatibleHint: Сохранено в предыдущем формате шаблонов. Хранится только для восстановления — пересоздайте в новом редакторе.
+    skeletonName: 'Каркас страницы: {label}'
+    skeletonDescription: Начинается с текущей структуры встроенной страницы «{label}».
+    blankSkeletonName: Пустой каркас страницы
+    skeletonIdentity: Основные сведения
+    skeletonNameField: Имя
 primitives:
     groupIdentity: Поля личности
     groupTrait: Трейты
@@ -168,6 +173,11 @@ editor:
     unknownLabelMessage: Неизвестная ссылка на перевод «{id}».
     depthMessage: Достигнут предел вложенности — максимум {limit} уровней.
     countMessage: Достигнут предел элементов — максимум {limit}.
+    newSection: Новая секция
+    newGroup: Новая группа
+    newOption: Вариант {index}
+    coordinateCurrent: '{label} (текущее)'
+    coordinateMax: '{label} (максимум)'
 fieldTypes:
     builtIn: Встроенная часть страницы
     text: Текст
@@ -220,7 +230,9 @@ page:
     embedNoDocument: Создайте или откройте персонажа, чтобы заполнить эту часть листа прямо здесь.
     fallbackTitle: Страница шаблона недоступна
     fallbackDescription: Назначенный шаблон отсутствует. Показана стандартная страница — можно выбрать другую ниже.
-    requiredUnfilled: 'Не заполнено обязательных полей: {count}.'
+    requiredUnfilled:
+        message: '{count} обязательное поле ещё не заполнено.|{count} обязательных поля ещё не заполнены.|{count} обязательных полей ещё не заполнено.'
+        plural: true
     primitiveDegraded: 'Привязка «{binding}» недоступна на этом устройстве.'
     formulaDegraded: 'Невозможно вычислить «{field}»: {reason}.'
     formulaReasonUnknown: значение «{coordinate}» недоступно

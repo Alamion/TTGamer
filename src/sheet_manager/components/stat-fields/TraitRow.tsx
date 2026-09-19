@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus } from 'lucide-react';
 
@@ -283,7 +285,7 @@ export function CustomTraitList({
                 className="flex items-center gap-1 text-sm text-textPrimary hover:text-textPrimary/80 transition-colors py-1"
             >
                 <Plus className="w-4 h-4" />
-                Add
+                {translate(uiMessages.sheet.controls.add)}
             </button>
         </div>
     );
