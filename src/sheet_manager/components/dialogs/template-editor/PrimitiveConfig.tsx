@@ -6,6 +6,7 @@ import type { NodeUpdates } from './draft';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
 import { ListSourceSelect, ValueSourceSelect } from './SourceControls';
+import { TermHintControl } from './TermHintControl';
 
 const primitives = uiMessages.sheet.templates.primitives;
 const editor = uiMessages.sheet.templates.editor;
@@ -95,6 +96,7 @@ export function PrimitiveConfig({
                 label={t(editor.showLabel)}
                 onChange={(checked) => update({ hideLabel: checked ? undefined : true })}
             />
+            <TermHintControl node={node} onChange={(termHint) => update({ termHint })} />
 
             {descriptor?.kind === 'resource' && descriptor.mode === 'pool' && (
                 <label className="grid gap-1 text-xs text-textSecondary">

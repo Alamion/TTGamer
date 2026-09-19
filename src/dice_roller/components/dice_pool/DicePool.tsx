@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { type UiMessageDescriptor, uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { useState } from 'react';
 
@@ -9,9 +11,10 @@ import RollControls from './RollControls';
 
 type DiceTab = 'standard' | 'dnd' | 'wod' | '';
 
-const TABS: { id: DiceTab; label: string }[] = [
-    { id: 'standard', label: 'Standard' },
-    { id: 'dnd', label: 'D&D' },
+/** Tab labels: a message to translate, or a system name shown verbatim in every locale. */
+const TABS: { id: DiceTab; label: UiMessageDescriptor | string }[] = [
+    { id: 'standard', label: uiMessages.dice.pool.tabs.standard },
+    { id: 'dnd', label: uiMessages.dice.pool.tabs.dnd },
     { id: 'wod', label: 'WoD' },
 ];
 
@@ -34,7 +37,7 @@ export default function DicePool() {
                                 : 'opacity-60 border-b-transparent hover:opacity-85'
                         )}
                     >
-                        {tab.label}
+                        {typeof tab.label === 'string' ? tab.label : translate(tab.label)}
                     </button>
                 ))}
             </div>

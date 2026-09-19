@@ -1,0 +1,252 @@
+# Book-term glossary (spec 009). One entry per game term:
+#
+#   - id: larceny                                  # unique in this file, kebab-case
+#     en: Larceny                                  # English book name (must match the English text at every ref)
+#     ru: Воровство                                # approved Russian form (must match the Russian text at every ref)
+#     ruShort: Воровство                           # optional; shown when a sheet row is narrow
+#     note: why this translation was chosen        # optional
+#     refs:                                        # UI message ids or catalog:<catalogId>/<entryId>
+#       - ttgamer.ui.sheet.v5.skills.larceny
+#
+# A label is a book term exactly when its ref is listed here: it then gets the English-name hint.
+- id: strength
+  en: Strength
+  ru: Сила
+  refs:
+      - catalog:attributes/strength
+- id: dexterity
+  en: Dexterity
+  ru: Ловкость
+  refs:
+      - catalog:attributes/dexterity
+- id: stamina
+  en: Stamina
+  ru: Выносливость
+  refs:
+      - catalog:attributes/stamina
+- id: charisma
+  en: Charisma
+  ru: Харизма
+  refs:
+      - catalog:attributes/charisma
+- id: manipulation
+  en: Manipulation
+  ru: Манипуляция
+  note: matches the Russian Star Wars docs and terminology (was «Манипулирование» in catalog data); V5 keeps «Манипулирование»; pending maintainer review
+  refs:
+      - catalog:attributes/manipulation
+- id: appearance
+  en: Appearance
+  ru: Внешность
+  refs:
+      - catalog:attributes/appearance
+- id: perception
+  en: Perception
+  ru: Восприятие
+  refs:
+      - catalog:attributes/perception
+- id: intelligence
+  en: Intelligence
+  ru: Интеллект
+  refs:
+      - catalog:attributes/intelligence
+- id: wits
+  en: Wits
+  ru: Смекалка
+  note: matches the Russian Star Wars docs and V5 (was «Сообразительность» in catalog data); pending maintainer review
+  refs:
+      - catalog:attributes/wits
+- id: alertness
+  en: Alertness
+  ru: Бдительность
+  refs:
+      - catalog:abilities/alertness
+- id: athletics
+  en: Athletics
+  ru: Атлетика
+  refs:
+      - catalog:abilities/athletics
+- id: brawl
+  en: Brawl
+  ru: Рукопашный бой
+  refs:
+      - catalog:abilities/brawl
+- id: command
+  en: Command
+  ru: Командование
+  refs:
+      - catalog:abilities/command
+- id: diplomacy
+  en: Diplomacy
+  ru: Дипломатия
+  refs:
+      - catalog:abilities/diplomacy
+- id: dodge
+  en: Dodge
+  ru: Уклонение
+  refs:
+      - catalog:abilities/dodge
+- id: empathy
+  en: Empathy
+  ru: Эмпатия
+  refs:
+      - catalog:abilities/empathy
+- id: intimidation
+  en: Intimidation
+  ru: Запугивание
+  refs:
+      - catalog:abilities/intimidation
+- id: streetwise
+  en: Streetwise
+  ru: Знание улиц
+  refs:
+      - catalog:abilities/streetwise
+- id: subterfuge
+  en: Subterfuge
+  ru: Хитрость
+  refs:
+      - catalog:abilities/subterfuge
+- id: blaster
+  en: Blaster
+  ru: Бластер
+  refs:
+      - catalog:abilities/blaster
+- id: gunnery
+  en: Gunnery
+  ru: Артиллерия
+  refs:
+      - catalog:abilities/gunnery
+- id: melee
+  en: Melee
+  ru: Рукопашное оружие
+  ruShort: Рукоп. оружие
+  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
+  refs:
+      - catalog:abilities/melee
+- id: pilot
+  en: Pilot
+  ru: Пилотирование
+  refs:
+      - catalog:abilities/pilot
+- id: programming
+  en: Programming
+  ru: Программирование
+  ruShort: Программир.
+  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
+  refs:
+      - catalog:abilities/programming
+- id: repair
+  en: Repair
+  ru: Ремонт
+  refs:
+      - catalog:abilities/repair
+- id: ride
+  en: Ride
+  ru: Езда
+  refs:
+      - catalog:abilities/ride
+- id: security
+  en: Security
+  ru: Взлом
+  refs:
+      - catalog:abilities/security
+- id: stealth
+  en: Stealth
+  ru: Скрытность
+  refs:
+      - catalog:abilities/stealth
+- id: survival
+  en: Survival
+  ru: Выживание
+  refs:
+      - catalog:abilities/survival
+- id: astrogation
+  en: Astrogation
+  ru: Астрогация
+  refs:
+      - catalog:abilities/astrogation
+- id: bureaucracy
+  en: Bureaucracy
+  ru: Бюрократия
+  refs:
+      - catalog:abilities/bureaucracy
+- id: cultures
+  en: Cultures
+  ru: Культуры
+  refs:
+      - catalog:abilities/cultures
+- id: interfaces
+  en: Interfaces
+  ru: Интерфейсы
+  refs:
+      - catalog:abilities/interfaces
+- id: investigation
+  en: Investigation
+  ru: Расследование
+  refs:
+      - catalog:abilities/investigation
+- id: languages
+  en: Languages
+  ru: Языки
+  refs:
+      - catalog:abilities/languages
+- id: medicine
+  en: Medicine
+  ru: Медицина
+  refs:
+      - catalog:abilities/medicine
+- id: politics
+  en: Politics
+  ru: Политика
+  refs:
+      - catalog:abilities/politics
+- id: tech
+  en: Tech
+  ru: Технологии
+  refs:
+      - catalog:abilities/tech
+- id: trade
+  en: Trade
+  ru: Торговля
+  refs:
+      - catalog:abilities/trade
+- id: force-skills-control
+  en: Control
+  ru: Контроль
+  refs:
+      - catalog:force-skills/control
+- id: force-skills-dynamism
+  en: Dynamism
+  ru: Динамизм
+  refs:
+      - catalog:force-skills/dynamism
+- id: force-skills-rapport
+  en: Rapport
+  ru: Связь
+  refs:
+      - catalog:force-skills/rapport
+- id: force-skills-sense
+  en: Sense
+  ru: Чувство
+  refs:
+      - catalog:force-skills/sense
+- id: force-skills-telekinesis
+  en: Telekinesis
+  ru: Телекинез
+  refs:
+      - catalog:force-skills/telekinesis
+- id: virtues-conscience
+  en: Conscience
+  ru: Совесть
+  refs:
+      - catalog:virtues/conscience
+- id: virtues-passion
+  en: Passion
+  ru: Страсть
+  refs:
+      - catalog:virtues/passion
+- id: virtues-self-control
+  en: Self Control
+  ru: Самообладание
+  refs:
+      - catalog:virtues/self-control

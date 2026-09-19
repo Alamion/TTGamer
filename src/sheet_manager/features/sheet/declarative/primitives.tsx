@@ -22,6 +22,7 @@ import {
     TraitRow,
     TraitRowWithInput,
 } from '../../../components/stat-fields/TraitRow';
+import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
 import type {
     DocumentBindingDescriptor,
@@ -64,10 +65,15 @@ import {
     buildInventoryCatalog,
     buildWeaponsCatalog,
 } from '../data/bodyEquipmentCatalogs';
-import { CATALOG_BINDINGS, readCatalogDetails } from '../data/catalogBindings';
+import {
+    CATALOG_BINDINGS,
+    type CatalogBindingEntry,
+    readCatalogDetails,
+} from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { useBoundDocument } from './boundDocument';
 import { CohortTrack } from './CohortTrack';
+import { traitRowKind } from './rowKind';
 import { EnumField, RowsBody } from './RowsBody';
 import { mergeVisibleMarks, resolveComputedTrackLength, visibleMarks } from './trackLength';
 
@@ -142,22 +148,25 @@ function IdentityField({
 type TraitListEntry = { id: string; label: string; value: number };
 
 function toCatalogEntries(
-    source: ReadonlyArray<{ id: string; name: string; shortDescription?: string }>,
+    catalog: CatalogBindingEntry,
+    locale: string,
     filter?: { key: string; value: string }
 ): CatalogEntry[] {
-    return source
+    return catalog.entries
         .filter(
-            (entry) => !filter || (entry as Record<string, unknown>)[filter.key] === filter.value
+            (entry) =>
+                !filter ||
+                (entry as unknown as Record<string, unknown>)[filter.key] === filter.value
         )
         .map((entry) => ({
             id: entry.id,
-            name: entry.name,
-            subtitle: entry.shortDescription,
+            name: catalog.pickLabel(entry, locale),
+            subtitle: catalog.entryText(entry, 'shortDescription', locale),
         }));
 }
 
-/** Catalog entries for a bound list (registry-declared catalog + filter). */
-function listCatalog(binding: ListBinding): CatalogEntry[] | undefined {
+/** Catalog entries for a bound list (registry-declared catalog + filter), localized. */
+function listCatalog(binding: ListBinding, locale: string): CatalogEntry[] | undefined {
     if (!binding.catalog) return undefined;
     const { catalogId, catalogFilter } = binding.catalog;
     const catalog = CATALOG_BINDINGS.get(catalogId);
@@ -169,7 +178,7 @@ function listCatalog(binding: ListBinding): CatalogEntry[] | undefined {
         });
         return undefined;
     }
-    return toCatalogEntries(catalog.entries, catalogFilter);
+    return toCatalogEntries(catalog, locale, catalogFilter);
 }
 
 /**
@@ -193,6 +202,7 @@ function TraitListBindingView({
     placeholder?: string;
     columns?: 1 | 2 | 3 | 4;
 }) {
+    const locale = useDocusaurusContext().i18n.currentLocale;
     return (
         <CustomTraitList
             items={items as CustomSkill[]}
@@ -221,7 +231,7 @@ function TraitListBindingView({
             size="md"
             showFlags
             placeholder={placeholder}
-            catalog={listCatalog(binding)}
+            catalog={listCatalog(binding, locale)}
             onCatalogSelect={onCatalogSelect}
             onDiceRoll={buildDiceNotation}
         />
@@ -247,6 +257,7 @@ function SystemListBody({
     showTitle?: boolean;
     framed?: boolean;
 }) {
+    const locale = useDocusaurusContext().i18n.currentLocale;
     const bound = useBoundDocument();
     const { dataKey } = binding;
     const raw = (bound?.data[dataKey] as unknown[] | undefined) ?? [];
@@ -273,7 +284,7 @@ function SystemListBody({
                 onChange={(id, points, label) =>
                     write(items.map((item) => (item.id === id ? { ...item, points, label } : item)))
                 }
-                catalog={listCatalog(binding)}
+                catalog={listCatalog(binding, locale)}
                 onCatalogSelect={(id, entry) =>
                     write(
                         items.map((item) =>
@@ -443,7 +454,7 @@ function EquipmentSection({ sectionId, items, onUpdate, ...rest }: EquipmentSect
     }
 }
 
-const STAR_WARS_EQUIPMENT_CATALOGS: Record<EquipmentSectionId, () => CatalogEntry[]> = {
+const STAR_WARS_EQUIPMENT_CATALOGS: Record<EquipmentSectionId, (lang: string) => CatalogEntry[]> = {
     inventory: buildInventoryCatalog,
     armor: buildArmorCatalog,
     weapons: buildWeaponsCatalog,
@@ -453,6 +464,11 @@ const STAR_WARS_EQUIPMENT_CATALOGS: Record<EquipmentSectionId, () => CatalogEntr
 /** Equipment edited through the character capability (Star Wars items and catalogs). */
 function CharacterEquipmentBody({ sectionId }: { sectionId: EquipmentSectionId }) {
     const handlers = useBodyHandlers();
+    const locale = useDocusaurusContext().i18n.currentLocale;
+    const catalog = useMemo(
+        () => STAR_WARS_EQUIPMENT_CATALOGS[sectionId](locale),
+        [sectionId, locale]
+    );
     if (!handlers) {
         return <DegradedBinding bindingKey={`equipment:${sectionId}`} reason="no-body-handlers" />;
     }
@@ -490,7 +506,7 @@ function CharacterEquipmentBody({ sectionId }: { sectionId: EquipmentSectionId }
         <EquipmentSection
             sectionId={sectionId}
             readOnly={handlers.readOnly}
-            catalog={STAR_WARS_EQUIPMENT_CATALOGS[sectionId]()}
+            catalog={catalog}
             {...(bySection as Omit<EquipmentSectionProps, 'sectionId' | 'readOnly' | 'catalog'>)}
         />
     );
@@ -514,7 +530,7 @@ function BoundEquipmentBody({
                 const source = CATALOG_BINDINGS.get(catalogId);
                 return (source?.entries ?? []).map((entry) => ({
                     id: `${catalogId}/${entry.id}`,
-                    name: source!.entryLabel(entry, locale),
+                    name: source!.pickLabel(entry, locale),
                 }));
             }),
         [catalog, locale]
@@ -545,12 +561,14 @@ function BoundEquipmentBody({
                     const source = CATALOG_BINDINGS.get(catalogId);
                     const entry = source?.entries.find((candidate) => candidate.id === entryId);
                     const localized = entry && source?.entryText(entry, detailKey, locale);
+                    // Names are stored in English with the entry reference and shown in the
+                    // reader's language (resolveItemName); other details are copied localized.
                     const detail =
-                        detailKey === 'name' ? suggestion.name : (localized ?? details[detailKey]);
+                        detailKey === 'name' ? entry?.name : (localized ?? details[detailKey]);
                     if (typeof detail !== 'string' && typeof detail !== 'number') continue;
                     next = updateEquipmentItem(sectionId, next, id, field, detail);
                 }
-                write(next);
+                write(updateEquipmentItem(sectionId, next, id, 'entryRef', suggestion.id));
             }}
         />
     );
@@ -606,13 +624,15 @@ function PrimitiveTraitBody({
                 [descriptor.traitKey]: { ...trait, ...updates },
             },
         });
+    const rowKind = traitRowKind(node.compact, descriptor);
     const showSpecialization = descriptor.row?.specialization ?? true;
     const showFlags = descriptor.row?.flags ?? true;
-    if (node.compact) {
+    if (rowKind === 'compact') {
         const specialization = showSpecialization ? trait.specializationText?.trim() : undefined;
         const rating = (
             <CompactRating
                 label={label}
+                term={termLinkOf(node)}
                 value={trait.value}
                 max={descriptor.maximum}
                 disabled={readOnly}
@@ -628,10 +648,11 @@ function PrimitiveTraitBody({
             rating
         );
     }
-    if (!showSpecialization) {
+    if (rowKind === 'trait') {
         return (
             <TraitRow
                 label={label}
+                term={termLinkOf(node)}
                 value={trait.value}
                 maxValue={descriptor.maximum}
                 minimal={descriptor.minimum > 0 ? descriptor.minimum : undefined}
@@ -660,6 +681,7 @@ function PrimitiveTraitBody({
     return (
         <TraitRowWithInput
             name={label}
+            term={termLinkOf(node)}
             specializationText={trait.specializationText}
             value={trait.value}
             disabled={readOnly}
@@ -768,6 +790,7 @@ function PrimitiveResourceBody({
                 ) : (
                     <CompactRating
                         label={label}
+                        term={termLinkOf(node)}
                         value={Math.min(shown, rowMax)}
                         max={rowMax}
                         disabled={readOnly}
@@ -782,6 +805,7 @@ function PrimitiveResourceBody({
         <div className="grid gap-1">
             <TraitRow
                 label={label}
+                term={termLinkOf(node)}
                 value={Math.min(shown, rowMax)}
                 maxValue={rowMax}
                 minimal={minimum > 0 ? minimum : undefined}

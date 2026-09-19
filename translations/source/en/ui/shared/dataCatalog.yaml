@@ -1,0 +1,13 @@
+search: Search...
+selected:
+    message: '{count} selected|{count} selected'
+    plural: true
+clearSearch: Clear search
+empty: No results match your search.
+page: Page {page} of {pages}
+previousPage: Previous page
+nextPage: Next page
+closeDetail: Close detail
+itemDetails: Catalog item details
+openDetails: '{name} — open details'
+detailsOpen: '{name} — details open'

@@ -83,3 +83,20 @@ describe('template label translations (labelMessage)', () => {
         );
     });
 });
+
+describe('book terms on shipped trait rows (spec 009)', () => {
+    it('every trait shown by a shipped template is a glossary term', async () => {
+        const { shippedTemplateRowKinds } =
+            await import('../../scripts/i18n-verifier/templateRowKinds');
+        const { bookTerms } = await import('@site/src/i18n/generated/bookTerms');
+        const refs = [...shippedTemplateRowKinds().keys()];
+        expect(refs.length).toBeGreaterThan(40);
+        expect(refs.filter((ref) => !(ref in bookTerms))).toEqual([]);
+    });
+
+    it('no glossary term overflows the rows it is shown in', async () => {
+        const { runVerifier } = await import('../../scripts/i18n-verifier/run');
+        const run = await runVerifier({}, { rules: ['overflow'] });
+        expect(run.findings).toEqual([]);
+    }, 60_000);
+});

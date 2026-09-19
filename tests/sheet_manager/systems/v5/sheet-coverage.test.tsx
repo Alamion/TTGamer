@@ -24,7 +24,7 @@ beforeAll(() => {
 });
 
 function template(id: string): CustomTemplate {
-    return systemRegistry.getSystem('v5')!.defaultTemplates!.find((t) => t.id === id)!;
+    return systemRegistry.getSystem('wod-v5')!.defaultTemplates!.find((t) => t.id === id)!;
 }
 
 function addresses(nodes: readonly TemplateNode[]): string[] {

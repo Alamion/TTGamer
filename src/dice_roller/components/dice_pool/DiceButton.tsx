@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { memo } from 'react';
 
 import type { DiceConfig } from '../dice-config';
@@ -25,7 +27,7 @@ const DiceButton = memo(function DiceButton({
             className="flex items-center justify-center p-1.5 rounded-md cursor-pointer
                 border border-transparent transition-all
                 hover:bg-bgBase/40 hover:border-border active:scale-95"
-            title={`Left-click: Add ${config.notation} | Right-click: Remove ${config.notation}`}
+            title={translate(uiMessages.dice.pool.diceButtonTitle, { notation: config.notation })}
         >
             <config.Component
                 primaryColor={primaryColor}

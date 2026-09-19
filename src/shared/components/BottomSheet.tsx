@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { X } from 'lucide-react';
 import type { PointerEvent, ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
@@ -12,11 +14,23 @@ const MID = 40;
 const FULL = 8;
 const CLOSED = 100;
 
+const messages = uiMessages.shared.bottomSheet;
+
 export function BottomSheet({ onClose, children }: BottomSheetProps) {
     const [translateY, setTranslateY] = useState(CLOSED);
     const [isDragging, setIsDragging] = useState(false);
     const dragStartY = useRef(0);
     const dragBaseY = useRef(CLOSED);
+
+    // Room at the end of the page so the last content can scroll above the peeking sheet.
+    useEffect(() => {
+        const { body } = document;
+        const previous = body.style.paddingBottom;
+        body.style.paddingBottom = `${100 - PEEK + 6}dvh`;
+        return () => {
+            body.style.paddingBottom = previous;
+        };
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -67,7 +81,7 @@ export function BottomSheet({ onClose, children }: BottomSheetProps) {
     return (
         <section
             role="complementary"
-            aria-label="Catalog item details"
+            aria-label={translate(messages.label)}
             className="fixed left-0 right-0 bottom-0 z-50 bg-bgSurface rounded-t-xl border-t border-border shadow-xl will-change-transform"
             style={{
                 transform: `translateY(${translateY}%)`,
@@ -77,7 +91,7 @@ export function BottomSheet({ onClose, children }: BottomSheetProps) {
         >
             <button
                 type="button"
-                aria-label="Close details"
+                aria-label={translate(messages.close)}
                 onClick={onClose}
                 className="absolute right-3 top-2 z-10 rounded p-1 text-textSecondary hover:bg-bgBase hover:text-textPrimary"
             >
@@ -85,7 +99,7 @@ export function BottomSheet({ onClose, children }: BottomSheetProps) {
             </button>
             <button
                 type="button"
-                aria-label="Resize details sheet"
+                aria-label={translate(messages.resize)}
                 className="flex w-full justify-center pt-2 pb-1 cursor-grab active:cursor-grabbing touch-none"
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}

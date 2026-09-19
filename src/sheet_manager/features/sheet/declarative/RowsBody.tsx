@@ -4,13 +4,13 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
 import { useMemo } from 'react';
 
-import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import type { BindingOption, RowsBinding, RowsColumn } from '../../../systems/templateBindings';
 import { createRowId } from '../../../systems/templateBindings';
 import type { PrimitiveNode } from '../../../types/template';
 import { CATALOG_BINDINGS, readCatalogDetails } from '../data/catalogBindings';
 import { useBoundDocument } from './boundDocument';
+import { parentName, type RowSuggestion, rowSuggestions, suggestionsForRow } from './rowsCatalog';
 
 const fields = uiMessages.sheet.documents.fields;
 const tracks = uiMessages.sheet.tracks;
@@ -102,16 +102,8 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
     const bound = useBoundDocument();
     const locale = useDocusaurusContext().i18n.currentLocale;
     const catalog = descriptor.catalog;
-    const suggestions = useMemo<CatalogEntry[]>(
-        () =>
-            (catalog?.catalogIds ?? []).flatMap((catalogId) => {
-                const binding = CATALOG_BINDINGS.get(catalogId);
-                return (binding?.entries ?? []).map((entry) => ({
-                    id: `${catalogId}/${entry.id}`,
-                    name: binding!.entryLabel(entry, locale),
-                    subtitle: catalogId,
-                }));
-            }),
+    const suggestions = useMemo(
+        () => (catalog ? rowSuggestions(CATALOG_BINDINGS, catalog, locale) : []),
         [catalog, locale]
     );
     if (!bound) return null;
@@ -132,16 +124,26 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
     };
     const setCell = (index: number, key: string, value: string) =>
         write(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, [key]: value } : row)));
-    const fillFromCatalog = (index: number, suggestion: CatalogEntry) => {
+    const fillFromCatalog = (index: number, suggestion: RowSuggestion) => {
         if (!catalog) return;
         const [catalogId, entryId] = suggestion.id.split('/') as [string, string];
         const details = readCatalogDetails(catalogId, entryId);
         if (!details) return;
-        const updates: Record<string, string> = { [catalog.column]: suggestion.name };
+        const updates: Record<string, string> = {};
         for (const [detailKey, columnKey] of Object.entries(catalog.fills)) {
             const detail = details[detailKey];
             if (detail === undefined) continue;
             updates[columnKey] = detail === null ? '' : String(detail);
+        }
+        // The picked name as offered (localized with the book name), not the raw English detail.
+        updates[catalog.column] = suggestion.name;
+        if (catalog.parent && suggestion.parentId) {
+            updates[catalog.parent.column] = parentName(
+                CATALOG_BINDINGS,
+                catalog.parent,
+                suggestion.parentId,
+                locale
+            );
         }
         write(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, ...updates } : row)));
     };
@@ -207,7 +209,16 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                                 />
                                             ) : catalog && column.key === catalog.column ? (
                                                 <CatalogSuggest
-                                                    catalog={suggestions}
+                                                    catalog={[
+                                                        ...suggestionsForRow(
+                                                            CATALOG_BINDINGS,
+                                                            catalog,
+                                                            suggestions,
+                                                            row,
+                                                            bound.data,
+                                                            locale
+                                                        ),
+                                                    ]}
                                                     value={cell}
                                                     disabled={disabled}
                                                     ariaLabel={cellLabel}

@@ -1,6 +1,8 @@
 import { clsx } from 'clsx';
 
 import type { ConditionMark } from '../../types/character';
+import { TermLabel } from '../terms/TermLabel';
+import type { TermLink } from '../terms/termLink';
 
 interface CompactFieldProps {
     disabled: boolean;
@@ -27,16 +29,25 @@ export function CompactTextField({ disabled, label, onChange, value }: CompactTe
 }
 
 interface CompactRatingProps extends CompactFieldProps {
+    /** Book term of the label (spec 009). */
+    term?: TermLink;
     value: number;
     max?: number;
     onChange: (value: number) => void;
 }
 
-export function CompactRating({ disabled, label, max = 5, onChange, value }: CompactRatingProps) {
+export function CompactRating({
+    disabled,
+    label,
+    max = 5,
+    onChange,
+    term,
+    value,
+}: CompactRatingProps) {
     return (
-        <label className="flex min-w-0 items-center gap-1.5 text-xs">
+        <label className="term-row term-row-compact flex min-w-0 items-center gap-1.5 text-xs">
             <span className="min-w-0 flex-1 truncate text-textSecondary" title={label}>
-                {label}
+                <TermLabel text={label} {...term} />
             </span>
             <input
                 type="number"

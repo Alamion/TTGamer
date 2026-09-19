@@ -239,3 +239,56 @@
 .tailwind-root th {
     @apply border-borderMoreContrast;
 }
+
+/*
+ * Spec 009 book-term labels. No persistent marker: pointer devices only get a help cursor,
+ * keyboard focus gets the usual ring. Rows are size containers so a long Russian label swaps
+ * to its glossary short form on narrow rows (thresholds match the i18n verifier's overflow
+ * budgets in scripts/i18n-verifier/config.ts; calibrated at 360 px, spec 009 T087).
+ */
+.term-row {
+    container-type: inline-size;
+}
+
+@media (hover: hover) {
+    .term-label[data-term-ref] {
+        cursor: help;
+    }
+}
+.term-label[data-term-ref]:focus-visible {
+    border-radius: 0.125rem;
+    outline: 2px solid rgb(var(--primary) / 1);
+    outline-offset: 1px;
+}
+
+.term-label .term-short {
+    display: none;
+}
+
+@container (max-width: 22rem) {
+    .term-row-specialty .term-has-short .term-full {
+        display: none;
+    }
+    .term-row-specialty .term-has-short .term-short {
+        display: inline;
+    }
+}
+@container (max-width: 16rem) {
+    /* Too narrow for label, 8-character input, and dots on one line: input goes below. */
+    .term-row-specialty .term-row-inner {
+        flex-wrap: wrap;
+    }
+    .term-row-specialty .term-row-inner > :first-child {
+        flex: 1 1 0%;
+    }
+    .term-row-specialty .term-row-inner > input {
+        order: 2;
+        flex-basis: 100%;
+    }
+    .term-has-short .term-full {
+        display: none;
+    }
+    .term-has-short .term-short {
+        display: inline;
+    }
+}

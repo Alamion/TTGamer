@@ -1,9 +1,12 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Plus } from 'lucide-react';
 
 import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest, CollapsibleItem } from '../../../components';
 import { AutoResizeTextarea } from '../../../components';
 import type { ImplantItem } from '../../../types/character';
+import { useItemName } from '../data/itemDisplay';
 
 interface ImplantsSectionProps {
     items: ImplantItem[];
@@ -25,17 +28,21 @@ export function ImplantsSection({
     onCatalogSelect,
     catalog,
 }: ImplantsSectionProps) {
+    const itemName = useItemName();
     return (
         <div className="px-4 pb-4 space-y-2">
             {items.length === 0 ? (
-                <p className="text-sm text-textSecondary italic py-2">No implants yet...</p>
+                <p className="text-sm text-textSecondary italic py-2">
+                    {translate(uiMessages.sheet.items.implants.empty)}
+                </p>
             ) : (
                 items.map((item) => (
                     <CollapsibleItem
                         key={item.id}
                         title={
                             <span className="text-sm text-textPrimary truncate">
-                                {item.name || 'New Implant'}
+                                {itemName(item.name, item.entryRef) ||
+                                    translate(uiMessages.sheet.items.implants.untitled)}
                             </span>
                         }
                         onRemove={readOnly ? undefined : () => onRemove(item.id)}
@@ -44,42 +51,52 @@ export function ImplantsSection({
                         <div className="space-y-3">
                             <div>
                                 <span className="block text-xs text-textSecondary mb-0.5">
-                                    Name
+                                    {translate(uiMessages.sheet.items.name)}
                                 </span>
                                 <CatalogSuggest
                                     catalog={catalog}
-                                    value={item.name}
+                                    value={itemName(item.name, item.entryRef)}
                                     onChange={(val) => onUpdate(item.id, 'name', val)}
                                     onSelect={(entry) => onCatalogSelect(item.id, entry)}
-                                    placeholder="Implant name..."
+                                    placeholder={translate(
+                                        uiMessages.sheet.items.implants.namePlaceholder
+                                    )}
                                     disabled={readOnly}
                                     className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
-                                    ariaLabel="Implant name"
+                                    ariaLabel={translate(uiMessages.sheet.items.implants.nameLabel)}
                                 />
                             </div>
                             <div>
                                 <span className="block text-xs text-textSecondary mb-0.5">
-                                    Type
+                                    {translate(uiMessages.sheet.items.implants.type)}
                                 </span>
                                 <input
                                     type="text"
                                     value={item.type}
                                     onChange={(e) => onUpdate(item.id, 'type', e.target.value)}
                                     className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
-                                    placeholder="Limb, Sensory, Uplink..."
-                                    aria-label="Implant type"
+                                    placeholder={translate(
+                                        uiMessages.sheet.items.implants.typePlaceholder
+                                    )}
+                                    aria-label={translate(
+                                        uiMessages.sheet.items.implants.typeLabel
+                                    )}
                                 />
                             </div>
                             <div>
                                 <span className="block text-xs text-textSecondary mb-0.5">
-                                    Effect
+                                    {translate(uiMessages.sheet.items.implants.effect)}
                                 </span>
                                 <AutoResizeTextarea
                                     value={item.effect}
                                     onChange={(value) => onUpdate(item.id, 'effect', value)}
-                                    placeholder="Mechanical effect..."
+                                    placeholder={translate(
+                                        uiMessages.sheet.items.implants.effectPlaceholder
+                                    )}
                                     readOnly={readOnly}
-                                    ariaLabel="Implant effect"
+                                    ariaLabel={translate(
+                                        uiMessages.sheet.items.implants.effectLabel
+                                    )}
                                 />
                             </div>
                         </div>
@@ -90,10 +107,10 @@ export function ImplantsSection({
                 <button
                     onClick={onAdd}
                     className="flex items-center gap-1 text-sm text-textSecondary hover:text-textSecondary/80 transition-colors"
-                    aria-label="Add implant"
+                    aria-label={translate(uiMessages.sheet.items.implants.addLabel)}
                 >
                     <Plus className="w-4 h-4" aria-hidden="true" />
-                    Add Implant
+                    {translate(uiMessages.sheet.items.implants.add)}
                 </button>
             )}
         </div>

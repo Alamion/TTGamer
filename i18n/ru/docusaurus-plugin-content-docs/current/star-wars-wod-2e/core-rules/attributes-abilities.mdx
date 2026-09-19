@@ -4,9 +4,13 @@ title: Атрибуты и Способности
 ---
 
 import { ATTRIBUTES } from '@site/src/data/attributes';
-import { renderAttributeDetail } from '@site/src/data/attributeConfig';
+import { ATTRIBUTE_GRID, renderAttributeDetail } from '@site/src/data/attributeConfig';
 import { ABILITIES } from '@site/src/data/abilities';
-import { ABILITY_COLUMNS, renderAbilityDetail } from '@site/src/data/abilityConfig';
+import {
+    ABILITY_COLUMNS,
+    ABILITY_FILTERS,
+    renderAbilityDetail,
+} from '@site/src/data/abilityConfig';
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
 import { EntityGrid } from '@site/src/shared/components/EntityCard';
 import { TemplateFragment } from '@site/src/sheet_manager/docsEmbeds';
@@ -31,14 +35,7 @@ import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 Ментальные Черты представляют общий умственный потенциал персонажа, включая память, восприятие и способность учиться и мыслить.
 
 <TWWrapper>
-    <EntityGrid
-        entities={ATTRIBUTES}
-        renderDetail={renderAttributeDetail}
-        getName={(e) => e.name}
-        getDescription={(e) => e.shortDescription}
-        getTags={(e) => e.specialties}
-        getKey={(e) => e.id}
-    />
+    <EntityGrid entities={ATTRIBUTES} renderDetail={renderAttributeDetail} {...ATTRIBUTE_GRID} />
     <br />
     <TemplateFragment node="attributes" />
 </TWWrapper>
@@ -68,7 +65,7 @@ import { DataCatalog } from '@site/src/shared/components/DataCatalog';
         data={ABILITIES}
         columns={ABILITY_COLUMNS}
         renderDetail={renderAbilityDetail}
-        filters={[{ columnId: 'category', label: 'Category' }]}
+        filters={ABILITY_FILTERS}
         id="abilities"
     />
     <br />

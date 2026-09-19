@@ -1,0 +1,44 @@
+armored-clothing:
+    name: Armored Clothing
+    description: Street clothes reinforced with thin flexi-plate inserts. Offers negligible ballistic protection but can turn a knife blade or reduce a glancing blaster hit. The main advantage is concealment — nobody knows you are armored until they hit you.
+    notes: Concealed light plating sewn into normal clothes. No AR bonus but provides minimal protection.
+blast-vest-helmet:
+    name: Blast Vest & Helmet
+    description: A flexible blast-proof vest paired with a light helmet. Standard issue for private security, militia, and anyone expecting low-level threats. Provides minimal protection against blaster fire but offers peace of mind against shrapnel and glancing shots. The light construction does not impede movement.
+    notes: Basic protection. Adds dice to Stamina soak.
+flight-suit:
+    name: Flight Suit
+    description: A form-fitting vacuum-sealed suit worn by starfighter pilots and ship crew. Provides emergency life support, temperature regulation, and minimal blast protection. The suit can sustain a wearer in vacuum for 30 minutes and includes a comlink, locator beacon, and medical monitor.
+    notes: Pilot suit. Vacuum-sealed with emergency oxygen (30 min).
+combat-jumpsuit:
+    name: Combat Jumpsuit
+    description: A reinforced body glove worn under armor or alone for light protection. Standard issue for Imperial Navy officers and crew who need protection without the bulk of full armor. The durasteel-weave fabric can deflect shrapnel and reduce blaster damage while allowing full mobility.
+    notes: Flexible combat uniform. Low profile, no movement penalty.
+bounty-hunter-armor:
+    name: Bounty Hunter Armor
+    description: Reinforced combat plating favored by bounty hunters, elite mercenaries, and Rebel commandos. Offers meaningful protection against blaster fire but the bulk limits agility. Often customized with pouches, weapon holsters, and utility mounts.
+    notes: Heavy combat armor. Reduces dexterity pools.
+armored-flightsuit:
+    name: Armored Flightsuit
+    description: A hybrid of flight suit and combat armor — the vacuum seal and life support of a flight suit combined with trauma plates. Used by TIE fighter pilots and boarding parties who need both environmental protection and combat durability.
+    notes: Flight suit with integrated armor plates. Reduces dexterity.
+light-combat-armor:
+    name: Light Combat Armor
+    description: Military-grade armor plates over a padded body glove, offering a compromise between protection and mobility. Used by special forces, elite units, and mercenary commanders who need to stay agile while expecting heavy resistance.
+    notes: Military-grade light plating. Balances protection and mobility.
+stormtrooper-armor:
+    name: Stormtrooper Armor
+    description: The iconic white plastoid armor of the Imperial stormtrooper. Offers the best protection of any commonly seen armor but severely restricts mobility. The helmet includes a comlink, heads-up display, and environmental filters. Not available on the open market — usually acquired from defeated troopers.
+    notes: Imperial issue. Highest AR, heaviest penalty. Not available for purchase.
+heavy-combat-armor:
+    name: Heavy Combat Armor
+    description: Full-body durasteel plating used by heavy assault troopers and combat droids. Offers exceptional protection at the cost of almost all agility. The wearer cannot run and suffers a -3D penalty to all Dexterity-based pools. Not recommended for extended operations.
+    notes: Full body plating. Extremely heavy dexterity penalty.
+mandalorian-armor:
+    name: Mandalorian Armor
+    description: Forged from beskar, the near-indestructible Mandalorian iron. Mandalorian armor offers exceptional protection without the bulk of conventional armor, resisting blaster fire with ease and even withstanding lightsaber strikes (though sustained contact will eventually cut through). Each set is custom-crafted and culturally significant. Never sold — only inherited or earned.
+    notes: Legendary beskar alloy. Superior protection without bulk. Only damaged by lightsabers.
+jedi-robes:
+    name: Jedi Robes
+    description: The traditional robes of a Jedi Knight. While offering no conventional armor protection, the robes are often treated with defensive compounds that provide marginal resistance to energy attacks. More importantly, they do not impede a Jedi's movement or connection to the Force.
+    notes: Traditional Jedi attire. No armor value but may provide minor resistance to energy.

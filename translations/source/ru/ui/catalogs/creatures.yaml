@@ -1,0 +1,24 @@
+columns:
+    name: Название
+    type: Тип
+    scale: Масштаб
+    attacks: Атаки
+detail:
+    physical: Физические
+    mental: Ментальные
+    other: Прочее
+    strength: СИЛ
+    dexterity: ЛОВ
+    stamina: ВЫН
+    perception: ВОС
+    intelligence: ИНТ
+    wits: СМК
+    willpower: ВОЛ
+    movement: ДВИЖ
+    scale: Масштаб
+    size: Размер
+    armor: Броня
+    abilities: Способности
+    attacks: Атаки
+    merits: Достоинства
+    flaws: Недостатки

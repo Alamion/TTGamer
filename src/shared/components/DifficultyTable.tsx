@@ -1,4 +1,10 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useMemo, useState } from 'react';
+
+import { usePluralMessage } from '../hooks/usePluralMessage';
+
+const messages = uiMessages.shared.difficultyTable;
 
 function computeProb(pool: number, diff: number, minNet: number, cancelOnes: boolean): number {
     const pOne = cancelOnes ? 0.1 : 0;
@@ -29,15 +35,15 @@ function factorial(n: number): number {
 }
 
 const DIFFICULTIES = [3, 4, 5, 6, 7, 8, 9, 10];
-const DIFF_LABELS: Record<number, string> = {
-    3: 'Easy',
-    4: 'Routine',
-    5: 'Straightforward',
-    6: 'Standard',
-    7: 'Challenging',
-    8: 'Difficult',
-    9: 'Extremely Difficult',
-    10: 'Nearly Impossible',
+const DIFF_LABELS: Record<number, { id: string; message: string }> = {
+    3: messages.difficulty.easy,
+    4: messages.difficulty.routine,
+    5: messages.difficulty.straightforward,
+    6: messages.difficulty.standard,
+    7: messages.difficulty.challenging,
+    8: messages.difficulty.difficult,
+    9: messages.difficulty.extremelyDifficult,
+    10: messages.difficulty.nearlyImpossible,
 };
 
 const DIFF_BG: Record<number, string> = {
@@ -64,6 +70,7 @@ const THRESHOLDS = [1, 2, 3, 4, 5];
 export function DifficultyTable() {
     const [cancelOnes, setCancelOnes] = useState(true);
     const [currentPool, setCurrentPool] = useState(7);
+    const plural = usePluralMessage();
 
     const rows = useMemo(() => {
         return THRESHOLDS.map((minNet) => ({
@@ -76,7 +83,7 @@ export function DifficultyTable() {
         <div className="tailwind-root overflow-x-auto">
             <div className="flex flex-wrap gap-4 items-end mb-4">
                 <label className="flex flex-col gap-1 text-sm">
-                    Current dice in pool
+                    {translate(messages.pool)}
                     <input
                         type="number"
                         min={1}
@@ -95,7 +102,7 @@ export function DifficultyTable() {
                         onChange={(e) => setCancelOnes(e.target.checked)}
                         className="w-4 h-4"
                     />
-                    1s cancel successes
+                    {translate(messages.cancelOnes)}
                 </label>
             </div>
 
@@ -106,18 +113,18 @@ export function DifficultyTable() {
                             scope="col"
                             className="sticky left-0 bg-white dark:bg-gray-900 border px-2 py-1.5 text-left z-10"
                         >
-                            Net Suc. \ Diff
+                            {translate(messages.corner)}
                         </th>
                         {DIFFICULTIES.map((d) => (
                             <th
                                 key={d}
                                 scope="col"
                                 className={`border px-2 py-1.5 text-center ${DIFF_BG[d]}`}
-                                title={DIFF_LABELS[d]}
+                                title={translate(DIFF_LABELS[d])}
                             >
                                 {d}
                                 <span className="block text-[10px] font-normal">
-                                    {DIFF_LABELS[d]}
+                                    {translate(DIFF_LABELS[d])}
                                 </span>
                             </th>
                         ))}
@@ -149,10 +156,9 @@ export function DifficultyTable() {
             </table>
 
             <p className="text-xs text-gray-500 mt-2">
-                Rows show the chance of rolling at least N net successes with {currentPool}{' '}
-                dice.&nbsp;
-                {cancelOnes ? 'Each 1 cancels one success.' : 'Ones are ignored (no cancelation).'}
-                Values update immediately when inputs change.
+                {plural(messages.summary, currentPool)}{' '}
+                {translate(cancelOnes ? messages.cancelEach : messages.onesIgnored)}{' '}
+                {translate(messages.liveUpdate)}
             </p>
         </div>
     );

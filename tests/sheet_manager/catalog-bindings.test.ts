@@ -53,8 +53,9 @@ describe('catalog binding registry', () => {
         const binding = CATALOG_BINDINGS.get('melee-weapons')!;
         const first = binding.entries[0]!;
         expect(binding.entryLabel(first, 'en')).toBe(first.name);
-        // No ru data translations for this catalog yet — fallback keeps the English name.
-        expect(binding.entryLabel(first, 'ru')).toBe(first.name);
+        expect(binding.entryLabel(first, 'ru')).toBe('Нож');
+        // A locale without a translation keeps the English name.
+        expect(binding.entryLabel(first, 'de')).toBe(first.name);
     });
 
     it('extracts detail values for the copy runtime', () => {

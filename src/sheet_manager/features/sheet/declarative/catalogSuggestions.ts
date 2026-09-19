@@ -27,7 +27,7 @@ export function useCatalogSuggestions(catalogId: string | undefined): CatalogEnt
         () =>
             (catalog?.entries ?? []).map((entry) => ({
                 id: entry.id,
-                name: catalog!.entryLabel(entry, locale),
+                name: catalog!.pickLabel(entry, locale),
             })),
         [catalog, locale]
     );

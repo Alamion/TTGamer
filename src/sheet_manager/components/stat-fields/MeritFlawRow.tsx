@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Plus, X } from 'lucide-react';
 
 import type { CatalogEntry } from '../controls/CatalogSuggest.tsx';
@@ -80,7 +82,11 @@ export function MeritFlawList({
                                 value={item.label}
                                 onChange={(label) => onChange(item.id, item.points, label)}
                                 onSelect={(entry) => onCatalogSelect(item.id, entry)}
-                                placeholder={isMerit ? 'Merit name...' : 'Flaw name...'}
+                                placeholder={translate(
+                                    isMerit
+                                        ? uiMessages.sheet.controls.meritFlaw.meritPlaceholder
+                                        : uiMessages.sheet.controls.meritFlaw.flawPlaceholder
+                                )}
                                 disabled={disabled}
                                 className="flex-1 bg-bgSurface border rounded px-3 py-1 text-sm text-textPrimary"
                             />
@@ -91,7 +97,11 @@ export function MeritFlawList({
                                 onChange={(e) => onChange(item.id, item.points, e.target.value)}
                                 disabled={disabled}
                                 className="flex-1 bg-bgSurface border rounded px-3 py-1 text-sm text-textPrimary"
-                                placeholder={isMerit ? 'Merit name...' : 'Flaw name...'}
+                                placeholder={translate(
+                                    isMerit
+                                        ? uiMessages.sheet.controls.meritFlaw.meritPlaceholder
+                                        : uiMessages.sheet.controls.meritFlaw.flawPlaceholder
+                                )}
                             />
                         )}
                         <button
@@ -99,6 +109,7 @@ export function MeritFlawList({
                             onClick={() => onRemove(item.id)}
                             disabled={disabled}
                             className="text-textSecondary hover:text-error transition-colors p-1"
+                            aria-label={translate(uiMessages.sheet.controls.meritFlaw.remove)}
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -112,7 +123,11 @@ export function MeritFlawList({
                 className="flex items-center gap-1 text-sm mt-3 py-1 transition-colors text-textPrimary hover:opacity-80"
             >
                 <Plus className="w-4 h-4" />
-                Add {title.slice(0, -1)}
+                {translate(
+                    isMerit
+                        ? uiMessages.sheet.controls.meritFlaw.addMerit
+                        : uiMessages.sheet.controls.meritFlaw.addFlaw
+                )}
             </button>
         </>
     );

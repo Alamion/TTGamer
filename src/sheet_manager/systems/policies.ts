@@ -40,7 +40,7 @@ export const PUBLISHER_POLICIES: Readonly<Record<PolicyId, PublisherPolicy>> = {
         explanation: uiMessages.sheet.policies.darkPack.explanation,
         url: 'https://www.paradoxinteractive.com/games/world-of-darkness/community/dark-pack-agreement',
         badge: '/img/dark-pack-badge.webp',
-        aboutPage: '/docs/v5/dark-pack',
+        aboutPage: '/docs/wod-v5/dark-pack',
         nonCommercial: true,
     },
 };

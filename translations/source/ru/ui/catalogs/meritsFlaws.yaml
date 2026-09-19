@@ -1,0 +1,15 @@
+columns:
+    name: Достоинство / недостаток
+    cost: Цена
+    type: Тип
+    shortDescription: Описание
+    category: Категория
+detail:
+    cost: Цена
+    implantNoCost: Без цены в очках · Имплант
+    tags: Теги
+points:
+    message: '{count} очко|{count} очка|{count} очков'
+    plural: true
+filters:
+    severity: Серьёзность

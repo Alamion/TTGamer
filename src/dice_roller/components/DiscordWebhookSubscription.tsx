@@ -1,5 +1,8 @@
+import { translate } from '@docusaurus/Translate';
+import { type UiMessageDescriptor, uiMessages } from '@site/src/i18n/generated/uiMessages';
 import {
     buildDiscordHistoryMessage,
+    type DiscordDeliveryResult,
     isValidDiscordWebhook,
     queueDiscordMessage,
     SESSION_STORAGE_KEY,
@@ -11,6 +14,18 @@ import toast from 'react-hot-toast';
 import { onRollResult } from '../dice-logic/dice-roller';
 import type { RollResult } from '../dice-logic/types';
 import { useDiceRollerStore } from '../store/diceRollerStore';
+
+type DeliveryFailureReason = Extract<DiscordDeliveryResult, { ok: false }>['reason'];
+
+/** User-facing message per delivery failure code; the codes stay in the Discord integration. */
+const DELIVERY_ERROR_MESSAGES: Record<
+    Exclude<DeliveryFailureReason, 'rate-limited'>,
+    UiMessageDescriptor
+> = {
+    network: uiMessages.integrations.discord.errors.network,
+    rejected: uiMessages.integrations.discord.errors.rejected,
+    'invalid-webhook': uiMessages.integrations.discord.errors.rejected,
+};
 
 export default function DiscordWebhookSubscription() {
     const settings = useDiceRollerStore((s) => s.settings);
@@ -31,17 +46,16 @@ export default function DiscordWebhookSubscription() {
             queueDiscordMessage(message, webhookUrl).then((delivery) => {
                 if (delivery.ok) return;
                 if (delivery.reason === 'rate-limited') {
-                    const wait = delivery.retryAfterMs
-                        ? ` Try again in about ${Math.ceil(delivery.retryAfterMs / 1_000)} seconds.`
-                        : ' Try again in a moment.';
-                    toast.error(`Discord is rate-limiting rolls.${wait}`);
+                    toast.error(
+                        delivery.retryAfterMs
+                            ? translate(uiMessages.integrations.discord.errors.rateLimitedRetry, {
+                                  seconds: Math.ceil(delivery.retryAfterMs / 1_000),
+                              })
+                            : translate(uiMessages.integrations.discord.errors.rateLimited)
+                    );
                     return;
                 }
-                toast.error(
-                    delivery.reason === 'network'
-                        ? 'Discord could not be reached. Check your connection.'
-                        : 'Discord rejected this roll. Check the webhook settings.'
-                );
+                toast.error(translate(DELIVERY_ERROR_MESSAGES[delivery.reason]));
             });
         });
 

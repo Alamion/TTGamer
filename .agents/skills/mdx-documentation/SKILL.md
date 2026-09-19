@@ -46,7 +46,7 @@ to them. Separate them with two line breaks:
 
 ```mdx
 <TWWrapper>
-    <TemplateFragment systemId="v5" template="v5-hunter-sheet" node="attributes" />
+    <TemplateFragment systemId="wod-v5" template="v5-hunter-sheet" node="attributes" />
 </TWWrapper>
 
 <br />
@@ -58,7 +58,7 @@ to them. Separate them with two line breaks:
 ```
 
 Not needed when a heading follows (headings bring their own margin) or when the embed closes an
-admonition. Enforced for `docs/v5` by `tests/docs/v5-docs.test.ts`. (Older Star Wars pages use a
+admonition. Enforced for `docs/wod-v5` by `tests/docs/wod-v5-docs.test.ts`. (Older Star Wars pages use a
 single `<br />`.)
 
 ## Catalogs in documentation
@@ -68,6 +68,14 @@ Show a catalog's entries with `<CatalogBrowser catalogId="…" />` (from
 detail panel, localized from the catalog translations. The catalog must declare `browse`
 (columns, filters, optional child catalog) in its plugin; a list lives on one page only — link
 to it from other pages instead of repeating it.
+
+## Russian terminology
+
+- The first mention of a glossary game term on a Russian page reads «Русский (English)»
+  (`Воровство (Larceny)`); later mentions are Russian only. The verifier's `docs-terms` rule
+  checks it (terms come from `translations/glossary/`, scoped to the system's docs tree).
+- Catalog embeds (`DataCatalog` filters, `EntityGrid` getters) use the exported descriptor-based
+  configs from `src/data/*Config.tsx`, never literal labels.
 
 ## Cross-References
 
@@ -84,20 +92,20 @@ Use relative links: `[Dice Pools](../core-rules/dice-pools.mdx)` — never absol
 
 ## V5 page format (candidate for all systems)
 
-Pages under `docs/v5/` follow `specs/008-hunter-v5-character/contracts/docs-structure.md`,
-enforced by `tests/docs/v5-docs.test.ts`. It is the candidate format for a future rework of
+Pages under `docs/wod-v5/` follow `specs/008-hunter-v5-character/contracts/docs-structure.md`,
+enforced by `tests/docs/wod-v5-docs.test.ts`. It is the candidate format for a future rework of
 the Star Wars docs (TODO T-047).
 
 - Front matter: `title`, `sidebar_position`, **`description`** (required), optional
   `sidebar_label`; folder index pages add `slug: ./` and `<DocCardList />`.
 - Every page opens with `:::tip[In short]` (RU: `:::tip[Коротко]`), 2–4 lines.
 - Pages carry no publisher notice. The Dark Pack statement (badge, verbatim notice,
-  explanation) lives only on `docs/v5/dark-pack.mdx`:
+  explanation) lives only on `docs/wod-v5/dark-pack.mdx`:
   `<TWWrapper><PolicyStatement policy="dark-pack" /></TWWrapper>` (import from
   `@site/src/sheet_manager/docsEmbeds`). Sheets show only the badge linking there.
 - Guided creation steps (`first-hunter/0N-*`): progress line, In short, "Why it matters at the
   table", "Decide" (questions), optional "Options at a glance", "On your sheet"
-  (`<TemplateFragment systemId="v5" template="v5-hunter-sheet" node="…"/>`), a running example
+  (`<TemplateFragment systemId="wod-v5" template="v5-hunter-sheet" node="…"/>`), a running example
   in `:::note[Example: Lena]`, optional `<details>` questions, `:::info[Checkpoint]`, "Next".
 - Dice examples use `InlineRoll` with fixed results and explain criticals in words.
 - Own words only: names from the books are fine; explanations, examples, and tables are ours.

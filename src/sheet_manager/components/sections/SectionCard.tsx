@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 
@@ -33,7 +35,9 @@ export function SectionCard({
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="text-textSecondary hover:text-textPrimary transition-colors"
-                aria-label={`Documentation for ${title}`}
+                aria-label={translate(uiMessages.sheet.controls.documentationFor, {
+                    title: title ?? '',
+                })}
             >
                 <HelpCircle className="w-4 h-4" />
             </a>
@@ -45,7 +49,7 @@ export function SectionCard({
             onClick={() => setIsExpanded(!isExpanded)}
             className="w-full flex items-center justify-between p-4 text-left hover:bg-bgBase/30 transition-colors"
             aria-expanded={isExpanded}
-            aria-label={`Toggle ${title} section`}
+            aria-label={translate(uiMessages.sheet.controls.toggleSection, { title: title ?? '' })}
         >
             <h3 className="text-textSecondary text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
                 {title}

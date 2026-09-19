@@ -1,0 +1,6 @@
+columns:
+    name: Background
+    shortDescription: Description
+    category: Category
+detail:
+    dotRank: Dot Rank

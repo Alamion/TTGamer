@@ -32,7 +32,9 @@ manager:
     selectDocument: Select {title}
     deleteSelected: Delete selected
     deleteTitle: Delete documents
-    deleteDescription: Are you sure you want to delete {count} document(s)? This cannot be undone.
+    deleteDescription:
+        message: Are you sure you want to delete {count} document? This cannot be undone.|Are you sure you want to delete {count} documents? This cannot be undone.
+        plural: true
     close: Close
 create:
     title: Create document

@@ -118,7 +118,7 @@ describe('system-aware template matching (feature 008)', () => {
 
     it('does not resolve a template of another system with the same kind', () => {
         const library = [buildTemplate('sentient-page')];
-        expect(resolveCustomTemplate('sentient-page', library, characterKind, 'v5')).toEqual({
+        expect(resolveCustomTemplate('sentient-page', library, characterKind, 'wod-v5')).toEqual({
             reason: 'system-mismatch',
         });
         expect(
@@ -127,7 +127,7 @@ describe('system-aware template matching (feature 008)', () => {
     });
 
     it('skips a same-id user template of another system when resolving a view', () => {
-        const foreign = buildTemplate('full-sheet', 'character', 'v5');
+        const foreign = buildTemplate('full-sheet', 'character', 'wod-v5');
         const resolved = resolveEffectiveTemplate(
             'full-sheet',
             { templates: [foreign], defaultOverrides: {} },
@@ -143,7 +143,7 @@ describe('system-aware template matching (feature 008)', () => {
             resolveEffectiveTemplate(
                 'full-sheet',
                 { templates: [], defaultOverrides: {} },
-                'v5',
+                'wod-v5',
                 characterKind
             )
         ).toBeUndefined();
@@ -154,7 +154,9 @@ describe('system-aware template matching (feature 008)', () => {
         expect(
             isTemplateCompatible(template, { systemId: 'star-wars-wod', kind: 'character' })
         ).toBe(true);
-        expect(isTemplateCompatible(template, { systemId: 'v5', kind: 'character' })).toBe(false);
+        expect(isTemplateCompatible(template, { systemId: 'wod-v5', kind: 'character' })).toBe(
+            false
+        );
         expect(isTemplateCompatible(template, { systemId: 'star-wars-wod', kind: 'vehicle' })).toBe(
             false
         );

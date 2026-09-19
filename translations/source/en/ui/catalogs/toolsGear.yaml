@@ -1,0 +1,9 @@
+columns:
+    name: Item
+    category: Category
+    effect: Effect
+    cost: Cost
+detail:
+    category: Category
+    cost: Cost
+    effect: Effect

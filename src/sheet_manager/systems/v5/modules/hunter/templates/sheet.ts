@@ -32,13 +32,13 @@ const v5 = uiMessages.sheet.v5;
 const hunter = uiMessages.sheet.v5Hunter;
 
 export const HUNTER_DOCS = {
-    creedDrive: '/docs/v5/hunter/first-hunter/creed-drive',
-    cell: '/docs/v5/hunter/reference/desperation-danger-despair',
-    edges: '/docs/v5/hunter/first-hunter/edges-perks',
-    advantages: '/docs/v5/hunter/reference/advantages-flaws',
-    equipment: '/docs/v5/hunter/reference/weapons-gear',
-    aims: '/docs/v5/hunter/first-hunter/concept-ambition-desire',
-    touchstones: '/docs/v5/hunter/first-hunter/touchstones',
+    creedDrive: '/docs/wod-v5/hunter/first-hunter/creed-drive',
+    cell: '/docs/wod-v5/hunter/reference/desperation-danger-despair',
+    edges: '/docs/wod-v5/hunter/first-hunter/edges-perks',
+    advantages: '/docs/wod-v5/hunter/reference/advantages-flaws',
+    equipment: '/docs/wod-v5/hunter/reference/weapons-gear',
+    aims: '/docs/wod-v5/hunter/first-hunter/concept-ambition-desire',
+    touchstones: '/docs/wod-v5/hunter/first-hunter/touchstones',
 } as const;
 
 /** Name, Concept, Creed, and Drive. */
@@ -220,7 +220,7 @@ function hunterPurposeSection(): SectionNode {
 export const hunterSheetTemplate: CustomTemplate = {
     id: 'v5-hunter-sheet',
     name: 'Hunter: the Reckoning 5e — Full sheet',
-    systemId: SystemIdSchema.parse('v5'),
+    systemId: SystemIdSchema.parse('wod-v5'),
     documentKind: DocumentKindSchema.parse('character'),
     schemaVersion: TEMPLATE_SCHEMA_VERSION,
     children: [

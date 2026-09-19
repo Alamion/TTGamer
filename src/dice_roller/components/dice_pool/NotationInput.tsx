@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Info, Star } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -53,7 +55,7 @@ export default function NotationInput() {
                                     : 'border-red-500/60'
                                 : 'border-border'
                         }`}
-                    placeholder="Roll notation (e.g. 2d6+3 or 4d20kh3)"
+                    placeholder={translate(uiMessages.dice.pool.notation.placeholder)}
                     value={notationInput}
                     onChange={(e) => setNotationInput(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -73,7 +75,7 @@ export default function NotationInput() {
                         rel="noopener noreferrer"
                         className="absolute right-10 flex items-center justify-center w-5 h-5
                             text-textSecondary hover:text-textPrimary transition-colors"
-                        title="View dice notation reference"
+                        title={translate(uiMessages.dice.pool.notation.reference)}
                     >
                         <Info size={14} />
                     </a>
@@ -84,14 +86,20 @@ export default function NotationInput() {
                         onClick={() => toggleFavorite(notationInput)}
                         className={`absolute right-10 flex items-center justify-center w-5 h-5 transition-colors
                             ${starred ? 'text-yellow-500' : 'text-textSecondary hover:text-textPrimary'}`}
-                        title={starred ? 'Remove from favorites' : 'Save as favorite'}
+                        title={translate(
+                            starred
+                                ? uiMessages.dice.pool.notation.removeFavorite
+                                : uiMessages.dice.pool.notation.saveFavorite
+                        )}
                     >
                         <Star size={14} fill={starred ? 'currentColor' : 'none'} />
                     </button>
                 )}
             </div>
             {notationInput.length > 0 && !notationValid && (
-                <span className="text-xs text-red-500 mt-0.5 block">Invalid notation</span>
+                <span className="text-xs text-red-500 mt-0.5 block">
+                    {translate(uiMessages.dice.pool.notation.invalid)}
+                </span>
             )}
         </div>
     );

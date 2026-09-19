@@ -1,0 +1,34 @@
+columns:
+    name: Транспорт
+    scale: Масштаб
+    maneuverability: Манёвр.
+    durability: Прочность
+    speed: Скорость
+    hyperdrive: Гипер
+    shields: Щиты
+    eras: Эпоха
+detail:
+    reroll: Переброс десяток
+    configuration: Характеристики
+    maneuverability: Манёвренность
+    durability: Прочность
+    speed: Скорость
+    altitude: Высота
+    ground: Наземный
+    shields: Щиты
+    none: Нет
+    astrogation: Астрогация
+    hyperdrive: Гипердвигатель
+    navComputer: Навкомпьютер
+    commSensors: Связь/Сенсоры
+    sensorRange: Дальность сенсоров
+    crewCapacity: Экипаж и вместимость
+    crew: Экипаж
+    passengers: Пассажиры
+    cargo: Грузоподъёмность
+    consumables: Автономность
+    physical: Корпус
+    type: Тип
+    length: Длина
+    era: Эпоха
+    weapons: Вооружение

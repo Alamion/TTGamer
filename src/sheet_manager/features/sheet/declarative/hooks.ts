@@ -550,7 +550,7 @@ export function useTemplatePage(
                 degraded: false,
                 options: binding.entries.map((entry) => ({
                     value: entry.id,
-                    label: binding.entryLabel(entry, locale),
+                    label: binding.pickLabel(entry, locale),
                 })),
                 details: new Map(binding.fillableDetails.map((detail) => [detail.key, detail])),
                 getEntry: (entryId) => binding.entries.find((entry) => entry.id === entryId),

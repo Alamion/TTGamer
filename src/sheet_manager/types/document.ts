@@ -9,7 +9,21 @@ const identifierSchema = z
     .regex(/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/, 'Expected a lowercase kebab-case identifier');
 
 export const DocumentKindSchema = identifierSchema.brand<'DocumentKind'>();
-export const SystemIdSchema = identifierSchema.brand<'SystemId'>();
+/**
+ * System ids renamed after documents were already saved: stored documents, files, and templates
+ * that still carry the old id read as the current one.
+ */
+const RENAMED_SYSTEM_IDS: Readonly<Record<string, string>> = { v5: 'wod-v5' };
+
+export const SystemIdSchema = z
+    .preprocess(
+        (value) =>
+            typeof value === 'string' && Object.hasOwn(RENAMED_SYSTEM_IDS, value)
+                ? RENAMED_SYSTEM_IDS[value]
+                : value,
+        identifierSchema
+    )
+    .brand<'SystemId'>();
 export const DocumentDefinitionIdSchema = identifierSchema.brand<'DocumentDefinitionId'>();
 export const DocumentViewIdSchema = identifierSchema.brand<'DocumentViewId'>();
 

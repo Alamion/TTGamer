@@ -1,0 +1,26 @@
+meta:
+    pageTitle: Home
+    pageDescription: TTGamer - Star Wars WEG/WoD Hybrid TTRPG Character Sheet Manager & Documentation
+hero:
+    tagline: TTRPG Sheets and Docs
+    status: Active Development — v{version}
+    characterSheet: Character Sheet
+    quickStart: Quick Start
+features:
+    heading: What's Available
+    characterSheet:
+        title: Character Sheet
+        summary: Full-featured manager with 9 attributes, 30 abilities, Force powers, inventory, health tracking, and more. Supports sentient and droid characters; vehicle sheets are planned.
+    diceRoller:
+        title: 3D Dice Roller
+        summary: Real-time 3D dice physics with WebGL, sound effects, surface physics, roll history, and support for any dice notation. 2D fallback included.
+    documentation:
+        title: Full Documentation
+        summary: Complete rules documentation covering character creation, combat, vehicles, GM tools, bestiary, equipment, and a full worked example.
+about:
+    title: About the System
+    body: A hybrid TTRPG system combining the narrative simplicity of {weg} with the mechanical depth of the {wod} d10 dice pool system. Create characters with 9 core attributes, 30 abilities, skill specializations, Force powers, and track bashing/lethal damage on a dual health system.
+    worldOfDarkness: World of Darkness
+status:
+    live: 'LIVE:'
+    docsComplete: '{count} docs complete'

@@ -1,0 +1,13 @@
+columns:
+    name: Название
+    type: Тип
+    damage: Урон
+    damageType: Тип урона
+    falloff: Ослабление
+    cost: Цена
+detail:
+    type: Тип
+    damage: Урон
+    falloff: Ослабление
+    cost: Цена
+    notes: Примечания

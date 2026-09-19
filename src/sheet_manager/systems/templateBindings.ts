@@ -290,7 +290,22 @@ export interface RowsBinding extends BindingBase {
         catalogIds: readonly string[];
         column: string;
         fills: Readonly<Record<string, string>>;
+        parent?: RowsCatalogParent;
     };
+}
+
+/**
+ * Entries that belong to an entry of another catalog (a Perk to its Edge). Picking one writes
+ * the parent's localized name into `column`; suggestions keep to parents named in that cell or,
+ * when it is empty, in the `namedBy` rows. Names that match no parent entry (custom or renamed)
+ * do not narrow the suggestions.
+ */
+export interface RowsCatalogParent {
+    /** Entry property holding the parent entry id. */
+    entryKey: string;
+    catalogId: string;
+    column: string;
+    namedBy?: { dataKey: string; column: string };
 }
 
 export type DocumentBindingDescriptor =

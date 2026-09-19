@@ -1,0 +1,13 @@
+columns:
+    name: Name
+    type: Type
+    damage: Damage
+    damageType: Dmg Type
+    falloff: Falloff
+    cost: Cost
+detail:
+    type: Type
+    damage: Damage
+    falloff: Falloff
+    cost: Cost
+    notes: Notes

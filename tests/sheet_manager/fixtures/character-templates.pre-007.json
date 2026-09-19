@@ -10,7 +10,6 @@
                 "id": "base",
                 "type": "section",
                 "title": "Base",
-                "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
                 "children": [
                     {
                         "id": "base-portrait",
@@ -129,8 +128,8 @@
                                 "labelMessage": "ttgamer.ui.sheet.base.fields.age.label"
                             }
                         ],
-                        "columns": 3,
                         "column": 2,
+                        "columns": 3,
                         "hideTitle": true,
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
                     },
@@ -201,8 +200,8 @@
                                 "labelMessage": "ttgamer.ui.sheet.base.fields.features.label"
                             }
                         ],
-                        "columns": 3,
                         "column": 2,
+                        "columns": 3,
                         "labelMessage": "ttgamer.ui.sheet.base.appearance"
                     },
                     {
@@ -229,6 +228,7 @@
                         "labelMessage": "ttgamer.ui.sheet.base.biography"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
                 "columns": 2,
                 "labelMessage": "ttgamer.ui.sheet.base.title"
             },
@@ -236,7 +236,6 @@
                 "id": "attributes",
                 "type": "section",
                 "title": "Attributes",
-                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
                 "children": [
                     {
                         "id": "attributes-physical",
@@ -374,6 +373,7 @@
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.mental"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
                 "columns": 3,
                 "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes"
             },
@@ -381,7 +381,6 @@
                 "id": "skills",
                 "type": "section",
                 "title": "Skills",
-                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
                 "children": [
                     {
                         "id": "abilities-talents",
@@ -398,7 +397,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/alertness"
                             },
                             {
                                 "id": "trait-athletics",
@@ -409,7 +409,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/athletics"
                             },
                             {
                                 "id": "trait-brawl",
@@ -420,7 +421,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/brawl"
                             },
                             {
                                 "id": "trait-command",
@@ -431,7 +433,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/command"
                             },
                             {
                                 "id": "trait-diplomacy",
@@ -442,7 +445,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/diplomacy"
                             },
                             {
                                 "id": "trait-dodge",
@@ -453,7 +457,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/dodge"
                             },
                             {
                                 "id": "trait-empathy",
@@ -464,7 +469,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/empathy"
                             },
                             {
                                 "id": "trait-intimidation",
@@ -475,7 +481,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/intimidation"
                             },
                             {
                                 "id": "trait-streetwise",
@@ -486,7 +493,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/streetwise"
                             },
                             {
                                 "id": "trait-subterfuge",
@@ -497,7 +505,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/subterfuge"
                             },
                             {
                                 "id": "list-talents",
@@ -525,7 +534,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/blaster"
                             },
                             {
                                 "id": "trait-gunnery",
@@ -536,7 +546,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/gunnery"
                             },
                             {
                                 "id": "trait-melee",
@@ -547,7 +558,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/melee"
                             },
                             {
                                 "id": "trait-pilot",
@@ -558,7 +570,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/pilot"
                             },
                             {
                                 "id": "trait-programming",
@@ -569,7 +582,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/programming"
                             },
                             {
                                 "id": "trait-repair",
@@ -580,7 +594,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/repair"
                             },
                             {
                                 "id": "trait-ride",
@@ -591,7 +606,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/ride"
                             },
                             {
                                 "id": "trait-security",
@@ -602,7 +618,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/security"
                             },
                             {
                                 "id": "trait-stealth",
@@ -613,7 +630,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/stealth"
                             },
                             {
                                 "id": "trait-survival",
@@ -624,7 +642,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/survival"
                             },
                             {
                                 "id": "list-skills",
@@ -652,7 +671,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/astrogation"
                             },
                             {
                                 "id": "trait-bureaucracy",
@@ -663,7 +683,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/bureaucracy"
                             },
                             {
                                 "id": "trait-cultures",
@@ -674,7 +695,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/cultures"
                             },
                             {
                                 "id": "trait-interfaces",
@@ -685,7 +707,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/interfaces"
                             },
                             {
                                 "id": "trait-investigation",
@@ -696,7 +719,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/investigation"
                             },
                             {
                                 "id": "trait-languages",
@@ -707,7 +731,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/languages"
                             },
                             {
                                 "id": "trait-medicine",
@@ -718,7 +743,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/medicine"
                             },
                             {
                                 "id": "trait-politics",
@@ -729,7 +755,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/politics"
                             },
                             {
                                 "id": "trait-tech",
@@ -740,7 +767,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/tech"
                             },
                             {
                                 "id": "trait-trade",
@@ -751,7 +779,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/trade"
                             },
                             {
                                 "id": "list-knowledges",
@@ -765,6 +794,7 @@
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.knowledges"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
                 "columns": 3,
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills"
             },
@@ -772,7 +802,6 @@
                 "id": "advantages",
                 "type": "section",
                 "title": "Advantages",
-                "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
                 "children": [
                     {
                         "id": "advantages-backgrounds",
@@ -826,6 +855,7 @@
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
                 "columns": 3,
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages"
             },
@@ -833,7 +863,6 @@
                 "id": "force",
                 "type": "section",
                 "title": "Force",
-                "docsPath": "/docs/star-wars-wod-2e/character/force",
                 "children": [
                     {
                         "id": "force-skills-group",
@@ -850,7 +879,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:force-skills/control"
                             },
                             {
                                 "id": "trait-dynamism",
@@ -861,7 +891,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:force-skills/dynamism"
                             },
                             {
                                 "id": "trait-rapport",
@@ -872,7 +903,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:force-skills/rapport"
                             },
                             {
                                 "id": "trait-sense",
@@ -883,7 +915,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:force-skills/sense"
                             },
                             {
                                 "id": "trait-telekinesis",
@@ -894,7 +927,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:force-skills/telekinesis"
                             }
                         ],
                         "column": 1,
@@ -916,7 +950,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:virtues/conscience"
                             },
                             {
                                 "id": "trait-passion",
@@ -927,7 +962,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:virtues/passion"
                             },
                             {
                                 "id": "trait-self-control",
@@ -938,7 +974,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:virtues/self-control"
                             }
                         ],
                         "column": 2,
@@ -955,8 +992,8 @@
                                 "id": "resource-willpower",
                                 "type": "primitive",
                                 "bindingKey": "resource:willpower",
-                                "label": "Willpower",
                                 "compact": false,
+                                "label": "Willpower",
                                 "minFrom": "min(passion + self-control, 10)",
                                 "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                             },
@@ -964,8 +1001,8 @@
                                 "id": "resource-max-force-points",
                                 "type": "primitive",
                                 "bindingKey": "resource:force-points",
-                                "label": "Max Force Points",
                                 "compact": false,
+                                "label": "Max Force Points",
                                 "minFrom": "self-control",
                                 "part": "max",
                                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.maxForcePoints"
@@ -974,16 +1011,16 @@
                                 "id": "resource-force-points",
                                 "type": "primitive",
                                 "bindingKey": "resource:force-points",
-                                "label": "Force Points",
                                 "compact": false,
+                                "label": "Force Points",
                                 "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
                             },
                             {
                                 "id": "resource-dark-side",
                                 "type": "primitive",
                                 "bindingKey": "resource:dark-side-resistance",
-                                "label": "Dark Side Resistance",
                                 "compact": false,
+                                "label": "Dark Side Resistance",
                                 "minFrom": "max(0, min(5 + conscience - passion, 10))",
                                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
                             }
@@ -1011,6 +1048,7 @@
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.forcePowers"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/character/force",
                 "columns": 3,
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.force"
             },
@@ -1018,7 +1056,6 @@
                 "id": "body",
                 "type": "section",
                 "title": "Body",
-                "docsPath": "/docs/star-wars-wod-2e/equipment",
                 "children": [
                     {
                         "id": "body-inventory",
@@ -1109,6 +1146,7 @@
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/equipment",
                 "columns": 2,
                 "columnWidths": [2, 1],
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.body"
@@ -1117,7 +1155,6 @@
                 "id": "other",
                 "type": "section",
                 "title": "Other",
-                "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
                 "children": [
                     {
                         "id": "derived-stats",
@@ -1228,6 +1265,7 @@
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#derived-stats",
                 "columns": 3,
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.other"
             }
@@ -1244,7 +1282,6 @@
                 "id": "base",
                 "type": "section",
                 "title": "Base",
-                "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
                 "children": [
                     {
                         "id": "base-portrait",
@@ -1363,8 +1400,8 @@
                                 "labelMessage": "ttgamer.ui.sheet.base.fields.age.label"
                             }
                         ],
-                        "columns": 3,
                         "column": 2,
+                        "columns": 3,
                         "hideTitle": true,
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
                     },
@@ -1435,8 +1472,8 @@
                                 "labelMessage": "ttgamer.ui.sheet.base.fields.features.label"
                             }
                         ],
-                        "columns": 3,
                         "column": 2,
+                        "columns": 3,
                         "labelMessage": "ttgamer.ui.sheet.base.appearance"
                     },
                     {
@@ -1463,6 +1500,7 @@
                         "labelMessage": "ttgamer.ui.sheet.base.biography"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/quick-start#2-fill-in-the-basics",
                 "columns": 2,
                 "labelMessage": "ttgamer.ui.sheet.base.title"
             },
@@ -1470,7 +1508,6 @@
                 "id": "attributes",
                 "type": "section",
                 "title": "Attributes",
-                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
                 "children": [
                     {
                         "id": "attributes-physical",
@@ -1608,6 +1645,7 @@
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.mental"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#attributes",
                 "columns": 3,
                 "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes"
             },
@@ -1615,7 +1653,6 @@
                 "id": "skills",
                 "type": "section",
                 "title": "Skills",
-                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
                 "children": [
                     {
                         "id": "abilities-talents",
@@ -1632,7 +1669,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/alertness"
                             },
                             {
                                 "id": "trait-athletics",
@@ -1643,7 +1681,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/athletics"
                             },
                             {
                                 "id": "trait-brawl",
@@ -1654,7 +1693,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/brawl"
                             },
                             {
                                 "id": "trait-command",
@@ -1665,7 +1705,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/command"
                             },
                             {
                                 "id": "trait-diplomacy",
@@ -1676,7 +1717,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/diplomacy"
                             },
                             {
                                 "id": "trait-dodge",
@@ -1687,7 +1729,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/dodge"
                             },
                             {
                                 "id": "trait-empathy",
@@ -1698,7 +1741,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/empathy"
                             },
                             {
                                 "id": "trait-intimidation",
@@ -1709,7 +1753,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/intimidation"
                             },
                             {
                                 "id": "trait-streetwise",
@@ -1720,7 +1765,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/streetwise"
                             },
                             {
                                 "id": "trait-subterfuge",
@@ -1731,7 +1777,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/subterfuge"
                             },
                             {
                                 "id": "list-talents",
@@ -1769,7 +1816,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/blaster"
                             },
                             {
                                 "id": "trait-gunnery",
@@ -1780,7 +1828,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/gunnery"
                             },
                             {
                                 "id": "trait-melee",
@@ -1791,7 +1840,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/melee"
                             },
                             {
                                 "id": "trait-pilot",
@@ -1802,7 +1852,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/pilot"
                             },
                             {
                                 "id": "trait-programming",
@@ -1813,7 +1864,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/programming"
                             },
                             {
                                 "id": "trait-repair",
@@ -1824,7 +1876,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/repair"
                             },
                             {
                                 "id": "trait-ride",
@@ -1835,7 +1888,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/ride"
                             },
                             {
                                 "id": "trait-security",
@@ -1846,7 +1900,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/security"
                             },
                             {
                                 "id": "trait-stealth",
@@ -1857,7 +1912,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/stealth"
                             },
                             {
                                 "id": "trait-survival",
@@ -1868,7 +1924,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/survival"
                             },
                             {
                                 "id": "list-skills",
@@ -1906,7 +1963,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/astrogation"
                             },
                             {
                                 "id": "trait-bureaucracy",
@@ -1917,7 +1975,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/bureaucracy"
                             },
                             {
                                 "id": "trait-cultures",
@@ -1928,7 +1987,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/cultures"
                             },
                             {
                                 "id": "trait-interfaces",
@@ -1939,7 +1999,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/interfaces"
                             },
                             {
                                 "id": "trait-investigation",
@@ -1950,7 +2011,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/investigation"
                             },
                             {
                                 "id": "trait-languages",
@@ -1961,7 +2023,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/languages"
                             },
                             {
                                 "id": "trait-medicine",
@@ -1972,7 +2035,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/medicine"
                             },
                             {
                                 "id": "trait-politics",
@@ -1983,7 +2047,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/politics"
                             },
                             {
                                 "id": "trait-tech",
@@ -1994,7 +2059,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/tech"
                             },
                             {
                                 "id": "trait-trade",
@@ -2005,7 +2071,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:abilities/trade"
                             },
                             {
                                 "id": "list-knowledges",
@@ -2029,6 +2096,7 @@
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.knowledges"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/core-rules/attributes-abilities#abilities",
                 "columns": 3,
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.skills"
             },
@@ -2036,7 +2104,6 @@
                 "id": "advantages",
                 "type": "section",
                 "title": "Advantages",
-                "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
                 "children": [
                     {
                         "id": "advantages-backgrounds",
@@ -2090,6 +2157,7 @@
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.flaws"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/character/merits-flaws",
                 "columns": 3,
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.advantages"
             },
@@ -2097,7 +2165,6 @@
                 "id": "force",
                 "type": "section",
                 "title": "Resources",
-                "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
                 "children": [
                     {
                         "id": "force-virtues",
@@ -2114,7 +2181,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:virtues/conscience"
                             },
                             {
                                 "id": "trait-passion",
@@ -2125,7 +2193,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:virtues/passion"
                             },
                             {
                                 "id": "trait-self-control",
@@ -2136,7 +2205,8 @@
                                 "max": 5,
                                 "presentation": "dots",
                                 "compact": false,
-                                "required": false
+                                "required": false,
+                                "labelMessage": "catalog:virtues/self-control"
                             }
                         ],
                         "column": 1,
@@ -2153,8 +2223,8 @@
                                 "id": "resource-willpower",
                                 "type": "primitive",
                                 "bindingKey": "resource:willpower",
-                                "label": "Willpower",
                                 "compact": false,
+                                "label": "Willpower",
                                 "minFrom": "min(passion + self-control, 10)",
                                 "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                             }
@@ -2163,6 +2233,7 @@
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.resources"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/character/virtues-willpower#the-three-virtues",
                 "columns": 2,
                 "labelMessage": "ttgamer.ui.sheet.documents.fields.resources"
             },
@@ -2170,7 +2241,6 @@
                 "id": "body",
                 "type": "section",
                 "title": "Body",
-                "docsPath": "/docs/star-wars-wod-2e/equipment",
                 "children": [
                     {
                         "id": "body-inventory",
@@ -2261,6 +2331,7 @@
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/equipment",
                 "columns": 2,
                 "columnWidths": [2, 1],
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.body"
@@ -2269,7 +2340,6 @@
                 "id": "other",
                 "type": "section",
                 "title": "Other",
-                "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
                 "children": [
                     {
                         "id": "experience",
@@ -2331,6 +2401,7 @@
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.notes"
                     }
                 ],
+                "docsPath": "/docs/star-wars-wod-2e/gm/rewards-advancement",
                 "columns": 2,
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.other"
             }
@@ -2527,7 +2598,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/alertness"
                     },
                     {
                         "id": "trait-athletics",
@@ -2539,7 +2611,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/athletics"
                     },
                     {
                         "id": "trait-brawl",
@@ -2551,7 +2624,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/brawl"
                     },
                     {
                         "id": "trait-command",
@@ -2563,7 +2637,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/command"
                     },
                     {
                         "id": "trait-diplomacy",
@@ -2575,7 +2650,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/diplomacy"
                     },
                     {
                         "id": "trait-dodge",
@@ -2587,7 +2663,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/dodge"
                     },
                     {
                         "id": "trait-empathy",
@@ -2599,7 +2676,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/empathy"
                     },
                     {
                         "id": "trait-intimidation",
@@ -2611,7 +2689,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/intimidation"
                     },
                     {
                         "id": "trait-streetwise",
@@ -2623,7 +2702,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/streetwise"
                     },
                     {
                         "id": "trait-subterfuge",
@@ -2635,7 +2715,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/subterfuge"
                     },
                     {
                         "id": "trait-blaster",
@@ -2647,7 +2728,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/blaster"
                     },
                     {
                         "id": "trait-gunnery",
@@ -2659,7 +2741,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/gunnery"
                     },
                     {
                         "id": "trait-melee",
@@ -2671,7 +2754,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/melee"
                     },
                     {
                         "id": "trait-pilot",
@@ -2683,7 +2767,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/pilot"
                     },
                     {
                         "id": "trait-programming",
@@ -2695,7 +2780,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/programming"
                     },
                     {
                         "id": "trait-repair",
@@ -2707,7 +2793,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/repair"
                     },
                     {
                         "id": "trait-ride",
@@ -2719,7 +2806,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/ride"
                     },
                     {
                         "id": "trait-security",
@@ -2731,7 +2819,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/security"
                     },
                     {
                         "id": "trait-stealth",
@@ -2743,7 +2832,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/stealth"
                     },
                     {
                         "id": "trait-survival",
@@ -2755,7 +2845,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/survival"
                     },
                     {
                         "id": "trait-astrogation",
@@ -2767,7 +2858,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/astrogation"
                     },
                     {
                         "id": "trait-bureaucracy",
@@ -2779,7 +2871,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/bureaucracy"
                     },
                     {
                         "id": "trait-cultures",
@@ -2791,7 +2884,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/cultures"
                     },
                     {
                         "id": "trait-interfaces",
@@ -2803,7 +2897,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/interfaces"
                     },
                     {
                         "id": "trait-investigation",
@@ -2815,7 +2910,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/investigation"
                     },
                     {
                         "id": "trait-languages",
@@ -2827,7 +2923,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/languages"
                     },
                     {
                         "id": "trait-medicine",
@@ -2839,7 +2936,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/medicine"
                     },
                     {
                         "id": "trait-politics",
@@ -2851,7 +2949,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/politics"
                     },
                     {
                         "id": "trait-tech",
@@ -2863,7 +2962,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/tech"
                     },
                     {
                         "id": "trait-trade",
@@ -2875,7 +2975,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/trade"
                     }
                 ],
                 "columns": 3,
@@ -2897,7 +2998,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:virtues/conscience"
                     },
                     {
                         "id": "trait-passion",
@@ -2909,7 +3011,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:virtues/passion"
                     },
                     {
                         "id": "trait-self-control",
@@ -2921,14 +3024,15 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:virtues/self-control"
                     },
                     {
                         "id": "resource-willpower",
                         "type": "primitive",
                         "bindingKey": "resource:willpower",
-                        "label": "Willpower",
                         "compact": true,
+                        "label": "Willpower",
                         "column": 2,
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                     },
@@ -2936,8 +3040,8 @@
                         "id": "resource-force-points",
                         "type": "primitive",
                         "bindingKey": "resource:force-points",
-                        "label": "Force Points",
                         "compact": true,
+                        "label": "Force Points",
                         "column": 2,
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
                     },
@@ -2945,8 +3049,8 @@
                         "id": "resource-dark-side",
                         "type": "primitive",
                         "bindingKey": "resource:dark-side-resistance",
-                        "label": "Dark Side Resistance",
                         "compact": true,
+                        "label": "Dark Side Resistance",
                         "column": 2,
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
                     },
@@ -3200,7 +3304,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/alertness"
                     },
                     {
                         "id": "trait-athletics",
@@ -3212,7 +3317,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/athletics"
                     },
                     {
                         "id": "trait-brawl",
@@ -3224,7 +3330,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/brawl"
                     },
                     {
                         "id": "trait-command",
@@ -3236,7 +3343,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/command"
                     },
                     {
                         "id": "trait-diplomacy",
@@ -3248,7 +3356,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/diplomacy"
                     },
                     {
                         "id": "trait-dodge",
@@ -3260,7 +3369,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/dodge"
                     },
                     {
                         "id": "trait-empathy",
@@ -3272,7 +3382,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/empathy"
                     },
                     {
                         "id": "trait-intimidation",
@@ -3284,7 +3395,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/intimidation"
                     },
                     {
                         "id": "trait-streetwise",
@@ -3296,7 +3408,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/streetwise"
                     },
                     {
                         "id": "trait-subterfuge",
@@ -3308,7 +3421,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:abilities/subterfuge"
                     },
                     {
                         "id": "trait-blaster",
@@ -3320,7 +3434,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/blaster"
                     },
                     {
                         "id": "trait-gunnery",
@@ -3332,7 +3447,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/gunnery"
                     },
                     {
                         "id": "trait-melee",
@@ -3344,7 +3460,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/melee"
                     },
                     {
                         "id": "trait-pilot",
@@ -3356,7 +3473,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/pilot"
                     },
                     {
                         "id": "trait-programming",
@@ -3368,7 +3486,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/programming"
                     },
                     {
                         "id": "trait-repair",
@@ -3380,7 +3499,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/repair"
                     },
                     {
                         "id": "trait-ride",
@@ -3392,7 +3512,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/ride"
                     },
                     {
                         "id": "trait-security",
@@ -3404,7 +3525,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/security"
                     },
                     {
                         "id": "trait-stealth",
@@ -3416,7 +3538,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/stealth"
                     },
                     {
                         "id": "trait-survival",
@@ -3428,7 +3551,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 2
+                        "column": 2,
+                        "labelMessage": "catalog:abilities/survival"
                     },
                     {
                         "id": "trait-astrogation",
@@ -3440,7 +3564,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/astrogation"
                     },
                     {
                         "id": "trait-bureaucracy",
@@ -3452,7 +3577,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/bureaucracy"
                     },
                     {
                         "id": "trait-cultures",
@@ -3464,7 +3590,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/cultures"
                     },
                     {
                         "id": "trait-interfaces",
@@ -3476,7 +3603,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/interfaces"
                     },
                     {
                         "id": "trait-investigation",
@@ -3488,7 +3616,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/investigation"
                     },
                     {
                         "id": "trait-languages",
@@ -3500,7 +3629,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/languages"
                     },
                     {
                         "id": "trait-medicine",
@@ -3512,7 +3642,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/medicine"
                     },
                     {
                         "id": "trait-politics",
@@ -3524,7 +3655,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/politics"
                     },
                     {
                         "id": "trait-tech",
@@ -3536,7 +3668,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/tech"
                     },
                     {
                         "id": "trait-trade",
@@ -3548,7 +3681,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 3
+                        "column": 3,
+                        "labelMessage": "catalog:abilities/trade"
                     }
                 ],
                 "columns": 3,
@@ -3570,7 +3704,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:virtues/conscience"
                     },
                     {
                         "id": "trait-passion",
@@ -3582,7 +3717,8 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:virtues/passion"
                     },
                     {
                         "id": "trait-self-control",
@@ -3594,14 +3730,15 @@
                         "presentation": "dots",
                         "compact": true,
                         "required": false,
-                        "column": 1
+                        "column": 1,
+                        "labelMessage": "catalog:virtues/self-control"
                     },
                     {
                         "id": "resource-willpower",
                         "type": "primitive",
                         "bindingKey": "resource:willpower",
-                        "label": "Willpower",
                         "compact": true,
+                        "label": "Willpower",
                         "column": 2,
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                     },

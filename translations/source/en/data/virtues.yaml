@@ -1,0 +1,9 @@
+conscience:
+    name: Conscience
+    shortDescription: Moral compass; rolled to resist losing Dark Side Resistance
+passion:
+    name: Passion
+    shortDescription: Emotional drive that ties the character to the Force
+self-control:
+    name: Self Control
+    shortDescription: Restraint over urges, anger, and fear

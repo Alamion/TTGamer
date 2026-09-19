@@ -15,9 +15,9 @@ import { hunterSheetTemplate } from './modules/hunter/templates/sheet';
  * V5 line shares (attributes, skills, Health/Willpower severity tracks, advantages, experience).
  * Each supernatural line is a **module** under `modules/<line>/` that contributes its own document
  * definitions, catalogs, bindings, and templates on top of the ruleset. A document names the
- * ruleset through `systemId: 'v5'` and its module through `DocumentDefinition.module.id`.
+ * ruleset through `systemId: 'wod-v5'` and its module through `DocumentDefinition.module.id`.
  */
-export const V5_SYSTEM_ID = SystemIdSchema.parse('v5');
+export const V5_SYSTEM_ID = SystemIdSchema.parse('wod-v5');
 
 export const v5System: SystemPlugin = {
     id: V5_SYSTEM_ID,

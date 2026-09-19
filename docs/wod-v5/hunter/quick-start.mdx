@@ -1,0 +1,106 @@
+---
+sidebar_position: 3.21
+title: Quickstart
+description: Play a first Hunter scene in twenty minutes — the one roll, harm, desperation, and a ten-minute hunter.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
+import { TemplateFragment } from '@site/src/sheet_manager/docsEmbeds';
+
+# Quickstart
+
+:::tip[In short]
+Roll **Attribute + Skill** in ten-sided dice, count **6+**, pairs of 10s count four. Mark harm as **superficial** or **aggravated**. When the hunt matters, add **Desperation dice** — and pay if one shows a 1.
+:::
+
+## What you need
+
+- A hunter sheet open in the [Sheet Manager](/universal_sheet) (a second tab works well).
+- A handful of ten-sided dice, or the site's dice roller.
+- Two to five players and a Storyteller.
+
+## The one roll you need to know
+
+1. The Storyteller names an **Attribute** and a **Skill**. Add their dots: that is your pool.
+2. Roll the pool. Each die showing **6 or more** is a success; **each pair of 10s** is worth four.
+3. Reach the **Difficulty** (usually 2–4 successes) and you succeed. Extra successes make the result better.
+4. Once per roll, spend a point of **Willpower** to reroll up to three failed dice.
+
+:::note[Example: Lena]
+Lena checks a body that is far too cold for how recently it died: **Intelligence 2 + Medicine 3**, Difficulty 2, and her _Trauma_ specialty adds a die.
+
+<TWWrapper>
+    <InlineRoll notation={'6d10>=6@3,8,1,6,5,2'} variant="details" preroll />
+</TWWrapper>
+
+<br />
+<br />
+
+The 8 and the 6 are two successes — just enough. She notices the bite marks someone tried to stitch
+shut.
+:::
+
+Details: [Dice Pools](../rules/dice-pools.mdx).
+
+## Getting hurt and pushing through
+
+- **Health** has Stamina + 3 boxes; **Willpower** has Composure + Resolve boxes.
+- **Superficial** harm fades quickly; **aggravated** harm stays. Aggravated marks fill boxes first.
+- No empty boxes left? New superficial harm turns an old superficial mark aggravated. A full track means you are **impaired**.
+- On the sheet, click a box to mark it: once for superficial (╱), twice for aggravated (×), a third time to clear it.
+
+Details: [Damage and Willpower](../rules/damage-willpower.mdx).
+
+## The hunter twist
+
+- **Desperation** (0–5) belongs to the whole cell. When a roll directly serves the hunt, add that many **Desperation dice**. Their successes count normally.
+- If any Desperation die shows a **1**, the hunter pays: either the cell's **Danger** rises (the monsters notice), or the hunter falls into **Despair** — their Drive stops helping until they find their way back.
+- **Danger** measures how exposed the cell is. The higher it climbs, the harder the night gets.
+
+Details: [Desperation, Danger, and Despair](./reference/desperation-danger-despair.mdx).
+
+## Make a hunter in ten minutes
+
+| Step | What to do                                                              | Detail                                                         |
+| ---- | ----------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 1    | Name, concept, an **Ambition** (long-term) and a **Desire** (right now) | [Concept](./first-hunter/02-concept-ambition-desire.mdx)       |
+| 2    | Pick a **Creed** (how you hunt) and a **Drive** (why you hunt)          | [Creed and Drive](./first-hunter/03-creed-drive.mdx)           |
+| 3    | Attributes: one at 4, three at 3, four at 2, one at 1                   | [Attributes](./first-hunter/04-attributes.mdx)                 |
+| 4    | Skills: pick a spread (below), plus one free Specialty                  | [Skills](./first-hunter/05-skills-specialties.mdx)             |
+| 5    | **Edges**: two Edges and one Perk, or one Edge and two Perks            | [Edges and Perks](./first-hunter/06-edges-perks.mdx)           |
+| 6    | 7 points of Advantages, 2 points of Flaws                               | [Advantages and Flaws](./first-hunter/07-advantages-flaws.mdx) |
+| 7    | One or two **Touchstones** with their Convictions                       | [Touchstones](./first-hunter/08-touchstones.mdx)               |
+| 8    | Check Health, Willpower, and the cell's Desperation and Danger          | [Finishing touches](./first-hunter/09-finishing-touches.mdx)   |
+
+Skill spreads (choose one):
+
+| Spread             | At 4 | At 3 | At 2 | At 1 |
+| ------------------ | ---- | ---- | ---- | ---- |
+| Jack of all trades | —    | 1    | 8    | 10   |
+| Balanced           | —    | 3    | 5    | 7    |
+| Specialist         | 1    | 3    | 3    | 3    |
+
+Academics, Craft, Performance, and Science each come with a Specialty of their own if you take any dots in them.
+
+<TWWrapper>
+    <TemplateFragment systemId="wod-v5" template="v5-hunter-sheet" node="identity" />
+</TWWrapper>
+
+## Your first scene
+
+> **Storyteller:** The night nurse swears the man in bed 4 had no pulse an hour ago. Now the bed is empty and the window is open. What do you do?
+>
+> **Lena's player:** I check the window frame for blood. Wits and Awareness?
+>
+> **Storyteller:** Wits plus Awareness, Difficulty 2.
+>
+> **Lena's player:** Six dice… three successes.
+>
+> **Storyteller:** No blood — but frost on the inside of the glass, in the shape of a hand.
+
+## Where next
+
+- New to all of this? Walk through [Your first hunter](./first-hunter/).
+- Want every box explained? See [Reading the sheet](./reference/reading-the-sheet.mdx).
+- Rolling questions? [Dice Pools](../rules/dice-pools.mdx).

@@ -4,7 +4,11 @@ title: Backgrounds
 ---
 
 import { BACKGROUNDS } from '@site/src/data/backgroundsData';
-import { BACKGROUND_COLUMNS, renderBackgroundDetail } from '@site/src/data/backgroundsConfig';
+import {
+    BACKGROUND_COLUMNS,
+    BACKGROUND_FILTERS,
+    renderBackgroundDetail,
+} from '@site/src/data/backgroundsConfig';
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 
@@ -25,7 +29,7 @@ Search by name or description. Click a row to see the full dot-rank descriptions
         data={BACKGROUNDS}
         columns={BACKGROUND_COLUMNS}
         renderDetail={renderBackgroundDetail}
-        filters={[{ columnId: 'category', label: 'Category' }]}
+        filters={BACKGROUND_FILTERS}
         searchPlaceholder="Search backgrounds..."
         id="backgrounds"
     />

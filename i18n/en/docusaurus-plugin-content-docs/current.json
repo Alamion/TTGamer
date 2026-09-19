@@ -23,22 +23,6 @@
         "message": "vehicles-mechanisms",
         "description": "The label for category 'vehicles-mechanisms' in sidebar 'docsSidebar'"
     },
-    "sidebar.docsSidebar.category.wod": {
-        "message": "wod",
-        "description": "The label for category 'wod' in sidebar 'docsSidebar'"
-    },
-    "sidebar.docsSidebar.category.wod-core-rules": {
-        "message": "Core Rules",
-        "description": "The label for category 'Core Rules' in sidebar 'docsSidebar'"
-    },
-    "sidebar.docsSidebar.category.vtm-2e": {
-        "message": "vtm-2e",
-        "description": "The label for category 'vtm-2e' in sidebar 'docsSidebar'"
-    },
-    "sidebar.docsSidebar.category.vtm-character": {
-        "message": "Character",
-        "description": "The label for category 'Character' in sidebar 'docsSidebar'"
-    },
     "sidebar.docsSidebar.category.sw-wod-character": {
         "message": "Character",
         "description": "The label for category 'Character' in sidebar 'docsSidebar'"
@@ -58,10 +42,6 @@
     "sidebar.docsSidebar.category.Star Wars WoD 2e": {
         "message": "Star Wars WoD 2e",
         "description": "The label for category 'Star Wars WoD 2e' in sidebar 'docsSidebar'"
-    },
-    "sidebar.docsSidebar.category.World of Darkness": {
-        "message": "World of Darkness",
-        "description": "The label for category 'World of Darkness' in sidebar 'docsSidebar'"
     },
     "sidebar.docsSidebar.category.sw-wod": {
         "message": "Star Wars WoD 2e",

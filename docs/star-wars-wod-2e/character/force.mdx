@@ -6,13 +6,21 @@ title: The Force
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
 import { TemplateFragment } from '@site/src/sheet_manager/docsEmbeds';
 import { FORCE_POWERS } from '@site/src/data/forcePowersData';
-import { FORCE_POWER_COLUMNS, renderForcePowerDetail } from '@site/src/data/forcePowersConfig';
+import {
+    FORCE_POWER_COLUMNS,
+    FORCE_POWER_FILTERS,
+    renderForcePowerDetail,
+} from '@site/src/data/forcePowersConfig';
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
-import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meritsFlawsConfig';
+import {
+    MERITS_FLAWS_COLUMNS,
+    MERITS_FLAWS_TYPE_FILTERS,
+    renderMeritFlawDetail,
+} from '@site/src/data/meritsFlawsConfig';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 import { EntityGrid } from '@site/src/shared/components/EntityCard';
 import { FORCE_SKILLS } from '@site/src/data/forceSkills';
-import { renderForceSkillDetail } from '@site/src/data/forceSkillsConfig';
+import { FORCE_SKILL_GRID, renderForceSkillDetail } from '@site/src/data/forceSkillsConfig';
 
 # The Force
 
@@ -34,10 +42,7 @@ Click any Force Skill to see its full description and what each rating means.
     <EntityGrid
         entities={FORCE_SKILLS}
         renderDetail={renderForceSkillDetail}
-        getName={(e) => e.name}
-        getDescription={(e) => e.shortDescription}
-        getTags={(e) => e.specialties}
-        getKey={(e) => e.id}
+        {...FORCE_SKILL_GRID}
     />
     <br />
     <TemplateFragment node="force" />
@@ -87,14 +92,7 @@ Use the search bar to find powers by name or effect. Use the **Skills** filter t
         data={FORCE_POWERS}
         columns={FORCE_POWER_COLUMNS}
         renderDetail={renderForcePowerDetail}
-        filters={[
-            {
-                columnId: 'forcePointCost',
-                label: 'Force Point Cost',
-                optionsMap: { true: 'Costs FP', false: 'Free' },
-            },
-            { columnId: 'skills', label: 'Skills', mode: 'multi' },
-        ]}
+        filters={FORCE_POWER_FILTERS}
         searchPlaceholder="Search powers by name or effect..."
         id="force-powers"
     />
@@ -164,7 +162,7 @@ These merits and flaws relate to the Force. Click any row for full description. 
         data={MERITS_FLAWS.filter((m) => m.category === 'Force Connections')}
         columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
-        filters={[{ columnId: 'type', label: 'Type' }]}
+        filters={MERITS_FLAWS_TYPE_FILTERS}
         searchPlaceholder="Search Force merits & flaws..."
         id="force-merits-flaws"
     />

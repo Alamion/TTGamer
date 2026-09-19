@@ -30,7 +30,7 @@ beforeAll(() => {
 afterEach(cleanup);
 
 function template(id: string): CustomTemplate {
-    return systemRegistry.getSystem('v5')!.defaultTemplates!.find((t) => t.id === id)!;
+    return systemRegistry.getSystem('wod-v5')!.defaultTemplates!.find((t) => t.id === id)!;
 }
 
 describe('hunter brief view', () => {
@@ -108,7 +108,7 @@ describe('hunter documentation embeds', () => {
             render(
                 createElement(TemplatePreview, {
                     document: hunterExampleDocument(),
-                    systemId: 'v5',
+                    systemId: 'wod-v5',
                     template: 'v5-hunter-brief',
                 })
             );
@@ -144,14 +144,14 @@ describe('hunter documentation embeds', () => {
             });
             render(
                 createElement(TemplateFragment, {
-                    systemId: 'v5',
+                    systemId: 'wod-v5',
                     template: 'v5-hunter-sheet',
                     node: 'identity',
                 })
             );
             fireEvent.click(screen.getByTitle('Create a new document'));
             const created = useDocumentStore.getState().documents.at(-1)!;
-            expect([created.systemId, created.definitionId]).toEqual(['v5', 'hunter']);
+            expect([created.systemId, created.definitionId]).toEqual(['wod-v5', 'hunter']);
         },
         RENDER_TIMEOUT
     );

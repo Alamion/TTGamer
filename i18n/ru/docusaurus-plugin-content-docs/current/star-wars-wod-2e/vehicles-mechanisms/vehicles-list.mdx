@@ -6,7 +6,11 @@ title: Каталог транспорта
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 import { VEHICLES } from '@site/src/data/vehicleData';
-import { VEHICLE_COLUMNS, renderVehicleDetail } from '@site/src/data/vehicleConfig';
+import {
+    VEHICLE_COLUMNS,
+    VEHICLE_FILTERS,
+    renderVehicleDetail,
+} from '@site/src/data/vehicleConfig';
 
 # Каталог транспорта
 
@@ -22,10 +26,7 @@ import { VEHICLE_COLUMNS, renderVehicleDetail } from '@site/src/data/vehicleConf
         columns={VEHICLE_COLUMNS}
         renderDetail={renderVehicleDetail}
         searchPlaceholder="Поиск транспорта..."
-        filters={[
-            { columnId: 'scale', label: 'Масштаб' },
-            { columnId: 'eras', label: 'Эра', mode: 'multi' },
-        ]}
+        filters={VEHICLE_FILTERS}
         id="vehicle-catalog"
     />
 </TWWrapper>

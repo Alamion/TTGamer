@@ -1,4 +1,7 @@
+import { translate } from '@docusaurus/Translate';
 import * as Popover from '@radix-ui/react-popover';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { matchesSearch } from '@site/src/shared/utils/normalizeSearchText';
 import { Command } from 'cmdk';
 import { useMemo, useRef, useState } from 'react';
 
@@ -37,10 +40,8 @@ export function CatalogSuggest({
 
     const filtered = useMemo(() => {
         if (!value.trim()) return showAllWhenEmpty ? catalog : [];
-        const q = value.toLowerCase();
-        return catalog.filter(
-            (e) => e.name.toLowerCase().includes(q) || e.id.toLowerCase().includes(q)
-        );
+        // Names are "Русское (English)" outside English, so either language matches.
+        return catalog.filter((e) => matchesSearch(value, e.name, e.id));
     }, [catalog, showAllWhenEmpty, value]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,7 +83,7 @@ export function CatalogSuggest({
                 <Command shouldFilter={false}>
                     <Command.List>
                         <Command.Empty className="px-3 py-2 text-sm text-textSecondary">
-                            No matches found
+                            {translate(uiMessages.sheet.controls.noMatches)}
                         </Command.Empty>
                         {filtered.map((entry) => (
                             <Command.Item

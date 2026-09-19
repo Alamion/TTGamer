@@ -55,7 +55,7 @@ const RENAMES: Record<string, string> = {
 
 function homebrewTemplate(): CustomTemplate {
     const shipped = systemRegistry
-        .getSystem('v5')!
+        .getSystem('wod-v5')!
         .defaultTemplates!.find(({ id }) => id === 'v5-hunter-sheet')!;
     let draft = createDraftFromTemplate(shipped, {
         id: 'hollow-crown',
@@ -70,7 +70,7 @@ function homebrewTemplate(): CustomTemplate {
 describe('re-skinning the hunter sheet (US4)', () => {
     it('keeps every binding valid after relabelling', () => {
         const template = homebrewTemplate();
-        expect(template.systemId).toBe('v5');
+        expect(template.systemId).toBe('wod-v5');
         expect(validateTemplateReferences(template)).toEqual([]);
     });
 
@@ -91,7 +91,7 @@ describe('re-skinning the hunter sheet (US4)', () => {
             expect(value).toBe(3);
 
             const shipped = systemRegistry
-                .getSystem('v5')!
+                .getSystem('wod-v5')!
                 .defaultTemplates!.find(({ id }) => id === 'v5-hunter-sheet')!;
             render(createElement(DeclarativeSheetView, { template: shipped }));
             expect(screen.getByText('Firearms')).toBeTruthy();
@@ -107,7 +107,7 @@ describe('re-skinning the hunter sheet (US4)', () => {
         expect(parsed.ok).toBe(true);
         if (parsed.ok) {
             expect(parsed.template).not.toHaveProperty('notices');
-            expect(parsed.template.systemId).toBe('v5');
+            expect(parsed.template.systemId).toBe('wod-v5');
         }
     });
 

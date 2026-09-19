@@ -1,0 +1,15 @@
+columns:
+    name: Оружие
+    damage: Урон
+    range: Дальн.
+    ammo: Боезапас
+    difficulty: Сл.
+    conceal: Скрытн.
+detail:
+    damage: Урон
+    range: Дальность
+    rangeValue: '{range} м'
+    ammo: Боеприпасы
+    difficulty: Сложность
+    conceal: Скрытность
+    notes: Примечания

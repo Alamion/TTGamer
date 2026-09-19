@@ -4,9 +4,17 @@ title: Расы
 ---
 
 import { SPECIES } from '@site/src/data/speciesData';
-import { SPECIES_COLUMNS, renderSpeciesDetail } from '@site/src/data/speciesConfig';
+import {
+    SPECIES_COLUMNS,
+    SPECIES_FILTERS,
+    renderSpeciesDetail,
+} from '@site/src/data/speciesConfig';
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
-import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meritsFlawsConfig';
+import {
+    MERITS_FLAWS_COLUMNS,
+    MERITS_FLAWS_TYPE_FILTERS,
+    renderMeritFlawDetail,
+} from '@site/src/data/meritsFlawsConfig';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
 
@@ -43,10 +51,7 @@ import { TWWrapper } from '@site/src/shared/components/TWWrapper';
         data={SPECIES}
         columns={SPECIES_COLUMNS}
         renderDetail={renderSpeciesDetail}
-        filters={[
-            { columnId: 'category', label: 'Category' },
-            { columnId: 'eras', label: 'Era', mode: 'multi' },
-        ]}
+        filters={SPECIES_FILTERS}
         searchPlaceholder="Поиск рас, эпох или типов..."
         id="species"
     />
@@ -88,7 +93,7 @@ import { TWWrapper } from '@site/src/shared/components/TWWrapper';
         data={MERITS_FLAWS.filter((m) => m.category === 'Alien Physiology')}
         columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
-        filters={[{ columnId: 'type', label: 'Type' }]}
+        filters={MERITS_FLAWS_TYPE_FILTERS}
         searchPlaceholder="Поиск достоинств и недостатков..."
         id="alien-physiology"
     />

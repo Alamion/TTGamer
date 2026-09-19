@@ -1,5 +1,6 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { generateId } from '@site/src/shared/utils/random';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -22,6 +23,7 @@ import {
 import type { UnknownDocumentEnvelope } from '../../../types/document';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
 import { exportFileName, parseImportedDocument, serializeDocumentExport } from './documentFile';
+import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
 import { templateSelectValue, ViewModeSelect } from './ViewModeSelect';
@@ -70,6 +72,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
               .map((template) => ({ id: template.id, name: template.name }))
         : [];
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
+    const pluralMessage = usePluralMessage();
     const [managerDialogOpen, setManagerDialogOpen] = useState(false);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [templatesDialogOpen, setTemplatesDialogOpen] = useState(false);
@@ -102,9 +105,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                 ? countUnfilledRequired(template, currentDocument.templateValues ?? {})
                 : 0;
             if (unfilled > 0) {
-                toast(
-                    translate(uiMessages.sheet.templates.page.requiredUnfilled, { count: unfilled })
-                );
+                toast(pluralMessage(uiMessages.sheet.templates.page.requiredUnfilled, unfilled));
             }
         }
     };
@@ -134,11 +135,12 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
     };
 
     const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (!files?.length) return;
+        // Capture files before resetting the input — clearing the value empties the live FileList.
+        const files = Array.from(event.target.files ?? []);
+        if (files.length === 0) return;
         event.target.value = '';
 
-        for (const file of Array.from(files)) {
+        for (const file of files) {
             let raw: unknown;
             try {
                 raw = JSON.parse(await file.text());
@@ -179,22 +181,28 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                     onManageTemplates={() => setTemplatesDialogOpen(true)}
                     viewMode={
                         currentDocument && currentDefinition && currentView ? (
-                            <ViewModeSelect
-                                definition={currentDefinition}
-                                value={templateSelectValue(activeTemplateId, currentView.id)}
-                                onChangeTemplate={(templateId) =>
-                                    updateDocumentMetadata(currentDocument.id, {
-                                        templateId: templateId ?? undefined,
-                                    })
-                                }
-                                onChangeView={(preferredViewId) =>
-                                    updateDocumentMetadata(currentDocument.id, { preferredViewId })
-                                }
-                                templateOptions={templateOptions}
-                            />
+                            <>
+                                <ViewModeSelect
+                                    definition={currentDefinition}
+                                    value={templateSelectValue(activeTemplateId, currentView.id)}
+                                    onChangeTemplate={(templateId) =>
+                                        updateDocumentMetadata(currentDocument.id, {
+                                            templateId: templateId ?? undefined,
+                                        })
+                                    }
+                                    onChangeView={(preferredViewId) =>
+                                        updateDocumentMetadata(currentDocument.id, {
+                                            preferredViewId,
+                                        })
+                                    }
+                                    templateOptions={templateOptions}
+                                />
+                                <GameTermsMenu />
+                            </>
                         ) : undefined
                     }
                 />
+                {currentDocument && <TermHintNotice />}
                 {!currentDocument && (
                     <div className="py-6 text-center">
                         <h2 className="mb-2 text-xl font-bold text-textPrimary">

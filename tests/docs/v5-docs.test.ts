@@ -11,8 +11,8 @@ import { describe, expect, it } from 'vitest';
 
 const ROOT = path.resolve(__dirname, '../..');
 const TREES = {
-    en: path.join(ROOT, 'docs/v5'),
-    ru: path.join(ROOT, 'i18n/ru/docusaurus-plugin-content-docs/current/v5'),
+    en: path.join(ROOT, 'docs/wod-v5'),
+    ru: path.join(ROOT, 'i18n/ru/docusaurus-plugin-content-docs/current/wod-v5'),
 } as const;
 const SUMMARY_TITLES = { en: 'In short', ru: 'Коротко' } as const;
 
@@ -69,7 +69,7 @@ describe('V5 documentation format', () => {
                 });
                 if (/first-hunter\/0[2-9]-/.test(name)) {
                     expect(source, `${name}: sheet embed`).toMatch(
-                        /<TemplateFragment systemId="v5"/
+                        /<TemplateFragment systemId="wod-v5"/
                     );
                 }
             }

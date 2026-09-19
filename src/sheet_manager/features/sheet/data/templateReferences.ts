@@ -1,3 +1,6 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+
 import {
     listDocumentBindings,
     listNumericCoordinates,
@@ -50,8 +53,18 @@ export function listTemplateNumericCoordinates(
             options.push({ coordinate: fieldValueKey(node), label: node.label });
         } else if (node.type === 'resource') {
             const key = fieldValueKey(node);
-            options.push({ coordinate: `${key}.current`, label: `${node.label} (current)` });
-            options.push({ coordinate: `${key}.max`, label: `${node.label} (max)` });
+            options.push({
+                coordinate: `${key}.current`,
+                label: translate(uiMessages.sheet.templates.editor.coordinateCurrent, {
+                    label: node.label,
+                }),
+            });
+            options.push({
+                coordinate: `${key}.max`,
+                label: translate(uiMessages.sheet.templates.editor.coordinateMax, {
+                    label: node.label,
+                }),
+            });
         } else if (node.type === 'formula') {
             options.push({ coordinate: fieldValueKey(node), label: node.label });
         }

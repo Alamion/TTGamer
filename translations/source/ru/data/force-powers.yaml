@@ -1,0 +1,99 @@
+awareness:
+    name: Осознание
+    shortDescription: Видеть ауры Силы и оценивать силу существ
+bridge-minds:
+    name: Мост разумов
+    shortDescription: Мысленная связь между двумя существами
+calm-beast:
+    name: Успокоение зверя
+    shortDescription: Утихомирить неразумное существо через Силу
+clairvoyance:
+    name: Ясновидение
+    shortDescription: Наблюдать далёкие события через Силу
+concealment:
+    name: Сокрытие
+    shortDescription: Спрятать своё присутствие в Силе от обнаружения
+contain-energy:
+    name: Сдерживание энергии
+    shortDescription: Поглотить или перенаправить энергетическую атаку
+crush:
+    name: Сокрушение (Удушье Силы)
+    shortDescription: Сдавить или задушить цель телекинезом
+energy-burst:
+    name: Энергетический разряд (молния ситхов)
+    shortDescription: Обрушить на цель трескучий энергетический разряд
+focus:
+    name: Фокусировка
+    shortDescription: Умножить успехи следующей Силы Силы
+force-feats:
+    name: Подвиги Силы
+    shortDescription: Усилить физическое деяние с помощью Силы
+healing:
+    name: Исцеление
+    shortDescription: Ускорить естественное заживление через Силу
+heave:
+    name: Швырок
+    shortDescription: Метнуть крупный предмет телекинезом
+ignore-pain:
+    name: Контроль боли
+    shortDescription: Снять штрафы за ранения сосредоточением на Силе
+lightsaber-combat:
+    name: Бой на световых мечах
+    shortDescription: Улучшенная техника поединка на световых мечах
+lightsaber-creation:
+    name: Создание светового меча
+    shortDescription: Собрать новый световой меч на основе кристалла кайбер
+lightsaber-empower:
+    name: Усиление светового меча
+    shortDescription: Направить Силу, чтобы увеличить урон светового меча
+manipulate-object:
+    name: Управление предметом
+    shortDescription: Точный телекинетический контроль над предметом
+meditate:
+    name: Медитация
+    shortDescription: Войти в транс, чтобы восстановить Очки Силы
+meld-with-force:
+    name: Слияние с Силой
+    shortDescription: Подготовиться стать призраком Силы после смерти
+operate:
+    name: Дистанционное управление
+    shortDescription: Удалённо пилотировать машину или управлять ею
+physical-prowess:
+    name: Физическая мощь
+    shortDescription: Усилить все атлетические способности с помощью Силы
+probe-memories:
+    name: Зондирование памяти
+    shortDescription: Насильно извлечь воспоминания цели
+proficiency:
+    name: Мастерство
+    shortDescription: Временно усилить одну Способность с помощью Силы
+project-thoughts:
+    name: Передача мыслей
+    shortDescription: Отправить мысленное послание другому существу
+read-surface-thoughts:
+    name: Чтение поверхностных мыслей
+    shortDescription: Слышать поверхностные мысли находящейся рядом цели
+repel:
+    name: Отталкивание
+    shortDescription: Отбросить цели назад телекинезом
+somnolence:
+    name: Усыпление
+    shortDescription: Погрузить цель в неестественный сон
+subjugate:
+    name: Порабощение
+    shortDescription: Взять под контроль тело другого существа
+suggestion:
+    name: Внушение (трюк джедаев с разумом)
+    shortDescription: Вложить простую команду в слабый разум
+summon-object:
+    name: Призыв предмета
+    shortDescription: Притянуть предмет в руку через Силу
+transfer-life:
+    name: Передача жизни
+    shortDescription: Перенести уровни здоровья от одного существа к другому
+vanquish:
+    name: Покорение
+    shortDescription: Получать Очки Силы через подавление
+ventriloquism:
+    name: Чревовещание
+    shortDescription: Создавать звуковые иллюзии с помощью Силы

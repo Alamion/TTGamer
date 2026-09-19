@@ -110,11 +110,17 @@ const hunterBindings: DocumentBindingDescriptor[] = [
                 type: 'text',
             },
         ],
-        // Picking a book Perk also names the Edge it belongs to.
+        // Perk suggestions follow the hunter's Edges; picking one also names its Edge.
         catalog: {
             catalogIds: ['v5-hunter-perks'],
             column: 'name',
-            fills: { name: 'name', edgeName: 'edge' },
+            fills: { name: 'name' },
+            parent: {
+                entryKey: 'edge',
+                catalogId: 'v5-hunter-edges',
+                column: 'edge',
+                namedBy: { dataKey: 'edges', column: 'name' },
+            },
         },
     },
 ];

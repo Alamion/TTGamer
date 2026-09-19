@@ -41,6 +41,16 @@ export const LabelMessageSchema = z
 const labelMessageShape = { labelMessage: LabelMessageSchema.optional() };
 
 /**
+ * Spec 009: the book term a field or primitive stands for. `termRef` keeps the translation
+ * reference after the author renames the label (which drops `labelMessage`); the effective
+ * term is `termRef ?? labelMessage`. `termHint: false` turns its English-name hint off.
+ */
+const termShape = {
+    termRef: LabelMessageSchema.optional(),
+    termHint: z.literal(false).optional(),
+};
+
+/**
  * Render-time condition on any node: shown only while the value at `coordinate` equals `equals`
  * (`not` inverts). Evaluated against the shared coordinate space; never affects storage, and
  * the template editor always shows the node.
@@ -71,6 +81,7 @@ const fieldBaseShape = {
     id: templateIdentifierSchema,
     label: z.string().min(1).max(120),
     ...labelMessageShape,
+    ...termShape,
     ...placementShape,
     /** Keep the label for accessibility and the editor, but do not show it on the page. */
     hideLabel: z.boolean().optional(),
@@ -321,6 +332,7 @@ const PrimitiveNodeSchema = z.object({
     bindingKey: z.string().min(1).max(120),
     label: z.string().min(1).max(120).optional(),
     ...labelMessageShape,
+    ...termShape,
     ...placementShape,
     hideLabel: z.boolean().optional(),
     /** Pool resources: edit the current value (default) or the maximum. */

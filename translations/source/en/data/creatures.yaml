@@ -1,0 +1,175 @@
+wampa:
+    name: Wampa
+    description: A massive, carnivorous predator native to the ice world of Hoth. Wampas hunt by tracking prey through blizzards, using their thick fur and powerful build to endure the extreme cold. They drag their kills back to icy caves for later consumption. Their claws and teeth can tear through most armor, and their strength is legendary — a wampa can rip a man-sized target apart with ease.
+    movement: Tracking, Walking
+tauntaun:
+    name: Tauntaun
+    description: A furry, two-legged omnivore native to the icy plains of Hoth. Tauntauns are used as mounts by the Rebel Alliance, prized for their speed, endurance, and resistance to cold. They are herd animals by nature, trainable with patience, and fiercely protective of their riders. Their charge attack delivers a powerful bashing impact.
+    movement: Running
+rancor:
+    name: Rancor
+    description: A hulking subterranean carnivore with a ravenous appetite and tremendous strength. Rancors are used by crime lords and arena masters as executioners and gladiatorial beasts. Despite their slow intellect, they are cunning ambush predators in their native cave environments. A Rancor at Walker scale can tear through armored vehicles and shrug off blaster fire that would fell a platoon of soldiers.
+    movement: Walking, Charging
+nexu:
+    name: Nexu
+    description: A lean, quadrupedal predator covered in tan fur with quills running down its spine. Native to the planet Cholganna, the Nexu is a relentless hunter that combines feline grace with reptilian resilience. Its quills flare when threatened, and it can scale sheer surfaces to ambush prey from above. In the Geonosian arena, a Nexu proved itself a deadly opponent — fast enough to dodge blaster bolts and strong enough to tear through humanoid targets.
+    movement: Pouncing, Climbing, Sprinting
+acklay:
+    name: Acklay
+    description: A giant, six-legged crustacean with bladed forelimbs and a chitinous exoskeleton. Native to the planet Vendaxa, the Acklay is an amphibious predator equally at home in water or on land. Its legs end in razor-sharp points that can impale a human-sized target, and its claws can crush durasteel. The Acklay was famously used in the Geonosian arena, where its aquatic adaptations proved a terrifying surprise for opponents.
+    movement: Walking, Swimming
+reek:
+    name: Reek
+    description: A massive, thick-hided bovine with three sharp horns and a volatile temper. Native to the planet Ylesia, the Reek is a herbivore by diet but a brawler by nature. Its thick hide shrugs off most attacks, and its horns can punch through armor plate. In the Geonosian arena, a Reek proved that herbivores can be just as deadly as predators when provoked. Its charge attack builds tremendous momentum.
+    movement: Walking, Charging
+mynock:
+    name: Mynock
+    description: A leathery, winged parasite that dwells in the void of space, often found in asteroid fields or clinging to the hulls of starships. Mynocks feed on energy — draining power cables, hyperspace motivators, and other ship systems. They are more nuisance than threat to armed crews, but a swarm can disable a ship over time. Their screech is unmistakable in the corridors of a darkened vessel.
+    movement: Flying (space), Clinging
+dianoga:
+    name: Dianoga
+    description: A massive, tentacled scavenger that lurks in garbage compactors, sewers, and waste processing facilities across the galaxy. The dianoga has a single central eye atop a stalk and seven muscular tentacles. Native to the planet Vodran, dianogas have spread across the galaxy as stowaways on transports. They lie submerged in refuse, striking with their tentacles to drag prey into the depths. The trash compactor on the Death Star held a particularly large specimen.
+    movement: Swimming, Clinging
+sarlacc:
+    name: Sarlacc
+    description: A colossal, immobile predator that buries itself in desert sand, leaving only a wide pit opening. Found on Tatooine and similar arid worlds, the sarlacc digests its prey over a thousand years, consuming them slowly in its cavernous gullet. Its tentacles are strong enough to pull a fully grown humanoid into the pit, and its beak can crush durasteel. The sarlacc's near-immortal nature makes it more a terrain hazard than a traditional combat encounter.
+    movement: Stationary (buried)
+krayt-dragon:
+    name: Krayt Dragon
+    description: The undisputed apex predator of Tatooine, the Krayt Dragon is a massive reptilian beast that can burrow through solid rock and sand. Its armored scales are nearly impervious to blaster fire, and its acidic spit can dissolve a human in seconds. The dragon's bellow can be heard for kilometers across the Dune Sea. Tusken Raiders revere the Krayt Dragon and hunt it for its pearl — a valuable gem formed in its gullet.
+    movement: Burrowing, Walking
+dewback:
+    name: Dewback
+    description: A large, docile desert reptile commonly used as a mount by Imperials and locals across Tatooine. Dewbacks are cold-blooded, absorbing heat from the twin suns and becoming sluggish in the cold. Their scaly hides provide natural armor against the elements and blaster fire. Dewbacks are loyal, trainable mounts that can go for days without water and navigate the Dune Sea with unerring instinct.
+    movement: Walking, Running
+bantha:
+    name: Bantha
+    description: A massive, shaggy-haired ungulate native to Tatooine and other arid worlds. Banthas are the primary beasts of burden for Tusken Raiders, who form deep spiritual bonds with their mounts. Their thick fur protects them from the twin suns by day and insulates against the cold desert night. A bantha's curved horns can gore a predator, and the herd will rally to protect its members. Their mournful call is an iconic sound of the Dune Sea.
+    movement: Walking, Herd migration
+ronto:
+    name: Ronto
+    description: A colossal, slow-moving reptile used as a beast of burden across the Outer Rim. Rontos stand taller than most speeders and can carry entire trading post inventories on their backs. They are gentle by nature but can defend themselves with surprising ferocity when provoked. Jawas prize rontos for their scavenging expeditions, loading them with salvaged technology.
+    movement: Walking, Slow running
+fathier:
+    name: Fathier
+    description: A sleek, long-legged ungulate bred for speed across the galaxy. Fathiers are the premier racing mounts of the New Republic era, with champion bloodlines trading for fortunes. Their powerful hind legs can launch them into a gallop that blurs past most ground vehicles. Fathiers are sensitive animals — a calm, skilled rider can coax incredible performance from them, while harsh handling leads to bolting or refusal.
+    movement: Galloping (sprint)
+eopie:
+    name: Eopie
+    description: A sure-footed, twin-trunked pack animal native to Tatooine's desert wastes. Eopies are smaller and more agile than banthas, making them ideal for navigating rocky canyons and tight passes. They are gentle, patient creatures that form strong bonds with their owners. Despite their mild temperament, eopies have a surprisingly accurate spit attack that irritates the eyes and mucous membranes of potential predators.
+    movement: Walking, Trotting
+massiff:
+    name: Massiff
+    description: A heavily armored reptilian guard beast native to Tatooine and used by the Trade Federation and Imperial forces. Massiffs have powerful jaws lined with serrated teeth and thick armored scales that deflect blaster bolts. They are trained from hatching to be loyal guardians, attacking intruders without hesitation and pursuing prey with relentless determination. Their low, guttural growl is a warning few ignore.
+    movement: Walking, Sprinting
+gundark:
+    name: Gundark
+    description: A massive, four-armed primate known across the galaxy as one of the most dangerous non-sentient predators. The Gundark is notorious for its strength — a single adult can tear a man limb from limb. Native to the planet Vanquor, gundarks are fiercely territorial and will attack anything that enters their domain. Their four arms allow them to grapple multiple opponents or deliver devastating flurries of blows.
+    movement: Climbing, Walking, Charging
+hssiss:
+    name: Hssiss
+    description: A serpentine reptile corrupted by the dark side of the Force, found in Sith temples and dark side caves. Hssiss are native to the Sith world of Korriban, where millennia of exposure to dark side energy has twisted them into aggressive, near-impossible-to-detect ambush predators. Their scales are jet black, allowing them to blend into shadows perfectly. They are drawn to Force users and attack with unnatural precision.
+    movement: Slithering, Climbing
+vornskr:
+    name: Vornskr
+    description: A canine-like predator native to the planet Mykr, the Vornskr is notable for its sensitivity to the Force. These creatures can sense and track Force-sensitive beings across vast distances, making them feared by Jedi and Sith alike. Their tails end in a venomous stinger that can paralyze prey, and their pack-hunting tactics make them even more dangerous in numbers. The Vornskr's howl is said to chill the blood of even seasoned hunters.
+    movement: Pouncing, Climbing, Tracking
+terentatek:
+    name: Terentatek
+    description: A hulking, corrupted beast created by the ancient Sith to guard their tombs and temples. The Terentatek is a nightmarish fusion of reptilian and mammalian features, with thick tusks, armored plates, and eyes that burn with dark side energy. It is one of the few creatures that can actively resist the Force, making it a terrifying opponent for Jedi. Terentateks were hunted to near extinction during the Old Republic era.
+    movement: Walking, Charging
+tukata:
+    name: Tuk'ata
+    description: A fearsome, scarred hound bred by the ancient Sith to guard their tombs and hunt escaped slaves. Tuk'ata are muscular quadrupeds with sharp teeth, tattered ears, and hides marked by ritual scarring. They hunt in packs, coordinating their attacks with unnerving precision. Their loyalty to their Sith masters is absolute — a Tuk'ata will pursue its prey across a planet, tireless and relentless.
+    movement: Pouncing, Tracking, Sprinting
+blurrg:
+    name: Blurrg
+    description: A sturdy, four-legged reptile commonly used as a mount on swamp and jungle worlds. Blurrgs are stubborn but loyal creatures with powerful jaws and a thick hide that protects them from predators. Their flat feet distribute weight across soft ground, allowing them to traverse bogs and marshes that would bog down other mounts. The Lasat species particularly favors blurrgs as riding animals.
+    movement: Walking, Galloping
+varactyl:
+    name: Varactyl
+    description: A brilliantly plumed, lizard-like reptile with a long neck, powerful legs, and vibrant feathers. Varactyls are native to the planet Utapau, where they are used as mounts by the native Utai and Pau'an populations. Their multi-jointed legs allow them to scale the sheer sinkhole walls of Utapau with ease. Varactyls are loyal, brave creatures that form strong bonds with their handlers and fight fiercely to protect them.
+    movement: Walking, Sprinting, Climbing
+bogwing:
+    name: Bogwing
+    description: A large, leathery-winged predator that dwells in the swamps and jungles of the galaxy. The Bogwing is an ambush hunter that drops silently from the canopy onto unsuspecting prey. Its wings are specially adapted for silent flight, and its eyes can see in near-total darkness. Bogwings are known to circle above battles, waiting for easy pickings among the wounded.
+    movement: Flying, Gliding
+spinewolf:
+    name: Spinewolf
+    description: A gaunt, vicious pack predator recognizable by the ridge of bony spines running down its back. Found on multiple worlds, spinewolves hunt in coordinated packs, using howls to communicate and flank their prey. Their bite delivers a serrated tearing wound that causes severe bleeding. Spinewolves are persistent trackers — once a pack locks onto a target, it will pursue for days.
+    movement: Pouncing, Sprinting, Tracking
+womp-rat:
+    name: Womp Rat
+    description: A large, aggressive rodent native to Tatooine and other arid worlds. Womp rats are ubiquitous pests that burrow into moisture farms, chew through power cables, and raid food stores. While a single womp rat is little threat to an armed humanoid, swarms can overwhelm even seasoned warriors. Young Anakin Skywalker famously boasted about podracing through the dangerous womp rat territories of the Dune Sea.
+    movement: Scurrying, Burrowing
+rathtar:
+    name: Rathtar
+    description: A massive, spiny omnivore with a circular body covered in thick quills and surrounded by grasping tentacles around a central maw. Rathtars are notorious for their aggression and ability to consume prey nearly their own size. Native to unknown space, they are sometimes transported by smugglers and criminals as living weapons or cargo — a practice that inevitably ends in disaster when the rathtar gets loose.
+    movement: Rolling, Slithering
+loth-cat:
+    name: Loth-cat
+    description: A small, bat-eared feline with striped fur and large, expressive eyes. Native to the planet Lothal, the Loth-cat is a common sight in urban environments, where it hunts rodents and scavenges from markets. Despite its cute appearance, the Loth-cat is a fierce predator relative to its size, capable of taking prey larger than itself through ambush tactics. Its distinctive chirping call echoes through Lothal's city streets at night.
+    movement: Pouncing, Climbing
+sleen:
+    name: Sleen
+    description: A large, carnivorous reptile native to the swamps of Dagobah and similar wetland worlds. The Sleen is a patient ambush predator, lying submerged for hours with only its eyes above the water, waiting for prey to wander within striking range. Its bite is devastating — once locked on, the sleen performs a death roll, twisting to tear flesh and cause massive bleeding wounds.
+    movement: Swimming, Slithering
+gutkurr:
+    name: Gutkurr
+    description: A multi-legged desert predator with a heavily armored carapace and powerful mandibles. The Gutkurr burrows beneath the sand, sensing vibrations from surface prey before erupting from below in a devastating ambush. Native to the desert world of Jedha, these creatures are a constant hazard for anyone traveling outside the Holy City. Their armor is thick enough to deflect blaster bolts, making them dangerous opponents even for well-armed groups.
+    movement: Burrowing, Skittering
+_labels:
+    type:
+        Snow predator: Snow predator
+        Arctic climate omnivore: Arctic climate omnivore
+        Subterranean carnivore: Subterranean carnivore
+        Apex feline predator: Apex feline predator
+        Aquatic crustacean predator: Aquatic crustacean predator
+        Herbivorous bovine: Herbivorous bovine
+        Space-dwelling parasite: Space-dwelling parasite
+        Trash-compactor scavenger: Trash-compactor scavenger
+        Subterranean pit dweller: Subterranean pit dweller
+        Apex desert predator: Apex desert predator
+        Desert reptile mount: Desert reptile mount
+        Desert pack animal: Desert pack animal
+        Large pack animal: Large pack animal
+        Racing mount: Racing mount
+        Guard reptile: Guard reptile
+        Aggressive primate predator: Aggressive primate predator
+        Dark side corrupted reptile: Dark side corrupted reptile
+        Force-sensitive predator: Force-sensitive predator
+        Sith temple guardian: Sith temple guardian
+        Sith hound: Sith hound
+        Swamp mount: Swamp mount
+        Lizard-like mount: Lizard-like mount
+        Swamp aerial predator: Swamp aerial predator
+        Pack predator: Pack predator
+        Desert vermin: Desert vermin
+        Spiny omnivorous predator: Spiny omnivorous predator
+        Small feline predator: Small feline predator
+        Swamp reptile predator: Swamp reptile predator
+        Desert burrowing predator: Desert burrowing predator
+    size:
+        3m tall: 3m tall
+        1.2–3m at the shoulder: 1.2–3m at the shoulder
+        5–10m tall: 5–10m tall
+        1.5m at the shoulder: 1.5m at the shoulder
+        3–4m tall: 3–4m tall
+        2.5m at the shoulder: 2.5m at the shoulder
+        0.5–1m wingspan: 0.5–1m wingspan
+        3–8m long: 3–8m long
+        100m+ deep: 100m+ deep
+        20–50m long: 20–50m long
+        1.5m at the shoulder, 3m long: 1.5m at the shoulder, 3m long
+        2–3m at the shoulder: 2–3m at the shoulder
+        5m at the shoulder: 5m at the shoulder
+        2m at the shoulder: 2m at the shoulder
+        1m at the shoulder: 1m at the shoulder
+        2m tall: 2m tall
+        2–3m long: 2–3m long
+        1.5m long: 1.5m long
+        4–6m tall: 4–6m tall
+        1.2m at the shoulder: 1.2m at the shoulder
+        2–3m wingspan: 2–3m wingspan
+        0.5m long: 0.5m long
+        3–4m diameter: 3–4m diameter

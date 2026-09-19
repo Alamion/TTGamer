@@ -1,9 +1,14 @@
-import { access, readdir, readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-/** Documentation trees whose English pages must have Russian counterparts. */
-const documentRoots = ['star-wars-wod-2e', 'v5'] as const;
-const translationDocsRoot = 'i18n/ru/docusaurus-plugin-content-docs/current';
+import {
+    collectDocuments,
+    DOCUMENT_ROOTS,
+    ROOT_DOCUMENTS,
+    TRANSLATION_DOCS_ROOT,
+} from './docs-source.ts';
+
+const translationDocsRoot = TRANSLATION_DOCS_ROOT;
 const translationJsonFiles = [
     'code.json',
     'docusaurus-plugin-content-docs/current.json',
@@ -15,20 +20,6 @@ interface TranslationEntry {
 }
 
 type TranslationCatalog = Record<string, TranslationEntry>;
-
-async function collectDocuments(root: string, directory = root): Promise<string[]> {
-    const entries = await readdir(directory, { withFileTypes: true });
-    const paths = await Promise.all(
-        entries.map(async (entry) => {
-            const absolutePath = path.join(directory, entry.name);
-            if (entry.isDirectory()) {
-                return collectDocuments(root, absolutePath);
-            }
-            return /\.mdx?$/.test(entry.name) ? [path.relative(root, absolutePath)] : [];
-        })
-    );
-    return paths.flat().sort();
-}
 
 function difference(left: string[], right: string[]) {
     const rightSet = new Set(right);
@@ -127,8 +118,14 @@ async function validateDocumentRoot(root: string, errors: string[]): Promise<num
 async function main() {
     const errors: string[] = [];
     let documentCount = 0;
-    for (const root of documentRoots) {
+    for (const root of DOCUMENT_ROOTS) {
         documentCount += await validateDocumentRoot(root, errors);
+    }
+    for (const document of ROOT_DOCUMENTS) {
+        if (!(await exists(path.resolve(translationDocsRoot, document)))) {
+            errors.push(`Missing Russian document: ${document}`);
+        }
+        documentCount += 1;
     }
 
     await Promise.all(translationJsonFiles.map((file) => validateTranslationCatalog(file, errors)));

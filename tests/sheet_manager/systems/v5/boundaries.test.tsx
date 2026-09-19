@@ -82,7 +82,7 @@ describe('V5 ruleset and module boundaries (US5)', () => {
         const vampireSheet = {
             id: 'v5-vampire-sheet',
             name: 'Vampire',
-            systemId: SystemIdSchema.parse('v5'),
+            systemId: SystemIdSchema.parse('wod-v5'),
             documentKind: DocumentKindSchema.parse('character'),
             schemaVersion: TEMPLATE_SCHEMA_VERSION,
             children: [attributesSection(), trackGroup('health'), trackGroup('willpower')],
@@ -117,7 +117,7 @@ describe('V5 ruleset and module boundaries (US5)', () => {
         };
         const registry = new SystemRegistry([starWarsWodSystem, plugin]);
         expect(
-            resolveDocumentPolicies(registry, { systemId: 'v5', definitionId: 'vampire' }).map(
+            resolveDocumentPolicies(registry, { systemId: 'wod-v5', definitionId: 'vampire' }).map(
                 ({ id }) => id
             )
         ).toEqual(['dark-pack']);
@@ -126,7 +126,7 @@ describe('V5 ruleset and module boundaries (US5)', () => {
             registry.parseDocument({
                 id: 'vamp',
                 kind: 'character',
-                systemId: 'v5',
+                systemId: 'wod-v5',
                 definitionId: 'vampire',
                 schemaVersion: 1,
                 metadata: {},
@@ -140,7 +140,7 @@ describe('V5 ruleset and module boundaries (US5)', () => {
                 {
                     id: 'vamp',
                     kind: 'character',
-                    systemId: 'v5',
+                    systemId: 'wod-v5',
                     definitionId: 'hunter',
                     schemaVersion: 1,
                     metadata: { title: 'Vamp', tags: [] },

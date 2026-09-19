@@ -15,7 +15,7 @@ const v5 = uiMessages.sheet.v5;
 export const hunterBriefTemplate: CustomTemplate = {
     id: 'v5-hunter-brief',
     name: 'Hunter: the Reckoning 5e — Brief',
-    systemId: SystemIdSchema.parse('v5'),
+    systemId: SystemIdSchema.parse('wod-v5'),
     documentKind: DocumentKindSchema.parse('character'),
     schemaVersion: TEMPLATE_SCHEMA_VERSION,
     children: [

@@ -1,0 +1,12 @@
+columns:
+    name: Armor
+    classVal: Class
+    ar: AR
+    dexPenalty: Dex Penalty
+    cost: Cost
+detail:
+    classVal: Class
+    ar: AR (Soak Dice)
+    dexPenalty: Dex Penalty
+    cost: Cost
+    notes: Notes

@@ -1,13 +1,18 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus } from 'lucide-react';
 
 import type { CatalogEntry } from '../controls/CatalogSuggest.tsx';
 import { CatalogSuggest } from '../controls/CatalogSuggest.tsx';
+import type { TermLink } from '../terms/termLink';
 import { StatDot } from './StatDot.tsx';
 import { StatLabel } from './StatLabel.tsx';
 
 interface TraitRowProps {
     label: string;
+    /** Book term of the label (spec 009). */
+    term?: TermLink;
     value: number;
     maxValue?: number;
     onChange?: (
@@ -36,6 +41,7 @@ interface TraitRowProps {
 
 export function TraitRow({
     label,
+    term,
     value,
     maxValue = 5,
     onChange,
@@ -52,8 +58,8 @@ export function TraitRow({
     characterName,
 }: TraitRowProps) {
     return (
-        <div className={clsx('flex items-end justify-between py-1', className)}>
-            <StatLabel label={label} tooltip={tooltip} />
+        <div className={clsx('term-row flex items-end justify-between gap-2 py-1', className)}>
+            <StatLabel label={label} tooltip={tooltip} term={term} />
             <StatDot
                 value={value}
                 maxValue={maxValue}
@@ -75,6 +81,8 @@ export function TraitRow({
 
 interface TraitRowWithInputProps {
     name: string;
+    /** Book term of the label (spec 009). */
+    term?: TermLink;
     specializationText?: string;
     value: number;
     maxValue?: number;
@@ -105,6 +113,7 @@ interface TraitRowWithInputProps {
 
 export function TraitRowWithInput({
     name,
+    term,
     specializationText = '',
     value,
     maxValue = 5,
@@ -133,34 +142,38 @@ export function TraitRowWithInput({
     };
 
     return (
-        <div className={clsx('flex items-end gap-2 py-1.5', className)}>
-            <StatLabel label={name} tooltip={tooltip} />
-            <input
-                type="text"
-                value={specializationText}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                disabled={disabled}
-                className={clsx(
-                    'flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors min-w-5',
-                    disabled && 'opacity-50 cursor-not-allowed'
-                )}
-            />
-            <StatDot
-                value={value}
-                maxValue={maxValue}
-                onChange={onChange}
-                disabled={disabled}
-                size={size}
-                minimal={minimal}
-                showFlags={showFlags}
-                specialization={specialization}
-                experienced={experienced}
-                practiced={practiced}
-                onDiceRoll={onDiceRoll}
-                statLabel={name}
-                characterName={characterName}
-            />
+        // The outer div is the size container; the inner row wraps the specialization input
+        // onto its own line when the row is too narrow for label, input, and dots together.
+        <div className={clsx('term-row term-row-specialty py-1.5', className)}>
+            <div className="term-row-inner flex items-end gap-2">
+                <StatLabel label={name} tooltip={tooltip} term={term} />
+                <input
+                    type="text"
+                    value={specializationText}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    disabled={disabled}
+                    className={clsx(
+                        'w-0 flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors min-w-[8ch]',
+                        disabled && 'opacity-50 cursor-not-allowed'
+                    )}
+                />
+                <StatDot
+                    value={value}
+                    maxValue={maxValue}
+                    onChange={onChange}
+                    disabled={disabled}
+                    size={size}
+                    minimal={minimal}
+                    showFlags={showFlags}
+                    specialization={specialization}
+                    experienced={experienced}
+                    practiced={practiced}
+                    onDiceRoll={onDiceRoll}
+                    statLabel={name}
+                    characterName={characterName}
+                />
+            </div>
         </div>
     );
 }
@@ -283,7 +296,7 @@ export function CustomTraitList({
                 className="flex items-center gap-1 text-sm text-textPrimary hover:text-textPrimary/80 transition-colors py-1"
             >
                 <Plus className="w-4 h-4" />
-                Add
+                {translate(uiMessages.sheet.controls.add)}
             </button>
         </div>
     );

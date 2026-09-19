@@ -1,0 +1,4 @@
+collapse: Collapse roll details
+expand: Expand roll details
+rolls: 'Rolls: {details}'
+formatted: 'Formatted: {formatted}'

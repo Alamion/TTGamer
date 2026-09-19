@@ -8,6 +8,9 @@ import { createElement, type CSSProperties, useMemo } from 'react';
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
+import { TermHintProvider } from '../../../components/terms/TermHintProvider';
+import { TermLabel } from '../../../components/terms/TermLabel';
+import { termLinkOf } from '../../../components/terms/termLink';
 import type { FieldBinding } from '../../../systems/templateBindings';
 import {
     clampFieldNumber,
@@ -83,6 +86,9 @@ function FieldCell({
                         type: 'primitive',
                         bindingKey: bridged.key,
                         label: field.label,
+                        ...(field.labelMessage ? { labelMessage: field.labelMessage } : {}),
+                        ...(field.termRef ? { termRef: field.termRef } : {}),
+                        ...(field.termHint === false ? { termHint: false } : {}),
                         compact: field.compact,
                     }}
                     systemId={template.systemId}
@@ -167,7 +173,7 @@ function FieldCell({
                     field.hideLabel && 'sr-only'
                 )}
             >
-                {field.label}
+                <TermLabel text={field.label} {...termLinkOf(field)} />
                 {field.required && (
                     <span
                         aria-label={translate(editor.fieldRequired)}
@@ -606,7 +612,9 @@ export function DeclarativeSheetView({
                 embedded ? 'min-w-0 space-y-6' : 'mx-auto min-w-0 max-w-7xl space-y-6 p-4 lg:p-6'
             }
         >
-            <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+            <TermHintProvider>
+                <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+            </TermHintProvider>
         </div>
     );
 }

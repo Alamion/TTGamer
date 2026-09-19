@@ -41,3 +41,6 @@ context/*
 *~
 nul
 tmp/
+
+# Local agent worktrees
+.claude/worktrees/

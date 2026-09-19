@@ -9,7 +9,11 @@ import { CharRoll } from '@site/src/integrations/docs-character-rolls/CharRoll';
 import { TemplatePreview, healthPreviewDocument } from '@site/src/sheet_manager/docsEmbeds';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
-import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meritsFlawsConfig';
+import {
+    MERITS_FLAWS_COLUMNS,
+    MERITS_FLAWS_SEVERITY_FILTERS,
+    renderMeritFlawDetail,
+} from '@site/src/data/meritsFlawsConfig';
 
 # Здоровье, урон и исцеление
 
@@ -242,7 +246,7 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meri
 
 ### Медицинская помощь
 
-Персонаж с **Интеллектом + Медицина** может ускорить восстановление. Совершите бросок со сложностью, зависящей от текущего уровня здоровья пациента. **Разделите время восстановления на количество успехов** (минимальный делитель 1.5 для одного успеха).
+Персонаж с **Интеллектом + Медицина (Medicine)** может ускорить восстановление. Совершите бросок со сложностью, зависящей от текущего уровня здоровья пациента. **Разделите время восстановления на количество успехов** (минимальный делитель 1.5 для одного успеха).
 
 <TWWrapper>
     <InlineRoll notation={'5d10\u003e=6f=1'} variant="details" preroll />
@@ -263,7 +267,7 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meri
 
 Персонажи на уровне **Тяжело ранен и ниже** от Летального урона нуждаются в стабилизации, иначе они теряют **1 дополнительный уровень здоровья в час**.
 
-Совершите бросок **Интеллекта + Медицина** или **Хитроумия + Выживание** со сложностью, равной текущему уровню здоровья пациента из таблицы восстановления (модифицированной снаряжением), чтобы стабилизировать. При успехе пациент перестаёт истекать кровью, и естественное восстановление может начаться.
+Совершите бросок **Интеллекта + Медицина** или **Хитроумия + Выживание (Survival)** со сложностью, равной текущему уровню здоровья пациента из таблицы восстановления (модифицированной снаряжением), чтобы стабилизировать. При успехе пациент перестаёт истекать кровью, и естественное восстановление может начаться.
 
 ---
 
@@ -306,7 +310,7 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meri
         )}
         columns={MERITS_FLAWS_COLUMNS}
         renderDetail={renderMeritFlawDetail}
-        filters={[{ columnId: 'cost', label: 'Серьёзность' }]}
+        filters={MERITS_FLAWS_SEVERITY_FILTERS}
         searchPlaceholder="Поиск недостатков ампутации..."
         id="amputation-flaws"
     />
@@ -351,7 +355,7 @@ import { MERITS_FLAWS_COLUMNS, renderMeritFlawDetail } from '@site/src/data/meri
 
 | Тема                          | Правило                                                                 |
 | ----------------------------- | ----------------------------------------------------------------------- |
-| **Базовое сопротивление**     | Выносливость со сложностью 6                                            |
+| **Базовое сопротивление**     | Выносливость (Stamina) со сложностью 6                                  |
 | **Героическое правило**       | ПИ всегда получают минимум 1 Летальный                                  |
 | **Провал сопротивления**      | Без сознания на 1d10 минут                                              |
 | **Восстановление оглушения**  | 1 уровень за ход                                                        |

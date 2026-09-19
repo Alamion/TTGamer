@@ -32,7 +32,9 @@ manager:
     selectDocument: Выбрать {title}
     deleteSelected: Удалить выбранные
     deleteTitle: Удалить документы
-    deleteDescription: Удалить документов — {count}? Это действие нельзя отменить.
+    deleteDescription:
+        message: Удалить {count} документ? Это действие нельзя отменить.|Удалить {count} документа? Это действие нельзя отменить.|Удалить {count} документов? Это действие нельзя отменить.
+        plural: true
     close: Закрыть
 create:
     title: Создать документ
@@ -40,7 +42,7 @@ create:
     confirm: Создать
     cancel: Отмена
 systems:
-    starWarsWod: Star Wars (Мир Тьмы 2e)
+    starWarsWod: Звёздные Войны (Мир Тьмы 2e)
 types:
     character: Персонаж
     droid: Дроид

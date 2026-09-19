@@ -23,7 +23,7 @@ runs on it within 1–2 weeks of 2026-09-15; scope is limited to what that sessi
   module both declare it.
 - **Notice requirement** (revised 2026-09-15, following common fan-project practice): the full
   statement — Dark Pack badge, verbatim notice, and explanation — appears once, on a dedicated
-  documentation page (`docs/v5/dark-pack`). Hunter sheets (full, brief, and any user template)
+  documentation page (`docs/wod-v5/dark-pack`). Hunter sheets (full, brief, and any user template)
   show only the small Dark Pack badge in the bottom-left corner, linking to that page. Other
   documentation pages carry neither badge nor text. Exported hunter documents and hunter
   templates carry the notice text in the file. Nothing is shown for Star Wars sheets or unrelated
@@ -318,7 +318,7 @@ with a complete hunter on the sheet without asking the GM what any field means.
 - **FR-026**: Mechanics that V5 lines share (dice pools, attributes and skills, damage and
   Willpower) MUST be documented once in a place a future Vampire 5e section can link to.
 - **FR-027**: Every Hunter documentation page MUST exist in English and Russian and be written in the
-  project's own words. A single dedicated page (`docs/v5/dark-pack`, both languages) MUST carry the
+  project's own words. A single dedicated page (`docs/wod-v5/dark-pack`, both languages) MUST carry the
   full Dark Pack statement: badge, verbatim notice, explanation, and policy link. No other
   documentation page carries the badge or the notice.
 

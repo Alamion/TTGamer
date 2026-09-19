@@ -19,10 +19,15 @@ import { ARMOR_COLUMNS, renderArmorDetail } from '@site/src/data/armorConfig';
 import { CONSUMABLE_WEAPONS } from '@site/src/data/consumableWeaponsData';
 import {
     CONSUMABLE_WEAPONS_COLUMNS,
+    CONSUMABLE_WEAPONS_FILTERS,
     renderConsumableWeaponDetail,
 } from '@site/src/data/consumableWeaponsConfig';
 import { TOOLS_GEAR } from '@site/src/data/toolsGearData';
-import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGearConfig';
+import {
+    TOOLS_GEAR_COLUMNS,
+    TOOLS_GEAR_FILTERS,
+    renderToolGearDetail,
+} from '@site/src/data/toolsGearConfig';
 
 # Снаряжение
 
@@ -62,7 +67,7 @@ import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGe
 
 ### Рукопашное оружие
 
-Совершите бросок **Ловкости + Рукопашный бой** (или **Силы + Драка** для безоружной) с указанной сложностью. Урон добавляет Силу к базе оружия. Для персонажа с Силой 3 нож наносит <InlineRoll notation={'4d10>=6'} preroll /> (Сила 3 + 1), а световой меч наносит <InlineRoll notation={'8d10>=6'} preroll /> (Сила 3 + 5).
+Совершите бросок **Ловкости + Рукопашный бой (Brawl)** (или **Силы + Драка** для безоружной) с указанной сложностью. Урон добавляет Силу к базе оружия. Для персонажа с Силой 3 нож наносит <InlineRoll notation={'4d10>=6'} preroll /> (Сила (Strength) 3 + 1), а световой меч наносит <InlineRoll notation={'8d10>=6'} preroll /> (Сила 3 + 5).
 
 <TWWrapper>
     <DataCatalog
@@ -94,7 +99,7 @@ import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGe
         columns={CONSUMABLE_WEAPONS_COLUMNS}
         renderDetail={renderConsumableWeaponDetail}
         searchPlaceholder="Поиск расходного оружия..."
-        filters={[{ columnId: 'type', label: 'Тип' }]}
+        filters={CONSUMABLE_WEAPONS_FILTERS}
         id="consumable-weapons"
     />
 </TWWrapper>
@@ -123,7 +128,7 @@ import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGe
 
 Броня **бесполезна против световых мечей** — только экзотические материалы из Расширенной Вселенной могут противостоять лезвию светового меча.
 
-Совершите бросок Выносливости со сложностью 6 для сопротивления. С бронёй совершайте бросок **Выносливость + АР кости**.
+Совершите бросок Выносливости со сложностью 6 для сопротивления. С бронёй совершайте бросок **Выносливость (Stamina) + АР кости**.
 
 <TWWrapper>
     <InlineRoll notation={'4d10>=6'} variant="details" preroll /> — Выносливость 3 + Бронежилет
@@ -144,7 +149,7 @@ import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGe
 
 ## Медицинское оборудование
 
-Наличие подходящего медицинского оборудования уменьшает сложность бросков **Интеллекта + Медицина** (см. [Здоровье, урон и исцеление](./combat/health-damage-heal.mdx) для полных правил исцеления).
+Наличие подходящего медицинского оборудования уменьшает сложность бросков **Интеллекта + Медицина (Medicine)** (см. [Здоровье, урон и исцеление](./combat/health-damage-heal.mdx) для полных правил исцеления).
 
 **Бакта-танк** требует Знания Медицины минимум 3D для эксплуатации. Только один пациент за раз. После установки его нельзя транспортировать без полной разборки.
 
@@ -170,7 +175,7 @@ import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGe
         columns={TOOLS_GEAR_COLUMNS}
         renderDetail={renderToolGearDetail}
         searchPlaceholder="Поиск инструментов и снаряжения..."
-        filters={[{ columnId: 'category', label: 'Категория' }]}
+        filters={TOOLS_GEAR_FILTERS}
         id="tools-gear"
     />
 </TWWrapper>
@@ -247,7 +252,7 @@ import { TOOLS_GEAR_COLUMNS, renderToolGearDetail } from '@site/src/data/toolsGe
     <CharRoll attr="Dexterity" skill="Blaster" variant="details" />
 </TWWrapper>
 
-Встроенные кнопки броска листа объединяют Ловкость + Бластеры персонажа с обозначением урона оружия для атаки и бросков урона в один клик.
+Встроенные кнопки броска листа объединяют Ловкость (Dexterity) + Бластеры персонажа с обозначением урона оружия для атаки и бросков урона в один клик.
 
 ---
 

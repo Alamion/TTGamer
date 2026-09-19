@@ -149,7 +149,7 @@ the current `sheet_manager`, template, and documentation code (2026-09-14).
 
 ## D9 — Documentation location and format
 
-- **Decision**: new top-level docs folder `docs/v5/` ("World of Darkness 5th Edition"):
+- **Decision**: new top-level docs folder `docs/wod-v5/` ("World of Darkness 5th Edition"):
   `rules/` holds V5-shared mechanics (FR-026), `hunter/` holds the line (entry page, quickstart,
   newcomer path `first-hunter/`, reference). Russian mirror at the same paths; `validate-i18n` is
   extended from one hardcoded root to a list (`star-wars-wod-2e`, `v5`). The page format is defined

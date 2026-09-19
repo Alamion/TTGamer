@@ -132,7 +132,7 @@ describe('template files across systems (feature 008)', () => {
         const starWars = JSON.parse(serializeTemplateFile(buildTemplate()));
         expect(starWars).not.toHaveProperty('notices');
         const hunter = JSON.parse(
-            serializeTemplateFile({ ...buildTemplate('hunter-kit'), systemId: 'v5' as never })
+            serializeTemplateFile({ ...buildTemplate('hunter-kit'), systemId: 'wod-v5' as never })
         );
         expect(hunter.notices.map(({ policy }: { policy: string }) => policy)).toEqual([
             'dark-pack',

@@ -1,10 +1,27 @@
 # Changelog
 
+## v3.7.0
+
+### Major feat
+
+- **Russian interface without English leftovers (spec 009)**: the home page, dice roller (panel, settings, history, sharing), Discord delivery messages, shared components (catalog tables, panels, difficulty and scale charts), docs catalog columns and filters, sheet controls, and the weapon, armor, inventory, and implant cards are translated; counts use Russian plural forms («1 документ / 3 документа / 5 документов»)
+- **Translation coverage verifier**: `yarn i18n:verify` parses the code (TypeScript AST) and checks user-facing literals, missing or copied translations, plurals, catalog coverage, bilingual pickers, glossary consistency, label overflow, and Russian docs; runs in `verify:fast`, with reviewed exceptions in `translations/i18n-exceptions.yaml` and a coverage table in `yarn i18n:status`
+- **Book-term hints for players who learned from the English books**: hover, focus, or tap a trait name to see its English book name (one delegated popover per sheet, no persistent marker, a one-time tip); a "Game terms" preference switches between Russian with hints, English book names, and Russian without hints
+- **Term links survive re-skins**: renaming a trait in the template editor keeps its book term, with a per-field "Show book name hint" switch; exported templates keep both
+- **Bilingual pickers**: every catalog picker shows «Русский (English)» and finds entries by either name, ignoring case, ё/е, and diacritics; picked equipment keeps a catalog reference and shows its name in the reader's language until renamed
+- **Star Wars catalogs in Russian**: names, short descriptions, specialties, rating scales, and enumerated labels of every Star Wars catalog (species, merits and flaws, abilities, Force powers and skills, backgrounds, weapons, armor, gear, vehicles, creatures, virtues); abilities, Force skills, and virtues on the sheet read Russian
+- **Glossary**: `translations/glossary/` records the English and Russian form of every sheet term (Star Wars, V5, Hunter) with proposals for review
+
+### Minor feat
+
+- **Long labels fit their rows**: the specialization input keeps room for 8 characters, narrow columns move it to its own line, and long Russian terms switch to glossary short forms on phones
+- **Docs terms**: Russian docs write a game term's first mention as «Русский (English)»
+
 ## v3.6.0
 
 ### Major feat
 
-- **Hunter: the Reckoning 5e (spec 008)**: create, edit, export, and import hunter characters with a full sheet in the printed sheet's order and a brief at-the-table view — Creed and Drive with suggestions, Edges and Perks tables with book suggestions (a picked Perk fills its Edge), specialization text per skill, advantages and flaws, touchstones, experience, biography, Despair, and the cell's Desperation and Danger
+- **Hunter: the Reckoning 5e (spec 008)**: create, edit, export, and import hunter characters with a full sheet in the printed sheet's order and a brief at-the-table view — Creed and Drive with suggestions, Edges and Perks tables with book suggestions (Perk suggestions follow the hunter's Edges; a picked Perk fills its Edge in the reader's language), specialization text per skill, advantages and flaws, touchstones, experience, biography, Despair, and the cell's Desperation and Danger
 - **V5 ruleset layer**: `systems/v5/ruleset` (attributes, skills, Health/Willpower, advantages, experience, shared page parts) with the Hunter line as a module, so Vampire 5e can be added as another module
 - **Hunter pages laid out for the screen**: sections of related groups (Hunter with portrait and folded biography, Condition, Attributes, Skills, Edges and Perks, Aims and Convictions, Advantages and Flaws, Equipment, Experience and Notes), rules links on group headers, and a brief view of compact groups
 - **Type and setting**: document lists show the type ("Character") and the setting ("Hunter: the Reckoning 5e", "Star Wars (World of Darkness 2e)") in separate columns; the create dialog groups by setting
@@ -15,7 +32,7 @@
 - **Docs admonitions**: fixed notes that ran to the end of the page when a paragraph followed an embed without a blank line; a test now guards every page
 - **Hunter sheets reuse the WoD elements**: dot rows for traits, Desperation, and Danger; the condition track for Health and Willpower (click a box: Superficial ╱, Aggravated ×)
 - **Condition track additions**: computed length from a formula plus a player adjustment, a −/+ length regulator (also replaces the fodder "Health levels" select), and a `trackLayout` choice (table of levels or line of boxes) in the template editor
-- **Publisher notices**: policy metadata (`systems/policies.ts`, Dark Pack) with the official Dark Pack badge in the bottom-left corner of every hunter page (including custom templates), one full statement page (`docs/v5/dark-pack`), and `notices` in document and template exports
+- **Publisher notices**: policy metadata (`systems/policies.ts`, Dark Pack) with the official Dark Pack badge in the bottom-left corner of every hunter page (including custom templates), one full statement page (`docs/wod-v5/dark-pack`), and `notices` in document and template exports
 - **V5 and Hunter documentation (en + ru)**: shared V5 rules, a Hunter start page with three paths, a quickstart, a nine-step guided creation path for complete newcomers with the example hunter Lena Varga and live sheet embeds, and a reference (sheet map, Desperation/Danger/Despair, Creeds, Drives, Edges, glossary)
 
 ### Minor feat
@@ -29,6 +46,11 @@
 ### Fix
 
 - **System-aware templates**: a custom template of another system with the same document kind is no longer applied to a document (`template-incompatible` diagnostic); documentation embeds only render against documents of their own system
+- **Importing document files**: choosing a `.json` file in Import did nothing in Chromium browsers (the file list was cleared before it was read); import, the Replace / Duplicate / Cancel choice, and recovery work again
+- **Catalog details on phones**: the space kept free for the details sheet moved from under the catalog to the end of the page, so text after a catalog no longer drops below a large empty gap while details are open
+- **Picker names outside English**: catalog suggestions on sheets show and write "localized (English)" names (e.g. «Арсенал (Arsenal)»); advantage and flaw suggestions are localized at all; a picked Perk or Edge no longer writes the English name; Perk suggestions also recognize an Edge by the book name in parentheses
+- **Docs paths**: the V5 docs moved from `/docs/v5` to `/docs/wod-v5` (old links redirect); the unfinished `docs/wod` drafts (classic core rules, VtM 2e) were removed
+- **V5 system id**: `v5` is now `wod-v5` (unambiguous next to other 5th editions); stored hunters, exported files, and template copies with the old id are read as `wod-v5` (document and template stores re-parse at version 4)
 
 ## v3.5.0
 

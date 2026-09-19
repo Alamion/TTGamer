@@ -1,0 +1,9 @@
+columns:
+    name: Предмет
+    category: Категория
+    effect: Эффект
+    cost: Цена
+detail:
+    category: Категория
+    cost: Цена
+    effect: Эффект

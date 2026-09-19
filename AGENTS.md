@@ -138,8 +138,9 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 - Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by several lines (e.g. V5) are one ruleset. In code: `systems/v5/ruleset/` + `systems/v5/modules/<line>/`; every plugin (Star Wars included) declares its `catalogs`, `policies`, `defaultTemplates`, and `templateBindings` on `SystemPlugin`.
 - Generic sheet code never imports a concrete system folder: one ESLint `no-restricted-imports` pattern covers every `systems/<system>/` (allowed importers: `systems/index.ts`, `docsEmbeds.tsx`, the legacy path in `store/documentStore.ts`).
 - Third-party material: rules and catalog text in our own words (no verbatim book passages); publisher notices (e.g. Dark Pack) come from `systems/policies.ts` metadata declared by plugins/modules and render as a badge on sheets (`PolicyBadges`, linking to the policy's single docs page with `PolicyStatement`) and `notices` in exports — only where that material is used (constitution VIII).
-- Data changes must pass `yarn validate:data`. Documentation under `docs/star-wars-wod-2e` and `docs/v5` must be mirrored under Russian i18n and pass `yarn validate:i18n`.
+- Data changes must pass `yarn validate:data`. Documentation under `docs/star-wars-wod-2e` and `docs/wod-v5` must be mirrored under Russian i18n and pass `yarn validate:i18n`.
 - YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`; do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.
+- `yarn verify:fast` runs the translation coverage verifier (`yarn i18n:verify`): user-facing literals, missing keys, plurals, catalog and docs coverage, glossary consistency. New UI text goes through YAML; exceptions need a reason in `translations/i18n-exceptions.yaml`.
 
 ## 9. Specs vs Current State
 

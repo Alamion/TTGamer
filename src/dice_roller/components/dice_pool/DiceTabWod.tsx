@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { memo, useCallback, useMemo, useState } from 'react';
 
 import { handleDiceNotation, rewriteWodDifficulty } from '../../dice-logic/notation-utils';
@@ -105,7 +107,9 @@ const WodTab = memo(function WodTab() {
     return (
         <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between gap-2 px-3 py-2 rounded bg-bgBase/60">
-                <span className="text-xs font-semibold text-textPrimary">Difficulty:</span>
+                <span className="text-xs font-semibold text-textPrimary">
+                    {translate(uiMessages.dice.pool.wod.difficulty)}
+                </span>
                 <div className="flex items-center gap-2">
                     <button
                         type="button"

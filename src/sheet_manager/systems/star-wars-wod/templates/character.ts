@@ -642,19 +642,29 @@ const LABEL_MESSAGES: Readonly<Record<string, { id: string }>> = {
     Notes: documentFields.notes,
 };
 
-/** Attribute names are owned by the `attributes` data catalog (single translation owner). */
-const ATTRIBUTE_COORDINATES: ReadonlySet<string> = new Set(
-    ATTRIBUTE_GROUPS.flatMap(({ keys }) => keys.map(kebab))
-);
+/**
+ * Trait names are owned by data catalogs (single translation owner, and the glossary's book
+ * terms): trait coordinate → `catalog:<catalogId>/<entryId>`.
+ */
+const TRAIT_CATALOG_REFS: ReadonlyMap<string, string> = new Map([
+    ...ATTRIBUTE_GROUPS.flatMap(({ keys }) =>
+        keys.map((key) => [kebab(key), `catalog:attributes/${kebab(key)}`] as const)
+    ),
+    ...ABILITY_GROUPS.flatMap(({ keys }) =>
+        keys.map((key) => [kebab(key), `catalog:abilities/${kebab(key)}`] as const)
+    ),
+    ...FORCE_SKILL_KEYS.map((key) => [kebab(key), `catalog:force-skills/${kebab(key)}`] as const),
+    ...VIRTUE_KEYS.map((key) => [kebab(key), `catalog:virtues/${kebab(key)}`] as const),
+]);
 
 function withLabelMessages(node: TemplateNode): TemplateNode {
     const label = 'title' in node ? node.title : 'label' in node ? node.label : undefined;
-    const isAttribute =
-        node.type === 'rating' &&
-        node.valueKey !== undefined &&
-        ATTRIBUTE_COORDINATES.has(node.valueKey);
-    const reference = isAttribute
-        ? `catalog:attributes/${node.valueKey}`
+    const traitReference =
+        node.type === 'rating' && node.valueKey !== undefined
+            ? TRAIT_CATALOG_REFS.get(node.valueKey)
+            : undefined;
+    const reference = traitReference
+        ? traitReference
         : label
           ? LABEL_MESSAGES[label]?.id
           : undefined;

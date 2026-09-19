@@ -17,7 +17,7 @@ Unknown policy ids fail registry construction (tested), never at render time.
 > practice; the notice is addressed to the rights holder more than to players).
 
 Policy metadata adds `badge` (site-relative static path, `/img/dark-pack-badge.webp`) and
-`aboutPage` (`/docs/v5/dark-pack`). Both paths are prefixed with the locale base URL at render.
+`aboutPage` (`/docs/wod-v5/dark-pack`). Both paths are prefixed with the locale base URL at render.
 
 ## Components (`features/sheet/shell/PolicyNotice.tsx`)
 
@@ -29,14 +29,14 @@ Policy metadata adds `badge` (site-relative static path, `/img/dark-pack-badge.w
 
 ## Placement
 
-| Surface                                             | Where                                                            | Owner                      |
-| --------------------------------------------------- | ---------------------------------------------------------------- | -------------------------- |
-| Sheet workspace (any view, any template)            | badge only, bottom-left below the active view, outside templates | `SheetWorkspace`           |
-| Docs embeds (`TemplatePreview`, `TemplateFragment`) | never                                                            | —                          |
-| Dark Pack docs page                                 | `docs/v5/dark-pack.mdx` and RU mirror — the only full statement  | MDX, test-enforced         |
-| Other docs pages                                    | never                                                            | MDX, test-enforced         |
-| Document export                                     | top-level `notices`                                              | export in `SheetWorkspace` |
-| Template export                                     | wrapper-level `notices`                                          | `templateFile.ts`          |
+| Surface                                             | Where                                                               | Owner                      |
+| --------------------------------------------------- | ------------------------------------------------------------------- | -------------------------- |
+| Sheet workspace (any view, any template)            | badge only, bottom-left below the active view, outside templates    | `SheetWorkspace`           |
+| Docs embeds (`TemplatePreview`, `TemplateFragment`) | never                                                               | —                          |
+| Dark Pack docs page                                 | `docs/wod-v5/dark-pack.mdx` and RU mirror — the only full statement | MDX, test-enforced         |
+| Other docs pages                                    | never                                                               | MDX, test-enforced         |
+| Document export                                     | top-level `notices`                                                 | export in `SheetWorkspace` |
+| Template export                                     | wrapper-level `notices`                                             | `templateFile.ts`          |
 
 Surfaces for documents or systems without policies render and write nothing.
 
