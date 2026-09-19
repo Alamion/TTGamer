@@ -24,3 +24,378 @@
 - rule: identical
   match: https://example.com/portrait.webp
   reason: example URL shown as an input placeholder
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/backgrounds.mdx
+  match: strength
+  reason: «личная сила» (personal power), an ordinary word, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-1-concept-species.mdx
+  match: strength
+  reason: species description («их сила и выносливость»), ordinary words, not the
+      Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-1-concept-species.mdx
+  match: stamina
+  reason: species description («их сила и выносливость»), ordinary words, not the
+      Stamina attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-1-concept-species.mdx
+  match: appearance
+  reason: «раса определяет вашу внешность» (looks), an ordinary word, not the
+      Appearance attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-1-concept-species.mdx
+  match: perception
+  reason: «острое восприятие» in a species description, an ordinary word, not the
+      Perception attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-1-concept-species.mdx
+  match: subterfuge
+  reason: «любопытство и хитрость» (cunning) in a species description, not the
+      Subterfuge ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-5-virtues.mdx
+  match: strength
+  reason: «Сила Воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-5-virtues.mdx
+  match: force-skills-sense
+  reason: «чувство добра и зла» (sense of right and wrong), not the Sense Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-6-freebie.mdx
+  match: strength
+  reason: «Сила Силы» is the Force Strength rating, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-7-force.mdx
+  match: strength
+  reason: ordinary word in a Force skill description, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/worked-example.mdx
+  match: strength
+  reason: «Сила» here is the Force, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/dark_side_resistance.mdx
+  match: strength
+  reason: «Сила Воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/dark_side_resistance.mdx
+  match: force-skills-rapport
+  reason: «эмоциональную связь» (emotional connection), not the Rapport Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/droids-cyborgs.mdx
+  match: strength
+  reason: «Сила» here is the Force, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/droids-cyborgs.mdx
+  match: repair
+  reason: «Ремонт вместо лечения» is the generic repair mechanic (English "Repair
+      Instead of Healing"), not the Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/force.mdx
+  match: strength
+  reason: «Сила» here is the Force, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/force.mdx
+  match: force-skills-telekinesis
+  reason: generic description of Force powers («предвидение, телекинез»), not the
+      Telekinesis Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/index.mdx
+  match: strength
+  reason: «Сила» here is the Force, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/merits-flaws.mdx
+  match: intelligence
+  reason: «память и интеллект» in a category description, an ordinary word, not
+      the Intelligence attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/merits-flaws.mdx
+  match: force-skills-rapport
+  reason: «Связь с Силой» (connection to the Force), not the Rapport Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/reading-sheet.mdx
+  match: strength
+  reason: «Сила Воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/reading-sheet.mdx
+  match: appearance
+  reason: the free-text appearance field of the sheet header, not the Appearance
+      attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/reading-sheet.mdx
+  match: dodge
+  reason: «уклонение» (dodging) as an example use of Physical attributes, not the
+      Dodge ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/species.mdx
+  match: repair
+  reason: «Ремонт вместо лечения» is the generic repair mechanic (English "Repair
+      Instead of Healing"), not the Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/virtues-willpower.mdx
+  match: strength
+  reason: «Сила Воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/virtues-willpower.mdx
+  match: force-skills-sense
+  reason: «чувство добра и зла» (sense of right and wrong), not the Sense Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/combat/health-damage-heal.mdx
+  match: repair
+  reason: droid repair row ("Uses vehicle repair rules"), the generic mechanic,
+      not the Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/core-rules/attributes-abilities.mdx
+  match: appearance
+  reason: «описывают внешность, обаяние» describes the Social category in ordinary
+      words, not the Appearance attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/core-rules/attributes-abilities.mdx
+  match: perception
+  reason: «память, восприятие» describes the Mental category in ordinary words,
+      not the Perception attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/core-rules/dice-pools.mdx
+  match: blaster
+  reason: «ваш бластер заедает» is the weapon, not the Blaster ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/core-rules/dice-pools.mdx
+  match: repair
+  reason: «ремонт гипердвигателя» is an example task, an ordinary word, not the
+      Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/core-rules/dice-pools.mdx
+  match: security
+  reason: «взлом имперского мейнфрейма» is an example task, an ordinary word, not
+      the Security ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/core-rules/dice-pools.mdx
+  match: force-skills-control
+  reason: «получает контроль над системой» (gains control), not the Control Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/creatures/mechanics.mdx
+  match: force-skills-sense
+  reason: part of the merit name «Шестое Чувство», not the Sense Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/equipment.mdx
+  match: blaster
+  reason: «скорострельный бластер» is the weapon, not the Blaster ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/equipment.mdx
+  match: gunnery
+  reason: weapon category row (artillery weapons), not the Gunnery ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/equipment.mdx
+  match: melee
+  reason: weapon category heading (English "Melee Weapons"), not the Melee ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/example-of-play.mdx
+  match: blaster
+  reason: «скрытый бластер» is the weapon, not the Blaster ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/example-of-play.mdx
+  match: security
+  reason: «Взлом панели» names the task (slicing a panel), not the Security ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/example-of-play.mdx
+  match: survival
+  reason: «1 за выживание» (XP for surviving), not the Survival ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/adventure-design.mdx
+  match: survival
+  reason: story theme «Выживание vs. Справедливость», not the Survival ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/adventure-design.mdx
+  match: investigation
+  reason: adventure genre («расследование, политические интриги»), not the
+      Investigation ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/building-encounters.mdx
+  match: strength
+  reason: «Сила Воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/building-encounters.mdx
+  match: repair
+  reason: «Ремонт Лёгкого повреждения» (repairing damage) in a cost table, not the
+      Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/difficulty-reference.mdx
+  match: strength
+  reason: «нужны Сила или удача» — the Force, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/difficulty-reference.mdx
+  match: repair
+  reason: «Ремонт гипердвигателя под огнём» is an example task, not the Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/difficulty-reference.mdx
+  match: security
+  reason: «взлом имперского ядра» is an example task, not the Security ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/rewards-advancement.mdx
+  match: strength
+  reason: «Сила Воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/rewards-advancement.mdx
+  match: programming
+  reason: droid abilities as «программирование» (programming), not the Programming
+      ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/rewards-advancement.mdx
+  match: survival
+  reason: «выживание в испытании» (surviving an ordeal), not the Survival ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/running-the-game.mdx
+  match: command
+  reason: «руководящие роли, командование» (command roles) in a motivations table,
+      not the Command ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/running-the-game.mdx
+  match: force-skills-control
+  reason: «влияние и контроль» (control) in a motivations table, not the Control
+      Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/running-the-game.mdx
+  match: force-skills-sense
+  reason: part of the merit name «Чувство опасности», not the Sense Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/index.mdx
+  match: strength
+  reason: «Сила» here is the Force, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/quick-start.mdx
+  match: strength
+  reason: «Преимущества и Сила» — the Force, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/quick-start.mdx
+  match: repair
+  reason: «ремонт гипердвигателя» is an example task, not the Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/durability-damage-repair.mdx
+  match: repair
+  reason: page title «Прочность, урон и ремонт» (vehicle repair), not the Repair
+      ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/durability-damage-repair.mdx
+  match: force-skills-rapport
+  reason: «Связь/Сенсоры» is the vehicle Comms/Sensors system, not the Rapport
+      Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/modifications.mdx
+  match: blaster
+  reason: «одно очко на бластер» is the weapon, not the Blaster ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/modifications.mdx
+  match: programming
+  reason: «программирование дроидов» (droid programming) in a workshop table, not
+      the Programming ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/modifications.mdx
+  match: repair
+  reason: «Добавление, ремонт или улучшение» (repairing weapon systems), not the
+      Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/space-combat.mdx
+  match: strength
+  reason: «сила сигнала» (signal strength), not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/space-combat.mdx
+  match: dodge
+  reason: «преследование и уклонение» (evasion in chases), not the Dodge ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/space-combat.mdx
+  match: repair
+  reason: link to the page «Прочность, урон и ремонт», not the Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/space-combat.mdx
+  match: force-skills-rapport
+  reason: «открытая связь» (open comms link), not the Rapport Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/traits-systems.mdx
+  match: repair
+  reason: link to the page «Прочность, урон и ремонт», not the Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/traits-systems.mdx
+  match: force-skills-rapport
+  reason: «Связь/Сенсоры» is the vehicle Comms/Sensors system, not the Rapport
+      Force skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/vehicles-list.mdx
+  match: repair
+  reason: link to the page «Прочность, повреждения и ремонт», not the Repair ability
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/dark-pack.mdx
+  match: politics
+  reason: «как того требует политика» (the Dark Pack policy), not the Politics skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/first-hunter/01-what-is-a-hunter.mdx
+  match: investigation
+  reason: «расследование и подготовка» describes play in ordinary words, not the
+      Investigation skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/first-hunter/05-skills-specialties.mdx
+  match: conviction
+  reason: «Убеждение» here is the Persuasion skill; the glossary gives the same
+      Russian word to Conviction
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/first-hunter/07-advantages-flaws.mdx
+  match: assets
+  reason: «люди и ресурсы» (people and resources) describes Advantages, not the
+      Assets edge type
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/first-hunter/08-touchstones.mdx
+  match: persuasion
+  reason: «Убеждение» here is a Touchstone Conviction; the glossary gives the same
+      Russian word to the Persuasion skill
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/first-hunter/09-finishing-touches.mdx
+  match: strength
+  reason: «Сила воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/quick-start.mdx
+  match: strength
+  reason: «Сила воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/reference/reading-the-sheet.mdx
+  match: assets
+  reason: «Люди, ресурсы и осложнения» describes Advantages, not the Assets edge type
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/reference/reading-the-sheet.mdx
+  match: strength
+  reason: «Сила воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/rules/attributes-skills.mdx
+  match: perk
+  reason: «умение перетерпеть боль» (the ability to endure pain), not the Hunter Perk
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/rules/attributes-skills.mdx
+  match: conviction
+  reason: «Убеждение» here is the Persuasion skill; the glossary gives the same
+      Russian word to Conviction
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/rules/damage-willpower.mdx
+  match: strength
+  reason: «Сила воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/rules/index.mdx
+  match: strength
+  reason: «Сила воли» is Willpower, not the Strength attribute
+- rule: docs-terms
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/reference/glossary.mdx
+  match: /^(creed|drive|redemption|despair|desperation|danger|edge|perk|persuasion|conviction|touchstone)$/
+  reason: 'bilingual glossary table: the English name is already in its own column'
+- rule: docs
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/droids-cyborgs.mdx
+  match: /Arakyd Viper Probe Droid/
+  reason: proper name of a droid model (English "Arakyd Viper Probe Droid"), kept
+      as in the books
+- rule: docs
+  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/index.mdx
+  match: '/The Star Wars Roleplaying Game, Second Edition|Vampire: The Masquerade,
+      Second Edition|The Vampire Players Guide, Second Edition/'
+  reason: book titles and publisher credits (WEG, White Wolf, ISBN) of the source
+      books, cited in the original
+- rule: docs
+  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/dark-pack.mdx
+  match: '/Hunter: the Reckoning/'
+  reason: 'product names (World of Darkness, Hunter: the Reckoning) in the Dark
+      Pack notice, kept in English'
