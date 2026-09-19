@@ -1,5 +1,7 @@
 import Link from '@docusaurus/Link';
+import Translate, { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import Heading from '@theme/Heading';
 import Layout from '@theme/Layout';
 import type { ReactNode } from 'react';
@@ -23,7 +25,7 @@ function HomepageHeader() {
                 <div className="flex flex-col items-center text-center">
                     <div className="mb-4 inline-flex items-center gap-2 rounded border border-jedi-green/40 bg-jedi-green/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-jedi-green">
                         <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-jedi-green" />
-                        Active Development — v{version}
+                        {translate(uiMessages.site.home.hero.status, { version })}
                     </div>
                     <Heading
                         as="h1"
@@ -54,7 +56,7 @@ function HomepageHeader() {
                                 <path d="M12 18v-6" />
                                 <path d="M9 15h6" />
                             </svg>
-                            Character Sheet
+                            {translate(uiMessages.site.home.hero.characterSheet)}
                         </Link>
                         <Link
                             className="inline-flex items-center justify-center gap-2 rounded border-2 border-border bg-bgSurface px-8 py-3 font-bold uppercase tracking-wider text-textPrimary shadow transition-all duration-200 hover:border-primary/50 hover:text-primary active:scale-95"
@@ -73,7 +75,7 @@ function HomepageHeader() {
                                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
                                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
                             </svg>
-                            Quick Start
+                            {translate(uiMessages.site.home.hero.quickStart)}
                         </Link>
                     </div>
                 </div>
@@ -125,8 +127,8 @@ export default function Home(): ReactNode {
 
     return (
         <Layout
-            title="Home"
-            description="TTGamer - Star Wars WEG/WoD Hybrid TTRPG Character Sheet Manager & Documentation"
+            title={translate(uiMessages.site.home.meta.pageTitle)}
+            description={translate(uiMessages.site.home.meta.pageDescription)}
         >
             <div className="tailwind-root">
                 <HomepageHeader />
@@ -136,7 +138,7 @@ export default function Home(): ReactNode {
                             as="h2"
                             className="mb-2 text-2xl font-bold uppercase tracking-wide text-textPrimary"
                         >
-                            What's Available
+                            {translate(uiMessages.site.home.features.heading)}
                         </Heading>
                         <div className="mx-auto h-1 w-16 bg-primary" />
                     </div>
@@ -159,8 +161,10 @@ export default function Home(): ReactNode {
                                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                 </svg>
                             }
-                            title="Character Sheet"
-                            description="Full-featured manager with 9 attributes, 30 abilities, Force powers, inventory, health tracking, and more. Supports sentient and droid characters; vehicle sheets are planned."
+                            title={translate(uiMessages.site.home.features.characterSheet.title)}
+                            description={translate(
+                                uiMessages.site.home.features.characterSheet.summary
+                            )}
                             href="/universal_sheet"
                         />
                         <FeatureCard
@@ -179,8 +183,10 @@ export default function Home(): ReactNode {
                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                                 </svg>
                             }
-                            title="3D Dice Roller"
-                            description="Real-time 3D dice physics with WebGL, sound effects, surface physics, roll history, and support for any dice notation. 2D fallback included."
+                            title={translate(uiMessages.site.home.features.diceRoller.title)}
+                            description={translate(
+                                uiMessages.site.home.features.diceRoller.summary
+                            )}
                             href="/docs/star-wars-wod-2e/core-rules/dice-pools"
                         />
                         <FeatureCard
@@ -200,8 +206,10 @@ export default function Home(): ReactNode {
                                     <path d="M2 12h20" />
                                 </svg>
                             }
-                            title="Full Documentation"
-                            description="Complete rules documentation covering character creation, combat, vehicles, GM tools, bestiary, equipment, and a full worked example."
+                            title={translate(uiMessages.site.home.features.documentation.title)}
+                            description={translate(
+                                uiMessages.site.home.features.documentation.summary
+                            )}
                             href="/docs/star-wars-wod-2e/"
                         />
                     </div>
@@ -213,16 +221,28 @@ export default function Home(): ReactNode {
                                     as="h3"
                                     className="mb-2 text-xl font-bold uppercase tracking-wide text-textPrimary"
                                 >
-                                    About the System
+                                    {translate(uiMessages.site.home.about.title)}
                                 </Heading>
                                 <p className="text-textSecondary">
-                                    A hybrid TTRPG system combining the narrative simplicity of{' '}
-                                    <strong className="text-textPrimary">Star Wars WEG</strong> with
-                                    the mechanical depth of the{' '}
-                                    <strong className="text-textPrimary">World of Darkness</strong>{' '}
-                                    d10 dice pool system. Create characters with 9 core attributes,
-                                    30 abilities, skill specializations, Force powers, and track
-                                    bashing/lethal damage on a dual health system.
+                                    <Translate
+                                        id={uiMessages.site.home.about.body.id}
+                                        values={{
+                                            weg: (
+                                                <strong className="text-textPrimary">
+                                                    Star Wars WEG
+                                                </strong>
+                                            ),
+                                            wod: (
+                                                <strong className="text-textPrimary">
+                                                    {translate(
+                                                        uiMessages.site.home.about.worldOfDarkness
+                                                    )}
+                                                </strong>
+                                            ),
+                                        }}
+                                    >
+                                        {uiMessages.site.home.about.body.message}
+                                    </Translate>
                                 </p>
                             </div>
                         </div>
@@ -230,11 +250,16 @@ export default function Home(): ReactNode {
 
                     <div className="mt-8 rounded border border-droid-gold/30 bg-droid-gold/5 p-4 text-center">
                         <p className="text-sm font-mono text-textSecondary">
-                            <span className="text-droid-gold">LIVE:</span> ttgamer.vercel.app{' '}
+                            <span className="text-droid-gold">
+                                {translate(uiMessages.site.home.status.live)}
+                            </span>{' '}
+                            ttgamer.vercel.app{' '}
                             <span className="mx-2 text-border-more-contrast">|</span>{' '}
                             <span className="text-primary">v{version}</span>{' '}
                             <span className="mx-2 text-border-more-contrast">|</span>{' '}
-                            <span className="text-jedi-green">29 docs complete</span>{' '}
+                            <span className="text-jedi-green">
+                                {translate(uiMessages.site.home.status.docsComplete, { count: 29 })}
+                            </span>{' '}
                             <span className="mx-2 text-border-more-contrast">|</span>{' '}
                             <span className="text-hologram-blue">React 19 + Docusaurus 3.10</span>
                         </p>

@@ -13,6 +13,288 @@ export type UiMessageTree = {
 };
 
 export const uiMessages = {
+    dice: {
+        history: {
+            tabs: {
+                history: {
+                    id: 'ttgamer.ui.dice.history.tabs.history',
+                    message: 'History',
+                },
+                favorites: {
+                    id: 'ttgamer.ui.dice.history.tabs.favorites',
+                    message: 'Favorites',
+                },
+                recent: {
+                    id: 'ttgamer.ui.dice.history.tabs.recent',
+                    message: 'Recent',
+                },
+            },
+            addFavorite: {
+                id: 'ttgamer.ui.dice.history.addFavorite',
+                message: 'Add to favorites',
+            },
+            removeFavorite: {
+                id: 'ttgamer.ui.dice.history.removeFavorite',
+                message: 'Remove from favorites',
+            },
+            setNotationTitle: {
+                id: 'ttgamer.ui.dice.history.setNotationTitle',
+                message: 'Set notation | Right-click to roll',
+            },
+            stats: {
+                id: 'ttgamer.ui.dice.history.stats',
+                message: 'Stats: {stats}',
+            },
+            rolls: {
+                id: 'ttgamer.ui.dice.history.rolls',
+                message: 'Rolls: {details}',
+            },
+            formatted: {
+                id: 'ttgamer.ui.dice.history.formatted',
+                message: 'Formatted: {formatted}',
+            },
+            manuallyRerolled: {
+                id: 'ttgamer.ui.dice.history.manuallyRerolled',
+                message: 'Manually Rerolled',
+            },
+            empty: {
+                history: {
+                    id: 'ttgamer.ui.dice.history.empty.history',
+                    message: 'No rolls yet',
+                },
+                favorites: {
+                    id: 'ttgamer.ui.dice.history.empty.favorites',
+                    message: 'No favorites saved',
+                },
+                recent: {
+                    id: 'ttgamer.ui.dice.history.empty.recent',
+                    message: 'No recent notations',
+                },
+            },
+            clear: {
+                button: {
+                    id: 'ttgamer.ui.dice.history.clear.button',
+                    message: 'Clear',
+                },
+                history: {
+                    id: 'ttgamer.ui.dice.history.clear.history',
+                    message: 'Clear history',
+                },
+                favorites: {
+                    id: 'ttgamer.ui.dice.history.clear.favorites',
+                    message: 'Clear favorites',
+                },
+                recent: {
+                    id: 'ttgamer.ui.dice.history.clear.recent',
+                    message: 'Clear recent',
+                },
+                default: {
+                    id: 'ttgamer.ui.dice.history.clear.default',
+                    message: 'Clear',
+                },
+            },
+        },
+        inlineRoll: {
+            collapse: {
+                id: 'ttgamer.ui.dice.inlineRoll.collapse',
+                message: 'Collapse roll details',
+            },
+            expand: {
+                id: 'ttgamer.ui.dice.inlineRoll.expand',
+                message: 'Expand roll details',
+            },
+            rolls: {
+                id: 'ttgamer.ui.dice.inlineRoll.rolls',
+                message: 'Rolls: {details}',
+            },
+            formatted: {
+                id: 'ttgamer.ui.dice.inlineRoll.formatted',
+                message: 'Formatted: {formatted}',
+            },
+        },
+        panel: {
+            title: {
+                id: 'ttgamer.ui.dice.panel.title',
+                message: 'Dice Roller',
+            },
+            close: {
+                id: 'ttgamer.ui.dice.panel.close',
+                message: 'Close dice roller',
+            },
+        },
+        pool: {
+            tabs: {
+                standard: {
+                    id: 'ttgamer.ui.dice.pool.tabs.standard',
+                    message: 'Standard',
+                },
+                dnd: {
+                    id: 'ttgamer.ui.dice.pool.tabs.dnd',
+                    message: 'D&D',
+                },
+            },
+            dnd: {
+                advantage: {
+                    id: 'ttgamer.ui.dice.pool.dnd.advantage',
+                    message: 'ADV',
+                },
+                disadvantage: {
+                    id: 'ttgamer.ui.dice.pool.dnd.disadvantage',
+                    message: 'DIS',
+                },
+            },
+            wod: {
+                difficulty: {
+                    id: 'ttgamer.ui.dice.pool.wod.difficulty',
+                    message: 'Difficulty:',
+                },
+            },
+            diceButtonTitle: {
+                id: 'ttgamer.ui.dice.pool.diceButtonTitle',
+                message: 'Left-click: Add {notation} | Right-click: Remove {notation}',
+            },
+            diceAlt: {
+                id: 'ttgamer.ui.dice.pool.diceAlt',
+                message: 'Dice{type}',
+            },
+            notation: {
+                placeholder: {
+                    id: 'ttgamer.ui.dice.pool.notation.placeholder',
+                    message: 'Roll notation (e.g. 2d6+3 or 4d20kh3)',
+                },
+                reference: {
+                    id: 'ttgamer.ui.dice.pool.notation.reference',
+                    message: 'View dice notation reference',
+                },
+                saveFavorite: {
+                    id: 'ttgamer.ui.dice.pool.notation.saveFavorite',
+                    message: 'Save as favorite',
+                },
+                removeFavorite: {
+                    id: 'ttgamer.ui.dice.pool.notation.removeFavorite',
+                    message: 'Remove from favorites',
+                },
+                invalid: {
+                    id: 'ttgamer.ui.dice.pool.notation.invalid',
+                    message: 'Invalid notation',
+                },
+            },
+            controls: {
+                clear: {
+                    id: 'ttgamer.ui.dice.pool.controls.clear',
+                    message: 'Clear',
+                },
+                roll: {
+                    id: 'ttgamer.ui.dice.pool.controls.roll',
+                    message: 'Roll',
+                },
+            },
+        },
+        settings: {
+            open: {
+                id: 'ttgamer.ui.dice.settings.open',
+                message: 'Open dice roller settings',
+            },
+            title: {
+                id: 'ttgamer.ui.dice.settings.title',
+                message: 'Dice Roller Settings',
+            },
+            close: {
+                id: 'ttgamer.ui.dice.settings.close',
+                message: 'Close settings',
+            },
+            enable3dDicePanel: {
+                id: 'ttgamer.ui.dice.settings.enable3dDicePanel',
+                message: '3D Dice in Panel',
+            },
+            diceFaceColor: {
+                id: 'ttgamer.ui.dice.settings.diceFaceColor',
+                message: 'Dice face color',
+            },
+            diceTextColor: {
+                id: 'ttgamer.ui.dice.settings.diceTextColor',
+                message: 'Dice text color',
+            },
+            sound: {
+                id: 'ttgamer.ui.dice.settings.sound',
+                message: 'Roll sound effects',
+            },
+            volume: {
+                id: 'ttgamer.ui.dice.settings.volume',
+                message: 'Volume',
+            },
+            timeToReact: {
+                id: 'ttgamer.ui.dice.settings.timeToReact',
+                message: 'Time to react',
+            },
+            reactWindow: {
+                id: 'ttgamer.ui.dice.settings.reactWindow',
+                message: 'React window (seconds)',
+            },
+            reactWindowValue: {
+                id: 'ttgamer.ui.dice.settings.reactWindowValue',
+                message: '{seconds}s',
+            },
+            includeRollContext: {
+                id: 'ttgamer.ui.dice.settings.includeRollContext',
+                message: 'Include roll context',
+            },
+            includeCharacterName: {
+                id: 'ttgamer.ui.dice.settings.includeCharacterName',
+                message: 'Include character name',
+            },
+            includeCharacterStats: {
+                id: 'ttgamer.ui.dice.settings.includeCharacterStats',
+                message: 'Include character stats',
+            },
+        },
+        sharing: {
+            enableDiscordWebhook: {
+                id: 'ttgamer.ui.dice.sharing.enableDiscordWebhook',
+                message: 'Enable Discord webhook',
+            },
+            webhookUrl: {
+                id: 'ttgamer.ui.dice.sharing.webhookUrl',
+                message: 'Discord Webhook URL',
+            },
+            webhookValid: {
+                id: 'ttgamer.ui.dice.sharing.webhookValid',
+                message: 'Valid Discord webhook',
+            },
+            webhookInvalid: {
+                id: 'ttgamer.ui.dice.sharing.webhookInvalid',
+                message: 'Invalid Discord webhook URL format',
+            },
+            discordToggleTitle: {
+                id: 'ttgamer.ui.dice.sharing.discordToggleTitle',
+                message:
+                    'Left-click: toggle Discord webhook | Right-click: anonymize rolls (hide character data)',
+            },
+        },
+    },
+    integrations: {
+        discord: {
+            errors: {
+                rateLimited: {
+                    id: 'ttgamer.ui.integrations.discord.errors.rateLimited',
+                    message: 'Discord is rate-limiting rolls. Try again in a moment.',
+                },
+                rateLimitedRetry: {
+                    id: 'ttgamer.ui.integrations.discord.errors.rateLimitedRetry',
+                    message:
+                        'Discord is rate-limiting rolls. Try again in about {seconds} seconds.',
+                },
+                network: {
+                    id: 'ttgamer.ui.integrations.discord.errors.network',
+                    message: 'Discord could not be reached. Check your connection.',
+                },
+                rejected: {
+                    id: 'ttgamer.ui.integrations.discord.errors.rejected',
+                    message: 'Discord rejected this roll. Check the webhook settings.',
+                },
+            },
+        },
+    },
     sheet: {
         base: {
             title: {
@@ -2901,6 +3183,119 @@ export const uiMessages = {
                         message: 'An object with a strange power against monsters.',
                     },
                 },
+            },
+        },
+    },
+    site: {
+        home: {
+            meta: {
+                pageTitle: {
+                    id: 'ttgamer.ui.site.home.meta.pageTitle',
+                    message: 'Home',
+                },
+                pageDescription: {
+                    id: 'ttgamer.ui.site.home.meta.pageDescription',
+                    message:
+                        'TTGamer - Star Wars WEG/WoD Hybrid TTRPG Character Sheet Manager & Documentation',
+                },
+            },
+            hero: {
+                status: {
+                    id: 'ttgamer.ui.site.home.hero.status',
+                    message: 'Active Development — v{version}',
+                },
+                characterSheet: {
+                    id: 'ttgamer.ui.site.home.hero.characterSheet',
+                    message: 'Character Sheet',
+                },
+                quickStart: {
+                    id: 'ttgamer.ui.site.home.hero.quickStart',
+                    message: 'Quick Start',
+                },
+            },
+            features: {
+                heading: {
+                    id: 'ttgamer.ui.site.home.features.heading',
+                    message: "What's Available",
+                },
+                characterSheet: {
+                    title: {
+                        id: 'ttgamer.ui.site.home.features.characterSheet.title',
+                        message: 'Character Sheet',
+                    },
+                    summary: {
+                        id: 'ttgamer.ui.site.home.features.characterSheet.summary',
+                        message:
+                            'Full-featured manager with 9 attributes, 30 abilities, Force powers, inventory, health tracking, and more. Supports sentient and droid characters; vehicle sheets are planned.',
+                    },
+                },
+                diceRoller: {
+                    title: {
+                        id: 'ttgamer.ui.site.home.features.diceRoller.title',
+                        message: '3D Dice Roller',
+                    },
+                    summary: {
+                        id: 'ttgamer.ui.site.home.features.diceRoller.summary',
+                        message:
+                            'Real-time 3D dice physics with WebGL, sound effects, surface physics, roll history, and support for any dice notation. 2D fallback included.',
+                    },
+                },
+                documentation: {
+                    title: {
+                        id: 'ttgamer.ui.site.home.features.documentation.title',
+                        message: 'Full Documentation',
+                    },
+                    summary: {
+                        id: 'ttgamer.ui.site.home.features.documentation.summary',
+                        message:
+                            'Complete rules documentation covering character creation, combat, vehicles, GM tools, bestiary, equipment, and a full worked example.',
+                    },
+                },
+            },
+            about: {
+                title: {
+                    id: 'ttgamer.ui.site.home.about.title',
+                    message: 'About the System',
+                },
+                body: {
+                    id: 'ttgamer.ui.site.home.about.body',
+                    message:
+                        'A hybrid TTRPG system combining the narrative simplicity of {weg} with the mechanical depth of the {wod} d10 dice pool system. Create characters with 9 core attributes, 30 abilities, skill specializations, Force powers, and track bashing/lethal damage on a dual health system.',
+                },
+                worldOfDarkness: {
+                    id: 'ttgamer.ui.site.home.about.worldOfDarkness',
+                    message: 'World of Darkness',
+                },
+            },
+            status: {
+                live: {
+                    id: 'ttgamer.ui.site.home.status.live',
+                    message: 'LIVE:',
+                },
+                docsComplete: {
+                    id: 'ttgamer.ui.site.home.status.docsComplete',
+                    message: '{count} docs complete',
+                },
+            },
+        },
+        navbar: {
+            toggleDiceRoller: {
+                id: 'ttgamer.ui.site.navbar.toggleDiceRoller',
+                message: 'Toggle dice roller',
+            },
+            pendingRollTitle: {
+                id: 'ttgamer.ui.site.navbar.pendingRollTitle',
+                message: 'Left-click: roll | Right-click: clear',
+            },
+        },
+        sheetPage: {
+            pageTitle: {
+                id: 'ttgamer.ui.site.sheetPage.pageTitle',
+                message: 'Sheet Manager',
+            },
+            pageDescription: {
+                id: 'ttgamer.ui.site.sheetPage.pageDescription',
+                message: 'Universal Character Sheet Manager',
             },
         },
     },

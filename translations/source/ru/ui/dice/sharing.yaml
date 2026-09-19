@@ -1,0 +1,5 @@
+enableDiscordWebhook: Включить вебхук Discord
+webhookUrl: URL вебхука Discord
+webhookValid: Вебхук Discord указан верно
+webhookInvalid: Неверный формат URL вебхука Discord
+discordToggleTitle: 'ЛКМ: включить или выключить вебхук Discord | ПКМ: анонимные броски (скрыть данные персонажа)'

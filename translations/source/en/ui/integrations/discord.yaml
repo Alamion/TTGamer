@@ -1,0 +1,5 @@
+errors:
+    rateLimited: Discord is rate-limiting rolls. Try again in a moment.
+    rateLimitedRetry: Discord is rate-limiting rolls. Try again in about {seconds} seconds.
+    network: Discord could not be reached. Check your connection.
+    rejected: Discord rejected this roll. Check the webhook settings.

@@ -1,0 +1,4 @@
+collapse: Свернуть подробности броска
+expand: Развернуть подробности броска
+rolls: 'Броски: {details}'
+formatted: 'Формат: {formatted}'

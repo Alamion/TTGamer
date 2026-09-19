@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useMemo } from 'react';
 
 import { SvgImage, useDiceColors } from './utils';
@@ -330,7 +332,7 @@ function DiceSvg({
             style={style}
             className={className}
             onClick={onClick}
-            alt={`Dice${diceType.toUpperCase()}`}
+            alt={translate(uiMessages.dice.pool.diceAlt, { type: diceType.toUpperCase() })}
         />
     );
 }

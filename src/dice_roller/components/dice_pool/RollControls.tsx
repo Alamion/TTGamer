@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { isValidDiscordWebhook, SESSION_STORAGE_KEY } from '@site/src/integrations/discord';
 import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
 import { useCallback } from 'react';
@@ -57,7 +59,7 @@ export default function RollControls() {
                         e.preventDefault();
                         toggleAnonymize();
                     }}
-                    title="Left-click: toggle Discord webhook | Right-click: anonymize rolls (hide character data)"
+                    title={translate(uiMessages.dice.sharing.discordToggleTitle)}
                     className="inline-flex items-center justify-center w-8 h-8 rounded-md
                         hover:bg-bgBase/50 transition-colors"
                 >
@@ -93,7 +95,7 @@ export default function RollControls() {
                     hover:bg-bgBase/50 transition-colors
                     disabled:opacity-40 disabled:cursor-not-allowed"
             >
-                Clear
+                {translate(uiMessages.dice.pool.controls.clear)}
             </button>
             <button
                 type="button"
@@ -104,7 +106,7 @@ export default function RollControls() {
                     hover:bg-primary-hover transition-colors
                     disabled:opacity-40 disabled:cursor-not-allowed"
             >
-                Roll
+                {translate(uiMessages.dice.pool.controls.roll)}
             </button>
         </div>
     );

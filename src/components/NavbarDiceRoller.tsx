@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Dices } from 'lucide-react';
 import { useCallback } from 'react';
@@ -35,7 +37,7 @@ export default function NavbarDiceRoller() {
             >
                 <button
                     onClick={togglePanel}
-                    aria-label="Toggle dice roller"
+                    aria-label={translate(uiMessages.site.navbar.toggleDiceRoller)}
                     className="inline-flex items-center justify-center p-2 border-transparent rounded-md cursor-pointer bg-transparent text-textSecondary hover:border-primary hover:text-primary transition-colors"
                 >
                     <Dices size={18} />
@@ -45,7 +47,7 @@ export default function NavbarDiceRoller() {
                         onClick={handleClick}
                         onContextMenu={handleContextMenu}
                         className="bg-transparent border-none cursor-pointer p-2 font-mono text-sm truncate max-w-[120px] text-textPrimary hover:text-primary transition-colors"
-                        title="Left-click: roll | Right-click: clear"
+                        title={translate(uiMessages.site.navbar.pendingRollTitle)}
                     >
                         {notationInput}
                     </button>

@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { type UiMessageDescriptor, uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { RotateCw, Star, Trash2 } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
@@ -11,11 +13,24 @@ import {
 } from '../utils/sessionStorage';
 import type { HistoryTabType } from '../utils/types-ext';
 
-const TABS: { id: HistoryTabType; label: string }[] = [
-    { id: 'chat', label: 'History' },
-    { id: 'favorites', label: 'Favorites' },
-    { id: 'recent', label: 'Recent' },
+const TABS: { id: HistoryTabType; label: UiMessageDescriptor }[] = [
+    { id: 'chat', label: uiMessages.dice.history.tabs.history },
+    { id: 'favorites', label: uiMessages.dice.history.tabs.favorites },
+    { id: 'recent', label: uiMessages.dice.history.tabs.recent },
 ];
+
+const EMPTY_MESSAGES: Record<Exclude<HistoryTabType, ''>, UiMessageDescriptor> = {
+    chat: uiMessages.dice.history.empty.history,
+    favorites: uiMessages.dice.history.empty.favorites,
+    recent: uiMessages.dice.history.empty.recent,
+};
+
+const CLEAR_TITLES: Record<HistoryTabType, UiMessageDescriptor> = {
+    chat: uiMessages.dice.history.clear.history,
+    favorites: uiMessages.dice.history.clear.favorites,
+    recent: uiMessages.dice.history.clear.recent,
+    '': uiMessages.dice.history.clear.default,
+};
 
 interface ListItem {
     key: string;
@@ -100,7 +115,11 @@ function RollHistory() {
                         }}
                         className="flex-shrink-0 w-5 h-5 flex items-center justify-center cursor-pointer
                             hover:scale-110 transition-transform"
-                        title={item.isStarred ? 'Remove from favorites' : 'Add to favorites'}
+                        title={translate(
+                            item.isStarred
+                                ? uiMessages.dice.history.removeFavorite
+                                : uiMessages.dice.history.addFavorite
+                        )}
                     >
                         <Star
                             size={14}
@@ -148,7 +167,7 @@ function RollHistory() {
                         'border border-transparent rounded cursor-pointer',
                         'opacity-60 hover:opacity-100 hover:bg-bgBase/50 transition-all'
                     )}
-                    title="Set notation | Right-click to roll"
+                    title={translate(uiMessages.dice.history.setNotationTitle)}
                 >
                     <RotateCw size={12} />
                 </button>
@@ -163,24 +182,32 @@ function RollHistory() {
                     )}
                     {item.statLabels && item.statLabels.length > 0 && (
                         <>
-                            <span>Stats: {item.statLabels.join(', ')}</span>
+                            <span>
+                                {translate(uiMessages.dice.history.stats, {
+                                    stats: item.statLabels.join(', '),
+                                })}
+                            </span>
                             <br />
                         </>
                     )}
                     {includeRollContext && item.details != null && (
                         <>
-                            Rolls: {item.details}
+                            {translate(uiMessages.dice.history.rolls, { details: item.details })}
                             <br />
                         </>
                     )}
                     {includeRollContext && item.formatted != null && (
                         <>
-                            Formatted: {item.formatted}
+                            {translate(uiMessages.dice.history.formatted, {
+                                formatted: item.formatted,
+                            })}
                             <br />
                         </>
                     )}
                     {item.manuallyRerolled && (
-                        <span className="text-yellow-500 font-semibold">Manually Rerolled</span>
+                        <span className="text-yellow-500 font-semibold">
+                            {translate(uiMessages.dice.history.manuallyRerolled)}
+                        </span>
                     )}
                 </div>
             )}
@@ -197,12 +224,7 @@ function RollHistory() {
             (activeTab === 'favorites' && favorites.length === 0) ||
             (activeTab === 'recent' && recentNotations.length === 0);
         if (isEmpty) {
-            const emptyMsg =
-                activeTab === 'chat'
-                    ? 'No rolls yet'
-                    : activeTab === 'favorites'
-                      ? 'No favorites saved'
-                      : 'No recent notations';
+            const emptyMsg = translate(EMPTY_MESSAGES[activeTab]);
             return (
                 <div className="flex-1 overflow-y-auto min-h-0" ref={contentRef}>
                     <div className="py-5 text-center italic opacity-70 text-textPrimary">
@@ -270,7 +292,7 @@ function RollHistory() {
                                     : 'opacity-60 border-b-transparent hover:opacity-85'
                             )}
                         >
-                            {tab.label}
+                            {translate(tab.label)}
                         </button>
                     ))}
                 </div>
@@ -292,18 +314,10 @@ function RollHistory() {
                         bg-bgSurface text-textPrimary
                         hover:bg-bgBase/50 transition-colors
                         disabled:opacity-40 disabled:cursor-not-allowed"
-                    title={
-                        activeTab === 'chat'
-                            ? 'Clear history'
-                            : activeTab === 'favorites'
-                              ? 'Clear favorites'
-                              : activeTab === 'recent'
-                                ? 'Clear recent'
-                                : 'Clear'
-                    }
+                    title={translate(CLEAR_TITLES[activeTab])}
                 >
                     <Trash2 size={12} />
-                    Clear
+                    {translate(uiMessages.dice.history.clear.button)}
                 </button>
             </div>
             {renderTabContent()}

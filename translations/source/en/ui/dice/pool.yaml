@@ -1,0 +1,19 @@
+tabs:
+    standard: Standard
+    dnd: D&D
+dnd:
+    advantage: ADV
+    disadvantage: DIS
+wod:
+    difficulty: 'Difficulty:'
+diceButtonTitle: 'Left-click: Add {notation} | Right-click: Remove {notation}'
+diceAlt: Dice{type}
+notation:
+    placeholder: Roll notation (e.g. 2d6+3 or 4d20kh3)
+    reference: View dice notation reference
+    saveFavorite: Save as favorite
+    removeFavorite: Remove from favorites
+    invalid: Invalid notation
+controls:
+    clear: Clear
+    roll: Roll

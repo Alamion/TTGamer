@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { SlidePanel } from '@site/src/shared/components/SlidePanel';
 
 import { useDiceRollerStore } from '../store/diceRollerStore';
@@ -12,9 +14,9 @@ export default function DiceRollerPanel() {
         <SlidePanel
             open={panelOpen}
             onClose={togglePanel}
-            title="Dice Roller"
+            title={translate(uiMessages.dice.panel.title)}
             className="w-full sm:max-w-sm"
-            closeAriaLabel="Close dice roller"
+            closeAriaLabel={translate(uiMessages.dice.panel.close)}
         >
             <div className="flex flex-col gap-4 px-4 py-3">
                 <DicePool />

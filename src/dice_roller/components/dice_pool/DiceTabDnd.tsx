@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { memo, useCallback } from 'react';
 
 import { applyAdvantage, applyDisadvantage } from '../../dice-logic/notation-utils';
@@ -29,7 +31,7 @@ const DndTab = memo(function DndTab() {
                             bg-bgSurface text-textPrimary cursor-pointer
                             hover:bg-bgBase/50 transition-colors"
                     >
-                        ADV
+                        {translate(uiMessages.dice.pool.dnd.advantage)}
                     </button>
                     <button
                         type="button"
@@ -38,7 +40,7 @@ const DndTab = memo(function DndTab() {
                             bg-bgSurface text-textPrimary cursor-pointer
                             hover:bg-bgBase/50 transition-colors"
                     >
-                        DIS
+                        {translate(uiMessages.dice.pool.dnd.disadvantage)}
                     </button>
                 </div>
             </div>

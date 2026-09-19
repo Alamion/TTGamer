@@ -1,0 +1,14 @@
+open: Open dice roller settings
+title: Dice Roller Settings
+close: Close settings
+enable3dDicePanel: 3D Dice in Panel
+diceFaceColor: Dice face color
+diceTextColor: Dice text color
+sound: Roll sound effects
+volume: Volume
+timeToReact: Time to react
+reactWindow: React window (seconds)
+reactWindowValue: '{seconds}s'
+includeRollContext: Include roll context
+includeCharacterName: Include character name
+includeCharacterStats: Include character stats
