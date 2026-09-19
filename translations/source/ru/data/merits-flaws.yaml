@@ -1,0 +1,540 @@
+higher-purpose:
+    name: Высшая цель
+    shortDescription: Вами движет путеводная цель или идеал
+berserker:
+    name: Берсерк
+    shortDescription: Впадать в ярость, не замечая штрафов за ранения
+dual-nature:
+    name: Двойная натура
+    shortDescription: Две разные Натуры — Очки Силы восстанавливаются от обеих
+compulsion:
+    name: Навязчивость
+    shortDescription: Неподконтрольная привычка
+dark-secret:
+    name: Тёмная тайна
+    shortDescription: Секрет, раскрытие которого вас погубит
+intolerance:
+    name: Нетерпимость
+    shortDescription: Сильное предубеждение против какой-то группы
+phobia:
+    name: Фобия
+    shortDescription: Иррациональный страх — от лёгкого до тяжёлого (1–3 очка)
+shy:
+    name: Застенчивость
+    shortDescription: Неловкость в общении
+soft-hearted:
+    name: Мягкосердечие
+    shortDescription: Не можете отказать нуждающимся
+speech-impediment:
+    name: Дефект речи
+    shortDescription: Трудности с речью
+low-self-image:
+    name: Низкая самооценка
+    shortDescription: Постоянно недооцениваете свои способности
+driving-goal:
+    name: Всепоглощающая цель
+    shortDescription: Одна цель подчиняет себе всю вашу жизнь
+addict:
+    name: Зависимость
+    shortDescription: Зависимость от вещества (1–5 очков)
+common-sense:
+    name: Здравый смысл
+    shortDescription: Врождённая житейская мудрость
+concentration:
+    name: Концентрация
+    shortDescription: Исключительная способность сосредоточиться
+lightning-calculator:
+    name: Счётная машина
+    shortDescription: Мгновенный устный счёт
+time-sense:
+    name: Чувство времени
+    shortDescription: Вы всегда знаете точное время
+eidetic-memory:
+    name: Эйдетическая память
+    shortDescription: Безупречно помните всё пережитое
+direction-sense:
+    name: Чувство направления
+    shortDescription: Врождённое умение ориентироваться
+pig-headed:
+    name: Упрямец
+    shortDescription: Не можете смириться с неудачей
+well-prepared:
+    name: Предусмотрительность
+    shortDescription: Нужная бытовая мелочь всегда под рукой
+amnesia:
+    name: Амнезия
+    shortDescription: Утрачены воспоминания о прошлом
+confused:
+    name: Спутанность сознания
+    shortDescription: Легко теряетесь и путаетесь
+absent-minded:
+    name: Рассеянность
+    shortDescription: Невнимательны и забывчивы
+acute-hearing:
+    name: Острый слух
+    shortDescription: Сверхъестественно чуткий слух
+acute-smell:
+    name: Острое обоняние
+    shortDescription: Сверхъестественно чуткое обоняние
+acute-taste:
+    name: Тонкий вкус
+    shortDescription: Сверхъестественно чуткий вкус
+acute-vision:
+    name: Острое зрение
+    shortDescription: Сверхъестественно зоркие глаза
+color-blind:
+    name: Цветовая слепота
+    shortDescription: Видите мир только в чёрно-белом
+hard-of-hearing:
+    name: Тугоухость
+    shortDescription: Ослабленный слух
+bad-sight:
+    name: Плохое зрение
+    shortDescription: Неисправимый дефект зрения
+missing-eye:
+    name: Нет глаза
+    shortDescription: Вы потеряли глаз
+deaf:
+    name: Глухота
+    shortDescription: Вы совсем ничего не слышите
+blind:
+    name: Слепота
+    shortDescription: Вы полностью лишены зрения
+ambidextrous:
+    name: Амбидекстрия
+    shortDescription: Одинаково владеете обеими руками
+pitiable:
+    name: Вызывающий жалость
+    shortDescription: Окружающим хочется о вас заботиться
+natural-linguist:
+    name: Прирождённый лингвист
+    shortDescription: Дар к изучению языков
+dare-devil:
+    name: Сорвиголова
+    shortDescription: Риск и опасность придают вам сил
+fast-learner:
+    name: Быстрое обучение
+    shortDescription: Новые навыки даются вам быстрее
+jack-of-all-trades:
+    name: Мастер на все руки
+    shortDescription: Можете пытаться применить любую Способность без обучения
+droid-aptitude:
+    name: Подход к дроидам
+    shortDescription: Природное родство с дроидами
+experienced:
+    name: Опытный
+    shortDescription: Игнорируете одну единицу в бросках определённой Способности
+practiced:
+    name: Натренированный
+    shortDescription: Округление вверх при разделении запаса кубов
+illiterate:
+    name: Неграмотность
+    shortDescription: Не умеете читать и писать
+inept:
+    name: Неумелость
+    shortDescription: Трудности со всеми бросками Способностей
+uneducated:
+    name: Необразованность
+    shortDescription: Нет формального образования в Знаниях
+unskilled:
+    name: Неумеха
+    shortDescription: Плохо даются Навыки
+boon:
+    name: Услуга
+    shortDescription: Кто-то могущественный вам обязан (1–3 очка)
+underworld-ties:
+    name: Связи в преступном мире
+    shortDescription: Вы связаны с криминальным подпольем
+organizational-ties:
+    name: Связи в организации
+    shortDescription: У вас есть знакомые внутри крупной организации
+enemy:
+    name: Враг
+    shortDescription: Кто-то желает вам зла (1–5 очков)
+mistaken-identity:
+    name: Двойник
+    shortDescription: Вас часто принимают за кого-то другого
+ward:
+    name: Подопечный
+    shortDescription: Вы отвечаете за того, кто не может о себе позаботиться
+wanted:
+    name: В розыске
+    shortDescription: За вашу голову назначена награда (1–5 очков)
+slave-race:
+    name: Рабская раса
+    shortDescription: Вашу расу повсеместно обращают в рабство
+stereotyped:
+    name: Стереотипы
+    shortDescription: О вашей расе судят по предрассудкам
+double-jointed:
+    name: Гибкие суставы
+    shortDescription: Необычайно подвижные суставы
+disfigured:
+    name: Обезображенность
+    shortDescription: Заметное уродство
+deformity:
+    name: Деформация
+    shortDescription: Серьёзное физическое уродство
+lame:
+    name: Хромота
+    shortDescription: Необратимая травма ноги или бедра
+missing-arm:
+    name: Нет руки
+    shortDescription: Отсутствует рука или аналогичная конечность
+mute:
+    name: Немота
+    shortDescription: Вы не можете говорить
+hay-fever:
+    name: Аллергия
+    shortDescription: Аллергическая реакция на некоторые атмосферы (1–3 очка)
+all-thumbs:
+    name: Руки-крюки
+    shortDescription: Плохая мелкая моторика
+two-left-feet:
+    name: Косолапость
+    shortDescription: Неуклюжесть и отсутствие грации
+paraplegic:
+    name: Паралич ног
+    shortDescription: Парализованы ниже пояса
+cybernetic-limb:
+    name: Кибернетическая конечность
+    shortDescription: Конечность заменена кибернетическим протезом (1–2 очка)
+    implantEffect: Заменённая конечность со стандартными функциями
+cybernetic-sensory-organ:
+    name: Кибернетический орган чувств
+    shortDescription: Орган чувств заменён кибернетическим
+    implantEffect: Заменённый орган чувств со стандартными функциями
+cybernetic-uplink:
+    name: Кибернетический интерфейс
+    shortDescription: Прямое мысленное подключение к компьютерам
+    implantEffect: Прямое мысленное подключение к компьютерным сетям
+cybernetic-life-support:
+    name: Кибернетическое жизнеобеспечение
+    shortDescription: Жизненно важные органы заменены кибернетикой (1–5 очков)
+    implantEffect: Жизненно важные органы заменены кибернетическими системами
+clunky-cybernetics:
+    name: Грубая кибернетика
+    shortDescription: Некачественная кибернетика снижает атрибуты (1–5 очков)
+    implantEffect: Некачественная кибернетика снижает атрибуты
+cybernetic-arm:
+    name: Кибернетическая рука
+    shortDescription: Полная замена руки со стандартными функциями
+    implantEffect: Полная замена руки со стандартными функциями
+cybernetic-leg:
+    name: Кибернетическая нога
+    shortDescription: Полная замена ноги со стандартными функциями
+    implantEffect: Полная замена ноги со стандартными функциями
+cybernetic-hand:
+    name: Кибернетическая кисть
+    shortDescription: Замена кисти с обычным хватом и мелкой моторикой
+    implantEffect: Замена кисти с обычным хватом и мелкой моторикой
+cybernetic-eye:
+    name: Кибернетический глаз
+    shortDescription: Заменяет природный глаз мультиспектральной оптикой
+    implantEffect: Мультиспектральная оптика с 10-кратным увеличением
+cybernetic-ear:
+    name: Кибернетическое ухо
+    shortDescription: Улучшенный слух с расширенным диапазоном частот
+    implantEffect: Улучшенный слух с расширенным диапазоном частот
+neural-uplink-implant:
+    name: Нейроинтерфейс
+    shortDescription: Прямое мысленное подключение к компьютерным сетям
+    implantEffect: Прямое мысленное подключение к компьютерным сетям
+subdermal-armor:
+    name: Подкожная броня
+    shortDescription: Бронесетка, вживлённая под кожу
+    implantEffect: +1D к Поглощению физического урона
+respiratory-implant:
+    name: Дыхательный имплант
+    shortDescription: Фильтрует токсины и даёт аварийный кислород
+    implantEffect: Фильтрует токсины и даёт аварийный кислород на 4 часа
+targeting-computer:
+    name: Прицельный компьютер
+    shortDescription: Прицельная система с нейросвязью
+    implantEffect: −1 к сложности дальних атак
+combat-reflex-enhancer:
+    name: Усилитель боевых рефлексов
+    shortDescription: Спинальный имплант, ускоряющий реакцию
+    implantEffect: +1D к Инициативе
+comlink-implant:
+    name: Имплант-комлинк
+    shortDescription: Встроенный подкожный комлинк
+    implantEffect: Встроенный подкожный комлинк с шифрованным каналом
+recording-implant:
+    name: Записывающий имплант
+    shortDescription: Записывает звук и изображение во внутреннюю память
+    implantEffect: Записывает звук и изображение во внутреннюю память
+adrenal-booster:
+    name: Адреналиновый ускоритель
+    shortDescription: Имплант, выбрасывающий синтетический адреналин
+    implantEffect: Временно +1D к Силе и Выносливости (3 раза в день)
+dart-launcher:
+    name: Наручный дротикомёт
+    shortDescription: Скрытый дротикомёт в предплечье
+    implantEffect: Скрытый дротикомёт в предплечье
+cardio-enhancer:
+    name: Кардиоусилитель
+    shortDescription: Кибернетическое усиление сердца и лёгких
+    implantEffect: +1D к Выносливости в проверках на выносливость
+bio-monitor:
+    name: Биомонитор
+    shortDescription: Имплант для постоянного контроля здоровья
+    implantEffect: Постоянный контроль здоровья с аварийным оповещением
+luck:
+    name: Удача
+    shortDescription: Сила благоволит вам и дарит удачу
+force-sensitive:
+    name: Чувствительный к Силе
+    shortDescription: Способность освоить Силовые навыки и Силы
+strong-in-the-force:
+    name: Сильный в Силе
+    shortDescription: Сила в вас необычайно велика
+force-spirit-mentor:
+    name: Наставник-призрак Силы
+    shortDescription: Вас ведёт дух Силы
+natural-force-power:
+    name: Врождённая Сила Силы
+    shortDescription: Вы родились с природным даром Силы
+master:
+    name: Мастер
+    shortDescription: У вас есть ученик в Силе
+apprentice:
+    name: Ученик
+    shortDescription: Вы связаны клятвой с мастером Силы
+force-negator:
+    name: Подавитель Силы
+    shortDescription: Вокруг вас пузырь, куда Сила не проникает
+dark-side-curse:
+    name: Проклятие Тёмной Стороны
+    shortDescription: Вас прокляла Тёмная Сторона (1–5 очков)
+weak-in-the-force:
+    name: Слабый в Силе
+    shortDescription: Сила активно противится вам
+desired-by-dark-side:
+    name: Желанный для Тёмной Стороны
+    shortDescription: Тёмная Сторона настойчиво вас искушает
+dark-fate:
+    name: Тёмная судьба
+    shortDescription: Вас ждёт мрачная участь
+ap-amphibious:
+    name: Земноводность
+    shortDescription: Одинаково дышите воздухом и водой
+    restriction: Расовое — только не-люди
+ap-appendages-extra:
+    name: Дополнительные конечности
+    shortDescription: Конечностей больше, чем у человека
+    restriction: Расовое — только не-люди
+ap-appendages-flight:
+    name: Конечности для полёта
+    shortDescription: Крылья или иной орган полёта (1–3 очка)
+    restriction: Расовое — только не-люди
+ap-appendages-prehensile:
+    name: Хватательные конечности
+    shortDescription: Можете держать предметы не только руками
+    restriction: Расовое — только не-люди
+ap-catlike-reflexes:
+    name: Кошачьи рефлексы
+    shortDescription: Превосходная скорость реакции
+    restriction: Расовое — только не-люди
+ap-deliberate:
+    name: Неторопливость
+    shortDescription: Медленные, размеренные рефлексы
+    restriction: Расовое — только не-люди
+ap-enhanced-vision:
+    name: Улучшенное зрение
+    shortDescription: Видите за пределами обычного спектра
+    restriction: Расовое — только не-люди
+ap-enhanced-hearing:
+    name: Улучшенный слух
+    shortDescription: Слышите ультра- и инфразвук
+    restriction: Расовое — только не-люди
+ap-enhanced-olfactory:
+    name: Улучшенное обоняние
+    shortDescription: Тонкий нюх, помогающий выслеживать
+    restriction: Расовое — только не-люди
+ap-environmental-sensitivity:
+    name: Чувствительность к среде
+    shortDescription: Уязвимость к противоположной среде
+    restriction: Расовое — только не-люди
+ap-environmental-tolerance:
+    name: Устойчивость к среде
+    shortDescription: Защита от одной враждебной среды
+    restriction: Расовое — только не-люди
+ap-fast:
+    name: Быстрый
+    shortDescription: Превосходная скорость передвижения по земле
+    restriction: Расовое — только не-люди
+ap-feeble:
+    name: Хилый
+    shortDescription: Слабая мускулатура
+    restriction: Расовое — только не-люди
+ap-frail:
+    name: Хрупкий
+    shortDescription: Хрупкое сложение, слабое поглощение урона
+    restriction: Расовое — только не-люди
+ap-immune-jedi-mind-tricks:
+    name: Невосприимчивость к трюкам джедаев
+    shortDescription: Природная защита от ментального подчинения
+    restriction: Расовое — только не-люди
+ap-light-touch:
+    name: Лёгкая рука
+    shortDescription: Твёрдые руки для тонкой работы
+    restriction: Расовое — только не-люди
+ap-limited-vocal-range:
+    name: Ограниченный речевой диапазон
+    shortDescription: Не можете говорить на общегалактическом
+    restriction: Расовое — только не-люди
+ap-massive:
+    name: Массивный
+    shortDescription: Огромная масса мешает двигаться
+    restriction: Расовое — только не-люди
+ap-natural-weapons:
+    name: Природное оружие
+    shortDescription: Тело вооружено от природы (клыки, когти и т. п.)
+    restriction: Расовое — только не-люди
+ap-non-verbal-language:
+    name: Невербальный язык
+    shortDescription: Общение феромонами, телепатией и т. п.
+    restriction: Расовое — только не-люди
+ap-powerful:
+    name: Мощный
+    shortDescription: Природная сильная мускулатура
+    restriction: Расовое — только не-люди
+ap-short:
+    name: Низкорослый
+    shortDescription: Рост ниже среднего
+    restriction: Расовое — только не-люди
+ap-huge-size:
+    name: Огромный размер
+    shortDescription: Необычайно крупный — дополнительный уровень здоровья
+    restriction: Расовое — только не-люди
+ap-sixth-sense:
+    name: Шестое чувство
+    shortDescription: Восприятие за пределами человеческих чувств
+    restriction: Расовое — только не-люди
+ap-slow:
+    name: Медлительный
+    shortDescription: Низкая скорость бега
+    restriction: Расовое — только не-люди
+ap-strict-diet:
+    name: Строгая диета
+    shortDescription: Для нормальной жизни нужна особая пища
+    restriction: Расовое — только не-люди
+ap-tall:
+    name: Высокий
+    shortDescription: Рост намного выше среднего
+    restriction: Расовое — только не-люди
+ap-thick-skinned:
+    name: Толстокожий
+    shortDescription: Природно прочная шкура
+    restriction: Расовое — только не-люди
+ap-unique-atmosphere:
+    name: Особая атмосфера
+    shortDescription: Для дыхания нужна особая атмосфера
+    restriction: Расовое — только не-люди
+ap-hardy:
+    name: Выносливый организм
+    shortDescription: Исключительно стойкая физиология
+    restriction: Расовое — только не-люди
+ap-heightened-awareness:
+    name: Обострённое восприятие
+    shortDescription: Пассивная эхолокация или чувство окружения
+    restriction: Расовое — только не-люди
+ap-binary-mind:
+    name: Двойной разум
+    shortDescription: Два независимых потока мыслей одновременно
+    restriction: Расовое — только не-люди
+ap-four-arms:
+    name: Дополнительные руки (четыре)
+    shortDescription: Четыре полноценные руки
+    restriction: Расовое — только не-люди
+ap-flight-wings:
+    name: Полёт (крылья)
+    shortDescription: Природные крылья, способные к длительному полёту
+    restriction: Расовое — только не-люди
+_labels:
+    category:
+        Psychological: Психологические
+        Mental: Ментальные
+        Awareness: Восприятие
+        Aptitudes: Склонности
+        Galactic Connections: Галактические связи
+        Physical: Физические
+        Cybernetic: Кибернетика
+        Force Connections: Связь с Силой
+        Alien Physiology: Физиология рас
+    type:
+        Merit: Достоинство
+        Flaw: Недостаток
+        Implant: Имплант
+    tags:
+        Motivation: Мотивация
+        Roleplay: Отыгрыш
+        Combat: Бой
+        Rage: Ярость
+        Unique: Уникальное
+        Behavioral: Поведение
+        Social: Общение
+        Fear: Страх
+        Compassion: Сострадание
+        Communication: Коммуникация
+        Physiology: Физиология
+        Perception: Восприятие
+        Utility: Полезное
+        Focus: Сосредоточение
+        Intelligence: Интеллект
+        Memory: Память
+        Navigation: Навигация
+        Compulsion: Навязчивость
+        Preparation: Подготовка
+        Senses: Чувства
+        Tracking: Выслеживание
+        Physical: Физическое
+        Dexterity: Ловкость
+        Experience: Опыт
+        Versatility: Универсальность
+        Technology: Техника
+        Knowledge: Знания
+        Skills: Навыки
+        Favors: Услуги
+        Underworld: Преступный мир
+        Conflict: Конфликт
+        Species: Раса
+        Appearance: Внешность
+        Movement: Передвижение
+        Mobility: Подвижность
+        Survival: Выживание
+        Craft: Ремесло
+        Injury: Травма
+        Cybernetics: Кибернетика
+        Force: Сила
+        Luck: Удача
+        Sensitive: Чувствительность
+        Powerful: Могущество
+        Mentor: Наставник
+        Power: Мощь
+        Apprentice: Ученик
+        Curse: Проклятие
+        Unlucky: Невезение
+        Dark Side: Тёмная Сторона
+        Aquatic: Водное
+        Balance: Равновесие
+        Flight: Полёт
+        Initiative: Инициатива
+        Environment: Среда
+        Speed: Скорость
+        Strength: Физическая сила
+        Durability: Прочность
+        Mental: Ментальное
+        Size: Размер
+        Unarmed: Без оружия
+        Cognition: Мышление
+    implantType:
+        Limb: Конечность
+        Sensory: Органы чувств
+        Neural: Нейронный
+        Life Support: Жизнеобеспечение
+        Dermal: Кожный
+        Respiratory: Дыхательный
+        Combat: Боевой
+        Communication: Связь

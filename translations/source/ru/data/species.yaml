@@ -1,0 +1,115 @@
+ewok:
+    name: Эвок
+    shortDescription: Небольшие пушистые двуногие с лесной луны Эндора
+gamorrean-slavery:
+    name: Гаморреанец
+    shortDescription: Грузные свиноподобные гуманоиды, известные грубой силой
+gamorrean-free:
+    name: Гаморреанец
+    shortDescription: Грузные свиноподобные гуманоиды, известные грубой силой
+ithorian:
+    name: Иторианец
+    shortDescription: Кроткие длинношеие травоядные, почитающие природу
+mon-calamari-slavery:
+    name: Мон-Каламари
+    shortDescription: Земноводные гуманоиды с рыбьими головами, одарённые кораблестроители
+mon-calamari-free:
+    name: Мон-Каламари
+    shortDescription: Земноводные гуманоиды с рыбьими головами, одарённые кораблестроители
+rodian:
+    name: Родианец
+    shortDescription: Рептилоидные гуманоиды с репутацией охотников за головами
+sullustan:
+    name: Салластанец
+    shortDescription: Большеглазые гуманоиды с исключительным даром навигации
+twilek:
+    name: Тви'лек
+    shortDescription: Гуманоиды с характерными головными щупальцами — лекку
+wookiee-slavery:
+    name: Вуки
+    shortDescription: Рослые, могучие покрытые шерстью двуногие с Кашиика
+wookiee-free:
+    name: Вуки
+    shortDescription: Рослые, могучие покрытые шерстью двуногие с Кашиика
+human:
+    name: Человек
+    shortDescription: Самая многочисленная и разнообразная раса галактики
+zabrak:
+    name: Забрак
+    shortDescription: Рогатые гуманоиды, известные решимостью и выносливостью
+duros:
+    name: Дурос
+    shortDescription: Синекожие гуманоиды с большими красными глазами и врождённым чутьём пилота
+bothan:
+    name: Ботан
+    shortDescription: Пушистые гуманоиды, прославленные шпионской сетью и политической хваткой
+cerean:
+    name: Цереанин
+    shortDescription: Высокие гуманоиды с вытянутой головой и двойным мозгом
+nautolan:
+    name: Наутоланин
+    shortDescription: Земноводные гуманоиды с головными щупальцами и водным происхождением
+togruta:
+    name: Тогрута
+    shortDescription: Гуманоиды с монталами и головными щупальцами, известные обострённым восприятием
+kel-dor:
+    name: Кель Дор
+    shortDescription: Гуманоиды, которым нужны дыхательные маски; хорошо видят в полумраке
+chiss:
+    name: Чисс
+    shortDescription: Синекожие гуманоиды со светящимися красными глазами и стратегическим складом ума
+neimoidian:
+    name: Неймодианец
+    shortDescription: Зеленокожие гуманоиды с репутацией жадных трусов
+weequay:
+    name: Викуай
+    shortDescription: Гуманоиды с обветренной кожей и особым феромонным языком
+aqualish:
+    name: Аквалиш
+    shortDescription: Гуманоиды с моржовыми мордами, острыми бивнями и драчливым нравом
+trandoshan:
+    name: Трандошанин
+    shortDescription: Рептилоидные гуманоиды с регенерирующей чешуёй и культурой охотников
+quarren:
+    name: Куаррен
+    shortDescription: Земноводные гуманоиды с кальмароподобными лицами, уроженцы Мон-Калы
+bith:
+    name: Бит
+    shortDescription: Гуманоиды с большим куполообразным черепом, необычайным слухом и музыкальным даром
+noghri:
+    name: Ногри
+    shortDescription: Скрытные серокожие убийцы с острым обонянием
+selkath:
+    name: Селкат
+    shortDescription: Водные гуманоиды, похожие на сомов, с ядовитыми когтями
+barabel:
+    name: Барабел
+    shortDescription: Покрытые чешуёй рептилоидные гуманоиды с острыми зубами и грозной славой
+pauan:
+    name: Пау'ан
+    shortDescription: Высокие измождённые почти-люди, долгоживущие и приспособленные к темноте
+toydarian:
+    name: Тойдарианец
+    shortDescription: Невысокие крылатые гуманоиды, невосприимчивые к ментальному воздействию
+besalisk:
+    name: Безалиск
+    shortDescription: Четырёхрукие массивные гуманоиды с ледяной планеты Оджом
+_labels:
+    category:
+        Biped (small): Двуногий (малый)
+        Biped (large): Двуногий (крупный)
+        Amphibious: Земноводный
+        Reptilian: Рептилоид
+        Biped: Двуногий
+        Biped (horned): Двуногий (рогатый)
+        Biped (furry): Двуногий (пушистый)
+        Biped (tall): Двуногий (высокий)
+    eras:
+        Dawn of the Jedi: Рассвет джедаев
+        The Old Republic: Старая Республика
+        The High Republic: Высокая Республика
+        The Fall of the Jedi: Падение джедаев
+        The Reign of the Empire: Правление Империи
+        The Age of Rebellion: Эпоха Восстания
+        The New Republic: Новая Республика
+        The Rise of the First Order: Возвышение Первого ордена
