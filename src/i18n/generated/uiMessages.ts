@@ -2414,6 +2414,16 @@ export const uiMessages = {
                     message: 'Add implant',
                 },
             },
+            inventoryEffects: {
+                armor: {
+                    id: 'ttgamer.ui.sheet.items.inventoryEffects.armor',
+                    message: 'Class {classVal} | AR {ar} | Dex {dexPenalty} | {notes}',
+                },
+                ranged: {
+                    id: 'ttgamer.ui.sheet.items.inventoryEffects.ranged',
+                    message: '{damage} | {range}m | {ammo} shots | {notes}',
+                },
+            },
             catalog: {
                 rangedWeapon: {
                     id: 'ttgamer.ui.sheet.items.catalog.rangedWeapon',

@@ -49,6 +49,7 @@ export function CatalogBrowser({ catalogId }: { catalogId: string }) {
         return catalog.entries.map((entry) => ({
             id: entry.id,
             name: catalog.entryLabel(entry, lang),
+            bookName: entry.name,
             ...Object.fromEntries(
                 browse.columns.map((column) => [column.key, cellText(catalog, entry, column, lang)])
             ),
@@ -76,9 +77,11 @@ export function CatalogBrowser({ catalogId }: { catalogId: string }) {
 
     const columns: ColumnDef<BrowserRow>[] = [
         {
-            id: 'name',
+            // Shows the localized name; the column id points search at the English book name
+            // too (DataCatalog also matches the row's own value under the column id).
+            id: 'bookName',
             header: translate(messages.name),
-            accessorKey: 'name',
+            accessorFn: (row) => row.name,
             enableSorting: true,
         },
         ...browse.columns

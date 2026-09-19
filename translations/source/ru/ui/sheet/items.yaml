@@ -77,6 +77,9 @@ implants:
     effectLabel: Эффект импланта
     add: Добавить имплант
     addLabel: Добавить имплант
+inventoryEffects:
+    armor: 'Класс {classVal} | Защита {ar} | Ловк. {dexPenalty} | {notes}'
+    ranged: '{damage} | {range} м | {ammo} выстр. | {notes}'
 catalog:
     rangedWeapon: '{damage} | {range} м | {ammo} выстр.'
     rangedWeaponShort: '{damage} | {range} м'

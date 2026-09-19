@@ -1910,6 +1910,12 @@
     "ttgamer.ui.sheet.items.inventory.weightPlaceholder": {
         "message": "Weight..."
     },
+    "ttgamer.ui.sheet.items.inventoryEffects.armor": {
+        "message": "Class {classVal} | AR {ar} | Dex {dexPenalty} | {notes}"
+    },
+    "ttgamer.ui.sheet.items.inventoryEffects.ranged": {
+        "message": "{damage} | {range}m | {ammo} shots | {notes}"
+    },
     "ttgamer.ui.sheet.items.name": {
         "message": "Name"
     },

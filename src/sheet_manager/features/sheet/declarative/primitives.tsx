@@ -454,7 +454,7 @@ function EquipmentSection({ sectionId, items, onUpdate, ...rest }: EquipmentSect
     }
 }
 
-const STAR_WARS_EQUIPMENT_CATALOGS: Record<EquipmentSectionId, () => CatalogEntry[]> = {
+const STAR_WARS_EQUIPMENT_CATALOGS: Record<EquipmentSectionId, (lang: string) => CatalogEntry[]> = {
     inventory: buildInventoryCatalog,
     armor: buildArmorCatalog,
     weapons: buildWeaponsCatalog,
@@ -464,6 +464,11 @@ const STAR_WARS_EQUIPMENT_CATALOGS: Record<EquipmentSectionId, () => CatalogEntr
 /** Equipment edited through the character capability (Star Wars items and catalogs). */
 function CharacterEquipmentBody({ sectionId }: { sectionId: EquipmentSectionId }) {
     const handlers = useBodyHandlers();
+    const locale = useDocusaurusContext().i18n.currentLocale;
+    const catalog = useMemo(
+        () => STAR_WARS_EQUIPMENT_CATALOGS[sectionId](locale),
+        [sectionId, locale]
+    );
     if (!handlers) {
         return <DegradedBinding bindingKey={`equipment:${sectionId}`} reason="no-body-handlers" />;
     }
@@ -501,7 +506,7 @@ function CharacterEquipmentBody({ sectionId }: { sectionId: EquipmentSectionId }
         <EquipmentSection
             sectionId={sectionId}
             readOnly={handlers.readOnly}
-            catalog={STAR_WARS_EQUIPMENT_CATALOGS[sectionId]()}
+            catalog={catalog}
             {...(bySection as Omit<EquipmentSectionProps, 'sectionId' | 'readOnly' | 'catalog'>)}
         />
     );
@@ -556,12 +561,14 @@ function BoundEquipmentBody({
                     const source = CATALOG_BINDINGS.get(catalogId);
                     const entry = source?.entries.find((candidate) => candidate.id === entryId);
                     const localized = entry && source?.entryText(entry, detailKey, locale);
+                    // Names are stored in English with the entry reference and shown in the
+                    // reader's language (resolveItemName); other details are copied localized.
                     const detail =
-                        detailKey === 'name' ? suggestion.name : (localized ?? details[detailKey]);
+                        detailKey === 'name' ? entry?.name : (localized ?? details[detailKey]);
                     if (typeof detail !== 'string' && typeof detail !== 'number') continue;
                     next = updateEquipmentItem(sectionId, next, id, field, detail);
                 }
-                write(next);
+                write(updateEquipmentItem(sectionId, next, id, 'entryRef', suggestion.id));
             }}
         />
     );

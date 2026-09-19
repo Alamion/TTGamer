@@ -203,27 +203,27 @@ US6 P3. US2 (the verifier) runs before US1 because its report is the worklist fo
 
 ### Tests for User Story 3
 
-- [ ] T050 [P] [US3] Write `tests/sheet_manager/catalog-suggest-search.test.tsx`: `CatalogSuggest` finds entries by the English fragment, the Russian fragment, and an "е" query for an "ё" name; the empty state is translated
-- [ ] T051 [P] [US3] Write `tests/sheet_manager/equipment-entry-ref.test.ts`:
+- [x] T050 [P] [US3] Write `tests/sheet_manager/catalog-suggest-search.test.tsx`: `CatalogSuggest` finds entries by the English fragment, the Russian fragment, and an "е" query for an "ё" name; the empty state is translated
+- [x] T051 [P] [US3] Write `tests/sheet_manager/equipment-entry-ref.test.ts`:
     - picking a weapon stores `entryRef`;
     - the row displays the localized name while the stored `name` is empty or equals the English name;
     - a user-renamed item keeps its name in both locales;
     - documents without `entryRef` render unchanged;
     - round-trip through export/import keeps `entryRef`.
-- [ ] T052 [P] [US3] Write `tests/sheet_manager/catalog-browser-search.test.tsx`: `CatalogBrowser` and `DataCatalog` global search match English names in the Russian locale
+- [x] T052 [P] [US3] Write `tests/sheet_manager/catalog-browser-search.test.tsx`: `CatalogBrowser` and `DataCatalog` global search match English names in the Russian locale
 
 ### Implementation for User Story 3
 
-- [ ] T053 [US3] Add optional `entryRef: z.string().regex(/^[a-z0-9-]+\/[a-z0-9-]+$/).optional()` to `ItemSchema`, `ArmorItemSchema`, `WeaponItemSchema`, and `ImplantItemSchema` in `src/sheet_manager/types/character.ts`, and to the V5 gear/weapon/armor item shapes in `src/sheet_manager/systems/v5/ruleset/schema.ts`; no version bump
-- [ ] T054 [US3] Rewrite `buildWeapons/Armor/Inventory/ImplantsCatalog` in `src/sheet_manager/features/sheet/data/bodyEquipmentCatalogs.ts`. They take `locale`, use `pickLabel` for names, `entryText` for subtitles, and the subtitle messages from T043. Pass `locale` from their caller in `src/sheet_manager/features/sheet/declarative/primitives.tsx` (around :456).
-- [ ] T055 [US3] Update the `find*` helpers in `src/sheet_manager/features/sheet/hooks/useBodyHandlers.ts`. On pick, store `entryRef: "<catalogId>/<entryId>"` together with the English `name` and the copied stats; keep copied numeric fields as today.
-- [ ] T056 [US3] Add a display-name resolver `resolveItemName(item, locale)` in `src/sheet_manager/features/sheet/data/itemDisplay.ts`. It returns the localized entry name when `entryRef` is set and `name` is empty or equals the entry's English name, and otherwise returns `name`. Use it in the four body sections and in the declarative equipment rows in `primitives.tsx`.
-- [ ] T057 [US3] Switch `src/sheet_manager/components/controls/CatalogSuggest.tsx` filtering to `normalizeSearchText` over `pickSearchText` (or over the option name when options are plain strings)
-- [ ] T058 [P] [US3] Use `normalizeSearchText` in `src/sheet_manager/features/sheet/declarative/rowsCatalog.ts` (replace the local `trim().toLocaleLowerCase()` at :14)
-- [ ] T059 [P] [US3] Make `src/sheet_manager/features/docs/CatalogBrowser.tsx` and the `entryLabel` list in `src/sheet_manager/docsEmbeds.tsx` (around :254) search on `pickSearchText`, and in the Russian locale show `pickLabel` in picker contexts while keeping `entryLabel` for the table name column
-- [ ] T060 [P] [US3] Give `src/shared/components/DataCatalog.tsx` a custom `globalFilterFn`: it applies `normalizeSearchText` and also matches an optional `searchText(item)` prop, which callers fill with both names. Pass `searchText` from each `src/data/*Config.tsx` catalog.
+- [x] T053 [US3] Add optional `entryRef: z.string().regex(/^[a-z0-9-]+\/[a-z0-9-]+$/).optional()` to `ItemSchema`, `ArmorItemSchema`, `WeaponItemSchema`, and `ImplantItemSchema` in `src/sheet_manager/types/character.ts`, and to the V5 gear/weapon/armor item shapes in `src/sheet_manager/systems/v5/ruleset/schema.ts`; no version bump
+- [x] T054 [US3] Rewrite `buildWeapons/Armor/Inventory/ImplantsCatalog` in `src/sheet_manager/features/sheet/data/bodyEquipmentCatalogs.ts`. They take `locale`, use `pickLabel` for names, `entryText` for subtitles, and the subtitle messages from T043. Pass `locale` from their caller in `src/sheet_manager/features/sheet/declarative/primitives.tsx` (around :456).
+- [x] T055 [US3] Update the `find*` helpers in `src/sheet_manager/features/sheet/hooks/useBodyHandlers.ts`. On pick, store `entryRef: "<catalogId>/<entryId>"` together with the English `name` and the copied stats; keep copied numeric fields as today.
+- [x] T056 [US3] Add a display-name resolver `resolveItemName(item, locale)` in `src/sheet_manager/features/sheet/data/itemDisplay.ts`. It returns the localized entry name when `entryRef` is set and `name` is empty or equals the entry's English name, and otherwise returns `name`. Use it in the four body sections and in the declarative equipment rows in `primitives.tsx`.
+- [x] T057 [US3] Switch `src/sheet_manager/components/controls/CatalogSuggest.tsx` filtering to `normalizeSearchText` over `pickSearchText` (or over the option name when options are plain strings)
+- [x] T058 [P] [US3] Use `normalizeSearchText` in `src/sheet_manager/features/sheet/declarative/rowsCatalog.ts` (replace the local `trim().toLocaleLowerCase()` at :14)
+- [x] T059 [P] [US3] Make `src/sheet_manager/features/docs/CatalogBrowser.tsx` and the `entryLabel` list in `src/sheet_manager/docsEmbeds.tsx` (around :254) search on `pickSearchText`, and in the Russian locale show `pickLabel` in picker contexts while keeping `entryLabel` for the table name column
+- [x] T060 [P] [US3] Give `src/shared/components/DataCatalog.tsx` a custom `globalFilterFn`: it applies `normalizeSearchText` and also matches an optional `searchText(item)` prop, which callers fill with both names. Pass `searchText` from each `src/data/*Config.tsx` catalog.
 - [ ] T061 [US3] Replace the plain select used for catalog selects in `src/sheet_manager/features/sheet/declarative/fieldControls.tsx:180` with the searchable `CatalogSuggest` when an option list has more than 12 entries (bilingual labels already come from `declarative/hooks.ts:549-555`)
-- [ ] T062 [US3] Run `yarn i18n:verify --rule pickers` until it reports 0 errors, then set `pickers` to `error` in `scripts/i18n-verifier/config.ts`. Run `yarn test` and quickstart §3.
+- [x] T062 [US3] Run `yarn i18n:verify --rule pickers` until it reports 0 errors, then set `pickers` to `error` in `scripts/i18n-verifier/config.ts`. Run `yarn test` and quickstart §3.
 
 **Checkpoint**: all pickers are bilingual and searchable by both names; picked items follow the locale
 

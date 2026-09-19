@@ -1,5 +1,10 @@
+import { translate } from '@docusaurus/Translate';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+
 import type { CatalogEntry } from '../../../components';
 import { useCharacter } from '../../../hooks';
+import { catalogEntryText, entryEnumLabel } from '../../../systems/catalogs';
 import type { EquipmentSectionId } from '../../../systems/templateBindings';
 import {
     createEquipmentItem,
@@ -11,10 +16,12 @@ import {
     findImplantEntry,
     findInventorySource,
     findWeaponEntry,
+    parseEntryRef,
 } from '../data/bodyEquipmentCatalogs';
 
 export function useBodyHandlers() {
     const { character, readOnly, updateCharacter } = useCharacter();
+    const locale = useDocusaurusContext().i18n.currentLocale;
     if (!character) return null;
 
     const inventory = character.inventory || [];
@@ -56,40 +63,27 @@ export function useBodyHandlers() {
     const removeImplantItem = (id: string) => removeItem('implants', id);
     const updateImplantItem = updateItem('implants', implants);
 
+    const refOf = (entry: CatalogEntry) => (parseEntryRef(entry.id) ? entry.id : undefined);
+
     const handleWeaponCatalogSelect = (id: string, entry: CatalogEntry) => {
         const found = findWeaponEntry(entry);
         if (!found) return;
-        if (found.type === 'ranged') {
-            updateCharacter(character.id, {
-                weapons: weapons.map((w) =>
-                    w.id === id
-                        ? {
-                              ...w,
-                              name: entry.name,
-                              damage: found.entry.damage,
-                              range: String(found.entry.range),
-                              ammo: found.entry.ammo,
-                              maxAmmo: found.entry.ammo,
-                          }
-                        : w
-                ),
-            });
-        } else {
-            updateCharacter(character.id, {
-                weapons: weapons.map((w) =>
-                    w.id === id
-                        ? {
-                              ...w,
-                              name: entry.name,
-                              damage: found.entry.damage,
-                              range: '',
-                              ammo: 0,
-                              maxAmmo: 0,
-                          }
-                        : w
-                ),
-            });
-        }
+        const ranged = found.type === 'ranged' ? found.entry : undefined;
+        updateCharacter(character.id, {
+            weapons: weapons.map((w) =>
+                w.id === id
+                    ? {
+                          ...w,
+                          entryRef: refOf(entry),
+                          name: found.entry.name,
+                          damage: found.entry.damage,
+                          range: ranged ? String(ranged.range) : '',
+                          ammo: ranged?.ammo ?? 0,
+                          maxAmmo: ranged?.ammo ?? 0,
+                      }
+                    : w
+            ),
+        });
     };
 
     const handleArmorCatalogSelect = (id: string, entry: CatalogEntry) => {
@@ -100,7 +94,8 @@ export function useBodyHandlers() {
                     a.id === id
                         ? {
                               ...a,
-                              name: entry.name,
+                              entryRef: refOf(entry),
+                              name: armorEntry.name,
                               classVal: String(armorEntry.classVal),
                               ar: armorEntry.ar,
                               dex: armorEntry.dexPenalty,
@@ -114,84 +109,48 @@ export function useBodyHandlers() {
     const handleInventoryCatalogSelect = (id: string, entry: CatalogEntry) => {
         const source = findInventorySource(entry);
         if (!source) return;
-
-        const base = { text: entry.name, price: '', effects: '', description: '' };
-
-        switch (source.type) {
-            case 'toolGear':
-                updateCharacter(character.id, {
-                    inventory: inventory.map((item) =>
-                        item.id === id
-                            ? {
-                                  ...item,
-                                  ...base,
-                                  description: source.entry.description,
-                                  effects: source.entry.effect,
-                                  price: source.entry.cost,
-                              }
-                            : item
-                    ),
-                });
-                break;
-            case 'consumable':
-                updateCharacter(character.id, {
-                    inventory: inventory.map((item) =>
-                        item.id === id
-                            ? {
-                                  ...item,
-                                  ...base,
-                                  description: source.entry.description,
-                                  effects: `${source.entry.damage} ${source.entry.damageType} | ${source.entry.notes}`,
-                                  price: source.entry.cost,
-                              }
-                            : item
-                    ),
-                });
-                break;
-            case 'armor':
-                updateCharacter(character.id, {
-                    inventory: inventory.map((item) =>
-                        item.id === id
-                            ? {
-                                  ...item,
-                                  ...base,
-                                  description: source.entry.description,
-                                  effects: `Class ${source.entry.classVal} | AR ${source.entry.ar} | Dex ${source.entry.dexPenalty} | ${source.entry.notes}`,
-                                  price: source.entry.cost,
-                              }
-                            : item
-                    ),
-                });
-                break;
-            case 'ranged':
-                updateCharacter(character.id, {
-                    inventory: inventory.map((item) =>
-                        item.id === id
-                            ? {
-                                  ...item,
-                                  ...base,
-                                  description: source.entry.description,
-                                  effects: `${source.entry.damage} | ${source.entry.range}m | ${source.entry.ammo} shots | ${source.entry.notes}`,
-                              }
-                            : item
-                    ),
-                });
-                break;
-            case 'melee':
-                updateCharacter(character.id, {
-                    inventory: inventory.map((item) =>
-                        item.id === id
-                            ? {
-                                  ...item,
-                                  ...base,
-                                  description: source.entry.description,
-                                  effects: `${source.entry.damage} | ${source.entry.notes}`,
-                              }
-                            : item
-                    ),
-                });
-                break;
-        }
+        const catalogId = parseEntryRef(entry.id)!.catalogId;
+        const text = (key: string) => catalogEntryText(catalogId, source.entry, key, locale) ?? '';
+        const notes = text('notes');
+        const effects = (() => {
+            switch (source.type) {
+                case 'toolGear':
+                    return text('effect');
+                case 'consumable':
+                    return `${source.entry.damage} ${entryEnumLabel(catalogId, 'damageType', source.entry.damageType, locale)} | ${notes}`;
+                case 'armor':
+                    return translate(uiMessages.sheet.items.inventoryEffects.armor, {
+                        classVal: source.entry.classVal,
+                        ar: source.entry.ar,
+                        dexPenalty: source.entry.dexPenalty,
+                        notes,
+                    });
+                case 'ranged':
+                    return translate(uiMessages.sheet.items.inventoryEffects.ranged, {
+                        damage: source.entry.damage,
+                        range: source.entry.range,
+                        ammo: source.entry.ammo,
+                        notes,
+                    });
+                case 'melee':
+                    return `${source.entry.damage} | ${notes}`;
+            }
+        })();
+        const price = 'cost' in source.entry ? source.entry.cost : '';
+        updateCharacter(character.id, {
+            inventory: inventory.map((item) =>
+                item.id === id
+                    ? {
+                          ...item,
+                          entryRef: refOf(entry),
+                          text: source.entry.name,
+                          description: text('description'),
+                          effects,
+                          price,
+                      }
+                    : item
+            ),
+        });
     };
 
     const handleImplantCatalogSelect = (id: string, entry: CatalogEntry) => {
@@ -202,9 +161,21 @@ export function useBodyHandlers() {
                     i.id === id
                         ? {
                               ...i,
-                              name: entry.name,
-                              type: implantEntry.implantType!,
-                              effect: implantEntry.implantEffect ?? '',
+                              entryRef: refOf(entry),
+                              name: implantEntry.name,
+                              type: entryEnumLabel(
+                                  'merits-flaws',
+                                  'implantType',
+                                  implantEntry.implantType!,
+                                  locale
+                              ),
+                              effect:
+                                  catalogEntryText(
+                                      'merits-flaws',
+                                      implantEntry,
+                                      'implantEffect',
+                                      locale
+                                  ) ?? '',
                           }
                         : i
                 ),

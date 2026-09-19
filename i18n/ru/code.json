@@ -1910,6 +1910,12 @@
     "ttgamer.ui.sheet.items.inventory.weightPlaceholder": {
         "message": "Вес..."
     },
+    "ttgamer.ui.sheet.items.inventoryEffects.armor": {
+        "message": "Класс {classVal} | Защита {ar} | Ловк. {dexPenalty} | {notes}"
+    },
+    "ttgamer.ui.sheet.items.inventoryEffects.ranged": {
+        "message": "{damage} | {range} м | {ammo} выстр. | {notes}"
+    },
     "ttgamer.ui.sheet.items.name": {
         "message": "Название"
     },

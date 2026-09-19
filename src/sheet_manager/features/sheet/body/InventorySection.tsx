@@ -6,6 +6,7 @@ import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest, Checkbox, CollapsibleItem } from '../../../components';
 import { AutoResizeTextarea } from '../../../components';
 import type { Item } from '../../../types/character';
+import { useItemName } from '../data/itemDisplay';
 
 const inventoryMessages = uiMessages.sheet.items.inventory;
 
@@ -53,6 +54,7 @@ export function InventorySection({
     onCatalogSelect,
     catalog,
 }: InventorySectionProps) {
+    const itemName = useItemName();
     return (
         <div className="px-4 pb-4 space-y-2">
             {items.length === 0 ? (
@@ -65,7 +67,8 @@ export function InventorySection({
                         key={item.id}
                         title={
                             <span className="text-sm text-textPrimary truncate">
-                                {item.text || translate(uiMessages.sheet.items.inventory.untitled)}
+                                {itemName(item.text, item.entryRef) ||
+                                    translate(uiMessages.sheet.items.inventory.untitled)}
                             </span>
                         }
                         badge={
@@ -83,7 +86,7 @@ export function InventorySection({
                                 </span>
                                 <CatalogSuggest
                                     catalog={catalog}
-                                    value={item.text}
+                                    value={itemName(item.text, item.entryRef)}
                                     onChange={(val) => onUpdate(item.id, 'text', val)}
                                     onSelect={(entry) => onCatalogSelect(item.id, entry)}
                                     placeholder={translate(

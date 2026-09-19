@@ -65,9 +65,19 @@ export function calculateHealthPenalty(levels: ConditionMark[]): number {
     return 0;
 }
 
+/**
+ * Catalog entry an equipment item was picked from (`<catalogId>/<entryId>`, spec 009). The item
+ * name then displays in the reader's language while it still equals the entry's English name.
+ */
+const entryRefSchema = z
+    .string()
+    .regex(/^[a-z0-9-]+\/[a-z0-9-]+$/)
+    .optional();
+
 export const ItemSchema = z
     .object({
         id: z.string(),
+        entryRef: entryRefSchema,
         text: z.string(),
         description: z.string().default(''),
         effects: z.string().default(''),
@@ -84,6 +94,7 @@ export const ItemSchema = z
 
 export const ArmorItemSchema = z.object({
     id: z.string(),
+    entryRef: entryRefSchema,
     name: z.string(),
     classVal: z.string(),
     ar: z.string(),
@@ -93,6 +104,7 @@ export const ArmorItemSchema = z.object({
 export const WeaponItemSchema = z
     .object({
         id: z.string(),
+        entryRef: entryRefSchema,
         name: z.string(),
         damage: z.string(),
         range: z.string(),
@@ -106,6 +118,7 @@ export const WeaponItemSchema = z
 
 export const ImplantItemSchema = z.object({
     id: z.string(),
+    entryRef: entryRefSchema,
     name: z.string(),
     type: z.string(),
     effect: z.string(),

@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest, CollapsibleItem } from '../../../components';
 import type { ArmorItem } from '../../../types/character';
+import { useItemName } from '../data/itemDisplay';
 
 const armorMessages = uiMessages.sheet.items.armor;
 
@@ -47,6 +48,7 @@ export function ArmorSection({
     onCatalogSelect,
     catalog,
 }: ArmorSectionProps) {
+    const itemName = useItemName();
     return (
         <div className="px-4 pb-4 space-y-2">
             {items.length === 0 ? (
@@ -59,7 +61,8 @@ export function ArmorSection({
                         key={item.id}
                         title={
                             <span className="text-sm text-textPrimary truncate">
-                                {item.name || translate(uiMessages.sheet.items.armor.untitled)}
+                                {itemName(item.name, item.entryRef) ||
+                                    translate(uiMessages.sheet.items.armor.untitled)}
                             </span>
                         }
                         onRemove={readOnly ? undefined : () => onRemove(item.id)}
@@ -72,7 +75,7 @@ export function ArmorSection({
                                 </span>
                                 <CatalogSuggest
                                     catalog={catalog}
-                                    value={item.name}
+                                    value={itemName(item.name, item.entryRef)}
                                     onChange={(val) => onUpdate(item.id, 'name', val)}
                                     onSelect={(entry) => onCatalogSelect(item.id, entry)}
                                     placeholder={translate(

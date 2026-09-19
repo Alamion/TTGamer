@@ -43,7 +43,7 @@ export const DEFAULT_CONFIG: VerifierConfig = {
         identical: 'error',
         plural: 'error',
         catalog: 'report',
-        pickers: 'report',
+        pickers: 'error',
         docs: 'report',
         'docs-terms': 'report',
         glossary: 'report',

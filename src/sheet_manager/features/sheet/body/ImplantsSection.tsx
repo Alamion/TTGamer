@@ -6,6 +6,7 @@ import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest, CollapsibleItem } from '../../../components';
 import { AutoResizeTextarea } from '../../../components';
 import type { ImplantItem } from '../../../types/character';
+import { useItemName } from '../data/itemDisplay';
 
 interface ImplantsSectionProps {
     items: ImplantItem[];
@@ -27,6 +28,7 @@ export function ImplantsSection({
     onCatalogSelect,
     catalog,
 }: ImplantsSectionProps) {
+    const itemName = useItemName();
     return (
         <div className="px-4 pb-4 space-y-2">
             {items.length === 0 ? (
@@ -39,7 +41,8 @@ export function ImplantsSection({
                         key={item.id}
                         title={
                             <span className="text-sm text-textPrimary truncate">
-                                {item.name || translate(uiMessages.sheet.items.implants.untitled)}
+                                {itemName(item.name, item.entryRef) ||
+                                    translate(uiMessages.sheet.items.implants.untitled)}
                             </span>
                         }
                         onRemove={readOnly ? undefined : () => onRemove(item.id)}
@@ -52,7 +55,7 @@ export function ImplantsSection({
                                 </span>
                                 <CatalogSuggest
                                     catalog={catalog}
-                                    value={item.name}
+                                    value={itemName(item.name, item.entryRef)}
                                     onChange={(val) => onUpdate(item.id, 'name', val)}
                                     onSelect={(entry) => onCatalogSelect(item.id, entry)}
                                     placeholder={translate(

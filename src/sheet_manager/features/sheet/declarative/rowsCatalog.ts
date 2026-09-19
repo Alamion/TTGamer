@@ -1,3 +1,5 @@
+import { normalizeSearchText } from '@site/src/shared/utils/normalizeSearchText';
+
 import type { CatalogEntry } from '../../../components';
 import { bookNameOf, type CatalogBindingEntry } from '../../../systems';
 import type { RowsBinding, RowsCatalogParent } from '../../../systems/templateBindings';
@@ -11,7 +13,7 @@ export interface RowSuggestion extends CatalogEntry {
     parentId?: string;
 }
 
-const normalize = (name: string) => name.trim().toLocaleLowerCase();
+const normalize = normalizeSearchText;
 
 /** Picker name of a parent entry, as a filled cell shows it (the id when the entry is unknown). */
 export function parentName(

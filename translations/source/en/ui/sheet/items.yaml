@@ -77,6 +77,9 @@ implants:
     effectLabel: Implant effect
     add: Add Implant
     addLabel: Add implant
+inventoryEffects:
+    armor: 'Class {classVal} | AR {ar} | Dex {dexPenalty} | {notes}'
+    ranged: '{damage} | {range}m | {ammo} shots | {notes}'
 catalog:
     rangedWeapon: '{damage} | {range}m | {ammo} shots'
     rangedWeaponShort: '{damage} | {range}m'
