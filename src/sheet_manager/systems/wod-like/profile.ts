@@ -104,9 +104,3 @@ export function createWodSheetProfileVariant(
 ) {
     return WodSheetProfileSchema.parse({ ...base, ...overrides });
 }
-
-export function getWodTraitGroup(profile: WodSheetProfile, id: string) {
-    const group = profile.traitGroups.find((candidate) => candidate.id === id);
-    if (!group) throw new Error(`Unknown WoD trait group: ${profile.id}/${id}`);
-    return group;
-}

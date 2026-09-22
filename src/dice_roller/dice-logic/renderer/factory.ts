@@ -130,33 +130,3 @@ export function prepareDiceGeometries(
 
     return { geometries, groupSizes };
 }
-
-export class DiceFactory {
-    private _config: DiceFactoryConfig;
-
-    constructor(_config: DiceFactoryConfig) {
-        this._config = _config;
-    }
-
-    prepareGeometries(diceGroups: DiceGroup[]): {
-        geometries: DiceGeometryData[];
-        groupSizes: number[];
-    } {
-        return prepareDiceGeometries(diceGroups, this._config);
-    }
-
-    dispose(): void {}
-}
-
-export function create3DDiceRoll(
-    _width: number,
-    _height: number,
-    diceColor: string,
-    textColor: string
-): DiceFactory {
-    return new DiceFactory({
-        diceColor,
-        textColor,
-        scaler: 1,
-    });
-}

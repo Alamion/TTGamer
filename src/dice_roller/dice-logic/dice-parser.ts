@@ -10,15 +10,6 @@ import {
 import { type LexerToken, tokenize } from './dice-lexer';
 import type { ASTNode, ComparePoint, DiceModifiers, TokenType } from './types';
 
-const PRECEDENCE: Record<string, number> = {
-    '^': 4,
-    '*': 3,
-    '/': 3,
-    '%': 3,
-    '+': 2,
-    '-': 2,
-};
-
 function parseModifierValue(token: LexerToken): number {
     let value: number;
     if (token.type === 'NUMBER') {
@@ -566,58 +557,6 @@ export function parseToAST(input: string): ASTNode {
     return ast;
 }
 
-export function parseDiceNotation(notation: string): {
-    expressions: Array<{
-        type: 'dice' | 'number';
-        value: unknown;
-        operation: '+' | '-' | '*' | '/' | '%' | '^';
-    }>;
-    original: string;
-} {
-    try {
-        const ast = parseToAST(notation);
-        const expressions = flattenAST(ast, '+');
-        return { expressions, original: notation };
-    } catch (err) {
-        debug('Failed to parse dice notation:', notation, err);
-        return { expressions: [], original: notation };
-    }
-}
-
-function flattenAST(
-    node: ASTNode,
-    operation: '+' | '-' | '*' | '/' | '%' | '^' = '+'
-): Array<{
-    type: 'dice' | 'number';
-    value: unknown;
-    operation: '+' | '-' | '*' | '/' | '%' | '^';
-}> {
-    if (node.type === 'NumericLiteral') {
-        return [{ type: 'number', value: node.value, operation }];
-    }
-
-    if (node.type === 'DiceGroup') {
-        return [{ type: 'dice', value: node, operation }];
-    }
-
-    if (node.type === 'BinaryOp') {
-        const leftExprs = flattenAST(node.left, operation);
-        const rightExprs = flattenAST(node.right, node.operator);
-        return [...leftExprs, ...rightExprs];
-    }
-
-    if (node.type === 'UnaryOp') {
-        const op = node.operator === '-' ? ('-' as const) : ('+' as const);
-        return flattenAST(node.operand, op);
-    }
-
-    if (node.type === 'Parenthesized') {
-        return flattenAST(node.expression, operation);
-    }
-
-    return [];
-}
-
 export function validateNotation(notation: string): boolean {
     if (!notation || !notation.trim()) return false;
     try {
@@ -633,5 +572,3 @@ export function validateNotation(notation: string): boolean {
         return false;
     }
 }
-
-export { PRECEDENCE };

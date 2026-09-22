@@ -1,31 +1,11 @@
-import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { ScaleList, SpecialtiesList } from '@site/src/shared/components/DetailSections';
 import { catalogEntryList, catalogEntryText } from '@site/src/sheet_manager/systems/catalogs';
-import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
 import type { AttributeEntry } from './attributes';
-import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from './catalogI18n';
+import { useCatalogText } from './catalogI18n';
 
 const CATALOG_ID = 'attributes';
-const messages = uiMessages.catalogs.attributes;
-
-export const ATTRIBUTE_COLUMNS: ColumnDef<AttributeEntry>[] = [
-    {
-        id: 'name',
-        header: columnHeader(messages.columns.name),
-        accessorKey: 'name',
-        enableSorting: true,
-        meta: localizedTextMeta(CATALOG_ID, 'name'),
-    },
-    {
-        id: 'category',
-        header: columnHeader(messages.columns.category),
-        accessorKey: 'category',
-        enableSorting: true,
-        meta: enumLabelMeta(CATALOG_ID, 'category'),
-    },
-];
 
 /** `EntityGrid` getters: name, summary, and specialties in the reader's locale. */
 export const ATTRIBUTE_GRID = {
