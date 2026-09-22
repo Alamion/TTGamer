@@ -2232,7 +2232,7 @@ export const catalogTranslations = {
         },
         attributes: {
             strength: {
-                name: 'Сила',
+                name: 'Мощь',
                 shortDescription: 'Грубая физическая мощь',
                 specialties: [
                     'Крепкая хватка',
@@ -3698,8 +3698,8 @@ export const catalogTranslations = {
                 category: {
                     Psychological: 'Психологические',
                     Mental: 'Ментальные',
-                    Awareness: 'Восприятие',
-                    Aptitudes: 'Склонности',
+                    Awareness: 'Чутьё',
+                    Aptitudes: 'Способности',
                     'Galactic Connections': 'Галактические связи',
                     Physical: 'Физические',
                     Cybernetic: 'Кибернетика',
@@ -4481,7 +4481,7 @@ export const catalogTranslations = {
         'v5-hunter-gear': {
             chaoscope: {
                 name: 'Хаоскоп',
-                effect: 'Сканер на машине: Интеллект + Внимательность со Сложностью 6 обнаруживает сверхъестественную угрозу рядом; легче против уже знакомого вида.',
+                effect: 'Сканер на машине: Интеллект + Бдительность со Сложностью 6 обнаруживает сверхъестественную угрозу рядом; легче против уже знакомого вида.',
             },
             xscope: {
                 name: 'Иксскоп',

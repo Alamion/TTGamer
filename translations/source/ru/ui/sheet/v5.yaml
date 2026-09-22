@@ -7,7 +7,7 @@ attributes:
     dexterity: Ловкость
     stamina: Выносливость
     charisma: Обаяние
-    manipulation: Манипулирование
+    manipulation: Манипуляция
     composure: Самообладание
     intelligence: Интеллект
     wits: Смекалка
@@ -32,7 +32,7 @@ skills:
     streetwise: Знание улиц
     subterfuge: Обман
     academics: Гуманитарные науки
-    awareness: Внимательность
+    awareness: Бдительность
     finance: Финансы
     investigation: Расследование
     medicine: Медицина
@@ -44,7 +44,7 @@ sections:
     attributes: Атрибуты
     skills: Навыки
     health: Здоровье
-    willpower: Сила воли
+    willpower: Воля
     advantages: Достоинства
     flaws: Недостатки
     advantagesFlaws: Достоинства и недостатки
@@ -63,7 +63,7 @@ fields:
     chronicleTenets: Принципы хроники
     name: Имя
     touchstone: Опора
-    conviction: Убеждение
+    conviction: Убеждённость
     experienceTotal: Всего опыта
     experienceSpent: Потрачено опыта
     experienceLeft: Осталось опыта

@@ -15,7 +15,9 @@ statDot:
     remove: Remove
 meritFlaw:
     meritPlaceholder: Merit name...
+    advantagePlaceholder: Advantage name...
     flawPlaceholder: Flaw name...
     addMerit: Add Merit
+    addAdvantage: Add Advantage
     addFlaw: Add Flaw
     remove: Remove entry

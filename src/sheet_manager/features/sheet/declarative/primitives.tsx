@@ -276,6 +276,7 @@ function SystemListBody({
                 disabled={disabled}
                 docsPath={docsPath}
                 isMerit={isMerit}
+                positiveTerm={binding.positiveTerm}
                 columns={columns}
                 showTitle={showTitle}
                 framed={framed}

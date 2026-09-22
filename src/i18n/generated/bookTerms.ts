@@ -62,7 +62,7 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     },
     'catalog:abilities/melee': {
         en: 'Melee',
-        ruShort: 'Рукоп. оружие',
+        ruShort: 'Рук. оружие',
     },
     'catalog:abilities/pilot': {
         en: 'Pilot',
@@ -72,7 +72,7 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     },
     'catalog:abilities/programming': {
         en: 'Programming',
-        ruShort: 'Программир.',
+        ruShort: 'Програм.',
     },
     'catalog:abilities/repair': {
         en: 'Repair',
@@ -196,7 +196,7 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     },
     'ttgamer.ui.sheet.v5.skills.academics': {
         en: 'Academics',
-        ruShort: 'Гуманит. науки',
+        ruShort: 'Гум. науки',
     },
     'ttgamer.ui.sheet.v5.skills.animalKen': {
         en: 'Animal Ken',
@@ -228,7 +228,7 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     },
     'ttgamer.ui.sheet.v5.skills.insight': {
         en: 'Insight',
-        ruShort: 'Проницат.',
+        ruShort: 'Прониц.',
     },
     'ttgamer.ui.sheet.v5.skills.intimidation': {
         en: 'Intimidation',

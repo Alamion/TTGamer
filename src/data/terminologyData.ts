@@ -176,7 +176,7 @@ export const TERMINOLOGY: TerminologyEntry[] = [
     { id: 'physical', english: 'Physical', russian: 'Физические', category: 'Character' },
     { id: 'social', english: 'Social', russian: 'Социальные', category: 'Character' },
     { id: 'mental', english: 'Mental', russian: 'Ментальные', category: 'Character' },
-    { id: 'strength', english: 'Strength', russian: 'Сила', category: 'Character' },
+    { id: 'strength', english: 'Strength', russian: 'Мощь', category: 'Character' },
     { id: 'dexterity', english: 'Dexterity', russian: 'Ловкость', category: 'Character' },
     { id: 'stamina', english: 'Stamina', russian: 'Выносливость', category: 'Character' },
     { id: 'charisma', english: 'Charisma', russian: 'Харизма', category: 'Character' },
@@ -194,7 +194,7 @@ export const TERMINOLOGY: TerminologyEntry[] = [
         category: 'Character',
     },
     { id: 'passion', english: 'Passion', russian: 'Страсть', category: 'Character' },
-    { id: 'willpower-char', english: 'Willpower', russian: 'Сила Воли', category: 'Character' },
+    { id: 'willpower-char', english: 'Willpower', russian: 'Воля', category: 'Character' },
     { id: 'force-point-char', english: 'Force Point', russian: 'Очки Силы', category: 'Character' },
     {
         id: 'dark-side-char',
@@ -266,7 +266,7 @@ export const TERMINOLOGY: TerminologyEntry[] = [
         russian: 'Очки Силы (ОС)',
         category: 'Character',
     },
-    { id: 'willpower-char-2', english: 'Willpower', russian: 'Сила Воли', category: 'Character' },
+    { id: 'willpower-char-2', english: 'Willpower', russian: 'Воля', category: 'Character' },
     {
         id: 'dark-side-resistance-dsr',
         english: 'Dark Side Resistance (DSR)',

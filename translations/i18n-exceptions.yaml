@@ -25,15 +25,6 @@
   match: https://example.com/portrait.webp
   reason: example URL shown as an input placeholder
 - rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/backgrounds.mdx
-  match: strength
-  reason: «личная сила» (personal power), an ordinary word, not the Strength attribute
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-1-concept-species.mdx
-  match: strength
-  reason: species description («их сила и выносливость»), ordinary words, not the
-      Strength attribute
-- rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-1-concept-species.mdx
   match: stamina
   reason: species description («их сила и выносливость»), ordinary words, not the
@@ -55,36 +46,12 @@
       Subterfuge ability
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-5-virtues.mdx
-  match: strength
-  reason: «Сила Воли» is Willpower, not the Strength attribute
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-5-virtues.mdx
   match: force-skills-sense
   reason: «чувство добра и зла» (sense of right and wrong), not the Sense Force skill
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-6-freebie.mdx
-  match: strength
-  reason: «Сила Силы» is the Force Strength rating, not the Strength attribute
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-7-force.mdx
-  match: strength
-  reason: ordinary word in a Force skill description, not the Strength attribute
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/worked-example.mdx
-  match: strength
-  reason: «Сила» here is the Force, not the Strength attribute
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/dark_side_resistance.mdx
-  match: strength
-  reason: «Сила Воли» is Willpower, not the Strength attribute
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/dark_side_resistance.mdx
   match: force-skills-rapport
   reason: «эмоциональную связь» (emotional connection), not the Rapport Force skill
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/droids-cyborgs.mdx
-  match: strength
-  reason: «Сила» here is the Force, not the Strength attribute
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/droids-cyborgs.mdx
   match: repair
@@ -100,10 +67,6 @@
   reason: generic description of Force powers («предвидение, телекинез»), not the
       Telekinesis Force skill
 - rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/index.mdx
-  match: strength
-  reason: «Сила» here is the Force, not the Strength attribute
-- rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/merits-flaws.mdx
   match: intelligence
   reason: «память и интеллект» in a category description, an ordinary word, not
@@ -112,10 +75,6 @@
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/merits-flaws.mdx
   match: force-skills-rapport
   reason: «Связь с Силой» (connection to the Force), not the Rapport Force skill
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/reading-sheet.mdx
-  match: strength
-  reason: «Сила Воли» is Willpower, not the Strength attribute
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/reading-sheet.mdx
   match: appearance
@@ -190,14 +149,6 @@
   reason: weapon category heading (English "Melee Weapons"), not the Melee ability
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/example-of-play.mdx
-  match: blaster
-  reason: «скрытый бластер» is the weapon, not the Blaster ability
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/example-of-play.mdx
-  match: security
-  reason: «Взлом панели» names the task (slicing a panel), not the Security ability
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/example-of-play.mdx
   match: survival
   reason: «1 за выживание» (XP for surviving), not the Survival ability
 - rule: docs-terms
@@ -211,17 +162,9 @@
       Investigation ability
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/building-encounters.mdx
-  match: strength
-  reason: «Сила Воли» is Willpower, not the Strength attribute
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/building-encounters.mdx
   match: repair
   reason: «Ремонт Лёгкого повреждения» (repairing damage) in a cost table, not the
       Repair ability
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/difficulty-reference.mdx
-  match: strength
-  reason: «нужны Сила или удача» — the Force, not the Strength attribute
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/difficulty-reference.mdx
   match: repair
@@ -230,10 +173,6 @@
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/difficulty-reference.mdx
   match: security
   reason: «взлом имперского ядра» is an example task, not the Security ability
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/rewards-advancement.mdx
-  match: strength
-  reason: «Сила Воли» is Willpower, not the Strength attribute
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/rewards-advancement.mdx
   match: programming
@@ -257,14 +196,6 @@
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/gm/running-the-game.mdx
   match: force-skills-sense
   reason: part of the merit name «Чувство опасности», not the Sense Force skill
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/index.mdx
-  match: strength
-  reason: «Сила» here is the Force, not the Strength attribute
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/quick-start.mdx
-  match: strength
-  reason: «Преимущества и Сила» — the Force, not the Strength attribute
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/quick-start.mdx
   match: repair
@@ -293,10 +224,6 @@
   match: repair
   reason: «Добавление, ремонт или улучшение» (repairing weapon systems), not the
       Repair ability
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/space-combat.mdx
-  match: strength
-  reason: «сила сигнала» (signal strength), not the Strength attribute
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/vehicles-mechanisms/space-combat.mdx
   match: dodge
@@ -332,53 +259,18 @@
   reason: «расследование и подготовка» describes play in ordinary words, not the
       Investigation skill
 - rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/first-hunter/05-skills-specialties.mdx
-  match: conviction
-  reason: «Убеждение» here is the Persuasion skill; the glossary gives the same
-      Russian word to Conviction
-- rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/first-hunter/07-advantages-flaws.mdx
   match: assets
   reason: «люди и ресурсы» (people and resources) describes Advantages, not the
       Assets edge type
 - rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/first-hunter/08-touchstones.mdx
-  match: persuasion
-  reason: «Убеждение» here is a Touchstone Conviction; the glossary gives the same
-      Russian word to the Persuasion skill
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/first-hunter/09-finishing-touches.mdx
-  match: strength
-  reason: «Сила воли» is Willpower, not the Strength attribute
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/quick-start.mdx
-  match: strength
-  reason: «Сила воли» is Willpower, not the Strength attribute
-- rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/reference/reading-the-sheet.mdx
   match: assets
   reason: «Люди, ресурсы и осложнения» describes Advantages, not the Assets edge type
 - rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/reference/reading-the-sheet.mdx
-  match: strength
-  reason: «Сила воли» is Willpower, not the Strength attribute
-- rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/rules/attributes-skills.mdx
   match: perk
   reason: «умение перетерпеть боль» (the ability to endure pain), not the Hunter Perk
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/rules/attributes-skills.mdx
-  match: conviction
-  reason: «Убеждение» here is the Persuasion skill; the glossary gives the same
-      Russian word to Conviction
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/rules/damage-willpower.mdx
-  match: strength
-  reason: «Сила воли» is Willpower, not the Strength attribute
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/rules/index.mdx
-  match: strength
-  reason: «Сила воли» is Willpower, not the Strength attribute
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/wod-v5/hunter/reference/glossary.mdx
   match: /^(creed|drive|redemption|despair|desperation|danger|edge|perk|persuasion|conviction|touchstone)$/
@@ -399,7 +291,3 @@
   match: '/Hunter: the Reckoning/'
   reason: 'product names (World of Darkness, Hunter: the Reckoning) in the Dark
       Pack notice, kept in English'
-- rule: docs-terms
-  file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/merits-flaws.mdx
-  match: perception
-  reason: «Восприятие» here is the Awareness merit category, not the Perception attribute (same Russian word; glossary review)

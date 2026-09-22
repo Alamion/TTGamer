@@ -19,6 +19,8 @@ interface MeritFlawListProps {
     onRemove: (id: string) => void;
     onChange: (id: string, points: number, label: string) => void;
     isMerit?: boolean;
+    /** Book word for a positive entry: V5 lines call them Advantages, Star Wars calls them Merits. */
+    positiveTerm?: 'merit' | 'advantage';
     disabled?: boolean;
     docsPath?: string;
     catalog?: CatalogEntry[];
@@ -45,6 +47,7 @@ export function MeritFlawList({
     onRemove,
     onChange,
     isMerit = true,
+    positiveTerm = 'merit',
     disabled = false,
     docsPath,
     catalog,
@@ -53,6 +56,14 @@ export function MeritFlawList({
     showTitle = true,
     framed = true,
 }: MeritFlawListProps) {
+    const messages = uiMessages.sheet.controls.meritFlaw;
+    const advantage = positiveTerm === 'advantage';
+    const positivePlaceholder = advantage
+        ? messages.advantagePlaceholder
+        : messages.meritPlaceholder;
+    const negativePlaceholder = messages.flawPlaceholder;
+    const addPositive = advantage ? messages.addAdvantage : messages.addMerit;
+    const addNegative = messages.addFlaw;
     const content = (
         <>
             <div
@@ -83,9 +94,7 @@ export function MeritFlawList({
                                 onChange={(label) => onChange(item.id, item.points, label)}
                                 onSelect={(entry) => onCatalogSelect(item.id, entry)}
                                 placeholder={translate(
-                                    isMerit
-                                        ? uiMessages.sheet.controls.meritFlaw.meritPlaceholder
-                                        : uiMessages.sheet.controls.meritFlaw.flawPlaceholder
+                                    isMerit ? positivePlaceholder : negativePlaceholder
                                 )}
                                 disabled={disabled}
                                 className="flex-1 bg-bgSurface border rounded px-3 py-1 text-sm text-textPrimary"
@@ -123,11 +132,7 @@ export function MeritFlawList({
                 className="flex items-center gap-1 text-sm mt-3 py-1 transition-colors text-textPrimary hover:opacity-80"
             >
                 <Plus className="w-4 h-4" />
-                {translate(
-                    isMerit
-                        ? uiMessages.sheet.controls.meritFlaw.addMerit
-                        : uiMessages.sheet.controls.meritFlaw.addFlaw
-                )}
+                {translate(isMerit ? addPositive : addNegative)}
             </button>
         </>
     );

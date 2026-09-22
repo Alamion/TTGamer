@@ -365,12 +365,6 @@
     "ttgamer.ui.catalogs.armor.detail.notes": {
         "message": "Notes"
     },
-    "ttgamer.ui.catalogs.attributes.columns.category": {
-        "message": "Category"
-    },
-    "ttgamer.ui.catalogs.attributes.columns.name": {
-        "message": "Attribute"
-    },
     "ttgamer.ui.catalogs.backgrounds.columns.category": {
         "message": "Category"
     },
@@ -1226,11 +1220,17 @@
     "ttgamer.ui.sheet.controls.labelInformation": {
         "message": "{label} information"
     },
+    "ttgamer.ui.sheet.controls.meritFlaw.addAdvantage": {
+        "message": "Add Advantage"
+    },
     "ttgamer.ui.sheet.controls.meritFlaw.addFlaw": {
         "message": "Add Flaw"
     },
     "ttgamer.ui.sheet.controls.meritFlaw.addMerit": {
         "message": "Add Merit"
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.advantagePlaceholder": {
+        "message": "Advantage name..."
     },
     "ttgamer.ui.sheet.controls.meritFlaw.flawPlaceholder": {
         "message": "Flaw name..."
