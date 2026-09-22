@@ -84,10 +84,7 @@ export const WodSheetProfileSchema = z
         });
     });
 
-export type WodTraitDefinition = z.infer<typeof WodTraitDefinitionSchema>;
 export type WodTraitGroup = z.infer<typeof WodTraitGroupSchema>;
-export type WodResourceDefinition = z.infer<typeof WodResourceDefinitionSchema>;
-export type WodConditionTrack = z.infer<typeof WodConditionTrackSchema>;
 export type WodSheetProfile = z.infer<typeof WodSheetProfileSchema>;
 
 export function defineWodSheetProfile(input: z.input<typeof WodSheetProfileSchema>) {

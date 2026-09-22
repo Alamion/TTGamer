@@ -36,7 +36,29 @@ describe('glossary short forms', () => {
         expect(label.classList.contains('term-has-short')).toBe(true);
         expect(label.querySelector('.term-short')?.getAttribute('aria-hidden')).toBe('true');
         expect(label.getAttribute('data-term-detail')).toBe('Обращение с животными');
-        expect(screen.getByText('Animal Ken, Обращение с животными').className).toBe('sr-only');
+        const description = screen.getByText('Animal Ken, Обращение с животными', {
+            ignore: false,
+        });
+        // Hidden, so the English name is announced as the description only, never as part of
+        // the label's accessible name.
+        expect(description.hasAttribute('hidden')).toBe(true);
+        expect(label.getAttribute('aria-describedby')).toBe(description.id);
+    });
+
+    it('announces the English name once: as the description, not inside the label name', () => {
+        setTestLocale('ru');
+        useReaderPrefsStore.setState({ gameTerms: 'ru' });
+        const { container } = renderLabel('Воровство', 'ttgamer.ui.sheet.v5.skills.larceny');
+        const label = container.querySelector('.term-label') as HTMLElement;
+        const description = document.getElementById(label.getAttribute('aria-describedby')!)!;
+        // The description carries the English name. It must stay hidden: a visible (even sr-only)
+        // copy joins the label's own accessible name, and the reader says "Larceny" twice.
+        expect(description.textContent).toBe('Larceny');
+        expect(description.hasAttribute('hidden')).toBe(true);
+        const readable = [...label.children]
+            .filter((child) => !child.hasAttribute('hidden') && child.ariaHidden !== 'true')
+            .map((child) => child.textContent);
+        expect(readable).toEqual(['Воровство']);
     });
 
     it('adds no short form when the term has none', () => {

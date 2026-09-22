@@ -344,11 +344,11 @@ export const TERMINOLOGY: TerminologyEntry[] = [
     { id: 'trade', english: 'Trade', russian: 'Торговля', category: 'Abilities' },
 
     // Force
-    { id: 'force-skill', english: 'Force Skill', russian: 'Силовой навык', category: 'Force' },
+    { id: 'force-skill', english: 'Force Skill', russian: 'Навык Силы', category: 'Force' },
     { id: 'control', english: 'Control', russian: 'Контроль', category: 'Force' },
     { id: 'sense', english: 'Sense', russian: 'Чувство', category: 'Force' },
     { id: 'telekinesis', english: 'Telekinesis', russian: 'Телекинез', category: 'Force' },
-    { id: 'force-power', english: 'Force Power', russian: 'Силовая сила', category: 'Force' },
+    { id: 'force-power', english: 'Force Power', russian: 'Техника Силы', category: 'Force' },
     { id: 'light-side', english: 'Light Side', russian: 'Светлая Сторона', category: 'Force' },
     { id: 'dark-side-force', english: 'Dark Side', russian: 'Тёмная Сторона', category: 'Force' },
     {

@@ -11,7 +11,7 @@ nexu:
     name: Нексу
     movement: Прыжок на добычу, лазание, спринт
 acklay:
-    name: Аклэй
+    name: Аклай
     movement: Ходьба, плавание
 reek:
     name: Рик
@@ -38,7 +38,7 @@ ronto:
     name: Ронто
     movement: Ходьба, медленный бег
 fathier:
-    name: Фатьер
+    name: Фатье
     movement: Галоп (спринт)
 eopie:
     name: Эопи
@@ -62,7 +62,7 @@ tukata:
     name: Тук'ата
     movement: Прыжок на добычу, выслеживание, спринт
 blurrg:
-    name: Блёрг
+    name: Блург
     movement: Ходьба, галоп
 varactyl:
     name: Варактиль
@@ -74,7 +74,7 @@ spinewolf:
     name: Шиповолк
     movement: Прыжок на добычу, спринт, выслеживание
 womp-rat:
-    name: Крыса-вумп
+    name: Вомп-крыса
     movement: Быстрые перебежки, рытьё
 rathtar:
     name: Раттар

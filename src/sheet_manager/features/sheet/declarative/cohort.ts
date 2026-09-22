@@ -8,12 +8,6 @@ import type { ConditionMark } from '../../../types/character';
 
 const SEVERITY: Record<ConditionMark, number> = { empty: 0, slash: 1, cross: 2 };
 
-export interface CohortMember {
-    id: string;
-    label: string;
-    marks: readonly ConditionMark[];
-}
-
 function memberLetter(index: number): string {
     return String.fromCharCode(65 + (index % 26));
 }

@@ -284,7 +284,7 @@ code only in their own folders
 - [x] T098 Own-words audit: compare catalog summaries in `src/sheet_manager/systems/v5/modules/hunter/catalogs.ts`, strings in `translations/source/{en,ru}/ui/sheet/v5-hunter.yaml`, and every page under `docs/wod-v5/` with the book (sheet pp. 282–283, creation pp. 54–61, Edges pp. 90–100, cells pp. 125–127); rewrite any sentence that follows book wording
 - [x] T099 Check whether the Dark Pack Agreement requires the Dark Pack logo on the site; if yes, add a note under T-037 in `TODO.md` (logo assets are T-037 scope)
 - [x] T100 Run `yarn prettier --write` on changed files, `yarn validate:data`, `yarn validate:i18n`, `yarn audit:dead-code` (review only), and `yarn verify:full`
-- [ ] T101 Run the full quickstart.md (Scenarios 1–6), including the SC-009 hallway test when a newcomer is available, and record results at the bottom of `specs/008-hunter-v5-character/quickstart.md`
+- [x] T101 Run the full quickstart.md (Scenarios 1–6), including the SC-009 hallway test when a newcomer is available, and record results at the bottom of `specs/008-hunter-v5-character/quickstart.md` — done 2026-09-23; the SC-009 hallway test moved to backlog T-053 (onboarding)
 
 ---
 

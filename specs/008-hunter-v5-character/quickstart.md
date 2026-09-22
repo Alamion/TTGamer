@@ -84,3 +84,11 @@ returns only registry wiring). Star Wars tests pass unchanged.
 ## Scenario 6 — Table readiness (SC-008)
 
 By 2026-09-20 scenarios 1–2 pass on the deployed site; by 2026-09-29 all scenarios pass.
+
+## Results
+
+2026-09-19 — Scenarios 1–5 walked in the app; every bug they surfaced was fixed in the same pass.
+2026-09-23 — Scenario 6 (table readiness) met: the maintainer and several other players created and
+ran hunters on the deployed site. All of them already knew H:tR, so SC-009 is NOT covered: the
+hallway test with a true newcomer is now an acceptance criterion of backlog task T-053 (guided
+step-by-step creation and the in-app system quickstart), which owns onboarding.

@@ -158,9 +158,7 @@ export type ArmorItem = z.infer<typeof ArmorItemSchema>;
 export type WeaponItem = z.infer<typeof WeaponItemSchema>;
 export type ImplantItem = z.infer<typeof ImplantItemSchema>;
 export type CustomSkill = z.infer<typeof CustomSkillSchema>;
-export type Background = z.infer<typeof BackgroundSchema>;
 export type MeritFlawItem = z.infer<typeof MeritFlawSchema>;
-export type ForcePowerItem = z.infer<typeof ForcePowerItemSchema>;
 
 export const TraitModifierSchema = z.object({
     specialization: z.boolean().optional(),
@@ -174,7 +172,6 @@ export const TraitValueSchema = z.object({
     ...TraitModifierSchema.shape,
 });
 
-export type TraitModifier = z.infer<typeof TraitModifierSchema>;
 export type TraitValue = z.infer<typeof TraitValueSchema>;
 
 export const BaseCharacterSchema = z.object({
@@ -212,9 +209,6 @@ export const BaseCharacterSchema = z.object({
     notes: z.string(),
 });
 
-export type CharacterType = z.infer<typeof CharacterTypeSchema>;
-export type CharacterMetadata = z.infer<typeof CharacterMetadataSchema>;
-export type Health = z.infer<typeof HealthSchema>;
 export type Item = z.infer<typeof ItemSchema>;
 export type BaseCharacter = z.infer<typeof BaseCharacterSchema>;
 

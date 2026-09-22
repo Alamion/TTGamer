@@ -47,11 +47,11 @@ export const DEFAULT_CONFIG: VerifierConfig = {
         keys: 'error',
         identical: 'error',
         plural: 'error',
-        catalog: 'report',
+        catalog: 'error',
         pickers: 'error',
         docs: 'error',
         'docs-terms': 'error',
-        glossary: 'report',
+        glossary: 'error',
         overflow: 'error',
     },
     paths: {

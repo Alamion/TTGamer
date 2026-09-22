@@ -38,8 +38,10 @@ export function TermLabel({ className, ...input }: TermLabelProps) {
                     {short}
                 </span>
             )}
+            {/* The description is `hidden`, not `sr-only`: a directly referenced element is still
+                read out, but it stays out of the label's own accessible name. */}
             {hint && (
-                <span id={descriptionId} className="sr-only">
+                <span id={descriptionId} hidden>
                     {detail ? `${hint}, ${detail}` : hint}
                 </span>
             )}

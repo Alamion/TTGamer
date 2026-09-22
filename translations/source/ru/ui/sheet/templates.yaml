@@ -211,9 +211,9 @@ defaults:
     customKnowledges: Свои знания
     advantages: Преимущества
     force: Сила
-    forceSkills: Силовые навыки
+    forceSkills: Навыки Силы
     darkSideResistance: Сопротивление Тёмной Стороне
-    forcePowers: Силы Силы
+    forcePowers: Техники Силы
     derivedStats: Производные показатели
     initiativeStandard: Инициатива (обыч.)
     initiativeLightsaber: Инициатива (свет. меч)

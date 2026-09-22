@@ -24,18 +24,18 @@ energy-burst:
     shortDescription: Обрушить на цель трескучий энергетический разряд
 focus:
     name: Фокусировка
-    shortDescription: Умножить успехи следующей Силы Силы
+    shortDescription: Умножить успехи следующей Техники Силы
 force-feats:
-    name: Подвиги Силы
+    name: Деяния Силы
     shortDescription: Усилить физическое деяние с помощью Силы
 healing:
     name: Исцеление
     shortDescription: Ускорить естественное заживление через Силу
 heave:
-    name: Швырок
+    name: Бросок
     shortDescription: Метнуть крупный предмет телекинезом
 ignore-pain:
-    name: Контроль боли
+    name: Подавление боли
     shortDescription: Снять штрафы за ранения сосредоточением на Силе
 lightsaber-combat:
     name: Бой на световых мечах
@@ -56,10 +56,10 @@ meld-with-force:
     name: Слияние с Силой
     shortDescription: Подготовиться стать призраком Силы после смерти
 operate:
-    name: Дистанционное управление
+    name: Управление механизмом
     shortDescription: Удалённо пилотировать машину или управлять ею
 physical-prowess:
-    name: Физическая мощь
+    name: Физическое превосходство
     shortDescription: Усилить все атлетические способности с помощью Силы
 probe-memories:
     name: Зондирование памяти
@@ -83,7 +83,7 @@ subjugate:
     name: Порабощение
     shortDescription: Взять под контроль тело другого существа
 suggestion:
-    name: Внушение (трюк джедаев с разумом)
+    name: Внушение (уловка джедая)
     shortDescription: Вложить простую команду в слабый разум
 summon-object:
     name: Призыв предмета
