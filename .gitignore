@@ -44,3 +44,6 @@ tmp/
 
 # Local agent worktrees
 .claude/worktrees/
+
+# Playwright CLI scratch output
+.playwright-cli/

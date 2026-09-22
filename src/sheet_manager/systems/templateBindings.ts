@@ -71,6 +71,8 @@ export interface ListBinding extends BindingBase {
      * to the catalog filter convention (a `Flaw` filter means negative).
      */
     polarity?: 'positive' | 'negative';
+    /** Book word for positive entries; V5 lines call them Advantages. Defaults to `merit`. */
+    positiveTerm?: 'merit' | 'advantage';
     /** Translated list title (the plain `label` is the fallback). */
     translation?: TranslationDescriptor;
 }

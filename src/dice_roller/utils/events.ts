@@ -5,11 +5,6 @@ import { RollCancelledError } from '../dice-logic/errors';
 import { execute2DRoll, executeUnifiedRoll } from '../dice-logic/roll-orchestrator';
 import type { RollResult } from '../dice-logic/types';
 
-export interface DiceRollEventPayload {
-    notation: string;
-    quiet?: boolean;
-}
-
 export interface RollOptions {
     statLabels?: string[];
     characterName?: string;

@@ -31,7 +31,8 @@
       - ttgamer.ui.sheet.v5.attributes.charisma
 - id: manipulation
   en: Manipulation
-  ru: Манипулирование
+  ru: Манипуляция
+  note: 'T-061 review: unified with the Star Wars setting and the Russian docs (was «Манипулирование»)'
   refs:
       - ttgamer.ui.sheet.v5.attributes.manipulation
 - id: composure
@@ -88,7 +89,7 @@
   en: Melee
   ru: Холодное оружие
   ruShort: Хол. оружие
-  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
+  note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
       - ttgamer.ui.sheet.v5.skills.melee
 - id: stealth
@@ -105,7 +106,7 @@
   en: Animal Ken
   ru: Обращение с животными
   ruShort: Обр. с живот.
-  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
+  note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
       - ttgamer.ui.sheet.v5.skills.animalKen
 - id: etiquette
@@ -116,8 +117,8 @@
 - id: insight
   en: Insight
   ru: Проницательность
-  ruShort: Проницат.
-  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
+  ruShort: Прониц.
+  note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
       - ttgamer.ui.sheet.v5.skills.insight
 - id: intimidation
@@ -153,13 +154,14 @@
 - id: academics
   en: Academics
   ru: Гуманитарные науки
-  ruShort: Гуманит. науки
-  note: short form proposed in spec 009 (narrow sheet rows); pending maintainer review
+  ruShort: Гум. науки
+  note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
       - ttgamer.ui.sheet.v5.skills.academics
 - id: awareness
   en: Awareness
-  ru: Внимательность
+  ru: Бдительность
+  note: 'T-061 review: «Бдительность» (was «Внимательность»); the Star Wars Alertness ability keeps that name in its own setting'
   refs:
       - ttgamer.ui.sheet.v5.skills.awareness
 - id: finance
@@ -204,19 +206,20 @@
       - ttgamer.ui.sheet.v5.sections.health
 - id: willpower
   en: Willpower
-  ru: Сила воли
+  ru: Воля
+  note: 'T-061 review: «Воля», so «Сила» stays free for Strength and the Force'
   refs:
       - ttgamer.ui.sheet.v5.sections.willpower
 - id: touchstone
   en: Touchstone
   ru: Опора
-  note: 'T-061 proposal: «Опора»; alternatives «Якорь», «Ориентир»'
+  note: 'T-061 review: «Опора»'
   refs:
       - ttgamer.ui.sheet.v5.fields.touchstone
 - id: conviction
   en: Conviction
-  ru: Убеждение
-  note: 'T-061 proposal: «Убеждение»'
+  ru: Убеждённость
+  note: 'T-061 review: «Убеждённость», so «Убеждение» stays with the Persuasion skill'
   refs:
       - ttgamer.ui.sheet.v5.fields.conviction
 - id: chronicle-tenets

@@ -124,14 +124,6 @@ export function CompactResource({
     );
 }
 
-export function CompactSectionHeading({ children }: { children: React.ReactNode }) {
-    return (
-        <h2 className="mb-2 border-b border-border pb-1 text-[0.7rem] font-bold uppercase tracking-[0.16em] text-textPrimary">
-            {children}
-        </h2>
-    );
-}
-
 interface CompactConditionLevel {
     id: string;
     label: string;

@@ -1,5 +1,5 @@
 import { evaluateDiceAST } from './dice-evaluator';
-import { parseToAST, validateNotation as validateNotationAST } from './dice-parser';
+import { parseToAST } from './dice-parser';
 import type { FullRollResult, RollResult } from './types';
 
 function executeRollInternal(notation: string, randomFn?: () => number): FullRollResult {
@@ -9,10 +9,6 @@ function executeRollInternal(notation: string, randomFn?: () => number): FullRol
 
 export function rollDices(notation: string, randomFn?: () => number): FullRollResult {
     return executeRollInternal(notation, randomFn);
-}
-
-export function validateNotation(notation: string): boolean {
-    return validateNotationAST(notation);
 }
 
 const rollCallbacks: Array<(result: RollResult) => void> = [];

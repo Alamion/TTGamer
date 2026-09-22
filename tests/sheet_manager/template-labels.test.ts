@@ -38,7 +38,7 @@ describe('template label translations (labelMessage)', () => {
     it('resolves catalog references for the locale and leaves ids untouched', () => {
         const localized = localizeTemplate(fullSheet, 'ru');
         const strength = findNode(localized.children, 'trait-strength');
-        expect(strength && 'label' in strength && strength.label).toBe('Сила');
+        expect(strength && 'label' in strength && strength.label).toBe('Мощь');
         expect(strength && 'valueKey' in strength && strength.valueKey).toBe('strength');
         // The source template is not mutated.
         const source = findNode(fullSheet.children, 'trait-strength');

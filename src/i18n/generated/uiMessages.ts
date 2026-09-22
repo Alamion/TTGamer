@@ -76,18 +76,6 @@ export const uiMessages = {
                 },
             },
         },
-        attributes: {
-            columns: {
-                name: {
-                    id: 'ttgamer.ui.catalogs.attributes.columns.name',
-                    message: 'Attribute',
-                },
-                category: {
-                    id: 'ttgamer.ui.catalogs.attributes.columns.category',
-                    message: 'Category',
-                },
-            },
-        },
         backgrounds: {
             columns: {
                 name: {
@@ -1450,6 +1438,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.controls.meritFlaw.meritPlaceholder',
                     message: 'Merit name...',
                 },
+                advantagePlaceholder: {
+                    id: 'ttgamer.ui.sheet.controls.meritFlaw.advantagePlaceholder',
+                    message: 'Advantage name...',
+                },
                 flawPlaceholder: {
                     id: 'ttgamer.ui.sheet.controls.meritFlaw.flawPlaceholder',
                     message: 'Flaw name...',
@@ -1457,6 +1449,10 @@ export const uiMessages = {
                 addMerit: {
                     id: 'ttgamer.ui.sheet.controls.meritFlaw.addMerit',
                     message: 'Add Merit',
+                },
+                addAdvantage: {
+                    id: 'ttgamer.ui.sheet.controls.meritFlaw.addAdvantage',
+                    message: 'Add Advantage',
                 },
                 addFlaw: {
                     id: 'ttgamer.ui.sheet.controls.meritFlaw.addFlaw',

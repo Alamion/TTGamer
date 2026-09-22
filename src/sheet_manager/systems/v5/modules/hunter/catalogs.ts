@@ -124,8 +124,6 @@ export const HUNTER_PERKS = [
     { id: 'artifact-shield', name: 'Shield', edge: 'artifact' },
 ] as const;
 
-export type HunterEdgeCategory = (typeof HUNTER_EDGE_NAMES)[number]['category'];
-
 /** Entries carry translated own-words summaries (and Edge category names) for docs tables. */
 export const HUNTER_CREEDS = HUNTER_CREED_NAMES.map((entry) => ({
     ...entry,

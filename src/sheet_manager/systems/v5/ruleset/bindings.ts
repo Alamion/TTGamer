@@ -102,6 +102,7 @@ export function buildV5CoreBindings(
             dataKey: 'advantages',
             entryShape: 'merit-flaw',
             polarity: 'positive',
+            positiveTerm: 'advantage',
         },
         {
             key: 'list:flaws',

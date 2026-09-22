@@ -15,7 +15,9 @@ statDot:
     remove: Удалить
 meritFlaw:
     meritPlaceholder: Название достоинства...
+    advantagePlaceholder: Название достоинства...
     flawPlaceholder: Название недостатка...
     addMerit: Добавить достоинство
+    addAdvantage: Добавить достоинство
     addFlaw: Добавить недостаток
     remove: Удалить запись

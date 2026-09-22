@@ -1,9 +1,4 @@
-export {
-    create3DDiceRoll,
-    DiceFactory,
-    type DiceFactoryConfig,
-    prepareDiceGeometries,
-} from './factory';
+export { type DiceFactoryConfig, prepareDiceGeometries } from './factory';
 export {
     D2DiceGeometry,
     D4DiceGeometry,

@@ -84,10 +84,7 @@ export const WodSheetProfileSchema = z
         });
     });
 
-export type WodTraitDefinition = z.infer<typeof WodTraitDefinitionSchema>;
 export type WodTraitGroup = z.infer<typeof WodTraitGroupSchema>;
-export type WodResourceDefinition = z.infer<typeof WodResourceDefinitionSchema>;
-export type WodConditionTrack = z.infer<typeof WodConditionTrackSchema>;
 export type WodSheetProfile = z.infer<typeof WodSheetProfileSchema>;
 
 export function defineWodSheetProfile(input: z.input<typeof WodSheetProfileSchema>) {
@@ -103,10 +100,4 @@ export function createWodSheetProfileVariant(
     }
 ) {
     return WodSheetProfileSchema.parse({ ...base, ...overrides });
-}
-
-export function getWodTraitGroup(profile: WodSheetProfile, id: string) {
-    const group = profile.traitGroups.find((candidate) => candidate.id === id);
-    if (!group) throw new Error(`Unknown WoD trait group: ${profile.id}/${id}`);
-    return group;
 }

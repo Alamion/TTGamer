@@ -2232,7 +2232,7 @@ export const catalogTranslations = {
         },
         attributes: {
             strength: {
-                name: 'Сила',
+                name: 'Мощь',
                 shortDescription: 'Грубая физическая мощь',
                 specialties: [
                     'Крепкая хватка',
@@ -2665,7 +2665,7 @@ export const catalogTranslations = {
                 movement: 'Прыжок на добычу, лазание, спринт',
             },
             acklay: {
-                name: 'Аклэй',
+                name: 'Аклай',
                 movement: 'Ходьба, плавание',
             },
             reek: {
@@ -2701,7 +2701,7 @@ export const catalogTranslations = {
                 movement: 'Ходьба, медленный бег',
             },
             fathier: {
-                name: 'Фатьер',
+                name: 'Фатье',
                 movement: 'Галоп (спринт)',
             },
             eopie: {
@@ -2733,7 +2733,7 @@ export const catalogTranslations = {
                 movement: 'Прыжок на добычу, выслеживание, спринт',
             },
             blurrg: {
-                name: 'Блёрг',
+                name: 'Блург',
                 movement: 'Ходьба, галоп',
             },
             varactyl: {
@@ -2749,7 +2749,7 @@ export const catalogTranslations = {
                 movement: 'Прыжок на добычу, спринт, выслеживание',
             },
             'womp-rat': {
-                name: 'Крыса-вумп',
+                name: 'Вомп-крыса',
                 movement: 'Быстрые перебежки, рытьё',
             },
             rathtar: {
@@ -2862,10 +2862,10 @@ export const catalogTranslations = {
             },
             focus: {
                 name: 'Фокусировка',
-                shortDescription: 'Умножить успехи следующей Силы Силы',
+                shortDescription: 'Умножить успехи следующей Техники Силы',
             },
             'force-feats': {
-                name: 'Подвиги Силы',
+                name: 'Деяния Силы',
                 shortDescription: 'Усилить физическое деяние с помощью Силы',
             },
             healing: {
@@ -2873,11 +2873,11 @@ export const catalogTranslations = {
                 shortDescription: 'Ускорить естественное заживление через Силу',
             },
             heave: {
-                name: 'Швырок',
+                name: 'Бросок',
                 shortDescription: 'Метнуть крупный предмет телекинезом',
             },
             'ignore-pain': {
-                name: 'Контроль боли',
+                name: 'Подавление боли',
                 shortDescription: 'Снять штрафы за ранения сосредоточением на Силе',
             },
             'lightsaber-combat': {
@@ -2905,11 +2905,11 @@ export const catalogTranslations = {
                 shortDescription: 'Подготовиться стать призраком Силы после смерти',
             },
             operate: {
-                name: 'Дистанционное управление',
+                name: 'Управление механизмом',
                 shortDescription: 'Удалённо пилотировать машину или управлять ею',
             },
             'physical-prowess': {
-                name: 'Физическая мощь',
+                name: 'Физическое превосходство',
                 shortDescription: 'Усилить все атлетические способности с помощью Силы',
             },
             'probe-memories': {
@@ -2941,7 +2941,7 @@ export const catalogTranslations = {
                 shortDescription: 'Взять под контроль тело другого существа',
             },
             suggestion: {
-                name: 'Внушение (трюк джедаев с разумом)',
+                name: 'Внушение (уловка джедая)',
                 shortDescription: 'Вложить простую команду в слабый разум',
             },
             'summon-object': {
@@ -3232,7 +3232,7 @@ export const catalogTranslations = {
                 shortDescription: 'Неисправимый дефект зрения',
             },
             'missing-eye': {
-                name: 'Нет глаза',
+                name: 'Потерянный глаз',
                 shortDescription: 'Вы потеряли глаз',
             },
             deaf: {
@@ -3248,7 +3248,7 @@ export const catalogTranslations = {
                 shortDescription: 'Одинаково владеете обеими руками',
             },
             pitiable: {
-                name: 'Вызывающий жалость',
+                name: 'Жалкий вид',
                 shortDescription: 'Окружающим хочется о вас заботиться',
             },
             'natural-linguist': {
@@ -3284,7 +3284,7 @@ export const catalogTranslations = {
                 shortDescription: 'Не умеете читать и писать',
             },
             inept: {
-                name: 'Неумелость',
+                name: 'Бестолковость',
                 shortDescription: 'Трудности со всеми бросками Способностей',
             },
             uneducated: {
@@ -3292,7 +3292,7 @@ export const catalogTranslations = {
                 shortDescription: 'Нет формального образования в Знаниях',
             },
             unskilled: {
-                name: 'Неумеха',
+                name: 'Неумелость',
                 shortDescription: 'Плохо даются Навыки',
             },
             boon: {
@@ -3324,8 +3324,8 @@ export const catalogTranslations = {
                 shortDescription: 'За вашу голову назначена награда (1–5 очков)',
             },
             'slave-race': {
-                name: 'Рабская раса',
-                shortDescription: 'Вашу расу повсеместно обращают в рабство',
+                name: 'Порабощённый вид',
+                shortDescription: 'Ваш вид повсеместно обращают в рабство',
             },
             stereotyped: {
                 name: 'Стереотипы',
@@ -3348,7 +3348,7 @@ export const catalogTranslations = {
                 shortDescription: 'Необратимая травма ноги или бедра',
             },
             'missing-arm': {
-                name: 'Нет руки',
+                name: 'Потерянная рука',
                 shortDescription: 'Отсутствует рука или аналогичная конечность',
             },
             mute: {
@@ -3356,7 +3356,7 @@ export const catalogTranslations = {
                 shortDescription: 'Вы не можете говорить',
             },
             'hay-fever': {
-                name: 'Аллергия',
+                name: 'Сенная лихорадка',
                 shortDescription: 'Аллергическая реакция на некоторые атмосферы (1–3 очка)',
             },
             'all-thumbs': {
@@ -3364,8 +3364,8 @@ export const catalogTranslations = {
                 shortDescription: 'Плохая мелкая моторика',
             },
             'two-left-feet': {
-                name: 'Косолапость',
-                shortDescription: 'Неуклюжесть и отсутствие грации',
+                name: 'Неуклюжесть',
+                shortDescription: 'Неловкость и отсутствие грации',
             },
             paraplegic: {
                 name: 'Паралич ног',
@@ -3482,7 +3482,7 @@ export const catalogTranslations = {
             },
             'force-sensitive': {
                 name: 'Чувствительный к Силе',
-                shortDescription: 'Способность освоить Силовые навыки и Силы',
+                shortDescription: 'Способность освоить Навыки Силы и Техники Силы',
             },
             'strong-in-the-force': {
                 name: 'Сильный в Силе',
@@ -3493,7 +3493,7 @@ export const catalogTranslations = {
                 shortDescription: 'Вас ведёт дух Силы',
             },
             'natural-force-power': {
-                name: 'Врождённая Сила Силы',
+                name: 'Врождённый дар Силы',
                 shortDescription: 'Вы родились с природным даром Силы',
             },
             master: {
@@ -3525,7 +3525,7 @@ export const catalogTranslations = {
                 shortDescription: 'Вас ждёт мрачная участь',
             },
             'ap-amphibious': {
-                name: 'Земноводность',
+                name: 'Земноводный',
                 shortDescription: 'Одинаково дышите воздухом и водой',
                 restriction: 'Расовое — только не-люди',
             },
@@ -3665,7 +3665,7 @@ export const catalogTranslations = {
                 restriction: 'Расовое — только не-люди',
             },
             'ap-unique-atmosphere': {
-                name: 'Особая атмосфера',
+                name: 'Особый состав атмосферы',
                 shortDescription: 'Для дыхания нужна особая атмосфера',
                 restriction: 'Расовое — только не-люди',
             },
@@ -3675,7 +3675,7 @@ export const catalogTranslations = {
                 restriction: 'Расовое — только не-люди',
             },
             'ap-heightened-awareness': {
-                name: 'Обострённое восприятие',
+                name: 'Обострённое чутьё',
                 shortDescription: 'Пассивная эхолокация или чувство окружения',
                 restriction: 'Расовое — только не-люди',
             },
@@ -3698,8 +3698,8 @@ export const catalogTranslations = {
                 category: {
                     Psychological: 'Психологические',
                     Mental: 'Ментальные',
-                    Awareness: 'Восприятие',
-                    Aptitudes: 'Склонности',
+                    Awareness: 'Чутьё',
+                    Aptitudes: 'Способности',
                     'Galactic Connections': 'Галактические связи',
                     Physical: 'Физические',
                     Cybernetic: 'Кибернетика',
@@ -3902,11 +3902,11 @@ export const catalogTranslations = {
                     'Пушистые гуманоиды, прославленные шпионской сетью и политической хваткой',
             },
             cerean: {
-                name: 'Цереанин',
+                name: 'Цереанец',
                 shortDescription: 'Высокие гуманоиды с вытянутой головой и двойным мозгом',
             },
             nautolan: {
-                name: 'Наутоланин',
+                name: 'Наутоланец',
                 shortDescription:
                     'Земноводные гуманоиды с головными щупальцами и водным происхождением',
             },
@@ -3916,7 +3916,7 @@ export const catalogTranslations = {
                     'Гуманоиды с монталами и головными щупальцами, известные обострённым восприятием',
             },
             'kel-dor': {
-                name: 'Кель Дор',
+                name: 'Кел Дор',
                 shortDescription:
                     'Гуманоиды, которым нужны дыхательные маски; хорошо видят в полумраке',
             },
@@ -3930,7 +3930,7 @@ export const catalogTranslations = {
                 shortDescription: 'Зеленокожие гуманоиды с репутацией жадных трусов',
             },
             weequay: {
-                name: 'Викуай',
+                name: 'Виквей',
                 shortDescription: 'Гуманоиды с обветренной кожей и особым феромонным языком',
             },
             aqualish: {
@@ -4481,7 +4481,7 @@ export const catalogTranslations = {
         'v5-hunter-gear': {
             chaoscope: {
                 name: 'Хаоскоп',
-                effect: 'Сканер на машине: Интеллект + Внимательность со Сложностью 6 обнаруживает сверхъестественную угрозу рядом; легче против уже знакомого вида.',
+                effect: 'Сканер на машине: Интеллект + Бдительность со Сложностью 6 обнаруживает сверхъестественную угрозу рядом; легче против уже знакомого вида.',
             },
             xscope: {
                 name: 'Иксскоп',
@@ -4871,16 +4871,16 @@ export const catalogTranslations = {
                 consumables: '1 год',
             },
             'imperial-star-destroyer': {
-                name: 'Звёздный Разрушитель класса «Империал I»',
-                model: 'Звёздный Разрушитель класса «Империал I» производства «Верфей Куата»',
+                name: 'Звёздный разрушитель класса «Империал I»',
+                model: 'Звёздный разрушитель класса «Империал I» производства «Верфей Куата»',
                 crew: '36 810 + 275 стрелков, минимальный: 5 000/+20',
                 passengers: '9 700 солдат',
                 cargo: '36 000 т',
                 consumables: '6 лет',
             },
             'mon-cal-mc80': {
-                name: 'Звёздный крейсер Мон Каламари MC80',
-                model: 'Звёздный крейсер Мон Каламари MC80',
+                name: 'Звёздный крейсер Мон-Каламари MC80',
+                model: 'Звёздный крейсер Мон-Каламари MC80',
                 crew: '5 156 + 246 стрелков, минимальный: 1 230/+10',
                 passengers: '1 200 солдат',
                 cargo: '20 000 т',
@@ -4925,7 +4925,7 @@ export const catalogTranslations = {
                     'Modified light freighter': 'Модифицированный лёгкий грузовой корабль',
                     'Inter-system customs vessel': 'Межсистемное таможенное судно',
                     'Stock scout vessel': 'Серийный корабль-разведчик',
-                    'Star Destroyer': 'Звёздный Разрушитель',
+                    'Star Destroyer': 'Звёздный разрушитель',
                     'Star Cruiser': 'Звёздный крейсер',
                     'Mid-sized multi-purpose vessel': 'Многоцелевой корабль среднего размера',
                     'Escort starship': 'Корабль сопровождения',

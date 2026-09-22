@@ -365,12 +365,6 @@
     "ttgamer.ui.catalogs.armor.detail.notes": {
         "message": "Примечания"
     },
-    "ttgamer.ui.catalogs.attributes.columns.category": {
-        "message": "Категория"
-    },
-    "ttgamer.ui.catalogs.attributes.columns.name": {
-        "message": "Атрибут"
-    },
     "ttgamer.ui.catalogs.backgrounds.columns.category": {
         "message": "Категория"
     },
@@ -1226,11 +1220,17 @@
     "ttgamer.ui.sheet.controls.labelInformation": {
         "message": "Подсказка: {label}"
     },
+    "ttgamer.ui.sheet.controls.meritFlaw.addAdvantage": {
+        "message": "Добавить достоинство"
+    },
     "ttgamer.ui.sheet.controls.meritFlaw.addFlaw": {
         "message": "Добавить недостаток"
     },
     "ttgamer.ui.sheet.controls.meritFlaw.addMerit": {
         "message": "Добавить достоинство"
+    },
+    "ttgamer.ui.sheet.controls.meritFlaw.advantagePlaceholder": {
+        "message": "Название достоинства..."
     },
     "ttgamer.ui.sheet.controls.meritFlaw.flawPlaceholder": {
         "message": "Название недостатка..."
@@ -1605,7 +1605,7 @@
         "message": "Оружие"
     },
     "ttgamer.ui.sheet.documents.fields.willpower": {
-        "message": "Сила воли"
+        "message": "Воля"
     },
     "ttgamer.ui.sheet.documents.manager.close": {
         "message": "Закрыть"
@@ -2082,10 +2082,10 @@
         "message": "Сила"
     },
     "ttgamer.ui.sheet.templates.defaults.forcePowers": {
-        "message": "Силы Силы"
+        "message": "Техники Силы"
     },
     "ttgamer.ui.sheet.templates.defaults.forceSkills": {
-        "message": "Силовые навыки"
+        "message": "Навыки Силы"
     },
     "ttgamer.ui.sheet.templates.defaults.freePoints": {
         "message": "Свободные очки"
@@ -3036,7 +3036,7 @@
         "message": "Интеллект"
     },
     "ttgamer.ui.sheet.v5.attributes.manipulation": {
-        "message": "Манипулирование"
+        "message": "Манипуляция"
     },
     "ttgamer.ui.sheet.v5.attributes.mental": {
         "message": "Ментальные"
@@ -3069,7 +3069,7 @@
         "message": "Принципы хроники"
     },
     "ttgamer.ui.sheet.v5.fields.conviction": {
-        "message": "Убеждение"
+        "message": "Убеждённость"
     },
     "ttgamer.ui.sheet.v5.fields.dateOfBirth": {
         "message": "Дата рождения"
@@ -3147,7 +3147,7 @@
         "message": "Оружие"
     },
     "ttgamer.ui.sheet.v5.sections.willpower": {
-        "message": "Сила воли"
+        "message": "Воля"
     },
     "ttgamer.ui.sheet.v5.skills.academics": {
         "message": "Гуманитарные науки"
@@ -3159,7 +3159,7 @@
         "message": "Атлетика"
     },
     "ttgamer.ui.sheet.v5.skills.awareness": {
-        "message": "Внимательность"
+        "message": "Бдительность"
     },
     "ttgamer.ui.sheet.v5.skills.brawl": {
         "message": "Драка"
@@ -3492,7 +3492,7 @@
         "message": "Дальний бой"
     },
     "ttgamer.ui.site.home.about.body": {
-        "message": "Гибридная НРИ, сочетающая повествовательную простоту {weg} с механической глубиной системы пулов d10 из {wod}. Создавайте персонажей с 9 основными атрибутами, 30 способностями, специализациями навыков, силами Силы и отслеживайте ударный и летальный урон на двойной шкале здоровья."
+        "message": "Гибридная НРИ, сочетающая повествовательную простоту {weg} с механической глубиной системы пулов d10 из {wod}. Создавайте персонажей с 9 основными атрибутами, 30 способностями, специализациями навыков, техниками Силы и отслеживайте ударный и летальный урон на двойной шкале здоровья."
     },
     "ttgamer.ui.site.home.about.title": {
         "message": "О системе"
@@ -3501,7 +3501,7 @@
         "message": "«Мира Тьмы»"
     },
     "ttgamer.ui.site.home.features.characterSheet.summary": {
-        "message": "Полноценный менеджер с 9 атрибутами, 30 способностями, силами Силы, инвентарём, учётом здоровья и многим другим. Поддерживает разумных персонажей и дроидов; листы транспорта в планах."
+        "message": "Полноценный менеджер с 9 атрибутами, 30 способностями, техниками Силы, инвентарём, учётом здоровья и многим другим. Поддерживает разумных персонажей и дроидов; листы транспорта в планах."
     },
     "ttgamer.ui.site.home.features.characterSheet.title": {
         "message": "Лист персонажа"

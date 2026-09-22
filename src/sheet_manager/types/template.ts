@@ -180,7 +180,6 @@ export const CatalogBindingSchema = z.object({
         .default({}),
 });
 
-export type CatalogFillRule = z.infer<typeof CatalogFillRuleSchema>;
 export type CatalogBinding = z.infer<typeof CatalogBindingSchema>;
 
 const SelectFieldSchema = z.object({
@@ -294,7 +293,10 @@ export type TemplateFieldType = (typeof TEMPLATE_FIELD_TYPES)[number];
 
 type Exact<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 type AssertTrue<T extends true> = T;
-/** Compile-time guard: the list above must name every schema field type. */
+/**
+ * Compile-time guard: the list above must name every schema field type.
+ * @knipignore nothing imports it — the assertion is the point.
+ */
 export type TemplateFieldTypesAreComplete = AssertTrue<
     Exact<TemplateFieldType, TemplateField['type']>
 >;
@@ -434,7 +436,10 @@ export const TEMPLATE_STRUCTURE_TYPES = ['section', 'group', 'table', 'list', 'p
 
 export type TemplateNodeType = (typeof TEMPLATE_STRUCTURE_TYPES)[number] | TemplateFieldType;
 
-/** Compile-time guard: structure + field types must name every node type. */
+/**
+ * Compile-time guard: structure + field types must name every node type.
+ * @knipignore nothing imports it — the assertion is the point.
+ */
 export type TemplateNodeTypesAreComplete = AssertTrue<
     Exact<TemplateNodeType, TemplateNode['type']>
 >;

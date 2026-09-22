@@ -92,7 +92,7 @@ bad-sight:
     name: Плохое зрение
     shortDescription: Неисправимый дефект зрения
 missing-eye:
-    name: Нет глаза
+    name: Потерянный глаз
     shortDescription: Вы потеряли глаз
 deaf:
     name: Глухота
@@ -104,7 +104,7 @@ ambidextrous:
     name: Амбидекстрия
     shortDescription: Одинаково владеете обеими руками
 pitiable:
-    name: Вызывающий жалость
+    name: Жалкий вид
     shortDescription: Окружающим хочется о вас заботиться
 natural-linguist:
     name: Прирождённый лингвист
@@ -131,13 +131,13 @@ illiterate:
     name: Неграмотность
     shortDescription: Не умеете читать и писать
 inept:
-    name: Неумелость
+    name: Бестолковость
     shortDescription: Трудности со всеми бросками Способностей
 uneducated:
     name: Необразованность
     shortDescription: Нет формального образования в Знаниях
 unskilled:
-    name: Неумеха
+    name: Неумелость
     shortDescription: Плохо даются Навыки
 boon:
     name: Услуга
@@ -161,8 +161,8 @@ wanted:
     name: В розыске
     shortDescription: За вашу голову назначена награда (1–5 очков)
 slave-race:
-    name: Рабская раса
-    shortDescription: Вашу расу повсеместно обращают в рабство
+    name: Порабощённый вид
+    shortDescription: Ваш вид повсеместно обращают в рабство
 stereotyped:
     name: Стереотипы
     shortDescription: О вашей расе судят по предрассудкам
@@ -179,20 +179,20 @@ lame:
     name: Хромота
     shortDescription: Необратимая травма ноги или бедра
 missing-arm:
-    name: Нет руки
+    name: Потерянная рука
     shortDescription: Отсутствует рука или аналогичная конечность
 mute:
     name: Немота
     shortDescription: Вы не можете говорить
 hay-fever:
-    name: Аллергия
+    name: Сенная лихорадка
     shortDescription: Аллергическая реакция на некоторые атмосферы (1–3 очка)
 all-thumbs:
     name: Руки-крюки
     shortDescription: Плохая мелкая моторика
 two-left-feet:
-    name: Косолапость
-    shortDescription: Неуклюжесть и отсутствие грации
+    name: Неуклюжесть
+    shortDescription: Неловкость и отсутствие грации
 paraplegic:
     name: Паралич ног
     shortDescription: Парализованы ниже пояса
@@ -285,7 +285,7 @@ luck:
     shortDescription: Сила благоволит вам и дарит удачу
 force-sensitive:
     name: Чувствительный к Силе
-    shortDescription: Способность освоить Силовые навыки и Силы
+    shortDescription: Способность освоить Навыки Силы и Техники Силы
 strong-in-the-force:
     name: Сильный в Силе
     shortDescription: Сила в вас необычайно велика
@@ -293,7 +293,7 @@ force-spirit-mentor:
     name: Наставник-призрак Силы
     shortDescription: Вас ведёт дух Силы
 natural-force-power:
-    name: Врождённая Сила Силы
+    name: Врождённый дар Силы
     shortDescription: Вы родились с природным даром Силы
 master:
     name: Мастер
@@ -317,7 +317,7 @@ dark-fate:
     name: Тёмная судьба
     shortDescription: Вас ждёт мрачная участь
 ap-amphibious:
-    name: Земноводность
+    name: Земноводный
     shortDescription: Одинаково дышите воздухом и водой
     restriction: Расовое — только не-люди
 ap-appendages-extra:
@@ -429,7 +429,7 @@ ap-thick-skinned:
     shortDescription: Природно прочная шкура
     restriction: Расовое — только не-люди
 ap-unique-atmosphere:
-    name: Особая атмосфера
+    name: Особый состав атмосферы
     shortDescription: Для дыхания нужна особая атмосфера
     restriction: Расовое — только не-люди
 ap-hardy:
@@ -437,7 +437,7 @@ ap-hardy:
     shortDescription: Исключительно стойкая физиология
     restriction: Расовое — только не-люди
 ap-heightened-awareness:
-    name: Обострённое восприятие
+    name: Обострённое чутьё
     shortDescription: Пассивная эхолокация или чувство окружения
     restriction: Расовое — только не-люди
 ap-binary-mind:
@@ -456,8 +456,8 @@ _labels:
     category:
         Psychological: Психологические
         Mental: Ментальные
-        Awareness: Восприятие
-        Aptitudes: Склонности
+        Awareness: Чутьё
+        Aptitudes: Способности
         Galactic Connections: Галактические связи
         Physical: Физические
         Cybernetic: Кибернетика

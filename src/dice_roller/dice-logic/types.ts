@@ -47,25 +47,6 @@ export interface DiceGroup {
     forcedValues?: number[];
 }
 
-export interface DiceExpression {
-    type: 'dice';
-    value: DiceGroup;
-    operation: '+' | '-' | '*' | '/' | '%' | '^';
-}
-
-export interface NumberExpression {
-    type: 'number';
-    value: number;
-    operation: '+' | '-' | '*' | '/' | '%' | '^';
-}
-
-export type ParsedExpression = DiceExpression | NumberExpression;
-
-export interface ParseResult {
-    expressions: ParsedExpression[];
-    original: string;
-}
-
 export type TokenType =
     | 'NUMBER'
     | 'DICE'
@@ -102,20 +83,6 @@ export type TokenType =
     | 'COMMA'
     | 'ERROR'
     | 'END';
-
-export interface Token {
-    type: TokenType;
-    value:
-        | string
-        | number
-        | number[]
-        | { count: number; sides: number; fudge: boolean; customFaces?: number[] };
-    text: string;
-    line: number;
-    col: number;
-}
-
-export type ASTNodeType = 'NumericLiteral' | 'DiceGroup' | 'BinaryOp' | 'UnaryOp' | 'Parenthesized';
 
 export interface NumericLiteralNode {
     type: 'NumericLiteral';

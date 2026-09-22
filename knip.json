@@ -9,5 +9,6 @@
     ],
     "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "tests/**/*.{ts,tsx}"],
     "ignore": ["src/i18n/generated/**", "src/@types/**"],
-    "ignoreExportsUsedInFile": true
+    "ignoreExportsUsedInFile": true,
+    "tags": ["-knipignore"]
 }

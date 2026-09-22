@@ -40,8 +40,6 @@ export const TemplateListEntrySchema = z.object({
     value: z.number().int().min(0).max(20).optional(),
 });
 
-export type TemplateListEntry = z.infer<typeof TemplateListEntrySchema>;
-
 export const TemplateListValueSchema = z
     .array(TemplateListEntrySchema)
     .max(TEMPLATE_VALUES_LIMITS.listEntriesMax);
@@ -64,12 +62,8 @@ export type TemplateImageValue = z.infer<typeof TemplateImageValueSchema>;
 /** One table cell: a primitive or a resource value. */
 export const TemplateTableCellSchema = z.union([PrimitiveValueSchema, TemplateResourceValueSchema]);
 
-export type TemplateTableCell = z.infer<typeof TemplateTableCellSchema>;
-
 /** One table row: column id → cell. */
 export const TemplateTableRowSchema = z.record(z.string().min(1).max(64), TemplateTableCellSchema);
-
-export type TemplateTableRow = z.infer<typeof TemplateTableRowSchema>;
 
 /** Table block value stored under the block id: row index → row. */
 export const TemplateTableRowsSchema = z.record(z.string().min(1).max(64), TemplateTableRowSchema);
@@ -100,8 +94,6 @@ export type TemplatePageValues = z.infer<typeof TemplatePageValuesSchema>;
  * document. Fields in different templates sharing a valueKey address the same entry here.
  */
 export const TemplateValuesBagSchema = TemplatePageValuesSchema;
-
-export type TemplateValuesBag = TemplatePageValues;
 
 export type TemplateFieldValue =
     | string

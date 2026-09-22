@@ -1,5 +1,5 @@
 import { HEALTH_LEVELS } from '../../types/character';
-import { defineWodSheetProfile, getWodTraitGroup } from '../wod-like';
+import { defineWodSheetProfile } from '../wod-like';
 
 const trait = (key: string, minimum = 0) => ({
     id: key
@@ -151,13 +151,3 @@ export const starWarsWodProfile = defineWodSheetProfile({
         },
     ],
 });
-
-export const starWarsAttributeGroups = ['physical', 'social', 'mental'].map((id) =>
-    getWodTraitGroup(starWarsWodProfile, id)
-);
-export const starWarsAbilityGroups = ['talents', 'skills', 'knowledges'].map((id) =>
-    getWodTraitGroup(starWarsWodProfile, id)
-);
-export const starWarsForceSkills = getWodTraitGroup(starWarsWodProfile, 'force-skills');
-export const starWarsVirtues = getWodTraitGroup(starWarsWodProfile, 'virtues');
-export const starWarsVehicleSystems = getWodTraitGroup(starWarsWodProfile, 'vehicle-systems');
