@@ -184,6 +184,12 @@ item array through the same molecules (V5 `weapons`, `inventory`).
 - Trait bindings may declare `row: { specialization?, flags? }` (default both true): hide the
   specialization text input or the specialization/experienced/practiced flags (V5 attributes
   hide both, V5 skills hide the flags).
+- A catalog-bound single-select field with more than `SEARCHABLE_SELECT_THRESHOLD` (12) resolved
+  options renders the searchable `CatalogSuggest` instead of a `<select>` (`fieldControls.tsx`,
+  `usesSearchableSelect`). It stores the option's value exactly as the drop-down did, so catalog
+  fills are unaffected, and a stored value the catalog no longer offers keeps its text. Shorter
+  lists and static options keep the plain select; a bound multi-select cannot exist (the schema
+  rejects it).
 - Field bindings: `valueType` also `boolean` (toggle fields); `range` clamps numbers on write;
   `suggestions: { catalogId }` turns a bridged text field into free text with catalog
   suggestions (`useCatalogSuggestions`, localized names).

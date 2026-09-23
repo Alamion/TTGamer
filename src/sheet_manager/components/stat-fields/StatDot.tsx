@@ -203,9 +203,12 @@ export function StatDot({
                             className={clsx(
                                 'ml-auto rounded font-bold transition-all duration-200 flex items-center justify-center',
                                 flagSizeClasses[size],
-                                'text-textSecondary opacity-40 hover:opacity-70 hover:text-error',
+                                // Destructive at rest, unmistakable under pointer or keyboard focus.
+                                'text-error opacity-50 hover:opacity-100 focus-visible:opacity-100',
+                                'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-error',
                                 disabled && 'cursor-not-allowed'
                             )}
+                            aria-label={translate(uiMessages.sheet.controls.statDot.remove)}
                             title={translate(uiMessages.sheet.controls.statDot.remove)}
                         >
                             <X size={dotPixel - 2} />

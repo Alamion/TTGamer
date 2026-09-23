@@ -821,6 +821,9 @@
     "ttgamer.ui.dice.panel.close": {
         "message": "Close dice roller"
     },
+    "ttgamer.ui.dice.panel.renderer3dUnavailable": {
+        "message": "3D dice could not be loaded — rolling with 2D dice instead."
+    },
     "ttgamer.ui.dice.panel.title": {
         "message": "Dice Roller"
     },

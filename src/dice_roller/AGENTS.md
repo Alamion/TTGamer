@@ -34,6 +34,12 @@ notation → tokenize → strict AST parse
                      → RollResult event → history/toast/Discord subscribers
 ```
 
+The 3D renderer (`three` + `cannon-es`) is loaded on demand: `roll-orchestrator.ts` holds a
+memoized `import('./renderer')` performed only after a roll is known to be a 3D roll, so no page
+load pulls the engine in. A rejected load clears the memo (the next roll may retry), rolls in 2D,
+and returns `renderer3dUnavailable: true` on the result; `components/Renderer3DFallbackNotice.tsx`
+turns that flag into one toast per session, because `dice-logic` may not import UI or stores.
+
 The current 3D path is physics-authoritative for supported dice. It passes those values back into the evaluator as pre-generated rolls. Unsupported dice, excessive physical dice, renderer failure, and invalid physics output fall back to a normal 2D evaluation of the entire roll.
 
 All live 3D rolls share one physics field and can physically collide, but their logical lifecycle is isolated by renderer session ID. A handle may only lock, reroll, add, settle, inspect, arrange, or dismiss its own session. Initial and explosion dice share one `MAX_PHYSICAL_3D_DICE` budget per logical roll.

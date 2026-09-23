@@ -5,13 +5,37 @@ import type { MixedRollConfig } from '../utils/types-ext';
 import { detectExplosion, detectRerolls, detectUnique, evaluateDiceAST } from './dice-evaluator';
 import { parseToAST } from './dice-parser';
 import { RollCancelledError } from './errors';
-import type { DiceGeometryData } from './renderer';
-import { prepareDiceGeometries, startPhysicsRoll } from './renderer';
+import type { DiceGeometryData, prepareDiceGeometries, startPhysicsRoll } from './renderer';
 import type { PhysicsRollHandle } from './renderer/renderer-pool';
 import type { ASTNode, DiceGroupNode, DiceRoll, RollResult } from './types';
 import { buildGroupKey } from './utils';
 
 const SUPPORTED_3D_SIDES = new Set([2, 4, 6, 8, 10, 12, 20, 100]);
+
+interface RendererApi {
+    prepareDiceGeometries: typeof prepareDiceGeometries;
+    startPhysicsRoll: typeof startPhysicsRoll;
+}
+
+let rendererApi: Promise<RendererApi> | undefined;
+
+/**
+ * The 3D renderer and its physics engine are downloaded on the first 3D roll, never as part
+ * of a page load. The promise is memoized so concurrent and later rolls share one download; a
+ * rejected load clears it so a later roll can try again.
+ */
+function loadRenderer(): Promise<RendererApi> {
+    rendererApi ??= import('./renderer')
+        .then((module) => ({
+            prepareDiceGeometries: module.prepareDiceGeometries,
+            startPhysicsRoll: module.startPhysicsRoll,
+        }))
+        .catch((err: unknown) => {
+            rendererApi = undefined;
+            throw err;
+        });
+    return rendererApi;
+}
 const FUDGE_LABEL_MAP: Record<number, string> = { [-1]: '-', [0]: ' ', [1]: '+' };
 
 function hasForcedValues(ast: ASTNode): boolean {
@@ -168,7 +192,7 @@ export async function processExplosionLoop(
     multiplier: number,
     handle: { addDice: (extraDiceData: DiceGeometryData[]) => Promise<number[]> },
     config: { diceColor: string; textColor: string },
-    prepareGeometries: typeof prepareDiceGeometries = prepareDiceGeometries,
+    prepareGeometries: typeof prepareDiceGeometries,
     physicalCapacity = { remaining: MAX_PHYSICAL_3D_DICE }
 ): Promise<void> {
     const isD100 = group.sides === 100;
@@ -333,6 +357,18 @@ export async function executeUnifiedRoll(
             );
             return evaluateDiceAST(ast, notation);
         }
+
+        let renderer: RendererApi;
+        try {
+            renderer = await loadRenderer();
+        } catch (err) {
+            warn(
+                `3D dice could not be loaded (${err instanceof Error ? err.message : String(err)}) — rolling ${notation} in 2D`,
+                '3DDiceRolls'
+            );
+            return { ...evaluateDiceAST(ast, notation), renderer3dUnavailable: true };
+        }
+        const { prepareDiceGeometries, startPhysicsRoll } = renderer;
 
         const { geometries, groupSizes } = prepareDiceGeometries(flatGroups, {
             diceColor: defaultConfig.diceColor,

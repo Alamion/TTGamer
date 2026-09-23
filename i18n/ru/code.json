@@ -821,6 +821,9 @@
     "ttgamer.ui.dice.panel.close": {
         "message": "Закрыть панель бросков"
     },
+    "ttgamer.ui.dice.panel.renderer3dUnavailable": {
+        "message": "Не удалось загрузить 3D-кубики — бросок выполнен в 2D."
+    },
     "ttgamer.ui.dice.panel.title": {
         "message": "Броски кубиков"
     },

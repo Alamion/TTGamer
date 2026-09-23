@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.8.0
+
+### Minor feat
+
+- **The 3D dice engine leaves the critical path (spec 010)**: `three` and `cannon-es` are downloaded on the first 3D roll instead of with every page — the shared bundle every route loads drops from 1.44 MB to 793 KB; when the chunk cannot be fetched the roll still resolves in 2D, says so once, and retries on the next roll
+- **Long catalog pickers are searchable**: a template field bound to a catalog with more than 12 entries (species, creatures, vehicles, Force techniques, gear) becomes a search field with «Русский (English)» labels instead of a drop-down of hundreds of options; the stored value, catalog fills, and short lists are unchanged
+- **Catalog pickers work without a mouse**: arrow keys, Home/End, Enter, and Escape drive the suggestion list of every catalog picker, including the equipment pickers that already used it
+- **The rating clear control is visible**: the cross that removes a trait is red at rest, stronger on hover and keyboard focus, and announces "Remove" to screen readers instead of carrying only a tooltip
+
+### Chore
+
+- **Dead code cannot accumulate**: `yarn audit:dead-code` (knip) runs inside `yarn verify` and fails on any unused file, export, or dependency; the last two findings are resolved (the `TemplateValuesBagSchema` alias is gone, the stale generated-translations ignore is removed), and a deliberate export without importers is exempted at its declaration with `@knipignore` and a reason (constitution 1.4.0)
+
 ## v3.7.0
 
 ### Major feat

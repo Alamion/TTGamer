@@ -172,4 +172,9 @@ export interface RollResult {
     manuallyRerolled?: boolean;
     characterName?: string;
     statLabels?: string[];
+    /**
+     * A 3D roll that fell back to 2D because the renderer could not be downloaded.
+     * Transient presentation flag: never stored in history, never shared.
+     */
+    renderer3dUnavailable?: boolean;
 }
