@@ -30,21 +30,6 @@ reused for a different entry, never renumbered (gaps after removals are permanen
 
 ## 🟢 Medium
 
-### F-003 — Panel rolls show no roll toast in a production build
-
-**Area:** dice roller panel / theme shell
-
-**Evidence:** `src/theme/Root.tsx` subscribes to `onRollResult` and raises a roll toast for every
-result, and the same subscription feeds the history list. In a production build (`yarn serve`)
-a roll started from the dice panel updates the history but no toast ever appears; the
-react-hot-toast container stays empty. Reproduced on the pre-change baseline build as well, so
-it predates the spec 010 changes and is not caused by them. Found while verifying the 3D
-fallback notice, which is why that notice is covered by a component test instead of a browser check.
-
-**Recommendation:** find out whether the `dice-logic/dice-roller` module is duplicated across
-chunks (two callback registries) or whether the toast is rendered and immediately dismissed;
-add a regression test for "a roll raises exactly one toast" once the cause is known.
-
 ### F-002 — DataCatalog URL parameter initialization race
 
 **Area:** shared catalog components

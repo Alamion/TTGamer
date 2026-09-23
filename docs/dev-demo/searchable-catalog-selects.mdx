@@ -1,0 +1,79 @@
+---
+title: 'Demo: searchable catalog selects'
+sidebar_label: 'Demo: catalog selects'
+draft: true
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import { TemplateFragment } from '@site/src/sheet_manager/docsEmbeds';
+
+:::caution[Development page]
+
+`draft: true` keeps this page out of production builds — it renders with `yarn start` and is
+absent from `yarn build`. It exists to try the searchable catalog picker (T-064) by hand; delete
+it once the behavior is trusted.
+
+:::
+
+:::note[The embeds need a document]
+
+Both embeds edit **the document currently open in the Sheet Manager**, and the two catalog
+fields that cross the threshold live on non-character sheets. So open
+[the Sheet Manager](/universal_sheet), create a **Creature** (and later a **Vehicle**), then come
+back here — the matching embed below becomes editable. Until then it shows the "create or open"
+prompt.
+
+:::
+
+## What changed
+
+A template field bound to a catalog renders the searchable picker instead of a drop-down when
+its resolved option list has **more than 12 entries** (`SEARCHABLE_SELECT_THRESHOLD` in
+`features/sheet/declarative/fieldControls.tsx`). Shorter lists and fields with static options
+keep the plain `<select>`, so most of a sheet looks unchanged.
+
+Catalog sizes today: `merits-flaws` 133, `v5-hunter-advantages` 52, `v5-hunter-perks` 49,
+`force-powers` 33, `species` 32, `tools-gear` 31, `creatures` 30, `vehicles` 26 — over the
+threshold; `ranged-weapons` 12, `backgrounds` 12, `v5-hunter-edges` 12, `armor` 11,
+`melee-weapons` 9, `v5-hunter-gear` 9 — under it.
+
+## Creature identity — searchable and plain side by side
+
+**Bestiary entry** is bound to `creatures` (30 entries) and is now a search field. **Scale** in
+the same group has static options and is still a drop-down, which is the contrast to look for.
+
+<TWWrapper>
+    <TemplateFragment template="creature-sheet" node="creature-identity" />
+</TWWrapper>
+
+## Vehicle identification
+
+**Catalog model** is bound to `vehicles` (26 entries).
+
+<TWWrapper>
+    <TemplateFragment template="vehicle-sheet" node="vehicle-identity" />
+</TWWrapper>
+
+## What to try
+
+1. **Search by name.** Type `ranc` or `wamp`, `x-wing` or `t-65`. Case, `ё`/`е`, and diacritics
+   are ignored. Suggestion labels follow the site locale, so to search by the Russian name start
+   the dev server with `yarn start --locale ru` — then `ранк` matches too.
+2. **Pick with the keyboard only.** Tab to the field, type, move with ArrowDown/ArrowUp or
+   Home/End, choose with Enter, close with Escape. The highlighted row is what Enter takes.
+3. **Confirm the fill still runs.** Choosing a bestiary entry overwrites the mapped creature
+   values (Species, attributes, attacks, armor); choosing a vehicle model fills its stats. That
+   is the same write path the drop-down used.
+4. **Clear the field.** Empty the input — the field is cleared, while values previously copied
+   from a catalog entry stay, as they did before.
+5. **Unknown entries survive.** A document holding an id the catalog no longer offers shows the
+   raw stored text instead of silently losing it.
+6. **Phone width.** At 360 px the suggestion list opens below the input, never on top of it.
+
+## Where the code lives
+
+| Concern                                          | File                                                                                                                 |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Threshold and control choice                     | `src/sheet_manager/features/sheet/declarative/fieldControls.tsx` (`usesSearchableSelect`, `SearchableSelectControl`) |
+| The picker itself, including keyboard navigation | `src/sheet_manager/components/controls/CatalogSuggest.tsx`                                                           |
+| Tests                                            | `tests/sheet_manager/declarative-catalog-select.test.tsx`                                                            |

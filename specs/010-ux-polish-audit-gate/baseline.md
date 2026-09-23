@@ -52,11 +52,14 @@ Checked against `yarn serve` on port 3001 with `playwright-cli`.
 - Sheet route loads with **0** requests for the 3D chunk; the first 3D roll fetches it once
   and a second roll fetches nothing. A removed chunk (simulated 404) produces a correct 2D
   result, the `3DDiceRolls` warning, and a retry on the next roll.
-- React hydration warning #418 appears on the sheet route **before and after** this change
-  (verified by rebuilding the stashed baseline), so it is pre-existing and out of scope.
-- Panel rolls do not surface the roll toast in a production build, before or after this
-  change — a pre-existing defect recorded as F-003 in `TOFIX.md`. The 3D-fallback notice is
-  covered by `tests/dice_roller/components/renderer-3d-fallback-notice.test.tsx` instead.
+- A recoverable React hydration notice (#418) is logged to the console on the sheet route
+  **before and after** this change (verified by rebuilding the stashed baseline), so it is
+  pre-existing, console-only, and out of scope here.
+- Both toasts were confirmed in the browser: an ordinary panel roll shows `d6 | = 5`, and a
+  roll whose 3D chunk is missing (chunk removed from `build/`, fresh session so the browser
+  cache cannot serve it) shows "3D dice could not be loaded — rolling with 2D dice instead."
+  A 3D roll settles over several seconds, so the toast and the history entry appear only after
+  the dice stop — an earlier read of the DOM was simply too early.
 - A creature sheet's `Bestiary entry` renders the searchable input; typing `wamp` and
   pressing Enter fills Species = Wampa. Keyboard-only selection took ~2 s of scripted
   interaction (SC-003 budget: 10 s). At 360 px the suggestion popover sits below the input
