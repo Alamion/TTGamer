@@ -88,13 +88,6 @@ export const TemplatePageValuesSchema = z
 
 export type TemplatePageValues = z.infer<typeof TemplatePageValuesSchema>;
 
-/** Whole-document bag: template id → page values. */
-/**
- * Document-global value bag (clarification D1/D3): keyed by valueKey, one flat namespace per
- * document. Fields in different templates sharing a valueKey address the same entry here.
- */
-export const TemplateValuesBagSchema = TemplatePageValuesSchema;
-
 export type TemplateFieldValue =
     | string
     | number

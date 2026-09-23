@@ -770,6 +770,10 @@ export const uiMessages = {
                 id: 'ttgamer.ui.dice.panel.close',
                 message: 'Close dice roller',
             },
+            renderer3dUnavailable: {
+                id: 'ttgamer.ui.dice.panel.renderer3dUnavailable',
+                message: '3D dice could not be loaded — rolling with 2D dice instead.',
+            },
         },
         pool: {
             tabs: {

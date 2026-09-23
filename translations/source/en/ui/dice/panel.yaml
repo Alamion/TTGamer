@@ -1,2 +1,3 @@
 title: Dice Roller
 close: Close dice roller
+renderer3dUnavailable: 3D dice could not be loaded — rolling with 2D dice instead.

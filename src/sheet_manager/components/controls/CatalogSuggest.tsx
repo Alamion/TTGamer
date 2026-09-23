@@ -36,6 +36,7 @@ export function CatalogSuggest({
     showAllWhenEmpty = false,
 }: CatalogSuggestProps) {
     const [open, setOpen] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const filtered = useMemo(() => {
@@ -46,6 +47,7 @@ export function CatalogSuggest({
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onChange(e.target.value);
+        setActiveIndex(0);
         if (!open) setOpen(true);
     };
 
@@ -53,7 +55,40 @@ export function CatalogSuggest({
         onChange(entry.name);
         onSelect(entry);
         setOpen(false);
+        setActiveIndex(0);
         inputRef.current?.blur();
+    };
+
+    /**
+     * Focus stays on the trigger input, which is outside the portalled suggestion list, so the
+     * list cannot receive these keys on its own. Owning the active index here keeps the picker
+     * operable without a pointer and keeps the highlight in sync with what Enter will choose.
+     */
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (!['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter', 'Escape'].includes(e.key)) return;
+        if (e.key === 'Escape') {
+            setOpen(false);
+            return;
+        }
+        if (filtered.length === 0) return;
+        if (!open) {
+            if (e.key === 'Enter') return;
+            e.preventDefault();
+            setOpen(true);
+            return;
+        }
+        e.preventDefault();
+        if (e.key === 'Enter') {
+            const entry = filtered[Math.min(activeIndex, filtered.length - 1)];
+            if (entry) handleSelect(entry);
+            return;
+        }
+        setActiveIndex((current) => {
+            if (e.key === 'Home') return 0;
+            if (e.key === 'End') return filtered.length - 1;
+            const next = e.key === 'ArrowDown' ? current + 1 : current - 1;
+            return Math.max(0, Math.min(next, filtered.length - 1));
+        });
     };
 
     return (
@@ -64,6 +99,7 @@ export function CatalogSuggest({
                     type="text"
                     value={value}
                     onChange={handleInputChange}
+                    onKeyDown={handleInputKeyDown}
                     onFocus={() => {
                         if ((value.trim() || showAllWhenEmpty) && filtered.length > 0)
                             setOpen(true);
@@ -80,7 +116,10 @@ export function CatalogSuggest({
                 align="start"
                 onOpenAutoFocus={(e) => e.preventDefault()}
             >
-                <Command shouldFilter={false}>
+                <Command
+                    shouldFilter={false}
+                    value={filtered[Math.min(activeIndex, filtered.length - 1)]?.id ?? ''}
+                >
                     <Command.List>
                         <Command.Empty className="px-3 py-2 text-sm text-textSecondary">
                             {translate(uiMessages.sheet.controls.noMatches)}

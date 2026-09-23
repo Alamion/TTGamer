@@ -39,25 +39,26 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 
 ## 3. Development Commands
 
-| Command                             | Purpose                              |
-| ----------------------------------- | ------------------------------------ |
-| `yarn start`                        | Start Docusaurus dev server          |
-| `yarn build`                        | Production build                     |
-| `yarn serve`                        | Preview production build             |
-| `yarn typecheck`                    | TypeScript check                     |
-| `yarn lint` / `yarn lint:fix`       | ESLint + Prettier (check / auto-fix) |
-| `yarn format` / `yarn format:check` | Prettier only (write / check)        |
-| `yarn test`                         | Run Vitest tests                     |
-| `yarn test:watch`                   | Vitest watch mode                    |
-| `yarn test:coverage`                | Vitest coverage report               |
-| `yarn validate:data`                | Validate catalogs and references     |
-| `yarn audit:dead-code`              | knip: unused files/exports/deps      |
-| `yarn validate:i18n`                | Check English/Russian docs parity    |
-| `yarn check:version`                | Check package/changelog/UI version   |
-| `yarn verify:fast`                  | Lint and typecheck                   |
-| `yarn verify:full`                  | Lint, typecheck, tests, build        |
-| `yarn deploy`                       | Deploy to GitHub Pages               |
-| `yarn clear`                        | Clear Docusaurus cache               |
+| Command                             | Purpose                                            |
+| ----------------------------------- | -------------------------------------------------- |
+| `yarn start`                        | Start Docusaurus dev server                        |
+| `yarn build`                        | Production build                                   |
+| `yarn serve`                        | Preview production build                           |
+| `yarn typecheck`                    | TypeScript check                                   |
+| `yarn lint` / `yarn lint:fix`       | ESLint + Prettier (check / auto-fix)               |
+| `yarn format` / `yarn format:check` | Prettier only (write / check)                      |
+| `yarn test`                         | Run Vitest tests                                   |
+| `yarn test:watch`                   | Vitest watch mode                                  |
+| `yarn test:coverage`                | Vitest coverage report                             |
+| `yarn validate:data`                | Validate catalogs and references                   |
+| `yarn audit:dead-code`              | knip: unused files/exports/deps (gate in `verify`) |
+| `yarn validate:i18n`                | Check English/Russian docs parity                  |
+| `yarn check:version`                | Check package/changelog/UI version                 |
+| `yarn verify:fast`                  | Lint and typecheck                                 |
+| `yarn verify`                       | Fast checks, dead-code gate, tests                 |
+| `yarn verify:full`                  | Fast checks, dead-code gate, tests, build          |
+| `yarn deploy`                       | Deploy to GitHub Pages                             |
+| `yarn clear`                        | Clear Docusaurus cache                             |
 
 ## 4. Code Conventions
 
@@ -150,6 +151,7 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 ## 10. Verification Scope
 
 - Small code edit: targeted tests plus `yarn verify:fast`.
-- Dice parser/evaluator or schema/persistence edit: `yarn verify`.
+- Dice parser/evaluator or schema/persistence edit: `yarn verify` (includes the knip
+  dead-code gate; a deliberate export without importers needs `@knipignore` and a reason).
 - Config, dependency, route, generated CSS, or documentation-path edit: `yarn verify:full`.
 - The pre-commit hook runs the full verifier on `main`/`master` and the fast verifier on other branches.

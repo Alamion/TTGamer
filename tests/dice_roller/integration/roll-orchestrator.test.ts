@@ -4,7 +4,7 @@ import {
     processRethrowLoop,
 } from '@site/src/dice_roller/dice-logic/roll-orchestrator';
 import type { DiceGroupNode, DiceRoll } from '@site/src/dice_roller/dice-logic/types';
-import { MAX_EXPLOSIONS } from '@site/src/dice_roller/utils/constants';
+import { MAX_EXPLOSIONS, MAX_PHYSICAL_3D_DICE } from '@site/src/dice_roller/utils/constants';
 import { describe, expect, it, vi } from 'vitest';
 
 function parseGroup(notation: string): DiceGroupNode {
@@ -126,5 +126,105 @@ describe('3D reroll orchestration', () => {
         );
 
         expect(rethrow).toHaveBeenCalledTimes(MAX_EXPLOSIONS);
+    });
+});
+
+const RENDERER_PATH = '@site/src/dice_roller/dice-logic/renderer';
+const ORCHESTRATOR_PATH = '@site/src/dice_roller/dice-logic/roll-orchestrator';
+
+/** Counts how often the renderer module is actually evaluated (i.e. downloaded). */
+const rendererLoads = vi.hoisted(() => ({ count: 0, failFirst: false }));
+
+function mockRenderer(): void {
+    vi.doMock(RENDERER_PATH, () => {
+        rendererLoads.count++;
+        const prepare = (groups: Array<{ count: number }>) => ({
+            geometries: Array.from({ length: groups[0].count }, () => ({}) as never),
+            groupSizes: [groups[0].count],
+        });
+        return {
+            get prepareDiceGeometries() {
+                if (rendererLoads.failFirst) {
+                    rendererLoads.failFirst = false;
+                    throw new Error('chunk unavailable');
+                }
+                return prepare;
+            },
+            startPhysicsRoll: () => ({
+                sessionId: 1,
+                settle: Promise.resolve([4]),
+                lockDice: vi.fn(),
+                rethrow: vi.fn(async () => []),
+                addDice: vi.fn(async () => []),
+                arrangeAndDismiss: vi.fn(),
+                wasManuallyRerolled: () => false,
+            }),
+        };
+    });
+}
+
+async function loadOrchestrator() {
+    vi.resetModules();
+    rendererLoads.count = 0;
+    mockRenderer();
+    return import(ORCHESTRATOR_PATH);
+}
+
+const config3d = { enable3dDice: true, diceColor: '#000', textColor: '#fff' };
+
+describe('3D renderer loading', () => {
+    it('never loads the renderer for a roll that resolves in 2D', async () => {
+        const { executeUnifiedRoll } = await loadOrchestrator();
+
+        await executeUnifiedRoll('1d6', { enable3dDice: false });
+        await executeUnifiedRoll('1d7', config3d); // unsupported sides
+        await executeUnifiedRoll(`${MAX_PHYSICAL_3D_DICE + 1}d6`, config3d); // over the limit
+
+        expect(rendererLoads.count).toBe(0);
+    });
+
+    it('loads the renderer once across sequential 3D rolls', async () => {
+        const { executeUnifiedRoll } = await loadOrchestrator();
+
+        await executeUnifiedRoll('1d6', config3d);
+        await executeUnifiedRoll('1d6', config3d);
+
+        expect(rendererLoads.count).toBe(1);
+    });
+
+    it('loads the renderer once for concurrent 3D rolls', async () => {
+        const { executeUnifiedRoll } = await loadOrchestrator();
+
+        const [first, second] = await Promise.all([
+            executeUnifiedRoll('1d6', config3d),
+            executeUnifiedRoll('1d6', config3d),
+        ]);
+
+        expect(rendererLoads.count).toBe(1);
+        expect(first.total).toBe(4);
+        expect(second.total).toBe(4);
+    });
+
+    it('falls back to 2D with a flag when the renderer cannot be loaded', async () => {
+        const { executeUnifiedRoll } = await loadOrchestrator();
+        rendererLoads.failFirst = true;
+
+        const result = await executeUnifiedRoll('1d6', config3d);
+
+        expect(result.renderer3dUnavailable).toBe(true);
+        expect(result.total).toBeGreaterThanOrEqual(1);
+        expect(result.total).toBeLessThanOrEqual(6);
+    });
+
+    it('retries the load on a later roll after a failure', async () => {
+        const { executeUnifiedRoll } = await loadOrchestrator();
+        rendererLoads.failFirst = true;
+
+        const failed = await executeUnifiedRoll('1d6', config3d);
+        const recovered = await executeUnifiedRoll('1d6', config3d);
+
+        expect(failed.renderer3dUnavailable).toBe(true);
+        expect(recovered.renderer3dUnavailable).toBeUndefined();
+        expect(recovered.total).toBe(4);
     });
 });

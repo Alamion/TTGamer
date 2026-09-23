@@ -55,7 +55,9 @@ A d100 is one logical die represented by two physical d10s. Indexing, rerolls, e
 
 The renderer owns one shared physics world so simultaneous sessions' dice can collide. Every `startPhysicsRoll()` handle is nevertheless bound to one numeric session ID: lock, reroll, add/explode, settle, manual-reroll state, arrange, and dismiss operations must use that ID. Never recover a session by taking the last array element. The physical-dice cap covers the initial dice plus additions across every group in that logical session; the recursive-modifier cap covers physical reroll/explosion work.
 
-The whole roll falls back to 2D when 3D is disabled, no supported geometry exists, the physical-dice limit is exceeded, renderer orchestration fails, or physics returns a non-finite value. Never replace an invalid physics value with a random d20 value.
+The renderer module is imported dynamically and memoized in `roll-orchestrator.ts`, after the 2D decisions, so `three`/`cannon-es` never sit on a page's critical path. Keep type-only references to it as `import type`, never add a static value import, and pass the loaded `prepareDiceGeometries` into helpers instead of importing it at module scope. A failed load is a 2D fallback flagged with `renderer3dUnavailable` (presented by `Renderer3DFallbackNotice`), and the memo is cleared so a later roll can retry.
+
+The whole roll falls back to 2D when 3D is disabled, no supported geometry exists, the physical-dice limit is exceeded, the renderer cannot be downloaded, renderer orchestration fails, or physics returns a non-finite value. Never replace an invalid physics value with a random d20 value.
 
 ## Tests
 

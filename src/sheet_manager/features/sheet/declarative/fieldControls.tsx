@@ -4,6 +4,7 @@ import { clsx } from 'clsx';
 import { ExternalLink, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { DocumentSearch } from '../../../components/controls/DocumentSearch';
 import { reportSheetIssue } from '../../../diagnostics';
 import {
@@ -29,6 +30,22 @@ const inputClasses =
 export interface CatalogOption {
     value: string;
     label: string;
+}
+
+/**
+ * Above this many options a plain drop-down stops being usable, so the field switches to the
+ * searchable picker (bilingual labels, ё/diacritics-insensitive search).
+ */
+export const SEARCHABLE_SELECT_THRESHOLD = 12;
+
+/** Single-select catalog fields with long lists get the searchable control; everything else does not. */
+export function usesSearchableSelect(
+    field: FieldType<'select'>,
+    options: ReadonlyArray<CatalogOption>
+): boolean {
+    return (
+        Boolean(field.binding) && !field.multiple && options.length > SEARCHABLE_SELECT_THRESHOLD
+    );
 }
 
 export interface DocumentOption {
@@ -179,11 +196,24 @@ function SelectFieldControlRender({
             ? catalogOptions
             : field.options.map((option) => ({ value: option.id, label: option.label }));
 
+    if (usesSearchableSelect(field, options)) {
+        return (
+            <SearchableSelectControl
+                disabled={disabled}
+                field={field}
+                onChange={onChange}
+                options={options}
+                value={value}
+            />
+        );
+    }
+
     if (field.multiple) {
         const selected = Array.isArray(value) ? value : [];
         return (
             <select
                 multiple
+                aria-label={field.label}
                 value={selected}
                 onChange={(event) =>
                     onChange(Array.from(event.target.selectedOptions, (option) => option.value))
@@ -218,6 +248,50 @@ function SelectFieldControlRender({
                 </option>
             ))}
         </select>
+    );
+}
+
+/**
+ * Searchable single-select over a long catalog. The query is local; the field still stores the
+ * option's value, so catalog fills and existing documents behave exactly as with the drop-down.
+ */
+function SearchableSelectControl({
+    disabled,
+    field,
+    onChange,
+    options,
+    value,
+}: {
+    disabled: boolean;
+    field: FieldType<'select'>;
+    onChange: (value: unknown) => void;
+    options: ReadonlyArray<CatalogOption>;
+    value: unknown;
+}) {
+    const stored = typeof value === 'string' ? value : '';
+    // An entry the catalog no longer offers keeps its stored text instead of being cleared.
+    const storedLabel = options.find((option) => option.value === stored)?.label ?? stored;
+    const [query, setQuery] = useState(storedLabel);
+    const [lastStored, setLastStored] = useState(stored);
+
+    if (stored !== lastStored) {
+        setLastStored(stored);
+        setQuery(storedLabel);
+    }
+
+    return (
+        <CatalogSuggest
+            ariaLabel={field.label}
+            catalog={options.map((option) => ({ id: option.value, name: option.label }))}
+            className={`${inputClasses} w-full`}
+            disabled={disabled}
+            onChange={(next) => {
+                setQuery(next);
+                if (next.trim() === '' && stored !== '') onChange(undefined);
+            }}
+            onSelect={(entry) => onChange(entry.id)}
+            value={query}
+        />
     );
 }
 

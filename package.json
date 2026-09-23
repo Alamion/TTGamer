@@ -1,7 +1,7 @@
 {
     "name": "ttgamer",
     "packageManager": "yarn@1.22.22",
-    "version": "3.7.0",
+    "version": "3.8.0",
     "private": true,
     "scripts": {
         "docusaurus": "docusaurus",
@@ -34,7 +34,7 @@
         "i18n:verify": "node --import tsx scripts/verify-i18n.ts",
         "check:version": "node --import tsx scripts/check-version.ts",
         "verify:fast": "yarn lint && yarn typecheck && yarn validate:backlog && node --import tsx scripts/build-translations.ts --check && yarn validate:i18n",
-        "verify": "yarn verify:fast && yarn test",
+        "verify": "yarn verify:fast && yarn audit:dead-code && yarn test",
         "verify:full": "yarn verify && yarn build"
     },
     "dependencies": {

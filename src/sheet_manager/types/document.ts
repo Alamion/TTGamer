@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { TemplateValuesBagSchema } from './templateValues';
+import { TemplatePageValuesSchema } from './templateValues';
 
 const identifierSchema = z
     .string()
@@ -43,7 +43,11 @@ const DocumentEnvelopeBaseSchema = z.object({
     definitionId: DocumentDefinitionIdSchema,
     schemaVersion: z.number().int().positive().max(1_000_000),
     metadata: DocumentMetadataSchema,
-    templateValues: TemplateValuesBagSchema.optional().default({}),
+    /**
+     * Document-global value bag (clarification D1/D3): keyed by valueKey, one flat namespace per
+     * document. Fields in different templates sharing a valueKey address the same entry here.
+     */
+    templateValues: TemplatePageValuesSchema.optional().default({}),
 });
 
 export const UnknownDocumentEnvelopeSchema = DocumentEnvelopeBaseSchema.extend({

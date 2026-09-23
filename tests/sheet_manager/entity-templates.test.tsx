@@ -19,9 +19,28 @@ import { DocumentViewIdSchema } from '@site/src/sheet_manager/types/document';
 import type { CustomTemplate, TemplateNode } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 const RENDER_TIMEOUT = 20_000;
+
+beforeAll(() => {
+    // cmdk (searchable catalog picker) needs these two jsdom gaps filled.
+    Element.prototype.scrollIntoView ??= () => undefined;
+    globalThis.ResizeObserver ??= class {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+    } as never;
+});
+
+/**
+ * Long catalogs render the searchable picker instead of a drop-down: type enough of the
+ * entry's name, then choose it from the suggestions.
+ */
+function pickFromCatalog(fieldLabel: string, query: string, optionLabel: string) {
+    fireEvent.change(screen.getByLabelText(fieldLabel), { target: { value: query } });
+    fireEvent.click(screen.getAllByText(optionLabel, { exact: true })[0]);
+}
 
 function template(id: string): CustomTemplate {
     return systemRegistry.getSystem('star-wars-wod')!.defaultTemplates!.find((t) => t.id === id)!;
@@ -223,9 +242,7 @@ describe('shipped entity templates (feature 007)', () => {
             data.notes = 'Keep me';
             seed(data, 'creature', 'creature');
             render(createElement(DeclarativeSheetView, { template: template('creature-sheet') }));
-            const bestiary = screen.getByRole('combobox', { name: 'Bestiary entry' });
-
-            fireEvent.change(bestiary, { target: { value: 'wampa' } });
+            pickFromCatalog('Bestiary entry', 'Wampa', 'Wampa');
             let stored = current().data as CreatureData;
             expect(stored.species).toBe('Wampa');
             expect(stored.attributes.Strength.value).toBe(5);
@@ -237,7 +254,7 @@ describe('shipped entity templates (feature 007)', () => {
             expect(current().templateValues?.['creature-merits']).toHaveLength(3);
             expect(current().templateValues?.movement).toBe('Tracking, Walking');
 
-            fireEvent.change(bestiary, { target: { value: 'rancor' } });
+            pickFromCatalog('Bestiary entry', 'Rancor', 'Rancor');
             stored = current().data as CreatureData;
             expect(stored.species).toBe('Rancor');
             expect(stored.name).toBe('Old Snowy');
@@ -280,9 +297,7 @@ describe('shipped entity templates (feature 007)', () => {
                 },
             ]);
             render(createElement(DeclarativeSheetView, { template: template('vehicle-sheet') }));
-            fireEvent.change(screen.getByRole('combobox', { name: 'Catalog model' }), {
-                target: { value: 'x-wing' },
-            });
+            pickFromCatalog('Catalog model', 'X-wing', 'T-65B X-wing');
             const stored = current().data as VehicleData;
             expect(stored.model).toBe('Incom T-65B X-wing');
             expect(stored.scale).toBe('starfighter');

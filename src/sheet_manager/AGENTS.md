@@ -46,7 +46,8 @@ Use dependency direction, not component size, to classify sheet UI:
 
 1. **Atoms** (`components/controls`, `components/stat-fields`) render one input or value.
    They receive values and callbacks, and must not read document context, stores, systems,
-   or persistence. Generic inputs live in `controls/` (e.g. `CatalogSuggest`); `stat-fields/` renders
+   or persistence. Generic inputs live in `controls/` (e.g. `CatalogSuggest`, which owns its own
+   keyboard navigation because its input sits outside the portalled list); `stat-fields/` renders
    one concrete stat. Extend an existing atom with an optional prop before adding a new one.
 2. **Molecules** (`components/sections`) combine atoms into one reusable interaction such
    as a trait group, resource group, condition track (optional strip layout and −/+ length

@@ -1,7 +1,19 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.3.0 -> 1.3.1 (clarification: VIII notices may be one dedicated page plus
+Version change: 1.3.1 -> 1.4.0 (amendment: the dead-code audit becomes a Tier 2 gate instead
+  of an advisory report; exemptions are declaration-level with a stated reason)
+
+Modified sections:
+  Verification Workflow — `yarn audit:dead-code` runs inside `yarn verify` (Tier 2) and fails
+    the run on any unused file, export, or dependency; `@knipignore` at the declaration with a
+    stated reason is the only exemption; dependency removal stays human-reviewed
+
+Runtime guidance updated: AGENTS.md (§3 command table, §10 Verification Scope)
+
+Deferred TODOs: none
+
+Previous: 1.3.0 -> 1.3.1 (clarification: VIII notices may be one dedicated page plus
   badges where material is used, instead of full text on every surface)
 
 Previous: 1.2.0 -> 1.3.0 (amendment: layered game systems, third-party content, library scale)
@@ -244,13 +256,16 @@ is perceived, the principles govern and this table clarifies application.
 
 - **Tier 1 — Fast check** (`yarn verify:fast`): lint + typecheck. Required for any small
   code edit; the default for most branches.
-- **Tier 2 — Logic and schema** (`yarn verify`): lint + typecheck + full test suite.
-  Required for edits to `dice-logic`, schemas, stores, or persistence.
+- **Tier 2 — Logic and schema** (`yarn verify`): lint + typecheck + dead-code audit + full
+  test suite. Required for edits to `dice-logic`, schemas, stores, or persistence.
 - **Tier 3 — Full verification** (`yarn verify:full`): lint + typecheck + tests +
   production build. Required for config, dependency, route, generated-CSS, or
   documentation-path changes.
-- **Advisory audit** (`yarn audit:dead-code`): knip report of unused files, exports, and
-  dependencies; reviewed by a human, not a merge gate.
+- **Dead-code gate** (`yarn audit:dead-code`, inside Tier 2): knip fails the run on any
+  unused file, export, or dependency and names the file and symbol. An export that exists
+  deliberately without importers (for example an exhaustiveness guard) is exempted at its
+  declaration with `@knipignore` and a stated reason — never by a broad ignore pattern.
+  Removing a dependency to satisfy the gate stays a human decision.
 - **Specialized validators**: `yarn validate:data` and `yarn validate:i18n` are required
   gates for their domains and are not substitutes for tests.
 - **Review expectations**: every change states which modules it touches; cross-module
@@ -282,4 +297,4 @@ is perceived, the principles govern and this table clarifies application.
   guidance file for day-to-day development; it must remain consistent with this
   constitution and defer to it on conflict.
 
-**Version**: 1.3.1 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-15
+**Version**: 1.4.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-23

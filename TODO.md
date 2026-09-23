@@ -80,7 +80,8 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 
 ### Minor
 
-- [ ] ⬜ **T-013 — Lazy load 3D packages** (none) — the page loads faster because the 3D dice renderer and its physics engine download only when 3D dice are requested.
+- [x] ✅ **T-013 — Lazy load 3D packages** (none) — the page loads faster because the 3D dice renderer and its physics engine download only when 3D dice are requested.
+    - 2026-09-23: done in spec 010. `three` and `cannon-es` moved out of the shared bundle: `main.js` went from 1 437 367 B to 792 588 B (−44.9%) and the 3D code sits in its own 607 353 B chunk fetched on the first 3D roll (once per session, shared by concurrent rolls). A failed load rolls in 2D, reports it once through a toast, and retries on the next roll.
 - [x] ✅ **T-014 — Inline dice rolls** (none) — readers roll directly from documentation pages.
 - [ ] ⬜ **T-015 — Multi-system dice pool tabs** (none) — players keep separate dice pools per game system with favorites, once roll-session isolation and mixed-roll orchestrator tests are complete. (task for roadmap path `multi-system-sheets`)
 - [ ] ⬜ **T-016 — Discord webhook backend proxy** (a backend must exist) — roll sharing stops exposing the webhook secret to the browser: an authenticated backend proxy holds it server-side; not a current release blocker.
@@ -95,7 +96,8 @@ estimates, open questions. Priority ordering lives only in the section grouping.
     - Column settings add real columns inside the editor and the width control resizes them, rather than only writing configuration.
     - Sections show their characteristic primary/secondary accent bars in the editor.
     - Mostly an interface rework over existing template capabilities; low priority.
-- [ ] ⬜ **T-055 — Visible StatDot clear control** (none) — the optional clear cross on StatDot is noticeable: semi-transparent red by default, more opaque on hover and keyboard focus.
+- [x] ✅ **T-055 — Visible StatDot clear control** (none) — the optional clear cross on StatDot is noticeable: semi-transparent red by default, more opaque on hover and keyboard focus.
+    - 2026-09-23: done in spec 010; the control also gained the `aria-label` the accessibility floor requires (it previously carried only a `title`).
 - [ ] ⬜ **T-056 — Denser brief layouts** (none) — a brief sheet fits one phone screen or a quarter of a desktop screen: CompactRating labels shorten to three uppercase letters with minimal label-to-value spacing, and the other element kinds tighten the same way, so far more field groups fit without losing information or visible grouping.
     - Prerequisite for the embedded brief cards of T-051 and T-059.
 - [ ] ⬜ **T-057 — Back navigation between linked entities** (T-051) — following a link to another entity is reversible: browser back and forward return to the previously viewed document, even though it is physically the same page.
@@ -126,7 +128,8 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [x] ✅ **T-023 — Translation source audit** (T-021, T-022) — literal string IDs and generated-descriptor imports get a static audit once at least two further domains establish the usage patterns; deliberately not a brittle regex scanner.
     - 2026-09-19: delivered as the spec 009 translation coverage verifier (`yarn i18n:verify`, TypeScript AST), part of `verify:fast`.
 - [ ] ⬜ **T-063 — Russian catalog descriptions** (T-022) — Russian readers get the long `description` texts of the Star Wars catalogs in Russian, written as own-words paraphrases (Principle VIII); `yarn i18n:status` lists the entries still falling back to English. (task for roadmap path `core-book-docs`)
-- [ ] ⬜ **T-064 — Searchable long catalog selects** (T-022) — template fields whose catalog select has more than 12 options use the searchable `CatalogSuggest` (bilingual labels, case/ё-insensitive search) instead of a plain select in `declarative/fieldControls.tsx`; deferred from spec 009 (task T061).
+- [x] ✅ **T-064 — Searchable long catalog selects** (T-022) — template fields whose catalog select has more than 12 options use the searchable `CatalogSuggest` (bilingual labels, case/ё-insensitive search) instead of a plain select in `declarative/fieldControls.tsx`; deferred from spec 009 (task T061).
+    - 2026-09-23: done in spec 010. Applies to bound single-select fields only — the template schema already rejects a bound multi-select, so no carve-out was needed. Keyboard navigation of the suggestion list had to be implemented in `CatalogSuggest` (focus stays on the trigger input, outside the portalled list), which fixes the equipment pickers too.
 - [x] ✅ **T-065 — Check of book-term hints outside unit tests** (none) — the English-name hints (spec 009) are confirmed in a real browser: the English name is announced once per label, and at phone width the tap-to-show hint, the one-time notice, and the short forms in narrow trait/specialty rows work without covering the inputs.
     - 2026-09-23: checked through Playwright against the dev server instead of a screen reader and a physical phone. Found and fixed a real defect: the hint description was `sr-only`, so it sat inside the label's own accessible name and a reader said the English name twice; it is `hidden` now and reaches the reader only through `aria-describedby` (regression test in `tests/sheet_manager/term-short-form.test.tsx`). At 360 px the long terms fall back to their short forms, inputs keep ≥ 99 px, the tap opens the hint inside the viewport and it covers no input.
 
@@ -141,9 +144,10 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 
 - [ ] ⬜ **T-028 — Boundary check** (the integration-module convention settles) — module boundaries are enforced automatically: `shared` cannot import feature modules and direct feature-to-feature imports are flagged.
 - [ ] ⬜ **T-029 — Bundle-budget report** (T-013) — bundle-size regressions are caught against meaningful per-chunk limits once the 3D renderer is lazy-loaded.
-- [ ] 🟡 **T-030 — Dead-code/export audit** (none) — unused exports and dead code surface with explicit MDX and Docusaurus entry-point configuration; dependency removal stays human-reviewed.
+- [x] ✅ **T-030 — Dead-code/export audit** (none) — unused exports and dead code surface with explicit MDX and Docusaurus entry-point configuration; dependency removal stays human-reviewed.
     - Dead files/functions removed; knip committed (`knip.json`, `yarn audit:dead-code`) and MDX imports normalized to `@site/` so it resolves them.
-    - 2026-09-23: every unused export and unused exported type reviewed and removed (23 in all); `@docusaurus/plugin-content-docs` now declared. The two template exhaustiveness guards are kept and marked `@knipignore` — nothing imports them because the assertion itself is the product. Remaining: knip still exits 1 on the deliberate `TemplateValuesBagSchema` alias and one config hint, so decide whether to resolve those and gate `verify` on knip.
+    - 2026-09-23: every unused export and unused exported type reviewed and removed (23 in all); `@docusaurus/plugin-content-docs` now declared. The two template exhaustiveness guards are kept and marked `@knipignore` — nothing imports them because the assertion itself is the product.
+    - 2026-09-23: done in spec 010. Both remaining findings resolved — the `TemplateValuesBagSchema` alias was dropped (its only importer now uses `TemplatePageValuesSchema`, with the bag comment moved to that field) and the stale `src/i18n/generated/**` ignore removed. `yarn audit:dead-code` now runs inside `yarn verify` (Tier 2, ~17 s) and fails on any new finding; constitution 1.4.0 records the tier and keeps `@knipignore` at a declaration as the only exemption.
 - [ ] ⬜ **T-031 — AI-context validator reconsideration** (none) — decide whether the AI-context validator returns once the AGENTS/skill structure stabilizes; intentionally stalled for now.
 - [ ] ⬜ **T-032 — Store persistence tests** (none) — character data is protected by store hydration/migration fixtures, import-conflict component tests, rendering tests for every shipped template page, and persistence failure/recovery tests.
 - [ ] ⬜ **T-033 — Playwright smoke tests** (none) — homepage, docs, sheet, and dice routes plus keyboard flows get smoke coverage.
