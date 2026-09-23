@@ -77,7 +77,7 @@ share character trait/equipment blocks; the droid adapter maps its mechanical `d
 to the shared condition capability without changing persisted field names. Labels and track
 profiles remain definition-owned configuration. Shared views route by capability presence
 (`capabilities.character`), never by `definitionId` string matching. Retired pre-template
-blocks and views are archived for reference in `context/legacy-sheet-components/`.
+blocks and views are archived for reference in `context/sheet-manager/legacy-sheet-components/`.
 
 ## Character Access
 

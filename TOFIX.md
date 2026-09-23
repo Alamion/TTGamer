@@ -28,6 +28,14 @@ reused for a different entry, never renumbered (gaps after removals are permanen
 
 **Recommendation:** Remove the client-side `sendToDiscordWebhook` call and POST to an authenticated backend endpoint that proxies the message to Discord with server-side secret storage; no anonymous proxy. Important but not a release blocker for the offline-first product.
 
+### F-006 — Erased sheet stats still label the next roll
+
+**Area:** dice roller roll context (sheet → dice panel)
+
+**Evidence:** Testers report: click a skill on a sheet, erase the notation by hand, click a skill again, roll — the result (history, Discord message) names both skills, though only the second one is in the pool. Each sheet click pushes a label onto the session-stored stack (`pushStatLabel` in `src/integrations/sheet-dice/useSheetDiceActions.ts`); the stack is cleared only by the clear button (`RollControls.tsx`), a roll, or recalling history, never when the text is edited in `NotationInput.tsx` or cleared by right-clicking the header's pending-roll button (`src/components/NavbarDiceRoller.tsx`), so erased stats survive.
+
+**Recommendation:** Tie the queued labels to the notation they came with: clear the stack when the input becomes empty, and drop labels whose notation part no longer appears in the input; add a test for the reported sequence.
+
 ## 🟢 Medium
 
 ### F-002 — DataCatalog URL parameter initialization race
@@ -37,3 +45,19 @@ reused for a different entry, never renumbered (gaps after removals are permanen
 **Evidence:** `DataCatalog.tsx` splits URL parameter initialization across `useLayoutEffect` (first render) and `useEffect` (subsequent navigations) using a `firstRender` ref (`src/shared/components/DataCatalog.tsx:355-368`). Potentially fragile under concurrent rendering; no user-visible failure has been reproduced.
 
 **Recommendation:** Revisit if concurrent navigation demonstrates a breakage; converge on one reducer/external-store boundary rather than adding more refs.
+
+### F-004 — 3D dice spawn inside each other and scatter at high speed
+
+**Area:** dice roller 3D physics (`src/dice_roller/dice-logic/renderer/`)
+
+**Evidence:** A player reported that thrown dice can pass into each other, after which the physics engine's penetration resolution flings them apart at high speed. The default spawn vector in `shapes.ts` (`createDefaultVector`) places every die independently at a random point of a 100×100 square at the same height, with launch speeds up to ~2 250 units/s, and CCD is disabled (`ccdSpeedThreshold`/`ccdRadius` commented out) — nothing prevents overlapping spawns or tunnelling on a large step. Not yet reproduced locally; frequency may depend on pool size and frame timing.
+
+**Recommendation:** Reproduce with the display-condition tests (T-066) first. Then spawn dice on non-overlapping slots (or reject overlapping positions), and evaluate CCD or a speed/step cap before tuning contact-material parameters.
+
+### F-005 — 3D roll timing depends on the display refresh rate
+
+**Area:** dice roller 3D renderer (`src/dice_roller/dice-logic/renderer/renderer.ts`)
+
+**Evidence:** The result display and fade-out count animation frames (`showFrames`, `fadeFrames`, 60 or 30 frames each), so at 165 Hz dice stay visible and fade ~2.75× faster than at 60 Hz, and on a throttled/low-FPS display slower. An older report said dice vanished or their values were read before they stopped on a high-refresh display; it was fixed once but not re-confirmed with the reporter. The settle check itself uses wall-clock time (100 ms below `VELOCITY_THRESHOLD = 5`), and whether that threshold accepts a still-tipping die is unverified.
+
+**Recommendation:** Convert frame-counted phases to elapsed-time durations, then use the display-condition tests (T-066) to confirm settle and read-out behave the same at 60, 144, 165, and 240 Hz before closing; ask the original reporter to re-check.

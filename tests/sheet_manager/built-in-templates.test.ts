@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 /**
  * Views are templates (feature 007): the `built-in` layout path and its React blocks are retired
- * (archived under `context/legacy-sheet-components/`). Every view of every registered system must
+ * (archived under `context/sheet-manager/legacy-sheet-components/`). Every view of every registered system must
  * resolve to a shipped default template with the same id and document kind.
  */
 describe('views are shipped templates', () => {
