@@ -1,7 +1,19 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.3.1 -> 1.4.0 (amendment: the dead-code audit becomes a Tier 2 gate instead
+Version change: 1.4.0 -> 1.4.1 (clarification: a policy badge confirms the project accepts
+  the policy; it is placed once in a prominent place per product surface that presents the
+  material, not repeated on every view, and game mechanics alone need no notice)
+
+Modified principles:
+  VIII. Respectful Use of Third-Party Material — badge placement and the mechanics
+    exception made explicit
+
+Runtime guidance updated: AGENTS.md (§8 Module Boundaries, third-party material)
+
+Deferred TODOs: none
+
+Previous: 1.3.1 -> 1.4.0 (amendment: the dead-code audit becomes a Tier 2 gate instead
   of an advisory report; exemptions are declaration-level with a stated reason)
 
 Modified sections:
@@ -223,6 +235,12 @@ republishing their books. Rules:
   with surfaces that use the material (sheets) showing the required badge linking to it, and
   exports carrying the notice text. A page MUST NOT carry notices or attributions for
   material it does not use.
+- The badge confirms that the project accepts the policy's terms. It is placed once, in a
+  prominent place, on the surface that presents the publisher's material (e.g. the
+  character sheet); it MUST NOT be repeated on every view, panel, toast, history entry, or
+  message that happens to touch that material. Game mechanics on their own (dice
+  procedures, success counting, outcome names) are not publisher material and carry no
+  notice.
 - A combination inherits every applicable policy: a setting run on another publisher's
   engine shows both notices.
 - Content under a non-commercial policy stays free, with no purchases or monetized
@@ -297,4 +315,4 @@ is perceived, the principles govern and this table clarifies application.
   guidance file for day-to-day development; it must remain consistent with this
   constitution and defer to it on conflict.
 
-**Version**: 1.4.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-23
+**Version**: 1.4.1 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-24
