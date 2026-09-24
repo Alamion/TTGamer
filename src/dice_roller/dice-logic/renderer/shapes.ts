@@ -87,7 +87,6 @@ export abstract class DiceShape {
         data: DiceGeometryData,
         vector?: { x: number; y: number }
     ) {
-        debug(`DiceShape: Creating dice with ${data.values?.length || 0} sides`);
         this.sides = sides;
         this.inertia = inertia;
         this.w = w;
@@ -126,17 +125,6 @@ export abstract class DiceShape {
             z: 0,
         };
         const axis = randomOrientation();
-        debug('Vector generated', {
-            v,
-            dist,
-            boost,
-            vector,
-            pos,
-            velvec,
-            velocity,
-            angular,
-            axis,
-        });
         return {
             pos,
             velocity,
@@ -169,17 +157,6 @@ export abstract class DiceShape {
         const normals = this.buffer.attributes.normal.array as Float32Array;
         const groups = this.buffer.groups;
 
-        debug(
-            `DiceShape: Calculating result for ${this.sides}-sided die, groups: ${groups.length}, normals count: ${normals.length}`
-        );
-
-        for (let i = 0; i < Math.min(5, groups.length); i++) {
-            const g = groups[i];
-            debug(
-                `  Group ${i}: start=${g.start}, count=${g.count}, materialIndex=${g.materialIndex}`
-            );
-        }
-
         const materialNormals: Map<number, { angle: number; groupIndex: number }> = new Map();
 
         for (let i = 0; i < groups.length; i++) {
@@ -189,15 +166,11 @@ export abstract class DiceShape {
             // Skip material index 0 (blank label for triangular connecting faces).
             // Material 1 is the '0'/'00' face on d10/d100 and must be included.
             if (matIdx < 1) {
-                // debug(`  Skipping group ${i}: materialIndex ${matIdx} is a border/blank face`)
                 continue;
             }
 
             const startVertex = group.start * 3;
             if (startVertex + 2 >= normals.length) {
-                debug(
-                    `  Skipping group ${i}: startVertex ${startVertex} >= normals.length ${normals.length}`
-                );
                 continue;
             }
 
@@ -206,16 +179,12 @@ export abstract class DiceShape {
             const nz = normals[startVertex + 2];
 
             if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) {
-                debug(
-                    `  Skipping group ${i}: normal has non-finite components (${nx}, ${ny}, ${nz})`
-                );
                 continue;
             }
 
             const normal = new Vector3(nx, ny, nz);
 
             if (normal.lengthSq() === 0) {
-                debug(`  Skipping group ${i}: zero-length normal`);
                 continue;
             }
 
@@ -224,7 +193,6 @@ export abstract class DiceShape {
                 .applyQuaternion(cannonQuaternionToThree(this.body.quaternion));
 
             if (worldNormal.lengthSq() === 0) {
-                debug(`  Skipping group ${i}: zero-length worldNormal`);
                 continue;
             }
 
@@ -233,7 +201,6 @@ export abstract class DiceShape {
             const dot = n1.dot(n2);
 
             if (!Number.isFinite(dot)) {
-                debug(`  Skipping group ${i}: dot product is non-finite (${dot})`);
                 continue;
             }
 
@@ -245,8 +212,6 @@ export abstract class DiceShape {
                 materialNormals.set(matIdx, { angle, groupIndex: i });
             }
         }
-
-        debug(`DiceShape: Found ${materialNormals.size} unique materials:`, materialNormals);
 
         if (materialNormals.size === 0) {
             const randomIndex = Math.floor(Math.random() * this.values.length);
@@ -283,17 +248,17 @@ export abstract class DiceShape {
             );
             result = this.values?.[approxIndex] ?? approxIndex + 1;
         }
-
-        debug(
-            `DiceShape: Result calculated - closestMatIndex: ${closestMatIndex}, faceIndex: ${faceIndex}, value: ${result}, closestAngle: ${closestAngle}`
-        );
         return result;
     }
 
+    /**
+     * Draws the die between the last two physics steps (cannon-es interpolates by the time
+     * left over), so motion is smooth at refresh rates other than the 60 Hz physics step.
+     */
     set(): void {
         // Validate position values before updating geometry
-        const pos = this.body.position;
-        const quat = this.body.quaternion;
+        const pos = this.body.interpolatedPosition;
+        const quat = this.body.interpolatedQuaternion;
 
         if (!Number.isFinite(pos.x) || !Number.isFinite(pos.y) || !Number.isFinite(pos.z)) {
             debug('DiceShape: Invalid position detected, skipping update');
@@ -350,13 +315,16 @@ export abstract class DiceShape {
             this.vector.velocity.y,
             this.vector.velocity.z
         );
+        // A teleport, not motion: nothing to interpolate from.
+        this.body.previousPosition.copy(this.body.position);
+        this.body.interpolatedPosition.copy(this.body.position);
+        this.body.previousQuaternion.copy(this.body.quaternion);
+        this.body.interpolatedQuaternion.copy(this.body.quaternion);
         // this.body.ccdSpeedThreshold = 5;
         // this.body.ccdRadius = 0.5;
         this.body.linearDamping = 0.1;
         this.body.angularDamping = 0.1;
         this.body.wakeUp();
-
-        debug('DiceShape created:', this.body);
     }
 }
 

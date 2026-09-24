@@ -7,20 +7,24 @@ import {
     ANGULAR_VELOCITY_THRESHOLD,
     FADE_SECONDS,
     FRAME_RATE,
+    FULL_SIZE_DICE_POOL,
     MAX_ROLL_SECONDS,
     REST_SECONDS,
     SHOW_SECONDS,
     VELOCITY_THRESHOLD,
 } from '../../utils/constants';
 import { RollCancelledError } from '../errors';
+import { applyCrowdCollisions } from './crowd';
 import type { DiceGeometryData } from './geometries';
 import { MAX_LIVELINESS, physicsProfile } from './liveliness';
 import { PhysicsWorld } from './physics';
-import { ResourceTracker } from './resource';
 import { SceneManager } from './scene';
 import { createDiceShape, DiceShape } from './shapes';
 import { SoundManager } from './sound-manager';
 import { separateSpawns } from './spawn';
+
+/** How much faster than the rest thresholds a resting die must move to count as moving again. */
+const WAKE_FACTOR = 4;
 
 export interface DiceRendererConfig {
     diceColor: string;
@@ -58,7 +62,6 @@ interface RollSession {
     fadeLeft: number;
     allStopped: boolean;
     isAnimating: boolean;
-    tracker: ResourceTracker;
     /** Simulated time the current throw started at. */
     startedAt: number;
     cancelled: boolean;
@@ -104,6 +107,7 @@ export class DiceRenderer {
     private mouse = new Vector2();
     private hoveredMesh: Mesh | null = null;
     private hitDieAtPointerDown = false;
+    private pendingPointerMove: PointerEvent | null = null;
     private boundPointerDown: (e: PointerEvent) => void;
     private boundPointerMove: (e: PointerEvent) => void;
     private boundClickCapture: (e: MouseEvent) => void;
@@ -261,13 +265,23 @@ export class DiceRenderer {
         }, 200);
     }
 
-    /** Applies the profile's damping and launch strength to a die that was just thrown. */
-    private launch(die: DiceShape): void {
+    /**
+     * Applies the profile's damping and launch strength to a die that was just thrown. Dice of
+     * a large pool also sleep as soon as they are still, so the solver skips the settled part
+     * of the pile (dice #12).
+     */
+    private launch(die: DiceShape, poolSize: number): void {
         const { body } = die;
+        const crowded = poolSize > FULL_SIZE_DICE_POOL;
+        if (crowded) applyCrowdCollisions(body);
         body.linearDamping = this.profile.linearDamping;
         body.angularDamping = this.profile.angularDamping;
-        body.sleepSpeedLimit = this.profile.sleepSpeed;
-        body.sleepTimeLimit = this.profile.sleepTime;
+        body.sleepSpeedLimit = crowded
+            ? Math.max(this.profile.sleepSpeed, VELOCITY_THRESHOLD)
+            : this.profile.sleepSpeed;
+        body.sleepTimeLimit = crowded
+            ? Math.min(this.profile.sleepTime, REST_SECONDS)
+            : this.profile.sleepTime;
         body.velocity.scale(this.profile.launch, body.velocity);
         body.angularVelocity.scale(this.profile.launch, body.angularVelocity);
     }
@@ -279,9 +293,8 @@ export class DiceRenderer {
             .flatMap((session) => session.dice.map((die) => die.body));
     }
 
-    private addDiceToScene(diceShapes: DiceShape[], tracker: ResourceTracker): void {
+    private addDiceToScene(diceShapes: DiceShape[]): void {
         for (const shape of diceShapes) {
-            tracker.track(shape.geometry);
             this.sceneManager.add(shape.geometry);
             this.physicsWorld.add(shape);
             shape.body.addEventListener('collide', (event: unknown) => {
@@ -290,12 +303,17 @@ export class DiceRenderer {
         }
     }
 
-    private removeDiceFromScene(diceShapes: DiceShape[], tracker: ResourceTracker): void {
+    /**
+     * Removes dice and frees their own materials. Geometry and the face atlas belong to the
+     * factory's dice templates and are shared across dice and rolls, so they stay.
+     */
+    private removeDiceFromScene(diceShapes: DiceShape[]): void {
         for (const shape of diceShapes) {
             this.sceneManager.remove(shape.geometry);
             this.physicsWorld.remove(shape);
+            const { material } = shape.geometry;
+            for (const each of Array.isArray(material) ? material : [material]) each.dispose();
         }
-        tracker.dispose();
     }
 
     private getRandomVector(): { x: number; y: number } {
@@ -362,7 +380,7 @@ export class DiceRenderer {
             };
             const dice = createDiceShape(sides, this.width, this.height, data, perDieVector);
             dice.geometry.userData.flatIndex = i;
-            this.launch(dice);
+            this.launch(dice, totalDice);
             diceShapes.push(dice);
         }
 
@@ -379,8 +397,7 @@ export class DiceRenderer {
             this.airborneBodies(),
             this.physicsWorld.limits
         );
-        const tracker = new ResourceTracker();
-        this.addDiceToScene(diceShapes, tracker);
+        this.addDiceToScene(diceShapes);
 
         let settleResolve: ((values: number[]) => void) | null = null;
         let settleReject: ((err: Error) => void) | null = null;
@@ -403,7 +420,6 @@ export class DiceRenderer {
             fadeLeft: FADE_SECONDS,
             allStopped: false,
             isAnimating: true,
-            tracker,
             startedAt: this.clock,
             cancelled: false,
             accepted: false,
@@ -463,7 +479,7 @@ export class DiceRenderer {
                     y: vector.y + (Math.random() - 0.5) * rethrowSpread,
                 };
                 die.recreate(perDieVector, this.width, this.height);
-                this.launch(die);
+                this.launch(die, activeSession.dice.length);
                 rethrown.push(die);
             }
         }
@@ -514,7 +530,7 @@ export class DiceRenderer {
                 y: vector.y + (Math.random() - 0.5) * addSpread,
             };
             const dice = createDiceShape(sides, this.width, this.height, data, perDieVector);
-            this.launch(dice);
+            this.launch(dice, activeSession.dice.length + newCount);
             newDice.push(dice);
         }
 
@@ -523,7 +539,7 @@ export class DiceRenderer {
             this.airborneBodies(),
             this.physicsWorld.limits
         );
-        this.addDiceToScene(newDice, activeSession.tracker);
+        this.addDiceToScene(newDice);
         activeSession.dice.push(...newDice);
 
         let settleResolve: ((values: number[]) => void) | null = null;
@@ -644,7 +660,7 @@ export class DiceRenderer {
             session.settleReject = null;
         }
 
-        this.removeDiceFromScene(session.dice, session.tracker);
+        this.removeDiceFromScene(session.dice);
 
         this.sceneManager.render();
 
@@ -669,6 +685,7 @@ export class DiceRenderer {
 
         const dt = this.physicsWorld.step(this.frameRate);
         this.clock += dt;
+        this.resolvePointerMove();
 
         for (const session of this.sessions) {
             if (!session.isAnimating) continue;
@@ -766,11 +783,14 @@ export class DiceRenderer {
                 continue;
             }
 
-            // Spin about the vertical axis cannot change the face that is up.
+            // Spin about the vertical axis cannot change the face that is up. A die that has
+            // come to rest stays at rest through solver jitter in a pile and wakes only when
+            // knocked, or a large pool never has every die still in the same instant.
             const { x: tipX, y: tipY } = die.body.angularVelocity;
+            const slack = die.stopped ? WAKE_FACTOR : 1;
             const still =
-                die.body.velocity.length() < VELOCITY_THRESHOLD &&
-                Math.hypot(tipX, tipY) < ANGULAR_VELOCITY_THRESHOLD;
+                die.body.velocity.length() < VELOCITY_THRESHOLD * slack &&
+                Math.hypot(tipX, tipY) < ANGULAR_VELOCITY_THRESHOLD * slack;
 
             if (!still) {
                 die.stopped = false;
@@ -853,7 +873,15 @@ export class DiceRenderer {
         e.preventDefault();
     }
 
+    /** Pointer moves arrive far more often than frames; hover is resolved once per frame. */
     private handlePointerMove(e: PointerEvent): void {
+        this.pendingPointerMove = e;
+    }
+
+    private resolvePointerMove(): void {
+        const e = this.pendingPointerMove;
+        if (!e) return;
+        this.pendingPointerMove = null;
         const sessions = this.getActiveSessions();
         if (sessions.length === 0) {
             this.clearHover();
@@ -956,7 +984,7 @@ export class DiceRenderer {
             die.body.velocity.set(vel.x, vel.y, vel.z);
             const angVel = this.generateRerollAngularVelocity();
             die.body.angularVelocity.set(angVel.x, angVel.y, angVel.z);
-            this.launch(die);
+            this.launch(die, session.dice.length);
             die.body.wakeUp();
             die.stopped = false;
             die.restingSince = null;
@@ -976,7 +1004,7 @@ export class DiceRenderer {
         document.removeEventListener('click', this.boundClickCapture, { capture: true });
         document.removeEventListener('pointermove', this.boundPointerMove);
         for (const session of this.sessions) {
-            this.removeDiceFromScene(session.dice, session.tracker);
+            this.removeDiceFromScene(session.dice);
         }
         this.sessions = [];
 

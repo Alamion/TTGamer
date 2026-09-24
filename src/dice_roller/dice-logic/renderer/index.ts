@@ -14,7 +14,6 @@ export {
 export { PhysicsWorld } from './physics';
 export { DiceRenderer, type DiceRendererConfig } from './renderer';
 export { disposeSharedRenderer, startPhysicsRoll } from './renderer-pool';
-export { ResourceTracker } from './resource';
 export { SceneManager } from './scene';
 export {
     D2Dice,

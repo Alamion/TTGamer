@@ -44,6 +44,10 @@ export interface DiceFactoryConfig extends DiceRendererConfig {
     scaler: number;
 }
 
+/** Built dice per look; a die of a large pool is a clone, not a rebuild (dice #12). */
+const templates = new Map<string, { clone(): DiceGeometryData; values: number[] }>();
+const MAX_TEMPLATES = 48;
+
 function getOrCreateGeometry(
     sides: number,
     config: DiceFactoryConfig,
@@ -54,6 +58,28 @@ function getOrCreateGeometry(
         return null;
     }
 
+    const key = [sides, fudge ? 'F' : '', config.diceColor, config.textColor, config.scaler].join(
+        '|'
+    );
+    let template = templates.get(key);
+    if (!template) {
+        template = buildTemplate(GeometryClass, config, fudge) ?? undefined;
+        if (!template) return null;
+        if (templates.size >= MAX_TEMPLATES) {
+            templates.delete(templates.keys().next().value!);
+        }
+        templates.set(key, template);
+    }
+    const geom = template.clone();
+    geom.values = template.values;
+    return geom;
+}
+
+function buildTemplate(
+    GeometryClass: DiceGeometryClass,
+    config: DiceFactoryConfig,
+    fudge?: boolean
+): { clone(): DiceGeometryData; values: number[] } | null {
     const options = {
         diceColor: config.diceColor,
         textColor: config.textColor,
@@ -77,15 +103,8 @@ function getOrCreateGeometry(
     if (!created) {
         return null;
     }
-    const geom = created.clone();
-
-    if (fudge) {
-        geom.values = g.values;
-    } else {
-        geom.values = geom.values.map((v) => v + 1);
-    }
-
-    return geom;
+    const values = fudge ? g.values : g.values.map((v) => v + 1);
+    return { clone: () => created.clone(), values };
 }
 
 export function prepareDiceGeometries(

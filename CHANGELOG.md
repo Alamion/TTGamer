@@ -5,10 +5,13 @@
 ### Minor feat
 
 - **Dice feel setting (dice #13)**: one slider in the dice roller settings runs from heavy dice, which grip the table and stop almost where they land (about 2 s for ten dice), to lively dice that hop and tumble for seconds — the original behavior and the default; faces stay fair across the range
+- **Large 3D pools stay smooth (dice #12)**: each die now draws with one material from a packed face texture instead of one draw call per triangle, pools above a dozen dice shrink so the pile settles, and settled dice in a large pool sleep; on integrated graphics 100 d6 roll at about 57 fps (was 19) and 100 d20 at about 53 fps (previously they did not finish within a minute), and the 3D limit rises from 100 to 200 physical dice
+- **Steadier 3D frame pacing**: dice are drawn between physics steps, so motion is smooth on 120–240 Hz displays; large pools collide die-to-die as spheres (the real shape still decides the face), cloned dice share their geometry, hover highlighting runs once per frame, and the development build no longer logs every die face — a 100 d20 roll keeps 99% of frames at 60 fps on integrated graphics
 
 ### Fix
 
 - **Dice settings can be closed on phones**: the settings dialog grew taller than a phone screen, pushing its close button above the screen and under the site header with no way to scroll; it now opens above the header, fits the visible screen, and scrolls its settings while the title and close button stay in place
+- **Large piles reach a result**: a die that has come to rest stays at rest through solver jitter and counts as moving again only when knocked, so a pool of a hundred dice no longer waits for the 10-second limit
 - **Fair 3D start orientations**: a die's starting rotation was drawn from a skewed distribution; it is now uniform over all orientations, which matters most when dice barely tumble
 - **The botch die stays in the Classic WoD tab without a threshold**: it adds `d10f=1`, which only sums like any d10 until a threshold is set; setting one also gives plain and botch-only d10 terms the threshold
 

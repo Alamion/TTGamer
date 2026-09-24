@@ -151,10 +151,12 @@ export async function traceRoll(
     timing: FrameTiming,
     {
         liveliness,
+        scaler = 1,
         limitMs = 40_000,
         onFrame,
     }: {
         liveliness?: number;
+        scaler?: number;
         limitMs?: number;
         onFrame?: (ms: number, bodies: Body[]) => void;
     } = {}
@@ -163,7 +165,7 @@ export async function traceRoll(
     const { geometries, groupSizes } = prepareDiceGeometries(groups as never, {
         diceColor: '#202020',
         textColor: '#ffffff',
-        scaler: 1,
+        scaler,
     });
     // three.js draws UUIDs from Math.random for every uncached texture; re-seed after them so
     // a seed means the same throw whatever ran before it.

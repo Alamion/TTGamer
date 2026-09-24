@@ -1,6 +1,11 @@
 ﻿import { debug, warn } from '@site/src/shared/utils/logging';
 
-import { MAX_EXPLOSIONS, MAX_PHYSICAL_3D_DICE } from '../utils/constants';
+import {
+    FULL_SIZE_DICE_POOL,
+    MAX_EXPLOSIONS,
+    MAX_PHYSICAL_3D_DICE,
+    MIN_DICE_SCALE,
+} from '../utils/constants';
 import type { MixedRollConfig } from '../utils/types-ext';
 import { detectExplosion, detectRerolls, detectUnique, evaluateDiceAST } from './dice-evaluator';
 import { parseToAST } from './dice-parser';
@@ -186,12 +191,22 @@ export async function processRethrowLoop(
     return current;
 }
 
+/**
+ * Dice size for a throw of `physicalDice` dice. Large pools shrink so their total footprint
+ * stays near that of a full-size dozen: fewer collisions keep frames cheap and let the pile
+ * settle instead of jostling until the time limit.
+ */
+export function diceScaleFor(physicalDice: number): number {
+    if (physicalDice <= FULL_SIZE_DICE_POOL) return 1;
+    return Math.max(MIN_DICE_SCALE, Math.sqrt(FULL_SIZE_DICE_POOL / physicalDice));
+}
+
 export async function processExplosionLoop(
     group: DiceGroupNode,
     allGroupRolls: DiceRoll[],
     multiplier: number,
     handle: { addDice: (extraDiceData: DiceGeometryData[]) => Promise<number[]> },
-    config: { diceColor: string; textColor: string },
+    config: { diceColor: string; textColor: string; scaler?: number },
     prepareGeometries: typeof prepareDiceGeometries,
     physicalCapacity = { remaining: MAX_PHYSICAL_3D_DICE }
 ): Promise<void> {
@@ -239,7 +254,11 @@ export async function processExplosionLoop(
                     fudge: group.fudge,
                 },
             ],
-            { diceColor: config.diceColor, textColor: config.textColor, scaler: 1 }
+            {
+                diceColor: config.diceColor,
+                textColor: config.textColor,
+                scaler: config.scaler ?? 1,
+            }
         );
 
         const explosionValues = await handle.addDice(extraData.geometries);
@@ -376,11 +395,12 @@ export async function executeUnifiedRoll(
             return { ...evaluateDiceAST(ast, notation), renderer3dUnavailable: true };
         }
         const { prepareDiceGeometries, startPhysicsRoll } = renderer;
+        const scaler = diceScaleFor(physicalDiceCount);
 
         const { geometries, groupSizes } = prepareDiceGeometries(flatGroups, {
             diceColor: defaultConfig.diceColor,
             textColor: defaultConfig.textColor,
-            scaler: 1,
+            scaler,
         });
 
         if (geometries.length === 0) {
@@ -392,7 +412,7 @@ export async function executeUnifiedRoll(
             {
                 diceColor: defaultConfig.diceColor,
                 textColor: defaultConfig.textColor,
-                scaler: 1,
+                scaler,
                 enableSound: defaultConfig.enableSound,
                 soundVolume: defaultConfig.soundVolume,
                 timeToReact: defaultConfig.timeToReact,
@@ -465,7 +485,7 @@ export async function executeUnifiedRoll(
                 allGroupRolls,
                 multiplier,
                 handle,
-                { ...defaultConfig, diceColor: colourOf(group) },
+                { ...defaultConfig, diceColor: colourOf(group), scaler },
                 prepareDiceGeometries,
                 physicalCapacity
             );

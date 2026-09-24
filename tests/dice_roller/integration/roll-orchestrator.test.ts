@@ -1,10 +1,16 @@
 import { parseToAST } from '@site/src/dice_roller/dice-logic/dice-parser';
 import {
+    diceScaleFor,
     processExplosionLoop,
     processRethrowLoop,
 } from '@site/src/dice_roller/dice-logic/roll-orchestrator';
 import type { DiceGroupNode, DiceRoll } from '@site/src/dice_roller/dice-logic/types';
-import { MAX_EXPLOSIONS, MAX_PHYSICAL_3D_DICE } from '@site/src/dice_roller/utils/constants';
+import {
+    FULL_SIZE_DICE_POOL,
+    MAX_EXPLOSIONS,
+    MAX_PHYSICAL_3D_DICE,
+    MIN_DICE_SCALE,
+} from '@site/src/dice_roller/utils/constants';
 import { describe, expect, it, vi } from 'vitest';
 
 function parseGroup(notation: string): DiceGroupNode {
@@ -17,6 +23,34 @@ const prepareGeometries = vi.fn((groups: Array<{ count: number }>) => ({
     geometries: Array.from({ length: groups[0].count }, () => ({}) as never),
     groupSizes: [groups[0].count],
 }));
+
+describe('large-pool dice size (dice #12)', () => {
+    it('keeps full-size dice up to a dozen and shrinks larger pools by area', () => {
+        expect(diceScaleFor(1)).toBe(1);
+        expect(diceScaleFor(FULL_SIZE_DICE_POOL)).toBe(1);
+        expect(diceScaleFor(FULL_SIZE_DICE_POOL * 4)).toBeCloseTo(0.5);
+        expect(diceScaleFor(MAX_PHYSICAL_3D_DICE)).toBeGreaterThanOrEqual(MIN_DICE_SCALE);
+        expect(diceScaleFor(10_000)).toBe(MIN_DICE_SCALE);
+    });
+
+    it('gives exploding dice the size of the throw they join', async () => {
+        const group = parseGroup('1d6!');
+        const rolls: DiceRoll[] = [{ sides: 6, value: 6, dropped: false }];
+        const prepare = vi.fn(prepareGeometries);
+        await processExplosionLoop(
+            group,
+            rolls,
+            1,
+            { addDice: vi.fn().mockResolvedValueOnce([2]) },
+            { diceColor: '#000', textColor: '#fff', scaler: 0.5 },
+            prepare
+        );
+        expect(prepare).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ scaler: 0.5 })
+        );
+    });
+});
 
 describe('3D explosion orchestration', () => {
     it('continues compound explosions based on each latest raw value', async () => {
@@ -178,7 +212,8 @@ describe('3D renderer loading', () => {
 
         await executeUnifiedRoll('1d6', { enable3dDice: false });
         await executeUnifiedRoll('1d7', config3d); // unsupported sides
-        await executeUnifiedRoll(`${MAX_PHYSICAL_3D_DICE + 1}d6`, config3d); // over the limit
+        // 101 d100 are 202 physical d10: over the limit, though within the parser's 200 dice.
+        await executeUnifiedRoll(`${MAX_PHYSICAL_3D_DICE / 2 + 1}d100`, config3d);
 
         expect(rendererLoads.count).toBe(0);
     });

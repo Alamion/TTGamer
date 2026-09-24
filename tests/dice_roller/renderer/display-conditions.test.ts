@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 
+import { diceScaleFor } from '@site/src/dice_roller/dice-logic/roll-orchestrator';
 import {
     ANGULAR_VELOCITY_THRESHOLD,
     FADE_SECONDS,
+    MAX_ROLL_SECONDS,
     SHOW_SECONDS,
     VELOCITY_THRESHOLD,
 } from '@site/src/dice_roller/utils/constants';
@@ -149,6 +151,39 @@ describe('3D dice under display conditions (T-066)', { timeout: 60_000 }, () => 
                 0
             );
             // 15.09 is the 1% critical value for five degrees of freedom.
+            expect(chiSquare).toBeLessThan(15.09);
+        });
+    });
+
+    describe('large pools (dice #12)', () => {
+        it.each([
+            [100, 20],
+            [200, 6],
+        ])('settles %i d%i before the time limit, every die at rest', async (n, sides) => {
+            installDisplay(3);
+            const trace = await traceRoll(Array(n).fill(sides), steadyRate(60), {
+                scaler: diceScaleFor(n),
+            });
+            expect(trace.settledAt).not.toBeNull();
+            expect(trace.settledAt!).toBeLessThan(MAX_ROLL_SECONDS * 1000);
+            expect(trace.spawnOverlaps).toBe(0);
+            expect(trace.speedAtSettle!.linear).toBeLessThan(VELOCITY_THRESHOLD);
+        });
+
+        it('reads fair d6 faces from a large pool', async () => {
+            const faces = new Map<number, number>();
+            for (let seed = 1; seed <= 10; seed++) {
+                installDisplay(seed);
+                const trace = await traceRoll(Array(40).fill(6), steadyRate(60), {
+                    scaler: diceScaleFor(40),
+                });
+                for (const value of trace.values) faces.set(value, (faces.get(value) ?? 0) + 1);
+            }
+            const expected = 400 / 6;
+            const chiSquare = [1, 2, 3, 4, 5, 6].reduce(
+                (sum, face) => sum + ((faces.get(face) ?? 0) - expected) ** 2 / expected,
+                0
+            );
             expect(chiSquare).toBeLessThan(15.09);
         });
     });

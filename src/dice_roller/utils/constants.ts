@@ -10,7 +10,7 @@ export const MAX_DICE_SIDES = 100_000;
 export const MAX_EXPLOSIONS = 100;
 export const MAX_NOTATION_LENGTH = 500;
 export const MAX_NUMERIC_LITERAL = 1_000_000_000;
-export const MAX_PHYSICAL_3D_DICE = 100;
+export const MAX_PHYSICAL_3D_DICE = 200;
 // 3D timings are simulated seconds, so every refresh rate shows the same roll (F-005).
 export const MAX_ROLL_SECONDS = 10;
 /** Linear speed (scene units/s) and spin (rad/s) under which a die counts as still. */
@@ -22,6 +22,9 @@ export const SHOW_SECONDS = 1;
 export const ACCEPTED_SHOW_SECONDS = 0.5;
 export const FADE_SECONDS = 1;
 export const FRAME_RATE = 1 / 60;
+/** Pools up to this many physical dice keep full-size dice; larger pools shrink (dice #12). */
+export const FULL_SIZE_DICE_POOL = 12;
+export const MIN_DICE_SCALE = 0.2;
 
 export const DEFAULT_SETTINGS = {
     enable3dDicePanel: true,
