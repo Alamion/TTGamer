@@ -54,7 +54,8 @@ The dice roller knows no game systems. Every roll through the store may carry a 
 header's pending-roll button, and history re-rolls (`currentPanelOrigin(control)`). `tab` is the
 persisted `panelTab` (`''` = none, the default) and is read even while the panel is closed.
 A queued sheet stat stores its `RollSource` in session storage (`dice_roller_roll_source`); the
-store attaches it to panel origins and drops it whenever the input becomes empty.
+store attaches it to panel origins. It and the queued stat labels (`dice_roller_stat_labels`)
+are dropped whenever the input becomes empty, however it was emptied.
 
 Rolls made from a character (a sheet's immediate roll, the header's pending-roll button with a
 queued or shown V5 character) follow that character's system and line whatever tab is

@@ -239,8 +239,11 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
         },
 
         setNotationInput: (val: string) => {
-            // An emptied input drops the queued sheet source, however it was emptied.
-            if (!val.trim()) clearRollSource();
+            // An emptied input drops the queued sheet context, however it was emptied.
+            if (!val.trim()) {
+                clearRollSource();
+                clearStatLabels();
+            }
             set({ notationInput: val });
         },
 

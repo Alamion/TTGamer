@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.9.1
+
+### Fix
+
+- **Erased sheet stats no longer label the next roll (F-006)**: clicking a stat, erasing the notation, and clicking another stat used to name both stats in history and Discord; emptying the input now drops the queued stat labels as well as the roll source, however it was emptied
+
 ## v3.9.0
 
 ### Minor feat

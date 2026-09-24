@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import { onRollResult } from '@site/src/dice_roller/dice-logic';
 import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';
 import { DEFAULT_SETTINGS } from '@site/src/dice_roller/utils/constants';
 import type { RollOptions } from '@site/src/dice_roller/utils/events';
@@ -13,6 +14,7 @@ import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const HUNTER = { systemId: 'wod-v5', definitionId: 'hunter' };
+const realRoll = useDiceRollerStore.getState().roll;
 
 describe('sheet → dice handoff', () => {
     beforeEach(() => {
@@ -50,6 +52,27 @@ describe('sheet → dice handoff', () => {
         act(() => result.current.queueNotation('3d10>=6'));
         act(() => useDiceRollerStore.getState().setNotationInput(''));
         expect(getRollSource()).toBeUndefined();
+    });
+
+    it('labels a roll only with stats queued after the input was erased (F-006)', async () => {
+        useDiceRollerStore.setState({
+            roll: realRoll,
+            settings: { ...DEFAULT_SETTINGS, enable3dDicePanel: false },
+        });
+        const brawl = renderHook(() => useSheetDiceActions({ statLabel: 'Brawl' }));
+        act(() => brawl.result.current.queueNotation('3d10>=6'));
+        act(() => useDiceRollerStore.getState().setNotationInput(''));
+        const firearms = renderHook(() => useSheetDiceActions({ statLabel: 'Firearms' }));
+        act(() => firearms.result.current.queueNotation('2d10>=6'));
+
+        let labels: string[] | undefined;
+        const off = onRollResult((rolled) => {
+            labels = rolled.statLabels;
+        });
+        const { notationInput, roll } = useDiceRollerStore.getState();
+        await act(() => roll(notationInput));
+        off();
+        expect(labels).toEqual(['Firearms']);
     });
 
     it('publishes the shown document only while mounted', () => {

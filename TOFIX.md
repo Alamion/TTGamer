@@ -28,14 +28,6 @@ reused for a different entry, never renumbered (gaps after removals are permanen
 
 **Recommendation:** Remove the client-side `sendToDiscordWebhook` call and POST to an authenticated backend endpoint that proxies the message to Discord with server-side secret storage; no anonymous proxy. Important but not a release blocker for the offline-first product.
 
-### F-006 — Erased sheet stats still label the next roll
-
-**Area:** dice roller roll context (sheet → dice panel)
-
-**Evidence:** Testers report: click a skill on a sheet, erase the notation by hand, click a skill again, roll — the result (history, Discord message) names both skills, though only the second one is in the pool. Each sheet click pushes a label onto the session-stored stack (`pushStatLabel` in `src/integrations/sheet-dice/useSheetDiceActions.ts`); the stack is cleared only by the clear button (`RollControls.tsx`), a roll, or recalling history, never when the text is edited in `NotationInput.tsx` or cleared by right-clicking the header's pending-roll button (`src/components/NavbarDiceRoller.tsx`), so erased stats survive.
-
-**Recommendation:** Tie the queued labels to the notation they came with: clear the stack when the input becomes empty, and drop labels whose notation part no longer appears in the input; add a test for the reported sequence.
-
 ## 🟢 Medium
 
 ### F-002 — DataCatalog URL parameter initialization race
