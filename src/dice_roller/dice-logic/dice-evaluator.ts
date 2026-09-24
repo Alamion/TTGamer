@@ -10,6 +10,8 @@ import type {
     ExplodeModifier,
     FullRollResult,
     RerollModifier,
+    SetBonus,
+    SetBonusResult,
     UniqueModifier,
 } from './types';
 import { applyKeepDrop, buildGroupKey, formatModifiers, formatRollValues } from './utils';
@@ -292,6 +294,23 @@ function applyCriticalFailure(
     });
 }
 
+/**
+ * Marks complete sets of kept dice matching the set's compare point, in roll order, and
+ * returns the successes they add. Dice objects are marked in place so every array sharing
+ * them (rolls, keptRolls) sees the marks.
+ */
+function applySetBonus(rolls: DiceRoll[], setBonus: SetBonus): SetBonusResult {
+    const members = rolls.filter(
+        (r) => !r.dropped && matchesComparePoint(r.value, setBonus.comparePoint)
+    );
+    const sets = Math.floor(members.length / setBonus.size);
+    members.slice(0, sets * setBonus.size).forEach((roll, i) => {
+        roll.setIndex = Math.floor(i / setBonus.size);
+        if (i % setBonus.size === 0) roll.setBonus = setBonus.bonus;
+    });
+    return { sets, added: sets * setBonus.bonus };
+}
+
 export function detectRerolls(
     node: DiceGroupNode,
     rawValues: number[],
@@ -356,7 +375,7 @@ function evaluateDiceGroup(
     groupIndex: number,
     preGeneratedValues?: Map<string, DiceRoll[]>,
     randomFn?: () => number
-): DiceGroupResult {
+): { group: DiceGroupResult; setBonus?: SetBonusResult } {
     const groupKey = buildGroupKey(node, groupIndex);
 
     const preRolls = preGeneratedValues?.get(groupKey);
@@ -487,6 +506,16 @@ function evaluateDiceGroup(
         rolls = [...kept, ...dropped];
     }
 
+    if (node.label) {
+        rolls = rolls.map((r) => ({ ...r, label: node.label }));
+    }
+
+    // Order 12: Set bonus — marks kept dice; the successes are added to the sum below
+    let setBonusResult: SetBonusResult | undefined;
+    if (node.modifiers.setBonus) {
+        setBonusResult = applySetBonus(rolls, node.modifiers.setBonus);
+    }
+
     const keptRolls = rolls.filter((r) => !r.dropped);
     const droppedRolls = rolls.filter((r) => r.dropped);
 
@@ -506,6 +535,9 @@ function evaluateDiceGroup(
     if (node.modifiers.criticalFailureBotch) {
         sum -= keptRolls.filter((r) => r.criticalFailureBotch).length;
     }
+    if (setBonusResult) {
+        sum += setBonusResult.added;
+    }
 
     const notationParts: string[] = [];
     if (node.fudge) {
@@ -515,15 +547,20 @@ function evaluateDiceGroup(
     } else {
         notationParts.push(`${node.count}d${node.sides}`);
     }
+    if (node.label) notationParts.push(`:${node.label}`);
 
     return {
-        notation: `${notationParts.join('')}${formatModifiers(node.modifiers)}`,
-        sides: node.fudge ? 6 : node.sides,
-        rolls,
-        keptRolls,
-        droppedRolls,
-        sum,
-        operation,
+        group: {
+            notation: `${notationParts.join('')}${formatModifiers(node.modifiers)}`,
+            sides: node.fudge ? 6 : node.sides,
+            rolls,
+            keptRolls,
+            droppedRolls,
+            sum,
+            operation,
+            ...(node.label ? { label: node.label } : {}),
+        },
+        setBonus: setBonusResult,
     };
 }
 
@@ -533,15 +570,21 @@ function evaluateAST(
     preGeneratedValues?: Map<string, DiceRoll[]>,
     groupIndex: { current: number } = { current: 0 },
     randomFn?: () => number
-): { value: number; diceGroups: DiceGroupResult[] } {
+): EvaluatedNode {
     if (node.type === 'NumericLiteral') {
-        return { value: node.value, diceGroups: [] };
+        return { value: node.value, diceGroups: [], setBonus: [] };
     }
 
     if (node.type === 'DiceGroup') {
         const idx = groupIndex.current++;
-        const group = evaluateDiceGroup(node, operation, idx, preGeneratedValues, randomFn);
-        return { value: group.sum, diceGroups: [group] };
+        const { group, setBonus } = evaluateDiceGroup(
+            node,
+            operation,
+            idx,
+            preGeneratedValues,
+            randomFn
+        );
+        return { value: group.sum, diceGroups: [group], setBonus: setBonus ? [setBonus] : [] };
     }
 
     if (node.type === 'BinaryOp') {
@@ -592,6 +635,7 @@ function evaluateAST(
         return {
             value,
             diceGroups: [...leftResult.diceGroups, ...rightResult.diceGroups],
+            setBonus: [...leftResult.setBonus, ...rightResult.setBonus],
         };
     }
 
@@ -604,14 +648,38 @@ function evaluateAST(
             randomFn
         );
         const value = node.operator === '-' ? -operandResult.value : operandResult.value;
-        return { value, diceGroups: operandResult.diceGroups };
+        return { value, diceGroups: operandResult.diceGroups, setBonus: operandResult.setBonus };
     }
 
     if (node.type === 'Parenthesized') {
-        return evaluateAST(node.expression, operation, preGeneratedValues, groupIndex, randomFn);
+        const inner = evaluateAST(
+            node.expression,
+            operation,
+            preGeneratedValues,
+            groupIndex,
+            randomFn
+        );
+        const poolBonus = node.poolModifiers?.setBonus;
+        if (!poolBonus) return inner;
+        // Order 12 at pool scope: sets span every term of the pool, in roll order.
+        const applied = applySetBonus(
+            inner.diceGroups.flatMap((group) => group.rolls),
+            poolBonus
+        );
+        return {
+            value: inner.value + applied.added,
+            diceGroups: inner.diceGroups,
+            setBonus: [...inner.setBonus, applied],
+        };
     }
 
-    return { value: 0, diceGroups: [] };
+    return { value: 0, diceGroups: [], setBonus: [] };
+}
+
+interface EvaluatedNode {
+    value: number;
+    diceGroups: DiceGroupResult[];
+    setBonus: SetBonusResult[];
 }
 
 function formatASTWithValues(
@@ -650,7 +718,7 @@ export function evaluateDiceAST(
 ): FullRollResult {
     debug('DiceEvaluator: Evaluating AST for:', originalNotation, preGeneratedValues);
     const result = evaluateAST(ast, '+', preGeneratedValues, { current: 0 }, randomFn);
-    const { value: total, diceGroups } = result;
+    const { value: total, diceGroups, setBonus } = result;
     if (!Number.isFinite(total)) {
         throw new RangeError('Dice expression produced a non-finite result');
     }
@@ -677,6 +745,7 @@ export function evaluateDiceAST(
         total,
         details,
         formatted,
+        ...(setBonus.length > 0 ? { setBonus } : {}),
     };
 }
 

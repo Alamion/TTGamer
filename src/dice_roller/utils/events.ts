@@ -4,10 +4,12 @@ import { notifyRollResult } from '../dice-logic/dice-roller';
 import { RollCancelledError } from '../dice-logic/errors';
 import { execute2DRoll, executeUnifiedRoll } from '../dice-logic/roll-orchestrator';
 import type { RollResult } from '../dice-logic/types';
+import type { RollOrigin } from './rollReader';
 
 export interface RollOptions {
     statLabels?: string[];
     characterName?: string;
+    origin?: RollOrigin;
 }
 
 export async function handleRollEvent(
@@ -20,8 +22,11 @@ export async function handleRollEvent(
         soundVolume?: number;
         timeToReact?: boolean;
         timeToReactSeconds?: number;
+        specialDiceColor?: string;
     },
-    rollOptions?: RollOptions
+    rollOptions?: RollOptions,
+    /** Runs on the finished result before subscribers see it (e.g. a system reading). */
+    annotate?: (result: RollResult) => void
 ): Promise<RollResult | null> {
     if (!notation) {
         warn('Roll event received without notation', 'Event Handler');
@@ -43,6 +48,10 @@ export async function handleRollEvent(
             if (rollOptions?.characterName) {
                 result.characterName = rollOptions.characterName;
             }
+            if (rollOptions?.origin) {
+                result.origin = rollOptions.origin;
+            }
+            annotate?.(result);
             notifyRollResult(result);
         }
         return result;

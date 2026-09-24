@@ -72,3 +72,13 @@ fields:
     appearance: Внешность
     distinguishingFeatures: Особые приметы
     history: История
+dice:
+    hunger:
+        line: Голод
+        game: VtM 5e
+        messyCritical: Грязный критический успех
+        messyCriticalDetail: В критической паре есть кубик Голода с 10 — Зверь решает, каким будет успех.
+        messyCriticalConditional: Грязный критический успех, если бросок наберёт Сложность
+        bestialFailure: Звериный провал
+        bestialFailureDetail: Бросок провален, а на кубике Голода выпала 1 — Зверь берёт своё.
+        bestialFailureConditional: Звериный провал, если бросок не наберёт Сложность

@@ -1,10 +1,16 @@
-import type { DiceGroupNode, DiceModifiers, DiceRoll } from './types';
+import type { DiceGroupNode, DiceGroupResult, DiceModifiers, DiceRoll, SetBonus } from './types';
 
 export function buildGroupKey(
     node: DiceGroupNode | { count: number; sides: number; fudge: boolean; customFaces?: number[] },
     index: number
 ): string {
     return `${node.count}d${node.sides}_${node.fudge ? 'f' : ''}_${index}_${node.customFaces ? node.customFaces.join(',') : ''}`;
+}
+
+export function formatSetBonus(setBonus: SetBonus): string {
+    const bonus = setBonus.bonus === setBonus.size ? '' : `.${setBonus.bonus}`;
+    const cp = setBonus.comparePoint;
+    return `x${setBonus.size}${bonus}${cp.operator}${cp.value}`;
 }
 
 export function formatModifiers(modifiers: DiceModifiers): string {
@@ -80,6 +86,7 @@ export function formatModifiers(modifiers: DiceModifiers): string {
         }
     }
     if (modifiers.sort) parts.push(modifiers.sort === 'asc' ? 's' : 'sd');
+    if (modifiers.setBonus) parts.push(formatSetBonus(modifiers.setBonus));
     return parts.join('');
 }
 
@@ -149,6 +156,9 @@ export function formatRollValues(rolls: DiceRoll[], divider: ',' | '+'): string 
                 } else if (r.targetFailure) {
                     s = `${s}_`;
                 }
+                if (r.setIndex !== undefined && !r.dropped) {
+                    s = `${s}x`;
+                }
                 return s;
             })
             .join(', ');
@@ -168,9 +178,19 @@ export function formatRollValues(rolls: DiceRoll[], divider: ',' | '+'): string 
                 } else if (r.criticalFailureBotch) {
                     valStr += '-1';
                 }
+                if (r.setBonus) {
+                    valStr += `+${r.setBonus}`;
+                }
                 return valStr;
             })
             .join('+');
         return new_rolls.replace(/\+-/g, '-');
     }
+}
+
+/** Kept values of the labelled (`:h`) dice of a roll, in roll order. */
+export function specialDiceValues(result: { diceGroups: DiceGroupResult[] }): number[] {
+    return result.diceGroups
+        .filter((group) => group.label === 'h')
+        .flatMap((group) => group.keptRolls.map((roll) => roll.value));
 }

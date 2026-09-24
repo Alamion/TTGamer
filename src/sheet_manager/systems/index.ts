@@ -54,13 +54,18 @@ export type {
 } from './templateBindings';
 export type {
     DeclarativeDocumentLayout,
+    DiceOutcome,
+    DiceReadingLine,
     DocumentDefinition,
     DocumentLayout,
     DocumentModule,
     DocumentViewDefinition,
     DocumentViewLabel,
     ParsedRegisteredDocument,
+    RollReadingRules,
+    SystemDiceRules,
     SystemPlugin,
+    TraitPoolFlags,
 } from './types';
 export type { EffectiveTemplate, ResolvedCustomTemplate } from './view';
 export {

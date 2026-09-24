@@ -25,6 +25,47 @@ describe('Discord webhook integration', () => {
         expect(message.length).toBeLessThanOrEqual(2_000);
     });
 
+    it('adds special dice and outcome lines, even without roll context', () => {
+        const result = {
+            notation: '(3d10+2d10:h)>=6x2=10',
+            diceGroups: [],
+            total: 3,
+            details: '',
+            formatted: '',
+        };
+        const message = buildDiscordHistoryMessage(result, {
+            specialDice: 'Special dice (Desperation): 6, 1',
+            outcomes: ['A Desperation die shows 1'],
+        });
+        expect(message).toContain('Special dice \\(Desperation\\): 6, 1');
+        expect(message).toContain('> **A Desperation die shows 1**');
+        expect(message).not.toContain('```');
+    });
+
+    it('puts the verdict right after the total', () => {
+        const message = buildDiscordHistoryMessage(
+            { notation: '3d10>=6', diceGroups: [], total: 2, details: '', formatted: '' },
+            { verdict: 'Success (needed 2, margin 0)' }
+        );
+        expect(message.split('\n').slice(0, 2)).toEqual([
+            '3d10\\>=6 = **2**',
+            '**Success \\(needed 2, margin 0\\)**',
+        ]);
+    });
+
+    it('leaves the message unchanged without a reading', () => {
+        const result = {
+            notation: '2d6',
+            diceGroups: [],
+            total: 7,
+            details: '3, 4',
+            formatted: '3+4',
+        };
+        expect(buildDiscordHistoryMessage(result, undefined)).toBe(
+            buildDiscordHistoryMessage(result)
+        );
+    });
+
     it('coalesces nearby messages and disables mentions', async () => {
         vi.useFakeTimers();
         const fetchMock = vi.fn().mockResolvedValue({ ok: true });

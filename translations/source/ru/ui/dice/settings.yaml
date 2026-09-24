@@ -4,6 +4,7 @@ close: Закрыть настройки
 enable3dDicePanel: 3D-кубики в панели
 diceFaceColor: Цвет граней
 diceTextColor: Цвет символов
+specialDiceColor: Цвет особых кубиков
 sound: Звук бросков
 volume: Громкость
 timeToReact: Время на реакцию

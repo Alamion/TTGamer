@@ -110,9 +110,8 @@ describe('Evaluator - forced rolls (@)', () => {
         expect(result.diceGroups[0].keptRolls).toHaveLength(3);
     });
 
-    it('forced values throw on count mismatch', () => {
-        const ast = parseToAST('2d6@1');
-        expect(() => evaluateDiceAST(ast, '2d6@1')).toThrow(/count mismatch/);
+    it('forced values throw on count mismatch (checked while parsing)', () => {
+        expect(() => parseToAST('2d6@1')).toThrow(/count mismatch/);
     });
 
     it('forced values work through rollDices pipeline', () => {

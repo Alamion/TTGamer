@@ -6,6 +6,24 @@ dnd:
     disadvantage: DIS
 wod:
     difficulty: 'Difficulty:'
+    mode: Rules
+    modes:
+        classic: Classic
+        v5: V5
+    specialDie: Special die
+    line: 'Special dice:'
+    v5Difficulty: 'Difficulty (successes):'
+    successes: 'Successes needed:'
+    successesNotSet: not set
+    clearSuccesses: Clear the successes needed
+    decreaseSuccesses: Need fewer successes
+    increaseSuccesses: Need more successes
+    difficultyNotSet: not set
+    clearDifficulty: Clear the Difficulty
+    decreaseDifficulty: Lower the Difficulty
+    increaseDifficulty: Raise the Difficulty
+    criticalPairs: Count pairs of 10s as criticals
+    specialOutcomes: Report special dice outcomes
 diceButtonTitle: 'Left-click: Add {notation} | Right-click: Remove {notation}'
 diceAlt: Dice{type}
 notation:
@@ -13,7 +31,32 @@ notation:
     reference: View dice notation reference
     saveFavorite: Save as favorite
     removeFavorite: Remove from favorites
-    invalid: Invalid notation
+    errors:
+        unknownCharacter: 'Unknown character “{found}”'
+        unexpectedToken: '“{found}” is not expected here — expected {expected}'
+        unexpectedEnd: 'The notation ends too early — expected {expected}'
+        missingCompareValue: 'Add {expected} after “{found}”'
+        unclosedGroup: This “(” is never closed
+        trailingInput: '“{found}” follows a complete roll — add an operator such as +'
+        labelPosition: 'Put :h right after the dice it marks, as in 2d10:h'
+        setBonusNeedsTarget: 'A set bonus needs a success target such as >=6 in the same pool'
+        invalidSetSize: 'Sets need at least 2 dice and a bonus of at least 1'
+        forcedValuesCount: 'Forced values after @: expected {max}, found {found}'
+        limitExceeded: 'Over the limit for {limit}: at most {max}'
+        expected:
+            number: a number
+            dice: dice
+            open: “(”
+            close: “)”
+            compare: a comparison (for example, =10)
+            or: ' or '
+        limits:
+            notationLength: notation length
+            astNodes: expressions
+            numericLiteral: numbers
+            diceCount: dice
+            diceSides: sides of a die
+            customFaces: custom faces
 controls:
     clear: Clear
     roll: Roll

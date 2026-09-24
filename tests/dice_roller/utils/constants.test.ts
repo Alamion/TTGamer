@@ -51,6 +51,14 @@ describe('DEFAULT_SETTINGS', () => {
             'includeCharacterName',
             'includeCharacterStats',
             'includeRollContext',
+            'specialDiceColor',
+            'wodMode',
+            'wodThreshold',
+            'wodSuccesses',
+            'v5Line',
+            'v5CriticalPairs',
+            'v5SpecialOutcomes',
+            'v5Difficulty',
         ]);
     });
 
@@ -146,5 +154,48 @@ describe('SETTINGS_METADATA', () => {
     it('soundVolume and timeToReactSeconds do not have rangeChild', () => {
         expect(SETTINGS_METADATA.soundVolume.rangeChild).toBeUndefined();
         expect(SETTINGS_METADATA.timeToReactSeconds.rangeChild).toBeUndefined();
+    });
+});
+
+describe('feature 011 settings', () => {
+    it('defaults keep classic users unchanged and V5 reading on', () => {
+        expect(DEFAULT_SETTINGS.wodMode).toBe('classic');
+        expect(DEFAULT_SETTINGS.v5Line).toBe('desperation');
+        expect(DEFAULT_SETTINGS.v5CriticalPairs).toBe(true);
+        expect(DEFAULT_SETTINGS.v5SpecialOutcomes).toBe(true);
+        expect(DEFAULT_SETTINGS.v5Difficulty).toBeNull();
+        expect(DEFAULT_SETTINGS.wodThreshold).toBe(6);
+        expect(DEFAULT_SETTINGS.wodSuccesses).toBeNull();
+    });
+
+    it('declares metadata types for the new keys', () => {
+        expect(SETTINGS_METADATA.specialDiceColor.type).toBe('color');
+        expect(SETTINGS_METADATA.wodMode.type).toBe('choice');
+        expect(SETTINGS_METADATA.v5Line.type).toBe('choice');
+        expect(SETTINGS_METADATA.v5CriticalPairs.type).toBe('boolean');
+        expect(SETTINGS_METADATA.v5SpecialOutcomes.type).toBe('boolean');
+        expect(SETTINGS_METADATA.v5Difficulty.type).toBe('number');
+        expect(SETTINGS_METADATA.wodThreshold.type).toBe('number');
+        expect(SETTINGS_METADATA.wodSuccesses.type).toBe('number');
+    });
+});
+
+describe('special dice colour contrast (FR-006)', () => {
+    const luminance = (hex: string) => {
+        const channels = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+        const [r, g, b] = channels.map((v) =>
+            v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+        );
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const contrast = (a: string, b: string) => {
+        const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+        return (hi + 0.05) / (lo + 0.05);
+    };
+
+    it('keeps face numbers readable and stands apart from the primary colour', () => {
+        const special = DEFAULT_SETTINGS.specialDiceColor;
+        expect(contrast(special, DEFAULT_SETTINGS.secondaryDiceColor)).toBeGreaterThanOrEqual(4.5);
+        expect(contrast(special, DEFAULT_SETTINGS.primaryDiceColor)).toBeGreaterThanOrEqual(3);
     });
 });

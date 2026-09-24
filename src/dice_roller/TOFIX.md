@@ -1,7 +1,7 @@
 # TOFIX — Dice Roller Module
 
-**Version:** 3.0.0
-**Last updated:** June 2026
+**Version:** 3.8.0
+**Last updated:** September 2026
 
 ## Legend
 
@@ -29,11 +29,11 @@ See root `TOFIX.md` — cross-cutting issue, severity owned there. Dice roller o
 
 **Fix prerequisites:** define shared-resource ownership/reference counting, route removal through one release operation, add fake disposable-resource tests, then run a manual repeated-roll/resize stress check. Do not blindly dispose shared materials while live dice still reference them.
 
-## ⬜ Low
+## 🟢 Medium
 
-### High-refresh-rate settling
+### 3D physics artifacts (tracked as root TOFIX F-004 and F-005)
 
-Dice can still disappear before settling on 165 Hz+ displays. CCD threshold/radius remains commented out in `shapes.ts`; reproduce and profile before changing physics parameters.
+See root `TOFIX.md`. F-004: dice spawn inside each other and scatter at high speed. F-005: show/fade phases are frame-counted, so roll timing depends on the display refresh rate (supersedes the former "High-refresh-rate settling" entry). Both are reproduced first by the display-condition tests (root T-066).
 
 ---
 

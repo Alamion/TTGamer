@@ -46,14 +46,53 @@ All live 3D rolls share one physics field and can physically collide, but their 
 
 Do not describe the renderer as presentation-only or claim that `swapFace()` forces evaluator-generated results; that is not the current implementation.
 
+## Roll Origin and System Readings
+
+The dice roller knows no game systems. Every roll through the store may carry a `RollOrigin`
+(`utils/rollReader.ts`): `{ kind: 'sheet', source }` for a sheet's immediate roll, or
+`{ kind: 'panel', control, tab, wod?, source? }` for the panel's roll button, Enter, the
+header's pending-roll button, and history re-rolls (`currentPanelOrigin(control)`). `tab` is the
+persisted `panelTab` (`''` = none, the default) and is read even while the panel is closed.
+A queued sheet stat stores its `RollSource` in session storage (`dice_roller_roll_source`); the
+store attaches it to panel origins and drops it whenever the input becomes empty.
+
+Rolls made from a character (a sheet's immediate roll, the header's pending-roll button with a
+queued or shown V5 character) follow that character's system and line whatever tab is
+selected; rolls made in the panel follow the panel's tab and its settings.
+
+`store.roll()` hands origin-carrying rolls to the one registered `RollReader`:
+`prepare` may rewrite the notation (e.g. add `x2=10`), `interpret` returns a
+`RollReadingSummary` stored on `RollResult.reading` (history, toast, Discord). No reader, or a
+throwing reader, means an unread roll and a logged warning. The reader lives in
+`src/integrations/roll-reading/` and is registered lazily from `src/theme/Root.tsx`, so the
+system registry never joins the shared bundle. Documentation inline rolls call `rollDices()`
+directly and are never read.
+
+Labelled (`:h`) dice use `settings.specialDiceColor` in 3D (per flat group in the orchestrator,
+kept by explosions) and are listed as special dice in history and Discord. The WoD tab has a
+persisted Classic / V5 mode (`settings.wodMode`); V5 mode holds the line, the optional
+Difficulty in successes, and the `v5CriticalPairs` / `v5SpecialOutcomes` switches. Classic
+mode holds an optional success threshold (`wodThreshold`, default 6; unset adds plain `d10`,
+hides the botch die, and leaves the notation alone) and optional successes needed
+(`wodSuccesses`).
+
+The successes needed of the current mode travel in the panel origin (`wod.difficulty`). When it
+is set and the rolled notation is a success pool, the store attaches a neutral
+`RollResult.verdict` (`rollVerdict` in `utils/rollReader.ts`: succeeded, margin), shown in the
+toast, history, and Discord. Sheet rolls and other tabs get none; an unset value changes nothing.
+
+The dice store persists with `version: 1`; its `merge` lays stored settings over
+`DEFAULT_SETTINGS`, so a new settings key needs only a default and a `SETTINGS_METADATA` entry.
+
 ## Public and Internal Imports
 
 The public barrel exports only:
 
 - `rollDices`
 - `onRollResult`
-- `validateNotation`
-- `RollResult` and `FullRollResult` types
+- `validateNotation` and `diagnoseNotation` (structured `NotationDiagnostic`; spec 011)
+- `isSuccessPool` and `withPoolSetBonus` (neutral pool helpers for system readings)
+- `RollResult`, `FullRollResult`, `NotationDiagnostic`, `NotationErrorKind`, and `LimitName` types
 
 UI outside this module may use that barrel. Dice internals and their unit tests should import the owning file directly, so widening the public API is an explicit decision.
 
@@ -66,7 +105,7 @@ UI outside this module may use that barrel. Dice internals and their unit tests 
 - A logical d100 consumes two physical d10 values in 3D.
 - Forced `@` values are deterministic in 2D. The 3D path currently warns and uses physics values.
 - Roll context stored in session storage must be consumed or explicitly cleared when recalling context-free history entries.
-- WoD difficulty controls rewrite both per-die and parenthesized group success thresholds already present in the editor.
+- WoD threshold controls rewrite both per-die and parenthesized group success thresholds already present in the editor; clearing the threshold rewrites nothing.
 
 ## Testing
 

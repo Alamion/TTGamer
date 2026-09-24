@@ -8,7 +8,44 @@ import {
     MAX_NUMERIC_LITERAL,
 } from '../utils/constants';
 import { type LexerToken, tokenize } from './dice-lexer';
-import type { ASTNode, ComparePoint, DiceModifiers, TokenType } from './types';
+import {
+    type LimitName,
+    type NotationDiagnostic,
+    NotationError,
+    type NotationErrorKind,
+} from './errors';
+import type {
+    ASTNode,
+    ComparePoint,
+    DiceGroupNode,
+    DiceLabel,
+    DiceModifiers,
+    SetBonus,
+    TokenType,
+} from './types';
+
+const PRIMARY_EXPECTED = ['number', 'dice', '('];
+
+function tokenSpan(token: LexerToken): { offset: number; length: number; found?: string } {
+    return {
+        offset: token.offset,
+        length: token.text.length,
+        found: token.text || undefined,
+    };
+}
+
+function locate(token: LexerToken): string {
+    return ` at line ${token.line || 1}, column ${token.col || 1}`;
+}
+
+function limitError(
+    message: string,
+    name: LimitName,
+    max: number,
+    span: { offset: number; length: number; found?: string }
+): NotationError {
+    return new NotationError(message, { kind: 'limit-exceeded', ...span, limit: { name, max } });
+}
 
 function parseModifierValue(token: LexerToken): number {
     let value: number;
@@ -19,7 +56,12 @@ function parseModifierValue(token: LexerToken): number {
         value = match ? parseInt(match[0], 10) : 1;
     }
     if (!Number.isFinite(value) || value > MAX_NUMERIC_LITERAL) {
-        throw new RangeError(`Numeric values may not exceed ${MAX_NUMERIC_LITERAL}`);
+        throw limitError(
+            `Numeric values may not exceed ${MAX_NUMERIC_LITERAL}`,
+            'numeric-literal',
+            MAX_NUMERIC_LITERAL,
+            tokenSpan(token)
+        );
     }
     return value;
 }
@@ -44,14 +86,6 @@ class TokenStream {
         return this.tokens[this.position++];
     }
 
-    expect(type: TokenType): LexerToken {
-        const token = this.peek();
-        if (token && token.type === type) {
-            return this.consume()!;
-        }
-        throw this.error(`Expected ${type}`);
-    }
-
     has(type: TokenType): boolean {
         const token = this.peek();
         return token ? token.type === type : false;
@@ -62,9 +96,22 @@ class TokenStream {
         return token ? token.type === 'END' : true;
     }
 
-    error(message: string, token = this.peek()): SyntaxError {
-        const location = token ? ` at line ${token.line || 1}, column ${token.col || 1}` : '';
-        return new SyntaxError(`${message}${location}`);
+    /** The END token, kept so end-of-input errors can point past the last character. */
+    end(): LexerToken {
+        return this.tokens[this.tokens.length - 1];
+    }
+
+    error(
+        message: string,
+        kind: NotationErrorKind,
+        token: LexerToken = this.peek() ?? this.end(),
+        expected?: string[]
+    ): NotationError {
+        return new NotationError(`${message}${locate(token)}`, {
+            kind,
+            ...tokenSpan(token),
+            expected,
+        });
     }
 }
 
@@ -129,23 +176,48 @@ function parsePrimary(stream: TokenStream): ASTNode {
     const token = stream.peek();
 
     if (!token) {
-        throw stream.error('Unexpected end of input');
+        throw stream.error(
+            'Unexpected end of input',
+            'unexpected-end',
+            stream.end(),
+            PRIMARY_EXPECTED
+        );
     }
 
     if (token.type === 'LPAREN') {
-        stream.consume();
+        const open = stream.consume()!;
         const expr = parseExpression(stream);
-        stream.expect('RPAREN');
-        // Parse and distribute group-level modifiers to all dice inside the parens
+        const close = stream.peek();
+        if (!close || close.type === 'END') {
+            throw stream.error('Expected RPAREN', 'unclosed-group', open);
+        }
+        if (close.type !== 'RPAREN') {
+            throw stream.error('Expected RPAREN', 'unexpected-token', close, [')']);
+        }
+        stream.consume();
+        // Group modifiers are distributed to the inner terms; a set bonus stays pool-wide.
         const groupMods = parseGroupModifiers(stream);
+        const setBonus = groupMods?.setBonus;
         if (groupMods) {
+            delete groupMods.setBonus;
             distributeModifiersToDiceGroups(expr, groupMods);
         }
-        return { type: 'Parenthesized', expression: expr };
+        return {
+            type: 'Parenthesized',
+            expression: expr,
+            ...(setBonus ? { poolModifiers: { setBonus } } : {}),
+        };
+    }
+
+    if (token.type === 'LABEL') {
+        throw labelPositionError(stream, token);
     }
 
     if (token.type === 'NUMBER') {
         stream.consume();
+        if (stream.peek()?.type === 'LABEL') {
+            throw labelPositionError(stream, stream.peek()!);
+        }
         return {
             type: 'NumericLiteral',
             value:
@@ -164,10 +236,55 @@ function parsePrimary(stream: TokenStream): ASTNode {
     }
 
     if (token.type === 'END') {
-        throw stream.error('Expected a number, dice group, or parenthesized expression', token);
+        throw stream.error(
+            'Expected a number, dice group, or parenthesized expression',
+            'unexpected-end',
+            token,
+            PRIMARY_EXPECTED
+        );
     }
 
-    throw stream.error(`Unexpected token ${token.type} (${token.text})`, token);
+    throw stream.error(
+        `Unexpected token ${token.type} (${token.text})`,
+        'unexpected-token',
+        token,
+        PRIMARY_EXPECTED
+    );
+}
+
+function labelPositionError(stream: TokenStream, token: LexerToken): NotationError {
+    return stream.error('A label must follow the dice it marks', 'label-position', token);
+}
+
+function parseSetBonus(stream: TokenStream, modifiers: DiceModifiers): void {
+    const tok = stream.consume()!;
+    const span = { offset: tok.offset, length: tok.text.length };
+    if (modifiers.setBonus) {
+        throw stream.error('Only one set bonus is allowed per pool', 'unexpected-token', tok);
+    }
+    const [sizeText, bonusText] = tok.text.slice(1).split('.');
+    const size = parseInt(sizeText, 10);
+    const bonus = bonusText === undefined ? size : parseInt(bonusText, 10);
+    if (!(size >= 2 && size <= MAX_DICE_COUNT) || !(bonus >= 1 && bonus <= MAX_NUMERIC_LITERAL)) {
+        throw stream.error(
+            `Set size must be 2–${MAX_DICE_COUNT} and the bonus at least 1`,
+            'invalid-set-size',
+            tok
+        );
+    }
+    const next = stream.peek();
+    if (!next || !isCompareType(next.type)) {
+        const end = !next || next.type === 'END';
+        throw stream.error(
+            'A set bonus must be followed by a compare point',
+            end ? 'unexpected-end' : 'unexpected-token',
+            next ?? stream.end(),
+            ['compare']
+        );
+    }
+    const comparePoint = parseComparePoint(stream)!;
+    const setBonus: SetBonus = { size, bonus, comparePoint, span };
+    modifiers.setBonus = setBonus;
 }
 
 function isCompareType(type?: TokenType): boolean {
@@ -199,7 +316,12 @@ function parseComparePoint(stream: TokenStream): ComparePoint | undefined {
         const opToken = stream.consume()!;
         const valueToken = stream.peek();
         if (!valueToken || valueToken.type !== 'NUMBER') {
-            throw stream.error('Comparison operator must be followed by a number', valueToken);
+            throw stream.error(
+                'Comparison operator must be followed by a number',
+                'missing-compare-value',
+                opToken,
+                ['number']
+            );
         }
         const value =
             typeof valueToken.value === 'number'
@@ -343,11 +465,27 @@ function tryParseOneModifier(stream: TokenStream, modifiers: DiceModifiers): boo
         }
 
         case 'MOD_FAILURE': {
-            stream.consume();
+            const tok = stream.consume()!;
             const cp = parseComparePoint(stream);
-            if (cp) modifiers.targetFailure = cp;
+            if (!cp) {
+                throw stream.error(
+                    'A failure modifier must be followed by a compare point',
+                    'missing-compare-value',
+                    tok,
+                    ['compare']
+                );
+            }
+            modifiers.targetFailure = cp;
             return true;
         }
+
+        case 'MOD_SET': {
+            parseSetBonus(stream, modifiers);
+            return true;
+        }
+
+        case 'LABEL':
+            throw labelPositionError(stream, peekToken);
 
         case 'GT':
         case 'GTE':
@@ -384,14 +522,32 @@ function parseDiceGroup(stream: TokenStream): ASTNode {
     const customFaces: number[] | undefined = diceValue.customFaces;
 
     if (!Number.isInteger(count) || count < 1 || count > MAX_DICE_COUNT) {
-        throw stream.error(`Dice count must be between 1 and ${MAX_DICE_COUNT}`, token);
+        throw limitError(
+            `Dice count must be between 1 and ${MAX_DICE_COUNT}${locate(token)}`,
+            'dice-count',
+            MAX_DICE_COUNT,
+            tokenSpan(token)
+        );
     }
     if (!Number.isInteger(sides) || sides < 1 || sides > MAX_DICE_SIDES) {
-        throw stream.error(`Dice sides must be between 1 and ${MAX_DICE_SIDES}`, token);
+        throw limitError(
+            `Dice sides must be between 1 and ${MAX_DICE_SIDES}${locate(token)}`,
+            'dice-sides',
+            MAX_DICE_SIDES,
+            tokenSpan(token)
+        );
     }
 
     const modifiers: DiceModifiers = {};
     let forcedValues: number[] | undefined;
+    let label: DiceLabel | undefined;
+    let forcedSpanStart = 0;
+    let forcedSpanEnd = 0;
+
+    if (stream.peek()?.type === 'LABEL') {
+        stream.consume();
+        label = 'h';
+    }
 
     while (stream.peek() && !stream.isEnd()) {
         const peekToken = stream.peek()!;
@@ -405,10 +561,15 @@ function parseDiceGroup(stream: TokenStream): ASTNode {
 
         // Forced values (@N,N,N,..) — parse values, then continue for remaining modifiers
         if (peekToken.type === 'AT') {
-            stream.consume();
+            const at = stream.consume()!;
             forcedValues = [];
+            forcedSpanStart = at.offset;
+            forcedSpanEnd = at.offset + at.text.length;
             while (stream.peek() && stream.peek()!.type !== 'END') {
                 const tok = stream.peek()!;
+                if (tok.type === 'NUMBER' || tok.type === 'COMMA') {
+                    forcedSpanEnd = tok.offset + tok.text.length;
+                }
                 if (tok.type === 'NUMBER') {
                     stream.consume();
                     forcedValues.push(
@@ -428,6 +589,19 @@ function parseDiceGroup(stream: TokenStream): ASTNode {
         if (!tryParseOneModifier(stream, modifiers)) break;
     }
 
+    if (forcedValues && forcedValues.length !== count) {
+        throw new NotationError(
+            `Forced roll count mismatch: expected ${count} value(s), got ${forcedValues.length}`,
+            {
+                kind: 'forced-values-count',
+                offset: forcedSpanStart,
+                length: forcedSpanEnd - forcedSpanStart,
+                found: String(forcedValues.length),
+                limit: { name: 'dice-count', max: count },
+            }
+        );
+    }
+
     return {
         type: 'DiceGroup',
         count,
@@ -436,6 +610,7 @@ function parseDiceGroup(stream: TokenStream): ASTNode {
         customFaces,
         fudge,
         forcedValues: forcedValues && forcedValues.length > 0 ? forcedValues : undefined,
+        ...(label ? { label } : {}),
     };
 }
 
@@ -499,15 +674,24 @@ function distributeModifiersToDiceGroups(node: ASTNode, mods: DiceModifiers): vo
 }
 
 export function parseToAST(input: string): ASTNode {
+    const wholeInput = { offset: 0, length: input.length };
     if (input.length > MAX_NOTATION_LENGTH) {
-        throw new SyntaxError(`Notation may contain at most ${MAX_NOTATION_LENGTH} characters`);
+        throw limitError(
+            `Notation may contain at most ${MAX_NOTATION_LENGTH} characters`,
+            'notation-length',
+            MAX_NOTATION_LENGTH,
+            wholeInput
+        );
     }
     const tokens = tokenize(input);
     const invalidToken = tokens.find((token) => token.type === 'ERROR');
     if (invalidToken) {
-        throw new SyntaxError(
-            `Unexpected token ${invalidToken.text} at line ${invalidToken.line}, column ${invalidToken.col}`
-        );
+        throw new NotationError(`Unexpected token ${invalidToken.text}${locate(invalidToken)}`, {
+            kind: 'unknown-character',
+            offset: invalidToken.offset,
+            length: 1,
+            found: invalidToken.text.charAt(0),
+        });
     }
     const excessiveNumber = tokens.find(
         (token) =>
@@ -517,8 +701,11 @@ export function parseToAST(input: string): ASTNode {
                 token.value > MAX_NUMERIC_LITERAL)
     );
     if (excessiveNumber) {
-        throw new RangeError(
-            `Numeric values may not exceed ${MAX_NUMERIC_LITERAL} at line ${excessiveNumber.line}, column ${excessiveNumber.col}`
+        throw limitError(
+            `Numeric values may not exceed ${MAX_NUMERIC_LITERAL}${locate(excessiveNumber)}`,
+            'numeric-literal',
+            MAX_NUMERIC_LITERAL,
+            tokenSpan(excessiveNumber)
         );
     }
     debug(
@@ -528,21 +715,54 @@ export function parseToAST(input: string): ASTNode {
     const stream = new TokenStream(tokens);
     const ast = parseExpression(stream);
     if (!stream.isEnd()) {
-        const token = stream.peek();
-        throw stream.error(`Unexpected trailing token ${token?.text || token?.type}`, token);
+        const token = stream.peek()!;
+        throw stream.error(
+            `Unexpected trailing token ${token.text || token.type}`,
+            'trailing-input',
+            token
+        );
     }
+
+    const setBonusNeedsTarget = (bonus: SetBonus): NotationError =>
+        new NotationError('A set bonus needs a success target in the same pool', {
+            kind: 'set-bonus-needs-target',
+            offset: bonus.span?.offset ?? 0,
+            length: bonus.span?.length ?? input.length,
+        });
+    const diceGroupsIn = (node: ASTNode, out: DiceGroupNode[] = []): DiceGroupNode[] => {
+        if (node.type === 'DiceGroup') out.push(node);
+        else if (node.type === 'BinaryOp') {
+            diceGroupsIn(node.left, out);
+            diceGroupsIn(node.right, out);
+        } else if (node.type === 'UnaryOp') diceGroupsIn(node.operand, out);
+        else if (node.type === 'Parenthesized') diceGroupsIn(node.expression, out);
+        return out;
+    };
 
     let nodeCount = 0;
     let diceCount = 0;
     const visit = (node: ASTNode): void => {
         nodeCount++;
         if (nodeCount > MAX_AST_NODES) {
-            throw new SyntaxError(`Notation may contain at most ${MAX_AST_NODES} expressions`);
+            throw limitError(
+                `Notation may contain at most ${MAX_AST_NODES} expressions`,
+                'ast-nodes',
+                MAX_AST_NODES,
+                wholeInput
+            );
         }
         if (node.type === 'DiceGroup') {
+            if (node.modifiers.setBonus && !node.modifiers.targetSuccess) {
+                throw setBonusNeedsTarget(node.modifiers.setBonus);
+            }
             diceCount += node.count;
             if (diceCount > MAX_DICE_COUNT) {
-                throw new SyntaxError(`A roll may contain at most ${MAX_DICE_COUNT} dice`);
+                throw limitError(
+                    `A roll may contain at most ${MAX_DICE_COUNT} dice`,
+                    'dice-count',
+                    MAX_DICE_COUNT,
+                    wholeInput
+                );
             }
         } else if (node.type === 'BinaryOp') {
             visit(node.left);
@@ -550,11 +770,30 @@ export function parseToAST(input: string): ASTNode {
         } else if (node.type === 'UnaryOp') {
             visit(node.operand);
         } else if (node.type === 'Parenthesized') {
+            const poolBonus = node.poolModifiers?.setBonus;
+            if (poolBonus) {
+                const groups = diceGroupsIn(node.expression);
+                if (groups.length === 0 || groups.some((g) => !g.modifiers.targetSuccess)) {
+                    throw setBonusNeedsTarget(poolBonus);
+                }
+            }
             visit(node.expression);
         }
     };
     visit(ast);
     return ast;
+}
+
+/** Why `notation` is invalid, or `null` when it parses. Empty input is not diagnosed. */
+export function diagnoseNotation(notation: string): NotationDiagnostic | null {
+    if (!notation || !notation.trim()) return null;
+    try {
+        parseToAST(notation);
+        return null;
+    } catch (error) {
+        if (error instanceof NotationError) return error.diagnostic;
+        return { kind: 'unexpected-token', offset: 0, length: notation.length };
+    }
 }
 
 export function validateNotation(notation: string): boolean {

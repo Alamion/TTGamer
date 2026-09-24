@@ -3,6 +3,7 @@ import DiscordWebhookSubscription from '@site/src/dice_roller/components/Discord
 import Renderer3DFallbackNotice from '@site/src/dice_roller/components/Renderer3DFallbackNotice';
 import { RollToastContent } from '@site/src/dice_roller/components/RollToastContent';
 import { onRollResult } from '@site/src/dice_roller/dice-logic';
+import RollReadingRegistration from '@site/src/integrations/roll-reading/RollReadingRegistration';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
@@ -34,6 +35,7 @@ export default function Root({ children }: RootProps): ReactNode {
     return (
         <>
             {children}
+            <RollReadingRegistration />
             <DiscordWebhookSubscription />
             <Renderer3DFallbackNotice />
             <div id="modal-root" className="tailwind-root"></div>

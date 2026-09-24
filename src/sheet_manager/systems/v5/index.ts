@@ -5,8 +5,11 @@ import type { SystemPlugin } from '../types';
 import { hunterTemplateBindings } from './modules/hunter/bindings';
 import { hunterCatalogs } from './modules/hunter/catalogs';
 import { hunterDefinition } from './modules/hunter/definition';
+import { desperationDiceLine } from './modules/hunter/dice';
 import { hunterBriefTemplate } from './modules/hunter/templates/brief';
 import { hunterSheetTemplate } from './modules/hunter/templates/sheet';
+import { hungerDiceLine } from './modules/vampire/dice';
+import { createV5DiceRules } from './ruleset/dice';
 
 /**
  * World of Darkness 5th Edition (V5) system plugin.
@@ -27,8 +30,12 @@ export const v5System: SystemPlugin = {
     defaultTemplates: [hunterSheetTemplate, hunterBriefTemplate],
     templateBindings: hunterTemplateBindings,
     catalogs: hunterCatalogs,
+    dice: createV5DiceRules([hungerDiceLine, desperationDiceLine]),
 };
 
 export { hunterDefinition } from './modules/hunter/definition';
+export { desperationDiceLine } from './modules/hunter/dice';
 export type { HunterData } from './modules/hunter/schema';
 export { createHunterDefault, HunterSchema } from './modules/hunter/schema';
+export { hungerDiceLine } from './modules/vampire/dice';
+export { createV5DiceReading } from './ruleset/dice';

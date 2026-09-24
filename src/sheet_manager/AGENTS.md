@@ -77,7 +77,7 @@ share character trait/equipment blocks; the droid adapter maps its mechanical `d
 to the shared condition capability without changing persisted field names. Labels and track
 profiles remain definition-owned configuration. Shared views route by capability presence
 (`capabilities.character`), never by `definitionId` string matching. Retired pre-template
-blocks and views are archived for reference in `context/legacy-sheet-components/`.
+blocks and views are archived for reference in `context/sheet-manager/legacy-sheet-components/`.
 
 ## Character Access
 
@@ -100,6 +100,15 @@ Do not read `currentCharacter` directly inside a reusable sheet element. Direct 
 - Publisher policies come from `systems/policies.ts`; `SheetWorkspace` renders only the badge
   (`PolicyBadges`, linking to the policy's docs page) outside the template tree so no template
   can remove it, and exports carry `notices`. The full text lives on one docs page.
+- Dice mechanics belong to the ruleset (`SystemPlugin.dice`): `traitPool` builds a stat's
+  notation (a plugin without it shows no stat dice button; Star Wars declares the classic
+  `systems/wod-like/dicePool.ts`, V5 its own 6+ pool), and an optional `reading` (V5:
+  `systems/v5/ruleset/dice.ts`) adds critical pairs and reads special-dice outcomes. Each V5
+  module contributes its dice line (`modules/hunter/dice.ts` Desperation,
+  `modules/vampire/dice.ts` Hunger, awaiting the vampire sheet). Primitives resolve the builder
+  with `useDocumentTraitDiceRoll()`; `StatDot` sends the document as the roll source
+  (`useDocumentRollSource()`), and `SheetWorkspace` publishes the shown document
+  (`integrations/sheet-dice/shownDocument.ts`). Publisher badges never appear on dice surfaces.
 - Shipped view ids are unique across systems (prefix them with the system, e.g.
   `v5-hunter-sheet`); composite keys for overrides are T-046.
 

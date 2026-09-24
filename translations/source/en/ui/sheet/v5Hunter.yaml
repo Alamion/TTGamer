@@ -96,3 +96,8 @@ summaries:
         repel-the-unnatural: The power to drive creatures back.
         thwart-the-unnatural: Resistance against powers aimed at the hunter.
         artifact: An object with a strange power against monsters.
+dice:
+    line: Desperation
+    game: H:tR 5e
+    desperationOne: A Desperation die shows 1
+    desperationOneDetail: Choose — push through and raise the cell's Danger by one, or fall into Despair.

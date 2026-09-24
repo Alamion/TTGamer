@@ -451,7 +451,7 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
   and preset seeding; `draft.ts` and `ElementEditor.tsx` are similarly overloaded.
 - Unused exports awaiting cleanup: `newNodeId`, `ALL_TEMPLATE_SKELETONS`, `collectPrimitiveNodes`.
 - Retired pre-template blocks, viewers, views, and `DocumentSheetSections` are archived
-  (reference only) in `context/legacy-sheet-components/`.
+  (reference only) in `context/sheet-manager/legacy-sheet-components/`.
 
 ## Tests map (`tests/sheet_manager/`)
 

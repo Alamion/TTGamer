@@ -1,10 +1,11 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Info, Star } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
-import { validateNotation } from '../../dice-logic/dice-parser';
-import { useDiceRollerStore } from '../../store/diceRollerStore';
+import { diagnoseNotation } from '../../dice-logic/dice-parser';
+import { currentPanelOrigin, useDiceRollerStore } from '../../store/diceRollerStore';
+import { notationDiagnosticMessage } from './notationDiagnosticMessage';
 
 export default function NotationInput() {
     const notationInput = useDiceRollerStore((s) => s.notationInput);
@@ -27,14 +28,17 @@ export default function NotationInput() {
         };
     }, [notationInput]);
 
-    const notationValid = debouncedInput.length === 0 || validateNotation(debouncedInput);
+    const errorId = useId();
+    const diagnostic = useMemo(() => diagnoseNotation(debouncedInput), [debouncedInput]);
+    const notationValid = debouncedInput.trim().length === 0 || diagnostic === null;
+    const errorMessage = diagnostic ? notationDiagnosticMessage(diagnostic) : '';
     const starred =
         notationInput.trim().length > 0 && favorites.some((f) => f.notation === notationInput);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && notationValid && notationInput.trim()) {
             const toRoll = notationInput.trim();
-            roll(toRoll);
+            roll(toRoll, { origin: currentPanelOrigin('enter') });
             setNotationInput('');
         }
     };
@@ -59,6 +63,10 @@ export default function NotationInput() {
                     value={notationInput}
                     onChange={(e) => setNotationInput(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    aria-invalid={notationInput.length > 0 && !notationValid}
+                    aria-describedby={
+                        notationInput.length > 0 && !notationValid ? errorId : undefined
+                    }
                 />
                 {notationInput.length > 0 && (
                     <span
@@ -96,11 +104,28 @@ export default function NotationInput() {
                     </button>
                 )}
             </div>
-            {notationInput.length > 0 && !notationValid && (
-                <span className="text-xs text-red-500 mt-0.5 block">
-                    {translate(uiMessages.dice.pool.notation.invalid)}
-                </span>
-            )}
+            <div id={errorId} role="status" aria-live="polite" className="text-xs mt-0.5">
+                {notationInput.length > 0 && diagnostic && (
+                    <>
+                        <span className="text-red-500 block">{errorMessage}</span>
+                        <code
+                            aria-hidden="true"
+                            className="block font-mono text-textSecondary whitespace-pre-wrap break-all"
+                        >
+                            {debouncedInput.slice(0, diagnostic.offset)}
+                            <mark className="bg-red-500/30 text-textPrimary rounded-sm">
+                                {diagnostic.length > 0
+                                    ? debouncedInput.slice(
+                                          diagnostic.offset,
+                                          diagnostic.offset + diagnostic.length
+                                      )
+                                    : '\u2038'}
+                            </mark>
+                            {debouncedInput.slice(diagnostic.offset + diagnostic.length)}
+                        </code>
+                    </>
+                )}
+            </div>
         </div>
     );
 }

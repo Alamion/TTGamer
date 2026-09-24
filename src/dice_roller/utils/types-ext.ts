@@ -23,4 +23,6 @@ export interface MixedRollConfig {
     soundVolume: number;
     timeToReact: boolean;
     timeToReactSeconds: number;
+    /** Face colour of labelled (`:h`) dice; the primary colour when absent. */
+    specialDiceColor?: string;
 }

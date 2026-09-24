@@ -97,7 +97,8 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 │   ├── integrations/          # External/cross-feature adapters
 │   │   ├── discord/           #   Bounded, queued Discord webhook delivery
 │   │   ├── docs-character-rolls/ # Documentation ↔ sheet/dice adapter
-│   │   └── sheet-dice/        #   Character stat ↔ dice panel adapter
+│   │   ├── roll-reading/      #   Game-system dice readings (V5 criticals, special dice)
+│   │   └── sheet-dice/        #   Character stat ↔ dice panel adapter, shown document
 │   ├── data/                  # Catalog entries, filters, and table configs
 │   ├── shared/                # DataCatalog, EntityCard, TWWrapper, hooks, utils
 │   │   ├── components/        #   Reusable UI components (SecretField, DataCatalog, EntityCard, etc.)
@@ -113,7 +114,8 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 ├── translations/source/        # Canonical YAML UI/catalog translation sources
 ├── scripts/                   # Catalog, i18n, and version validators
 ├── tests/                     # Vitest logic, integration, and component tests
-└── static/                    # Images, sounds (dice impacts, surfaces)
+├── static/                    # Images, sounds (dice impacts, surfaces)
+└── context/                   # Local, git-ignored reference material (see context/AGENTS.md)
 ```
 
 ## 7. Key Skills (`.agents/skills/`)
@@ -136,9 +138,9 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 - `shared/` contains system-independent UI and utilities only. Cross-feature or external-service behavior belongs in `integrations/`.
 - Bound sheet elements read through `useBoundDocument()` (character capability for characters, typed document data for other kinds); pages are shipped templates, not React blocks.
 - Imported/persisted documents must pass the envelope schema and their registered definition schema; `BaseCharacterSchema` is only the legacy-character import path (Zod strips unknown legacy fields).
-- Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by several lines (e.g. V5) are one ruleset. In code: `systems/v5/ruleset/` + `systems/v5/modules/<line>/`; every plugin (Star Wars included) declares its `catalogs`, `policies`, `defaultTemplates`, and `templateBindings` on `SystemPlugin`.
+- Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by several lines (e.g. V5) are one ruleset. In code: `systems/v5/ruleset/` + `systems/v5/modules/<line>/`; every plugin (Star Wars included) declares its `catalogs`, `policies`, `defaultTemplates`, `templateBindings`, and `dice` on `SystemPlugin`.
 - Generic sheet code never imports a concrete system folder: one ESLint `no-restricted-imports` pattern covers every `systems/<system>/` (allowed importers: `systems/index.ts`, `docsEmbeds.tsx`, the legacy path in `store/documentStore.ts`).
-- Third-party material: rules and catalog text in our own words (no verbatim book passages); publisher notices (e.g. Dark Pack) come from `systems/policies.ts` metadata declared by plugins/modules and render as a badge on sheets (`PolicyBadges`, linking to the policy's single docs page with `PolicyStatement`) and `notices` in exports — only where that material is used (constitution VIII).
+- Third-party material: rules and catalog text in our own words (no verbatim book passages); publisher notices (e.g. Dark Pack) come from `systems/policies.ts` metadata declared by plugins/modules and render as a badge on sheets (`PolicyBadges`, linking to the policy's single docs page with `PolicyStatement`) and `notices` in exports — only where that material is used, once per surface in a prominent place, never repeated on dice, toasts, history, or messages; game mechanics alone need no notice (constitution VIII).
 - Data changes must pass `yarn validate:data`. Documentation under `docs/star-wars-wod-2e` and `docs/wod-v5` must be mirrored under Russian i18n and pass `yarn validate:i18n`.
 - YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`; do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.
 - `yarn verify:fast` runs the translation coverage verifier (`yarn i18n:verify`): user-facing literals, missing keys, plurals, catalog and docs coverage, glossary consistency. New UI text goes through YAML; exceptions need a reason in `translations/i18n-exceptions.yaml`.
@@ -148,7 +150,13 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 - `specs/NNN-*` are change records: they explain why a feature was built, and later specs amend earlier ones. Never reconstruct current behavior from a spec chain.
 - Current behavior lives in module `AGENTS.md` files and `.agents/skills/`. A feature is complete only when those are updated and superseded specs carry a historical banner.
 
-## 10. Verification Scope
+## 10. Reference Material (`context/`)
+
+- Before designing a feature, check `context/AGENTS.md` for references: `context/corebooks/` holds rulebooks for every system; `context/<module>/` holds material for that module (e.g. `context/dice-roller/` has the notation libraries our dice syntax follows).
+- `context/` is git-ignored and excluded from every tool; never import from it, and paraphrase rules text (section 8, third-party material).
+- New reference material goes into the matching folder and is listed in `context/AGENTS.md`.
+
+## 11. Verification Scope
 
 - Small code edit: targeted tests plus `yarn verify:fast`.
 - Dice parser/evaluator or schema/persistence edit: `yarn verify` (includes the knip

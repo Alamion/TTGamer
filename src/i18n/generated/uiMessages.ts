@@ -702,6 +702,34 @@ export const uiMessages = {
                 id: 'ttgamer.ui.dice.history.formatted',
                 message: 'Formatted: {formatted}',
             },
+            specialDice: {
+                id: 'ttgamer.ui.dice.history.specialDice',
+                message: 'Special dice ({line}): {values}',
+            },
+            specialDiceUnnamed: {
+                id: 'ttgamer.ui.dice.history.specialDiceUnnamed',
+                message: 'Special dice: {values}',
+            },
+            verdict: {
+                success: {
+                    id: 'ttgamer.ui.dice.history.verdict.success',
+                    message: 'Success (needed {difficulty}, margin {margin})',
+                },
+                failure: {
+                    id: 'ttgamer.ui.dice.history.verdict.failure',
+                    message: 'Failure (needed {difficulty}, short by {shortfall})',
+                },
+            },
+            verdictShort: {
+                success: {
+                    id: 'ttgamer.ui.dice.history.verdictShort.success',
+                    message: 'Success',
+                },
+                failure: {
+                    id: 'ttgamer.ui.dice.history.verdictShort.failure',
+                    message: 'Failure',
+                },
+            },
             manuallyRerolled: {
                 id: 'ttgamer.ui.dice.history.manuallyRerolled',
                 message: 'Manually Rerolled',
@@ -801,6 +829,76 @@ export const uiMessages = {
                     id: 'ttgamer.ui.dice.pool.wod.difficulty',
                     message: 'Difficulty:',
                 },
+                mode: {
+                    id: 'ttgamer.ui.dice.pool.wod.mode',
+                    message: 'Rules',
+                },
+                modes: {
+                    classic: {
+                        id: 'ttgamer.ui.dice.pool.wod.modes.classic',
+                        message: 'Classic',
+                    },
+                    v5: {
+                        id: 'ttgamer.ui.dice.pool.wod.modes.v5',
+                        message: 'V5',
+                    },
+                },
+                specialDie: {
+                    id: 'ttgamer.ui.dice.pool.wod.specialDie',
+                    message: 'Special die',
+                },
+                line: {
+                    id: 'ttgamer.ui.dice.pool.wod.line',
+                    message: 'Special dice:',
+                },
+                v5Difficulty: {
+                    id: 'ttgamer.ui.dice.pool.wod.v5Difficulty',
+                    message: 'Difficulty (successes):',
+                },
+                successes: {
+                    id: 'ttgamer.ui.dice.pool.wod.successes',
+                    message: 'Successes needed:',
+                },
+                successesNotSet: {
+                    id: 'ttgamer.ui.dice.pool.wod.successesNotSet',
+                    message: 'not set',
+                },
+                clearSuccesses: {
+                    id: 'ttgamer.ui.dice.pool.wod.clearSuccesses',
+                    message: 'Clear the successes needed',
+                },
+                decreaseSuccesses: {
+                    id: 'ttgamer.ui.dice.pool.wod.decreaseSuccesses',
+                    message: 'Need fewer successes',
+                },
+                increaseSuccesses: {
+                    id: 'ttgamer.ui.dice.pool.wod.increaseSuccesses',
+                    message: 'Need more successes',
+                },
+                difficultyNotSet: {
+                    id: 'ttgamer.ui.dice.pool.wod.difficultyNotSet',
+                    message: 'not set',
+                },
+                clearDifficulty: {
+                    id: 'ttgamer.ui.dice.pool.wod.clearDifficulty',
+                    message: 'Clear the Difficulty',
+                },
+                decreaseDifficulty: {
+                    id: 'ttgamer.ui.dice.pool.wod.decreaseDifficulty',
+                    message: 'Lower the Difficulty',
+                },
+                increaseDifficulty: {
+                    id: 'ttgamer.ui.dice.pool.wod.increaseDifficulty',
+                    message: 'Raise the Difficulty',
+                },
+                criticalPairs: {
+                    id: 'ttgamer.ui.dice.pool.wod.criticalPairs',
+                    message: 'Count pairs of 10s as criticals',
+                },
+                specialOutcomes: {
+                    id: 'ttgamer.ui.dice.pool.wod.specialOutcomes',
+                    message: 'Report special dice outcomes',
+                },
             },
             diceButtonTitle: {
                 id: 'ttgamer.ui.dice.pool.diceButtonTitle',
@@ -827,9 +925,103 @@ export const uiMessages = {
                     id: 'ttgamer.ui.dice.pool.notation.removeFavorite',
                     message: 'Remove from favorites',
                 },
-                invalid: {
-                    id: 'ttgamer.ui.dice.pool.notation.invalid',
-                    message: 'Invalid notation',
+                errors: {
+                    unknownCharacter: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.unknownCharacter',
+                        message: 'Unknown character “{found}”',
+                    },
+                    unexpectedToken: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.unexpectedToken',
+                        message: '“{found}” is not expected here — expected {expected}',
+                    },
+                    unexpectedEnd: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.unexpectedEnd',
+                        message: 'The notation ends too early — expected {expected}',
+                    },
+                    missingCompareValue: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.missingCompareValue',
+                        message: 'Add {expected} after “{found}”',
+                    },
+                    unclosedGroup: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.unclosedGroup',
+                        message: 'This “(” is never closed',
+                    },
+                    trailingInput: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.trailingInput',
+                        message: '“{found}” follows a complete roll — add an operator such as +',
+                    },
+                    labelPosition: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.labelPosition',
+                        message: 'Put :h right after the dice it marks, as in 2d10:h',
+                    },
+                    setBonusNeedsTarget: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.setBonusNeedsTarget',
+                        message: 'A set bonus needs a success target such as >=6 in the same pool',
+                    },
+                    invalidSetSize: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.invalidSetSize',
+                        message: 'Sets need at least 2 dice and a bonus of at least 1',
+                    },
+                    forcedValuesCount: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.forcedValuesCount',
+                        message: 'Forced values after @: expected {max}, found {found}',
+                    },
+                    limitExceeded: {
+                        id: 'ttgamer.ui.dice.pool.notation.errors.limitExceeded',
+                        message: 'Over the limit for {limit}: at most {max}',
+                    },
+                    expected: {
+                        number: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.expected.number',
+                            message: 'a number',
+                        },
+                        dice: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.expected.dice',
+                            message: 'dice',
+                        },
+                        open: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.expected.open',
+                            message: '“(”',
+                        },
+                        close: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.expected.close',
+                            message: '“)”',
+                        },
+                        compare: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.expected.compare',
+                            message: 'a comparison (for example, =10)',
+                        },
+                        or: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.expected.or',
+                            message: ' or ',
+                        },
+                    },
+                    limits: {
+                        notationLength: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.limits.notationLength',
+                            message: 'notation length',
+                        },
+                        astNodes: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.limits.astNodes',
+                            message: 'expressions',
+                        },
+                        numericLiteral: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.limits.numericLiteral',
+                            message: 'numbers',
+                        },
+                        diceCount: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.limits.diceCount',
+                            message: 'dice',
+                        },
+                        diceSides: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.limits.diceSides',
+                            message: 'sides of a die',
+                        },
+                        customFaces: {
+                            id: 'ttgamer.ui.dice.pool.notation.errors.limits.customFaces',
+                            message: 'custom faces',
+                        },
+                    },
                 },
             },
             controls: {
@@ -867,6 +1059,10 @@ export const uiMessages = {
             diceTextColor: {
                 id: 'ttgamer.ui.dice.settings.diceTextColor',
                 message: 'Dice text color',
+            },
+            specialDiceColor: {
+                id: 'ttgamer.ui.dice.settings.specialDiceColor',
+                message: 'Special dice color',
             },
             sound: {
                 id: 'ttgamer.ui.dice.settings.sound',
@@ -4187,6 +4383,44 @@ export const uiMessages = {
                     message: 'History',
                 },
             },
+            dice: {
+                hunger: {
+                    line: {
+                        id: 'ttgamer.ui.sheet.v5.dice.hunger.line',
+                        message: 'Hunger',
+                    },
+                    game: {
+                        id: 'ttgamer.ui.sheet.v5.dice.hunger.game',
+                        message: 'VtM 5e',
+                    },
+                    messyCritical: {
+                        id: 'ttgamer.ui.sheet.v5.dice.hunger.messyCritical',
+                        message: 'Messy critical',
+                    },
+                    messyCriticalDetail: {
+                        id: 'ttgamer.ui.sheet.v5.dice.hunger.messyCriticalDetail',
+                        message:
+                            'A critical pair includes a Hunger die showing 10 — the Beast decides how the success plays out.',
+                    },
+                    messyCriticalConditional: {
+                        id: 'ttgamer.ui.sheet.v5.dice.hunger.messyCriticalConditional',
+                        message: 'Messy critical if the roll meets the Difficulty',
+                    },
+                    bestialFailure: {
+                        id: 'ttgamer.ui.sheet.v5.dice.hunger.bestialFailure',
+                        message: 'Bestial failure',
+                    },
+                    bestialFailureDetail: {
+                        id: 'ttgamer.ui.sheet.v5.dice.hunger.bestialFailureDetail',
+                        message:
+                            'The roll failed and a Hunger die shows 1 — the Beast takes its due.',
+                    },
+                    bestialFailureConditional: {
+                        id: 'ttgamer.ui.sheet.v5.dice.hunger.bestialFailureConditional',
+                        message: 'Bestial failure if the roll misses the Difficulty',
+                    },
+                },
+            },
         },
         v5Hunter: {
             module: {
@@ -4555,6 +4789,25 @@ export const uiMessages = {
                         id: 'ttgamer.ui.sheet.v5Hunter.summaries.edges.artifact',
                         message: 'An object with a strange power against monsters.',
                     },
+                },
+            },
+            dice: {
+                line: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.dice.line',
+                    message: 'Desperation',
+                },
+                game: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.dice.game',
+                    message: 'H:tR 5e',
+                },
+                desperationOne: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.dice.desperationOne',
+                    message: 'A Desperation die shows 1',
+                },
+                desperationOneDetail: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.dice.desperationOneDetail',
+                    message:
+                        "Choose — push through and raise the cell's Danger by one, or fall into Despair.",
                 },
             },
         },

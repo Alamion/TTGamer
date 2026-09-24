@@ -1,3 +1,5 @@
+import type { RollOrigin, RollReadingSummary, RollVerdict } from '../utils/rollReader';
+
 export interface ComparePoint {
     operator: '>' | '>=' | '<' | '<=' | '=' | '!=' | '<>';
     value: number;
@@ -19,6 +21,18 @@ export interface UniqueModifier {
     once?: boolean;
 }
 
+/** For every complete set of `size` kept dice matching `comparePoint`, add `bonus` successes. */
+export interface SetBonus {
+    size: number;
+    bonus: number;
+    comparePoint: ComparePoint;
+    /** Position of the modifier in the notation, for diagnostics. */
+    span?: { offset: number; length: number };
+}
+
+/** The label marking a dice term as the pool's special subset (`:h`). */
+export type DiceLabel = 'h';
+
 export interface DiceModifiers {
     min?: number;
     max?: number;
@@ -36,6 +50,7 @@ export interface DiceModifiers {
     criticalSuccessBotch?: boolean;
     criticalFailureBotch?: boolean;
     sort?: 'asc' | 'desc';
+    setBonus?: SetBonus;
 }
 
 export interface DiceGroup {
@@ -45,6 +60,8 @@ export interface DiceGroup {
     customFaces?: number[];
     fudge?: boolean;
     forcedValues?: number[];
+    /** 3D face colour for this group only (labelled dice); the roll's colour otherwise. */
+    diceColor?: string;
 }
 
 export type TokenType =
@@ -71,6 +88,8 @@ export type TokenType =
     | 'MOD_CSB'
     | 'MOD_CFB'
     | 'MOD_FAILURE'
+    | 'MOD_SET'
+    | 'LABEL'
     | 'GT'
     | 'GTE'
     | 'LT'
@@ -97,6 +116,7 @@ export interface DiceGroupNode {
     customFaces?: number[];
     fudge?: boolean;
     forcedValues?: number[];
+    label?: DiceLabel;
 }
 
 export interface BinaryOpNode {
@@ -115,6 +135,8 @@ export interface UnaryOpNode {
 export interface ParenthesizedNode {
     type: 'Parenthesized';
     expression: ASTNode;
+    /** Pool-wide modifiers that are not distributed to the inner terms. */
+    poolModifiers?: { setBonus?: SetBonus };
 }
 
 export type ASTNode =
@@ -142,6 +164,11 @@ export interface DiceRoll {
     maxCapped?: boolean;
     rerolledOnce?: boolean;
     faceLabel?: string;
+    label?: DiceLabel;
+    /** 0-based index of the complete set this die belongs to, within its set-bonus scope. */
+    setIndex?: number;
+    /** Successes the set adds; carried by the set's first member so formatted sums add up. */
+    setBonus?: number;
 }
 
 export interface DiceGroupResult {
@@ -152,6 +179,12 @@ export interface DiceGroupResult {
     droppedRolls: DiceRoll[];
     sum: number;
     operation: '+' | '-' | '*' | '/' | '%' | '^';
+    label?: DiceLabel;
+}
+
+export interface SetBonusResult {
+    sets: number;
+    added: number;
 }
 
 export interface FullRollResult {
@@ -161,6 +194,8 @@ export interface FullRollResult {
     details: string;
     formatted: string;
     manuallyRerolled?: boolean;
+    /** One entry per scope that had a set bonus, in evaluation order. */
+    setBonus?: SetBonusResult[];
 }
 
 export interface RollResult {
@@ -170,6 +205,7 @@ export interface RollResult {
     details: string;
     formatted: string;
     manuallyRerolled?: boolean;
+    setBonus?: SetBonusResult[];
     characterName?: string;
     statLabels?: string[];
     /**
@@ -177,4 +213,10 @@ export interface RollResult {
      * Transient presentation flag: never stored in history, never shared.
      */
     renderer3dUnavailable?: boolean;
+    /** Where the roll was started (panel tab, sheet); absent for direct API rolls. */
+    origin?: RollOrigin;
+    /** Set when a system reading (e.g. V5) was applied to this roll. */
+    reading?: RollReadingSummary;
+    /** Set when the roll counted successes against a Difficulty that was given. */
+    verdict?: RollVerdict;
 }

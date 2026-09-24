@@ -794,6 +794,12 @@
     "ttgamer.ui.dice.history.setNotationTitle": {
         "message": "Set notation | Right-click to roll"
     },
+    "ttgamer.ui.dice.history.specialDice": {
+        "message": "Special dice ({line}): {values}"
+    },
+    "ttgamer.ui.dice.history.specialDiceUnnamed": {
+        "message": "Special dice: {values}"
+    },
     "ttgamer.ui.dice.history.stats": {
         "message": "Stats: {stats}"
     },
@@ -805,6 +811,18 @@
     },
     "ttgamer.ui.dice.history.tabs.recent": {
         "message": "Recent"
+    },
+    "ttgamer.ui.dice.history.verdict.failure": {
+        "message": "Failure (needed {difficulty}, short by {shortfall})"
+    },
+    "ttgamer.ui.dice.history.verdict.success": {
+        "message": "Success (needed {difficulty}, margin {margin})"
+    },
+    "ttgamer.ui.dice.history.verdictShort.failure": {
+        "message": "Failure"
+    },
+    "ttgamer.ui.dice.history.verdictShort.success": {
+        "message": "Success"
     },
     "ttgamer.ui.dice.inlineRoll.collapse": {
         "message": "Collapse roll details"
@@ -845,8 +863,74 @@
     "ttgamer.ui.dice.pool.dnd.disadvantage": {
         "message": "DIS"
     },
-    "ttgamer.ui.dice.pool.notation.invalid": {
-        "message": "Invalid notation"
+    "ttgamer.ui.dice.pool.notation.errors.expected.close": {
+        "message": "“)”"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.compare": {
+        "message": "a comparison (for example, =10)"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.dice": {
+        "message": "dice"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.number": {
+        "message": "a number"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.open": {
+        "message": "“(”"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.or": {
+        "message": " or "
+    },
+    "ttgamer.ui.dice.pool.notation.errors.forcedValuesCount": {
+        "message": "Forced values after @: expected {max}, found {found}"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.invalidSetSize": {
+        "message": "Sets need at least 2 dice and a bonus of at least 1"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.labelPosition": {
+        "message": "Put :h right after the dice it marks, as in 2d10:h"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limitExceeded": {
+        "message": "Over the limit for {limit}: at most {max}"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.astNodes": {
+        "message": "expressions"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.customFaces": {
+        "message": "custom faces"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.diceCount": {
+        "message": "dice"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.diceSides": {
+        "message": "sides of a die"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.notationLength": {
+        "message": "notation length"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.numericLiteral": {
+        "message": "numbers"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.missingCompareValue": {
+        "message": "Add {expected} after “{found}”"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.setBonusNeedsTarget": {
+        "message": "A set bonus needs a success target such as >=6 in the same pool"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.trailingInput": {
+        "message": "“{found}” follows a complete roll — add an operator such as +"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.unclosedGroup": {
+        "message": "This “(” is never closed"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.unexpectedEnd": {
+        "message": "The notation ends too early — expected {expected}"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.unexpectedToken": {
+        "message": "“{found}” is not expected here — expected {expected}"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.unknownCharacter": {
+        "message": "Unknown character “{found}”"
     },
     "ttgamer.ui.dice.pool.notation.placeholder": {
         "message": "Roll notation (e.g. 2d6+3 or 4d20kh3)"
@@ -866,8 +950,59 @@
     "ttgamer.ui.dice.pool.tabs.standard": {
         "message": "Standard"
     },
+    "ttgamer.ui.dice.pool.wod.clearDifficulty": {
+        "message": "Clear the Difficulty"
+    },
+    "ttgamer.ui.dice.pool.wod.clearSuccesses": {
+        "message": "Clear the successes needed"
+    },
+    "ttgamer.ui.dice.pool.wod.criticalPairs": {
+        "message": "Count pairs of 10s as criticals"
+    },
+    "ttgamer.ui.dice.pool.wod.decreaseDifficulty": {
+        "message": "Lower the Difficulty"
+    },
+    "ttgamer.ui.dice.pool.wod.decreaseSuccesses": {
+        "message": "Need fewer successes"
+    },
     "ttgamer.ui.dice.pool.wod.difficulty": {
         "message": "Difficulty:"
+    },
+    "ttgamer.ui.dice.pool.wod.difficultyNotSet": {
+        "message": "not set"
+    },
+    "ttgamer.ui.dice.pool.wod.increaseDifficulty": {
+        "message": "Raise the Difficulty"
+    },
+    "ttgamer.ui.dice.pool.wod.increaseSuccesses": {
+        "message": "Need more successes"
+    },
+    "ttgamer.ui.dice.pool.wod.line": {
+        "message": "Special dice:"
+    },
+    "ttgamer.ui.dice.pool.wod.mode": {
+        "message": "Rules"
+    },
+    "ttgamer.ui.dice.pool.wod.modes.classic": {
+        "message": "Classic"
+    },
+    "ttgamer.ui.dice.pool.wod.modes.v5": {
+        "message": "V5"
+    },
+    "ttgamer.ui.dice.pool.wod.specialDie": {
+        "message": "Special die"
+    },
+    "ttgamer.ui.dice.pool.wod.specialOutcomes": {
+        "message": "Report special dice outcomes"
+    },
+    "ttgamer.ui.dice.pool.wod.successes": {
+        "message": "Successes needed:"
+    },
+    "ttgamer.ui.dice.pool.wod.successesNotSet": {
+        "message": "not set"
+    },
+    "ttgamer.ui.dice.pool.wod.v5Difficulty": {
+        "message": "Difficulty (successes):"
     },
     "ttgamer.ui.dice.settings.close": {
         "message": "Close settings"
@@ -901,6 +1036,9 @@
     },
     "ttgamer.ui.dice.settings.sound": {
         "message": "Roll sound effects"
+    },
+    "ttgamer.ui.dice.settings.specialDiceColor": {
+        "message": "Special dice color"
     },
     "ttgamer.ui.dice.settings.timeToReact": {
         "message": "Time to react"
@@ -3062,6 +3200,30 @@
     "ttgamer.ui.sheet.v5.attributes.wits": {
         "message": "Wits"
     },
+    "ttgamer.ui.sheet.v5.dice.hunger.bestialFailure": {
+        "message": "Bestial failure"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.bestialFailureConditional": {
+        "message": "Bestial failure if the roll misses the Difficulty"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.bestialFailureDetail": {
+        "message": "The roll failed and a Hunger die shows 1 — the Beast takes its due."
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.game": {
+        "message": "VtM 5e"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.line": {
+        "message": "Hunger"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.messyCritical": {
+        "message": "Messy critical"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.messyCriticalConditional": {
+        "message": "Messy critical if the roll meets the Difficulty"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.messyCriticalDetail": {
+        "message": "A critical pair includes a Hunger die showing 10 — the Beast decides how the success plays out."
+    },
     "ttgamer.ui.sheet.v5.fields.age": {
         "message": "Age"
     },
@@ -3340,6 +3502,18 @@
     },
     "ttgamer.ui.sheet.v5Hunter.categories.endowments": {
         "message": "Endowments"
+    },
+    "ttgamer.ui.sheet.v5Hunter.dice.desperationOne": {
+        "message": "A Desperation die shows 1"
+    },
+    "ttgamer.ui.sheet.v5Hunter.dice.desperationOneDetail": {
+        "message": "Choose — push through and raise the cell's Danger by one, or fall into Despair."
+    },
+    "ttgamer.ui.sheet.v5Hunter.dice.game": {
+        "message": "H:tR 5e"
+    },
+    "ttgamer.ui.sheet.v5Hunter.dice.line": {
+        "message": "Desperation"
     },
     "ttgamer.ui.sheet.v5Hunter.fields.ambition": {
         "message": "Ambition"

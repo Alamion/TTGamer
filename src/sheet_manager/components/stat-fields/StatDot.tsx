@@ -5,6 +5,8 @@ import { clsx } from 'clsx';
 import { Dices, X } from 'lucide-react';
 import { useCallback } from 'react';
 
+import { useDocumentRollSource } from '../../hooks/useDocumentSource';
+
 interface StatDotProps {
     value: number;
     maxValue?: number;
@@ -50,7 +52,12 @@ export function StatDot({
     statLabel,
     characterName,
 }: StatDotProps) {
-    const { queueNotation, rollImmediately } = useSheetDiceActions({ characterName, statLabel });
+    const rollSource = useDocumentRollSource();
+    const { queueNotation, rollImmediately } = useSheetDiceActions({
+        characterName,
+        statLabel,
+        rollSource,
+    });
 
     const handleDiceLeftClick = useCallback(() => {
         if (disabled || !onDiceRoll) return;

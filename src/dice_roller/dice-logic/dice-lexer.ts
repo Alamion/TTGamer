@@ -1,6 +1,7 @@
 import moo, { type Lexer, type Token } from 'moo';
 
 import { MAX_CUSTOM_FACE_COUNT } from '../utils/constants';
+import { NotationError } from './errors';
 import type { TokenType } from './types';
 
 const lexer: Lexer = moo.compile({
@@ -30,6 +31,8 @@ const lexer: Lexer = moo.compile({
     MOD_CS: 'cs',
     MOD_CF: 'cf',
     MOD_FAILURE: 'f',
+    MOD_SET: /x\d+(?:\.\d+)?/,
+    LABEL: ':h',
     NEQ: /<>/,
     GTE: '>=',
     LTE: '<=',
@@ -52,6 +55,8 @@ export interface LexerToken {
     text: string;
     line: number;
     col: number;
+    /** 0-based position of the token in the input; `input.length` for END. */
+    offset: number;
 }
 
 function isFudgeDice(text: string): boolean {
@@ -67,17 +72,27 @@ function parseDiceCount(text: string): number {
     return match ? parseInt(match[1], 10) : 1;
 }
 
-function parseDiceSides(text: string): number {
+function parseDiceSides(text: string, offset: number): number {
     if (isFudgeDice(text)) return 6;
     if (hasCustomFaces(text)) {
-        const faces = parseCustomFaces(text);
+        const faces = parseCustomFaces(text, offset);
         return faces.length > 0 ? Math.max(...faces) : 6;
     }
     const match = text.match(/d(\d+)$/);
     return match ? parseInt(match[1], 10) : 6;
 }
 
-function parseCustomFaces(text: string): number[] {
+function tooManyFaces(text: string, offset: number): NotationError {
+    return new NotationError(`Custom dice may contain at most ${MAX_CUSTOM_FACE_COUNT} faces`, {
+        kind: 'limit-exceeded',
+        offset,
+        length: text.length,
+        found: text,
+        limit: { name: 'custom-faces', max: MAX_CUSTOM_FACE_COUNT },
+    });
+}
+
+function parseCustomFaces(text: string, offset = 0): number[] {
     const bracketStart = text.indexOf('[');
     if (bracketStart === -1) return [];
     const content = text.slice(bracketStart + 1, -1);
@@ -90,16 +105,12 @@ function parseCustomFaces(text: string): number[] {
                 const min = Math.min(start, end);
                 const max = Math.max(start, end);
                 if (max - min + 1 > MAX_CUSTOM_FACE_COUNT) {
-                    throw new RangeError(
-                        `Custom dice may contain at most ${MAX_CUSTOM_FACE_COUNT} faces`
-                    );
+                    throw tooManyFaces(text, offset);
                 }
                 for (let i = min; i <= max; i++) {
                     result.push(i);
                     if (result.length > MAX_CUSTOM_FACE_COUNT) {
-                        throw new RangeError(
-                            `Custom dice may contain at most ${MAX_CUSTOM_FACE_COUNT} faces`
-                        );
+                        throw tooManyFaces(text, offset);
                     }
                 }
             }
@@ -108,9 +119,7 @@ function parseCustomFaces(text: string): number[] {
             if (!isNaN(n)) {
                 result.push(n);
                 if (result.length > MAX_CUSTOM_FACE_COUNT) {
-                    throw new RangeError(
-                        `Custom dice may contain at most ${MAX_CUSTOM_FACE_COUNT} faces`
-                    );
+                    throw tooManyFaces(text, offset);
                 }
             }
         }
@@ -170,6 +179,10 @@ function mapTokenType(token: Token): TokenType {
             return 'MOD_CF';
         case 'MOD_FAILURE':
             return 'MOD_FAILURE';
+        case 'MOD_SET':
+            return 'MOD_SET';
+        case 'LABEL':
+            return 'LABEL';
         case 'NEQ':
             return 'NEQ';
         case 'GTE':
@@ -207,9 +220,11 @@ export function tokenize(input: string): LexerToken[] {
             const text = token.text;
             value = {
                 count: parseDiceCount(text),
-                sides: parseDiceSides(text),
+                sides: parseDiceSides(text, token.offset),
                 fudge: isFudgeDice(text),
-                customFaces: hasCustomFaces(text) ? parseCustomFaces(text) : undefined,
+                customFaces: hasCustomFaces(text)
+                    ? parseCustomFaces(text, token.offset)
+                    : undefined,
             };
         }
 
@@ -219,6 +234,7 @@ export function tokenize(input: string): LexerToken[] {
             text: token.text,
             line: token.line,
             col: token.col,
+            offset: token.offset,
         });
     }
 
@@ -228,6 +244,7 @@ export function tokenize(input: string): LexerToken[] {
         text: '',
         line: 0,
         col: 0,
+        offset: input.length,
     });
 
     return tokens;
