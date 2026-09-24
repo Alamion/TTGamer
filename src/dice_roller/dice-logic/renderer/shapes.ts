@@ -62,8 +62,8 @@ export abstract class DiceShape {
     h: number;
 
     stopped: boolean = false;
-    staleIterations = 0;
-    lastMovingTime = 0;
+    /** Simulated time the die became still; null while it moves. */
+    restingSince: number | null = null;
 
     vector!: DiceVector;
 
@@ -325,8 +325,7 @@ export abstract class DiceShape {
         this.h = height;
         this.vector = this.generateVector(vector);
         this.stopped = false;
-        this.staleIterations = 0;
-        this.lastMovingTime = 0;
+        this.restingSince = null;
         this.create();
     }
 

@@ -104,12 +104,14 @@ UI outside this module may use that barrel. Dice internals and their unit tests 
 - Exponentiation is currently left-associative; changing that is a notation compatibility decision.
 - Modifier order is defined in `dice-evaluator.ts` and documented in `.agents/skills/dice-logic/references/modifiers.md`.
 - A logical d100 consumes two physical d10 values in 3D.
+- 3D timing runs on simulated time (the physics step count), never on frames or the wall clock: rest before read-out (`REST_SECONDS` below `VELOCITY_THRESHOLD` and a tipping spin below `ANGULAR_VELOCITY_THRESHOLD`), the `MAX_ROLL_SECONDS` limit, time to react, and show/fade (`SHOW_SECONDS`, `FADE_SECONDS`). A frame advances at most ten 1/60 s steps, so a hidden tab pauses the roll instead of ending it.
+- New dice enter the physics field through `separateSpawns` (`renderer/spawn.ts`): no two bounding spheres of airborne dice may intersect at spawn.
 - Forced `@` values are deterministic in 2D. The 3D path currently warns and uses physics values.
 - Roll context stored in session storage must be consumed or explicitly cleared when recalling context-free history entries.
 - WoD threshold controls rewrite both per-die and parenthesized group success thresholds already present in the editor; clearing the threshold rewrites nothing.
 
 ## Testing
 
-Run `yarn test` for parser/evaluator/notation changes and `yarn verify` before handoff. Tests using a mock random function consume all initial dice first, then values required by modifiers.
+Run `yarn test` for parser/evaluator/notation changes and `yarn verify` before handoff. Renderer changes must keep `tests/dice_roller/renderer/display-conditions.test.ts` green: its harness runs the real renderer headless under simulated refresh rates, stutter, and hidden tabs. Tests using a mock random function consume all initial dice first, then values required by modifiers.
 
 Load `.agents/skills/dice-logic/SKILL.md` before changing lexer, parser, evaluator, or 3D orchestration behavior.

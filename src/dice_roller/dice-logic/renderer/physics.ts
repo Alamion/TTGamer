@@ -9,6 +9,8 @@ export class PhysicsWorld {
     barrierMaterial: Material;
     lastCallTime = 0;
     private barriers: Body[] = [];
+    /** Half-extents of the area inside the barriers, at the table. */
+    limits = { x: Infinity, y: Infinity };
     WIDTH!: number;
     HEIGHT!: number;
 
@@ -76,6 +78,7 @@ export class PhysicsWorld {
         // Barriers at 90% of visible area so dice stay on-screen with some margin
         const limitX = (visibleWidth / 2) * 0.9;
         const limitY = (visibleHeight / 2) * 0.9;
+        this.limits = { x: limitX, y: limitY };
 
         const wallConfig = {
             allowSleep: false,
@@ -117,14 +120,26 @@ export class PhysicsWorld {
         });
     }
 
-    step(step = 1 / 60): void {
+    /** Forgets the last frame time, so a loop restarted after idling does not catch up. */
+    resetClock(): void {
+        this.lastCallTime = 0;
+    }
+
+    /**
+     * Advances the simulation by the wall time since the last call in fixed steps (at most
+     * ten per call, so a long pause only moves the dice a sixth of a second) and returns the
+     * simulated seconds, which drive every roll timing.
+     */
+    step(step = 1 / 60): number {
         const time = performance.now() / 1000;
+        // world.time follows the wall clock; the step count is what was simulated.
+        const before = this.world.stepnumber;
         if (!this.lastCallTime) {
             this.world.step(step);
         } else {
-            const dt = time - this.lastCallTime;
-            this.world.step(step, dt);
+            this.world.step(step, time - this.lastCallTime);
         }
         this.lastCallTime = time;
+        return (this.world.stepnumber - before) * step;
     }
 }

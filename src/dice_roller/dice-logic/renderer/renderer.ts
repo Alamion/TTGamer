@@ -2,7 +2,16 @@ import { isDevelopment } from '@site/src/shared/utils/env';
 import { debug } from '@site/src/shared/utils/logging';
 import { BoxGeometry, type Material, Mesh, MeshBasicMaterial, Raycaster, Vector2 } from 'three';
 
-import { FRAME_RATE, MAX_ROLL_SECONDS, VELOCITY_THRESHOLD } from '../../utils/constants';
+import {
+    ACCEPTED_SHOW_SECONDS,
+    ANGULAR_VELOCITY_THRESHOLD,
+    FADE_SECONDS,
+    FRAME_RATE,
+    MAX_ROLL_SECONDS,
+    REST_SECONDS,
+    SHOW_SECONDS,
+    VELOCITY_THRESHOLD,
+} from '../../utils/constants';
 import { RollCancelledError } from '../errors';
 import type { DiceGeometryData } from './geometries';
 import { PhysicsWorld } from './physics';
@@ -10,6 +19,7 @@ import { ResourceTracker } from './resource';
 import { SceneManager } from './scene';
 import { createDiceShape, DiceShape } from './shapes';
 import { SoundManager } from './sound-manager';
+import { separateSpawns } from './spawn';
 
 export interface DiceRendererConfig {
     diceColor: string;
@@ -40,12 +50,14 @@ interface RollSession {
     lockedIndices: Set<number>;
     iterations: number;
     currentIterations: number;
-    showFrames: number;
-    fadeFrames: number;
+    /** Simulated seconds left in the showing and fading phases. */
+    showLeft: number;
+    fadeLeft: number;
     allStopped: boolean;
     isAnimating: boolean;
     tracker: ResourceTracker;
-    startTime: number;
+    /** Simulated time the current throw started at. */
+    startedAt: number;
     cancelled: boolean;
     accepted: boolean;
     manuallyRerolled: boolean;
@@ -64,8 +76,8 @@ export class DiceRenderer {
     soundManager: SoundManager;
 
     private readonly frameRate = FRAME_RATE;
-    private readonly velocityThreshold = VELOCITY_THRESHOLD;
-    private maxRollSecs = MAX_ROLL_SECONDS;
+    /** Simulated seconds; advances only with physics steps, so it ignores the refresh rate. */
+    private clock = 0;
 
     private container: HTMLDivElement;
     private animationId: number | null = null;
@@ -79,7 +91,7 @@ export class DiceRenderer {
     private config: DiceRendererConfig;
 
     private timeToReactEnabled: boolean;
-    private timeToReactMs: number;
+    private timeToReactSeconds: number;
 
     private acceptBtn: HTMLButtonElement | null = null;
     private cancelBtn: HTMLButtonElement | null = null;
@@ -95,13 +107,13 @@ export class DiceRenderer {
 
     setTimeToReact(enabled: boolean, seconds: number): void {
         this.timeToReactEnabled = enabled;
-        this.timeToReactMs = seconds * 1000;
+        this.timeToReactSeconds = seconds;
     }
 
     constructor(width: number, height: number, config: DiceRendererConfig) {
         this.config = config;
         this.timeToReactEnabled = config.timeToReact ?? false;
-        this.timeToReactMs = (config.timeToReactSeconds ?? 5) * 1000;
+        this.timeToReactSeconds = config.timeToReactSeconds ?? 5;
         this.soundManager = new SoundManager({
             enabled: config.enableSound ?? true,
             volume: config.soundVolume ?? 80,
@@ -237,6 +249,13 @@ export class DiceRenderer {
         }, 200);
     }
 
+    /** Every die of every session that is still being thrown or settling. */
+    private airborneBodies(): DiceShape['body'][] {
+        return this.sessions
+            .filter((session) => session.isAnimating)
+            .flatMap((session) => session.dice.map((die) => die.body));
+    }
+
     private addDiceToScene(diceShapes: DiceShape[], tracker: ResourceTracker): void {
         for (const shape of diceShapes) {
             tracker.track(shape.geometry);
@@ -331,6 +350,11 @@ export class DiceRenderer {
             this.updateWallVisuals();
         }
 
+        separateSpawns(
+            diceShapes.map((die) => die.body),
+            this.airborneBodies(),
+            this.physicsWorld.limits
+        );
         const tracker = new ResourceTracker();
         this.addDiceToScene(diceShapes, tracker);
 
@@ -351,12 +375,12 @@ export class DiceRenderer {
             lockedIndices: new Set(),
             iterations: 0,
             currentIterations: 0,
-            showFrames: 60,
-            fadeFrames: 60,
+            showLeft: SHOW_SECONDS,
+            fadeLeft: FADE_SECONDS,
             allStopped: false,
             isAnimating: true,
             tracker,
-            startTime: performance.now(),
+            startedAt: this.clock,
             cancelled: false,
             accepted: false,
             manuallyRerolled: false,
@@ -367,7 +391,8 @@ export class DiceRenderer {
 
         if (!this.isRunning) {
             this.isRunning = true;
-            this.animate();
+            this.physicsWorld.resetClock();
+            this.animationId = requestAnimationFrame(() => this.animate());
         }
 
         return { sessionId, settle: settlePromise };
@@ -403,6 +428,7 @@ export class DiceRenderer {
             Math.min(this.width, this.height) * 0.3
         );
 
+        const rethrown: DiceShape[] = [];
         for (const idx of flatIndices) {
             activeSession.lockedIndices.delete(idx);
             const die = activeSession.dice[idx];
@@ -413,8 +439,15 @@ export class DiceRenderer {
                     y: vector.y + (Math.random() - 0.5) * rethrowSpread,
                 };
                 die.recreate(perDieVector, this.width, this.height);
+                rethrown.push(die);
             }
         }
+        const rethrownBodies = new Set(rethrown.map((die) => die.body));
+        separateSpawns(
+            [...rethrownBodies],
+            this.airborneBodies().filter((body) => !rethrownBodies.has(body)),
+            this.physicsWorld.limits
+        );
 
         let settleResolve: ((values: number[]) => void) | null = null;
         let settleReject: ((err: Error) => void) | null = null;
@@ -428,7 +461,7 @@ export class DiceRenderer {
         activeSession.phase = 'waiting_reroll';
         activeSession.allStopped = false;
         activeSession.currentIterations = 0;
-        activeSession.startTime = performance.now();
+        activeSession.startedAt = this.clock;
 
         return settlePromise;
     }
@@ -459,6 +492,11 @@ export class DiceRenderer {
             newDice.push(dice);
         }
 
+        separateSpawns(
+            newDice.map((die) => die.body),
+            this.airborneBodies(),
+            this.physicsWorld.limits
+        );
         this.addDiceToScene(newDice, activeSession.tracker);
         activeSession.dice.push(...newDice);
 
@@ -474,7 +512,7 @@ export class DiceRenderer {
         activeSession.phase = 'exploding';
         activeSession.allStopped = false;
         activeSession.currentIterations = 0;
-        activeSession.startTime = performance.now();
+        activeSession.startedAt = this.clock;
 
         return settlePromise;
     }
@@ -516,7 +554,6 @@ export class DiceRenderer {
             die.body.angularVelocity.set(0, 0, 0);
             die.body.updateMassProperties();
             die.stopped = true;
-            die.staleIterations = 999;
         }
         session.allStopped = true;
         session.currentIterations = 0;
@@ -529,7 +566,7 @@ export class DiceRenderer {
         }
 
         session.phase = 'showing';
-        session.showFrames = 30;
+        session.showLeft = ACCEPTED_SHOW_SECONDS;
         this.syncLoading();
     }
 
@@ -604,6 +641,9 @@ export class DiceRenderer {
     private animate(): void {
         if (!this.isRunning) return;
 
+        const dt = this.physicsWorld.step(this.frameRate);
+        this.clock += dt;
+
         for (const session of this.sessions) {
             if (!session.isAnimating) continue;
 
@@ -625,8 +665,9 @@ export class DiceRenderer {
 
                 case 'showing':
                     if (session.allStopped) {
-                        session.showFrames--;
-                        if (session.showFrames <= 0) {
+                        session.showLeft -= dt;
+                        if (session.showLeft <= 0) {
+                            session.fadeLeft += session.showLeft;
                             session.phase = 'fading';
                         }
                     } else if (this.checkRollFinished(session)) {
@@ -635,19 +676,19 @@ export class DiceRenderer {
                     }
                     break;
 
-                case 'fading':
-                    if (session.fadeFrames > 0) {
-                        const progress = session.fadeFrames / 60;
-                        const easeOut = 1 - Math.pow(1 - progress, 3);
-                        for (const die of session.dice) {
-                            die.setOpacity(easeOut);
-                        }
-                        session.fadeFrames--;
-                    } else {
+                case 'fading': {
+                    session.fadeLeft -= dt;
+                    if (session.fadeLeft <= 0) {
                         this.completeSession(session);
                         continue;
                     }
+                    const progress = session.fadeLeft / FADE_SECONDS;
+                    const easeOut = 1 - Math.pow(1 - progress, 3);
+                    for (const die of session.dice) {
+                        die.setOpacity(easeOut);
+                    }
                     break;
+                }
 
                 case 'complete':
                     this.completeSession(session);
@@ -663,7 +704,6 @@ export class DiceRenderer {
         }
 
         if (this.sessions.length > 0) {
-            this.physicsWorld.step(this.frameRate);
             this.sceneManager.render();
             this.animationId = requestAnimationFrame(() => this.animate());
         } else {
@@ -671,11 +711,17 @@ export class DiceRenderer {
         }
     }
 
+    /**
+     * A throw is finished when every die has stayed still — slower than the linear threshold
+     * and tipping slower than the angular one — for REST_SECONDS of simulated time, or after
+     * MAX_ROLL_SECONDS.
+     * Simulated time does not run ahead of the dice when frames are late or a tab was hidden.
+     */
     private checkRollFinished(session: RollSession): boolean {
         let allStoppedNow = true;
 
-        const elapsed = performance.now() - session.startTime;
-        if (this.timeToReactEnabled && elapsed < this.timeToReactMs && !session.accepted) {
+        const elapsed = this.clock - session.startedAt;
+        if (this.timeToReactEnabled && elapsed < this.timeToReactSeconds && !session.accepted) {
             return false;
         }
 
@@ -688,25 +734,25 @@ export class DiceRenderer {
                 continue;
             }
 
-            if (elapsed > this.maxRollSecs * 1000) {
+            if (elapsed > MAX_ROLL_SECONDS) {
                 debug(`Session ${session.id}: Animation timeout for die ${i}`);
                 die.stopped = true;
                 continue;
             }
 
-            const a = die.body.angularVelocity;
-            const v = die.body.velocity;
+            // Spin about the vertical axis cannot change the face that is up.
+            const { x: tipX, y: tipY } = die.body.angularVelocity;
+            const still =
+                die.body.velocity.length() < VELOCITY_THRESHOLD &&
+                Math.hypot(tipX, tipY) < ANGULAR_VELOCITY_THRESHOLD;
 
-            if (a.length() < this.velocityThreshold && v.length() < this.velocityThreshold) {
-                const now = performance.now();
-                if (die.lastMovingTime === 0) {
-                    die.lastMovingTime = now;
-                } else if (now - die.lastMovingTime > 100) {
-                    die.stopped = true;
-                }
-            } else {
+            if (!still) {
                 die.stopped = false;
-                die.lastMovingTime = 0;
+                die.restingSince = null;
+            } else if (die.restingSince === null) {
+                die.restingSince = this.clock;
+            } else if (this.clock - die.restingSince >= REST_SECONDS) {
+                die.stopped = true;
             }
 
             if (!die.stopped) {
@@ -886,13 +932,12 @@ export class DiceRenderer {
             die.body.angularVelocity.set(angVel.x, angVel.y, angVel.z);
             die.body.wakeUp();
             die.stopped = false;
-            die.staleIterations = 0;
-            die.lastMovingTime = 0;
+            die.restingSince = null;
         }
 
         session.allStopped = false;
         session.currentIterations = 0;
-        session.startTime = performance.now();
+        session.startedAt = this.clock;
     }
 
     dispose(): void {

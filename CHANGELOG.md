@@ -5,6 +5,12 @@
 ### Fix
 
 - **Erased sheet stats no longer label the next roll (F-006)**: clicking a stat, erasing the notation, and clicking another stat used to name both stats in history and Discord; emptying the input now drops the queued stat labels as well as the roll source, however it was emptied
+- **3D dice no longer spawn inside each other (F-004)**: every thrown, rethrown, or exploding die starts clear of the others in the air, so the physics solver no longer pushes interpenetrating dice apart with extra speed
+- **3D rolls look the same on every display (F-005)**: the result stays on screen for 1 s and fades for 1 s at 30, 60, 144, 165, or 240 Hz (at 165 Hz it used to vanish in under 0.75 s); settling and the 10-second limit count simulated time, so a tab hidden during a roll no longer reads dice in mid-air on return; a die is read only once it has stopped sliding and tipping for 0.2 s
+
+### Chore
+
+- **Display-condition tests for 3D dice (T-066)**: a headless harness runs the real renderer and cannon-es with stubbed WebGL under simulated refresh rates, stutter, and hidden tabs; the cases failed on the previous renderer and guard spawn overlap, solver energy, rest at read-out, and show/fade timing
 
 ## v3.9.0
 

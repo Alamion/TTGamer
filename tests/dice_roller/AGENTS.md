@@ -22,6 +22,9 @@ tests/dice_roller/
 │   ├── reroll.test.ts                    # Reroll (r, ro, r<condition>)
 │   ├── combined.test.ts                  # Multiple modifiers together
 │   └── group-modifiers.test.ts           # Group notation evaluation
+├── renderer/
+│   ├── harness.ts                        # Headless 3D rolls: fake clock/frames, seeded random, stubbed WebGL
+│   └── display-conditions.test.ts        # T-066: spawn, solver energy, rest at read-out, show/fade at 30–240 Hz
 ├── integration/
 │   └── full-pipeline.test.ts             # Tokenize → Parse → Evaluate → Format
 └── utils/
@@ -35,3 +38,4 @@ tests/dice_roller/
 - **Use `parseToAST()` + `evaluateDiceAST()`** for unit-level parser/evaluator tests
 - **Use `rollDices()`** for full pipeline tests (includes `onRollResult` formatting)
 - **No SillyTavern mocks needed** — dice-logic is pure TS with no external dependencies
+- **3D harness** — `installDisplay(seed)` then `traceRoll(sides, timing)`; the seed is re-applied after geometry creation because three.js consumes `Math.random` for texture UUIDs, so a seed names the same throw whatever ran before
