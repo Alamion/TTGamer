@@ -1,8 +1,16 @@
 # Changelog
 
-## v3.9.1
+## v3.10.0
+
+### Minor feat
+
+- **Dice feel setting (dice #13)**: one slider in the dice roller settings runs from heavy dice, which grip the table and stop almost where they land (about 2 s for ten dice), to lively dice that hop and tumble for seconds — the original behavior and the default; faces stay fair across the range
 
 ### Fix
+
+- **Dice settings can be closed on phones**: the settings dialog grew taller than a phone screen, pushing its close button above the screen and under the site header with no way to scroll; it now opens above the header, fits the visible screen, and scrolls its settings while the title and close button stay in place
+- **Fair 3D start orientations**: a die's starting rotation was drawn from a skewed distribution; it is now uniform over all orientations, which matters most when dice barely tumble
+- **The botch die stays in the Classic WoD tab without a threshold**: it adds `d10f=1`, which only sums like any d10 until a threshold is set; setting one also gives plain and botch-only d10 terms the threshold
 
 - **Erased sheet stats no longer label the next roll (F-006)**: clicking a stat, erasing the notation, and clicking another stat used to name both stats in history and Discord; emptying the input now drops the queued stat labels as well as the roll source, however it was emptied
 - **3D dice no longer spawn inside each other (F-004)**: every thrown, rethrown, or exploding die starts clear of the others in the air, so the physics solver no longer pushes interpenetrating dice apart with extra speed

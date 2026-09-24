@@ -73,8 +73,9 @@ Labelled (`:h`) dice use `settings.specialDiceColor` in 3D (per flat group in th
 kept by explosions) and are listed as special dice in history and Discord. The WoD tab has a
 persisted Classic / V5 mode (`settings.wodMode`); V5 mode holds the line, the optional
 Difficulty in successes, and the `v5CriticalPairs` / `v5SpecialOutcomes` switches. Classic
-mode holds an optional success threshold (`wodThreshold`, default 6; unset adds plain `d10`,
-hides the botch die, and leaves the notation alone) and optional successes needed
+mode holds an optional success threshold (`wodThreshold`, default 6; unset adds plain `d10` and
+`d10f=1`, which only sum, and leaves the notation alone; setting it also gives plain or
+botch-only top-level d10 terms the threshold via `addWodThreshold`) and optional successes needed
 (`wodSuccesses`).
 
 The successes needed of the current mode travel in the panel origin (`wod.difficulty`). When it
@@ -105,6 +106,8 @@ UI outside this module may use that barrel. Dice internals and their unit tests 
 - Modifier order is defined in `dice-evaluator.ts` and documented in `.agents/skills/dice-logic/references/modifiers.md`.
 - A logical d100 consumes two physical d10 values in 3D.
 - 3D timing runs on simulated time (the physics step count), never on frames or the wall clock: rest before read-out (`REST_SECONDS` below `VELOCITY_THRESHOLD` and a tipping spin below `ANGULAR_VELOCITY_THRESHOLD`), the `MAX_ROLL_SECONDS` limit, time to react, and show/fade (`SHOW_SECONDS`, `FADE_SECONDS`). A frame advances at most ten 1/60 s steps, so a hidden tab pauses the roll instead of ending it.
+- Dice feel is one setting, `diceLiveliness` (0 heavy – 100 lively, default 100 = the original physics bit for bit). `renderer/liveliness.ts` turns it into a `PhysicsProfile` (gravity, contact friction/restitution, damping, launch strength, sleep threshold); the world applies gravity and contacts, and `DiceRenderer.launch()` applies the per-die part at every throw, rethrow, explosion, and manual reroll. Heavy dice sleep when they creep, so pile-ups end instead of reaching the time limit.
+- Start orientations are uniform random quaternions (`randomOrientation` in `shapes.ts`); an axis-angle draw is skewed, which shows when dice barely tumble.
 - New dice enter the physics field through `separateSpawns` (`renderer/spawn.ts`): no two bounding spheres of airborne dice may intersect at spawn.
 - Forced `@` values are deterministic in 2D. The 3D path currently warns and uses physics values.
 - Roll context stored in session storage must be consumed or explicitly cleared when recalling context-free history entries.

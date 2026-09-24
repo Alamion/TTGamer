@@ -1,5 +1,6 @@
 import { Body, ContactMaterial, Material, NaiveBroadphase, Plane, Vec3, World } from 'cannon-es';
 
+import { MAX_LIVELINESS, type PhysicsProfile, physicsProfile } from './liveliness';
 import type { DiceShape } from './shapes';
 
 export class PhysicsWorld {
@@ -9,15 +10,17 @@ export class PhysicsWorld {
     barrierMaterial: Material;
     lastCallTime = 0;
     private barriers: Body[] = [];
+    private deskContact!: ContactMaterial;
+    private barrierContact!: ContactMaterial;
+    private diceContact!: ContactMaterial;
     /** Half-extents of the area inside the barriers, at the table. */
     limits = { x: Infinity, y: Infinity };
     WIDTH!: number;
     HEIGHT!: number;
 
-    constructor(WIDTH: number, HEIGHT: number) {
+    constructor(WIDTH: number, HEIGHT: number, profile = physicsProfile(MAX_LIVELINESS)) {
         this.WIDTH = WIDTH;
         this.HEIGHT = HEIGHT;
-        // Use stronger gravity so dice hit the table quickly but stay in view
         this.world = new World({ gravity: new Vec3(0, 0, -1000) });
         this.world.broadphase = new NaiveBroadphase();
         this.world.allowSleep = true;
@@ -27,33 +30,34 @@ export class PhysicsWorld {
         this.barrierMaterial = new Material('barrier');
 
         this.buildWalls();
+        this.applyProfile(profile);
+    }
+
+    /** Gravity and surface response; dice damping and launch are applied per throw. */
+    applyProfile(profile: PhysicsProfile): void {
+        this.world.gravity.set(0, 0, -profile.gravity);
+        for (const [contact, surface] of [
+            [this.deskContact, profile.desk],
+            [this.barrierContact, profile.barrier],
+            [this.diceContact, profile.dice],
+        ] as const) {
+            contact.friction = surface.friction;
+            contact.restitution = surface.restitution;
+        }
     }
 
     buildWalls(): void {
-        this.world.addContactMaterial(
-            new ContactMaterial(this.deskMaterial, this.diceMaterial, {
-                friction: 0.01,
-                restitution: 0.2,
+        const contact = (a: Material) =>
+            new ContactMaterial(a, this.diceMaterial, {
                 contactEquationRelaxation: 3,
                 contactEquationStiffness: 1e8,
-            })
-        );
-        this.world.addContactMaterial(
-            new ContactMaterial(this.barrierMaterial, this.diceMaterial, {
-                friction: 0.01,
-                restitution: 0.6,
-                contactEquationRelaxation: 3,
-                contactEquationStiffness: 1e8,
-            })
-        );
-        this.world.addContactMaterial(
-            new ContactMaterial(this.diceMaterial, this.diceMaterial, {
-                friction: 0.1,
-                restitution: 0.5,
-                contactEquationRelaxation: 3,
-                contactEquationStiffness: 1e8,
-            })
-        );
+            });
+        this.deskContact = contact(this.deskMaterial);
+        this.barrierContact = contact(this.barrierMaterial);
+        this.diceContact = contact(this.diceMaterial);
+        this.world.addContactMaterial(this.deskContact);
+        this.world.addContactMaterial(this.barrierContact);
+        this.world.addContactMaterial(this.diceContact);
 
         // Ground plane - rotated to face upward (positive Z)
         const ground = new Body({

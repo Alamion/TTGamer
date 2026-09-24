@@ -317,6 +317,7 @@ export async function executeUnifiedRoll(
         soundVolume: config?.soundVolume ?? 80,
         timeToReact: config?.timeToReact ?? false,
         timeToReactSeconds: config?.timeToReactSeconds ?? 5,
+        diceLiveliness: config?.diceLiveliness,
         specialDiceColor: config?.specialDiceColor,
     };
     const colourOf = (group: DiceGroupNode) =>
@@ -396,6 +397,7 @@ export async function executeUnifiedRoll(
                 soundVolume: defaultConfig.soundVolume,
                 timeToReact: defaultConfig.timeToReact,
                 timeToReactSeconds: defaultConfig.timeToReactSeconds,
+                liveliness: defaultConfig.diceLiveliness,
             },
             geometries,
             groupSizes

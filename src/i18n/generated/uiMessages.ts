@@ -1084,6 +1084,22 @@ export const uiMessages = {
                 id: 'ttgamer.ui.dice.settings.reactWindowValue',
                 message: '{seconds}s',
             },
+            diceFeel: {
+                id: 'ttgamer.ui.dice.settings.diceFeel',
+                message: 'Dice feel',
+            },
+            diceFeelHeavy: {
+                id: 'ttgamer.ui.dice.settings.diceFeelHeavy',
+                message: 'Heavy',
+            },
+            diceFeelLively: {
+                id: 'ttgamer.ui.dice.settings.diceFeelLively',
+                message: 'Lively',
+            },
+            diceFeelValue: {
+                id: 'ttgamer.ui.dice.settings.diceFeelValue',
+                message: '{value} of 100: 0 heavy, 100 lively',
+            },
             includeRollContext: {
                 id: 'ttgamer.ui.dice.settings.includeRollContext',
                 message: 'Include roll context',

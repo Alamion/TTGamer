@@ -97,6 +97,8 @@ export interface RollTrace {
     speedAtSettle: { linear: number; angular: number } | null;
     /** Largest tilt, in degrees, between a die's read face and straight up at settle. */
     tiltAtSettle: number | null;
+    /** Values the renderer reported, in throw order. */
+    values: number[];
     /** ms from the reported values until the dice left the scene. */
     showAndFadeMs: number | null;
     frames: number;
@@ -147,7 +149,15 @@ function tiltDegrees(data: DiceGeometryData): number {
 export async function traceRoll(
     sides: number[],
     timing: FrameTiming,
-    limitMs = 40_000
+    {
+        liveliness,
+        limitMs = 40_000,
+        onFrame,
+    }: {
+        liveliness?: number;
+        limitMs?: number;
+        onFrame?: (ms: number, bodies: Body[]) => void;
+    } = {}
 ): Promise<RollTrace> {
     const groups = sides.map((s) => ({ sides: s, count: 1 }));
     const { geometries, groupSizes } = prepareDiceGeometries(groups as never, {
@@ -163,6 +173,7 @@ export async function traceRoll(
         textColor: '#ffffff',
         scaler: 1,
         enableSound: false,
+        liveliness,
     });
 
     const bodies = geometries.map((g) => g.body);
@@ -177,13 +188,15 @@ export async function traceRoll(
         speedAtSettle: null,
         tiltAtSettle: null,
         showAndFadeMs: null,
+        values: [],
         frames: 0,
     };
 
     const launchEnergy = Math.max(...bodies.map(energyOf));
     let settled = false;
-    void session.settle.then(() => {
+    void session.settle.then((values) => {
         settled = true;
+        trace.values = values;
     });
 
     while (frameQueue.length > 0 && now - start < limitMs) {
@@ -195,6 +208,7 @@ export async function traceRoll(
         await Promise.resolve();
         await Promise.resolve();
 
+        onFrame?.(now - start, bodies);
         const speeds = bodies.map(speedOf);
         trace.peakSpeed = Math.max(trace.peakSpeed, ...speeds.map((s) => s.linear));
         trace.energyGain = Math.max(

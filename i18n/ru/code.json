@@ -1010,6 +1010,18 @@
     "ttgamer.ui.dice.settings.diceFaceColor": {
         "message": "Цвет граней"
     },
+    "ttgamer.ui.dice.settings.diceFeel": {
+        "message": "Поведение кубов"
+    },
+    "ttgamer.ui.dice.settings.diceFeelHeavy": {
+        "message": "Тяжёлые"
+    },
+    "ttgamer.ui.dice.settings.diceFeelLively": {
+        "message": "Прыгучие"
+    },
+    "ttgamer.ui.dice.settings.diceFeelValue": {
+        "message": "{value} из 100: 0 — тяжёлые, 100 — прыгучие"
+    },
     "ttgamer.ui.dice.settings.diceTextColor": {
         "message": "Цвет символов"
     },

@@ -10,6 +10,10 @@ volume: Volume
 timeToReact: Time to react
 reactWindow: React window (seconds)
 reactWindowValue: '{seconds}s'
+diceFeel: Dice feel
+diceFeelHeavy: Heavy
+diceFeelLively: Lively
+diceFeelValue: '{value} of 100: 0 heavy, 100 lively'
 includeRollContext: Include roll context
 includeCharacterName: Include character name
 includeCharacterStats: Include character stats

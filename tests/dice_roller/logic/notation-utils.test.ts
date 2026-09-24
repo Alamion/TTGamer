@@ -1,4 +1,5 @@
 import {
+    addWodThreshold,
     applyAdvantage,
     applyDisadvantage,
     findLastMatch,
@@ -329,6 +330,20 @@ describe('handleDiceNotation', () => {
 
     it('preserves modifier on existing die when decrementing', () => {
         expect(handleDiceNotation('4d6kh3', 'd6', false)).toBe('3d6kh3');
+    });
+});
+
+describe('addWodThreshold', () => {
+    it('gives plain and botch-only d10 terms the threshold', () => {
+        expect(addWodThreshold('3d10 + d10f=1 + 2d10:h', 7)).toBe(
+            '3d10>=7 + d10>=7f=1 + 2d10:h>=7'
+        );
+    });
+
+    it('leaves counted, other, and grouped terms alone', () => {
+        expect(addWodThreshold('2d10>=6 + d6 + 3', 7)).toBe('2d10>=6 + d6 + 3');
+        expect(addWodThreshold('2d10!', 7)).toBe('2d10!');
+        expect(addWodThreshold('(2d10+d10)', 7)).toBe('(2d10+d10)');
     });
 });
 

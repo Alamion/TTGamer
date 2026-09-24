@@ -1,5 +1,5 @@
 import { debug } from '@site/src/shared/utils/logging';
-import { Body, Vec3 } from 'cannon-es';
+import { Body } from 'cannon-es';
 import {
     BufferGeometry,
     type Material,
@@ -23,7 +23,24 @@ interface DiceVector {
     pos: { x: number; y: number; z: number };
     velocity: { x: number; y: number; z: number };
     angular: { x: number; y: number; z: number };
+    /** Start orientation as a unit quaternion. */
     axis: { x: number; y: number; z: number; w: number };
+}
+
+/**
+ * A rotation drawn uniformly over all orientations (Shoemake). A random axis and angle is not
+ * uniform, and when dice barely tumble the start orientation decides the face.
+ */
+function randomOrientation(): DiceVector['axis'] {
+    const [u1, u2, u3] = [Math.random(), Math.random(), Math.random()];
+    const a = Math.sqrt(1 - u1);
+    const b = Math.sqrt(u1);
+    return {
+        x: a * Math.sin(2 * Math.PI * u2),
+        y: a * Math.cos(2 * Math.PI * u2),
+        z: b * Math.sin(2 * Math.PI * u3),
+        w: b * Math.cos(2 * Math.PI * u3),
+    };
 }
 
 function createDefaultVector(): DiceVector {
@@ -43,12 +60,7 @@ function createDefaultVector(): DiceVector {
             y: 200 * Math.random(),
             z: 100 * Math.random(),
         },
-        axis: {
-            x: Math.random(),
-            y: Math.random(),
-            z: Math.random(),
-            w: Math.random(),
-        },
+        axis: randomOrientation(),
     };
 }
 
@@ -113,12 +125,7 @@ export abstract class DiceShape {
             y: (Math.random() * 5 + this.inertia) * ang.x,
             z: 0,
         };
-        const axis = {
-            x: Math.random(),
-            y: Math.random(),
-            z: Math.random(),
-            w: Math.random(),
-        };
+        const axis = randomOrientation();
         debug('Vector generated', {
             v,
             dist,
@@ -331,10 +338,8 @@ export abstract class DiceShape {
 
     create(): void {
         this.body.position.set(this.vector.pos.x, this.vector.pos.y, this.vector.pos.z);
-        this.body.quaternion.setFromAxisAngle(
-            new Vec3(this.vector.axis.x, this.vector.axis.y, this.vector.axis.z),
-            this.vector.axis.w * Math.PI * 2
-        );
+        const { x, y, z, w } = this.vector.axis;
+        this.body.quaternion.set(x, y, z, w);
         this.body.angularVelocity.set(
             this.vector.angular.x,
             this.vector.angular.y,

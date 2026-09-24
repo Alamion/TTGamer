@@ -1010,6 +1010,18 @@
     "ttgamer.ui.dice.settings.diceFaceColor": {
         "message": "Dice face color"
     },
+    "ttgamer.ui.dice.settings.diceFeel": {
+        "message": "Dice feel"
+    },
+    "ttgamer.ui.dice.settings.diceFeelHeavy": {
+        "message": "Heavy"
+    },
+    "ttgamer.ui.dice.settings.diceFeelLively": {
+        "message": "Lively"
+    },
+    "ttgamer.ui.dice.settings.diceFeelValue": {
+        "message": "{value} of 100: 0 heavy, 100 lively"
+    },
     "ttgamer.ui.dice.settings.diceTextColor": {
         "message": "Dice text color"
     },

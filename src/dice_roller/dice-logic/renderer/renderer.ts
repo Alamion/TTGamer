@@ -14,6 +14,7 @@ import {
 } from '../../utils/constants';
 import { RollCancelledError } from '../errors';
 import type { DiceGeometryData } from './geometries';
+import { MAX_LIVELINESS, physicsProfile } from './liveliness';
 import { PhysicsWorld } from './physics';
 import { ResourceTracker } from './resource';
 import { SceneManager } from './scene';
@@ -29,6 +30,8 @@ export interface DiceRendererConfig {
     soundVolume?: number;
     timeToReact?: boolean;
     timeToReactSeconds?: number;
+    /** 0 (heavy: dice stop where they land) to 100 (lively, the default). */
+    liveliness?: number;
 }
 
 type SessionPhase =
@@ -105,6 +108,14 @@ export class DiceRenderer {
     private boundPointerMove: (e: PointerEvent) => void;
     private boundClickCapture: (e: MouseEvent) => void;
 
+    private profile = physicsProfile(MAX_LIVELINESS);
+
+    /** Takes effect on the next throw; dice already rolling keep their damping and launch. */
+    setLiveliness(liveliness: number): void {
+        this.profile = physicsProfile(liveliness);
+        this.physicsWorld.applyProfile(this.profile);
+    }
+
     setTimeToReact(enabled: boolean, seconds: number): void {
         this.timeToReactEnabled = enabled;
         this.timeToReactSeconds = seconds;
@@ -143,7 +154,8 @@ export class DiceRenderer {
         this.sceneManager = new SceneManager();
         this.container.appendChild(this.sceneManager.renderer.domElement);
 
-        this.physicsWorld = new PhysicsWorld(width, height);
+        this.profile = physicsProfile(config.liveliness ?? MAX_LIVELINESS);
+        this.physicsWorld = new PhysicsWorld(width, height, this.profile);
 
         this.sceneManager.initScene(width, height);
 
@@ -237,7 +249,7 @@ export class DiceRenderer {
                     this.updateWallVisuals();
                 }
             } else {
-                this.physicsWorld = new PhysicsWorld(newW, newH);
+                this.physicsWorld = new PhysicsWorld(newW, newH, this.profile);
                 this.sceneManager.initScene(newW, newH);
 
                 const camInfo = this.sceneManager.getCameraInfo();
@@ -247,6 +259,17 @@ export class DiceRenderer {
                 }
             }
         }, 200);
+    }
+
+    /** Applies the profile's damping and launch strength to a die that was just thrown. */
+    private launch(die: DiceShape): void {
+        const { body } = die;
+        body.linearDamping = this.profile.linearDamping;
+        body.angularDamping = this.profile.angularDamping;
+        body.sleepSpeedLimit = this.profile.sleepSpeed;
+        body.sleepTimeLimit = this.profile.sleepTime;
+        body.velocity.scale(this.profile.launch, body.velocity);
+        body.angularVelocity.scale(this.profile.launch, body.angularVelocity);
     }
 
     /** Every die of every session that is still being thrown or settling. */
@@ -339,6 +362,7 @@ export class DiceRenderer {
             };
             const dice = createDiceShape(sides, this.width, this.height, data, perDieVector);
             dice.geometry.userData.flatIndex = i;
+            this.launch(dice);
             diceShapes.push(dice);
         }
 
@@ -439,6 +463,7 @@ export class DiceRenderer {
                     y: vector.y + (Math.random() - 0.5) * rethrowSpread,
                 };
                 die.recreate(perDieVector, this.width, this.height);
+                this.launch(die);
                 rethrown.push(die);
             }
         }
@@ -489,6 +514,7 @@ export class DiceRenderer {
                 y: vector.y + (Math.random() - 0.5) * addSpread,
             };
             const dice = createDiceShape(sides, this.width, this.height, data, perDieVector);
+            this.launch(dice);
             newDice.push(dice);
         }
 
@@ -930,6 +956,7 @@ export class DiceRenderer {
             die.body.velocity.set(vel.x, vel.y, vel.z);
             const angVel = this.generateRerollAngularVelocity();
             die.body.angularVelocity.set(angVel.x, angVel.y, angVel.z);
+            this.launch(die);
             die.body.wakeUp();
             die.stopped = false;
             die.restingSince = null;

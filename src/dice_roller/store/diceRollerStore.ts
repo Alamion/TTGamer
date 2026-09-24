@@ -44,6 +44,8 @@ export interface DiceRollerSettings {
     soundVolume: number;
     timeToReact: boolean;
     timeToReactSeconds: number;
+    /** 3D dice feel, 0 (heavy) to 100 (lively, the original behavior). */
+    diceLiveliness: number;
     enableDiscordWebhook: boolean;
     includeCharacterName: boolean;
     includeCharacterStats: boolean;
@@ -173,6 +175,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
                 soundVolume: s.soundVolume,
                 timeToReact: s.timeToReact,
                 timeToReactSeconds: s.timeToReactSeconds,
+                diceLiveliness: s.diceLiveliness,
                 specialDiceColor: s.specialDiceColor,
             };
             const rolledNotation = prepared?.notation ?? notation;
