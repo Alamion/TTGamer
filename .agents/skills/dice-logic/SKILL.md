@@ -54,7 +54,7 @@ The two paths share parsing and final evaluator semantics but obtain initial val
 - 2D: `evaluateDiceAST()` generates values.
 - 3D: cannon-es physics generates values for supported shapes; the orchestrator performs physical rerolls/explosions and supplies pre-generated rolls to the evaluator.
 
-Therefore the renderer is not currently presentation-only. Do not implement forced-face animation or evaluator-authoritative 3D results under the assumption that it already exists.
+Therefore the renderer is not presentation-only: physics decides every die except those with forced `@` values, which are aimed by replaying the throw and turning the mesh by a die symmetry (see `src/dice_roller/AGENTS.md`). There is no evaluator-authoritative 3D mode.
 
 A d100 is one logical die represented by two physical d10s. Indexing, rerolls, explosions, and `groupSizes` must preserve that multiplier.
 

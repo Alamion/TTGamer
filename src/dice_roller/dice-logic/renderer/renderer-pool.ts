@@ -35,7 +35,8 @@ function scheduleDispose(): void {
 export function startPhysicsRoll(
     config: DiceRendererConfig,
     diceData: DiceGeometryData[],
-    groupSizes: number[]
+    groupSizes: number[],
+    targets?: readonly (number | undefined)[]
 ): PhysicsRollHandle {
     if (!sharedRenderer) {
         sharedRenderer = createRenderer(config);
@@ -56,7 +57,7 @@ export function startPhysicsRoll(
 
     scheduleDispose();
 
-    const { sessionId, settle } = sharedRenderer.startRoll(diceData, groupSizes);
+    const { sessionId, settle } = sharedRenderer.startRoll(diceData, groupSizes, targets);
 
     return {
         sessionId,

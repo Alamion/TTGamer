@@ -148,72 +148,92 @@ export abstract class DiceShape {
         return this.geometry.geometry as BufferGeometry;
     }
 
+    /**
+     * Rotation of the mesh relative to the body: one of the die's symmetries, so the mesh
+     * fills exactly the body's shape. A predetermined roll picks it so the forced face ends up
+     * where physics lands (identity otherwise).
+     */
+    faceOffset = new ThreeQuaternion();
+
     get result(): number {
         return this.getUpsideValue();
     }
 
-    getUpsideValue(): number {
-        const upVector = new Vector3(0, 0, this.sides === 4 ? -1 : 1);
+    /** Local normal of each numbered face (material index ≥ 1); shared by dice of one shape. */
+    faceNormals(): Map<number, Vector3> {
+        const cached = this.buffer.userData.faceNormals as Map<number, Vector3> | undefined;
+        if (cached) return cached;
         const normals = this.buffer.attributes.normal.array as Float32Array;
-        const groups = this.buffer.groups;
-
-        const materialNormals: Map<number, { angle: number; groupIndex: number }> = new Map();
-
-        for (let i = 0; i < groups.length; i++) {
-            const group = groups[i];
-            const matIdx = group.materialIndex ?? 0;
-
-            // Skip material index 0 (blank label for triangular connecting faces).
-            // Material 1 is the '0'/'00' face on d10/d100 and must be included.
-            if (matIdx < 1) {
-                continue;
-            }
-
-            const startVertex = group.start * 3;
-            if (startVertex + 2 >= normals.length) {
-                continue;
-            }
-
-            const nx = normals[startVertex];
-            const ny = normals[startVertex + 1];
-            const nz = normals[startVertex + 2];
-
-            if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) {
-                continue;
-            }
-
-            const normal = new Vector3(nx, ny, nz);
-
-            if (normal.lengthSq() === 0) {
-                continue;
-            }
-
-            const worldNormal = normal
-                .clone()
-                .applyQuaternion(cannonQuaternionToThree(this.body.quaternion));
-
-            if (worldNormal.lengthSq() === 0) {
-                continue;
-            }
-
-            const n1 = worldNormal.clone().normalize();
-            const n2 = upVector.clone().normalize();
-            const dot = n1.dot(n2);
-
-            if (!Number.isFinite(dot)) {
-                continue;
-            }
-
-            const clampedDot = Math.max(-1, Math.min(1, dot));
-            const angle = Math.acos(clampedDot);
-
-            const existing = materialNormals.get(matIdx);
-            if (!existing || angle < existing.angle) {
-                materialNormals.set(matIdx, { angle, groupIndex: i });
+        const faces = new Map<number, Vector3>();
+        for (const group of this.buffer.groups) {
+            // Material 0 is the blank chamfer; material 1 is the '0'/'00' face on d10/d100.
+            const material = group.materialIndex ?? 0;
+            if (material < 1 || faces.has(material)) continue;
+            const start = group.start * 3;
+            const normal = new Vector3(normals[start], normals[start + 1], normals[start + 2]);
+            if (normal.lengthSq() > 0 && Number.isFinite(normal.lengthSq())) {
+                faces.set(material, normal.normalize());
             }
         }
+        this.buffer.userData.faceNormals = faces;
+        return faces;
+    }
 
-        if (materialNormals.size === 0) {
+    /** Distinct normals of the whole surface, blank chamfers included. */
+    surfaceNormals(): Vector3[] {
+        const cached = this.buffer.userData.surfaceNormals as Vector3[] | undefined;
+        if (cached) return cached;
+        const array = this.buffer.attributes.normal.array as Float32Array;
+        const distinct: Vector3[] = [];
+        for (let index = 0; index + 2 < array.length; index += 3) {
+            const normal = new Vector3(array[index], array[index + 1], array[index + 2]);
+            if (!(normal.lengthSq() > 0)) continue;
+            normal.normalize();
+            if (!distinct.some((seen) => seen.distanceToSquared(normal) < 1e-6)) {
+                distinct.push(normal);
+            }
+        }
+        this.buffer.userData.surfaceNormals = distinct;
+        return distinct;
+    }
+
+    /** The face read for a mesh orientation: the one facing up (down for a d4); -1 if none. */
+    upFace(orientation: ThreeQuaternion): number {
+        const up = new Vector3(0, 0, this.sides === 4 ? -1 : 1);
+        let best = -1;
+        let bestDot = -Infinity;
+        const world = new Vector3();
+        for (const [material, normal] of this.faceNormals()) {
+            const dot = world.copy(normal).applyQuaternion(orientation).dot(up);
+            if (dot > bestDot) {
+                bestDot = dot;
+                best = material;
+            }
+        }
+        return best;
+    }
+
+    /** Die value of a face. d10/d100 material 1 (label '0'/'00') wraps to the last value. */
+    valueOfFace(material: number): number {
+        const faceIndex = (material - 2 + this.values.length) % this.values.length;
+        return this.values[faceIndex] ?? faceIndex + 1;
+    }
+
+    /** Faces that show `value` (a fudge die has two of each). */
+    facesShowing(value: number): number[] {
+        return [...this.faceNormals().keys()].filter(
+            (material) => this.valueOfFace(material) === value
+        );
+    }
+
+    /** Orientation the mesh is drawn with: the body's, turned by the face offset. */
+    meshOrientation(bodyQuaternion = this.body.quaternion): ThreeQuaternion {
+        return cannonQuaternionToThree(bodyQuaternion).multiply(this.faceOffset);
+    }
+
+    getUpsideValue(): number {
+        const material = this.upFace(this.meshOrientation());
+        if (material < 0) {
             const randomIndex = Math.floor(Math.random() * this.values.length);
             const fallbackValue = (this.values?.[randomIndex] ?? randomIndex + 1) || 1;
             debug(
@@ -221,34 +241,7 @@ export abstract class DiceShape {
             );
             return fallbackValue;
         }
-
-        let closestMatIndex = 1;
-        let closestAngle = Math.PI * 2;
-
-        for (const [matIndex, data] of materialNormals) {
-            if (data.angle < closestAngle) {
-                closestAngle = data.angle;
-                closestMatIndex = matIndex;
-            }
-        }
-
-        // Map material index back to a value index.
-        // For d10/d100: mat 1 (label '0'/'00') wraps to the last value (10).
-        // For other dice: mat 2+ maps linearly with modulo wrapping.
-        const faceIndex = (closestMatIndex - 2 + this.values.length) % this.values.length;
-        let result: number;
-
-        if (faceIndex >= 0 && faceIndex < this.values.length) {
-            result = this.values[faceIndex];
-        } else {
-            // Fallback: map as best we can to a valid index
-            const approxIndex = Math.max(
-                0,
-                Math.min(this.values.length - 1, Math.abs(faceIndex) % this.values.length)
-            );
-            result = this.values?.[approxIndex] ?? approxIndex + 1;
-        }
-        return result;
+        return this.valueOfFace(material);
     }
 
     /**
@@ -276,7 +269,7 @@ export abstract class DiceShape {
         }
 
         this.geometry.position.set(pos.x, pos.y, pos.z);
-        this.geometry.quaternion.set(quat.x, quat.y, quat.z, quat.w);
+        this.geometry.quaternion.set(quat.x, quat.y, quat.z, quat.w).multiply(this.faceOffset);
     }
 
     setOpacity(opacity: number): void {

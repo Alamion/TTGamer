@@ -1,5 +1,5 @@
 import { isDevelopment } from '@site/src/shared/utils/env';
-import { debug } from '@site/src/shared/utils/logging';
+import { debug, warn } from '@site/src/shared/utils/logging';
 import { BoxGeometry, type Material, Mesh, MeshBasicMaterial, Raycaster, Vector2 } from 'three';
 
 import {
@@ -10,6 +10,7 @@ import {
     FULL_SIZE_DICE_POOL,
     MAX_ROLL_SECONDS,
     REST_SECONDS,
+    REST_WAKE_FACTOR,
     SHOW_SECONDS,
     VELOCITY_THRESHOLD,
 } from '../../utils/constants';
@@ -18,13 +19,12 @@ import { applyCrowdCollisions } from './crowd';
 import type { DiceGeometryData } from './geometries';
 import { MAX_LIVELINESS, physicsProfile } from './liveliness';
 import { PhysicsWorld } from './physics';
+import { predictRestingFaces } from './predict';
 import { SceneManager } from './scene';
 import { createDiceShape, DiceShape } from './shapes';
 import { SoundManager } from './sound-manager';
 import { separateSpawns } from './spawn';
-
-/** How much faster than the rest thresholds a resting die must move to count as moving again. */
-const WAKE_FACTOR = 4;
+import { faceTurn } from './symmetry';
 
 export interface DiceRendererConfig {
     diceColor: string;
@@ -286,6 +286,22 @@ export class DiceRenderer {
         body.angularVelocity.scale(this.profile.launch, body.angularVelocity);
     }
 
+    private aimDice(dice: DiceShape[], targets: readonly (number | undefined)[]): void {
+        const landed = predictRestingFaces(this.physicsWorld, dice, this.frameRate);
+        dice.forEach((die, index) => {
+            const target = targets[index];
+            if (target === undefined || landed[index] < 0) return;
+            for (const face of die.facesShowing(target)) {
+                const turn = faceTurn(die.faceNormals(), face, landed[index], die.surfaceNormals());
+                if (turn) {
+                    die.faceOffset.copy(turn);
+                    return;
+                }
+            }
+            warn(`No face of a d${die.sides} shows ${target}; it lands as thrown`, 'DiceRenderer');
+        });
+    }
+
     /** Every die of every session that is still being thrown or settling. */
     private airborneBodies(): DiceShape['body'][] {
         return this.sessions
@@ -359,7 +375,16 @@ export class DiceRenderer {
         this.cancelBtn = null;
     }
 
-    startRoll(diceData: DiceGeometryData[], groupSizes: number[]): StartedRollSession {
+    /**
+     * `targets` holds, per die, a value it must show (a forced `@` value) or undefined. The
+     * throw is replayed ahead of time and each targeted die's mesh is turned by a symmetry so
+     * the target face lies where its body lands; the flight itself is untouched.
+     */
+    startRoll(
+        diceData: DiceGeometryData[],
+        groupSizes: number[],
+        targets: readonly (number | undefined)[] = []
+    ): StartedRollSession {
         debug('DiceRenderer: Starting new roll session with', diceData.length, 'dice');
 
         const sessionId = this.nextSessionId++;
@@ -398,6 +423,9 @@ export class DiceRenderer {
             this.physicsWorld.limits
         );
         this.addDiceToScene(diceShapes);
+        if (targets.some((target) => target !== undefined)) {
+            this.aimDice(diceShapes, targets);
+        }
 
         let settleResolve: ((values: number[]) => void) | null = null;
         let settleReject: ((err: Error) => void) | null = null;
@@ -787,7 +815,7 @@ export class DiceRenderer {
             // come to rest stays at rest through solver jitter in a pile and wakes only when
             // knocked, or a large pool never has every die still in the same instant.
             const { x: tipX, y: tipY } = die.body.angularVelocity;
-            const slack = die.stopped ? WAKE_FACTOR : 1;
+            const slack = die.stopped ? REST_WAKE_FACTOR : 1;
             const still =
                 die.body.velocity.length() < VELOCITY_THRESHOLD * slack &&
                 Math.hypot(tipX, tipY) < ANGULAR_VELOCITY_THRESHOLD * slack;

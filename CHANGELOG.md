@@ -8,6 +8,8 @@
 - **Large 3D pools stay smooth (dice #12)**: each die now draws with one material from a packed face texture instead of one draw call per triangle, pools above a dozen dice shrink so the pile settles, and settled dice in a large pool sleep; on integrated graphics 100 d6 roll at about 57 fps (was 19) and 100 d20 at about 53 fps (previously they did not finish within a minute), and the 3D limit rises from 100 to 200 physical dice
 - **Steadier 3D frame pacing**: dice are drawn between physics steps, so motion is smooth on 120–240 Hz displays; large pools collide die-to-die as spheres (the real shape still decides the face), cloned dice share their geometry, hover highlighting runs once per frame, and the development build no longer logs every die face — a 100 d20 roll keeps 99% of frames at 60 fps on integrated graphics
 
+- **Forced values show in 3D (dice #14)**: notation with `@` values (`2d10@6,7`, documentation examples) now lands the 3D dice on exactly those faces instead of warning and rolling randomly — the throw is replayed ahead of time and each die is turned by one of its own symmetries, so the flight stays natural and face layouts stay intact (a d6's opposite faces still add to 7); d100 aims both of its d10
+
 ### Fix
 
 - **Dice settings can be closed on phones**: the settings dialog grew taller than a phone screen, pushing its close button above the screen and under the site header with no way to scroll; it now opens above the header, fits the visible screen, and scrolls its settings while the title and close button stay in place

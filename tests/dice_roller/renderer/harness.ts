@@ -152,11 +152,14 @@ export async function traceRoll(
     {
         liveliness,
         scaler = 1,
+        targets,
         limitMs = 40_000,
         onFrame,
     }: {
         liveliness?: number;
         scaler?: number;
+        /** Per die, a value it must show (a forced `@` value). */
+        targets?: (number | undefined)[];
         limitMs?: number;
         onFrame?: (ms: number, bodies: Body[]) => void;
     } = {}
@@ -180,7 +183,7 @@ export async function traceRoll(
 
     const bodies = geometries.map((g) => g.body);
     const start = now;
-    const session = renderer.startRoll(geometries, groupSizes);
+    const session = renderer.startRoll(geometries, groupSizes, targets);
     const trace: RollTrace = {
         spawnOverlaps: spawnOverlaps(bodies),
         launchSpeed: Math.max(...bodies.map((b) => b.velocity.length())),

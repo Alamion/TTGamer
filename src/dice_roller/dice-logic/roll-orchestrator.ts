@@ -43,24 +43,6 @@ function loadRenderer(): Promise<RendererApi> {
 }
 const FUDGE_LABEL_MAP: Record<number, string> = { [-1]: '-', [0]: ' ', [1]: '+' };
 
-function hasForcedValues(ast: ASTNode): boolean {
-    let found = false;
-    function traverse(node: ASTNode): void {
-        if (node.type === 'DiceGroup' && node.forcedValues && node.forcedValues.length > 0) {
-            found = true;
-        } else if (node.type === 'BinaryOp') {
-            traverse(node.left);
-            traverse(node.right);
-        } else if (node.type === 'UnaryOp') {
-            traverse(node.operand);
-        } else if (node.type === 'Parenthesized') {
-            traverse(node.expression);
-        }
-    }
-    traverse(ast);
-    return found;
-}
-
 function has3DSupportedDice(ast: ASTNode): boolean {
     let found = false;
     function traverse(node: ASTNode): void {
@@ -199,6 +181,30 @@ export async function processRethrowLoop(
 export function diceScaleFor(physicalDice: number): number {
     if (physicalDice <= FULL_SIZE_DICE_POOL) return 1;
     return Math.max(MIN_DICE_SCALE, Math.sqrt(FULL_SIZE_DICE_POOL / physicalDice));
+}
+
+/** The two d10 faces a d100 value shows: tens then ones, where 0 is the '00'/'0' face. */
+function d100Faces(value: number): [number, number] {
+    const tens = Math.floor((value % 100) / 10);
+    const ones = value % 10;
+    return [tens || 10, ones || 10];
+}
+
+/**
+ * Per physical die of a throw, the value a forced `@` value needs it to show, or undefined for
+ * a die physics decides. Groups without 3D geometry contribute no dice.
+ */
+export function physicalTargets(
+    groups: readonly DiceGroupNode[],
+    groupSizes: readonly number[]
+): (number | undefined)[] {
+    return groups.flatMap((group, index) => {
+        if (!groupSizes[index]) return [];
+        if (!group.forcedValues) return Array<undefined>(groupSizes[index]).fill(undefined);
+        return group.forcedValues.flatMap((value) =>
+            group.sides === 100 ? d100Faces(value) : [value]
+        );
+    });
 }
 
 export async function processExplosionLoop(
@@ -350,15 +356,6 @@ export async function executeUnifiedRoll(
     try {
         ast = parseToAST(notation);
 
-        const hasForced = hasForcedValues(ast);
-
-        if (hasForced && defaultConfig.enable3dDice && has3DSupportedDice(ast)) {
-            warn(
-                `Forced rolls (@) not supported in 3D mode — rolling ${notation} with random physics`,
-                '3DDiceRolls'
-            );
-        }
-
         if (!defaultConfig.enable3dDice || !has3DSupportedDice(ast)) {
             return evaluateDiceAST(ast, notation);
         }
@@ -408,6 +405,7 @@ export async function executeUnifiedRoll(
             return evaluateDiceAST(ast, notation);
         }
 
+        const targets = physicalTargets(diceGroupNodes, groupSizes);
         const handle = startPhysicsRoll(
             {
                 diceColor: defaultConfig.diceColor,
@@ -420,11 +418,21 @@ export async function executeUnifiedRoll(
                 liveliness: defaultConfig.diceLiveliness,
             },
             geometries,
-            groupSizes
+            groupSizes,
+            targets
         );
         activeHandle = handle;
 
         let flatValues = await handle.settle;
+        // Forced values are the result; the dice were aimed at them, and a throw disturbed
+        // from outside (a click, another roll) only changes what is drawn.
+        if (targets.some((target, index) => target !== undefined && target !== flatValues[index])) {
+            warn(
+                `Aimed dice of ${notation} landed differently; using the forced values`,
+                '3DDiceRolls'
+            );
+        }
+        flatValues = flatValues.map((value, index) => targets[index] ?? value);
 
         if (flatValues.some((value) => typeof value !== 'number' || !Number.isFinite(value))) {
             warn('Physics returned an invalid die value — falling back to 2D', '3DDiceRolls');

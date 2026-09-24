@@ -1,6 +1,7 @@
 import { parseToAST } from '@site/src/dice_roller/dice-logic/dice-parser';
 import {
     diceScaleFor,
+    physicalTargets,
     processExplosionLoop,
     processRethrowLoop,
 } from '@site/src/dice_roller/dice-logic/roll-orchestrator';
@@ -167,14 +168,20 @@ const RENDERER_PATH = '@site/src/dice_roller/dice-logic/renderer';
 const ORCHESTRATOR_PATH = '@site/src/dice_roller/dice-logic/roll-orchestrator';
 
 /** Counts how often the renderer module is actually evaluated (i.e. downloaded). */
-const rendererLoads = vi.hoisted(() => ({ count: 0, failFirst: false }));
+const rendererLoads = vi.hoisted(() => ({
+    count: 0,
+    failFirst: false,
+    targets: undefined as readonly (number | undefined)[] | undefined,
+}));
 
 function mockRenderer(): void {
     vi.doMock(RENDERER_PATH, () => {
         rendererLoads.count++;
         const prepare = (groups: Array<{ count: number }>) => ({
-            geometries: Array.from({ length: groups[0].count }, () => ({}) as never),
-            groupSizes: [groups[0].count],
+            geometries: groups.flatMap((group) =>
+                Array.from({ length: group.count }, () => ({}) as never)
+            ),
+            groupSizes: groups.map((group) => group.count),
         });
         return {
             get prepareDiceGeometries() {
@@ -184,15 +191,24 @@ function mockRenderer(): void {
                 }
                 return prepare;
             },
-            startPhysicsRoll: () => ({
-                sessionId: 1,
-                settle: Promise.resolve([4]),
-                lockDice: vi.fn(),
-                rethrow: vi.fn(async () => []),
-                addDice: vi.fn(async () => []),
-                arrangeAndDismiss: vi.fn(),
-                wasManuallyRerolled: () => false,
-            }),
+            startPhysicsRoll: (
+                _config: unknown,
+                diceData: unknown[],
+                _sizes: unknown,
+                targets?: readonly (number | undefined)[]
+            ) => {
+                rendererLoads.targets = targets;
+                return {
+                    sessionId: 1,
+                    // Physics shows 4 on every die; aimed dice must not keep it.
+                    settle: Promise.resolve(diceData.map(() => 4)),
+                    lockDice: vi.fn(),
+                    rethrow: vi.fn(async () => []),
+                    addDice: vi.fn(async () => []),
+                    arrangeAndDismiss: vi.fn(),
+                    wasManuallyRerolled: () => false,
+                };
+            },
         };
     });
 }
@@ -324,5 +340,36 @@ describe('3D colour of labelled dice', () => {
         const { executeUnifiedRoll } = await loadColouredOrchestrator([10], [3]);
         await executeUnifiedRoll('1d10>=6!', colours);
         expect(configs.list.at(-1)?.diceColor).toBe('#111111');
+    });
+});
+
+describe('forced values in 3D (dice #14)', () => {
+    it('aims each physical die at its forced value; d100 at its tens and ones faces', () => {
+        const groups = [parseGroup('2d6@3,5'), parseGroup('3d8'), parseGroup('2d100@70,100')];
+        expect(physicalTargets(groups, [2, 3, 4])).toEqual([
+            3,
+            5,
+            undefined,
+            undefined,
+            undefined,
+            7,
+            10,
+            10,
+            10,
+        ]);
+        expect(physicalTargets([parseGroup('1d100@7')], [2])).toEqual([10, 7]);
+    });
+
+    it('skips groups without 3D dice', () => {
+        expect(physicalTargets([parseGroup('2d7@1,2'), parseGroup('1d6@6')], [0, 1])).toEqual([6]);
+    });
+
+    it('rolls forced notation in 3D and reports the forced values', async () => {
+        const { executeUnifiedRoll } = await loadOrchestrator();
+        const result = await executeUnifiedRoll('2d6@3,5+1d6', config3d);
+
+        expect(rendererLoads.targets).toEqual([3, 5, undefined]);
+        expect(result.total).toBe(12);
+        expect(result.diceGroups[0].rolls.map((roll: DiceRoll) => roll.value)).toEqual([3, 5]);
     });
 });
