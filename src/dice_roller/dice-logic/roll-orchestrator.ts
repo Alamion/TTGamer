@@ -254,8 +254,9 @@ export async function processExplosionLoop(
         const extraData = prepareGeometries(
             [
                 {
-                    sides: isD100 ? 10 : group.sides,
-                    count: explodeIndices.length * multiplier,
+                    // A d100 comes back as its tens and ones dice.
+                    sides: group.sides,
+                    count: explodeIndices.length,
                     modifiers: {},
                     fudge: group.fudge,
                 },
@@ -450,6 +451,8 @@ export async function executeUnifiedRoll(
             const multiplier = group.sides === 100 ? 2 : 1;
             const key = buildGroupKey(group, g);
             const initialPhysCount = groupSizes[g];
+            // A group without 3D dice has no values here; the evaluator rolls it in 2D.
+            if (!initialPhysCount) continue;
 
             const allGroupRolls = convertFlatToGroupRolls(
                 flatValues,

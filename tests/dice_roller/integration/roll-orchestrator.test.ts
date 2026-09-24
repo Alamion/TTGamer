@@ -305,7 +305,7 @@ describe('3D colour of labelled dice', () => {
             },
             startPhysicsRoll: () => ({
                 sessionId: 1,
-                settle: Promise.resolve(settleValues),
+                settle: settleValues,
                 lockDice: vi.fn(),
                 rethrow: vi.fn(async () => []),
                 addDice: vi.fn(async () => explosionValues),
@@ -371,5 +371,258 @@ describe('forced values in 3D (dice #14)', () => {
         expect(rendererLoads.targets).toEqual([3, 5, undefined]);
         expect(result.total).toBe(12);
         expect(result.diceGroups[0].rolls.map((roll: DiceRoll) => roll.value)).toEqual([3, 5]);
+    });
+});
+
+/** What the scripted renderer answers, one entry per physics call, and what it was asked. */
+/** `'cancel'` is the player cancelling; an Error is the renderer failing. */
+type Answer = number[] | Error | 'cancel';
+
+interface Script {
+    settle: Answer;
+    rethrows?: Answer[];
+    additions?: Answer[];
+}
+
+const scripted = {
+    groupSizes: [] as number[],
+    targets: undefined as readonly (number | undefined)[] | undefined,
+    handle: undefined as
+        | {
+              lockDice: ReturnType<typeof vi.fn>;
+              rethrow: ReturnType<typeof vi.fn>;
+              addDice: ReturnType<typeof vi.fn>;
+              arrangeAndDismiss: ReturnType<typeof vi.fn>;
+          }
+        | undefined,
+};
+
+const ERRORS_PATH = '@site/src/dice_roller/dice-logic/errors';
+const PHYSICAL_SIDES = new Set([2, 4, 6, 8, 10, 12, 20, 100]);
+
+/** A renderer whose dice carry their sides, with physics answers taken from `script`. */
+async function loadScriptedOrchestrator(script: Script) {
+    vi.resetModules();
+    scripted.handle = undefined;
+    // The error class of the fresh module graph, the one the orchestrator checks against.
+    const { RollCancelledError } = await import(ERRORS_PATH);
+    const answer = async (next: Answer | undefined) => {
+        if (next === 'cancel') throw new RollCancelledError();
+        if (next instanceof Error) throw next;
+        return next ?? [];
+    };
+    vi.doMock(RENDERER_PATH, () => ({
+        // Mirrors the factory: a d100 is a tens die and a ones die; odd sides get no dice.
+        prepareDiceGeometries: (groups: Array<{ sides: number; count: number }>) => {
+            const sizes = groups.map((group) =>
+                PHYSICAL_SIDES.has(group.sides) ? group.count * (group.sides === 100 ? 2 : 1) : 0
+            );
+            return {
+                geometries: groups.flatMap((group, index) =>
+                    Array.from({ length: sizes[index] }, (_, die) => ({
+                        sides: group.sides === 100 && die % 2 === 1 ? 10 : group.sides,
+                    }))
+                ),
+                groupSizes: sizes,
+            };
+        },
+        startPhysicsRoll: (
+            _config: unknown,
+            _dice: unknown[],
+            groupSizes: number[],
+            targets?: readonly (number | undefined)[]
+        ) => {
+            scripted.groupSizes = [...groupSizes];
+            scripted.targets = targets;
+            scripted.handle = {
+                lockDice: vi.fn(),
+                rethrow: vi.fn(() => answer(script.rethrows?.shift())),
+                addDice: vi.fn(() => answer(script.additions?.shift())),
+                arrangeAndDismiss: vi.fn(),
+            };
+            return {
+                sessionId: 1,
+                settle: answer(script.settle),
+                ...scripted.handle,
+                wasManuallyRerolled: () => false,
+            };
+        },
+    }));
+    return import(ORCHESTRATOR_PATH);
+}
+
+/** Makes every 2D die roll its highest face, so 2D values are recognisable. */
+function rollHighIn2D() {
+    return vi.spyOn(crypto, 'getRandomValues').mockImplementation((array) => {
+        (array as Uint32Array).fill(0xffffffff);
+        return array;
+    });
+}
+
+const valuesOf = (result: { diceGroups: Array<{ rolls: DiceRoll[] }> }, group: number) =>
+    result.diceGroups[group].rolls.map((roll) => roll.value);
+
+describe('mixed 3D and 2D groups (dice #5)', () => {
+    it('rolls a group without 3D dice in 2D instead of reading its neighbours', async () => {
+        const random = rollHighIn2D();
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            settle: [4, 5],
+        });
+        const result = await executeUnifiedRoll('1d7+2d6', config3d);
+        random.mockRestore();
+
+        expect(scripted.groupSizes).toEqual([0, 2]);
+        expect(valuesOf(result, 0)).toEqual([7]);
+        expect(valuesOf(result, 1)).toEqual([4, 5]);
+        expect(result.total).toBe(16);
+    });
+
+    it('keeps forced values of a group without 3D dice and aims only the physical ones', async () => {
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            settle: [4, 4],
+        });
+        const result = await executeUnifiedRoll('1d7@2+2d6@6,1', config3d);
+
+        expect(scripted.targets).toEqual([6, 1]);
+        expect(valuesOf(result, 0)).toEqual([2]);
+        expect(valuesOf(result, 1)).toEqual([6, 1]);
+    });
+
+    it('rerolls a physical group after a skipped one at its own dice', async () => {
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            settle: [1, 4],
+            rethrows: [[3, 4]],
+        });
+        const result = await executeUnifiedRoll('2d7@5,5+2d6r=1', config3d);
+
+        expect(scripted.handle!.rethrow).toHaveBeenCalledWith([0]);
+        expect(scripted.handle!.lockDice).toHaveBeenCalledWith([1]);
+        expect(valuesOf(result, 1)).toEqual([3, 4]);
+    });
+});
+
+describe('d100 rerolls and explosions in 3D (dice #5)', () => {
+    it('rerolls both dice of a d100 and reads the new pair', async () => {
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            // 42 and 00 (= 100); the 100 is rerolled into 35.
+            settle: [4, 2, 10, 10],
+            rethrows: [[4, 2, 3, 5]],
+        });
+        const result = await executeUnifiedRoll('2d100r=100', config3d);
+
+        expect(scripted.handle!.lockDice).toHaveBeenCalledWith([0, 1]);
+        expect(scripted.handle!.rethrow).toHaveBeenCalledWith([2, 3]);
+        expect(valuesOf(result, 0)).toEqual([42, 35]);
+        expect(result.total).toBe(77);
+    });
+
+    it('explodes a d100 into a new tens and ones pair', async () => {
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            settle: [10, 10],
+            additions: [[5, 10]],
+        });
+        const result = await executeUnifiedRoll('1d100!', config3d);
+
+        const added = scripted.handle!.addDice.mock.calls[0][0] as Array<{ sides: number }>;
+        expect(added.map((die) => die.sides)).toEqual([100, 10]);
+        expect(valuesOf(result, 0)).toEqual([100, 50]);
+        expect(result.total).toBe(150);
+    });
+
+    it('compounds d100 explosions into the die that exploded', async () => {
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            settle: [10, 10],
+            additions: [
+                [10, 10],
+                [1, 2],
+            ],
+        });
+        const result = await executeUnifiedRoll('1d100!!', config3d);
+
+        expect(scripted.handle!.addDice).toHaveBeenCalledTimes(2);
+        expect(valuesOf(result, 0)).toEqual([212]);
+    });
+});
+
+describe('falling back to 2D mid-roll (dice #5)', () => {
+    it('rolls in 2D and clears the table when physics returns an unreadable value', async () => {
+        const random = rollHighIn2D();
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            settle: [Number.NaN],
+        });
+        const result = await executeUnifiedRoll('1d6', config3d);
+        random.mockRestore();
+
+        expect(result.total).toBe(6);
+        expect(scripted.handle!.arrangeAndDismiss).toHaveBeenCalledTimes(1);
+    });
+
+    it('rolls in 2D and clears the table when the renderer fails during a reroll', async () => {
+        const random = rollHighIn2D();
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            settle: [1],
+            rethrows: [new Error('No active session')],
+        });
+        const result = await executeUnifiedRoll('1d6r=1', config3d);
+        random.mockRestore();
+
+        expect(result.total).toBe(6);
+        expect(scripted.handle!.arrangeAndDismiss).toHaveBeenCalledTimes(1);
+    });
+
+    it('rolls in 2D when explosions would outgrow the physical-dice limit', async () => {
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            // Every d100 of a full table shows 100 and would explode.
+            settle: Array.from({ length: MAX_PHYSICAL_3D_DICE }, () => 10),
+        });
+        const random = vi.spyOn(crypto, 'getRandomValues').mockImplementation((array) => {
+            (array as Uint32Array).fill(0);
+            return array;
+        });
+        const result = await executeUnifiedRoll(`${MAX_PHYSICAL_3D_DICE / 2}d100!`, config3d);
+        random.mockRestore();
+
+        expect(scripted.handle!.addDice).not.toHaveBeenCalled();
+        expect(scripted.handle!.arrangeAndDismiss).toHaveBeenCalledTimes(1);
+        expect(result.total).toBe(MAX_PHYSICAL_3D_DICE / 2);
+    });
+});
+
+describe('cancelling a 3D roll (dice #5)', () => {
+    const cancelledError = async () => (await import(ERRORS_PATH)).RollCancelledError;
+
+    it('rejects with the cancellation instead of rolling in 2D', async () => {
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({ settle: 'cancel' });
+        const RollCancelledError = await cancelledError();
+
+        await expect(executeUnifiedRoll('2d6', config3d)).rejects.toBeInstanceOf(
+            RollCancelledError
+        );
+        expect(scripted.handle!.arrangeAndDismiss).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects when the roll is cancelled during a reroll', async () => {
+        const { executeUnifiedRoll } = await loadScriptedOrchestrator({
+            settle: [1],
+            rethrows: ['cancel'],
+        });
+        const RollCancelledError = await cancelledError();
+
+        await expect(executeUnifiedRoll('1d6r=1', config3d)).rejects.toBeInstanceOf(
+            RollCancelledError
+        );
+    });
+
+    it('reaches no history or Discord subscriber', async () => {
+        await loadScriptedOrchestrator({ settle: 'cancel' });
+        const { handleRollEvent } = await import('@site/src/dice_roller/utils/events');
+        const { onRollResult } = await import('@site/src/dice_roller/dice-logic/dice-roller');
+        const subscriber = vi.fn();
+        const unsubscribe = onRollResult(subscriber);
+        const RollCancelledError = await cancelledError();
+
+        await expect(handleRollEvent('2d6', config3d)).rejects.toBeInstanceOf(RollCancelledError);
+        unsubscribe();
+        expect(subscriber).not.toHaveBeenCalled();
     });
 });
