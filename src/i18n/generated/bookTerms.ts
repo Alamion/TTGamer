@@ -179,6 +179,15 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     'ttgamer.ui.sheet.v5.attributes.wits': {
         en: 'Wits',
     },
+    'ttgamer.ui.sheet.v5.dice.hunger.bestialFailure': {
+        en: 'Bestial failure',
+    },
+    'ttgamer.ui.sheet.v5.dice.hunger.line': {
+        en: 'Hunger',
+    },
+    'ttgamer.ui.sheet.v5.dice.hunger.messyCritical': {
+        en: 'Messy critical',
+    },
     'ttgamer.ui.sheet.v5.fields.chronicleTenets': {
         en: 'Chronicle Tenets',
     },
@@ -287,6 +296,9 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     },
     'ttgamer.ui.sheet.v5Hunter.categories.endowments': {
         en: 'Endowments',
+    },
+    'ttgamer.ui.sheet.v5Hunter.dice.line': {
+        en: 'Desperation',
     },
     'ttgamer.ui.sheet.v5Hunter.fields.ambition': {
         en: 'Ambition',

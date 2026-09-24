@@ -24,6 +24,9 @@
 - rule: identical
   match: https://example.com/portrait.webp
   reason: example URL shown as an input placeholder
+- rule: identical
+  match: /^(VtM|H:tR) 5e$/
+  reason: game-line abbreviations (VtM 5e, H:tR 5e) are the same in every locale
 - rule: docs-terms
   file: i18n/ru/docusaurus-plugin-content-docs/current/star-wars-wod-2e/character/creation-steps/step-1-concept-species.mdx
   match: stamina

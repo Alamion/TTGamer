@@ -106,3 +106,24 @@ export function useBoundDocument(): BoundDocument | undefined {
         };
     }, [capability, character, document, readOnly, setTitle, update]);
 }
+
+export type TraitDiceRoll = (
+    value: number,
+    specialization: boolean | null,
+    experienced: boolean | null,
+    practiced: boolean | null
+) => string | undefined;
+
+/** The document system's stat pool builder; `undefined` when the system rolls no stat dice. */
+export function useDocumentTraitDiceRoll(): TraitDiceRoll | undefined {
+    const { document } = useDocumentSource();
+    const systemId = document?.systemId;
+    return useMemo(() => {
+        const traitPool = systemId
+            ? systemRegistry.getSystem(systemId)?.dice?.traitPool
+            : undefined;
+        if (!traitPool) return undefined;
+        return (value, specialization, experienced, practiced) =>
+            traitPool(value, { specialization, experienced, practiced });
+    }, [systemId]);
+}

@@ -3,6 +3,7 @@ import { type UiMessageDescriptor, uiMessages } from '@site/src/i18n/generated/u
 import {
     buildDiscordHistoryMessage,
     type DiscordDeliveryResult,
+    type DiscordReadingLines,
     isValidDiscordWebhook,
     queueDiscordMessage,
     SESSION_STORAGE_KEY,
@@ -13,7 +14,9 @@ import toast from 'react-hot-toast';
 
 import { onRollResult } from '../dice-logic/dice-roller';
 import type { RollResult } from '../dice-logic/types';
+import { specialDiceValues } from '../dice-logic/utils';
 import { useDiceRollerStore } from '../store/diceRollerStore';
+import { verdictText } from './verdictText';
 
 type DeliveryFailureReason = Extract<DiscordDeliveryResult, { ok: false }>['reason'];
 
@@ -26,6 +29,26 @@ const DELIVERY_ERROR_MESSAGES: Record<
     rejected: uiMessages.integrations.discord.errors.rejected,
     'invalid-webhook': uiMessages.integrations.discord.errors.rejected,
 };
+
+function readingLines(result: RollResult): DiscordReadingLines | undefined {
+    const values = result.diceGroups ? specialDiceValues(result) : [];
+    const outcomes = result.reading?.outcomes.map((outcome) => translate(outcome.title)) ?? [];
+    if (values.length === 0 && outcomes.length === 0 && !result.verdict) return undefined;
+    const joined = values.join(', ');
+    return {
+        verdict: result.verdict ? verdictText(result.verdict) : undefined,
+        specialDice:
+            values.length === 0
+                ? undefined
+                : result.reading
+                  ? translate(uiMessages.dice.history.specialDice, {
+                        line: translate(result.reading.lineLabel),
+                        values: joined,
+                    })
+                  : translate(uiMessages.dice.history.specialDiceUnnamed, { values: joined }),
+        outcomes,
+    };
+}
 
 export default function DiscordWebhookSubscription() {
     const settings = useDiceRollerStore((s) => s.settings);
@@ -40,9 +63,10 @@ export default function DiscordWebhookSubscription() {
         }
 
         const unsub = onRollResult((result: RollResult) => {
+            const reading = readingLines(result);
             const message = includeRollContext
-                ? buildDiscordHistoryMessage(result)
-                : buildDiscordHistoryMessage({ ...result, details: '', formatted: '' });
+                ? buildDiscordHistoryMessage(result, reading)
+                : buildDiscordHistoryMessage({ ...result, details: '', formatted: '' }, reading);
             queueDiscordMessage(message, webhookUrl).then((delivery) => {
                 if (delivery.ok) return;
                 if (delivery.reason === 'rate-limited') {

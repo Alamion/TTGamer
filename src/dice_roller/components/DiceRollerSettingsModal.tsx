@@ -92,6 +92,19 @@ export default function DiceRollerSettingsModal() {
                                 className="block w-full h-8 p-0.5 rounded cursor-pointer border border-border"
                             />
                         </label>
+                        <label className="flex-1 space-y-1">
+                            <span className="text-xs text-textSecondary">
+                                {translate(uiMessages.dice.settings.specialDiceColor)}
+                            </span>
+                            <input
+                                type="color"
+                                value={settings.specialDiceColor}
+                                onChange={(e) =>
+                                    updateSettings({ specialDiceColor: e.target.value })
+                                }
+                                className="block w-full h-8 p-0.5 rounded cursor-pointer border border-border"
+                            />
+                        </label>
                     </div>
 
                     <label className="flex items-center gap-3 cursor-pointer">

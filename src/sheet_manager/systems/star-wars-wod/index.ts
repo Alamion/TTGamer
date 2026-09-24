@@ -9,6 +9,7 @@ import {
     SystemIdSchema,
 } from '../../types/document';
 import type { DocumentDefinition, DocumentViewLabel, SystemPlugin } from '../types';
+import { classicWodTraitPool } from '../wod-like/dicePool';
 import { starWarsCatalogs } from './catalogs';
 import { starWarsWodDefaultTemplates } from './defaultTemplates';
 import { starWarsTemplateBindings } from './documentBindings';
@@ -163,6 +164,7 @@ export const starWarsWodSystem: SystemPlugin = {
     defaultTemplates: starWarsWodDefaultTemplates,
     templateBindings: starWarsTemplateBindings,
     catalogs: starWarsCatalogs,
+    dice: { traitPool: classicWodTraitPool },
 };
 
 export * from './catalogs';

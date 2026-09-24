@@ -3,12 +3,14 @@ import {
     applyDisadvantage,
     findLastMatch,
     handleDiceNotation,
+    isSuccessPool,
     makePartRaw,
     mergeDiceNotation,
     parseParts,
     rewriteWodDifficulty,
     splitD100Value,
     splitTopLevel,
+    withPoolSetBonus,
 } from '@site/src/dice_roller/dice-logic/notation-utils';
 import { describe, expect, it } from 'vitest';
 
@@ -460,5 +462,48 @@ describe('mergeDiceNotation edge cases', () => {
 
     it('appends when existing is a bare number and added is a die', () => {
         expect(mergeDiceNotation('5', '1d6')).toBe('5 + 1d6');
+    });
+});
+
+describe('labelled (:h) dice in notation helpers', () => {
+    it('keeps regular and labelled d10 as separate parts', () => {
+        let notation = handleDiceNotation('', 'd10>=6', true, 6);
+        notation = handleDiceNotation(notation, 'd10:h>=6', true, 6);
+        notation = handleDiceNotation(notation, 'd10:h>=6', true, 6);
+        notation = handleDiceNotation(notation, 'd10>=6', true, 6);
+        expect(notation).toBe('2d10>=6 + 2d10:h>=6');
+        expect(handleDiceNotation(notation, 'd10:h>=6', false, 6)).toBe('2d10>=6 + d10:h>=6');
+        expect(handleDiceNotation('2d10>=6 + d10:h>=6', 'd10:h>=6', false, 6)).toBe('2d10>=6');
+    });
+
+    it('never merges a sheet stat into the labelled part, nor drops it', () => {
+        expect(mergeDiceNotation('3d10>=6 + 2d10:h>=6', '2d10>=6')).toBe(
+            '(3d10+2d10)>=6 + 2d10:h>=6'
+        );
+        expect(mergeDiceNotation('2d10:h>=6', '3d10>=6')).toBe('2d10:h>=6 + 3d10>=6');
+    });
+
+    it('rewrites the classic difficulty on labelled dice too', () => {
+        expect(rewriteWodDifficulty('3d10>=6 + 2d10:h>=6', 8)).toBe('3d10>=8 + 2d10:h>=8');
+    });
+});
+
+describe('success pool helpers', () => {
+    const pairs = { size: 2, comparePoint: { operator: '=' as const, value: 10 } };
+
+    it('recognizes success pools', () => {
+        expect(isSuccessPool('5d10>=6')).toBe(true);
+        expect(isSuccessPool('3d10>=6 + 2d10:h>=6')).toBe(true);
+        expect(isSuccessPool('3d10>=6 + 2d6')).toBe(false);
+        expect(isSuccessPool('2d6+3')).toBe(false);
+        expect(isSuccessPool('not dice')).toBe(false);
+    });
+
+    it('adds a pool-wide set bonus once', () => {
+        expect(withPoolSetBonus('5d10>=6', pairs)).toBe('5d10>=6x2=10');
+        expect(withPoolSetBonus('(3d10+2d10:h)>=6', pairs)).toBe('(3d10+2d10:h)>=6x2=10');
+        expect(withPoolSetBonus('3d10>=6 + 2d10:h>=6', pairs)).toBe('(3d10>=6 + 2d10:h>=6)x2=10');
+        expect(withPoolSetBonus('5d10>=6x2=10', pairs)).toBe('5d10>=6x2=10');
+        expect(withPoolSetBonus('2d6+3', pairs)).toBeNull();
     });
 });

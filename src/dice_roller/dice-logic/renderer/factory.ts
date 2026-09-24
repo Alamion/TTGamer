@@ -109,10 +109,13 @@ export function prepareDiceGeometries(
         const totalPhysicalDice = group.count * physicalPerLogical;
 
         let actualCount = 0;
+        const groupConfig = group.diceColor
+            ? { ...factoryConfig, diceColor: group.diceColor }
+            : factoryConfig;
 
         for (let i = 0; i < totalPhysicalDice; i++) {
             const effectiveSides = isD100 && i % 2 === 0 ? 100 : physicalSides;
-            const geometry = getOrCreateGeometry(effectiveSides, factoryConfig, group.fudge);
+            const geometry = getOrCreateGeometry(effectiveSides, groupConfig, group.fudge);
             if (geometry) {
                 geometries.push(geometry);
                 actualCount++;

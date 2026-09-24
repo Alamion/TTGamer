@@ -6,6 +6,24 @@ dnd:
     disadvantage: ПОМЕХА
 wod:
     difficulty: 'Сложность:'
+    mode: Правила
+    modes:
+        classic: Классика
+        v5: V5
+    specialDie: Особый кубик
+    line: 'Особые кубики:'
+    v5Difficulty: 'Сложность (успехов):'
+    successes: 'Нужно успехов:'
+    successesNotSet: не задано
+    clearSuccesses: Сбросить число нужных успехов
+    decreaseSuccesses: Нужно меньше успехов
+    increaseSuccesses: Нужно больше успехов
+    difficultyNotSet: не задана
+    clearDifficulty: Сбросить Сложность
+    decreaseDifficulty: Уменьшить Сложность
+    increaseDifficulty: Увеличить Сложность
+    criticalPairs: Считать пары десяток критическими успехами
+    specialOutcomes: Сообщать об исходах особых кубиков
 diceButtonTitle: 'ЛКМ: добавить {notation} | ПКМ: убрать {notation}'
 diceAlt: Кубик {type}
 notation:
@@ -13,7 +31,32 @@ notation:
     reference: Открыть справку по нотации кубиков
     saveFavorite: Сохранить в избранное
     removeFavorite: Убрать из избранного
-    invalid: Неверная нотация
+    errors:
+        unknownCharacter: 'Неизвестный символ «{found}»'
+        unexpectedToken: '«{found}» здесь не ожидается — нужно {expected}'
+        unexpectedEnd: 'Нотация обрывается — нужно {expected}'
+        missingCompareValue: 'Добавьте {expected} после «{found}»'
+        unclosedGroup: Эта «(» не закрыта
+        trailingInput: '«{found}» идёт после законченного броска — добавьте оператор, например +'
+        labelPosition: 'Ставьте :h сразу после кубиков, которые она помечает, например 2d10:h'
+        setBonusNeedsTarget: 'Бонусу за наборы нужен порог успеха, например >=6, в том же пуле'
+        invalidSetSize: 'В наборе должно быть не меньше 2 кубиков, а бонус — не меньше 1'
+        forcedValuesCount: 'Заданные значения после @: нужно {max}, указано {found}'
+        limitExceeded: 'Превышен предел — {limit}: не больше {max}'
+        expected:
+            number: число
+            dice: кубики
+            open: «(»
+            close: «)»
+            compare: сравнение (например, =10)
+            or: ' или '
+        limits:
+            notationLength: длина нотации
+            astNodes: выражения
+            numericLiteral: числа
+            diceCount: кубики
+            diceSides: грани кубика
+            customFaces: свои грани
 controls:
     clear: Очистить
     roll: Бросить

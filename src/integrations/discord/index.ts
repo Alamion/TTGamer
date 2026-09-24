@@ -1,4 +1,4 @@
-export type { DiscordDeliveryResult } from './webhook';
+export type { DiscordDeliveryResult, DiscordReadingLines } from './webhook';
 export {
     buildDiscordHistoryMessage,
     isValidDiscordWebhook,

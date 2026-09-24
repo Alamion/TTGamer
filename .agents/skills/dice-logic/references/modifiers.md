@@ -464,7 +464,7 @@ A failure modifier _must_ directly follow a Success modifier, and works in much 
 
 For each failure counted, it will _subtract 1_ from the total number of successes counted.
 
-The Failure modifier is a [Compare Point](#compare-point), preceded with the lowercase letter "f":
+The Failure modifier is a [Compare Point](#compare-point), preceded with the lowercase letter "f". A bare `f` without a compare point is an error:
 
 ```
 // greater than 4 is success, less than 3 is failure
@@ -557,6 +557,43 @@ The default order is ascending, but you can specify the sort order using `sa` an
 ```
 
 ::: roller 4d6sd :::
+
+## Set bonus (TTGamer)
+
+**Notation:** `x{N}{cp}` or `x{N}.{K}{cp}`
+
+**Order:** 12 (after sorting)
+
+Not part of rpg-dice-roller. For every complete set of `N` kept dice that match the compare
+point, add `K` successes (`K` defaults to `N`). It needs a success target in the same scope.
+
+```
+6d10>=6x2=10: [6*, 7*, 10*x, 10*x, 4, 2] = 6   // one pair of 10s adds 2 (V5 critical)
+6d6>=5x3.1>=5: [5*x, 5*x, 5*x, 6*x, 6*x, 6*x] = 8
+```
+
+After a parenthesized pool, the bonus covers every term inside and is **not** copied onto
+each term, so a set can mix dice from different terms:
+
+```
+(4d10+2d10:h)>=6x2=10   // a regular 10 and a labelled 10 form one set
+```
+
+## Label (TTGamer)
+
+**Notation:** `:h`, directly after the dice
+
+Marks a term's dice as the pool's special subset (e.g. V5 Hunger or Desperation dice). It
+changes no value; the dice keep the label through explosions and rerolls, are drawn in the
+special dice colour in 3D, and are listed separately in history and Discord messages. A
+system reading (such as V5) decides what they mean.
+
+```
+3d10>=6 + 2d10:h>=6
+2d10:h@10,4>=6          // forced values come after the label
+```
+
+A label anywhere else (`2d10>=6:h`, `(2d10):h`, `5:h`) is an error.
 
 ## Compare point
 

@@ -228,3 +228,66 @@ describe('3D renderer loading', () => {
         expect(recovered.total).toBe(4);
     });
 });
+
+describe('3D colour of labelled dice', () => {
+    // Plain objects suffice: vi.doMock factories run later, inside each test.
+    const prepared = { groups: [] as { count: number; diceColor?: string }[][] };
+    const configs = { list: [] as { diceColor?: string }[] };
+
+    async function loadColouredOrchestrator(settleValues: number[], explosionValues: number[]) {
+        vi.resetModules();
+        prepared.groups = [];
+        configs.list = [];
+        vi.doMock(RENDERER_PATH, () => ({
+            prepareDiceGeometries: (
+                groups: { count: number; diceColor?: string }[],
+                config: { diceColor?: string }
+            ) => {
+                prepared.groups.push(groups.map(({ count, diceColor }) => ({ count, diceColor })));
+                configs.list.push(config);
+                return {
+                    geometries: groups.flatMap((group) =>
+                        Array.from({ length: group.count }, () => ({}) as never)
+                    ),
+                    groupSizes: groups.map((group) => group.count),
+                };
+            },
+            startPhysicsRoll: () => ({
+                sessionId: 1,
+                settle: Promise.resolve(settleValues),
+                lockDice: vi.fn(),
+                rethrow: vi.fn(async () => []),
+                addDice: vi.fn(async () => explosionValues),
+                arrangeAndDismiss: vi.fn(),
+                wasManuallyRerolled: () => false,
+            }),
+        }));
+        return import(ORCHESTRATOR_PATH);
+    }
+
+    const colours = { ...config3d, diceColor: '#111111', specialDiceColor: '#8B0000' };
+
+    it('gives labelled groups the special colour and leaves the others primary', async () => {
+        const { executeUnifiedRoll } = await loadColouredOrchestrator([6, 3, 10], []);
+        const result = await executeUnifiedRoll('(2d10+1d10:h)>=6', colours);
+
+        expect(prepared.groups[0]).toEqual([
+            { count: 2, diceColor: undefined },
+            { count: 1, diceColor: '#8B0000' },
+        ]);
+        expect(configs.list[0].diceColor).toBe('#111111');
+        expect(result.total).toBe(2);
+    });
+
+    it('keeps the special colour on dice exploded from a labelled group', async () => {
+        const { executeUnifiedRoll } = await loadColouredOrchestrator([10], [3]);
+        await executeUnifiedRoll('1d10:h>=6!', colours);
+        expect(configs.list.at(-1)?.diceColor).toBe('#8B0000');
+    });
+
+    it('explodes unlabelled dice in the primary colour', async () => {
+        const { executeUnifiedRoll } = await loadColouredOrchestrator([10], [3]);
+        await executeUnifiedRoll('1d10>=6!', colours);
+        expect(configs.list.at(-1)?.diceColor).toBe('#111111');
+    });
+});

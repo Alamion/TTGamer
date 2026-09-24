@@ -1,5 +1,6 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { useShownDocumentPublisher } from '@site/src/integrations/sheet-dice/shownDocument';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { generateId } from '@site/src/shared/utils/random';
 import { useRef, useState } from 'react';
@@ -43,6 +44,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
     } = useDocumentStore();
     const { templates } = useTemplateStore();
     const currentDocument = documents.find(({ id }) => id === currentDocumentId) ?? null;
+    useShownDocumentPublisher(currentDocument);
     const currentDefinition = currentDocument
         ? systemRegistry.getDocumentDefinition(
               currentDocument.systemId,

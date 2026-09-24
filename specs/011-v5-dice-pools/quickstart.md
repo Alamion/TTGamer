@@ -50,9 +50,10 @@ error-message assertions move to error kinds (SC-004).
 7. **Where the reading applies** (US3, SC-003). With both settings on, roll the same
    pool in the ten contexts of the spec: WoD V5 ✔; WoD Classic ✘; Standard ✘; D&D ✘;
    a docs inline roll ✘; right-click a Star Wars stat ✘; right-click a hunter stat ✔;
-   left-click a hunter stat and roll from the header with Standard selected ✘; the same
-   with no tab selected ✔ (Desperation); left-click a Star Wars stat and roll with no tab
-   ✘. Repeat the queued cases with the panel's roll button.
+   left-click a hunter stat and roll with the panel's roll button with Standard selected ✘;
+   the same from the header ✔ (Desperation); the same with no tab selected ✔; left-click a
+   Star Wars stat and roll with no tab ✘. With WoD V5 set to Hunger and a hunter stat
+   queued, the panel's roll button reads Hunger and the header reads Desperation.
 8. **Persistence** (US3 #8–9). In a private window the panel opens with no tab selected.
    Select WoD, switch to V5, change the line, reload → all kept.
 9. **V5 sheet pools** (US3 #7, FR-015). Left-click a hunter skill with 3 dots → `3d10>=6`

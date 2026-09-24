@@ -4,6 +4,7 @@ close: Close settings
 enable3dDicePanel: 3D Dice in Panel
 diceFaceColor: Dice face color
 diceTextColor: Dice text color
+specialDiceColor: Special dice color
 sound: Roll sound effects
 volume: Volume
 timeToReact: Time to react

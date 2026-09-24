@@ -4,14 +4,18 @@ import { clsx } from 'clsx';
 import { RotateCw, Star, Trash2 } from 'lucide-react';
 import { memo, useEffect, useRef, useState } from 'react';
 
-import { useDiceRollerStore } from '../store/diceRollerStore';
+import { specialDiceValues } from '../dice-logic/utils';
+import { currentPanelOrigin, useDiceRollerStore } from '../store/diceRollerStore';
+import type { RollReadingSummary, RollVerdict } from '../utils/rollReader';
 import {
     clearCharacterName,
+    clearRollSource,
     clearStatLabels,
     pushStatLabel,
     setCharacterName,
 } from '../utils/sessionStorage';
 import type { HistoryTabType } from '../utils/types-ext';
+import { verdictText } from './verdictText';
 
 const TABS: { id: HistoryTabType; label: UiMessageDescriptor }[] = [
     { id: 'chat', label: uiMessages.dice.history.tabs.history },
@@ -45,6 +49,9 @@ interface ListItem {
     manuallyRerolled?: boolean;
     characterName?: string;
     statLabels?: string[];
+    specialValues?: number[];
+    reading?: RollReadingSummary;
+    verdict?: RollVerdict;
 }
 
 function RollHistory() {
@@ -79,6 +86,7 @@ function RollHistory() {
     }, [history, activeTab]);
 
     const includeRollContext = useDiceRollerStore((s) => s.settings.includeRollContext);
+    const specialDiceColor = useDiceRollerStore((s) => s.settings.specialDiceColor);
 
     const toggleExpand = (id: string) => {
         setExpandedIds((prev) =>
@@ -92,6 +100,7 @@ function RollHistory() {
         setNotationInput(item.notation);
         clearCharacterName();
         clearStatLabels();
+        clearRollSource();
         if (item.characterName) {
             setCharacterName(item.characterName);
         }
@@ -142,6 +151,20 @@ function RollHistory() {
                             = {item.total}
                         </span>
                     )}
+                    {item.verdict && !item.isExpanded && (
+                        <span className="text-xs font-semibold text-textPrimary flex-shrink-0">
+                            {translate(
+                                item.verdict.succeeded
+                                    ? uiMessages.dice.history.verdictShort.success
+                                    : uiMessages.dice.history.verdictShort.failure
+                            )}
+                        </span>
+                    )}
+                    {item.reading?.outcomes[0] && !item.isExpanded && (
+                        <span className="text-xs font-semibold text-textPrimary truncate">
+                            {translate(item.reading.outcomes[0].title)}
+                        </span>
+                    )}
                 </button>
                 <button
                     type="button"
@@ -154,13 +177,14 @@ function RollHistory() {
                         e.stopPropagation();
                         clearCharacterName();
                         clearStatLabels();
+                        clearRollSource();
                         if (item.characterName) {
                             setCharacterName(item.characterName);
                         }
                         if (item.statLabels && item.statLabels.length > 0) {
                             item.statLabels.forEach((l) => pushStatLabel(l));
                         }
-                        roll(item.notation);
+                        roll(item.notation, { origin: currentPanelOrigin('history') });
                     }}
                     className={clsx(
                         'flex-shrink-0 w-6 h-6 flex items-center justify-center',
@@ -203,6 +227,50 @@ function RollHistory() {
                             })}
                             <br />
                         </>
+                    )}
+                    {item.verdict && (
+                        <>
+                            <span className="font-semibold text-textPrimary">
+                                {verdictText(item.verdict)}
+                            </span>
+                            <br />
+                        </>
+                    )}
+                    {item.specialValues && item.specialValues.length > 0 && (
+                        <>
+                            <span
+                                aria-hidden="true"
+                                className="inline-block w-2.5 h-2.5 mr-1 rounded-sm align-middle border border-border"
+                                style={{ background: specialDiceColor }}
+                            />
+                            <span className="font-semibold">
+                                {item.reading
+                                    ? translate(uiMessages.dice.history.specialDice, {
+                                          line: translate(item.reading.lineLabel),
+                                          values: item.specialValues.join(', '),
+                                      })
+                                    : translate(uiMessages.dice.history.specialDiceUnnamed, {
+                                          values: item.specialValues.join(', '),
+                                      })}
+                            </span>
+                            <br />
+                        </>
+                    )}
+                    {item.reading && item.reading.outcomes.length > 0 && (
+                        <ul className="list-none m-0 my-1 p-0 space-y-1">
+                            {item.reading.outcomes.map((outcome) => (
+                                <li key={outcome.id}>
+                                    <span className="font-semibold text-textPrimary">
+                                        {translate(outcome.title)}
+                                    </span>
+                                    {outcome.detail && (
+                                        <span className="block opacity-80">
+                                            {translate(outcome.detail)}
+                                        </span>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
                     )}
                     {item.manuallyRerolled && (
                         <span className="text-yellow-500 font-semibold">
@@ -250,6 +318,11 @@ function RollHistory() {
                           manuallyRerolled: entry.result.manuallyRerolled,
                           characterName: entry.result.characterName,
                           statLabels: entry.result.statLabels,
+                          specialValues: entry.result.diceGroups
+                              ? specialDiceValues(entry.result)
+                              : undefined,
+                          reading: entry.result.reading,
+                          verdict: entry.result.verdict,
                       }))
                       .reverse()
                 : activeTab === 'favorites'

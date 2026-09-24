@@ -19,7 +19,9 @@ metadata, data }` (see `types/document.ts`).
 - Definitions (`systems/types.ts`) own schema, default factory, views, a translated `label`
   descriptor, optional `capabilities`, `migrate`, and `module` (`{ id, policies }`).
 - Plugins (`SystemPlugin`) carry a translated `label`, `policies` (publisher policy ids),
-  `catalogs` (declared with `systems/catalogs.ts`), `defaultTemplates`, and `templateBindings`.
+  `catalogs` (declared with `systems/catalogs.ts`), `defaultTemplates`, `templateBindings`, and
+  optional `dice` (`traitPool` for stat rolls, `reading` for system dice outcomes; see
+  `src/sheet_manager/AGENTS.md`).
   Registered plugins: `star-wars-wod` (`systems/star-wars-wod/`) and `v5`
   (`systems/v5/`). The registry rejects view ids shared by two systems and unknown policy ids,
   and exposes `listDefinitions()` (create dialog) and `getSystem()`.

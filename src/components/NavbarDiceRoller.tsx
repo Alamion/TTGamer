@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 import { Dices } from 'lucide-react';
 import { useCallback } from 'react';
 
-import { useDiceRollerStore } from '../dice_roller/store/diceRollerStore';
+import { currentPanelOrigin, useDiceRollerStore } from '../dice_roller/store/diceRollerStore';
 
 export default function NavbarDiceRoller() {
     const togglePanel = useDiceRollerStore((s) => s.togglePanel);
@@ -13,7 +13,7 @@ export default function NavbarDiceRoller() {
     const roll = useDiceRollerStore((s) => s.roll);
 
     const handleClick = useCallback(() => {
-        roll(notationInput);
+        roll(notationInput, { origin: currentPanelOrigin('header') });
         setNotationInput('');
     }, [setNotationInput, notationInput, roll]);
 

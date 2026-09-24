@@ -1,4 +1,7 @@
+import { translate } from '@docusaurus/Translate';
+
 import type { RollResult } from '../dice-logic/types';
+import { verdictText } from './verdictText';
 
 const toastContainerStyle: React.CSSProperties = {
     textAlign: 'center',
@@ -18,11 +21,21 @@ const totalStyle: React.CSSProperties = {
     lineHeight: 1.2,
 };
 
+const outcomeStyle: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 700,
+    marginTop: 2,
+};
+
 export function RollToastContent({ result }: { result: RollResult }) {
     return (
         <div style={toastContainerStyle}>
             <div style={notationStyle}>{result.notation}</div>
             <div style={totalStyle}>= {result.total}</div>
+            {result.verdict && <div style={outcomeStyle}>{verdictText(result.verdict)}</div>}
+            {result.reading?.outcomes[0] && (
+                <div style={outcomeStyle}>{translate(result.reading.outcomes[0].title)}</div>
+            )}
         </div>
     );
 }

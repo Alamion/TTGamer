@@ -1,3 +1,5 @@
+import type { V5Line, WodMode } from './rollReader';
+
 export const MODULE_NAME = '3DDiceRolls';
 
 // Kept below MAX_NOTATION_LENGTH so this independent structural guard is reachable.
@@ -25,9 +27,17 @@ export const DEFAULT_SETTINGS = {
     includeCharacterName: true,
     includeCharacterStats: true,
     includeRollContext: true,
+    specialDiceColor: '#8B0000',
+    wodMode: 'classic' as WodMode,
+    wodThreshold: 6 as number | null,
+    wodSuccesses: null as number | null,
+    v5Line: 'desperation' as V5Line,
+    v5CriticalPairs: true,
+    v5SpecialOutcomes: true,
+    v5Difficulty: null as number | null,
 };
 
-export type SettingType = 'boolean' | 'string' | 'number' | 'color';
+export type SettingType = 'boolean' | 'string' | 'number' | 'color' | 'choice';
 
 export interface RangeChildConfig {
     key: keyof typeof DEFAULT_SETTINGS;
@@ -75,4 +85,12 @@ export const SETTINGS_METADATA: Record<keyof typeof DEFAULT_SETTINGS, SettingMet
     includeCharacterName: { type: 'boolean', name: 'Include character name' },
     includeCharacterStats: { type: 'boolean', name: 'Include character stats' },
     includeRollContext: { type: 'boolean', name: 'Include roll context' },
+    specialDiceColor: { type: 'color', name: 'Special dice color (faces)' },
+    wodMode: { type: 'choice', name: 'WoD tab mode' },
+    wodThreshold: { type: 'number', name: 'Classic WoD Difficulty (success threshold)' },
+    wodSuccesses: { type: 'number', name: 'Classic WoD successes needed' },
+    v5Line: { type: 'choice', name: 'V5 special dice line' },
+    v5CriticalPairs: { type: 'boolean', name: 'Count V5 critical pairs' },
+    v5SpecialOutcomes: { type: 'boolean', name: 'Report V5 special dice outcomes' },
+    v5Difficulty: { type: 'number', name: 'V5 Difficulty (successes needed)' },
 };

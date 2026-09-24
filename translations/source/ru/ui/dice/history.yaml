@@ -8,6 +8,14 @@ setNotationTitle: Подставить нотацию | ПКМ — бросит�
 stats: 'Характеристики: {stats}'
 rolls: 'Броски: {details}'
 formatted: 'Формат: {formatted}'
+specialDice: 'Особые кубики ({line}): {values}'
+specialDiceUnnamed: 'Особые кубики: {values}'
+verdict:
+    success: 'Успех (нужно {difficulty}, перевес {margin})'
+    failure: 'Провал (нужно {difficulty}, не хватило {shortfall})'
+verdictShort:
+    success: Успех
+    failure: Провал
 manuallyRerolled: Переброшено вручную
 empty:
     history: Бросков пока нет

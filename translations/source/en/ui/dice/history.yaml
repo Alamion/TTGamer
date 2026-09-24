@@ -8,6 +8,14 @@ setNotationTitle: Set notation | Right-click to roll
 stats: 'Stats: {stats}'
 rolls: 'Rolls: {details}'
 formatted: 'Formatted: {formatted}'
+specialDice: 'Special dice ({line}): {values}'
+specialDiceUnnamed: 'Special dice: {values}'
+verdict:
+    success: 'Success (needed {difficulty}, margin {margin})'
+    failure: 'Failure (needed {difficulty}, short by {shortfall})'
+verdictShort:
+    success: Success
+    failure: Failure
 manuallyRerolled: Manually Rerolled
 empty:
     history: No rolls yet

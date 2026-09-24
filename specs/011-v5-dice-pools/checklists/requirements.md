@@ -36,3 +36,12 @@
 - The notation spellings `:h` (user-chosen) and the set-bonus syntax are named as notation
   surface, not implementation; the set-bonus spelling is deliberately left to planning.
 - Items marked incomplete require spec updates before `$speckit-clarify` or `$speckit-plan`
+- Implementation walk-through (2026-09-24, headless Chromium against the dev server, Russian
+  locale, 3D off): first visit opens with no tab selected; WoD tab starts in Classic; V5 mode
+  shows the line choice, Difficulty "не задана", both switches on; the special-die button adds
+  and removes `d10:h>=6`; `6d10@6,7,10,10,4,2>=6` rolls as `…x2=10 = 6`; a Desperation 1 is
+  named in the toast and in history with the special dice listed; diagnostics for `5d10>=6f`,
+  `2d6 & 1`, `(2d10:h`, `300d6` show translated messages with the span marked. Sheet contexts
+  (quickstart 7, 9) and 3D colours (6) are covered by `tests/integrations/roll-reading.test.ts`,
+  `tests/sheet_manager/systems/dice-rules.test.ts`, and the orchestrator colour tests, not yet
+  by hand with a real hunter document.

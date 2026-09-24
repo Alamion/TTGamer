@@ -1,4 +1,7 @@
+import type { RollSource } from './rollReader';
+
 const STAT_LABELS_KEY = 'dice_roller_stat_labels';
+const ROLL_SOURCE_KEY = 'dice_roller_roll_source';
 const CHAR_NAME_KEY = 'dice_roller_character_name';
 
 function getStatLabels(): string[] {
@@ -65,5 +68,43 @@ export function clearCharacterName(): void {
         sessionStorage.removeItem(CHAR_NAME_KEY);
     } catch (e) {
         console.warn('[sessionStorage] Failed to clear character name:', e);
+    }
+}
+
+/** The document of the last queued sheet stat; decides a no-tab roll's system reading. */
+export function setRollSource(source: RollSource): void {
+    try {
+        sessionStorage.setItem(ROLL_SOURCE_KEY, JSON.stringify(source));
+    } catch (e) {
+        console.warn('[sessionStorage] Failed to set roll source:', e);
+    }
+}
+
+export function getRollSource(): RollSource | undefined {
+    try {
+        const raw = sessionStorage.getItem(ROLL_SOURCE_KEY);
+        if (!raw) return undefined;
+        const parsed: unknown = JSON.parse(raw);
+        if (
+            parsed &&
+            typeof parsed === 'object' &&
+            typeof (parsed as RollSource).systemId === 'string' &&
+            typeof (parsed as RollSource).definitionId === 'string'
+        ) {
+            const { systemId, definitionId } = parsed as RollSource;
+            return { systemId, definitionId };
+        }
+        return undefined;
+    } catch (e) {
+        console.warn('[sessionStorage] Failed to read roll source:', e);
+        return undefined;
+    }
+}
+
+export function clearRollSource(): void {
+    try {
+        sessionStorage.removeItem(ROLL_SOURCE_KEY);
+    } catch (e) {
+        console.warn('[sessionStorage] Failed to clear roll source:', e);
     }
 }

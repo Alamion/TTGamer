@@ -72,3 +72,13 @@ fields:
     appearance: Appearance
     distinguishingFeatures: Distinguishing features
     history: History
+dice:
+    hunger:
+        line: Hunger
+        game: VtM 5e
+        messyCritical: Messy critical
+        messyCriticalDetail: A critical pair includes a Hunger die showing 10 — the Beast decides how the success plays out.
+        messyCriticalConditional: Messy critical if the roll meets the Difficulty
+        bestialFailure: Bestial failure
+        bestialFailureDetail: The roll failed and a Hunger die shows 1 — the Beast takes its due.
+        bestialFailureConditional: Bestial failure if the roll misses the Difficulty

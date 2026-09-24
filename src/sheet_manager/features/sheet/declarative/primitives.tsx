@@ -3,7 +3,6 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useMemo } from 'react';
 
-import { buildDiceNotation } from '../../../../shared/utils/diceNotation';
 import { generateId } from '../../../../shared/utils/random';
 import type { CatalogEntry } from '../../../components';
 import { SectionCard } from '../../../components/sections/SectionCard';
@@ -71,7 +70,7 @@ import {
     readCatalogDetails,
 } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
-import { useBoundDocument } from './boundDocument';
+import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { CohortTrack } from './CohortTrack';
 import { traitRowKind } from './rowKind';
 import { EnumField, RowsBody } from './RowsBody';
@@ -202,6 +201,7 @@ function TraitListBindingView({
     placeholder?: string;
     columns?: 1 | 2 | 3 | 4;
 }) {
+    const traitDiceRoll = useDocumentTraitDiceRoll();
     const locale = useDocusaurusContext().i18n.currentLocale;
     return (
         <CustomTraitList
@@ -233,7 +233,7 @@ function TraitListBindingView({
             placeholder={placeholder}
             catalog={listCatalog(binding, locale)}
             onCatalogSelect={onCatalogSelect}
-            onDiceRoll={buildDiceNotation}
+            onDiceRoll={traitDiceRoll}
         />
     );
 }
@@ -608,6 +608,7 @@ function PrimitiveTraitBody({
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'trait' }>;
 }) {
     const bound = useBoundDocument();
+    const traitDiceRoll = useDocumentTraitDiceRoll();
     if (!bound) {
         return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
     }
@@ -674,7 +675,7 @@ function PrimitiveTraitBody({
                 specialization={trait.specialization ?? false}
                 experienced={trait.experienced ?? false}
                 practiced={trait.practiced ?? false}
-                onDiceRoll={buildDiceNotation}
+                onDiceRoll={traitDiceRoll}
                 characterName={bound.name}
             />
         );
@@ -706,7 +707,7 @@ function PrimitiveTraitBody({
             specialization={trait.specialization ?? false}
             experienced={trait.experienced ?? false}
             practiced={trait.practiced ?? false}
-            onDiceRoll={buildDiceNotation}
+            onDiceRoll={traitDiceRoll}
             characterName={bound.name}
         />
     );

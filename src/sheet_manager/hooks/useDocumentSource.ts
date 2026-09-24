@@ -62,3 +62,14 @@ export function useDocumentSource(): DocumentSource {
     );
     return override ?? storeSource;
 }
+
+/** The shown document's system and definition, handed to the dice roller with each roll. */
+export function useDocumentRollSource(): { systemId: string; definitionId: string } | undefined {
+    const { document } = useDocumentSource();
+    const systemId = document?.systemId;
+    const definitionId = document?.definitionId;
+    return useMemo(
+        () => (systemId && definitionId ? { systemId, definitionId } : undefined),
+        [systemId, definitionId]
+    );
+}

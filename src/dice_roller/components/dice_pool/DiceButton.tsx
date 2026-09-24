@@ -10,6 +10,8 @@ interface DiceButtonProps {
     secondaryColor: string;
     onAdd: (config: DiceConfig) => void;
     onRemove: (config: DiceConfig, e: React.MouseEvent) => void;
+    /** Accessible name prefix, e.g. "Special die", announced before the add/remove hint. */
+    label?: string;
 }
 
 const DiceButton = memo(function DiceButton({
@@ -18,7 +20,9 @@ const DiceButton = memo(function DiceButton({
     secondaryColor,
     onAdd,
     onRemove,
+    label,
 }: DiceButtonProps) {
+    const hint = translate(uiMessages.dice.pool.diceButtonTitle, { notation: config.notation });
     return (
         <button
             type="button"
@@ -27,7 +31,8 @@ const DiceButton = memo(function DiceButton({
             className="flex items-center justify-center p-1.5 rounded-md cursor-pointer
                 border border-transparent transition-all
                 hover:bg-bgBase/40 hover:border-border active:scale-95"
-            title={translate(uiMessages.dice.pool.diceButtonTitle, { notation: config.notation })}
+            title={label ? `${label}. ${hint}` : hint}
+            aria-label={label ? `${label}. ${hint}` : hint}
         >
             <config.Component
                 primaryColor={primaryColor}

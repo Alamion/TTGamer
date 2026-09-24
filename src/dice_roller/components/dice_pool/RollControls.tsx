@@ -5,8 +5,8 @@ import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorage
 import { useCallback } from 'react';
 
 import { validateNotation } from '../../dice-logic/dice-parser';
-import { useDiceRollerStore } from '../../store/diceRollerStore';
-import { clearCharacterName, clearStatLabels } from '../../utils/sessionStorage';
+import { currentPanelOrigin, useDiceRollerStore } from '../../store/diceRollerStore';
+import { clearCharacterName, clearRollSource, clearStatLabels } from '../../utils/sessionStorage';
 import DiceRollerSettingsModal from '../DiceRollerSettingsModal';
 
 export default function RollControls() {
@@ -26,12 +26,13 @@ export default function RollControls() {
         setNotationInput('');
         clearStatLabels();
         clearCharacterName();
+        clearRollSource();
     }, [setNotationInput]);
 
     const rollNotation = useCallback(() => {
         const toRoll = notationInput.trim();
         if (!toRoll || !validateNotation(toRoll)) return;
-        roll(toRoll);
+        roll(toRoll, { origin: currentPanelOrigin('roll-button') });
         setNotationInput('');
     }, [notationInput, roll, setNotationInput]);
 

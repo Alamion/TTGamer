@@ -161,7 +161,17 @@ export function queueDiscordMessage(
     return result;
 }
 
-export function buildDiscordHistoryMessage(result: RollResult): string {
+/** Already translated lines about the roll's verdict, special dice, and outcomes. */
+export interface DiscordReadingLines {
+    verdict?: string;
+    specialDice?: string;
+    outcomes?: readonly string[];
+}
+
+export function buildDiscordHistoryMessage(
+    result: RollResult,
+    reading?: DiscordReadingLines
+): string {
     const lines: string[] = [];
 
     if (result.characterName) {
@@ -177,6 +187,18 @@ export function buildDiscordHistoryMessage(result: RollResult): string {
             .map((label) => escapeMarkdown(truncate(label, 80)))
             .join(', ');
         lines.push(`Stats: ${truncate(labels, 500)}`);
+    }
+
+    if (reading?.verdict) {
+        lines.push(`**${escapeMarkdown(truncate(reading.verdict, 200))}**`);
+    }
+
+    // Kept even without roll context: colour alone never reaches the channel.
+    if (reading?.specialDice) {
+        lines.push(escapeMarkdown(truncate(reading.specialDice, 300)));
+    }
+    for (const outcome of (reading?.outcomes ?? []).slice(0, 6)) {
+        lines.push(`> **${escapeMarkdown(truncate(outcome, 200))}**`);
     }
 
     const details = result.details ? truncate(escapeCode(result.details), 700) : '';

@@ -317,7 +317,12 @@ export async function executeUnifiedRoll(
         soundVolume: config?.soundVolume ?? 80,
         timeToReact: config?.timeToReact ?? false,
         timeToReactSeconds: config?.timeToReactSeconds ?? 5,
+        specialDiceColor: config?.specialDiceColor,
     };
+    const colourOf = (group: DiceGroupNode) =>
+        group.label && defaultConfig.specialDiceColor
+            ? defaultConfig.specialDiceColor
+            : defaultConfig.diceColor;
 
     let ast: ASTNode | null = null;
     let activeHandle: PhysicsRollHandle | undefined;
@@ -345,6 +350,7 @@ export async function executeUnifiedRoll(
             modifiers: g.modifiers,
             customFaces: g.customFaces,
             fudge: g.fudge,
+            diceColor: g.label ? colourOf(g) : undefined,
         }));
         const physicalDiceCount = flatGroups.reduce(
             (total, group) => total + group.count * (group.sides === 100 ? 2 : 1),
@@ -457,7 +463,7 @@ export async function executeUnifiedRoll(
                 allGroupRolls,
                 multiplier,
                 handle,
-                defaultConfig,
+                { ...defaultConfig, diceColor: colourOf(group) },
                 prepareDiceGeometries,
                 physicalCapacity
             );

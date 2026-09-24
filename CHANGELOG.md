@@ -1,5 +1,25 @@
 # Changelog
 
+## v3.9.0
+
+### Minor feat
+
+- **V5 dice are counted for you (spec 011)**: the dice panel's WoD tab gets a Classic / V5 mode; in V5 each pair of 10s counts as four successes, Hunger and Desperation dice are rolled as special dice (own colour in 3D, listed separately in history and Discord), and the roll names a Desperation 1, a messy critical, or a bestial failure — phrased conditionally when no Difficulty is given; both behaviours are switches, and Classic mode rolls as before
+- **V5 sheets roll V5 pools**: clicking a hunter's trait builds `Nd10>=6` (no subtracted ones, no explosions) and a roll from the sheet or from the header's pending-roll button is read as V5 with the character's line, while rolls made in the panel follow the panel's tab and line; Star Wars sheets, the Standard and D&D tabs, and documentation rolls behave as before
+- **The WoD tab says whether a roll succeeded**: set the successes needed (V5 Difficulty, or the new Classic "successes needed") and every success-pool roll from the tab reports success with its margin or failure with the shortfall in the toast, history, and Discord; Classic's threshold can now be left unset too, and nothing changes while a value is unset
+- **Notation errors point at the mistake**: instead of "Invalid notation" the input highlights the offending part and says what was expected or which limit was hit, in English and Russian, announced once to screen readers
+- **Two neutral notation building blocks**: a `:h` label marks a pool's special dice, and a set bonus `x{N}[.{K}]{cp}` adds successes for every complete set of matching dice across a whole pool (`x2=10` for V5 criticals)
+
+### Fix
+
+- **A bare `f` or a wrong number of `@` values is reported while typing**: `5d10>=6f` and `2d10@1` used to validate and fail or be ignored later; the dice panel now also remembers its tab and new settings get their defaults after an update
+
+### Chore
+
+- **Game-system dice rules live with the system**: `SystemPlugin.dice` declares stat pools and readings; the Star Wars pool moved from `shared/` to `systems/wod-like/`, and the system registry loads on demand so it stays out of the shared bundle
+- **Constitution 1.4.1**: a publisher badge appears once, where the material is presented, and game mechanics need no notice
+- **Reference material**: `context/` is organized by module with a map in `context/AGENTS.md`, now including the rpg-dice-roller sources and notation guide
+
 ## v3.8.0
 
 ### Minor feat

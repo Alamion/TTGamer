@@ -1,5 +1,6 @@
 import { tokenize } from '@site/src/dice_roller/dice-logic/dice-lexer';
 import { parseToAST } from '@site/src/dice_roller/dice-logic/dice-parser';
+import { NotationError } from '@site/src/dice_roller/dice-logic/errors';
 import {
     MAX_AST_NODES,
     MAX_CUSTOM_FACE_COUNT,
@@ -49,5 +50,42 @@ describe('dice input complexity limits', () => {
         expect(() => parseToAST(`1d[1-${MAX_CUSTOM_FACE_COUNT + 1}]`)).toThrow(
             new RegExp(`at most ${MAX_CUSTOM_FACE_COUNT} faces`)
         );
+    });
+
+    it('reports every limit as a structured limit-exceeded diagnostic', () => {
+        const limitOf = (run: () => unknown) => {
+            try {
+                run();
+            } catch (error) {
+                expect(error).toBeInstanceOf(NotationError);
+                return (error as NotationError).diagnostic;
+            }
+            throw new Error('expected a NotationError');
+        };
+
+        expect(limitOf(() => parseToAST('1'.repeat(MAX_NOTATION_LENGTH + 1)))).toMatchObject({
+            kind: 'limit-exceeded',
+            offset: 0,
+            length: MAX_NOTATION_LENGTH + 1,
+            limit: { name: 'notation-length', max: MAX_NOTATION_LENGTH },
+        });
+        expect(limitOf(() => parseToAST(`2+${MAX_DICE_COUNT + 1}d6`))).toMatchObject({
+            kind: 'limit-exceeded',
+            offset: 2,
+            length: String(MAX_DICE_COUNT + 1).length + 2,
+            limit: { name: 'dice-count', max: MAX_DICE_COUNT },
+        });
+        expect(limitOf(() => parseToAST(`1d${MAX_DICE_SIDES + 1}`)).limit).toEqual({
+            name: 'dice-sides',
+            max: MAX_DICE_SIDES,
+        });
+        expect(limitOf(() => parseToAST(String(MAX_NUMERIC_LITERAL + 1))).limit).toEqual({
+            name: 'numeric-literal',
+            max: MAX_NUMERIC_LITERAL,
+        });
+        expect(limitOf(() => parseToAST(`1d[1-${MAX_CUSTOM_FACE_COUNT + 1}]`))).toMatchObject({
+            offset: 0,
+            limit: { name: 'custom-faces', max: MAX_CUSTOM_FACE_COUNT },
+        });
     });
 });

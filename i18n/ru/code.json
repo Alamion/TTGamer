@@ -794,6 +794,12 @@
     "ttgamer.ui.dice.history.setNotationTitle": {
         "message": "Подставить нотацию | ПКМ — бросить"
     },
+    "ttgamer.ui.dice.history.specialDice": {
+        "message": "Особые кубики ({line}): {values}"
+    },
+    "ttgamer.ui.dice.history.specialDiceUnnamed": {
+        "message": "Особые кубики: {values}"
+    },
     "ttgamer.ui.dice.history.stats": {
         "message": "Характеристики: {stats}"
     },
@@ -805,6 +811,18 @@
     },
     "ttgamer.ui.dice.history.tabs.recent": {
         "message": "Недавние"
+    },
+    "ttgamer.ui.dice.history.verdict.failure": {
+        "message": "Провал (нужно {difficulty}, не хватило {shortfall})"
+    },
+    "ttgamer.ui.dice.history.verdict.success": {
+        "message": "Успех (нужно {difficulty}, перевес {margin})"
+    },
+    "ttgamer.ui.dice.history.verdictShort.failure": {
+        "message": "Провал"
+    },
+    "ttgamer.ui.dice.history.verdictShort.success": {
+        "message": "Успех"
     },
     "ttgamer.ui.dice.inlineRoll.collapse": {
         "message": "Свернуть подробности броска"
@@ -845,8 +863,74 @@
     "ttgamer.ui.dice.pool.dnd.disadvantage": {
         "message": "ПОМЕХА"
     },
-    "ttgamer.ui.dice.pool.notation.invalid": {
-        "message": "Неверная нотация"
+    "ttgamer.ui.dice.pool.notation.errors.expected.close": {
+        "message": "«)»"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.compare": {
+        "message": "сравнение (например, =10)"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.dice": {
+        "message": "кубики"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.number": {
+        "message": "число"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.open": {
+        "message": "«(»"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.expected.or": {
+        "message": " или "
+    },
+    "ttgamer.ui.dice.pool.notation.errors.forcedValuesCount": {
+        "message": "Заданные значения после @: нужно {max}, указано {found}"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.invalidSetSize": {
+        "message": "В наборе должно быть не меньше 2 кубиков, а бонус — не меньше 1"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.labelPosition": {
+        "message": "Ставьте :h сразу после кубиков, которые она помечает, например 2d10:h"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limitExceeded": {
+        "message": "Превышен предел — {limit}: не больше {max}"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.astNodes": {
+        "message": "выражения"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.customFaces": {
+        "message": "свои грани"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.diceCount": {
+        "message": "кубики"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.diceSides": {
+        "message": "грани кубика"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.notationLength": {
+        "message": "длина нотации"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.limits.numericLiteral": {
+        "message": "числа"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.missingCompareValue": {
+        "message": "Добавьте {expected} после «{found}»"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.setBonusNeedsTarget": {
+        "message": "Бонусу за наборы нужен порог успеха, например >=6, в том же пуле"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.trailingInput": {
+        "message": "«{found}» идёт после законченного броска — добавьте оператор, например +"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.unclosedGroup": {
+        "message": "Эта «(» не закрыта"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.unexpectedEnd": {
+        "message": "Нотация обрывается — нужно {expected}"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.unexpectedToken": {
+        "message": "«{found}» здесь не ожидается — нужно {expected}"
+    },
+    "ttgamer.ui.dice.pool.notation.errors.unknownCharacter": {
+        "message": "Неизвестный символ «{found}»"
     },
     "ttgamer.ui.dice.pool.notation.placeholder": {
         "message": "Нотация броска (например, 2d6+3 или 4d20kh3)"
@@ -866,8 +950,59 @@
     "ttgamer.ui.dice.pool.tabs.standard": {
         "message": "Стандарт"
     },
+    "ttgamer.ui.dice.pool.wod.clearDifficulty": {
+        "message": "Сбросить Сложность"
+    },
+    "ttgamer.ui.dice.pool.wod.clearSuccesses": {
+        "message": "Сбросить число нужных успехов"
+    },
+    "ttgamer.ui.dice.pool.wod.criticalPairs": {
+        "message": "Считать пары десяток критическими успехами"
+    },
+    "ttgamer.ui.dice.pool.wod.decreaseDifficulty": {
+        "message": "Уменьшить Сложность"
+    },
+    "ttgamer.ui.dice.pool.wod.decreaseSuccesses": {
+        "message": "Нужно меньше успехов"
+    },
     "ttgamer.ui.dice.pool.wod.difficulty": {
         "message": "Сложность:"
+    },
+    "ttgamer.ui.dice.pool.wod.difficultyNotSet": {
+        "message": "не задана"
+    },
+    "ttgamer.ui.dice.pool.wod.increaseDifficulty": {
+        "message": "Увеличить Сложность"
+    },
+    "ttgamer.ui.dice.pool.wod.increaseSuccesses": {
+        "message": "Нужно больше успехов"
+    },
+    "ttgamer.ui.dice.pool.wod.line": {
+        "message": "Особые кубики:"
+    },
+    "ttgamer.ui.dice.pool.wod.mode": {
+        "message": "Правила"
+    },
+    "ttgamer.ui.dice.pool.wod.modes.classic": {
+        "message": "Классика"
+    },
+    "ttgamer.ui.dice.pool.wod.modes.v5": {
+        "message": "V5"
+    },
+    "ttgamer.ui.dice.pool.wod.specialDie": {
+        "message": "Особый кубик"
+    },
+    "ttgamer.ui.dice.pool.wod.specialOutcomes": {
+        "message": "Сообщать об исходах особых кубиков"
+    },
+    "ttgamer.ui.dice.pool.wod.successes": {
+        "message": "Нужно успехов:"
+    },
+    "ttgamer.ui.dice.pool.wod.successesNotSet": {
+        "message": "не задано"
+    },
+    "ttgamer.ui.dice.pool.wod.v5Difficulty": {
+        "message": "Сложность (успехов):"
     },
     "ttgamer.ui.dice.settings.close": {
         "message": "Закрыть настройки"
@@ -901,6 +1036,9 @@
     },
     "ttgamer.ui.dice.settings.sound": {
         "message": "Звук бросков"
+    },
+    "ttgamer.ui.dice.settings.specialDiceColor": {
+        "message": "Цвет особых кубиков"
     },
     "ttgamer.ui.dice.settings.timeToReact": {
         "message": "Время на реакцию"
@@ -3062,6 +3200,30 @@
     "ttgamer.ui.sheet.v5.attributes.wits": {
         "message": "Смекалка"
     },
+    "ttgamer.ui.sheet.v5.dice.hunger.bestialFailure": {
+        "message": "Звериный провал"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.bestialFailureConditional": {
+        "message": "Звериный провал, если бросок не наберёт Сложность"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.bestialFailureDetail": {
+        "message": "Бросок провален, а на кубике Голода выпала 1 — Зверь берёт своё."
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.game": {
+        "message": "VtM 5e"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.line": {
+        "message": "Голод"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.messyCritical": {
+        "message": "Грязный критический успех"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.messyCriticalConditional": {
+        "message": "Грязный критический успех, если бросок наберёт Сложность"
+    },
+    "ttgamer.ui.sheet.v5.dice.hunger.messyCriticalDetail": {
+        "message": "В критической паре есть кубик Голода с 10 — Зверь решает, каким будет успех."
+    },
     "ttgamer.ui.sheet.v5.fields.age": {
         "message": "Возраст"
     },
@@ -3340,6 +3502,18 @@
     },
     "ttgamer.ui.sheet.v5Hunter.categories.endowments": {
         "message": "Дары"
+    },
+    "ttgamer.ui.sheet.v5Hunter.dice.desperationOne": {
+        "message": "На кубике Безысходности выпала 1"
+    },
+    "ttgamer.ui.sheet.v5Hunter.dice.desperationOneDetail": {
+        "message": "Выберите — идти до конца и поднять Опасность ячейки на один или впасть в Отчаяние."
+    },
+    "ttgamer.ui.sheet.v5Hunter.dice.game": {
+        "message": "H:tR 5e"
+    },
+    "ttgamer.ui.sheet.v5Hunter.dice.line": {
+        "message": "Безысходность"
     },
     "ttgamer.ui.sheet.v5Hunter.fields.ambition": {
         "message": "Цель"

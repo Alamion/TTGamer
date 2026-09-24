@@ -1,5 +1,7 @@
 # Feature Specification: V5 Ruleset and Hunter: the Reckoning 5e Player Character
 
+> **Historical record (partly superseded).** V5 dice pools are no longer counted by hand: spec 011 adds critical pairs, Hunger/Desperation dice, and V5 stat pools. Current dice behavior: `src/dice_roller/AGENTS.md` and `src/sheet_manager/AGENTS.md`.
+
 > **Change record.** Current behavior: `.agents/skills/sheet-manager/SKILL.md` (systems, V5 layering, policies) and `.agents/skills/sheet-templates/SKILL.md` (templates, bindings, docs embeds).
 
 **Feature Branch**: `008-hunter-v5-character`

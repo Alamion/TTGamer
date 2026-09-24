@@ -38,6 +38,8 @@ Out of scope:
 - Q: What is the default state of critical pairs and special-dice outcomes, given that the WoD tab also serves classic WoD and Star Wars WoD? → A: Both on by default; the WoD tab gains a Classic / V5 mode switch, and panel rolls get the V5 reading only in V5 mode. V5 mode shows the special-die button, the line choice, and the Difficulty in successes; Classic mode keeps today's target-number difficulty and botch button.
 - Q: When does a panel roll get the V5 reading if a hunter sheet is open but the WoD tab in V5 mode is not selected? → A: A sheet's immediate roll (right-click on a stat) follows the sheet's system. A roll that goes through the panel's roll control, Enter in the notation input, or the header's pending-roll button (the notation shown next to the dice button after a stat is queued) follows the selected tab; when no tab is selected, the character the roll came from decides. Standard, D&D, and WoD Classic switch the V5 reading off.
 - Q: Which dice-panel tab is selected by default, and is the choice remembered? → A: No tab is selected by default; the user's tab choice (including none) is remembered across panel open/close and page reloads.
+- Q: (after implementation) Which line applies, and does the header button follow the tab? → A: Rolls made from a character — a sheet's immediate roll and the header's pending-roll button — follow the character: with a V5 character (queued stat, else the shown document) the V5 reading applies with that character's line whatever tab is selected; without one, the header falls back to the tab rule. Rolls made in the dice panel (roll button, Enter, history re-roll) follow the panel: the WoD tab's V5 mode and its line setting take priority, even when a hunter stat is queued. This amends the earlier answer that the header followed the tab.
+- Q: (after implementation) Does the Difficulty affect a roll, and what about Classic mode? → A: When set, the successes needed produce a verdict — success with its margin, or failure with the shortfall — shown with the roll, for panel rolls in both modes; unset, it changes nothing. Classic mode gains an optional "successes needed" value, and its target number can be left unset as well (dice are then added without a threshold and the botch die is hidden).
 
 ## User Scenarios & Testing _(mandatory)_
 
@@ -121,13 +123,12 @@ because the roll comes from a V5 character.
 **Why this priority**: without clear boundaries the settings would silently change classic
 WoD, Star Wars, and D&D results — worse than not having them. It depends on Stories 1 and 2.
 
-**Independent Test**: with both settings on, roll the same dice from ten contexts — WoD
+**Independent Test**: with both settings on, roll the same dice from eleven contexts — WoD
 tab in V5 mode; WoD tab in Classic mode; Standard tab; D&D tab; a docs inline roll; an
 immediate roll from a Star Wars sheet; an immediate roll from a hunter sheet; a queued
-hunter skill rolled with the Standard tab selected; a queued hunter skill rolled with no
-tab selected; a queued Star Wars skill rolled with no tab selected — rolling queued
-notation both from the panel and from the header's pending-roll button, and check where
-the V5 reading is applied.
+hunter skill rolled from the panel with the Standard tab selected; the same rolled from the
+header; a queued hunter skill rolled with no tab selected; a queued Star Wars skill rolled
+with no tab selected — and check where the V5 reading is applied and with which line.
 
 **Acceptance Scenarios**:
 
@@ -143,13 +144,18 @@ the V5 reading is applied.
    WoD sheet, **Then** no V5 reading is applied and the classic result
    (ones subtract, specialty explodes) is unchanged.
 5. **Given** both settings are on and the Standard tab is selected, **When** a hunter skill
-   is queued (left-click) and rolled from the panel or from the header's pending-roll
-   button, **Then** the pool is still a V5 pool (scenario 7) but no V5 reading is applied:
-   the selected tab decides.
+   is queued (left-click) and rolled from the panel's roll button, **Then** the pool is
+   still a V5 pool (scenario 7) but no V5 reading is applied: the panel decides. **When** it
+   is rolled from the header's pending-roll button instead, **Then** the V5 reading is
+   applied with the Desperation line: the character decides.
 6. **Given** both settings are on and no tab is selected, **When** a hunter skill is queued
    and rolled from the panel or from the header's pending-roll button, **Then** the V5
    reading is applied with the Desperation line; for a queued Star Wars WoD skill it is
    not.
+   6a. **Given** the WoD tab in V5 mode with the Hunger line and a hunter skill queued, **When**
+   the pool is rolled from the panel, **Then** it is read with Hunger (the panel's setting);
+   **When** it is rolled from the header, **Then** it is read with Desperation (the
+   character's line).
 7. **Given** a hunter sheet, **When** a skill is rolled, **Then** the pool is a V5 pool —
    ones do not subtract successes, dice do not explode, and no specialty die is added —
    whatever the settings are.
@@ -236,7 +242,8 @@ the message for each, in both languages.
 **V5 reading**
 
 - **FR-007**: The dice panel's WoD tab MUST offer a Classic / V5 mode switch. Classic mode
-  keeps today's controls (target-number difficulty, botch die) unchanged. V5 mode offers a
+  keeps today's controls (target-number difficulty, botch die) and adds the optional
+  successes needed (FR-011). V5 mode offers a
   regular V5 die, a button that adds and removes one labelled die, a choice of line
   (Hunger — VtM 5e, Desperation — H:tR 5e), the optional Difficulty (FR-011), and the
   "critical pairs" and "special-dice outcomes" settings.
@@ -249,7 +256,10 @@ the message for each, in both languages.
   fails and a labelled die shows 1.
 - **FR-011**: When the Difficulty (successes needed) is not known, outcomes that depend on
   success or failure MUST be stated conditionally, never guessed. The WoD tab MUST let the
-  user give that Difficulty optionally for panel rolls.
+  user give that Difficulty optionally for panel rolls. When it is given, a success-pool
+  roll from the tab MUST state whether it succeeded, with its margin or shortfall, in both
+  Classic mode (its own optional "successes needed") and V5 mode; Classic's target number
+  MUST also be optional, and an unset value MUST leave the roll unchanged.
 - **FR-012**: Outcome names and explanations MUST be in the reader's language and written
   in the project's own words (Principle VIII). They are game mechanics, so the dice roller,
   toasts, history, and Discord carry no publisher badge or notice; the Dark Pack badge
@@ -258,17 +268,21 @@ the message for each, in both languages.
 **Where the reading applies**
 
 - **FR-013**: The V5 reading MUST apply to a roll only when:
-  (a) it is a sheet's immediate roll from a character of a V5 system; or
-  (b) it goes through the panel's roll control, Enter in the notation input, or the
-  header's pending-roll button, and the selected tab is WoD in V5 mode; or
-  (c) it goes through those same controls, no tab is selected, and the roll came from a
+  (a) it is made from a V5 character — a sheet's immediate roll, or the header's
+  pending-roll button when the queued stat (else the shown document) belongs to a V5
+  character — whatever tab is selected; or
+  (b) it goes through the panel's roll control, Enter in the notation input, a history
+  re-roll, or the header button without a V5 character, and the selected tab is WoD in V5
+  mode; or
+  (c) it goes through the panel's controls, no tab is selected, and the roll came from a
   V5 character — the one whose stat was queued, or, for hand-typed notation, the
   character open in the sheet workspace.
   For (a) and (c) the line follows that character's module (Desperation for a hunter);
   for (b) it follows the tab's line choice.
-- **FR-014**: Panel and header rolls while the Standard, D&D, or WoD Classic tab is
-  selected, documentation inline rolls, and immediate or no-tab rolls from characters of
-  other systems MUST NOT receive the V5 reading, whatever the settings are.
+- **FR-014**: Panel rolls while the Standard, D&D, or WoD Classic tab is selected, header
+  rolls in that state without a V5 character, documentation inline rolls, and immediate or
+  no-tab rolls from characters of other systems MUST NOT receive the V5 reading, whatever
+  the settings are.
 - **FR-015**: A skill rolled from a V5 character sheet MUST build a V5 pool (successes on
   6+, ones do not subtract, dice do not explode) instead of the Star Wars WoD pool it
   builds today; Star Wars WoD sheets keep their current pool. A V5 specialty is free text
@@ -318,9 +332,10 @@ the message for each, in both languages.
   outcome, 100% of results match a hand count made from the written rules.
 - **SC-002**: A V5 player can roll a pool with two Desperation dice from the dice panel in
   under 10 seconds without typing notation.
-- **SC-003**: Across the ten roll contexts in User Story 3, the V5 reading appears in
-  exactly the three where it should (WoD tab in V5 mode; immediate hunter roll; queued
-  hunter roll with no tab selected) and in none of the other seven.
+- **SC-003**: Across the eleven roll contexts in User Story 3, the V5 reading appears in
+  exactly the four where it should (WoD tab in V5 mode; immediate hunter roll; queued
+  hunter roll from the header; queued hunter roll with no tab selected) and in none of the
+  other seven.
 - **SC-004**: 100% of the existing dice tests keep their expected roll results: no classic
   WoD, Star Wars WoD, or D&D result changes. Assertions on English error-message text move
   to the structured error kind; no expected total, success count, or formatted output

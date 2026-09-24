@@ -41,15 +41,16 @@ else the shown document, else absent.
 
 ## Applicability (FR-013 / FR-014)
 
-| Origin                                | Reading applies when | Line              |
-| ------------------------------------- | -------------------- | ----------------- |
-| `sheet` with a V5 source              | always               | the module's line |
-| `sheet` with another system           | never                | —                 |
-| `panel`, tab `wod`, mode `v5`         | always               | `settings.v5Line` |
-| `panel`, tab `wod`, mode `classic`    | never                | —                 |
-| `panel`, tab `standard` or `dnd`      | never                | —                 |
-| `panel`, tab `''`, V5 source          | always               | the module's line |
-| `panel`, tab `''`, other or no source | never                | —                 |
+| Origin                                                                      | Reading applies when | Line              |
+| --------------------------------------------------------------------------- | -------------------- | ----------------- |
+| `sheet` with a V5 source                                                    | always               | the module's line |
+| `panel`, control `header`, V5 source (queued, else shown)                   | always, any tab      | the module's line |
+| `sheet` with another system                                                 | never                | —                 |
+| `panel`, tab `wod`, mode `v5` (other controls, or header without V5 source) | always               | `settings.v5Line` |
+| `panel`, tab `wod`, mode `classic`                                          | never                | —                 |
+| `panel`, tab `standard` or `dnd`                                            | never                | —                 |
+| `panel`, tab `''`, V5 source                                                | always               | the module's line |
+| `panel`, tab `''`, other or no source                                       | never                | —                 |
 
 "V5 source" = the source's system declares `dice.reading`. When a reading applies:
 

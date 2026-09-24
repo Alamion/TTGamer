@@ -227,3 +227,21 @@
   ru: Принципы хроники
   refs:
       - ttgamer.ui.sheet.v5.fields.chronicleTenets
+- id: hunger
+  en: Hunger
+  ru: Голод
+  note: 'Spec 011: the VtM 5e special dice line; review with the VtM 5e sheet (T-039)'
+  refs:
+      - ttgamer.ui.sheet.v5.dice.hunger.line
+- id: messy-critical
+  en: Messy critical
+  ru: Грязный критический успех
+  note: 'Spec 011: pending maintainer review'
+  refs:
+      - ttgamer.ui.sheet.v5.dice.hunger.messyCritical
+- id: bestial-failure
+  en: Bestial failure
+  ru: Звериный провал
+  note: 'Spec 011: pending maintainer review'
+  refs:
+      - ttgamer.ui.sheet.v5.dice.hunger.bestialFailure

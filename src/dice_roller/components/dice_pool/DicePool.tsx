@@ -1,25 +1,25 @@
 import { translate } from '@docusaurus/Translate';
 import { type UiMessageDescriptor, uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
-import { useState } from 'react';
 
+import { useDiceRollerStore } from '../../store/diceRollerStore';
+import type { DicePanelTab } from '../../utils/rollReader';
 import DndTab from './DiceTabDnd';
 import StandardTab from './DiceTabStandard';
 import WodTab from './DiceTabWod';
 import NotationInput from './NotationInput';
 import RollControls from './RollControls';
 
-type DiceTab = 'standard' | 'dnd' | 'wod' | '';
-
 /** Tab labels: a message to translate, or a system name shown verbatim in every locale. */
-const TABS: { id: DiceTab; label: UiMessageDescriptor | string }[] = [
+const TABS: { id: DicePanelTab; label: UiMessageDescriptor | string }[] = [
     { id: 'standard', label: uiMessages.dice.pool.tabs.standard },
     { id: 'dnd', label: uiMessages.dice.pool.tabs.dnd },
     { id: 'wod', label: 'WoD' },
 ];
 
 export default function DicePool() {
-    const [activeTab, setActiveTab] = useState<DiceTab>('standard');
+    const activeTab = useDiceRollerStore((s) => s.panelTab);
+    const setActiveTab = useDiceRollerStore((s) => s.setPanelTab);
 
     return (
         <div className="flex flex-col gap-3">

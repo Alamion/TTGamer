@@ -48,6 +48,7 @@
   note: 'T-061 review: «Безысходность» (the pool that can turn into Despair)'
   refs:
       - ttgamer.ui.sheet.v5Hunter.fields.desperation
+      - ttgamer.ui.sheet.v5Hunter.dice.line
 - id: danger
   en: Danger
   ru: Опасность

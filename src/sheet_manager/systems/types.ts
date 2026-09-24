@@ -1,3 +1,4 @@
+import type { RollResult } from '@site/src/dice_roller/dice-logic';
 import type { z } from 'zod';
 
 import type {
@@ -78,6 +79,50 @@ export interface SystemPlugin {
     defaultTemplates?: readonly CustomTemplate[];
     /** Document data addresses templates may bind to; generic template code reads only these. */
     templateBindings?: readonly DocumentBindingDescriptor[];
+    /** Dice mechanics of the ruleset (constitution I); absent → stats show no dice button. */
+    dice?: SystemDiceRules;
+}
+
+export interface TraitPoolFlags {
+    specialization: boolean | null;
+    experienced: boolean | null;
+    practiced: boolean | null;
+}
+
+export interface DiceOutcome {
+    id: string;
+    title: DocumentViewLabel;
+    detail?: DocumentViewLabel;
+    /** True when the outcome depends on a Difficulty that was not given. */
+    conditional: boolean;
+}
+
+export interface DiceReadingLine {
+    id: string;
+    label: DocumentViewLabel;
+}
+
+/** How a ruleset reads its own rolls (criticals, special dice) on top of plain notation. */
+export interface RollReadingRules {
+    id: string;
+    lines: readonly DiceReadingLine[];
+    /** The line a document definition rolls with (e.g. a hunter rolls Desperation dice). */
+    lineFor(definitionId: string): string | undefined;
+    /**
+     * Rewrites a pool for this reading (e.g. adds the critical set bonus); `null` when the
+     * notation is not a pool this reading understands, so no reading applies.
+     */
+    prepare(notation: string, options: { criticalPairs: boolean }): string | null;
+    interpret(
+        result: RollResult,
+        options: { line: string; outcomes: boolean; difficulty: number | null }
+    ): DiceOutcome[];
+}
+
+export interface SystemDiceRules {
+    /** Notation for rolling one stat of `value` dots from a sheet. */
+    traitPool?(value: number, flags: TraitPoolFlags): string | undefined;
+    reading?: RollReadingRules;
 }
 
 export interface ParsedRegisteredDocument<TData = unknown> {
