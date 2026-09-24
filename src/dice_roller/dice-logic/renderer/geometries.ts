@@ -41,6 +41,77 @@ export interface DiceGeometryData {
 
 const textureCache = new Map<string, Texture>();
 
+interface FaceAtlas {
+    texture: Texture;
+    cols: number;
+    rows: number;
+}
+
+const atlasCache = new Map<string, FaceAtlas>();
+
+/**
+ * Packs every face texture of a die into one texture so the die draws with one material.
+ * With one material per face three.js issues a draw call per triangle group — over a hundred
+ * for a chamfered d20 — which made large pools unplayable (dice #12).
+ */
+function faceAtlas(faceTextures: (Texture | null)[], blankColor: string): FaceAtlas {
+    const key = `${faceTextures.map((texture) => texture?.uuid ?? '-').join('|')}_${blankColor}`;
+    const cached = atlasCache.get(key);
+    if (cached) return cached;
+
+    const images = faceTextures.map(
+        (texture) => (texture?.image as HTMLCanvasElement | undefined) ?? null
+    );
+    const cell = Math.max(128, ...images.map((image) => image?.width ?? 0));
+    const cols = Math.ceil(Math.sqrt(images.length));
+    const rows = Math.ceil(images.length / cols);
+    const canvas = document.createElement('canvas');
+    canvas.width = cols * cell;
+    canvas.height = rows * cell;
+    const context = canvas.getContext('2d');
+    images.forEach((image, index) => {
+        const x = (index % cols) * cell;
+        const y = Math.floor(index / cols) * cell;
+        if (image) {
+            context?.drawImage(image, x, y, cell, cell);
+        } else if (context) {
+            context.fillStyle = blankColor;
+            context.fillRect(x, y, cell, cell);
+        }
+    });
+
+    const texture = new Texture(canvas);
+    texture.needsUpdate = true;
+    const atlas = { texture, cols, rows };
+    atlasCache.set(key, atlas);
+    return atlas;
+}
+
+const clampUnit = (value: number) => Math.max(0, Math.min(1, value));
+
+/**
+ * Moves each triangle's face UVs into its material's atlas cell. Some face layouts reach
+ * slightly past 0–1; a texture per face clamped those at its edge, so they are clamped here
+ * rather than sampling the neighbouring cell.
+ */
+function mapUvsToAtlas(geometry: BufferGeometry, atlas: FaceAtlas): void {
+    const uv = geometry.attributes.uv;
+    for (const group of geometry.groups) {
+        const index = group.materialIndex ?? 0;
+        const col = index % atlas.cols;
+        const row = Math.floor(index / atlas.cols);
+        for (let vertex = group.start; vertex < group.start + group.count; vertex++) {
+            // Canvas textures are flipped: atlas row 0 is the top, at v = 1.
+            uv.setXY(
+                vertex,
+                (col + clampUnit(uv.getX(vertex))) / atlas.cols,
+                (atlas.rows - 1 - row + clampUnit(uv.getY(vertex))) / atlas.rows
+            );
+        }
+    }
+    uv.needsUpdate = true;
+}
+
 export default abstract class DiceGeometry {
     body!: Body;
     chamferGeometry!: { vectors: Vector3[]; faces: number[][] };
@@ -142,7 +213,22 @@ export default abstract class DiceGeometry {
         debug(
             `DiceGeometry: Got ${materials.length} materials, geometry groups: ${geometry.groups.length}`
         );
-        this.geometry = new Mesh(geometry, materials);
+        // The groups stay on the geometry: result reading finds faces by material index.
+        const atlas = faceAtlas(
+            materials.map((material) => material.map),
+            fixBrightness(this.diceColor, -10)
+        );
+        mapUvsToAtlas(geometry, atlas);
+        for (const material of materials) material.dispose();
+        this.geometry = new Mesh(
+            geometry,
+            new MeshPhongMaterial({
+                ...MATERIAL_OPTIONS,
+                map: atlas.texture,
+                transparent: true,
+                opacity: 1.0,
+            })
+        );
         this.geometry.receiveShadow = true;
         this.geometry.castShadow = true;
 
@@ -423,9 +509,11 @@ export default abstract class DiceGeometry {
 
     clone(): DiceGeometryData {
         const existingMaterial = this.body?.material ?? undefined;
+        // A body per die with its own hull: cannon-es shapes record their body, so dice must
+        // not share one. The mesh geometry and atlas texture are shared.
         const clonedBody = new Body({
             mass: this.mass,
-            shape: this.shape,
+            shape: new ConvexPolyhedron(this.shapeData),
             material: existingMaterial,
         });
         const clonedGeometry = this.geometry.clone();

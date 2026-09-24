@@ -261,6 +261,26 @@ export function rewriteWodDifficulty(notation: string, difficulty: number): stri
         .replace(/(\([^()]*(?:\d+)?d10[^()]*\))>=\d+/gi, `$1>=${boundedDifficulty}`);
 }
 
+/**
+ * Gives top-level d10 terms that count nothing yet (plain, or with only a botch `f`) the
+ * success threshold, so dice added while the WoD threshold was unset start counting once
+ * it is set. Terms with any other modifier and grouped notation are left alone.
+ */
+export function addWodThreshold(notation: string, threshold: number): string {
+    if (notation.includes('(')) return notation;
+    const parts = parseParts(notation);
+    if (!parts.some((part) => part.sides === 10 && /^(f|$)/.test(part.modifier))) {
+        return notation;
+    }
+    return parts
+        .map((part) =>
+            part.sides === 10 && /^(f|$)/.test(part.modifier)
+                ? makePartRaw(part.count, 10, `>=${threshold}${part.modifier}`, part.label)
+                : part.raw
+        )
+        .join(' + ');
+}
+
 export function handleDiceNotation(
     prev: string,
     btnNotation: string,

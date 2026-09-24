@@ -10,6 +10,10 @@ volume: Громкость
 timeToReact: Время на реакцию
 reactWindow: Окно реакции (секунды)
 reactWindowValue: '{seconds} с'
+diceFeel: Поведение кубов
+diceFeelHeavy: Тяжёлые
+diceFeelLively: Прыгучие
+diceFeelValue: '{value} из 100: 0 — тяжёлые, 100 — прыгучие'
 includeRollContext: Добавлять подробности броска
 includeCharacterName: Добавлять имя персонажа
 includeCharacterStats: Добавлять характеристики персонажа

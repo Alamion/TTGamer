@@ -37,15 +37,17 @@ describe('WoD dice tab', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Clear the Difficulty' }));
         expect(useDiceRollerStore.getState().settings.wodThreshold).toBeNull();
         expect(input()).toBe('2d10>=7');
-        expect(screen.getAllByRole('button', { name: /^Left-click: Add d10/ })).toHaveLength(1);
 
         act(() => useDiceRollerStore.setState({ notationInput: '' }));
         fireEvent.click(addButton(/^Left-click: Add d10 \|/));
         expect(input()).toBe('d10');
+        act(() => useDiceRollerStore.setState({ notationInput: '' }));
+        fireEvent.click(addButton(/^Left-click: Add d10f=1 \|/));
+        expect(input()).toBe('d10f=1');
 
         fireEvent.click(screen.getByRole('button', { name: 'Raise the Difficulty' }));
         expect(useDiceRollerStore.getState().settings.wodThreshold).toBe(6);
-        expect(input()).toBe('d10');
+        expect(input()).toBe('d10>=6f=1');
 
         expect(useDiceRollerStore.getState().settings.wodSuccesses).toBeNull();
         fireEvent.click(screen.getByRole('button', { name: 'Need more successes' }));

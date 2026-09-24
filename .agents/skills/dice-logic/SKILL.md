@@ -54,13 +54,15 @@ The two paths share parsing and final evaluator semantics but obtain initial val
 - 2D: `evaluateDiceAST()` generates values.
 - 3D: cannon-es physics generates values for supported shapes; the orchestrator performs physical rerolls/explosions and supplies pre-generated rolls to the evaluator.
 
-Therefore the renderer is not currently presentation-only. Do not implement forced-face animation or evaluator-authoritative 3D results under the assumption that it already exists.
+Therefore the renderer is not presentation-only: physics decides every die except those with forced `@` values, which are aimed by replaying the throw and turning the mesh by a die symmetry (see `src/dice_roller/AGENTS.md`). There is no evaluator-authoritative 3D mode.
 
 A d100 is one logical die represented by two physical d10s. Indexing, rerolls, explosions, and `groupSizes` must preserve that multiplier.
 
 The renderer owns one shared physics world so simultaneous sessions' dice can collide. Every `startPhysicsRoll()` handle is nevertheless bound to one numeric session ID: lock, reroll, add/explode, settle, manual-reroll state, arrange, and dismiss operations must use that ID. Never recover a session by taking the last array element. The physical-dice cap covers the initial dice plus additions across every group in that logical session; the recursive-modifier cap covers physical reroll/explosion work.
 
 The renderer module is imported dynamically and memoized in `roll-orchestrator.ts`, after the 2D decisions, so `three`/`cannon-es` never sit on a page's critical path. Keep type-only references to it as `import type`, never add a static value import, and pass the loaded `prepareDiceGeometries` into helpers instead of importing it at module scope. A failed load is a 2D fallback flagged with `renderer3dUnavailable` (presented by `Renderer3DFallbackNotice`), and the memo is cleared so a later roll can retry.
+
+Renderer timing uses simulated seconds (physics steps), not frames or wall time, and fresh dice are separated at spawn; `tests/dice_roller/renderer/` checks both under simulated displays (see `src/dice_roller/AGENTS.md` invariants).
 
 The whole roll falls back to 2D when 3D is disabled, no supported geometry exists, the physical-dice limit is exceeded, the renderer cannot be downloaded, renderer orchestration fails, or physics returns a non-finite value. Never replace an invalid physics value with a random d20 value.
 

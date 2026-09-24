@@ -54,7 +54,8 @@ The dice roller knows no game systems. Every roll through the store may carry a 
 header's pending-roll button, and history re-rolls (`currentPanelOrigin(control)`). `tab` is the
 persisted `panelTab` (`''` = none, the default) and is read even while the panel is closed.
 A queued sheet stat stores its `RollSource` in session storage (`dice_roller_roll_source`); the
-store attaches it to panel origins and drops it whenever the input becomes empty.
+store attaches it to panel origins. It and the queued stat labels (`dice_roller_stat_labels`)
+are dropped whenever the input becomes empty, however it was emptied.
 
 Rolls made from a character (a sheet's immediate roll, the header's pending-roll button with a
 queued or shown V5 character) follow that character's system and line whatever tab is
@@ -72,8 +73,9 @@ Labelled (`:h`) dice use `settings.specialDiceColor` in 3D (per flat group in th
 kept by explosions) and are listed as special dice in history and Discord. The WoD tab has a
 persisted Classic / V5 mode (`settings.wodMode`); V5 mode holds the line, the optional
 Difficulty in successes, and the `v5CriticalPairs` / `v5SpecialOutcomes` switches. Classic
-mode holds an optional success threshold (`wodThreshold`, default 6; unset adds plain `d10`,
-hides the botch die, and leaves the notation alone) and optional successes needed
+mode holds an optional success threshold (`wodThreshold`, default 6; unset adds plain `d10` and
+`d10f=1`, which only sum, and leaves the notation alone; setting it also gives plain or
+botch-only top-level d10 terms the threshold via `addWodThreshold`) and optional successes needed
 (`wodSuccesses`).
 
 The successes needed of the current mode travel in the panel origin (`wod.difficulty`). When it
@@ -103,12 +105,20 @@ UI outside this module may use that barrel. Dice internals and their unit tests 
 - Exponentiation is currently left-associative; changing that is a notation compatibility decision.
 - Modifier order is defined in `dice-evaluator.ts` and documented in `.agents/skills/dice-logic/references/modifiers.md`.
 - A logical d100 consumes two physical d10 values in 3D.
-- Forced `@` values are deterministic in 2D. The 3D path currently warns and uses physics values.
+- 3D timing runs on simulated time (the physics step count), never on frames or the wall clock: rest before read-out (`REST_SECONDS` below `VELOCITY_THRESHOLD` and a tipping spin below `ANGULAR_VELOCITY_THRESHOLD`), the `MAX_ROLL_SECONDS` limit, time to react, and show/fade (`SHOW_SECONDS`, `FADE_SECONDS`). A frame advances at most ten 1/60 s steps, so a hidden tab pauses the roll instead of ending it.
+- Dice feel is one setting, `diceLiveliness` (0 heavy – 100 lively, default 100 = the original physics bit for bit). `renderer/liveliness.ts` turns it into a `PhysicsProfile` (gravity, contact friction/restitution, damping, launch strength, sleep threshold); the world applies gravity and contacts, and `DiceRenderer.launch()` applies the per-die part at every throw, rethrow, explosion, and manual reroll. Heavy dice sleep when they creep, so pile-ups end instead of reaching the time limit.
+- Large pools (dice #12): a throw of more than `FULL_SIZE_DICE_POOL` physical dice uses smaller dice (`diceScaleFor` in `roll-orchestrator.ts`, applied to the throw and its explosions), its dice sleep as soon as they are still, and they meet each other as spheres while their hulls meet only the table and walls (`applyCrowdCollisions` in `renderer/crowd.ts`; hull-to-hull tests dominated a pile's frame time). A die that has come to rest counts as moving again only above `WAKE_FACTOR` × the rest thresholds, so pile jitter cannot hold a roll open. `MAX_PHYSICAL_3D_DICE` is 200.
+- Dice are cloned from per-look templates in `factory.ts` (type, fudge, colours, scale): the mesh geometry and atlas are shared and never disposed by a roll; each die owns its body, hull, and material, and only the material is disposed when the die leaves.
+- Meshes follow the bodies' interpolated pose (smooth at any refresh rate); `DiceShape.create()` resets the interpolation state because a spawn is a teleport. Hover highlighting raycasts once per frame, not per pointer event.
+- Each die draws with one `MeshPhongMaterial` whose map is a per-type/colour face atlas (`faceAtlas` in `geometries.ts`); the triangle groups and their material indices stay on the geometry because result reading finds faces by them. Never go back to a material per face: three.js issues a draw call per group.
+- Start orientations are uniform random quaternions (`randomOrientation` in `shapes.ts`); an axis-angle draw is skewed, which shows when dice barely tumble.
+- New dice enter the physics field through `separateSpawns` (`renderer/spawn.ts`): no two bounding spheres of airborne dice may intersect at spawn.
+- Forced `@` values are the result in 2D and 3D. In 3D the orchestrator passes per-die targets (`physicalTargets`; a d100 aims its tens and ones d10) to `startRoll`; the renderer replays the throw in a copy of the world (`predictRestingFaces`, `PhysicsWorld.cloneForPrediction`) and turns each aimed die's mesh by a symmetry of the die (`faceTurn`, `DiceShape.faceOffset`) so the forced face ends up where the body lands. The flight is untouched; a throw disturbed from outside (a click, another roll) still reports the forced values. Prediction needs exact replay: `PhysicsWorld.step` takes fixed 1/60 s steps itself (cannon-es's own accumulator advances sleep time by wall time), and clones copy inertia (cannon-es derives it from the world-space box at the moment shapes were added).
 - Roll context stored in session storage must be consumed or explicitly cleared when recalling context-free history entries.
 - WoD threshold controls rewrite both per-die and parenthesized group success thresholds already present in the editor; clearing the threshold rewrites nothing.
 
 ## Testing
 
-Run `yarn test` for parser/evaluator/notation changes and `yarn verify` before handoff. Tests using a mock random function consume all initial dice first, then values required by modifiers.
+Run `yarn test` for parser/evaluator/notation changes and `yarn verify` before handoff. Renderer changes must keep `tests/dice_roller/renderer/display-conditions.test.ts` green: its harness runs the real renderer headless under simulated refresh rates, stutter, and hidden tabs. Tests using a mock random function consume all initial dice first, then values required by modifiers.
 
 Load `.agents/skills/dice-logic/SKILL.md` before changing lexer, parser, evaluator, or 3D orchestration behavior.

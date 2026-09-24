@@ -23,6 +23,8 @@ export interface MixedRollConfig {
     soundVolume: number;
     timeToReact: boolean;
     timeToReactSeconds: number;
+    /** 0 (heavy) to 100 (lively); see `renderer/liveliness.ts`. */
+    diceLiveliness?: number;
     /** Face colour of labelled (`:h`) dice; the primary colour when absent. */
     specialDiceColor?: string;
 }

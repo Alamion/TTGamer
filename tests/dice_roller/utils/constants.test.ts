@@ -47,6 +47,7 @@ describe('DEFAULT_SETTINGS', () => {
             'soundVolume',
             'timeToReact',
             'timeToReactSeconds',
+            'diceLiveliness',
             'enableDiscordWebhook',
             'includeCharacterName',
             'includeCharacterStats',

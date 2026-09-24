@@ -3,7 +3,11 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { memo, useCallback, useMemo } from 'react';
 
-import { handleDiceNotation, rewriteWodDifficulty } from '../../dice-logic/notation-utils';
+import {
+    addWodThreshold,
+    handleDiceNotation,
+    rewriteWodDifficulty,
+} from '../../dice-logic/notation-utils';
 import { useDiceRollerStore } from '../../store/diceRollerStore';
 import { blendColors } from '../../utils/recolor_svg';
 import type { V5Line, WodMode } from '../../utils/rollReader';
@@ -203,7 +207,9 @@ function ClassicControls() {
 
     const setThreshold = (next: number | null) => {
         updateSettings({ wodThreshold: next });
-        if (next !== null) setNotationInput(rewriteWodDifficulty(notationInput, next));
+        if (next !== null) {
+            setNotationInput(addWodThreshold(rewriteWodDifficulty(notationInput, next), next));
+        }
     };
 
     return (
@@ -228,14 +234,12 @@ function ClassicControls() {
                     secondaryColor={settings.secondaryDiceColor}
                     {...regular}
                 />
-                {threshold !== null && (
-                    <DiceButton
-                        config={botchConfig}
-                        primaryColor={botchPrimaryColor}
-                        secondaryColor={settings.secondaryDiceColor}
-                        {...botch}
-                    />
-                )}
+                <DiceButton
+                    config={botchConfig}
+                    primaryColor={botchPrimaryColor}
+                    secondaryColor={settings.secondaryDiceColor}
+                    {...botch}
+                />
                 <DiceButton
                     key="d6"
                     config={d6Config}

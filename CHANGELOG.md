@@ -1,5 +1,33 @@
 # Changelog
 
+## v3.10.0
+
+### Minor feat
+
+- **Dice feel setting (dice #13)**: one slider in the dice roller settings runs from heavy dice, which grip the table and stop almost where they land (about 2 s for ten dice), to lively dice that hop and tumble for seconds — the original behavior and the default; faces stay fair across the range
+- **Large 3D pools stay smooth (dice #12)**: each die now draws with one material from a packed face texture instead of one draw call per triangle, pools above a dozen dice shrink so the pile settles, and settled dice in a large pool sleep; on integrated graphics 100 d6 roll at about 57 fps (was 19) and 100 d20 at about 53 fps (previously they did not finish within a minute), and the 3D limit rises from 100 to 200 physical dice
+- **Steadier 3D frame pacing**: dice are drawn between physics steps, so motion is smooth on 120–240 Hz displays; large pools collide die-to-die as spheres (the real shape still decides the face), cloned dice share their geometry, hover highlighting runs once per frame, and the development build no longer logs every die face — a 100 d20 roll keeps 99% of frames at 60 fps on integrated graphics
+
+- **Forced values show in 3D (dice #14)**: notation with `@` values (`2d10@6,7`, documentation examples) now lands the 3D dice on exactly those faces instead of warning and rolling randomly — the throw is replayed ahead of time and each die is turned by one of its own symmetries, so the flight stays natural and face layouts stay intact (a d6's opposite faces still add to 7); d100 aims both of its d10
+
+### Fix
+
+- **Dice settings can be closed on phones**: the settings dialog grew taller than a phone screen, pushing its close button above the screen and under the site header with no way to scroll; it now opens above the header, fits the visible screen, and scrolls its settings while the title and close button stay in place
+- **Large piles reach a result**: a die that has come to rest stays at rest through solver jitter and counts as moving again only when knocked, so a pool of a hundred dice no longer waits for the 10-second limit
+- **Fair 3D start orientations**: a die's starting rotation was drawn from a skewed distribution; it is now uniform over all orientations, which matters most when dice barely tumble
+- **The botch die stays in the Classic WoD tab without a threshold**: it adds `d10f=1`, which only sums like any d10 until a threshold is set; setting one also gives plain and botch-only d10 terms the threshold
+
+- **Erased sheet stats no longer label the next roll (F-006)**: clicking a stat, erasing the notation, and clicking another stat used to name both stats in history and Discord; emptying the input now drops the queued stat labels as well as the roll source, however it was emptied
+- **3D dice no longer spawn inside each other (F-004)**: every thrown, rethrown, or exploding die starts clear of the others in the air, so the physics solver no longer pushes interpenetrating dice apart with extra speed
+- **3D rolls look the same on every display (F-005)**: the result stays on screen for 1 s and fades for 1 s at 30, 60, 144, 165, or 240 Hz (at 165 Hz it used to vanish in under 0.75 s); settling and the 10-second limit count simulated time, so a tab hidden during a roll no longer reads dice in mid-air on return; a die is read only once it has stopped sliding and tipping for 0.2 s
+- **Dice without a 3D model roll their own values in mixed 3D rolls**: in `1d7+2d6` the d7 took the first d6's physical value (and a forced `1d7@2` showed that d6 instead of 2); it is now rolled in 2D alongside the 3D dice
+- **Exploding d100 adds a tens die**: a d100 explosion threw two plain d10s, so the added tens die read "7" instead of "70"; it now throws the same tens and ones pair as the original die
+
+### Chore
+
+- **Orchestrator integration tests (dice #5)**: a scripted renderer covers mixed 3D/2D groups, d100 rerolls and explosions, falling back to 2D mid-roll, and cancellation reaching neither history nor Discord
+- **Display-condition tests for 3D dice (T-066)**: a headless harness runs the real renderer and cannon-es with stubbed WebGL under simulated refresh rates, stutter, and hidden tabs; the cases failed on the previous renderer and guard spawn overlap, solver energy, rest at read-out, and show/fade timing
+
 ## v3.9.0
 
 ### Minor feat

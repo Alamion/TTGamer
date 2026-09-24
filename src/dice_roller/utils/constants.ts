@@ -10,10 +10,23 @@ export const MAX_DICE_SIDES = 100_000;
 export const MAX_EXPLOSIONS = 100;
 export const MAX_NOTATION_LENGTH = 500;
 export const MAX_NUMERIC_LITERAL = 1_000_000_000;
-export const MAX_PHYSICAL_3D_DICE = 100;
+export const MAX_PHYSICAL_3D_DICE = 200;
+// 3D timings are simulated seconds, so every refresh rate shows the same roll (F-005).
 export const MAX_ROLL_SECONDS = 10;
+/** Linear speed (scene units/s) and spin (rad/s) under which a die counts as still. */
 export const VELOCITY_THRESHOLD = 5;
+export const ANGULAR_VELOCITY_THRESHOLD = 1;
+/** How long a die must stay still before its face is read. */
+export const REST_SECONDS = 0.2;
+/** A resting die counts as moving again only this many times above the thresholds. */
+export const REST_WAKE_FACTOR = 4;
+export const SHOW_SECONDS = 1;
+export const ACCEPTED_SHOW_SECONDS = 0.5;
+export const FADE_SECONDS = 1;
 export const FRAME_RATE = 1 / 60;
+/** Pools up to this many physical dice keep full-size dice; larger pools shrink (dice #12). */
+export const FULL_SIZE_DICE_POOL = 12;
+export const MIN_DICE_SCALE = 0.2;
 
 export const DEFAULT_SETTINGS = {
     enable3dDicePanel: true,
@@ -23,6 +36,7 @@ export const DEFAULT_SETTINGS = {
     soundVolume: 80,
     timeToReact: false,
     timeToReactSeconds: 5,
+    diceLiveliness: 100,
     enableDiscordWebhook: true,
     includeCharacterName: true,
     includeCharacterStats: true,
@@ -81,6 +95,7 @@ export const SETTINGS_METADATA: Record<keyof typeof DEFAULT_SETTINGS, SettingMet
         },
     },
     timeToReactSeconds: { type: 'number', name: 'Time to react seconds' },
+    diceLiveliness: { type: 'number', name: 'Dice feel (0 heavy to 100 lively)' },
     enableDiscordWebhook: { type: 'boolean', name: 'Enable Discord webhook' },
     includeCharacterName: { type: 'boolean', name: 'Include character name' },
     includeCharacterStats: { type: 'boolean', name: 'Include character stats' },

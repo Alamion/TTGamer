@@ -1,5 +1,5 @@
 import { debug } from '@site/src/shared/utils/logging';
-import { Body, Vec3 } from 'cannon-es';
+import { Body } from 'cannon-es';
 import {
     BufferGeometry,
     type Material,
@@ -23,7 +23,24 @@ interface DiceVector {
     pos: { x: number; y: number; z: number };
     velocity: { x: number; y: number; z: number };
     angular: { x: number; y: number; z: number };
+    /** Start orientation as a unit quaternion. */
     axis: { x: number; y: number; z: number; w: number };
+}
+
+/**
+ * A rotation drawn uniformly over all orientations (Shoemake). A random axis and angle is not
+ * uniform, and when dice barely tumble the start orientation decides the face.
+ */
+function randomOrientation(): DiceVector['axis'] {
+    const [u1, u2, u3] = [Math.random(), Math.random(), Math.random()];
+    const a = Math.sqrt(1 - u1);
+    const b = Math.sqrt(u1);
+    return {
+        x: a * Math.sin(2 * Math.PI * u2),
+        y: a * Math.cos(2 * Math.PI * u2),
+        z: b * Math.sin(2 * Math.PI * u3),
+        w: b * Math.cos(2 * Math.PI * u3),
+    };
 }
 
 function createDefaultVector(): DiceVector {
@@ -43,12 +60,7 @@ function createDefaultVector(): DiceVector {
             y: 200 * Math.random(),
             z: 100 * Math.random(),
         },
-        axis: {
-            x: Math.random(),
-            y: Math.random(),
-            z: Math.random(),
-            w: Math.random(),
-        },
+        axis: randomOrientation(),
     };
 }
 
@@ -62,8 +74,8 @@ export abstract class DiceShape {
     h: number;
 
     stopped: boolean = false;
-    staleIterations = 0;
-    lastMovingTime = 0;
+    /** Simulated time the die became still; null while it moves. */
+    restingSince: number | null = null;
 
     vector!: DiceVector;
 
@@ -75,7 +87,6 @@ export abstract class DiceShape {
         data: DiceGeometryData,
         vector?: { x: number; y: number }
     ) {
-        debug(`DiceShape: Creating dice with ${data.values?.length || 0} sides`);
         this.sides = sides;
         this.inertia = inertia;
         this.w = w;
@@ -113,23 +124,7 @@ export abstract class DiceShape {
             y: (Math.random() * 5 + this.inertia) * ang.x,
             z: 0,
         };
-        const axis = {
-            x: Math.random(),
-            y: Math.random(),
-            z: Math.random(),
-            w: Math.random(),
-        };
-        debug('Vector generated', {
-            v,
-            dist,
-            boost,
-            vector,
-            pos,
-            velvec,
-            velocity,
-            angular,
-            axis,
-        });
+        const axis = randomOrientation();
         return {
             pos,
             velocity,
@@ -153,95 +148,92 @@ export abstract class DiceShape {
         return this.geometry.geometry as BufferGeometry;
     }
 
+    /**
+     * Rotation of the mesh relative to the body: one of the die's symmetries, so the mesh
+     * fills exactly the body's shape. A predetermined roll picks it so the forced face ends up
+     * where physics lands (identity otherwise).
+     */
+    faceOffset = new ThreeQuaternion();
+
     get result(): number {
         return this.getUpsideValue();
     }
 
-    getUpsideValue(): number {
-        const upVector = new Vector3(0, 0, this.sides === 4 ? -1 : 1);
+    /** Local normal of each numbered face (material index ≥ 1); shared by dice of one shape. */
+    faceNormals(): Map<number, Vector3> {
+        const cached = this.buffer.userData.faceNormals as Map<number, Vector3> | undefined;
+        if (cached) return cached;
         const normals = this.buffer.attributes.normal.array as Float32Array;
-        const groups = this.buffer.groups;
+        const faces = new Map<number, Vector3>();
+        for (const group of this.buffer.groups) {
+            // Material 0 is the blank chamfer; material 1 is the '0'/'00' face on d10/d100.
+            const material = group.materialIndex ?? 0;
+            if (material < 1 || faces.has(material)) continue;
+            const start = group.start * 3;
+            const normal = new Vector3(normals[start], normals[start + 1], normals[start + 2]);
+            if (normal.lengthSq() > 0 && Number.isFinite(normal.lengthSq())) {
+                faces.set(material, normal.normalize());
+            }
+        }
+        this.buffer.userData.faceNormals = faces;
+        return faces;
+    }
 
-        debug(
-            `DiceShape: Calculating result for ${this.sides}-sided die, groups: ${groups.length}, normals count: ${normals.length}`
+    /** Distinct normals of the whole surface, blank chamfers included. */
+    surfaceNormals(): Vector3[] {
+        const cached = this.buffer.userData.surfaceNormals as Vector3[] | undefined;
+        if (cached) return cached;
+        const array = this.buffer.attributes.normal.array as Float32Array;
+        const distinct: Vector3[] = [];
+        for (let index = 0; index + 2 < array.length; index += 3) {
+            const normal = new Vector3(array[index], array[index + 1], array[index + 2]);
+            if (!(normal.lengthSq() > 0)) continue;
+            normal.normalize();
+            if (!distinct.some((seen) => seen.distanceToSquared(normal) < 1e-6)) {
+                distinct.push(normal);
+            }
+        }
+        this.buffer.userData.surfaceNormals = distinct;
+        return distinct;
+    }
+
+    /** The face read for a mesh orientation: the one facing up (down for a d4); -1 if none. */
+    upFace(orientation: ThreeQuaternion): number {
+        const up = new Vector3(0, 0, this.sides === 4 ? -1 : 1);
+        let best = -1;
+        let bestDot = -Infinity;
+        const world = new Vector3();
+        for (const [material, normal] of this.faceNormals()) {
+            const dot = world.copy(normal).applyQuaternion(orientation).dot(up);
+            if (dot > bestDot) {
+                bestDot = dot;
+                best = material;
+            }
+        }
+        return best;
+    }
+
+    /** Die value of a face. d10/d100 material 1 (label '0'/'00') wraps to the last value. */
+    valueOfFace(material: number): number {
+        const faceIndex = (material - 2 + this.values.length) % this.values.length;
+        return this.values[faceIndex] ?? faceIndex + 1;
+    }
+
+    /** Faces that show `value` (a fudge die has two of each). */
+    facesShowing(value: number): number[] {
+        return [...this.faceNormals().keys()].filter(
+            (material) => this.valueOfFace(material) === value
         );
+    }
 
-        for (let i = 0; i < Math.min(5, groups.length); i++) {
-            const g = groups[i];
-            debug(
-                `  Group ${i}: start=${g.start}, count=${g.count}, materialIndex=${g.materialIndex}`
-            );
-        }
+    /** Orientation the mesh is drawn with: the body's, turned by the face offset. */
+    meshOrientation(bodyQuaternion = this.body.quaternion): ThreeQuaternion {
+        return cannonQuaternionToThree(bodyQuaternion).multiply(this.faceOffset);
+    }
 
-        const materialNormals: Map<number, { angle: number; groupIndex: number }> = new Map();
-
-        for (let i = 0; i < groups.length; i++) {
-            const group = groups[i];
-            const matIdx = group.materialIndex ?? 0;
-
-            // Skip material index 0 (blank label for triangular connecting faces).
-            // Material 1 is the '0'/'00' face on d10/d100 and must be included.
-            if (matIdx < 1) {
-                // debug(`  Skipping group ${i}: materialIndex ${matIdx} is a border/blank face`)
-                continue;
-            }
-
-            const startVertex = group.start * 3;
-            if (startVertex + 2 >= normals.length) {
-                debug(
-                    `  Skipping group ${i}: startVertex ${startVertex} >= normals.length ${normals.length}`
-                );
-                continue;
-            }
-
-            const nx = normals[startVertex];
-            const ny = normals[startVertex + 1];
-            const nz = normals[startVertex + 2];
-
-            if (!Number.isFinite(nx) || !Number.isFinite(ny) || !Number.isFinite(nz)) {
-                debug(
-                    `  Skipping group ${i}: normal has non-finite components (${nx}, ${ny}, ${nz})`
-                );
-                continue;
-            }
-
-            const normal = new Vector3(nx, ny, nz);
-
-            if (normal.lengthSq() === 0) {
-                debug(`  Skipping group ${i}: zero-length normal`);
-                continue;
-            }
-
-            const worldNormal = normal
-                .clone()
-                .applyQuaternion(cannonQuaternionToThree(this.body.quaternion));
-
-            if (worldNormal.lengthSq() === 0) {
-                debug(`  Skipping group ${i}: zero-length worldNormal`);
-                continue;
-            }
-
-            const n1 = worldNormal.clone().normalize();
-            const n2 = upVector.clone().normalize();
-            const dot = n1.dot(n2);
-
-            if (!Number.isFinite(dot)) {
-                debug(`  Skipping group ${i}: dot product is non-finite (${dot})`);
-                continue;
-            }
-
-            const clampedDot = Math.max(-1, Math.min(1, dot));
-            const angle = Math.acos(clampedDot);
-
-            const existing = materialNormals.get(matIdx);
-            if (!existing || angle < existing.angle) {
-                materialNormals.set(matIdx, { angle, groupIndex: i });
-            }
-        }
-
-        debug(`DiceShape: Found ${materialNormals.size} unique materials:`, materialNormals);
-
-        if (materialNormals.size === 0) {
+    getUpsideValue(): number {
+        const material = this.upFace(this.meshOrientation());
+        if (material < 0) {
             const randomIndex = Math.floor(Math.random() * this.values.length);
             const fallbackValue = (this.values?.[randomIndex] ?? randomIndex + 1) || 1;
             debug(
@@ -249,44 +241,17 @@ export abstract class DiceShape {
             );
             return fallbackValue;
         }
-
-        let closestMatIndex = 1;
-        let closestAngle = Math.PI * 2;
-
-        for (const [matIndex, data] of materialNormals) {
-            if (data.angle < closestAngle) {
-                closestAngle = data.angle;
-                closestMatIndex = matIndex;
-            }
-        }
-
-        // Map material index back to a value index.
-        // For d10/d100: mat 1 (label '0'/'00') wraps to the last value (10).
-        // For other dice: mat 2+ maps linearly with modulo wrapping.
-        const faceIndex = (closestMatIndex - 2 + this.values.length) % this.values.length;
-        let result: number;
-
-        if (faceIndex >= 0 && faceIndex < this.values.length) {
-            result = this.values[faceIndex];
-        } else {
-            // Fallback: map as best we can to a valid index
-            const approxIndex = Math.max(
-                0,
-                Math.min(this.values.length - 1, Math.abs(faceIndex) % this.values.length)
-            );
-            result = this.values?.[approxIndex] ?? approxIndex + 1;
-        }
-
-        debug(
-            `DiceShape: Result calculated - closestMatIndex: ${closestMatIndex}, faceIndex: ${faceIndex}, value: ${result}, closestAngle: ${closestAngle}`
-        );
-        return result;
+        return this.valueOfFace(material);
     }
 
+    /**
+     * Draws the die between the last two physics steps (cannon-es interpolates by the time
+     * left over), so motion is smooth at refresh rates other than the 60 Hz physics step.
+     */
     set(): void {
         // Validate position values before updating geometry
-        const pos = this.body.position;
-        const quat = this.body.quaternion;
+        const pos = this.body.interpolatedPosition;
+        const quat = this.body.interpolatedQuaternion;
 
         if (!Number.isFinite(pos.x) || !Number.isFinite(pos.y) || !Number.isFinite(pos.z)) {
             debug('DiceShape: Invalid position detected, skipping update');
@@ -304,7 +269,7 @@ export abstract class DiceShape {
         }
 
         this.geometry.position.set(pos.x, pos.y, pos.z);
-        this.geometry.quaternion.set(quat.x, quat.y, quat.z, quat.w);
+        this.geometry.quaternion.set(quat.x, quat.y, quat.z, quat.w).multiply(this.faceOffset);
     }
 
     setOpacity(opacity: number): void {
@@ -325,17 +290,14 @@ export abstract class DiceShape {
         this.h = height;
         this.vector = this.generateVector(vector);
         this.stopped = false;
-        this.staleIterations = 0;
-        this.lastMovingTime = 0;
+        this.restingSince = null;
         this.create();
     }
 
     create(): void {
         this.body.position.set(this.vector.pos.x, this.vector.pos.y, this.vector.pos.z);
-        this.body.quaternion.setFromAxisAngle(
-            new Vec3(this.vector.axis.x, this.vector.axis.y, this.vector.axis.z),
-            this.vector.axis.w * Math.PI * 2
-        );
+        const { x, y, z, w } = this.vector.axis;
+        this.body.quaternion.set(x, y, z, w);
         this.body.angularVelocity.set(
             this.vector.angular.x,
             this.vector.angular.y,
@@ -346,13 +308,16 @@ export abstract class DiceShape {
             this.vector.velocity.y,
             this.vector.velocity.z
         );
+        // A teleport, not motion: nothing to interpolate from.
+        this.body.previousPosition.copy(this.body.position);
+        this.body.interpolatedPosition.copy(this.body.position);
+        this.body.previousQuaternion.copy(this.body.quaternion);
+        this.body.interpolatedQuaternion.copy(this.body.quaternion);
         // this.body.ccdSpeedThreshold = 5;
         // this.body.ccdRadius = 0.5;
         this.body.linearDamping = 0.1;
         this.body.angularDamping = 0.1;
         this.body.wakeUp();
-
-        debug('DiceShape created:', this.body);
     }
 }
 
