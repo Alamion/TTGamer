@@ -1,5 +1,32 @@
 # Changelog
 
+## v3.11.0
+
+### Minor feat
+
+- **See the page while editing a template (spec 012, T-054)**: the template editor shows the page exactly as the sheet renders it — real sections, columns, dots, and tracks on sample data — next to an outline of the template and the settings of the selected element; clicking an element on the page selects it, and elements hidden by a display condition stay visible, hatched, and selectable; typing on the page only changes the sample data
+- **Arrange elements on the page**: drag an element by its chip into another place or column, drop it into an empty column, or insert a new one at any "+" between elements; column counts and widths change the page at once, and every move also works from the keyboard (Alt+arrows, Alt+Shift+arrows for columns) and is announced to screen readers
+- **Quick preview, undo, and duplicate**: a Preview switch shows the page as a reader sees it on the open document, a shipped example, or a blank document; every edit can be undone and redone (typing in one field is one step), elements can be duplicated with fresh identities, and the shortcuts work on any keyboard layout, including Russian
+- **Your own document types**: create a document type in any setting (for example "Organization" for Star Wars), design its pages in the editor, and create documents of it from the usual dialog; its documents keep every value when the page changes, and deleting a type keeps its documents on a page that lists their stored values
+- **Share types by file**: export a type with its pages and import it elsewhere; a document of your type carries the type inside its file, so it opens where the type is not installed, and a different version of an installed type asks to replace, keep both, or cancel
+- **Your own settings**: build a named setting on the World of Darkness 2nd or 5th Edition rules, give its character your own page, and group your document types in it; its characters roll and validate by the chosen rules
+- **World of Darkness 2nd Edition and V5 mortal characters**: the classic WoD 2e engine is now its own system with an engine-only character (classic abilities, no Force), and V5 gains a mortal character without a supernatural module; both are the bases for your settings
+
+### Fix
+
+- **Edited default pages stay with their system (T-046)**: saved edits of shipped pages are keyed by system and page, so they can never attach to another system's page with the same name; existing edits move over on load
+- **Imported templates no longer replace a shipped page**: a template file whose id matches a shipped page is imported under a new id
+- **Catalogs offered by the editor belong to the template's system**, and reference fields let you choose which document types they point to
+- **Template number fields keep their limits**: a typed value above the maximum or below the minimum is brought into range when you leave the field, and it snaps to the field's step
+- **Template ratings show one dot per point**: a rating with a maximum of 5 shows five dots and the first dot means 1, like attribute and skill rows (it showed an extra dot for zero)
+- **Field types in the editor are translated**, and the type picker fits the settings panel
+- **Types in your settings show the setting's name** in the template library instead of the ruleset's
+
+### Chore
+
+- **Star Wars runs on the WoD 2e ruleset (T-041)**: the engine's schema, profile, bindings, and page parts moved to `systems/wod2e/ruleset/`, with every Star Wars identity frozen; parity tests prove stored documents, shipped pages, and dice pools are unchanged
+- **Dark Pack scope**: the policy covers World of Darkness 5th Edition material only (constitution 1.4.2); WoD 2e and Star Wars carry no badge
+
 ## v3.10.0
 
 ### Minor feat

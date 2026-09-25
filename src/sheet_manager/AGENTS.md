@@ -2,7 +2,7 @@
 
 ## Scope
 
-The universal sheet implementation supports Star Wars WEG/WoD characters, droids, creatures, vehicles, and fodder groups. Definitions own their schemas and named views; do not fold kind-specific state into the shared document envelope.
+The universal sheet implementation supports Star Wars WEG/WoD characters, droids, creatures, vehicles, and fodder groups, Hunter: the Reckoning 5e characters, engine-only WoD 2e and V5 characters, and user-defined document types and settings (spec 012). Definitions own their schemas and named views; do not fold kind-specific state into the shared document envelope.
 
 ## Structure
 
@@ -27,11 +27,12 @@ src/sheet_manager/
 │   └── hooks/                # sheet-local behavior hooks
 ├── hooks/                    # useCharacter and update helpers
 ├── systems/                  # neutral contracts (registry, types, view, templateBindings,
-│   │                         # catalogs, policies) + one folder per system plugin:
-│   ├── star-wars-wod/        # Star Wars WoD 2e (ruleset + setting in one plugin until T-041)
-│   └── v5/                   # V5 ruleset (`ruleset/`) + supernatural modules (`modules/hunter/`)
+│   │                         # catalogs, policies, userTypes) + one folder per system plugin:
+│   ├── wod2e/                # classic WoD 2e ruleset (`ruleset/`) + the engine plugin `wod-2e`
+│   ├── star-wars-wod/        # Star Wars setting on the WoD 2e ruleset (identities frozen)
+│   └── v5/                   # V5 ruleset (`ruleset/`), engine character (`core/`), modules (`modules/hunter/`)
 ├── templates/                # setting-neutral template node builders
-├── store/                    # documentStore (polymorphic documents, v3) + templateStore (library, v3)
+├── store/                    # documentStore (v4) + templateStore (library, v5) + documentTypeStore (user types/settings, v1)
 └── types/                    # generic contracts, template schema, templateValues bag
 ```
 
@@ -97,7 +98,8 @@ Do not read `currentCharacter` directly inside a reusable sheet element. Direct 
   special-cased for Star Wars.
 - Rulesets shared by several lines keep shared mechanics in `ruleset/` and lines in
   `modules/<line>/` (see `.agents/skills/sheet-manager/SKILL.md`). A document carries one module.
-- Publisher policies come from `systems/policies.ts`; `SheetWorkspace` renders only the badge
+- Publisher policies come from `systems/policies.ts` (the Dark Pack covers V5 material only;
+  WoD 2e and Star Wars declare none); `SheetWorkspace` renders only the badge
   (`PolicyBadges`, linking to the policy's docs page) outside the template tree so no template
   can remove it, and exports carry `notices`. The full text lives on one docs page.
 - Dice mechanics belong to the ruleset (`SystemPlugin.dice`): `traitPool` builds a stat's
@@ -110,7 +112,14 @@ Do not read `currentCharacter` directly inside a reusable sheet element. Direct 
   (`useDocumentRollSource()`), and `SheetWorkspace` publishes the shown document
   (`integrations/sheet-dice/shownDocument.ts`). Publisher badges never appear on dice surfaces.
 - Shipped view ids are unique across systems (prefix them with the system, e.g.
-  `v5-hunter-sheet`); composite keys for overrides are T-046.
+  `v5-hunter-sheet`); edited defaults are keyed `systemId:viewId` (T-046, template store v5).
+- The Star Wars system is a setting on the WoD 2e ruleset (`systems/wod2e/ruleset/`: engine
+  schema shape, profile, bindings, page parts; spec 012). Its identities — system id, definition
+  ids, kinds, views, coordinates, data fields — are frozen; `tests/sheet_manager/systems/wod2e/`
+  guards parse, page, and dice parity. The engine plugin `wod-2e` ships an engine-only character.
+- User document types and settings (spec 012) reach generic code only through the registry
+  overlay (`systems/userTypes.ts`, `SystemRegistry.setUserDocumentTypes`); `user-` documents keep
+  every value in `templateValues`. Current-state detail: the sheet-templates skill.
 
 ## Schema and Import/Export
 
@@ -155,6 +164,9 @@ duplicate template facts here. Invariants that must never be broken:
 
 - Reuse proven sheet primitives before creating type-specific equivalents. New definitions should compose existing collapsible sections, trait/dot controls, health/resource trackers, equipment editors, and documentation-link patterns. If a primitive is nearly reusable, extract or parameterize it at the narrowest system-independent boundary instead of cloning a weaker implementation.
 - Model WoD-family differences as definition-owned configuration and block composition (trait groups, resource tracks, special-power blocks, labels, limits), not copied sheet pages. Reserve bespoke React blocks for genuinely different interaction models.
+- An element a setting needs is built as a template element user templates can configure in
+  the editor, preferably as an option on an existing element; it and its variants appear in
+  the draft-only element storybook (constitution VI, T-069).
 - `TraitRowWithInput` is controlled by `specializationText`; parent/store changes must appear immediately.
 - Icon-only actions require accessible labels.
 - Use Radix primitives for new modal behavior. A modal must label itself, trap focus, close on Escape, and restore focus to its trigger.

@@ -5,8 +5,17 @@ import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { describeDegradedFields, parseTemplateFile } from '../../features/sheet/shell/templateFile';
+import {
+    installTypePayload,
+    isTypeFile,
+    parseTypeFile,
+    rewriteTypeIdentity,
+    typeInstallState,
+} from '../../features/sheet/shell/typeFile';
 import { useTemplateStore } from '../../store/templateStore';
+import { isDefaultTemplateId } from '../../systems/view';
 import type { CustomTemplate } from '../../types/template';
+import { generateDraftId } from './template-editor/draft';
 
 const transfer = uiMessages.sheet.templates.transfer;
 
@@ -21,7 +30,7 @@ export function TemplateImportDialog({ onClose, open }: TemplateImportDialogProp
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [pending, setPending] = useState<CustomTemplate | null>(null);
+    const [pending, setPending] = useState<{ kind: 'template' | 'type' } | null>(null);
     const conflictResolverRef = useRef<
         ((resolution: 'replace' | 'duplicate' | 'cancel') => void) | null
     >(null);
@@ -29,6 +38,49 @@ export function TemplateImportDialog({ onClose, open }: TemplateImportDialogProp
     const applyImport = (template: CustomTemplate) => {
         saveTemplate(template);
         toast.success(translate(transfer.importSuccess, { title: template.name }));
+    };
+
+    const requestResolution = (kind: 'template' | 'type') =>
+        new Promise<'replace' | 'duplicate' | 'cancel'>((resolve) => {
+            conflictResolverRef.current = resolve;
+            setPending({ kind });
+        });
+
+    const errorMessage = (error: 'parse' | 'format' | 'version' | 'schema' | 'system') =>
+        ({
+            parse: transfer.importErrorFormat,
+            format: transfer.importErrorFormat,
+            version: transfer.importErrorVersion,
+            schema: transfer.importErrorSchema,
+            system: transfer.importErrorSystem,
+        })[error];
+
+    /** Type files (spec 012): the type, its setting, and its pages, after the conflict choice. */
+    const importTypeFile = async (text: string, filename: string) => {
+        const parsed = parseTypeFile(text);
+        if (!parsed.ok) {
+            toast.error(translate(errorMessage(parsed.error), { filename }));
+            return;
+        }
+        let payload = parsed.payload;
+        const state = typeInstallState(payload);
+        if (state === 'same') {
+            toast(
+                translate(uiMessages.sheet.documents.conflict.typeInstalled, {
+                    name: payload.type.name,
+                })
+            );
+            return;
+        }
+        if (state === 'conflict') {
+            const resolution = await requestResolution('type');
+            conflictResolverRef.current = null;
+            setPending(null);
+            if (resolution === 'cancel') return;
+            if (resolution === 'duplicate') payload = rewriteTypeIdentity(payload);
+        }
+        installTypePayload(payload);
+        toast.success(translate(transfer.importSuccess, { title: payload.type.name }));
     };
 
     const handleFiles = async (fileList: FileList | null) => {
@@ -39,22 +91,27 @@ export function TemplateImportDialog({ onClose, open }: TemplateImportDialogProp
         if (input) input.value = '';
 
         for (const file of files) {
+            let text = '';
             let parsed;
             try {
-                parsed = parseTemplateFile(await file.text());
+                text = await file.text();
+                parsed = parseTemplateFile(text);
             } catch {
                 parsed = { ok: false as const, error: 'parse' as const };
             }
+            let raw: unknown;
+            try {
+                raw = JSON.parse(text);
+            } catch {
+                raw = undefined;
+            }
+            if (isTypeFile(raw)) {
+                await importTypeFile(text, file.name);
+                continue;
+            }
 
             if (!parsed.ok) {
-                const reasonMessage = {
-                    parse: transfer.importErrorFormat,
-                    format: transfer.importErrorFormat,
-                    version: transfer.importErrorVersion,
-                    schema: transfer.importErrorSchema,
-                    system: transfer.importErrorSystem,
-                }[parsed.error];
-                toast.error(translate(reasonMessage, { filename: file.name }));
+                toast.error(translate(errorMessage(parsed.error), { filename: file.name }));
                 continue;
             }
 
@@ -62,15 +119,14 @@ export function TemplateImportDialog({ onClose, open }: TemplateImportDialogProp
                 parsed.template,
                 parsed.degradedCatalogFields
             );
+            // A user template with a shipped view's id would silently replace that page.
+            if (isDefaultTemplateId(parsed.template.id)) {
+                parsed.template = { ...parsed.template, id: generateDraftId('tpl') };
+            }
 
             if (templates.some(({ id }) => id === parsed.template.id)) {
                 // Identity collision — replace / duplicate / cancel, applied atomically.
-                const resolution = await new Promise<'replace' | 'duplicate' | 'cancel'>(
-                    (resolve) => {
-                        conflictResolverRef.current = resolve;
-                        setPending(parsed.template);
-                    }
-                );
+                const resolution = await requestResolution('template');
                 conflictResolverRef.current = null;
                 setPending(null);
                 if (resolution === 'cancel') continue;
@@ -148,10 +204,14 @@ export function TemplateImportDialog({ onClose, open }: TemplateImportDialogProp
                     <Dialog.Overlay className="fixed inset-0 z-[9998] bg-black/50" />
                     <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-bgSurface p-6 shadow-xl focus:outline-none">
                         <Dialog.Title className="text-lg font-semibold text-textPrimary">
-                            {t(transfer.conflictTitle)}
+                            {pending?.kind === 'type'
+                                ? t(uiMessages.sheet.documents.conflict.typeTitle)
+                                : t(transfer.conflictTitle)}
                         </Dialog.Title>
                         <Dialog.Description className="mt-2 text-sm text-textSecondary">
-                            {t(transfer.conflictPrompt)}
+                            {pending?.kind === 'type'
+                                ? t(uiMessages.sheet.documents.conflict.typePrompt)
+                                : t(transfer.conflictPrompt)}
                         </Dialog.Description>
                         <div className="mt-6 flex justify-end gap-2">
                             <button

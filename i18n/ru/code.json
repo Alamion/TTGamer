@@ -1439,6 +1439,15 @@
     "ttgamer.ui.sheet.documents.conflict.title": {
         "message": "Документ уже существует"
     },
+    "ttgamer.ui.sheet.documents.conflict.typeInstalled": {
+        "message": "«{name}» уже установлен."
+    },
+    "ttgamer.ui.sheet.documents.conflict.typePrompt": {
+        "message": "В файле другая версия установленного типа документа. Заменить установленный тип, сохранить оба (импортированный получит новую идентичность) или отменить?"
+    },
+    "ttgamer.ui.sheet.documents.conflict.typeTitle": {
+        "message": "Этот тип документа уже установлен"
+    },
     "ttgamer.ui.sheet.documents.create.cancel": {
         "message": "Отмена"
     },
@@ -1450,6 +1459,27 @@
     },
     "ttgamer.ui.sheet.documents.create.title": {
         "message": "Создать документ"
+    },
+    "ttgamer.ui.sheet.documents.examples.falcon": {
+        "message": "«Тысячелетний сокол» (пример)"
+    },
+    "ttgamer.ui.sheet.documents.examples.jaxVorn": {
+        "message": "Джакс Ворн (пример)"
+    },
+    "ttgamer.ui.sheet.documents.examples.landspeeder": {
+        "message": "Лендспидер Люка (пример)"
+    },
+    "ttgamer.ui.sheet.documents.examples.lenaVarga": {
+        "message": "Лена Варга (пример)"
+    },
+    "ttgamer.ui.sheet.documents.examples.redFive": {
+        "message": "Красный-5 (пример)"
+    },
+    "ttgamer.ui.sheet.documents.examples.stormtroopers": {
+        "message": "Отряд штурмовиков (пример)"
+    },
+    "ttgamer.ui.sheet.documents.examples.wampa": {
+        "message": "Вампа (пример)"
     },
     "ttgamer.ui.sheet.documents.fields.abilities": {
         "message": "Способности"
@@ -1862,6 +1892,9 @@
     "ttgamer.ui.sheet.documents.types.fodderGroup": {
         "message": "Группа статистов"
     },
+    "ttgamer.ui.sheet.documents.types.unknown": {
+        "message": "Неизвестный тип"
+    },
     "ttgamer.ui.sheet.documents.types.vehicle": {
         "message": "Транспорт"
     },
@@ -1882,6 +1915,9 @@
     },
     "ttgamer.ui.sheet.documents.views.label": {
         "message": "Режим отображения"
+    },
+    "ttgamer.ui.sheet.documents.views.storedValues": {
+        "message": "Сохранённые значения"
     },
     "ttgamer.ui.sheet.documents.views.vehicleSheet": {
         "message": "Лист транспорта"
@@ -2321,6 +2357,18 @@
     "ttgamer.ui.sheet.templates.editor.addTableBlock": {
         "message": "Добавить таблицу"
     },
+    "ttgamer.ui.sheet.templates.editor.areaOutline": {
+        "message": "Структура"
+    },
+    "ttgamer.ui.sheet.templates.editor.areaPage": {
+        "message": "Страница"
+    },
+    "ttgamer.ui.sheet.templates.editor.areaSettings": {
+        "message": "Настройки"
+    },
+    "ttgamer.ui.sheet.templates.editor.areaTabs": {
+        "message": "Области редактора"
+    },
     "ttgamer.ui.sheet.templates.editor.blockTitle": {
         "message": "Заголовок блока (необязательно)"
     },
@@ -2354,11 +2402,20 @@
     "ttgamer.ui.sheet.templates.editor.columnWidthsHint": {
         "message": "Ширины пропорциональны: 2 и 1 делают первую колонку вдвое шире."
     },
+    "ttgamer.ui.sheet.templates.editor.conditionMet": {
+        "message": "Условие выполнено"
+    },
+    "ttgamer.ui.sheet.templates.editor.conditionNotMet": {
+        "message": "Условие не выполнено"
+    },
     "ttgamer.ui.sheet.templates.editor.coordinateCurrent": {
         "message": "{label} (текущее)"
     },
     "ttgamer.ui.sheet.templates.editor.coordinateMax": {
         "message": "{label} (максимум)"
+    },
+    "ttgamer.ui.sheet.templates.editor.copySuffix": {
+        "message": "{label} (копия)"
     },
     "ttgamer.ui.sheet.templates.editor.countMessage": {
         "message": "Достигнут предел элементов — максимум {limit}."
@@ -2378,8 +2435,20 @@
     "ttgamer.ui.sheet.templates.editor.docsLink": {
         "message": "Ссылка на документацию (необязательно)"
     },
+    "ttgamer.ui.sheet.templates.editor.duplicate": {
+        "message": "Дублировать"
+    },
+    "ttgamer.ui.sheet.templates.editor.duplicated": {
+        "message": "{label}: создана копия."
+    },
     "ttgamer.ui.sheet.templates.editor.duplicateId": {
         "message": "Дубликат идентификатора «{id}» — идентификаторы должны быть уникальны в своей области."
+    },
+    "ttgamer.ui.sheet.templates.editor.elementIssue": {
+        "message": "У этого элемента есть проблема"
+    },
+    "ttgamer.ui.sheet.templates.editor.emptyColumn": {
+        "message": "Колонка {column} пуста — перетащите сюда элемент или вставьте новый."
     },
     "ttgamer.ui.sheet.templates.editor.emptyLabel": {
         "message": "Секции и поля требуют непустого названия."
@@ -2426,8 +2495,17 @@
     "ttgamer.ui.sheet.templates.editor.groupTitle": {
         "message": "Название группы"
     },
+    "ttgamer.ui.sheet.templates.editor.hiddenByCondition": {
+        "message": "Скрыто условием: показывается, только когда «{coordinate}» = {value}. Сейчас читатель этого не видит."
+    },
     "ttgamer.ui.sheet.templates.editor.hiddenTitleHint": {
         "message": "Группу без видимого заголовка нельзя свернуть."
+    },
+    "ttgamer.ui.sheet.templates.editor.inserted": {
+        "message": "{label}: добавлено."
+    },
+    "ttgamer.ui.sheet.templates.editor.insertHere": {
+        "message": "Вставить элемент сюда"
     },
     "ttgamer.ui.sheet.templates.editor.invalidBounds": {
         "message": "Минимум не может превышать максимум."
@@ -2489,8 +2567,29 @@
     "ttgamer.ui.sheet.templates.editor.minRows": {
         "message": "Мин. строк"
     },
+    "ttgamer.ui.sheet.templates.editor.modeEdit": {
+        "message": "Правка"
+    },
+    "ttgamer.ui.sheet.templates.editor.modeLabel": {
+        "message": "Режим редактора"
+    },
+    "ttgamer.ui.sheet.templates.editor.modePreview": {
+        "message": "Превью"
+    },
+    "ttgamer.ui.sheet.templates.editor.moved": {
+        "message": "{label}: перемещено."
+    },
+    "ttgamer.ui.sheet.templates.editor.movedColumn": {
+        "message": "{label}: перемещено в колонку {column}."
+    },
     "ttgamer.ui.sheet.templates.editor.moveDown": {
         "message": "Переместить ниже"
+    },
+    "ttgamer.ui.sheet.templates.editor.moveIn": {
+        "message": "Перенести в предыдущую группу"
+    },
+    "ttgamer.ui.sheet.templates.editor.moveOut": {
+        "message": "Вынести из группы"
     },
     "ttgamer.ui.sheet.templates.editor.moveUp": {
         "message": "Переместить выше"
@@ -2518,6 +2617,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.newSection": {
         "message": "Новая секция"
+    },
+    "ttgamer.ui.sheet.templates.editor.noSampleDocument": {
+        "message": "Тип документа этого шаблона недоступен, поэтому страницу нельзя показать."
     },
     "ttgamer.ui.sheet.templates.editor.numberMax": {
         "message": "Максимум"
@@ -2582,6 +2684,18 @@
     "ttgamer.ui.sheet.templates.editor.presentation": {
         "message": "Отображение"
     },
+    "ttgamer.ui.sheet.templates.editor.previewBlank": {
+        "message": "Пустой документ"
+    },
+    "ttgamer.ui.sheet.templates.editor.previewData": {
+        "message": "Данные превью"
+    },
+    "ttgamer.ui.sheet.templates.editor.previewFallback": {
+        "message": "Выбранный документ больше недоступен; показан пустой документ."
+    },
+    "ttgamer.ui.sheet.templates.editor.previewOpenDocument": {
+        "message": "Открытый документ: {title}"
+    },
     "ttgamer.ui.sheet.templates.editor.primitivePart": {
         "message": "Редактирует"
     },
@@ -2593,6 +2707,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.ratingNumber": {
         "message": "Число"
+    },
+    "ttgamer.ui.sheet.templates.editor.redo": {
+        "message": "Повторить"
     },
     "ttgamer.ui.sheet.templates.editor.referenceKinds": {
         "message": "Разрешённые типы документов"
@@ -2606,6 +2723,12 @@
     "ttgamer.ui.sheet.templates.editor.removeConfirmTitle": {
         "message": "Отменить изменения?"
     },
+    "ttgamer.ui.sheet.templates.editor.removed": {
+        "message": "{label}: удалено. Ctrl+Z — вернуть."
+    },
+    "ttgamer.ui.sheet.templates.editor.sampleNote": {
+        "message": "Пробные данные — точки, клетки и текст, изменённые здесь, не попадают в ваши документы."
+    },
     "ttgamer.ui.sheet.templates.editor.save": {
         "message": "Сохранить"
     },
@@ -2614,6 +2737,12 @@
     },
     "ttgamer.ui.sheet.templates.editor.sectionTitle": {
         "message": "Заголовок секции"
+    },
+    "ttgamer.ui.sheet.templates.editor.selectPrompt": {
+        "message": "Выберите элемент на странице или в структуре, чтобы изменить его настройки."
+    },
+    "ttgamer.ui.sheet.templates.editor.shortcutsHint": {
+        "message": "Клавиши: Alt+↑/↓ — переместить · Alt+←/→ — из группы или в группу · Alt+Shift+←/→ — колонка · Ctrl+D — дублировать · Delete — удалить · Ctrl+Z — отменить · Ctrl+Shift+Z — повторить"
     },
     "ttgamer.ui.sheet.templates.editor.showLabel": {
         "message": "Показывать подпись"
@@ -2650,6 +2779,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.trackerSource": {
         "message": "Отслеживает"
+    },
+    "ttgamer.ui.sheet.templates.editor.undo": {
+        "message": "Отменить"
     },
     "ttgamer.ui.sheet.templates.editor.unknownBinding": {
         "message": "Неизвестная привязка к данным «{id}» для этого типа документа."
@@ -2909,6 +3041,12 @@
     "ttgamer.ui.sheet.templates.library.buttonTitle": {
         "message": "Управление шаблонами страниц персонажа"
     },
+    "ttgamer.ui.sheet.templates.library.createSetting": {
+        "message": "Создать сеттинг"
+    },
+    "ttgamer.ui.sheet.templates.library.createType": {
+        "message": "Создать тип"
+    },
     "ttgamer.ui.sheet.templates.library.defaultBadge": {
         "message": "Стандартный"
     },
@@ -2917,6 +3055,18 @@
     },
     "ttgamer.ui.sheet.templates.library.deleteRefused": {
         "message": "«{name}» — стандартная страница, её нельзя удалить. Вместо этого сделайте копию."
+    },
+    "ttgamer.ui.sheet.templates.library.deleteSetting": {
+        "message": "Удалить сеттинг"
+    },
+    "ttgamer.ui.sheet.templates.library.deleteSettingDescription": {
+        "message": "Удалить сеттинг «{name}» вместе с его типами документов и страницами? К нему относится {count} документ; он останется.|Удалить сеттинг «{name}» вместе с его типами документов и страницами? К нему относятся {count} документа; они останутся.|Удалить сеттинг «{name}» вместе с его типами документов и страницами? К нему относятся {count} документов; они останутся."
+    },
+    "ttgamer.ui.sheet.templates.library.deleteType": {
+        "message": "Удалить тип"
+    },
+    "ttgamer.ui.sheet.templates.library.deleteTypeDescription": {
+        "message": "Удалить тип «{name}» и его страницы? Его использует {count} документ; он останется и покажет сохранённые значения.|Удалить тип «{name}» и его страницы? Его используют {count} документа; они останутся и покажут сохранённые значения.|Удалить тип «{name}» и его страницы? Его используют {count} документов; они останутся и покажут сохранённые значения."
     },
     "ttgamer.ui.sheet.templates.library.duplicate": {
         "message": "Дублировать"
@@ -2933,6 +3083,9 @@
     "ttgamer.ui.sheet.templates.library.export": {
         "message": "Экспорт"
     },
+    "ttgamer.ui.sheet.templates.library.exportType": {
+        "message": "Экспортировать тип"
+    },
     "ttgamer.ui.sheet.templates.library.incompatibleBadge": {
         "message": "Несовместимый формат"
     },
@@ -2948,6 +3101,24 @@
     "ttgamer.ui.sheet.templates.library.new": {
         "message": "Новый шаблон"
     },
+    "ttgamer.ui.sheet.templates.library.newPageFor": {
+        "message": "Новая страница: {target}"
+    },
+    "ttgamer.ui.sheet.templates.library.newSetting": {
+        "message": "Новый сеттинг"
+    },
+    "ttgamer.ui.sheet.templates.library.newSettingHint": {
+        "message": "Собственный сеттинг на существующих правилах. Его персонажи следуют правилам движка на ваших страницах, а ваши типы документов собраны в нём."
+    },
+    "ttgamer.ui.sheet.templates.library.newType": {
+        "message": "Новый тип документа"
+    },
+    "ttgamer.ui.sheet.templates.library.newTypeHint": {
+        "message": "Собственный тип документа в сеттинге, собранный из шаблонов. Его документы хранят все значения в своих страницах."
+    },
+    "ttgamer.ui.sheet.templates.library.noDescription": {
+        "message": "Без описания"
+    },
     "ttgamer.ui.sheet.templates.library.reset": {
         "message": "Вернуть оригинал"
     },
@@ -2956,6 +3127,15 @@
     },
     "ttgamer.ui.sheet.templates.library.resetConfirmTitle": {
         "message": "Вернуть стандартный шаблон к оригиналу?"
+    },
+    "ttgamer.ui.sheet.templates.library.settingName": {
+        "message": "Название сеттинга"
+    },
+    "ttgamer.ui.sheet.templates.library.settingPage": {
+        "message": "Страница: {type}"
+    },
+    "ttgamer.ui.sheet.templates.library.settingRuleset": {
+        "message": "Правила"
     },
     "ttgamer.ui.sheet.templates.library.skeletonDescription": {
         "message": "Начинается с текущей структуры встроенной страницы «{label}»."
@@ -2972,8 +3152,20 @@
     "ttgamer.ui.sheet.templates.library.title": {
         "message": "Шаблоны страниц"
     },
+    "ttgamer.ui.sheet.templates.library.typeBadge": {
+        "message": "Тип документа"
+    },
+    "ttgamer.ui.sheet.templates.library.typeName": {
+        "message": "Название типа"
+    },
+    "ttgamer.ui.sheet.templates.library.typeSetting": {
+        "message": "Сеттинг"
+    },
     "ttgamer.ui.sheet.templates.library.unnamedKind": {
         "message": "Другое"
+    },
+    "ttgamer.ui.sheet.templates.library.userSettings": {
+        "message": "Ваши сеттинги"
     },
     "ttgamer.ui.sheet.templates.page.embedNoDocument": {
         "message": "Создайте или откройте персонажа, чтобы заполнить эту часть листа прямо здесь."
@@ -3022,6 +3214,15 @@
     },
     "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
         "message": "{count} обязательное поле ещё не заполнено.|{count} обязательных поля ещё не заполнены.|{count} обязательных полей ещё не заполнено."
+    },
+    "ttgamer.ui.sheet.templates.page.typeLoading": {
+        "message": "Загрузка типов документов…"
+    },
+    "ttgamer.ui.sheet.templates.page.typeMissingDescription": {
+        "message": "Тип этого документа здесь не установлен, поэтому показаны его сохранённые значения. Импортируйте тип, чтобы вернуть его страницу."
+    },
+    "ttgamer.ui.sheet.templates.page.typeMissingTitle": {
+        "message": "Тип документа не установлен"
     },
     "ttgamer.ui.sheet.templates.primitives.addPreset": {
         "message": "Добавить пресет"
@@ -3211,6 +3412,18 @@
     },
     "ttgamer.ui.sheet.v5.attributes.wits": {
         "message": "Смекалка"
+    },
+    "ttgamer.ui.sheet.v5.core.section": {
+        "message": "Смертный"
+    },
+    "ttgamer.ui.sheet.v5.core.type": {
+        "message": "Смертный"
+    },
+    "ttgamer.ui.sheet.v5.core.views.brief": {
+        "message": "Краткий лист"
+    },
+    "ttgamer.ui.sheet.v5.core.views.sheet": {
+        "message": "Полный лист"
     },
     "ttgamer.ui.sheet.v5.dice.hunger.bestialFailure": {
         "message": "Звериный провал"
@@ -3679,6 +3892,144 @@
     },
     "ttgamer.ui.sheet.v5Hunter.weaponKinds.ranged": {
         "message": "Дальний бой"
+    },
+    "ttgamer.ui.sheet.wod2e.identity.chronicle": {
+        "message": "Хроника"
+    },
+    "ttgamer.ui.sheet.wod2e.system": {
+        "message": "Мир Тьмы 2-я редакция"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.academics": {
+        "message": "Гуманитарные науки"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.alertness": {
+        "message": "Бдительность"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.animalKen": {
+        "message": "Обращение с животными"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.appearance": {
+        "message": "Внешность"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.athletics": {
+        "message": "Атлетика"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.brawl": {
+        "message": "Драка"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.charisma": {
+        "message": "Обаяние"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.computer": {
+        "message": "Компьютеры"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.conscience": {
+        "message": "Совесть"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.courage": {
+        "message": "Мужество"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.crafts": {
+        "message": "Ремёсла"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.dexterity": {
+        "message": "Ловкость"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.dodge": {
+        "message": "Уклонение"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.drive": {
+        "message": "Вождение"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.empathy": {
+        "message": "Эмпатия"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.etiquette": {
+        "message": "Этикет"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.expression": {
+        "message": "Экспрессия"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.finance": {
+        "message": "Финансы"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.firearms": {
+        "message": "Стрельба"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.intelligence": {
+        "message": "Интеллект"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.intimidation": {
+        "message": "Запугивание"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.investigation": {
+        "message": "Расследование"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.law": {
+        "message": "Право"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.leadership": {
+        "message": "Лидерство"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.linguistics": {
+        "message": "Лингвистика"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.manipulation": {
+        "message": "Манипуляция"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.medicine": {
+        "message": "Медицина"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.melee": {
+        "message": "Холодное оружие"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.occult": {
+        "message": "Оккультизм"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.perception": {
+        "message": "Восприятие"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.performance": {
+        "message": "Исполнение"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.politics": {
+        "message": "Политика"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.science": {
+        "message": "Наука"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.security": {
+        "message": "Взлом"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.selfControl": {
+        "message": "Самоконтроль"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.stamina": {
+        "message": "Выносливость"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.stealth": {
+        "message": "Скрытность"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.streetwise": {
+        "message": "Знание улиц"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.strength": {
+        "message": "Сила"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.subterfuge": {
+        "message": "Обман"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.survival": {
+        "message": "Выживание"
+    },
+    "ttgamer.ui.sheet.wod2e.traits.wits": {
+        "message": "Смекалка"
+    },
+    "ttgamer.ui.sheet.wod2e.views.brief": {
+        "message": "Краткий лист"
+    },
+    "ttgamer.ui.sheet.wod2e.views.sheet": {
+        "message": "Полный лист"
     },
     "ttgamer.ui.site.home.about.body": {
         "message": "Гибридная НРИ, сочетающая повествовательную простоту {weg} с механической глубиной системы пулов d10 из {wod}. Создавайте персонажей с 9 основными атрибутами, 30 способностями, специализациями навыков, техниками Силы и отслеживайте ударный и летальный урон на двойной шкале здоровья."

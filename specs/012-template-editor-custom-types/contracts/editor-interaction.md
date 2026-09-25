@@ -63,8 +63,8 @@ Rules:
 
 - Shortcuts match `KeyboardEvent.code`, so they work with any keyboard layout (FR-011a). They
   are handled on the editor dialog content only and call `preventDefault()` when handled.
-- While focus is in a text input, textarea, or select, `Ctrl+Z`, `Ctrl+Y`, and `Delete` are
-  left to the browser.
+- While focus is in a text input, textarea, or select, `Ctrl+Z`, `Ctrl+Y`, `Delete`, and the
+  `Alt+Arrow` moves are left to the browser (text undo, deletion, and word jumps).
 - Refused moves (into itself, past depth 10 or 200 nodes) leave the draft unchanged and show
   the existing message (`cannotMoveIntoItself`, depth, count) in the live region and the issue
   area.

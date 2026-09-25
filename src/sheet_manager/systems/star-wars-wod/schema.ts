@@ -13,6 +13,7 @@ import {
     ItemSchema,
     TraitValueSchema,
 } from '../../types/character';
+import { StarWarsSettingShape, Wod2eCoreShape } from '../wod2e/ruleset/schema';
 
 const boundedTextSchema = z.string().max(2_000).default('');
 const boundedLabelSchema = z.string().max(120).default('');
@@ -87,7 +88,13 @@ const StarWarsCharacterMetadataSchema = CharacterMetadataSchema.extend({
     type: z.literal('sentient'),
 });
 
-export const StarWarsCharacterDataSchema = BaseCharacterSchema.omit({ id: true }).extend({
+/**
+ * A Star Wars character is the WoD 2e engine character plus the setting's own fields (spec 012):
+ * the same keys, limits, and defaults as the flat legacy shape it has always stored.
+ */
+export const StarWarsCharacterDataSchema = z.object({
+    ...Wod2eCoreShape,
+    ...StarWarsSettingShape,
     metadata: StarWarsCharacterMetadataSchema,
 });
 

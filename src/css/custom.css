@@ -42,6 +42,8 @@
     --warning: 245 158 11;
     --info: 2 132 199;
     --success: 21 128 61;
+    /* Template editor marks: distinct from the sheet's primary/secondary accents. */
+    --editor: 79 70 229;
 
     --sw-jedi-blue: 0 153 255;
     --sw-jedi-green: 0 255 64;
@@ -64,6 +66,7 @@
     --text-secondary: 148 163 184;
     --border: 51 65 85;
     --border-more-contrast: 71 85 105;
+    --editor: 129 140 248;
 }
 
 .header-github-link::before {

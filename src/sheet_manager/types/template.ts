@@ -537,6 +537,8 @@ export interface CustomTemplate {
     /** Owning system: page assignment and library listing match system + kind. */
     systemId: SystemId;
     documentKind: DocumentKind;
+    /** A page made for a user setting (spec 012): offered only to that setting's documents. */
+    settingId?: string;
     schemaVersion: number;
     children: TemplateNode[];
 }
@@ -690,6 +692,7 @@ export const CustomTemplateSchema = z
         description: z.string().max(1_000).optional(),
         systemId: SystemIdSchema.optional().default(SystemIdSchema.parse('star-wars-wod')),
         documentKind: DocumentKindSchema,
+        settingId: z.string().min(1).max(64).optional(),
         schemaVersion: z.number().int().positive().max(1_000_000),
         children: z.array(templateNodeSchema).min(1).max(TEMPLATE_LIMITS.nodesPerTemplate),
     })

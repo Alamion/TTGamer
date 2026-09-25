@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import { type DocumentViewLabel, systemRegistry } from '../../../systems';
+import { isUserKind } from '../../../systems/userTypes';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import {
     type CustomTemplate,
@@ -102,5 +103,9 @@ export function getSkeletonsForKind(
         const label = skeletonLabels.get(template.id);
         return label ? { ...template, ...skeletonText(label) } : template;
     });
-    return skeletons.length > 0 ? skeletons : [buildFallbackSkeleton()];
+    if (skeletons.length > 0) return skeletons;
+    // A user type starts from an empty page of its own system and kind ("New page"); the blank
+    // skeleton is a Star Wars character page and would target another kind.
+    if (isUserKind(documentKind)) return [];
+    return [buildFallbackSkeleton()];
 }

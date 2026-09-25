@@ -24,6 +24,30 @@ library:
     blankSkeletonName: Blank page skeleton
     skeletonIdentity: Identity
     skeletonNameField: Name
+    newType: New document type
+    newTypeHint: A document type of its own in a setting, built from templates. Its documents keep all values in their pages.
+    typeName: Type name
+    typeSetting: Setting
+    createType: Create type
+    newPageFor: 'New page: {target}'
+    exportType: Export type
+    deleteType: Delete type
+    deleteTypeDescription:
+        message: 'Delete the type "{name}" and its pages? {count} document uses it; it is kept and shows its stored values.|Delete the type "{name}" and its pages? {count} documents use it; they are kept and show their stored values.'
+        plural: true
+    noDescription: No description
+    typeBadge: Document type
+    newSetting: New setting
+    newSettingHint: A setting of your own on an existing ruleset. Its characters follow the ruleset's rules on pages you design, and it groups your document types.
+    settingName: Setting name
+    settingRuleset: Ruleset
+    createSetting: Create setting
+    settingPage: 'Page: {type}'
+    userSettings: Your settings
+    deleteSetting: Delete setting
+    deleteSettingDescription:
+        message: 'Delete the setting "{name}" with its document types and pages? {count} document belongs to it; it is kept.|Delete the setting "{name}" with its document types and pages? {count} documents belong to it; they are kept.'
+        plural: true
 primitives:
     groupIdentity: Identity fields
     groupTrait: Traits
@@ -179,6 +203,38 @@ editor:
     bookTerm: 'Book term: {term}'
     showTermHint: Show book name hint
     newOption: Option {index}
+    copySuffix: '{label} (copy)'
+    areaOutline: Outline
+    areaPage: Page
+    areaSettings: Settings
+    areaTabs: Editor areas
+    sampleNote: Sample data — dots, boxes, and text you change here never reach your documents.
+    noSampleDocument: This template's document type is not available, so the page cannot be shown.
+    hiddenByCondition: 'Hidden by a condition: shown only when "{coordinate}" is {value}. Readers do not see it now.'
+    conditionMet: Condition met
+    conditionNotMet: Condition not met
+    elementIssue: This element has an issue
+    insertHere: Insert an element here
+    emptyColumn: Column {column} is empty — drop an element here or insert one.
+    selectPrompt: Select an element on the page or in the outline to change its settings.
+    modeEdit: Edit
+    modePreview: Preview
+    modeLabel: Editor mode
+    previewData: Preview data
+    previewOpenDocument: 'Open document: {title}'
+    previewBlank: Blank document
+    previewFallback: The chosen document is no longer available; showing a blank document.
+    undo: Undo
+    redo: Redo
+    duplicate: Duplicate
+    moveOut: Move out of the group
+    moveIn: Move into the previous group
+    moved: '{label} moved.'
+    movedColumn: '{label} moved to column {column}.'
+    removed: '{label} removed. Press Ctrl+Z to undo.'
+    duplicated: '{label} copied.'
+    inserted: '{label} added.'
+    shortcutsHint: 'Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo'
     coordinateCurrent: '{label} (current)'
     coordinateMax: '{label} (max)'
 fieldTypes:
@@ -233,6 +289,9 @@ page:
     embedNoDocument: Create or open a character to fill in this part of the sheet here.
     fallbackTitle: Template page unavailable
     fallbackDescription: The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.
+    typeMissingTitle: Document type not installed
+    typeMissingDescription: This document's type is not installed here, so its stored values are listed instead. Import the type to get its page back.
+    typeLoading: Loading document types…
     requiredUnfilled:
         message: '{count} required field is still empty.|{count} required fields are still empty.'
         plural: true

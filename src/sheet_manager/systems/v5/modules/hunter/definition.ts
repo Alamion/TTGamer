@@ -6,6 +6,7 @@ import {
     DocumentViewIdSchema,
 } from '../../../../types/document';
 import type { DocumentDefinition, DocumentViewLabel } from '../../../types';
+import { LENA_VARGA_DOCUMENT } from './example';
 import { createHunterDefault, HunterSchema } from './schema';
 
 const views = uiMessages.sheet.v5Hunter.views;
@@ -33,4 +34,11 @@ export const hunterDefinition: DocumentDefinition = {
     // Schema version 1 is the first; later versions add steps here.
     migrate: (data) => data,
     module: { id: 'hunter', label: uiMessages.sheet.v5Hunter.module, policies: ['dark-pack'] },
+    examples: [
+        {
+            id: LENA_VARGA_DOCUMENT.id,
+            label: uiMessages.sheet.documents.examples.lenaVarga,
+            create: () => LENA_VARGA_DOCUMENT,
+        },
+    ],
 };

@@ -82,3 +82,9 @@ dice:
         bestialFailure: Звериный провал
         bestialFailureDetail: Бросок провален, а на кубике Голода выпала 1 — Зверь берёт своё.
         bestialFailureConditional: Звериный провал, если бросок не наберёт Сложность
+core:
+    type: Смертный
+    section: Смертный
+    views:
+        sheet: Полный лист
+        brief: Краткий лист

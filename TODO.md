@@ -50,9 +50,10 @@ estimates, open questions. Priority ordering lives only in the section grouping.
     - 2026-09-23: done. Several people walked the quickstart successfully, all of them already familiar with H:tR; the SC-009 hallway test with a true newcomer moves to T-053, which owns onboarding.
 - [ ] ⬜ **T-039 — Vampire: the Masquerade 5e player character** (T-038) — players maintain VtM 5e vampire sheets on the shared V5 ruleset, adding only the Vampire module. (task for roadmap path `multi-system-sheets`)
 - [ ] ⬜ **T-040 — V5 non-player entities** (T-038) — GMs track H:tR/VtM 5e NPCs, creatures, and organizations as documents instead of free-form markdown notes; planned as its own spec. (task for roadmap path `gm-notes-templates`)
-- [ ] ⬜ **T-041 — Ruleset / module / setting layering for existing systems** (T-038) — the Star Wars WoD system migrates from one combined `systemId` to a ruleset (WoD-like engine) + setting (Star Wars) + module list, so settings and supernatural types compose without per-combination code. (task for roadmap path `multi-system-sheets`)
+- [x] ✅ **T-041 — Ruleset / module / setting layering for existing systems** (T-038) — the Star Wars WoD system migrates from one combined `systemId` to a ruleset (WoD-like engine) + setting (Star Wars) + module list, so settings and supernatural types compose without per-combination code. (task for roadmap path `multi-system-sheets`)
     - A character carries one supernatural module by default; crossovers are built by extending the sheet through templates rather than stacking modules.
     - Existing persisted documents migrate through the versioned envelope migrations; no data loss.
+    - 2026-09-25: done in spec 012. `systems/wod2e/ruleset/` owns the WoD 2e schema shape, profile, bindings, and page parts; Star Wars composes them with every identity frozen (parity tests over stored documents, shipped pages, and dice); the engine plugin `wod-2e` ships an engine-only character. No Dark Pack notice (constitution 1.4.2).
 - [ ] 🚫 **T-042 — Shared entity library with tags and links** (T-041) — closed: superseded by T-052; entity organization returns to a file-system structure rather than a tag-sliced link graph.
     - The scale requirement carries over to T-052: thousands of entities, indexed IndexedDB queries instead of loading everything into memory, virtualized lists, and search/filter-first navigation.
 - [ ] ⬜ **T-043 — Classic World of Darkness lines** (T-041) — players use sheets for the remaining classic WoD lines (VtM, W:tA, C:tD, Wraith, H:tR classic) as ruleset modules, after the V5 lines. (task for roadmap path `multi-system-sheets`)
@@ -95,12 +96,14 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [x] ✅ **T-019 — Separate roll-group syntax** (none) — notation like `(3d10+1d10)>=6f=1` parses with separate roll groups before modifiers.
 - [x] ✅ **T-045 — V5 dice pools** (none) — players roll VtM 5e / H:tR 5e pools with automatic success, critical-pair, and Hunger/Desperation outcome handling instead of counting by hand; detail in `src/dice_roller/TODO.md` #15. (task for roadmap path `multi-system-sheets`)
     - 2026-09-24: done in spec 011. WoD tab Classic / V5 mode; critical pairs via the neutral `x2=10` set bonus; Hunger/Desperation as `:h` special dice with named outcomes (conditional without a Difficulty); V5 sheets build `Nd10>=6`; rolls from a V5 character (sheet or header button) use its line; panel rolls follow the WoD tab's V5 mode and line, or the character when no tab is selected. Structured notation diagnostics (dice TODO #3) shipped with it. Russian outcome names (Голод, грязный критический успех, звериный провал) await the maintainer's glossary review.
-- [ ] ⬜ **T-046 — Composite template keys** (none) — edited default pages stay attached to the right system as more systems ship: default overrides and shipped-template lookups key by `systemId:viewId` with a template store migration, replacing the view-id prefix convention. (task for roadmap path `multi-system-sheets`)
+- [x] ✅ **T-046 — Composite template keys** (none) — edited default pages stay attached to the right system as more systems ship: default overrides and shipped-template lookups key by `systemId:viewId` with a template store migration, replacing the view-id prefix convention. (task for roadmap path `multi-system-sheets`)
+    - 2026-09-25: done in spec 012. Template store v5 keys default overrides `systemId:viewId` and re-keys v4 entries on load; template imports no longer shadow shipped pages.
 - [ ] ⬜ **T-047 — Star Wars docs in the V5 page format** (T-038) — Star Wars readers get the same page anatomy as the V5 docs (short summary first, guided creation steps with a running example and sheet embeds), if the format proves itself at the table. (task for roadmap path `core-book-docs`)
-- [ ] ⬜ **T-054 — Live template editing** (none) — template authors edit a template on the real page layout instead of an abstract tree: an optional preview of the finished sheet, blocks reordered in place, fields added and moved where they will appear. (task for roadmap path `gm-notes-templates`)
+- [x] ✅ **T-054 — Live template editing** (none) — template authors edit a template on the real page layout instead of an abstract tree: an optional preview of the finished sheet, blocks reordered in place, fields added and moved where they will appear. (task for roadmap path `gm-notes-templates`)
     - Column settings add real columns inside the editor and the width control resizes them, rather than only writing configuration.
     - Sections show their characteristic primary/secondary accent bars in the editor.
     - Mostly an interface rework over existing template capabilities; low priority.
+    - 2026-09-25: done in spec 012. Outline | live page | settings editor on the real renderer with sample data, drag and keyboard arrangement (layout-independent shortcuts), quick preview with example data, bounded undo/redo, and duplication; a keystroke on the full Star Wars sheet renders in about 40 ms in jsdom (was 650 ms before frame memoization).
 - [x] ✅ **T-055 — Visible StatDot clear control** (none) — the optional clear cross on StatDot is noticeable: semi-transparent red by default, more opaque on hover and keyboard focus.
     - 2026-09-23: done in spec 010; the control also gained the `aria-label` the accessibility floor requires (it previously carried only a `title`).
 - [ ] ⬜ **T-056 — Denser brief layouts** (none) — a brief sheet fits one phone screen or a quarter of a desktop screen: CompactRating labels shorten to three uppercase letters with minimal label-to-value spacing, and the other element kinds tighten the same way, so far more field groups fit without losing information or visible grouping.
@@ -109,6 +112,37 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [ ] ⬜ **T-058 — System/custom template field parity** (none) — system-defined fields offer exactly the same settings as custom template fields (for example a maximum on an attribute such as Strength) and are indistinguishable in the editor UI.
     - Includes writing the parity rule into the constitution as an amendment (Sync Impact Report, version bump, mirrored into `AGENTS.md` and the sheet skills).
 - [ ] ⬜ **T-059 — Embedded documentation briefs in sheets** (T-051) — sheet hints show the chosen documentation fragment in place instead of only linking out to it, reusing the brief-embed mechanism and its on-demand loading budget. (task for roadmap path `core-book-docs`)
+- [ ] ⬜ **T-068 — Template editor guide with in-editor help** (none) — template authors understand every editor setting: a template editor section under `docs/` explains the elements and settings, and the editor links to the matching fragment through the existing documentation-link mechanism. (task for roadmap path `gm-notes-templates`)
+    - Settings that need it first: the documentation link (what it accepts and in which format) and the shared value key.
+    - The documentation link field also accepts external `https://` resources, not only in-app paths.
+- [ ] ⬜ **T-069 — Element storybook** (none) — contributors review every template element variant, documentation widget, and app color on one draft-only docs structure (`draft: true`, hidden in production like `docs/TODO.md`), so a change to an element is checked in one place. (task for roadmap path `gm-notes-templates`)
+    - Shipped templates that together show every variation of every template element (field types and their options, sections, groups, tables, trackers, ratings, and so on).
+    - Documentation widgets (for example DataCatalog and the Star Wars object size comparison).
+    - The full app palette, following the `DevPalette` reference on branch `v5-hunter-patron-gift-dev-palette` (commit 9d221af).
+    - Constitution VI (v1.5.0) makes the storybook mandatory for new and changed elements.
+- [ ] ⬜ **T-070 — Retarget a template's type and setting** (none) — template authors move an existing template to another document type or setting instead of recreating it; values bound to coordinates the new target lacks are reported, not silently dropped. Matters most for user types and settings.
+- [ ] ⬜ **T-071 — Separate type and setting manager** (T-070) — users manage their settings and document types (create for each other, rename, update, delete) in a tree like the editor outline, apart from template management, and see at a glance which setting owns each type. (task for roadmap path `gm-notes-templates`)
+    - Creating a setting or type no longer creates a default template for it.
+    - Settings and their types import and export as JSON files like templates; in the tree, users pick which branches (a setting, some of its types, their pages) go into an export or are taken from an import. Extends the spec 012 type file (`ttgamer-document-type` v1), which carries one type.
+    - 2026-09-25: the spec 012 review fixed the library labeling setting-owned types with the ruleset name instead of the setting's name.
+- [ ] ⬜ **T-072 — Template element fixes: toggle, choice, resource** (none) — template fields behave and look like the sheet's own controls. (task for roadmap path `gm-notes-templates`)
+    - 2026-09-25: done in the spec 012 review — typed numbers honor the minimum, maximum, and step (bounded on blur or Enter).
+    - Toggle: a StatDot-style dot (transparent when off, filled when on) instead of a browser checkbox.
+    - Multiple choice: an option to hide unselected options.
+    - Resource: balanced sizes of the fixed glyphs and the inputs.
+- [ ] ⬜ **T-073 — Rating element parity with trait rows** (T-058) — a template rating looks and works like the attribute and skill rows. (task for roadmap path `gm-notes-templates`)
+    - 2026-09-25: done in the spec 012 review — one dot per point (1..max); the minimum is a floor, not a dot.
+    - Optional current/maximum numbers on the right, off by default; optional label on the left like attributes; optional text input (for example a specialization) between the label and the dots.
+    - The "cells" style must differ from dots in function or be removed; today it is only paler dots.
+    - Both styles take a die symbol so the rating rolls, with its label in the roll details; the dot style also takes a specialization (SPE).
+- [ ] ⬜ **T-074 — User-created catalogs** (none) — template authors create their own catalogs for choice fields instead of only binding shipped ones. (task for roadmap path `gm-notes-templates`)
+- [ ] ⬜ **T-075 — Document reference to any kind** (none) — a document reference field targets any document type available to the template's setting, shipped or user-defined. (task for roadmap path `gm-notes-templates`)
+- [ ] ⬜ **T-076 — Derived value test coverage** (none) — formula-driven derived values are covered by behavior tests: parsing, references, errors, recomputation on change, and display in the editor and on the sheet.
+- [ ] ⬜ **T-077 — Custom list item template** (none) — a custom list's items are one configurable element of an existing field type, set up with the usual field settings; every field type places its remove control so it shows and works inside a list. (task for roadmap path `gm-notes-templates`)
+- [ ] ⬜ **T-078 — Configurable trackers** (none) — template authors build custom trackers beyond health and damage, enough to rebuild the Star Wars fodder-group health tracker from the template element alone. (task for roadmap path `gm-notes-templates`)
+    - The compact switch and the tracker view overlap; merge them into one setting.
+    - The penalty column is editable: its title (for example penalties → bonuses), per-level values, and an option to hide it.
+    - The third column's title is editable; authors add further text or value columns, each with its own level count, optionally duplicable by the sheet's user.
 
 ### Localization
 

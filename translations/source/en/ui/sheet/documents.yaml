@@ -17,6 +17,9 @@ toolbar:
     importSuccess: Imported "{title}"
     importError: Failed to import "{filename}"
 conflict:
+    typeTitle: This document type is already installed
+    typePrompt: The file carries a different version of an installed document type. Replace the installed type, keep both (the imported one gets a new identity), or cancel.
+    typeInstalled: '"{name}" is already installed.'
     title: Document already exists
     prompt: Replace it, import a duplicate with a new ID, or cancel this file.
     duplicate: Duplicate
@@ -36,6 +39,14 @@ manager:
         message: Are you sure you want to delete {count} document? This cannot be undone.|Are you sure you want to delete {count} documents? This cannot be undone.
         plural: true
     close: Close
+examples:
+    jaxVorn: Jax Vorn (example)
+    wampa: Wampa (example)
+    stormtroopers: Stormtrooper squad (example)
+    redFive: Red Five (example)
+    landspeeder: Luke's landspeeder (example)
+    falcon: Millennium Falcon (example)
+    lenaVarga: Lena Varga (example)
 create:
     title: Create document
     prompt: Choose the game system and document format to create.
@@ -49,7 +60,9 @@ types:
     creature: Creature
     vehicle: Vehicle
     fodderGroup: Fodder group
+    unknown: Unknown type
 views:
+    storedValues: Stored values
     label: View mode
     fullSheet: Full sheet
     brief: Brief

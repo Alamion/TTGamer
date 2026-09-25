@@ -5,28 +5,17 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { isPresetId } from '../data/presets';
 import { describeError, reportSheetIssue } from '../diagnostics';
+import {
+    applyTemplateValueWrites,
+    collectTableBlocks,
+} from '../features/sheet/data/templateValueWrites';
 import { deletePortrait } from '../persistence/portraitStorage';
 import { systemRegistry } from '../systems';
 import { characterDocumentFromBase } from '../systems/star-wars-wod/characterDocument';
 import type { DocumentMetadata, UnknownDocumentEnvelope } from '../types/document';
 import { DocumentMetadataSchema } from '../types/document';
-import {
-    collectTemplateFields,
-    type CustomTemplate,
-    fieldValueKey,
-    type TableNode,
-    tableValueKey,
-    type TemplateField,
-    walkTemplateNodes,
-} from '../types/template';
-import {
-    TEMPLATE_VALUES_LIMITS,
-    type TemplateFieldValue,
-    type TemplatePageValues,
-    type TemplateTableRows,
-    TemplateTableRowSchema,
-    validateTemplateValue,
-} from '../types/templateValues';
+import { collectTemplateFields, type CustomTemplate, fieldValueKey } from '../types/template';
+import type { TemplatePageValues } from '../types/templateValues';
 import { useTemplateStore } from './templateStore';
 
 /** Version 4: a re-parse that rewrites renamed system ids (`v5` → `wod-v5`). */
@@ -51,7 +40,7 @@ function flattenLegacyTemplateValues(
         const template = useTemplateStore.getState().getTemplate(templateId);
         const fieldDefs = template ? collectTemplateFields(template) : undefined;
         const declared = fieldDefs
-            ? new Set([...fieldDefs.keys(), ...getTableBlocks(template!).keys()])
+            ? new Set([...fieldDefs.keys(), ...collectTableBlocks(template!).keys()])
             : undefined;
         const isNestedPage =
             template !== undefined &&
@@ -77,7 +66,12 @@ export interface DocumentStoreState {
     currentDocumentId: string | null;
     recoveryEntries: unknown[];
     setCurrentDocument: (id: string | null) => void;
-    createDocument: (systemId: string, definitionId: string) => UnknownDocumentEnvelope;
+    /** `settingId` / `templateId`: a document created in a user setting, on its page (spec 012). */
+    createDocument: (
+        systemId: string,
+        definitionId: string,
+        options?: { settingId?: string; templateId?: string }
+    ) => UnknownDocumentEnvelope;
     updateDocumentData: (id: string, updater: (data: unknown) => unknown) => void;
     updateDocumentMetadata: (id: string, updates: Partial<DocumentMetadata>) => void;
     /** Writes the document-global value bag, validated against the rendered template. */
@@ -100,98 +94,6 @@ interface PersistedDocumentState {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
-
-function getTableBlocks(template: CustomTemplate) {
-    const blocks = new Map<string, TableNode>();
-    walkTemplateNodes(template.children, (node) => {
-        if (node.type === 'table') blocks.set(node.id, node);
-    });
-    return blocks;
-}
-
-type PageValidationResult =
-    | { ok: true; page: TemplatePageValues }
-    | { ok: false; key: string; reason: string };
-
-/**
- * Strict write path: changed entries whose storage key (valueKey) matches a template field or
- * table are validated against the template's own definitions. Unchanged entries pass through,
- * so a value stored before a template edit never blocks writes to other keys; orphaned entries
- * (keys the template no longer declares) pass through untouched so template edits never
- * destroy character data (spec FR-12).
- */
-function validateTemplatePageValues(
-    template: CustomTemplate,
-    page: TemplatePageValues,
-    previous: TemplatePageValues
-): PageValidationResult {
-    const fieldDefs = new Map<string, TemplateField>();
-    for (const field of collectTemplateFields(template).values()) {
-        fieldDefs.set(fieldValueKey(field), field);
-    }
-    const tableBlocks = new Map<string, TableNode>();
-    for (const block of getTableBlocks(template).values()) {
-        tableBlocks.set(tableValueKey(block), block);
-    }
-    const validated: TemplatePageValues = {};
-
-    for (const [key, value] of Object.entries(page)) {
-        // `undefined` means "clear this entry" — the key is dropped from the sparse bag.
-        if (value === undefined) continue;
-        if (value === previous[key]) {
-            validated[key] = value;
-            continue;
-        }
-
-        const field = fieldDefs.get(key);
-        if (field) {
-            const result = validateTemplateValue(field, value);
-            if (!result.ok) return { ok: false, key, reason: result.reason };
-            validated[key] = result.value;
-            continue;
-        }
-
-        const block = tableBlocks.get(key);
-        if (block) {
-            if (!isRecord(value)) return { ok: false, key, reason: 'table-not-object' };
-            if (Object.keys(value).length > block.maxRows) {
-                return { ok: false, key, reason: 'table-max-rows' };
-            }
-            const columns = new Map(block.columns.map((column) => [column.id, column]));
-            const rows: TemplateTableRows = {};
-            for (const [rowIndex, row] of Object.entries(value)) {
-                const rowKey = `${key}[${rowIndex}]`;
-                if (!isRecord(row)) return { ok: false, key: rowKey, reason: 'row-not-object' };
-                const cells: Record<string, TemplateFieldValue> = {};
-                for (const [columnId, cell] of Object.entries(row)) {
-                    if (cell === undefined) continue;
-                    const column = columns.get(columnId);
-                    const cellKey = `${rowKey}.${columnId}`;
-                    if (!column) return { ok: false, key: cellKey, reason: 'unknown-column' };
-                    const result = validateTemplateValue(column, cell);
-                    if (!result.ok) return { ok: false, key: cellKey, reason: result.reason };
-                    cells[columnId] = result.value;
-                }
-                if (Object.keys(cells).length === 0 && Object.keys(row).length === 0) {
-                    rows[rowIndex] = {};
-                    continue;
-                }
-                const parsedRow = TemplateTableRowSchema.safeParse(cells);
-                if (!parsedRow.success) return { ok: false, key: rowKey, reason: 'row-schema' };
-                rows[rowIndex] = parsedRow.data;
-            }
-            validated[key] = rows;
-            continue;
-        }
-
-        validated[key] = value;
-    }
-
-    if (Object.keys(validated).length > TEMPLATE_VALUES_LIMITS.entriesPerTemplate) {
-        return { ok: false, key: '<bag>', reason: 'entry-limit' };
-    }
-    return { ok: true, page: validated };
 }
 
 function getPortraitId(document: UnknownDocumentEnvelope | undefined) {
@@ -288,7 +190,7 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
         set({ currentDocumentId: id });
     },
 
-    createDocument: (systemId, definitionId) => {
+    createDocument: (systemId, definitionId, options = {}) => {
         const definition = systemRegistry.getDocumentDefinition(systemId, definitionId);
         const system = systemRegistry.getSystem(systemId);
         if (!definition || !system) {
@@ -304,6 +206,8 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
                 title: '',
                 tags: [],
                 preferredViewId: definition.defaultViewId,
+                ...(options.settingId ? { settingId: options.settingId } : {}),
+                ...(options.templateId ? { templateId: options.templateId } : {}),
             },
             templateValues: {},
             data: definition.schema.parse(definition.createDefault()),
@@ -368,30 +272,21 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
         // Values are stored document-globally keyed by valueKey (clarification D1):
         // fields across templates sharing a valueKey write the same coordinate.
         const previousPage = (current.templateValues ?? {}) as TemplatePageValues;
-        const updaterPage = updater(previousPage);
-        const validation = validateTemplatePageValues(template, updaterPage, previousPage);
-        if (!validation.ok) {
+        const result = applyTemplateValueWrites(template, previousPage, updater(previousPage));
+        if (!result.ok) {
             reportSheetIssue({
                 code: 'template-value-write-rejected',
                 message: 'Template value failed validation; the write was discarded',
                 details: {
                     documentId: id,
                     templateId: template.id,
-                    key: validation.key,
-                    reason: validation.reason,
+                    key: result.key,
+                    reason: result.reason,
                 },
             });
             return;
         }
-        // Keys the updater dropped (undefined) must also vanish from the stored bag,
-        // so a plain spread would resurrect cleared values.
-        const merged: TemplatePageValues = { ...previousPage };
-        for (const key of Object.keys(previousPage)) {
-            if (updaterPage[key] === undefined) delete merged[key];
-        }
-        for (const [key, value] of Object.entries(validation.page)) {
-            merged[key] = value as TemplatePageValues[string];
-        }
+        const merged = result.values;
         set(({ documents }) => ({
             documents: documents.map((document) =>
                 document.id === id

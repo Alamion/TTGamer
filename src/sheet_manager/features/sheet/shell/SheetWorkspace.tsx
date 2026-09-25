@@ -14,6 +14,7 @@ import {
     TemplateLibraryDialog,
 } from '../../../components';
 import { useDocumentStore } from '../../../store/documentStore';
+import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
 import {
     resolveCustomTemplate,
@@ -21,12 +22,19 @@ import {
     resolveDocumentView,
     systemRegistry,
 } from '../../../systems';
+import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
 import type { UnknownDocumentEnvelope } from '../../../types/document';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
-import { exportFileName, parseImportedDocument, serializeDocumentExport } from './documentFile';
+import {
+    exportFileName,
+    parseImportedDocument,
+    readEmbeddedType,
+    serializeDocumentExport,
+} from './documentFile';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
+import { installTypePayload, rewriteTypeIdentity, typeInstallState } from './typeFile';
 import { templateSelectValue, ViewModeSelect } from './ViewModeSelect';
 
 interface SheetWorkspaceProps {
@@ -43,6 +51,9 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
         updateDocumentMetadata,
     } = useDocumentStore();
     const { templates } = useTemplateStore();
+    // The registry lists installed user types; subscribing re-renders when they change.
+    useDocumentTypeStore((state) => state.types);
+    const settings = useDocumentTypeStore((state) => state.settings);
     const currentDocument = documents.find(({ id }) => id === currentDocumentId) ?? null;
     useShownDocumentPublisher(currentDocument);
     const currentDefinition = currentDocument
@@ -56,7 +67,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
         : undefined;
     const activeTemplate = currentDocument
         ? resolveCustomTemplate(
-              currentDocument.metadata.templateId,
+              assignedTemplateId(currentDocument, settings),
               templates,
               currentDocument.kind,
               currentDocument.systemId
@@ -69,7 +80,8 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
               .filter(
                   (template) =>
                       template.documentKind === currentDocument.kind &&
-                      template.systemId === currentDocument.systemId
+                      template.systemId === currentDocument.systemId &&
+                      templateMatchesSetting(template, currentDocument)
               )
               .map((template) => ({ id: template.id, name: template.name }))
         : [];
@@ -78,7 +90,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
     const [managerDialogOpen, setManagerDialogOpen] = useState(false);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [templatesDialogOpen, setTemplatesDialogOpen] = useState(false);
-    const [importConflict, setImportConflict] = useState<UnknownDocumentEnvelope | null>(null);
+    const [importConflict, setImportConflict] = useState<'document' | 'type' | null>(null);
     const conflictResolverRef = useRef<
         ((resolution: 'replace' | 'duplicate' | 'cancel') => void) | null
     >(null);
@@ -124,10 +136,10 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
         setResetDialogOpen(false);
     };
 
-    const requestConflictResolution = (document: UnknownDocumentEnvelope) =>
+    const requestConflictResolution = (subject: 'document' | 'type') =>
         new Promise<'replace' | 'duplicate' | 'cancel'>((resolve) => {
             conflictResolverRef.current = resolve;
-            setImportConflict(document);
+            setImportConflict(subject);
         });
 
     const resolveConflict = (resolution: 'replace' | 'duplicate' | 'cancel') => {
@@ -146,9 +158,33 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
             let raw: unknown;
             try {
                 raw = JSON.parse(await file.text());
+                // Validate everything before any change: the document, then the type it carries.
+                const embedded = readEmbeddedType(raw);
+                if (embedded && !embedded.ok) {
+                    throw new Error(`Embedded document type: ${embedded.error}`);
+                }
                 let imported = parseImportedDocument(raw);
+                // A document of a user type carries its type; install it first (spec 012).
+                if (embedded?.ok) {
+                    let payload = embedded.payload;
+                    const state = typeInstallState(payload);
+                    if (state === 'conflict') {
+                        const resolution = await requestConflictResolution('type');
+                        if (resolution === 'cancel') continue;
+                        if (resolution === 'duplicate') payload = rewriteTypeIdentity(payload);
+                    }
+                    if (state !== 'same') installTypePayload(payload);
+                    if (imported.definitionId !== payload.type.id) {
+                        imported = {
+                            ...imported,
+                            kind: payload.type.id as UnknownDocumentEnvelope['kind'],
+                            definitionId: payload.type
+                                .id as UnknownDocumentEnvelope['definitionId'],
+                        };
+                    }
+                }
                 if (documents.some(({ id }) => id === imported.id)) {
-                    const resolution = await requestConflictResolution(imported);
+                    const resolution = await requestConflictResolution('document');
                     if (resolution === 'cancel') continue;
                     if (resolution === 'duplicate') imported = { ...imported, id: generateId() };
                 }
@@ -233,7 +269,11 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                 open={templatesDialogOpen}
                 onOpenChange={setTemplatesDialogOpen}
             />
-            <ImportConflictDialog open={importConflict !== null} onResolve={resolveConflict} />
+            <ImportConflictDialog
+                open={importConflict !== null}
+                subject={importConflict ?? 'document'}
+                onResolve={resolveConflict}
+            />
 
             {currentDocument && children}
             {/* Outside the template tree: no page template, shipped or custom, can remove it. */}

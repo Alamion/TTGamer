@@ -1,0 +1,49 @@
+system: World of Darkness 2nd Edition
+views:
+    sheet: Full sheet
+    brief: Brief
+identity:
+    chronicle: Chronicle
+traits:
+    strength: Strength
+    dexterity: Dexterity
+    stamina: Stamina
+    charisma: Charisma
+    manipulation: Manipulation
+    appearance: Appearance
+    perception: Perception
+    intelligence: Intelligence
+    wits: Wits
+    alertness: Alertness
+    athletics: Athletics
+    brawl: Brawl
+    dodge: Dodge
+    empathy: Empathy
+    expression: Expression
+    intimidation: Intimidation
+    leadership: Leadership
+    streetwise: Streetwise
+    subterfuge: Subterfuge
+    animalKen: Animal Ken
+    crafts: Crafts
+    drive: Drive
+    etiquette: Etiquette
+    firearms: Firearms
+    melee: Melee
+    performance: Performance
+    security: Security
+    stealth: Stealth
+    survival: Survival
+    academics: Academics
+    computer: Computer
+    finance: Finance
+    investigation: Investigation
+    law: Law
+    linguistics: Linguistics
+    medicine: Medicine
+    occult: Occult
+    politics: Politics
+    science: Science
+    conscience: Conscience
+    selfControl: Self-Control
+    courage: Courage

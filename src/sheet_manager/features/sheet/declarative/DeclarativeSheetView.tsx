@@ -3,7 +3,14 @@ import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
-import { createElement, type CSSProperties, useMemo } from 'react';
+import {
+    createElement,
+    type CSSProperties,
+    memo,
+    type ReactNode,
+    useContext,
+    useMemo,
+} from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
@@ -26,6 +33,11 @@ import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import { useBoundDocument } from './boundDocument';
 import { useCatalogSuggestions } from './catalogSuggestions';
+import {
+    OverlayVersionContext,
+    type TemplateEditorOverlay,
+    useTemplateEditorOverlay,
+} from './editorOverlay';
 import type { FormulaEvaluationError } from './formula';
 import { useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { localizeTemplate } from './localizeTemplate';
@@ -400,17 +412,24 @@ function ListView({
     );
 }
 
-function NodeView({
+const NodeView = memo(function NodeView({
     node,
     pageApi,
     accentColor,
+    showHidden = false,
 }: {
     node: TemplateNode;
     pageApi: UseTemplatePageResult;
     accentColor: 'primary' | 'secondary';
+    /** The template editor renders condition-hidden nodes (marked by its frame). */
+    showHidden?: boolean;
 }) {
     const template = pageApi.template!;
-    if (node.visibleWhen && !pageApi.isVisible(node.visibleWhen, node.id)) return null;
+    // The editor keeps its own collapse state so editing never folds the real page.
+    const collapseKey = `${showHidden ? 'editor-' : ''}template-${template.id}-${node.id}`;
+    if (!showHidden && node.visibleWhen && !pageApi.isVisible(node.visibleWhen, node.id)) {
+        return null;
+    }
 
     if (node.type === 'section') {
         // Presentation (US3): a section is a collapsible block without a background box;
@@ -418,12 +437,13 @@ function NodeView({
         return (
             <CollapsibleBlock
                 title={node.title}
-                storageKey={`template-${template.id}-${node.id}`}
+                storageKey={collapseKey}
                 docsPath={node.docsPath}
                 accentColor={accentColor}
                 defaultExpanded={!node.defaultCollapsed}
             >
                 <ChildrenGrid
+                    parentId={node.id}
                     nodes={node.children}
                     pageApi={pageApi}
                     columns={node.columns}
@@ -440,14 +460,11 @@ function NodeView({
             <SectionCard
                 title={node.hideTitle ? undefined : node.title}
                 docsPath={node.hideTitle ? undefined : node.docsPath}
-                storageKey={
-                    node.collapsible && !node.hideTitle
-                        ? `template-${template.id}-${node.id}`
-                        : undefined
-                }
+                storageKey={node.collapsible && !node.hideTitle ? collapseKey : undefined}
                 defaultExpanded={!(node.collapsible && node.defaultCollapsed)}
             >
                 <ChildrenGrid
+                    parentId={node.id}
                     nodes={node.children}
                     pageApi={pageApi}
                     columns={node.columns}
@@ -483,30 +500,68 @@ function NodeView({
             value={coerceStoredValue(node, pageApi.values[fieldValueKey(node)])}
         />
     );
+});
+
+function framedNode(
+    overlay: TemplateEditorOverlay,
+    pageApi: UseTemplatePageResult,
+    version: unknown,
+    node: TemplateNode,
+    parentId: string | null,
+    index: number,
+    column: number | null,
+    content: ReactNode
+): ReactNode {
+    const conditionHidden =
+        node.visibleWhen !== undefined && !pageApi.isVisible(node.visibleWhen, node.id);
+    return (
+        <div key={node.id} className="min-w-0">
+            {overlay.renderFrame({
+                node,
+                parentId,
+                index,
+                column,
+                conditionHidden,
+                content,
+                version,
+            })}
+        </div>
+    );
 }
 
 function ChildrenGrid({
+    parentId = null,
     nodes,
     pageApi,
     columns,
     columnWidths,
 }: {
+    parentId?: string | null;
     nodes: readonly TemplateNode[];
     pageApi: UseTemplatePageResult;
     columns?: number;
     columnWidths?: readonly number[];
 }) {
-    if (nodes.length === 0) return null;
-    const renderNode = (node: TemplateNode, index: number) => (
-        <NodeView
-            key={node.id}
-            node={node}
-            pageApi={pageApi}
-            // Accent alternation is automatic (by sibling parity), never stored (FR-11).
-            accentColor={index % 2 === 0 ? 'primary' : 'secondary'}
-        />
-    );
-    const children = nodes.map(renderNode);
+    const overlay = useTemplateEditorOverlay();
+    const version = useContext(OverlayVersionContext);
+    if (nodes.length === 0 && !overlay) return null;
+    const renderNode = (node: TemplateNode, index: number, column: number | null = null) => {
+        const content = (
+            <NodeView
+                key={node.id}
+                node={node}
+                pageApi={pageApi}
+                // Accent alternation is automatic (by sibling parity), never stored (FR-11).
+                accentColor={index % 2 === 0 ? 'primary' : 'secondary'}
+                showHidden={overlay !== null}
+            />
+        );
+        return overlay
+            ? framedNode(overlay, pageApi, version, node, parentId, index, column, content)
+            : content;
+    };
+    const endSlot = overlay?.renderEndSlot({ parentId, index: nodes.length, column: null });
+    const children = [...nodes.map((node, index) => renderNode(node, index)), endSlot];
     // Proportional widths (e.g. 2:1) apply from the md breakpoint; narrow screens stack.
     const proportional =
         columns && columns > 1 && columnWidths?.length === columns
@@ -521,7 +576,10 @@ function ChildrenGrid({
               }
             : undefined;
     // Explicit placement: children stack inside their assigned column (unplaced → column 1).
-    if (columns && columns > 1 && nodes.some((node) => node.column !== undefined)) {
+    // An empty container in the editor stacks too, so each column offers a drop zone.
+    const stacked =
+        nodes.some((node) => node.column !== undefined) || (overlay !== null && nodes.length === 0);
+    if (columns && columns > 1 && stacked) {
         const stacks = Array.from({ length: columns }, (_, columnIndex) =>
             nodes
                 .map((node, index) => ({ node, index }))
@@ -535,15 +593,28 @@ function ChildrenGrid({
                 }
                 style={proportional?.style}
             >
-                {stacks.map((stack, columnIndex) => (
-                    <div
-                        key={columnIndex}
-                        className="grid grid-cols-1 content-start gap-4"
-                        data-column={columnIndex + 1}
-                    >
-                        {stack.map(({ node, index }) => renderNode(node, index))}
-                    </div>
-                ))}
+                {stacks.map((stack, columnIndex) => {
+                    const column = columnIndex + 1;
+                    const last = stack[stack.length - 1];
+                    const placement = {
+                        parentId,
+                        index: last ? last.index + 1 : nodes.length,
+                        column,
+                    };
+                    return (
+                        <div
+                            key={columnIndex}
+                            className="grid grid-cols-1 content-start gap-4"
+                            data-column={column}
+                        >
+                            {stack.map(({ node, index }) => renderNode(node, index, column))}
+                            {overlay &&
+                                (stack.length === 0
+                                    ? overlay.renderEmptyColumn(placement)
+                                    : overlay.renderEndSlot(placement))}
+                        </div>
+                    );
+                })}
             </div>
         );
     }
@@ -605,6 +676,18 @@ export function DeclarativeSheetView({
     // Translated display copy; ids and storage coordinates are identical to the source.
     const localized = useMemo(() => localizeTemplate(template, locale), [template, locale]);
     const pageApi = useTemplatePage(localized, { seedPresets: !embedded });
+    // Editor only: a version that ignores template-only changes (see OverlayFrameArgs.version).
+    const formulaSignature = useMemo(
+        () =>
+            JSON.stringify([
+                [...pageApi.formulaState.results],
+                [...pageApi.formulaState.maxima],
+                [...pageApi.formulaState.minima],
+            ]),
+        [pageApi.formulaState]
+    );
+    const values = pageApi.values;
+    const version = useMemo(() => ({ values, formulaSignature }), [values, formulaSignature]);
 
     return (
         <div
@@ -613,7 +696,9 @@ export function DeclarativeSheetView({
             }
         >
             <TermHintProvider>
-                <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                <OverlayVersionContext.Provider value={version}>
+                    <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                </OverlayVersionContext.Provider>
             </TermHintProvider>
         </div>
     );

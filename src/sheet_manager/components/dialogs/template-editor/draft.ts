@@ -11,6 +11,7 @@ import {
     type FormulaDependencyEntry,
     parseFormula,
 } from '../../../features/sheet/declarative/formula';
+import { resolveDataBindingByCoordinate } from '../../../systems/templateBindings';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import type {
     CustomTemplate,
@@ -271,6 +272,154 @@ export function moveNode(
     );
 }
 
+function idPrefixFor(node: TemplateNode): string {
+    switch (node.type) {
+        case 'section':
+            return 'sec';
+        case 'group':
+            return 'grp';
+        case 'table':
+            return 'blk';
+        case 'list':
+            return 'lst';
+        default:
+            return 'f';
+    }
+}
+
+/**
+ * A copy of a subtree with fresh identifiers for every node, table column, and select option.
+ * Custom values are not shared with the original: an explicit custom `valueKey` is dropped so
+ * the copy's coordinate becomes its new id — except a coordinate that addresses system data,
+ * which is kept so a copied trait row still shows the same trait.
+ */
+function cloneWithFreshIds(draft: EditorDraft, original: TemplateNode): TemplateNode {
+    const copy = structuredClone(original);
+    const keepBridgedCoordinate = (node: { id: string; valueKey?: string }) => {
+        const coordinate = node.valueKey ?? node.id;
+        if (resolveDataBindingByCoordinate(draft.systemId, draft.documentKind, coordinate)) {
+            node.valueKey = coordinate;
+        } else {
+            delete node.valueKey;
+        }
+    };
+    const renew = (node: TemplateNode) => {
+        if (isTemplateField(node) || node.type === 'table' || node.type === 'list') {
+            keepBridgedCoordinate(node as { id: string; valueKey?: string });
+        }
+        node.id = newId(idPrefixFor(node));
+        if (node.type === 'select') {
+            node.options = node.options.map((option) => ({ ...option, id: newId('opt') }));
+        }
+        if (node.type === 'table') {
+            node.columns = node.columns.map((column) => {
+                const renewed = { ...column, id: newId('f') };
+                delete renewed.valueKey;
+                return renewed;
+            });
+        }
+        if (isContainerNode(node)) node.children.forEach(renew);
+    };
+    renew(copy);
+
+    const labelled = copy as TermCarrier & { title?: string; label?: string };
+    const suffixed = (label: string) =>
+        translate(uiMessages.sheet.templates.editor.copySuffix, { label });
+    if (typeof labelled.title === 'string') labelled.title = suffixed(labelled.title);
+    else if (typeof labelled.label === 'string') labelled.label = suffixed(labelled.label);
+    keepTermOnRename(labelled);
+    return copy;
+}
+
+/** Inserts a copy of the node (fresh identities, see `cloneWithFreshIds`) right after it. */
+export function duplicateNode(
+    draft: EditorDraft,
+    nodeId: string
+): DraftOpResult & {
+    copyId?: string;
+} {
+    const location = locate(draft, nodeId);
+    if (!location) return fail('self-move');
+    const copy = cloneWithFreshIds(draft, location.parent![location.index]!);
+    const result = insertNode(draft, location.parentId, location.index + 1, copy);
+    return result.ok ? { ...result, copyId: copy.id } : result;
+}
+
+/** Where a node sits: its parent (null = page root) and its index among the siblings. */
+export function findNodePosition(
+    draft: EditorDraft,
+    nodeId: string
+): { parentId: string | null; index: number; siblings: readonly TemplateNode[] } | undefined {
+    const location = locate(draft, nodeId);
+    if (!location) return undefined;
+    return { parentId: location.parentId, index: location.index, siblings: location.parent! };
+}
+
+export function findNode(draft: EditorDraft, nodeId: string): TemplateNode | undefined {
+    const location = locate(draft, nodeId);
+    return location ? location.parent![location.index] : undefined;
+}
+
+/**
+ * A multi-column container whose children set no `column` flows them row by row. Before one
+ * child is placed in a column, every sibling gets the column it currently shows in, so placing
+ * one element never reshuffles the others (the renderer stacks all children once any is placed).
+ */
+export function materializeColumns(draft: EditorDraft, parentId: string | null): EditorDraft {
+    if (parentId === null) return draft;
+    const parent = findNode(draft, parentId);
+    if (!parent || !isContainerNode(parent)) return draft;
+    const columns = parent.columns ?? 1;
+    if (columns <= 1 || parent.children.some((child) => child.column !== undefined)) return draft;
+    const children = parent.children.map((child, index) => ({
+        ...child,
+        column: (index % columns) + 1,
+    }));
+    return replaceNode(draft, parentId, { ...parent, children } as TemplateNode);
+}
+
+export interface NodePlacement {
+    parentId: string | null;
+    /** Insertion index: the node lands before the sibling currently at this index. */
+    index: number;
+    /** The column to stack into, or `null` for flowing/single-column parents. */
+    column: number | null;
+}
+
+function withColumn(draft: EditorDraft, nodeId: string, column: number | null): EditorDraft {
+    return updateNode(draft, nodeId, { column: column ?? undefined });
+}
+
+/** Moves a node to a slot on the page or in the outline (one undo step, column included). */
+export function placeNode(
+    draft: EditorDraft,
+    nodeId: string,
+    placement: NodePlacement
+): DraftOpResult {
+    const prepared =
+        placement.column === null ? draft : materializeColumns(draft, placement.parentId);
+    const current = findNodePosition(prepared, nodeId);
+    if (!current) return fail('self-move');
+    const sameParent = current.parentId === placement.parentId;
+    const finalIndex =
+        sameParent && current.index < placement.index ? placement.index - 1 : placement.index;
+    const moved = moveNode(prepared, nodeId, placement.parentId, finalIndex);
+    if (!moved.ok) return moved;
+    return ok(withColumn(moved.draft, nodeId, placement.column));
+}
+
+/** Inserts a new node at a slot, in the slot's column. */
+export function insertAtPlacement(
+    draft: EditorDraft,
+    placement: NodePlacement,
+    node: TemplateNode
+): DraftOpResult {
+    const prepared =
+        placement.column === null ? draft : materializeColumns(draft, placement.parentId);
+    const placed = placement.column === null ? node : { ...node, column: placement.column };
+    return insertNode(prepared, placement.parentId, placement.index, placed);
+}
+
 /** Swaps a node for another (e.g. a field switching to a system resource); ids stay stable. */
 export function replaceNode(draft: EditorDraft, nodeId: string, next: TemplateNode): EditorDraft {
     return withChildren(
@@ -320,6 +469,15 @@ export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpda
         }
         for (const key of ['visibleWhen', 'defaultCollapsed'] as const) {
             if (key in updates && !updates[key]) delete (merged as Record<string, unknown>)[key];
+        }
+        // Fewer columns: children placed past the new last column move into it.
+        if ('columns' in updates && isContainerNode(merged)) {
+            const columns = merged.columns ?? 1;
+            merged.children = merged.children.map((child) =>
+                child.column !== undefined && child.column > columns
+                    ? { ...child, column: columns > 1 ? columns : undefined }
+                    : child
+            );
         }
         return merged;
     };
@@ -434,6 +592,8 @@ export function createDraftFromTemplate(
 
 export interface DraftIssue {
     message: string;
+    /** The element the issue belongs to, so the editor can mark and select it. */
+    nodeId?: string;
 }
 
 export interface DraftIssueMessages {
@@ -510,18 +670,24 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
                 }),
             });
         } else {
-            issues.push({ message: interpolate(messages.duplicateId, { id: issue.nodeId ?? '' }) });
+            issues.push({
+                message: interpolate(messages.duplicateId, { id: issue.nodeId ?? '' }),
+                nodeId: issue.nodeId,
+            });
         }
     }
 
     const seenEffectiveKeys = new Set<string>();
-    const checkEffectiveKey = (key: string) => {
+    const checkEffectiveKey = (key: string, nodeId: string) => {
         if (!isValidKey(key)) {
-            issues.push({ message: interpolate(messages.invalidKey, { id: key }) });
+            issues.push({ message: interpolate(messages.invalidKey, { id: key }), nodeId });
             return;
         }
-        if (seenEffectiveKeys.has(key)) {
-            issues.push({ message: interpolate(messages.duplicateId, { id: key }) });
+        // Two elements showing the same system datum (a copied trait row) are two views of
+        // one value, not a collision.
+        const bridged = resolveDataBindingByCoordinate(draft.systemId, draft.documentKind, key);
+        if (seenEffectiveKeys.has(key) && !bridged) {
+            issues.push({ message: interpolate(messages.duplicateId, { id: key }), nodeId });
         }
         seenEffectiveKeys.add(key);
     };
@@ -530,21 +696,20 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
     walkTemplateNodes(draft.children, (node) => {
         if (seenNodeIds.has(node.id)) return;
         seenNodeIds.add(node.id);
+        const issue = (message: string) => issues.push({ message, nodeId: node.id });
         if (node.type === 'section' || node.type === 'group') {
-            if (node.title.trim().length === 0) issues.push({ message: messages.emptyLabel });
+            if (node.title.trim().length === 0) issue(messages.emptyLabel);
         }
         if (node.type === 'table') {
-            checkEffectiveKey(node.valueKey ?? node.id);
-            if (node.minRows > node.maxRows) issues.push({ message: messages.invalidBounds });
+            checkEffectiveKey(node.valueKey ?? node.id, node.id);
+            if (node.minRows > node.maxRows) issue(messages.invalidBounds);
         }
         if (isTemplateField(node)) {
-            if (node.label.trim().length === 0) issues.push({ message: messages.emptyLabel });
-            checkEffectiveKey(node.valueKey ?? node.id);
+            if (node.label.trim().length === 0) issue(messages.emptyLabel);
+            checkEffectiveKey(node.valueKey ?? node.id, node.id);
             if (node.type === 'formula' && node.formula.trim().length > 0) {
                 if (!parseFormula(node.formula).ok) {
-                    issues.push({
-                        message: interpolate(messages.invalidFormula, { id: node.label }),
-                    });
+                    issue(interpolate(messages.invalidFormula, { id: node.label }));
                 }
             }
         }
@@ -552,33 +717,29 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
             const seenOptions = new Set<string>();
             for (const option of node.options) {
                 if (seenOptions.has(option.id)) {
-                    issues.push({ message: interpolate(messages.duplicateId, { id: option.id }) });
+                    issue(interpolate(messages.duplicateId, { id: option.id }));
                 }
                 seenOptions.add(option.id);
             }
         }
         if (node.type === 'number' || node.type === 'rating' || node.type === 'resource') {
             if (node.min !== undefined && node.max !== undefined && node.min > node.max) {
-                issues.push({ message: messages.invalidBounds });
+                issue(messages.invalidBounds);
             }
         }
         if (node.type === 'primitive' && node.minFrom && !parseFormula(node.minFrom).ok) {
-            issues.push({
-                message: interpolate(messages.invalidFormula, { id: node.label ?? node.id }),
-            });
+            issue(interpolate(messages.invalidFormula, { id: node.label ?? node.id }));
         }
         if (
             (node.type === 'rating' || node.type === 'number' || node.type === 'primitive') &&
             node.maxFrom
         ) {
             if (!parseFormula(node.maxFrom).ok) {
-                issues.push({
-                    message: interpolate(messages.invalidFormula, { id: node.label ?? node.id }),
-                });
+                issue(interpolate(messages.invalidFormula, { id: node.label ?? node.id }));
             }
         }
         if (node.type === 'list' && node.valueKey !== undefined) {
-            checkEffectiveKey(node.valueKey);
+            checkEffectiveKey(node.valueKey, node.id);
         }
     });
 
@@ -589,10 +750,14 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
     for (const cycle of detectDependencyCycles(dependencies)) {
         issues.push({
             message: interpolate(messages.circularDependency, { id: cycle.join(' → ') }),
+            nodeId: cycle[0],
         });
     }
     for (const issue of validateTemplateReferences(draft)) {
-        issues.push({ message: referenceIssueMessage(issue, messages) });
+        issues.push({
+            message: referenceIssueMessage(issue, messages),
+            nodeId: issue.nodeId,
+        });
     }
     return issues;
 }
@@ -671,7 +836,13 @@ export function changeFieldType(
     fieldId: string,
     type: TemplateField['type']
 ): EditorDraft {
-    return mapFieldItems(draft, fieldId, (field) => retypeField(field, type));
+    return mapFieldItems(draft, fieldId, (field) => {
+        const retyped = retypeField(field, type);
+        // A new reference points at documents of the template's own kind by default.
+        return retyped.type === 'reference' && field.type !== 'reference'
+            ? { ...retyped, targetKinds: [draft.documentKind] }
+            : retyped;
+    });
 }
 
 export function updateField(

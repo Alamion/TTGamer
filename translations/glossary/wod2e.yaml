@@ -1,0 +1,259 @@
+# Book-term glossary of the classic World of Darkness 2nd Edition engine (spec 012).
+# Russian forms follow the V5 glossary where the names coincide; the rest await the maintainer's
+# glossary review (T-061 style).
+
+- id: strength
+  en: Strength
+  ru: Сила
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.strength
+- id: dexterity
+  en: Dexterity
+  ru: Ловкость
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.dexterity
+- id: stamina
+  en: Stamina
+  ru: Выносливость
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.stamina
+- id: charisma
+  en: Charisma
+  ru: Обаяние
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.charisma
+- id: manipulation
+  en: Manipulation
+  ru: Манипуляция
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.manipulation
+- id: appearance
+  en: Appearance
+  ru: Внешность
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.appearance
+- id: perception
+  en: Perception
+  ru: Восприятие
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.perception
+- id: intelligence
+  en: Intelligence
+  ru: Интеллект
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.intelligence
+- id: wits
+  en: Wits
+  ru: Смекалка
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.wits
+- id: alertness
+  en: Alertness
+  ru: Бдительность
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.alertness
+- id: athletics
+  en: Athletics
+  ru: Атлетика
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.athletics
+- id: brawl
+  en: Brawl
+  ru: Драка
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.brawl
+- id: dodge
+  en: Dodge
+  ru: Уклонение
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.dodge
+- id: empathy
+  en: Empathy
+  ru: Эмпатия
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.empathy
+- id: expression
+  en: Expression
+  ru: Экспрессия
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.expression
+- id: intimidation
+  en: Intimidation
+  ru: Запугивание
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.intimidation
+- id: leadership
+  en: Leadership
+  ru: Лидерство
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.leadership
+- id: streetwise
+  en: Streetwise
+  ru: Знание улиц
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.streetwise
+- id: subterfuge
+  en: Subterfuge
+  ru: Обман
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.subterfuge
+- id: animal-ken
+  en: Animal Ken
+  ru: Обращение с животными
+  ruShort: Обр. с живот.
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.animalKen
+- id: crafts
+  en: Crafts
+  ru: Ремёсла
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.crafts
+- id: drive
+  en: Drive
+  ru: Вождение
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.drive
+- id: etiquette
+  en: Etiquette
+  ru: Этикет
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.etiquette
+- id: firearms
+  en: Firearms
+  ru: Стрельба
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.firearms
+- id: melee
+  en: Melee
+  ru: Холодное оружие
+  ruShort: Хол. оружие
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.melee
+- id: performance
+  en: Performance
+  ru: Исполнение
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.performance
+- id: security
+  en: Security
+  ru: Взлом
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.security
+- id: stealth
+  en: Stealth
+  ru: Скрытность
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.stealth
+- id: survival
+  en: Survival
+  ru: Выживание
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.survival
+- id: academics
+  en: Academics
+  ru: Гуманитарные науки
+  ruShort: Гум. науки
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.academics
+- id: computer
+  en: Computer
+  ru: Компьютеры
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.computer
+- id: finance
+  en: Finance
+  ru: Финансы
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.finance
+- id: investigation
+  en: Investigation
+  ru: Расследование
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.investigation
+- id: law
+  en: Law
+  ru: Право
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.law
+- id: linguistics
+  en: Linguistics
+  ru: Лингвистика
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.linguistics
+- id: medicine
+  en: Medicine
+  ru: Медицина
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.medicine
+- id: occult
+  en: Occult
+  ru: Оккультизм
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.occult
+- id: politics
+  en: Politics
+  ru: Политика
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.politics
+- id: science
+  en: Science
+  ru: Наука
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.science
+- id: conscience
+  en: Conscience
+  ru: Совесть
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.conscience
+- id: self-control
+  en: Self-Control
+  ru: Самоконтроль
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.selfControl
+- id: courage
+  en: Courage
+  ru: Мужество
+  note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
+  refs:
+      - ttgamer.ui.sheet.wod2e.traits.courage

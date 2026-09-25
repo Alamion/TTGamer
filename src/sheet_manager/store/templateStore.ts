@@ -13,23 +13,37 @@ import { CustomTemplateSchema } from '../types/template';
  * bounded quarantine — no migration while there is no permanent user base (spec FR-4/A5);
  * documents pointing at retired ids fall back to the built-in page via `resolveCustomTemplate`.
  * Version 4: a re-parse that rewrites renamed system ids (`v5` → `wod-v5`).
+ * Version 5 (spec 012, T-046): default overrides are keyed by `systemId:viewId`.
  */
-const STORE_VERSION = 4;
+const STORE_VERSION = 5;
 const MAX_QUARANTINE_ENTRIES = 100;
 
 export interface TemplateStoreState {
     templates: CustomTemplate[];
     quarantine: unknown[];
-    /** Saved user edits of default templates, keyed by the default template's identity (view id). */
+    /** Saved user edits of default templates, keyed by `overrideKey(systemId, viewId)`. */
     defaultOverrides: Record<string, CustomTemplate>;
     saveTemplate: (template: CustomTemplate) => void;
-    duplicateTemplate: (id: string, newId: string) => CustomTemplate | undefined;
+    /** Copies a user template, or the edited default `template` when given (its override). */
+    duplicateTemplate: (
+        id: string,
+        newId: string,
+        source?: CustomTemplate
+    ) => CustomTemplate | undefined;
     removeTemplate: (id: string) => void;
     getTemplate: (id: string) => CustomTemplate | undefined;
-    /** Explicit save of a default template edit (FR-9); marks the default as modified (FR-12). */
-    setDefaultOverride: (viewId: string, template: CustomTemplate) => void;
+    /**
+     * Explicit save of a default template edit (FR-9), keyed by the template's own system and id
+     * (the view id); marks the default as modified (FR-12).
+     */
+    setDefaultOverride: (template: CustomTemplate) => void;
     /** Reset (FR-10): deletes the override; the pristine original re-derives from the registry. */
-    clearDefaultOverride: (viewId: string) => void;
+    clearDefaultOverride: (systemId: string, viewId: string) => void;
+}
+
+/** One key per edited default page: view ids alone collide once several systems ship them. */
+export function overrideKey(systemId: string, viewId: string): string {
+    return `${systemId}:${viewId}`;
 }
 
 interface PersistedTemplateState {
@@ -58,7 +72,7 @@ function quarantineEntry(quarantine: unknown[], entry: unknown, error: unknown) 
     });
 }
 
-export function migrateTemplateStoreState(input: unknown): PersistedTemplateState {
+export function migrateTemplateStoreState(input: unknown, version = 0): PersistedTemplateState {
     if (!isRecord(input) || !Array.isArray(input.templates)) {
         return { templates: [], quarantine: [], defaultOverrides: {} };
     }
@@ -81,9 +95,12 @@ export function migrateTemplateStoreState(input: unknown): PersistedTemplateStat
     const defaultOverrides: Record<string, CustomTemplate> = {};
     const rawOverrides = input.defaultOverrides;
     if (isRecord(rawOverrides)) {
-        for (const [viewId, entry] of Object.entries(rawOverrides)) {
+        for (const [key, entry] of Object.entries(rawOverrides)) {
             try {
-                defaultOverrides[viewId] = CustomTemplateSchema.parse(entry);
+                const parsed = CustomTemplateSchema.parse(entry);
+                // v5: pre-v5 keys are bare view ids; the parsed template names its system.
+                const composite = version >= 5 ? key : overrideKey(parsed.systemId, key);
+                defaultOverrides[composite] = parsed;
             } catch (error) {
                 quarantineEntry(quarantine, entry, error);
             }
@@ -107,14 +124,10 @@ const stateCreator: StateCreator<TemplateStoreState, [], []> = (set, get) => ({
         }));
     },
 
-    duplicateTemplate: (id, newId) => {
-        const source = get().templates.find((template) => template.id === id);
-        const override = source ? undefined : get().defaultOverrides[id];
-        if (!source && !override) return undefined;
-        const copy = CustomTemplateSchema.parse({
-            ...(source ?? override),
-            id: newId,
-        });
+    duplicateTemplate: (id, newId, fallback) => {
+        const source = get().templates.find((template) => template.id === id) ?? fallback;
+        if (!source) return undefined;
+        const copy = CustomTemplateSchema.parse({ ...source, id: newId });
         set(({ templates }) => ({ templates: [...templates, copy] }));
         return copy;
     },
@@ -127,17 +140,20 @@ const stateCreator: StateCreator<TemplateStoreState, [], []> = (set, get) => ({
 
     getTemplate: (id) => get().templates.find((template) => template.id === id),
 
-    setDefaultOverride: (viewId, template) => {
+    setDefaultOverride: (template) => {
         const parsed = CustomTemplateSchema.parse(template);
         set(({ defaultOverrides }) => ({
-            defaultOverrides: { ...defaultOverrides, [viewId]: parsed },
+            defaultOverrides: {
+                ...defaultOverrides,
+                [overrideKey(parsed.systemId, parsed.id)]: parsed,
+            },
         }));
     },
 
-    clearDefaultOverride: (viewId) => {
+    clearDefaultOverride: (systemId, viewId) => {
         set(({ defaultOverrides }) => {
             const next = { ...defaultOverrides };
-            delete next[viewId];
+            delete next[overrideKey(systemId, viewId)];
             return { defaultOverrides: next };
         });
     },

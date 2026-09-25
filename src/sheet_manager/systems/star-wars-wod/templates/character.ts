@@ -1,25 +1,31 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import {
-    formula,
-    group,
-    list,
-    number,
-    primitive,
-    section as neutralSection,
-    text,
-} from '../../../templates/builders';
+import { formula, group, number, primitive } from '../../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import {
     type CustomTemplate,
     type GroupNode,
-    type PrimitiveNode,
     type SectionNode,
     TEMPLATE_SCHEMA_VERSION,
-    type TemplateField,
     type TemplateNode,
 } from '../../../types/template';
 import { dotsTrait as trait, traitCoordinate as kebab } from '../../wod-like/templateBuilders';
+import {
+    abilityGroups,
+    advantagesSection,
+    ATTRIBUTE_GROUPS,
+    attributesSection,
+    baseSection,
+    experienceGroup,
+    notesGroup,
+    resource,
+    skillsSection,
+    STANDARD_INITIATIVE,
+    systemList,
+    textFields,
+    virtuesGroup,
+    wodSection as section,
+} from '../../wod2e/ruleset/templateParts';
 import { DOCS } from './docs';
 
 /**
@@ -28,35 +34,6 @@ import { DOCS } from './docs';
  * render time; multi-column sections place their groups with `column`, so a column can stack
  * several groups. Accents are automatic (sibling parity) and never stored.
  */
-
-function section(
-    id: string,
-    title: string,
-    docsPath: string,
-    children: TemplateNode[],
-    columns?: number,
-    columnWidths?: number[]
-): SectionNode {
-    return neutralSection(id, title, docsPath, children, { columns, columnWidths });
-}
-
-function systemList(id: string, bindingKey: string, title: string) {
-    return list(id, { bindingKey }, title);
-}
-
-function resource(
-    id: string,
-    bindingKey: string,
-    label: string,
-    options: {
-        maxFrom?: string;
-        minFrom?: string;
-        compact?: boolean;
-        part?: 'current' | 'max';
-    } = {}
-): PrimitiveNode {
-    return primitive(id, bindingKey, { label, ...options });
-}
 
 /** Character sheets and droid sheets share one layout with droid-specific differences. */
 type SheetVariant = 'character' | 'droid';
@@ -68,78 +45,44 @@ const MINIMUMS = {
     darkSide: 'max(0, min(5 + conscience - passion, 10))',
 } as const;
 
-const ATTRIBUTE_GROUPS: ReadonlyArray<{ id: string; title: string; keys: string[] }> = [
-    { id: 'attributes-physical', title: 'Physical', keys: ['Strength', 'Dexterity', 'Stamina'] },
-    { id: 'attributes-social', title: 'Social', keys: ['Charisma', 'Manipulation', 'Appearance'] },
-    { id: 'attributes-mental', title: 'Mental', keys: ['Perception', 'Intelligence', 'Wits'] },
-];
-
-const ABILITY_GROUPS: ReadonlyArray<{
-    id: string;
-    title: string;
-    list: string;
-    bindingKey: string;
-    listTitle: string;
-    keys: string[];
-}> = [
-    {
-        id: 'abilities-talents',
-        title: 'Talents',
-        list: 'list-talents',
-        bindingKey: 'list:customTalents',
-        listTitle: 'Custom talents',
-        keys: [
-            'Alertness',
-            'Athletics',
-            'Brawl',
-            'Command',
-            'Diplomacy',
-            'Dodge',
-            'Empathy',
-            'Intimidation',
-            'Streetwise',
-            'Subterfuge',
-        ],
-    },
-    {
-        id: 'abilities-skills',
-        title: 'Skills',
-        list: 'list-skills',
-        bindingKey: 'list:customSkills',
-        listTitle: 'Custom skills',
-        keys: [
-            'Blaster',
-            'Gunnery',
-            'Melee',
-            'Pilot',
-            'Programming',
-            'Repair',
-            'Ride',
-            'Security',
-            'Stealth',
-            'Survival',
-        ],
-    },
-    {
-        id: 'abilities-knowledges',
-        title: 'Knowledges',
-        list: 'list-knowledges',
-        bindingKey: 'list:customKnowledges',
-        listTitle: 'Custom knowledges',
-        keys: [
-            'Astrogation',
-            'Bureaucracy',
-            'Cultures',
-            'Interfaces',
-            'Investigation',
-            'Languages',
-            'Medicine',
-            'Politics',
-            'Tech',
-            'Trade',
-        ],
-    },
-];
+const ABILITY_GROUPS = abilityGroups({
+    talents: [
+        'Alertness',
+        'Athletics',
+        'Brawl',
+        'Command',
+        'Diplomacy',
+        'Dodge',
+        'Empathy',
+        'Intimidation',
+        'Streetwise',
+        'Subterfuge',
+    ],
+    skills: [
+        'Blaster',
+        'Gunnery',
+        'Melee',
+        'Pilot',
+        'Programming',
+        'Repair',
+        'Ride',
+        'Security',
+        'Stealth',
+        'Survival',
+    ],
+    knowledges: [
+        'Astrogation',
+        'Bureaucracy',
+        'Cultures',
+        'Interfaces',
+        'Investigation',
+        'Languages',
+        'Medicine',
+        'Politics',
+        'Tech',
+        'Trade',
+    ],
+});
 
 const FORCE_SKILL_KEYS = ['Control', 'Dynamism', 'Rapport', 'Sense', 'Telekinesis'] as const;
 const VIRTUE_KEYS = ['Conscience', 'Passion', 'Self Control'] as const;
@@ -157,120 +100,12 @@ const IDENTITY_FIELDS: ReadonlyArray<[valueKey: string, label: string]> = [
     ['age', 'Age'],
 ];
 
-const APPEARANCE_FIELDS: ReadonlyArray<[valueKey: string, label: string]> = [
-    ['gender', 'Gender'],
-    ['height', 'Height'],
-    ['build', 'Build'],
-    ['hair', 'Hair'],
-    ['eyes', 'Eyes'],
-    ['features', 'Features'],
-];
-
-const PORTRAIT: TemplateField = {
-    id: 'portrait-image',
-    type: 'image',
-    label: 'Portrait',
-    valueKey: 'portrait',
-    compact: false,
-    required: false,
-};
-
-const textFields = (fields: ReadonlyArray<[string, string]>, compact = false) =>
-    fields.map(([key, label]) => text(`field-${key}`, label, key, { compact }));
-
-function baseSection(): SectionNode {
-    return section(
-        'base',
-        'Base',
-        DOCS.base,
-        [
-            group('base-portrait', 'Portrait', [{ ...PORTRAIT, hideLabel: true }], {
-                column: 1,
-                collapsible: true,
-            }),
-            group('identity-fields', 'Identity', textFields(IDENTITY_FIELDS), {
-                column: 2,
-                columns: 3,
-                hideTitle: true,
-            }),
-            group('base-appearance', 'Appearance', textFields(APPEARANCE_FIELDS), {
-                column: 2,
-                columns: 3,
-                collapsible: true,
-            }),
-            group(
-                'base-biography',
-                'Biography',
-                [
-                    text('field-biography', 'Biography', 'biography', {
-                        multiline: true,
-                        hideLabel: true,
-                        placeholder: 'Character biography...',
-                    }),
-                ],
-                { column: 2, collapsible: true }
-            ),
-        ],
-        2
-    );
-}
-
-function attributesSection(): SectionNode {
-    return section(
-        'attributes',
-        'Attributes',
-        DOCS.attributes,
-        ATTRIBUTE_GROUPS.map(({ id, title, keys }) =>
-            group(
-                id,
-                title,
-                keys.map((key) => trait(key))
-            )
-        ),
-        3
-    );
-}
-
-function skillsSection(variant: SheetVariant): SectionNode {
-    return section(
-        'skills',
-        'Skills',
-        DOCS.skills,
-        ABILITY_GROUPS.map(({ id, title, list, bindingKey, listTitle, keys }) =>
-            group(id, title, [
-                ...keys.map((key) => trait(key)),
-                systemList(list, bindingKey, listTitle),
-                // Droids may bank ability points they have not spread yet (per group).
-                ...(variant === 'droid'
-                    ? [
-                          number(
-                              `droid-free-${list.slice(5)}`,
-                              'Free points',
-                              `droid-free-${list.slice(5)}`
-                          ),
-                      ]
-                    : []),
-            ])
-        ),
-        3
-    );
-}
-
-function advantagesSection(): SectionNode {
-    return section(
-        'advantages',
-        'Advantages',
-        DOCS.meritsFlaws,
-        [
-            group('advantages-backgrounds', 'Backgrounds', [
-                systemList('list-backgrounds', 'list:backgrounds', 'Backgrounds'),
-            ]),
-            group('advantages-merits', 'Merits', [
-                systemList('list-merits', 'list:merits', 'Merits'),
-            ]),
-            group('advantages-flaws', 'Flaws', [systemList('list-flaws', 'list:flaws', 'Flaws')]),
-        ],
-        3
+function skills(variant: SheetVariant): SectionNode {
+    // Droids may bank ability points they have not spread yet (per group).
+    return skillsSection(ABILITY_GROUPS, DOCS.skills, (list) =>
+        variant === 'droid'
+            ? [number(`droid-free-${list.slice(5)}`, 'Free points', `droid-free-${list.slice(5)}`)]
+            : []
     );
 }
 
@@ -310,13 +145,7 @@ function resourcesGroup(variant: SheetVariant, column: number): GroupNode {
 }
 
 function forceSection(variant: SheetVariant): SectionNode {
-    const virtues = (column: number) =>
-        group(
-            'force-virtues',
-            'Virtues',
-            VIRTUE_KEYS.map((key) => trait(key)),
-            { column, docsPath: DOCS.virtues }
-        );
+    const virtues = (column: number) => virtuesGroup(VIRTUE_KEYS, column, DOCS.virtues);
     // Droids have no Force: virtues and Willpower only.
     if (variant === 'droid') {
         return section(
@@ -391,7 +220,7 @@ function bodySection(variant: SheetVariant): SectionNode {
 }
 
 const DERIVED = {
-    initiative: 'wits + alertness',
+    initiative: STANDARD_INITIATIVE,
     initiativeSaber: 'wits + alertness + control',
     movement: 'max(min(control, telekinesis), 1)',
 } as const;
@@ -408,23 +237,8 @@ function otherSection(variant: SheetVariant): SectionNode {
         ],
         { columns: 2, docsPath: DOCS.derived }
     );
-    const experience = group(
-        'experience',
-        'Experience',
-        [
-            number('field-experience-total', 'Total XP', 'experience-total'),
-            number('field-experience-spent', 'Spent', 'experience-spent'),
-            formula(
-                'derived-experience-available',
-                'Available',
-                'experience-total - experience-spent'
-            ),
-        ],
-        { docsPath: DOCS.experience }
-    );
-    const notes = group('notes', 'Notes', [
-        text('field-notes', 'Notes', 'notes', { multiline: true, hideLabel: true }),
-    ]);
+    const experience = experienceGroup(DOCS.experience);
+    const notes = notesGroup();
     // Derived stats depend on Force skills, which droids do not have.
     return variant === 'droid'
         ? section('other', 'Other', DOCS.experience, [experience, notes], 2)
@@ -439,10 +253,10 @@ function fullSheet(viewId: string, name: string, variant: SheetVariant): CustomT
         documentKind: DocumentKindSchema.parse('character'),
         schemaVersion: TEMPLATE_SCHEMA_VERSION,
         children: [
-            baseSection(),
-            attributesSection(),
-            skillsSection(variant),
-            advantagesSection(),
+            baseSection(DOCS.base, IDENTITY_FIELDS),
+            attributesSection(DOCS.attributes),
+            skills(variant),
+            advantagesSection(DOCS.meritsFlaws),
             forceSection(variant),
             bodySection(variant),
             otherSection(variant),

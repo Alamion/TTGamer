@@ -42,7 +42,27 @@ function resolveLabelMessage(reference: string, fallback: string, locale: string
     return translate({ id: reference, message: fallback });
 }
 
+/**
+ * Template nodes are immutable (edits rebuild only the changed path), so a node's localized copy
+ * is cached per locale: re-localizing an edited draft keeps every untouched node's identity and
+ * memoized node views skip them.
+ */
+const localizedNodes = new Map<string, WeakMap<TemplateNode, TemplateNode>>();
+
 function localizeNode(node: TemplateNode, locale: string): TemplateNode {
+    let cache = localizedNodes.get(locale);
+    if (!cache) {
+        cache = new WeakMap();
+        localizedNodes.set(locale, cache);
+    }
+    const cached = cache.get(node);
+    if (cached) return cached;
+    const localized = localizeUncached(node, locale);
+    cache.set(node, localized);
+    return localized;
+}
+
+function localizeUncached(node: TemplateNode, locale: string): TemplateNode {
     const reference = node.labelMessage;
     let next: TemplateNode = node;
     if (reference) {
@@ -76,7 +96,9 @@ function localizeNode(node: TemplateNode, locale: string): TemplateNode {
         };
     }
     if (next.type === 'section' || next.type === 'group') {
-        return { ...next, children: next.children.map((child) => localizeNode(child, locale)) };
+        const children = next.children.map((child) => localizeNode(child, locale));
+        const unchanged = children.every((child, index) => child === next.children[index]);
+        return unchanged && next === node ? node : { ...next, children };
     }
     if (next.type === 'table') {
         return {

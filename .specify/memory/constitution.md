@@ -1,7 +1,22 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.4.1 -> 1.4.2 (clarification: the Dark Pack policy covers World of
+Version change: 1.4.2 -> 1.5.0 (amendment: element storybook and template-editor parity
+  for new elements)
+
+Modified principles:
+  VI. Consistent, Accessible Experience — every template and documentation element, with its
+    variants, and every palette color appear in a draft-only docs storybook; elements a
+    setting needs are built as editor-configurable template elements, extending an existing
+    element in preference to adding a similar one
+
+Runtime guidance updated: AGENTS.md (§8 Module Boundaries), src/sheet_manager/AGENTS.md
+  (UI Rules), .agents/skills/sheet-templates/SKILL.md
+
+Deferred TODOs: T-069 builds the storybook; until it lands, new or changed elements record
+  their storybook entry in that task
+
+Previous: 1.4.1 -> 1.4.2 (clarification: the Dark Pack policy covers World of
   Darkness 5th Edition material only; a policy is declared only where it actually grants rights
   to the material, so classic World of Darkness engines and conversions built on them, such as
   the Star Wars WoD 2e hybrid, declare no Dark Pack notice)
@@ -206,9 +221,21 @@ same design language and accessibility floor. Rules:
   English-only and MUST NOT maintain Russian mirrors.
 - Feedback patterns (loading, empty, error, success) reuse the established components
   and phrasing; a module introducing a novel feedback pattern MUST justify it in review.
+- Element storybook: every distinct element used in templates (for example a StatDot
+  field or a section) or in documentation (for example DataCatalog or the Star Wars
+  object size comparison), with each of its variants, MUST appear in the draft-only
+  storybook under `docs/`, alongside every palette color the application uses. A new or
+  changed element is not done until the storybook shows it.
+- Template-editor parity for new elements: when a setting needs an element that does not
+  exist yet, it is built as a template element that user templates can configure in the
+  editor (and so it appears in the storybook), not as a setting-only component. Extending
+  an existing element with an option is preferred over adding a new element of similar
+  function.
 
 Rationale: consistency is what makes module handoffs feel like one application, and
 accessibility is non-negotiable because the audience includes assistive-technology users.
+One storybook makes element changes cheap to review, and building setting needs as
+configurable elements keeps shipped and user templates equally capable.
 
 ### VII. Performance as a Shared Budget
 
@@ -332,4 +359,4 @@ is perceived, the principles govern and this table clarifies application.
   guidance file for day-to-day development; it must remain consistent with this
   constitution and defer to it on conflict.
 
-**Version**: 1.4.2 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-25
+**Version**: 1.5.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-25

@@ -7,6 +7,7 @@ import type {
     DocumentKind,
     DocumentViewId,
     SystemId,
+    UnknownDocumentEnvelope,
 } from '../types/document';
 import type { CustomTemplate } from '../types/template';
 import type { DocumentCapabilities } from './capabilities';
@@ -47,6 +48,13 @@ export interface DocumentModule {
     policies?: readonly PolicyId[];
 }
 
+/** A shipped sample document (docs previews, the template editor's preview data). */
+export interface DocumentExample {
+    id: string;
+    label: DocumentViewLabel;
+    create: () => UnknownDocumentEnvelope;
+}
+
 export interface DocumentDefinition<TData = unknown> {
     id: DocumentDefinitionId;
     kind: DocumentKind;
@@ -61,6 +69,8 @@ export interface DocumentDefinition<TData = unknown> {
     derive?: (data: TData) => unknown;
     migrate?: (data: unknown, fromVersion: number) => unknown;
     module?: DocumentModule;
+    /** Sample documents of this definition, offered as template editor preview data. */
+    examples?: readonly DocumentExample[];
 }
 
 export interface SystemPlugin {
@@ -81,6 +91,11 @@ export interface SystemPlugin {
     templateBindings?: readonly DocumentBindingDescriptor[];
     /** Dice mechanics of the ruleset (constitution I); absent → stats show no dice button. */
     dice?: SystemDiceRules;
+    /**
+     * Engine-only definitions (no module, no setting material) a user setting may reuse with its
+     * own pages (spec 012).
+     */
+    coreDefinitions?: readonly DocumentDefinitionId[];
 }
 
 export interface TraitPoolFlags {

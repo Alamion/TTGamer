@@ -330,4 +330,133 @@ export const bookTerms: Readonly<Record<string, BookTerm>> = {
     'ttgamer.ui.sheet.v5Hunter.fields.redemption': {
         en: 'Redemption',
     },
+    'ttgamer.ui.sheet.wod2e.traits.academics': {
+        en: 'Academics',
+        ruShort: 'Гум. науки',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.alertness': {
+        en: 'Alertness',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.animalKen': {
+        en: 'Animal Ken',
+        ruShort: 'Обр. с живот.',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.appearance': {
+        en: 'Appearance',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.athletics': {
+        en: 'Athletics',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.brawl': {
+        en: 'Brawl',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.charisma': {
+        en: 'Charisma',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.computer': {
+        en: 'Computer',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.conscience': {
+        en: 'Conscience',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.courage': {
+        en: 'Courage',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.crafts': {
+        en: 'Crafts',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.dexterity': {
+        en: 'Dexterity',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.dodge': {
+        en: 'Dodge',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.drive': {
+        en: 'Drive',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.empathy': {
+        en: 'Empathy',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.etiquette': {
+        en: 'Etiquette',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.expression': {
+        en: 'Expression',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.finance': {
+        en: 'Finance',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.firearms': {
+        en: 'Firearms',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.intelligence': {
+        en: 'Intelligence',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.intimidation': {
+        en: 'Intimidation',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.investigation': {
+        en: 'Investigation',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.law': {
+        en: 'Law',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.leadership': {
+        en: 'Leadership',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.linguistics': {
+        en: 'Linguistics',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.manipulation': {
+        en: 'Manipulation',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.medicine': {
+        en: 'Medicine',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.melee': {
+        en: 'Melee',
+        ruShort: 'Хол. оружие',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.occult': {
+        en: 'Occult',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.perception': {
+        en: 'Perception',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.performance': {
+        en: 'Performance',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.politics': {
+        en: 'Politics',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.science': {
+        en: 'Science',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.security': {
+        en: 'Security',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.selfControl': {
+        en: 'Self-Control',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.stamina': {
+        en: 'Stamina',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.stealth': {
+        en: 'Stealth',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.streetwise': {
+        en: 'Streetwise',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.strength': {
+        en: 'Strength',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.subterfuge': {
+        en: 'Subterfuge',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.survival': {
+        en: 'Survival',
+    },
+    'ttgamer.ui.sheet.wod2e.traits.wits': {
+        en: 'Wits',
+    },
 };

@@ -1,5 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
+import { JAX_VORN_PRESET } from '../../data/presets';
 import type { BaseCharacter } from '../../types/character';
 import { BaseCharacterSchema } from '../../types/character';
 import {
@@ -11,8 +12,10 @@ import {
 import type { DocumentDefinition, DocumentViewLabel, SystemPlugin } from '../types';
 import { classicWodTraitPool } from '../wod-like/dicePool';
 import { starWarsCatalogs } from './catalogs';
+import { characterDocumentFromBase } from './characterDocument';
 import { starWarsWodDefaultTemplates } from './defaultTemplates';
 import { starWarsTemplateBindings } from './documentBindings';
+import { starWarsExampleDocument } from './examples';
 import {
     createDefaultCreatureData,
     createDefaultDroidData,
@@ -94,6 +97,21 @@ const CREATURE_BRIEF_VIEW = templateView('creature-brief', viewLabels.brief, ['b
 const VEHICLE_BRIEF_VIEW = templateView('vehicle-brief', viewLabels.brief, ['brief', 'npc-card']);
 const FODDER_BRIEF_VIEW = templateView('fodder-brief', viewLabels.brief, ['brief', 'npc-card']);
 
+const exampleLabels = uiMessages.sheet.documents.examples;
+
+/** A shipped example, built on demand (examples reference the definitions below). */
+function example(id: string, label: DocumentViewLabel) {
+    return {
+        id,
+        label,
+        create: () => {
+            const document = starWarsExampleDocument(id);
+            if (!document) throw new Error(`Unknown Star Wars example ${id}`);
+            return document;
+        },
+    };
+}
+
 export const starWarsCharacterDefinition: DocumentDefinition = {
     id: DocumentDefinitionIdSchema.parse('character'),
     kind: DocumentKindSchema.parse('character'),
@@ -104,6 +122,13 @@ export const starWarsCharacterDefinition: DocumentDefinition = {
     defaultViewId: CHARACTER_FULL_VIEW.id,
     views: [CHARACTER_FULL_VIEW, BRIEF_VIEW],
     capabilities: { character: characterCapability },
+    examples: [
+        {
+            id: JAX_VORN_PRESET.id,
+            label: exampleLabels.jaxVorn,
+            create: () => characterDocumentFromBase(JAX_VORN_PRESET),
+        },
+    ],
 };
 
 export const starWarsDroidDefinition: DocumentDefinition = {
@@ -127,6 +152,7 @@ export const starWarsCreatureDefinition: DocumentDefinition = {
     createDefault: createDefaultCreatureData,
     defaultViewId: CREATURE_FULL_VIEW.id,
     views: [CREATURE_FULL_VIEW, CREATURE_BRIEF_VIEW],
+    examples: [example('wampa::preset', exampleLabels.wampa)],
 };
 
 export const starWarsVehicleDefinition: DocumentDefinition = {
@@ -138,6 +164,11 @@ export const starWarsVehicleDefinition: DocumentDefinition = {
     createDefault: createDefaultVehicleData,
     defaultViewId: VEHICLE_FULL_VIEW.id,
     views: [VEHICLE_FULL_VIEW, VEHICLE_BRIEF_VIEW],
+    examples: [
+        example('red-five::preset', exampleLabels.redFive),
+        example('lukes-landspeeder::preset', exampleLabels.landspeeder),
+        example('millennium-falcon::preset', exampleLabels.falcon),
+    ],
 };
 
 export const starWarsFodderDefinition: DocumentDefinition = {
@@ -149,6 +180,7 @@ export const starWarsFodderDefinition: DocumentDefinition = {
     createDefault: createDefaultFodderData,
     defaultViewId: FODDER_VIEW.id,
     views: [FODDER_VIEW, FODDER_BRIEF_VIEW],
+    examples: [example('stormtrooper-squad::preset', exampleLabels.stormtroopers)],
 };
 
 export const starWarsWodSystem: SystemPlugin = {

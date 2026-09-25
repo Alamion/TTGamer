@@ -1,30 +1,66 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useState } from 'react';
 
 import { useDocumentStore } from '../../store/documentStore';
+import { useDocumentTypeStore } from '../../store/documentTypeStore';
 import { documentSettingLabel, systemRegistry } from '../../systems';
+import { isUserKind, type UserSetting } from '../../systems/userTypes';
 
 interface DocumentCreateDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
 
-const optionValue = (systemId: string, definitionId: string) => `${systemId}/${definitionId}`;
+type DefinitionEntry = ReturnType<typeof systemRegistry.listDefinitions>[number];
 
-/** Definitions grouped by setting (a system, or a module of a shared ruleset), in registry order. */
-function settingGroups() {
-    const groups: Array<{
-        key: string;
-        label: ReturnType<typeof documentSettingLabel>;
-        entries: Array<ReturnType<typeof systemRegistry.listDefinitions>[number]>;
-    }> = [];
-    for (const entry of systemRegistry.listDefinitions()) {
+/** `system/definition`, plus `/setting` for entries of a user setting. */
+const optionValue = (systemId: string, definitionId: string, settingId?: string) =>
+    settingId ? `${systemId}/${definitionId}/${settingId}` : `${systemId}/${definitionId}`;
+
+interface CreateGroup {
+    key: string;
+    /** A translated setting label, or a user setting's own name. */
+    label: string;
+    settingId?: string;
+    entries: DefinitionEntry[];
+}
+
+/**
+ * Shipped settings (a system, or a module of a shared ruleset) with their user types, in registry
+ * order; then each user setting with its ruleset's core definitions and its own types (spec 012).
+ */
+function createGroups(settings: Readonly<Record<string, UserSetting>>): CreateGroup[] {
+    const { types } = systemRegistry.getUserDocumentTypes();
+    const settingOf = (definitionId: string) => {
+        const owner = types[definitionId]?.owner;
+        return owner && 'settingId' in owner ? owner.settingId : undefined;
+    };
+    const groups: CreateGroup[] = [];
+    const all = systemRegistry.listDefinitions();
+    for (const entry of all) {
+        if (settingOf(entry.definition.id)) continue;
         const label = documentSettingLabel(entry.system, entry.definition);
         const key = `${entry.system.id}/${label.id}`;
         const group = groups.find((candidate) => candidate.key === key);
         if (group) group.entries.push(entry);
-        else groups.push({ key, label, entries: [entry] });
+        else groups.push({ key, label: translate(label), entries: [entry] });
+    }
+    for (const setting of Object.values(settings)) {
+        const system = systemRegistry.getSystem(setting.systemId);
+        if (!system) continue;
+        const core = all.filter(
+            ({ system: owner, definition }) =>
+                owner.id === system.id && (system.coreDefinitions ?? []).includes(definition.id)
+        );
+        const own = all.filter(({ definition }) => settingOf(definition.id) === setting.id);
+        groups.push({
+            key: setting.id,
+            label: setting.name,
+            settingId: setting.id,
+            entries: [...core, ...own],
+        });
     }
     return groups;
 }
@@ -32,7 +68,10 @@ function settingGroups() {
 /** Lists every registered document definition, grouped by setting. */
 export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialogProps) {
     const createDocument = useDocumentStore((state) => state.createDocument);
-    const groups = settingGroups();
+    // The registry lists installed user types; subscribing re-renders when they change.
+    const userTypes = useDocumentTypeStore((state) => state.types);
+    const settings = useDocumentTypeStore((state) => state.settings);
+    const groups = createGroups(settings);
     const first = systemRegistry.listDefinitions()[0];
     const [selected, setSelected] = useState(
         first ? optionValue(first.system.id, first.definition.id) : ''
@@ -41,9 +80,11 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
 
     const handleCreate = () => {
-        const [systemId, definitionId] = selected.split('/');
+        const [systemId, definitionId, settingId] = selected.split('/');
         if (!systemId || !definitionId) return;
-        createDocument(systemId, definitionId);
+        // A core definition in a user setting opens on the setting's own page, when it has one.
+        const templateId = settingId ? settings[settingId]?.pages[definitionId] : undefined;
+        createDocument(systemId, definitionId, { settingId, templateId });
         onOpenChange(false);
     };
 
@@ -62,10 +103,14 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
                         {groups.map((group) => (
                             <fieldset key={group.key} className="grid gap-2">
                                 <legend className="mb-1 text-xs font-semibold uppercase tracking-wider text-textSecondary">
-                                    {translate(group.label)}
+                                    {group.label}
                                 </legend>
                                 {group.entries.map(({ system, definition }) => {
-                                    const value = optionValue(system.id, definition.id);
+                                    const value = optionValue(
+                                        system.id,
+                                        definition.id,
+                                        group.settingId
+                                    );
                                     return (
                                         <label
                                             key={value}
@@ -78,8 +123,21 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
                                                 checked={selected === value}
                                                 onChange={() => setSelected(value)}
                                             />
-                                            <span className="text-sm font-medium text-textPrimary">
-                                                {translate(definition.label)}
+                                            <span className="grid gap-0.5">
+                                                <span className="text-sm font-medium text-textPrimary">
+                                                    {translate(definition.label)}
+                                                </span>
+                                                {isUserKind(definition.id) && (
+                                                    // Types may share a name; the description
+                                                    // tells them apart.
+                                                    <span className="text-xs text-textSecondary">
+                                                        {userTypes[definition.id]?.description ||
+                                                            translate(
+                                                                uiMessages.sheet.templates.library
+                                                                    .noDescription
+                                                            )}
+                                                    </span>
+                                                )}
                                             </span>
                                         </label>
                                     );

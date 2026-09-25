@@ -39,6 +39,7 @@ module.exports = {
                 textSecondary: `rgb(var(--text-secondary) / 1)`,
                 border: `rgb(var(--border) / 1)`,
                 borderMoreContrast: `rgb(var(--border-more-contrast) / 1)`,
+                editor: `rgb(var(--editor) / <alpha-value>)`,
 
                 jediBlue: `rgb(var(--sw-jedi-blue) / 1)`,
                 jediGreen: `rgb(var(--sw-jedi-green) / 1)`,

@@ -1,6 +1,6 @@
 # Feature Specification: Template Composition Usability
 
-> **Change record.** Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
+> **Change record.** The recursive panel editor it describes was replaced by the three-area visual editor of spec 012. Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
 
 **Feature Branch**: `006-template-composition-usability`
 

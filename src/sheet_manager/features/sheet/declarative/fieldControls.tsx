@@ -119,6 +119,96 @@ function TextFieldControlRender({
     );
 }
 
+/** Clamps to the bounds and snaps to the step grid anchored at the minimum (or zero). */
+export function boundNumber(
+    value: number,
+    { min, max, step }: { min?: number; max?: number; step?: number }
+): number {
+    let next = value;
+    if (step !== undefined && step > 0) {
+        const origin = min ?? 0;
+        // Round away float noise (0.1 steps) before comparing against the bounds.
+        next = Number((origin + Math.round((next - origin) / step) * step).toFixed(10));
+    }
+    if (max !== undefined && next > max) next = max;
+    if (min !== undefined && next < min) next = min;
+    return next;
+}
+
+/**
+ * The browser's `min`/`max`/`step` only bound the spinner, not typed text. Typing keeps a
+ * draft; in-range values are written at once, anything else is bounded on blur or Enter.
+ */
+function BoundedNumberInput({
+    className,
+    disabled,
+    label,
+    max,
+    min,
+    onChange,
+    step,
+    value,
+}: {
+    className: string;
+    disabled?: boolean;
+    label: string;
+    max?: number;
+    min?: number;
+    onChange: (value: number | undefined) => void;
+    step?: number;
+    value: number | undefined;
+}) {
+    const shown = value === undefined ? '' : String(value);
+    const [draft, setDraft] = useState(shown);
+    const [lastShown, setLastShown] = useState(shown);
+    if (shown !== lastShown) {
+        setLastShown(shown);
+        setDraft(shown);
+    }
+    const bounds = { min, max, step };
+
+    const commit = () => {
+        if (draft.trim() === '') {
+            onChange(undefined);
+            return;
+        }
+        const parsed = Number(draft);
+        const next = Number.isFinite(parsed) ? boundNumber(parsed, bounds) : value;
+        setDraft(next === undefined ? '' : String(next));
+        if (next !== value) onChange(next);
+    };
+
+    return (
+        <input
+            type="number"
+            inputMode="decimal"
+            value={draft}
+            min={min}
+            max={max}
+            step={step}
+            onChange={(event) => {
+                const text = event.target.value;
+                setDraft(text);
+                if (text === '') {
+                    onChange(undefined);
+                    return;
+                }
+                const parsed = Number(text);
+                if (Number.isFinite(parsed) && boundNumber(parsed, bounds) === parsed) {
+                    onChange(parsed);
+                }
+            }}
+            onBlur={commit}
+            onKeyDown={(event) => {
+                if (event.key === 'Enter') commit();
+            }}
+            disabled={disabled}
+            aria-label={label}
+            className={className}
+        />
+    );
+}
+
 export function NumberFieldControl(props: TemplateFieldControlProps) {
     const { field, ...rest } = props;
     return NumberFieldControlRender({ field: field as FieldType<'number'>, ...rest });
@@ -136,17 +226,16 @@ function NumberFieldControlRender({
     const current = typeof value === 'number' ? value : undefined;
     return (
         <div>
-            <input
-                type="number"
-                value={current === undefined ? '' : Math.min(current, effectiveMax ?? Infinity)}
+            <BoundedNumberInput
+                value={
+                    current === undefined ? undefined : Math.min(current, effectiveMax ?? Infinity)
+                }
                 min={field.min}
                 max={effectiveMax}
                 step={field.step}
-                onChange={(event) =>
-                    onChange(event.target.value === '' ? undefined : Number(event.target.value))
-                }
+                onChange={onChange}
                 disabled={disabled}
-                aria-label={field.label}
+                label={field.label}
                 className={`${inputClasses} w-full`}
             />
             {maxDegraded && (
@@ -317,16 +406,14 @@ function RatingFieldControlRender({
     if (field.presentation === 'number') {
         return (
             <div>
-                <input
-                    type="number"
-                    value={current ?? ''}
+                <BoundedNumberInput
+                    value={current}
                     min={field.min}
                     max={effectiveMax}
-                    onChange={(event) =>
-                        onChange(event.target.value === '' ? undefined : Number(event.target.value))
-                    }
+                    step={1}
+                    onChange={onChange}
                     disabled={disabled}
-                    aria-label={field.label}
+                    label={field.label}
                     className={`${inputClasses} w-20`}
                 />
                 {maxDegraded && (
@@ -344,10 +431,8 @@ function RatingFieldControlRender({
         );
     }
 
-    const levels = Array.from(
-        { length: Math.max(0, effectiveMax - field.min + 1) },
-        (_, index) => field.min + index
-    );
+    // One dot per point, like trait rows: dots 1..max; the minimum is a floor, not a dot.
+    const levels = Array.from({ length: Math.max(0, effectiveMax) }, (_, index) => index + 1);
 
     return (
         <div>
@@ -370,13 +455,7 @@ function RatingFieldControlRender({
                             aria-label={`${field.label}: ${level}`}
                             aria-pressed={active}
                             onClick={() =>
-                                onChange(
-                                    current === level
-                                        ? level - 1 < field.min
-                                            ? undefined
-                                            : level - 1
-                                        : level
-                                )
+                                onChange(Math.max(field.min, current === level ? level - 1 : level))
                             }
                             className={clsx(
                                 'h-4 w-4 rounded-full border transition-colors',

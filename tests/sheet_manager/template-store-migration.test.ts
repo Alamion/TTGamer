@@ -1,5 +1,11 @@
-import { migrateTemplateStoreState } from '@site/src/sheet_manager/store/templateStore';
-import { resolveCustomTemplate } from '@site/src/sheet_manager/systems/view';
+import {
+    migrateTemplateStoreState,
+    overrideKey,
+} from '@site/src/sheet_manager/store/templateStore';
+import {
+    resolveCustomTemplate,
+    resolveEffectiveTemplate,
+} from '@site/src/sheet_manager/systems/view';
 import { DocumentKindSchema } from '@site/src/sheet_manager/types/document';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
@@ -86,7 +92,7 @@ describe('template store retirement (v2→v3, feature 006 T008)', () => {
                 broken: { sections: 'nope' },
             },
         });
-        expect(migrated.defaultOverrides['full-sheet']).toBeDefined();
+        expect(migrated.defaultOverrides['star-wars-wod:full-sheet']).toBeDefined();
         expect(migrated.defaultOverrides['broken']).toBeUndefined();
         expect(migrated.quarantine).toHaveLength(1);
         expect(new Set(takeSheetIssues().map(({ code }) => code))).toEqual(
@@ -126,6 +132,66 @@ describe('template store retirement (v2→v3, feature 006 T008)', () => {
         });
         expect(migrated.templates).toHaveLength(2);
         expect(migrated.quarantine).toHaveLength(0);
-        expect(migrated.defaultOverrides['full-sheet']?.name).toBe('Valid Kit');
+        expect(migrated.defaultOverrides['star-wars-wod:full-sheet']?.name).toBe('Valid Kit');
+    });
+});
+
+describe('template store v5: composite override keys (spec 012, T-046)', () => {
+    const hunterOverride = () =>
+        CustomTemplateSchema.parse({
+            id: 'v5-hunter-sheet',
+            name: 'Edited Hunter',
+            systemId: 'wod-v5',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [{ id: 'notes', type: 'text', label: 'Notes' }],
+        });
+
+    it('re-keys v4 overrides by their own system without changing content', () => {
+        const starWars = buildTemplate('full-sheet', 'Edited Full');
+        const hunter = hunterOverride();
+        const migrated = migrateTemplateStoreState(
+            {
+                templates: [],
+                quarantine: [],
+                defaultOverrides: { 'full-sheet': starWars, 'v5-hunter-sheet': hunter },
+            },
+            4
+        );
+        expect(Object.keys(migrated.defaultOverrides).sort()).toEqual([
+            'star-wars-wod:full-sheet',
+            'wod-v5:v5-hunter-sheet',
+        ]);
+        expect(migrated.defaultOverrides['star-wars-wod:full-sheet']).toEqual(
+            CustomTemplateSchema.parse(starWars)
+        );
+        expect(migrated.defaultOverrides['wod-v5:v5-hunter-sheet']).toEqual(hunter);
+    });
+
+    it('keeps v5 keys as they are', () => {
+        const migrated = migrateTemplateStoreState(
+            {
+                templates: [],
+                quarantine: [],
+                defaultOverrides: { 'star-wars-wod:full-sheet': buildTemplate('full-sheet') },
+            },
+            5
+        );
+        expect(Object.keys(migrated.defaultOverrides)).toEqual(['star-wars-wod:full-sheet']);
+    });
+
+    it('applies an override only to its own system', () => {
+        const edited = buildTemplate('full-sheet', 'Edited Full');
+        const state = {
+            templates: [],
+            defaultOverrides: { [overrideKey('wod-v5', 'full-sheet')]: edited },
+        };
+        const resolved = resolveEffectiveTemplate(
+            'full-sheet',
+            state,
+            'star-wars-wod',
+            DocumentKindSchema.parse('character')
+        );
+        expect(resolved?.modified).toBe(false);
     });
 });

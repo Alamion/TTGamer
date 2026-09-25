@@ -1,40 +1,22 @@
-import { HEALTH_LEVELS } from '../../types/character';
-import { defineWodSheetProfile } from '../wod-like';
+import { createWodSheetProfileVariant } from '../wod-like';
+import {
+    WOD2E_ATTRIBUTE_GROUPS,
+    WOD2E_HEALTH_TRACK,
+    WOD2E_WILLPOWER,
+    wod2eProfile,
+    wodTrait as trait,
+} from '../wod2e/ruleset/profile';
 
-const trait = (key: string, minimum = 0) => ({
-    id: key
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, ''),
-    key,
-    label: key,
-    minimum,
-    maximum: 5,
-    catalog: 'attributes',
-});
-
-export const starWarsWodProfile = defineWodSheetProfile({
+/**
+ * The Star Wars conversion as a variant of the WoD 2e engine profile (spec 012): the engine's
+ * attributes, Willpower, and Health, with the setting's own abilities, Force skills, virtues
+ * (Passion in place of Courage), Force resources, and vehicle systems.
+ */
+export const starWarsWodProfile = createWodSheetProfileVariant(wod2eProfile, {
     id: 'star-wars-wod-core',
     label: 'Star Wars WoD 2e',
     traitGroups: [
-        {
-            id: 'physical',
-            label: 'Physical',
-            role: 'attribute',
-            traits: ['Strength', 'Dexterity', 'Stamina'].map((key) => trait(key, 1)),
-        },
-        {
-            id: 'social',
-            label: 'Social',
-            role: 'attribute',
-            traits: ['Charisma', 'Manipulation', 'Appearance'].map((key) => trait(key, 1)),
-        },
-        {
-            id: 'mental',
-            label: 'Mental',
-            role: 'attribute',
-            traits: ['Perception', 'Intelligence', 'Wits'].map((key) => trait(key, 1)),
-        },
+        ...WOD2E_ATTRIBUTE_GROUPS,
         {
             id: 'talents',
             label: 'Talents',
@@ -116,7 +98,7 @@ export const starWarsWodProfile = defineWodSheetProfile({
         },
     ],
     resources: [
-        { id: 'willpower', label: 'Willpower', mode: 'pool', minimum: 0, maximum: 10 },
+        WOD2E_WILLPOWER,
         { id: 'force-points', label: 'Force Points', mode: 'pool', minimum: 0, maximum: 10 },
         {
             id: 'dark-side-resistance',
@@ -127,15 +109,7 @@ export const starWarsWodProfile = defineWodSheetProfile({
         },
     ],
     conditionTracks: [
-        {
-            id: 'health',
-            label: 'Health',
-            levels: HEALTH_LEVELS.map(({ name, penalty }) => ({
-                id: name.toLowerCase(),
-                label: name,
-                penalty: penalty === 0 ? null : penalty,
-            })),
-        },
+        WOD2E_HEALTH_TRACK,
         {
             id: 'vehicle-damage',
             label: 'Damage',

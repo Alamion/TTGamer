@@ -1,6 +1,17 @@
 import { UnknownDocumentEnvelopeSchema } from '../types/document';
 import { isPolicyId } from './policies';
 import type { DocumentDefinition, ParsedRegisteredDocument, SystemPlugin } from './types';
+import {
+    EMPTY_USER_TYPES,
+    isUserKind,
+    ownerSystemId,
+    synthesizeOrphanDefinition,
+    synthesizeUserDefinition,
+    USER_KIND_PREFIX,
+    USER_TYPE_SCHEMA_VERSION,
+    UserTypeDataSchema,
+    type UserTypesSnapshot,
+} from './userTypes';
 
 /**
  * The setting a document belongs to, for lists and create dialogs: its module's name when the
@@ -20,6 +31,9 @@ function assertPolicies(owner: string, policies: readonly string[] | undefined) 
 
 export class SystemRegistry {
     readonly #systems = new Map<string, SystemPlugin>();
+    #userTypes: UserTypesSnapshot = EMPTY_USER_TYPES;
+    /** User-type definitions per system, rebuilt whenever the overlay snapshot changes. */
+    #userDefinitions = new Map<string, DocumentDefinition[]>();
 
     constructor(systems: readonly SystemPlugin[]) {
         // View ids key shipped templates and their overrides, so they are unique across systems.
@@ -31,6 +45,15 @@ export class SystemRegistry {
             assertPolicies(system.id, system.policies);
             const definitionIds = new Set<string>();
             for (const definition of system.documents) {
+                // `user-` belongs to user document types (spec 012): shipped ids never use it.
+                if (
+                    definition.id.startsWith(USER_KIND_PREFIX) ||
+                    definition.kind.startsWith(USER_KIND_PREFIX)
+                ) {
+                    throw new Error(
+                        `Shipped document definition ${system.id}/${definition.id} uses the reserved "${USER_KIND_PREFIX}" prefix`
+                    );
+                }
                 if (definitionIds.has(definition.id)) {
                     throw new Error(
                         `Duplicate document definition ID: ${system.id}/${definition.id}`
@@ -60,6 +83,15 @@ export class SystemRegistry {
                     );
                 }
             }
+            // User settings reuse these (spec 012): engine-only definitions of this system.
+            for (const coreId of system.coreDefinitions ?? []) {
+                const core = system.documents.find(({ id }) => id === coreId);
+                if (!core || core.module) {
+                    throw new Error(
+                        `Core definition ${system.id}/${coreId} must be a definition of the system without a module`
+                    );
+                }
+            }
             this.#systems.set(system.id, system);
         }
     }
@@ -72,15 +104,55 @@ export class SystemRegistry {
         return this.#systems.get(systemId);
     }
 
-    /** Every registered definition with its system, in registration order. */
+    /**
+     * Replaces the user types the registry knows (spec 012). Generic code keeps calling the same
+     * lookups; user types answer them next to the shipped definitions.
+     */
+    setUserDocumentTypes(snapshot: UserTypesSnapshot): void {
+        this.#userTypes = snapshot;
+        const bySystem = new Map<string, DocumentDefinition[]>();
+        for (const type of Object.values(snapshot.types)) {
+            const systemId = ownerSystemId(type, snapshot.settings);
+            if (!systemId || !this.#systems.has(systemId)) continue;
+            const list = bySystem.get(systemId) ?? [];
+            const definition = synthesizeUserDefinition(type, snapshot.templates, systemId);
+            // A type owned by a module (a V5 line) belongs to that module: its setting name and
+            // its publisher policies.
+            const moduleId = 'moduleId' in type.owner ? type.owner.moduleId : undefined;
+            const module = moduleId
+                ? this.#systems
+                      .get(systemId)
+                      ?.documents.find((shipped) => shipped.module?.id === moduleId)?.module
+                : undefined;
+            list.push(module ? { ...definition, module } : definition);
+            bySystem.set(systemId, list);
+        }
+        this.#userDefinitions = bySystem;
+    }
+
+    getUserDocumentTypes(): UserTypesSnapshot {
+        return this.#userTypes;
+    }
+
+    /** Every registered definition with its system: shipped ones, then user types. */
     listDefinitions(): readonly { system: SystemPlugin; definition: DocumentDefinition }[] {
         return this.getSystems().flatMap((system) =>
-            system.documents.map((definition) => ({ system, definition }))
+            [...system.documents, ...(this.#userDefinitions.get(system.id) ?? [])].map(
+                (definition) => ({ system, definition })
+            )
         );
     }
 
     getDocumentDefinition(systemId: string, definitionId: string) {
-        return this.getSystem(systemId)?.documents.find(({ id }) => id === definitionId);
+        const system = this.getSystem(systemId);
+        if (!system) return undefined;
+        if (isUserKind(definitionId)) {
+            return (
+                this.#userDefinitions.get(systemId)?.find(({ id }) => id === definitionId) ??
+                synthesizeOrphanDefinition(definitionId)
+            );
+        }
+        return system.documents.find(({ id }) => id === definitionId);
     }
 
     getDocumentView(systemId: string, definitionId: string, viewId?: string) {
@@ -92,6 +164,25 @@ export class SystemRegistry {
 
     parseDocument(input: unknown): ParsedRegisteredDocument {
         const envelope = UnknownDocumentEnvelopeSchema.parse(input);
+        // User-type documents share one data shape, so they parse without their type.
+        if (isUserKind(envelope.definitionId)) {
+            if (
+                !this.getSystem(envelope.systemId) ||
+                String(envelope.kind) !== envelope.definitionId
+            ) {
+                throw new Error(
+                    `Unsupported document definition: ${envelope.systemId}/${envelope.definitionId}`
+                );
+            }
+            return {
+                definition: this.getDocumentDefinition(envelope.systemId, envelope.definitionId)!,
+                envelope: {
+                    ...envelope,
+                    schemaVersion: USER_TYPE_SCHEMA_VERSION,
+                    data: UserTypeDataSchema.parse(envelope.data ?? {}),
+                },
+            };
+        }
         const definition = this.getDocumentDefinition(envelope.systemId, envelope.definitionId);
         if (!definition || definition.kind !== envelope.kind) {
             throw new Error(

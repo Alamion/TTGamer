@@ -3,6 +3,7 @@
 import { CharacterContext } from '@site/src/sheet_manager/context/CharacterContext';
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import { countUnfilledRequired } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
+import { boundNumber } from '@site/src/sheet_manager/features/sheet/declarative/fieldControls';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
@@ -324,6 +325,52 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
         expect(values?.charge).toBe(6);
         expect(values?.trained).toBe(true);
         expect(values?.rank).toBe('veteran');
+    });
+
+    it('bounds a typed number to the field limits on blur, writing in-range values at once', () => {
+        mount(buildTemplate());
+        const charge = screen.getByLabelText('Charge') as HTMLInputElement;
+        const stored = () => useDocumentStore.getState().documents[0]!.templateValues?.charge;
+
+        fireEvent.change(charge, { target: { value: '7' } });
+        expect(stored()).toBe(7);
+
+        fireEvent.change(charge, { target: { value: '42' } });
+        expect(stored()).toBe(7);
+        fireEvent.blur(charge);
+        expect(stored()).toBe(10);
+        expect(charge.value).toBe('10');
+
+        fireEvent.change(charge, { target: { value: '-3' } });
+        fireEvent.keyDown(charge, { key: 'Enter' });
+        expect(stored()).toBe(0);
+    });
+
+    it('snaps numbers to the step grid anchored at the minimum', () => {
+        expect(boundNumber(7, { min: 1, step: 2 })).toBe(7);
+        expect(boundNumber(6.2, { min: 1, step: 2 })).toBe(7);
+        expect(boundNumber(0.30000000000000004, { step: 0.1 })).toBe(0.3);
+        expect(boundNumber(11, { min: 0, max: 10, step: 5 })).toBe(10);
+    });
+
+    it('draws one rating dot per point, so the first dot is 1', () => {
+        mount(buildTemplate());
+        const dots = screen.getAllByRole('button', { name: /^Force rating: / });
+        expect(dots.map((dot) => dot.getAttribute('aria-label'))).toEqual([
+            'Force rating: 1',
+            'Force rating: 2',
+            'Force rating: 3',
+            'Force rating: 4',
+            'Force rating: 5',
+        ]);
+        const stored = () =>
+            useDocumentStore.getState().documents[0]!.templateValues?.['force-rating'];
+
+        fireEvent.click(dots[0]!);
+        expect(stored()).toBe(1);
+        // Clicking the top filled dot lowers the rating by one, down to the minimum.
+        fireEvent.click(screen.getByRole('button', { name: 'Force rating: 1' }));
+        expect(stored()).toBe(0);
     });
 
     it('adds table rows and fills cells', () => {

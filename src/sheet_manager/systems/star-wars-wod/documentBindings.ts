@@ -1,25 +1,24 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { portraitFieldBinding } from '../portraitBinding';
-import type {
-    DocumentBindingDescriptor,
-    EquipmentSectionId,
-    ListCatalogSupport,
-    SystemListShape,
-} from '../templateBindings';
+import type { DocumentBindingDescriptor } from '../templateBindings';
 import {
     buildWodResourceBindings,
     buildWodTrackBindings,
     buildWodTraitBindings,
-    toCoordinate,
 } from '../wod-like/templateBindings';
+import {
+    wod2eEquipmentBindings,
+    wod2eFieldBindings,
+    wod2eListBindings,
+} from '../wod2e/ruleset/bindings';
 import { starWarsEntityBindings } from './entityBindings';
 import { starWarsWodProfile } from './profile';
 
 /**
  * Star Wars WoD template bindings: the declaration of which document data a template may bind
  * to. Traits, resources, and tracks derive from the system profile (single owner of names and
- * limits); lists, equipment, and identity fields are declared here with their data keys.
+ * limits); lists, equipment, and identity fields come from the WoD 2e ruleset with the
+ * setting's additions (Force powers, implants, species and home world, its catalogs).
  */
 
 const CHARACTER_KINDS: ReadonlySet<string> = new Set(['character']);
@@ -80,71 +79,23 @@ const droidDamageBinding: DocumentBindingDescriptor = {
     dataKey: 'health',
 } as DocumentBindingDescriptor;
 
-const listDeclarations: ReadonlyArray<{
-    listId: string;
-    label: string;
-    dataKey?: string;
-    entryShape: SystemListShape;
-    catalog?: ListCatalogSupport;
-}> = [
-    { listId: 'customTalents', label: 'Custom talents', entryShape: 'trait' },
-    { listId: 'customSkills', label: 'Custom skills', entryShape: 'trait' },
-    { listId: 'customKnowledges', label: 'Custom knowledges', entryShape: 'trait' },
-    {
-        listId: 'forcePowers',
-        label: 'Force Powers',
-        // `forcePowerItems` is the single Force-power representation.
-        dataKey: 'forcePowerItems',
-        entryShape: 'named-trait',
-        catalog: { catalogId: 'force-powers' },
-    },
-    {
-        listId: 'merits',
-        label: 'Merits',
-        entryShape: 'merit-flaw',
-        catalog: { catalogId: 'merits-flaws', catalogFilter: { key: 'type', value: 'Merit' } },
-    },
-    {
-        listId: 'flaws',
-        label: 'Flaws',
-        entryShape: 'merit-flaw',
-        catalog: { catalogId: 'merits-flaws', catalogFilter: { key: 'type', value: 'Flaw' } },
-    },
-    {
-        listId: 'backgrounds',
-        label: 'Backgrounds',
-        entryShape: 'trait',
-        catalog: { catalogId: 'backgrounds' },
-    },
-];
+const listBindings = wod2eListBindings(CHARACTER_KINDS, {
+    settingLists: [
+        {
+            listId: 'forcePowers',
+            label: 'Force Powers',
+            // `forcePowerItems` is the single Force-power representation.
+            dataKey: 'forcePowerItems',
+            entryShape: 'named-trait',
+            catalog: { catalogId: 'force-powers' },
+        },
+    ],
+    catalogs: { meritsFlaws: 'merits-flaws', backgrounds: 'backgrounds' },
+});
 
-const listBindings: DocumentBindingDescriptor[] = listDeclarations.map(
-    ({ listId, label, dataKey, entryShape, catalog }) => ({
-        key: `list:${listId}`,
-        kind: 'list',
-        label,
-        documentKinds: CHARACTER_KINDS,
-        listId,
-        dataKey: dataKey ?? listId,
-        entryShape,
-        ...(catalog ? { catalog } : {}),
-    })
-);
-
-const equipmentBindings: DocumentBindingDescriptor[] = (
-    [
-        { sectionId: 'inventory', label: 'Inventory' },
-        { sectionId: 'armor', label: 'Dressed — Armor' },
-        { sectionId: 'weapons', label: 'Dressed — Weapons' },
-        { sectionId: 'implants', label: 'Implants & Cyberware' },
-    ] as ReadonlyArray<{ sectionId: EquipmentSectionId; label: string }>
-).map(({ sectionId, label }) => ({
-    key: `equipment:${sectionId}`,
-    kind: 'equipment',
-    label,
-    documentKinds: CHARACTER_KINDS,
-    sectionId,
-}));
+const equipmentBindings = wod2eEquipmentBindings(CHARACTER_KINDS, [
+    { sectionId: 'implants', label: 'Implants & Cyberware' },
+]);
 
 const METADATA_FIELDS: ReadonlyArray<[key: string, label: string]> = [
     ['name', 'Name'],
@@ -165,59 +116,7 @@ const METADATA_FIELDS: ReadonlyArray<[key: string, label: string]> = [
     ['biography', 'Biography'],
 ];
 
-const toNonNegativeInteger = (value: unknown) =>
-    typeof value === 'number' && Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 0;
-
-/** Experience stays schema-valid: whole non-negative numbers, spent never above total. */
-function constrainExperience(record: unknown): unknown {
-    const experience = (record ?? {}) as { total?: unknown; spent?: unknown };
-    const total = toNonNegativeInteger(experience.total);
-    return { total, spent: Math.min(toNonNegativeInteger(experience.spent), total) };
-}
-
-const fieldBindings: DocumentBindingDescriptor[] = [
-    portraitFieldBinding(CHARACTER_KINDS),
-    ...METADATA_FIELDS.map(
-        ([fieldKey, label]): DocumentBindingDescriptor => ({
-            key: `field:${fieldKey}`,
-            kind: 'field',
-            label,
-            documentKinds: CHARACTER_KINDS,
-            path: ['metadata', fieldKey],
-            valueType: 'string',
-            coordinate: toCoordinate(label),
-        })
-    ),
-    {
-        key: 'field:notes',
-        kind: 'field',
-        label: 'Notes',
-        documentKinds: CHARACTER_KINDS,
-        path: ['notes'],
-        valueType: 'string',
-        coordinate: 'notes',
-    },
-    {
-        key: 'field:experience-total',
-        kind: 'field',
-        label: 'Total XP',
-        documentKinds: CHARACTER_KINDS,
-        path: ['experience', 'total'],
-        valueType: 'number',
-        coordinate: 'experience-total',
-        constrain: constrainExperience,
-    },
-    {
-        key: 'field:experience-spent',
-        kind: 'field',
-        label: 'Spent XP',
-        documentKinds: CHARACTER_KINDS,
-        path: ['experience', 'spent'],
-        valueType: 'number',
-        coordinate: 'experience-spent',
-        constrain: constrainExperience,
-    },
-];
+const fieldBindings = wod2eFieldBindings(CHARACTER_KINDS, METADATA_FIELDS);
 
 export const starWarsTemplateBindings: readonly DocumentBindingDescriptor[] = [
     ...traitBindings,

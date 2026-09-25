@@ -106,6 +106,11 @@ dependencies — they are not identifiers; slugs are.
   still to come.
 - **Open questions**: which broad entity types ship first; how custom templates are
   shared between users.
+- **Notes**:
+    - 2026-09-25 — spec 012 shipped the template builder: a visual editor on the live page,
+      user-defined document types in any setting, user settings on the WoD 2e and V5 rules,
+      and type files; custom templates are shared by file, and document exports carry their
+      type.
 
 ### `offline-support` — Full offline support
 
