@@ -3208,6 +3208,28 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.discard',
                     message: 'Discard',
                 },
+                target: {
+                    id: 'ttgamer.ui.sheet.templates.editor.target',
+                    message: 'Type and setting',
+                },
+                targetLocked: {
+                    id: 'ttgamer.ui.sheet.templates.editor.targetLocked',
+                    message: "This page's type and setting are fixed here",
+                },
+                retargetTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.retargetTitle',
+                    message: 'Move the page?',
+                },
+                retargetDescription: {
+                    id: 'ttgamer.ui.sheet.templates.editor.retargetDescription',
+                    message:
+                        '{count} document opens on this page. After the move it opens on its default page.|{count} documents open on this page. After the move they open on their default page.',
+                    plural: true,
+                },
+                retargetConfirm: {
+                    id: 'ttgamer.ui.sheet.templates.editor.retargetConfirm',
+                    message: 'Move',
+                },
                 save: {
                     id: 'ttgamer.ui.sheet.templates.editor.save',
                     message: 'Save',

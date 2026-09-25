@@ -1,16 +1,26 @@
 import { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { clsx } from 'clsx';
 import { Redo2, Undo2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { kindLabel, listTemplateTargets } from '../../features/sheet/data/documentLabels';
+import {
+    listTemplateTargetGroups,
+    parseTemplateTargetValue,
+    templateTargetValue,
+} from '../../features/sheet/data/documentLabels';
 import { listTemplateNumericCoordinates } from '../../features/sheet/data/templateReferences';
+import {
+    planTemplateRetarget,
+    type RetargetPlan,
+} from '../../features/sheet/data/templateRetarget';
 import type { OverlayPlacement } from '../../features/sheet/declarative/editorOverlay';
+import { useDocumentStore } from '../../store/documentStore';
+import { useDocumentTypeStore } from '../../store/documentTypeStore';
 import { useTemplateStore } from '../../store/templateStore';
 import { listDocumentBindings } from '../../systems/templateBindings';
-import { isUserKind } from '../../systems/userTypes';
 import { isDefaultTemplateId } from '../../systems/view';
 import {
     collectTemplateFields,
@@ -46,7 +56,7 @@ import {
     removeOption,
     removeTableColumn,
     replaceNode,
-    setDraftKind,
+    setDraftTarget,
     updateField,
     updateFill,
     updateNode,
@@ -97,18 +107,30 @@ type EditorMode = 'edit' | 'preview';
 
 export interface TemplateEditorDialogProps {
     base:
-        | { kind: 'empty'; documentKind?: string; systemId?: string; name?: string }
+        | {
+              kind: 'empty';
+              documentKind?: string;
+              systemId?: string;
+              settingId?: string;
+              name?: string;
+          }
         | { kind: 'skeleton'; documentKind: string; template: CustomTemplate }
         | { kind: 'duplicate' | 'edit'; template: CustomTemplate };
     onClose: () => void;
     /** Called with the saved template (user templates only; e.g. to create a user type). */
     onSaved?: (template: CustomTemplate) => void;
+    /** The caller owns the page's place (a new type's first page, a setting's page). */
+    lockTarget?: boolean;
 }
 
 function initialDraft(base: TemplateEditorDialogProps['base']): EditorDraft {
     if (base.kind === 'empty') {
         const draft = createEmptyDraft(base.documentKind ?? 'character', base.systemId);
-        return base.name ? { ...draft, name: base.name } : draft;
+        return {
+            ...draft,
+            ...(base.name ? { name: base.name } : {}),
+            ...(base.settingId ? { settingId: base.settingId } : {}),
+        };
     }
     if (base.kind === 'edit') return createDraftFromTemplate(base.template);
     return createDraftFromTemplate(base.template, { id: generateDraftId('tpl') });
@@ -135,7 +157,12 @@ function reveal(selector: string, block: ScrollLogicalPosition) {
     element?.scrollIntoView?.({ block, behavior: reduced ? 'auto' : 'smooth' });
 }
 
-export function TemplateEditorDialog({ base, onClose, onSaved }: TemplateEditorDialogProps) {
+export function TemplateEditorDialog({
+    base,
+    lockTarget = false,
+    onClose,
+    onSaved,
+}: TemplateEditorDialogProps) {
     const { saveTemplate, setDefaultOverride } = useTemplateStore();
     const t = useCallback((descriptor: { message: string }) => translate(descriptor), []);
     const modalRoot =
@@ -153,6 +180,11 @@ export function TemplateEditorDialog({ base, onClose, onSaved }: TemplateEditorD
     const [mode, setMode] = useState<EditorMode>('edit');
     const [area, setArea] = useState<EditorArea>('page');
     const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false);
+    const [pendingRetarget, setPendingRetarget] = useState<{
+        template: CustomTemplate;
+        plan: RetargetPlan;
+    } | null>(null);
+    const plural = usePluralMessage();
     const [saveIssues, setSaveIssues] = useState<readonly string[]>([]);
     const [announcement, setAnnouncement] = useState('');
     const [initialJson] = useState(() => JSON.stringify(draft));
@@ -411,6 +443,17 @@ export function TemplateEditorDialog({ base, onClose, onSaved }: TemplateEditorD
         [selectedId, issueNodeKey]
     );
 
+    const saveUserTemplate = (template: CustomTemplate, plan: RetargetPlan) => {
+        saveTemplate(template);
+        const types = useDocumentTypeStore.getState();
+        for (const setting of plan.settings) types.saveSetting(setting);
+        for (const type of plan.types) types.saveType(type);
+        const { updateDocumentMetadata } = useDocumentStore.getState();
+        for (const id of plan.documentIds) updateDocumentMetadata(id, { templateId: undefined });
+        onSaved?.(template);
+        onClose();
+    };
+
     const handleSave = () => {
         try {
             const parsed = CustomTemplateSchema.parse(draft);
@@ -418,11 +461,19 @@ export function TemplateEditorDialog({ base, onClose, onSaved }: TemplateEditorD
                 // Draft-until-save (FR-9): the override lands only on explicit save; assigned
                 // documents then render the saved version (live propagation, clarification Q2).
                 setDefaultOverride(parsed);
-            } else {
-                saveTemplate(parsed);
-                onSaved?.(parsed);
+                onClose();
+                return;
             }
-            onClose();
+            // A page moved to another type or setting (T-070) takes its assignments along.
+            const { settings, types } = useDocumentTypeStore.getState();
+            const plan = planTemplateRetarget(parsed, {
+                documents: useDocumentStore.getState().documents,
+                settings,
+                types,
+                templates: useTemplateStore.getState().templates,
+            });
+            if (plan.documentIds.length > 0) setPendingRetarget({ template: parsed, plan });
+            else saveUserTemplate(parsed, plan);
         } catch (error) {
             const fallback =
                 error instanceof Error && error.message.length > 0 ? [error.message] : [];
@@ -472,12 +523,12 @@ export function TemplateEditorDialog({ base, onClose, onSaved }: TemplateEditorD
         [coordinatesKey]
     );
 
-    const kindOptions = listTemplateTargets()
-        .filter((target) => target.systemId === draft.systemId)
-        .map(({ kind }) => ({ kind, label: kindLabel(draft.systemId, kind) }));
-    if (!kindOptions.some(({ kind }) => kind === draft.documentKind)) {
-        kindOptions.push({ kind: draft.documentKind, label: draft.documentKind });
-    }
+    const targetGroups = listTemplateTargetGroups();
+    const targetValue = templateTargetValue(draft);
+    const targetKnown = targetGroups.some(({ options }) =>
+        options.some(({ value }) => value === targetValue)
+    );
+    const targetFixed = editingDefault || lockTarget;
 
     const selectedNode = selectedId ? findNode(draft, selectedId) : undefined;
     const selectedPosition = selectedId ? findNodePosition(draft, selectedId) : undefined;
@@ -575,20 +626,29 @@ export function TemplateEditorDialog({ base, onClose, onSaved }: TemplateEditorD
                                     className={`${inputClasses} min-w-0 flex-1 font-medium`}
                                 />
                                 <select
-                                    value={draft.documentKind}
+                                    value={targetValue}
                                     onChange={(event) => {
-                                        const kind = event.target.value;
-                                        change((current) => setDraftKind(current, kind));
+                                        const target = parseTemplateTargetValue(event.target.value);
+                                        if (target) {
+                                            change((current) => setDraftTarget(current, target));
+                                        }
                                     }}
-                                    // A user type's pages always belong to that type.
-                                    disabled={isUserKind(draft.documentKind)}
-                                    aria-label={t(library.kind)}
-                                    className={inputClasses}
+                                    disabled={targetFixed}
+                                    title={targetFixed ? t(editor.targetLocked) : undefined}
+                                    aria-label={t(editor.target)}
+                                    className={`${inputClasses} max-w-full`}
                                 >
-                                    {kindOptions.map(({ kind, label }) => (
-                                        <option key={kind} value={kind}>
-                                            {label}
-                                        </option>
+                                    {!targetKnown && (
+                                        <option value={targetValue}>{draft.documentKind}</option>
+                                    )}
+                                    {targetGroups.map((group) => (
+                                        <optgroup key={group.key} label={group.label}>
+                                            {group.options.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </optgroup>
                                     ))}
                                 </select>
                             </div>
@@ -773,6 +833,29 @@ export function TemplateEditorDialog({ base, onClose, onSaved }: TemplateEditorD
                 </Dialog.Content>
             </Dialog.Portal>
 
+            <ConfirmDialog
+                open={pendingRetarget !== null}
+                onOpenChange={(open) => {
+                    if (!open) setPendingRetarget(null);
+                }}
+                onConfirm={() => {
+                    if (pendingRetarget) {
+                        saveUserTemplate(pendingRetarget.template, pendingRetarget.plan);
+                    }
+                    setPendingRetarget(null);
+                }}
+                title={t(editor.retargetTitle)}
+                description={
+                    pendingRetarget
+                        ? plural(
+                              editor.retargetDescription,
+                              pendingRetarget.plan.documentIds.length
+                          )
+                        : ''
+                }
+                confirmLabel={t(editor.retargetConfirm)}
+                cancelLabel={t(editor.cancel)}
+            />
             <ConfirmDialog
                 open={discardConfirmOpen}
                 onOpenChange={setDiscardConfirmOpen}

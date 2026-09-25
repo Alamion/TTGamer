@@ -2732,6 +2732,15 @@
     "ttgamer.ui.sheet.templates.editor.removed": {
         "message": "{label}: удалено. Ctrl+Z — вернуть."
     },
+    "ttgamer.ui.sheet.templates.editor.retargetConfirm": {
+        "message": "Перенести"
+    },
+    "ttgamer.ui.sheet.templates.editor.retargetDescription": {
+        "message": "{count} документ открывается на этой странице. После переноса он откроется на своей странице по умолчанию.|{count} документа открываются на этой странице. После переноса они откроются на своих страницах по умолчанию.|{count} документов открываются на этой странице. После переноса они откроются на своих страницах по умолчанию."
+    },
+    "ttgamer.ui.sheet.templates.editor.retargetTitle": {
+        "message": "Перенести страницу?"
+    },
     "ttgamer.ui.sheet.templates.editor.sampleNote": {
         "message": "Пробные данные — точки, клетки и текст, изменённые здесь, не попадают в ваши документы."
     },
@@ -2782,6 +2791,12 @@
     },
     "ttgamer.ui.sheet.templates.editor.tableValueKey": {
         "message": "Общий ключ значения (строки таблицы)"
+    },
+    "ttgamer.ui.sheet.templates.editor.target": {
+        "message": "Тип и сеттинг"
+    },
+    "ttgamer.ui.sheet.templates.editor.targetLocked": {
+        "message": "Тип и сеттинг этой страницы здесь не меняются"
     },
     "ttgamer.ui.sheet.templates.editor.trackerSource": {
         "message": "Отслеживает"

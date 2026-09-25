@@ -12,6 +12,9 @@
 - **Your own settings**: build a named setting on the World of Darkness 2nd or 5th Edition rules, give its character your own page, and group your document types in it; its characters roll and validate by the chosen rules
 - **World of Darkness 2nd Edition and V5 mortal characters**: the classic WoD 2e engine is now its own system with an engine-only character (classic abilities, no Force), and V5 gains a mortal character without a supernatural module; both are the bases for your settings
 
+- **Move a template to another type or setting**: the editor's "Type and setting" select moves a page to any document type, your own types, or a character of your setting; documents that opened on it return to their default page after a confirmation, setting pages follow it, and data links the new type lacks are listed before saving
+- **New templates for your settings**: the library's "New template" list is grouped by setting and includes your settings' characters
+
 ### Fix
 
 - **Edited default pages stay with their system (T-046)**: saved edits of shipped pages are keyed by system and page, so they can never attach to another system's page with the same name; existing edits move over on load

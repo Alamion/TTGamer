@@ -122,6 +122,13 @@ editor:
     removeConfirmTitle: Discard changes?
     removeConfirmDescription: You have unsaved edits. Discard them?
     discard: Discard
+    target: Type and setting
+    targetLocked: This page's type and setting are fixed here
+    retargetTitle: Move the page?
+    retargetDescription:
+        message: '{count} document opens on this page. After the move it opens on its default page.|{count} documents open on this page. After the move they open on their default page.'
+        plural: true
+    retargetConfirm: Move
     save: Save
     cancel: Cancel
     duplicateId: Duplicate identifier "{id}" — identifiers must be unique within their scope.

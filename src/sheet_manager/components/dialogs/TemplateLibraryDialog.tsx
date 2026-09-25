@@ -8,7 +8,8 @@ import toast from 'react-hot-toast';
 
 import {
     listShippedSettings,
-    listTemplateTargets,
+    listTemplateTargetGroups,
+    parseTemplateTargetValue,
     targetLabel,
 } from '../../features/sheet/data/documentLabels';
 import { getSkeletonsForKind } from '../../features/sheet/data/templateSkeletons';
@@ -105,11 +106,24 @@ export function TemplateLibraryDialog({
     const [importOpen, setImportOpen] = useState(false);
     // Read on every render: the registry lists installed user types next to shipped kinds, and
     // this dialog re-renders when either store changes.
-    const targets = listTemplateTargets();
+    const targetGroups = listTemplateTargetGroups();
     const [newTarget, setNewTarget] = useState<string>(
-        targets[0]?.value ?? 'star-wars-wod/character'
+        targetGroups[0]?.options[0]?.value ?? 'star-wars-wod/character'
     );
-    const [newSystemId, newKind = 'character'] = newTarget.split('/');
+    const newTargetRef = parseTemplateTargetValue(newTarget) ?? {
+        systemId: 'star-wars-wod',
+        documentKind: 'character',
+    };
+    const newSystemId = newTargetRef.systemId;
+    const newKind = newTargetRef.documentKind;
+    const newTargetGroup = targetGroups.find(({ options }) =>
+        options.some(({ value }) => value === newTarget)
+    );
+    const newTargetLabel = newTargetGroup
+        ? `${newTargetGroup.label} · ${
+              newTargetGroup.options.find(({ value }) => value === newTarget)?.label ?? newKind
+          }`
+        : targetLabel(newSystemId, newKind);
 
     // Unified listing (FR-11/12): custom templates + modified defaults (unmodified defaults
     // derive on demand and are surfaced through the page selector; the library shows them too).
@@ -463,10 +477,14 @@ export function TemplateLibraryDialog({
                                     aria-label={t(library.kind)}
                                     className="rounded border border-border bg-bgSurface px-2 py-1 text-xs text-textPrimary"
                                 >
-                                    {targets.map((target) => (
-                                        <option key={target.value} value={target.value}>
-                                            {target.label}
-                                        </option>
+                                    {targetGroups.map((group) => (
+                                        <optgroup key={group.key} label={group.label}>
+                                            {group.options.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </optgroup>
                                     ))}
                                 </select>
                                 <button
@@ -476,7 +494,7 @@ export function TemplateLibraryDialog({
                                 >
                                     <Plus className="mr-1 inline h-3 w-3" aria-hidden="true" />
                                     {translate(library.newPageFor, {
-                                        target: targetLabel(newSystemId ?? '', newKind),
+                                        target: newTargetLabel,
                                     })}
                                 </button>
                                 <button
@@ -566,12 +584,18 @@ export function TemplateLibraryDialog({
                         name: editorBase.newType.name,
                     }}
                     onSaved={createTypeWith}
+                    lockTarget
                     onClose={closeEditor}
                 />
             )}
             {editorBase?.kind === 'empty' && (
                 <TemplateEditorDialog
-                    base={{ kind: 'empty', documentKind: newKind, systemId: newSystemId }}
+                    base={{
+                        kind: 'empty',
+                        documentKind: newKind,
+                        systemId: newSystemId,
+                        settingId: newTargetRef.settingId,
+                    }}
                     onClose={closeEditor}
                 />
             )}
@@ -583,6 +607,8 @@ export function TemplateLibraryDialog({
                         template: editorBase.template,
                     }}
                     onSaved={editorBase.onSaved}
+                    // A setting's page (the only caller with onSaved) stays that setting's.
+                    lockTarget={editorBase.onSaved !== undefined}
                     onClose={closeEditor}
                 />
             )}
@@ -590,6 +616,7 @@ export function TemplateLibraryDialog({
                 <TemplateEditorDialog
                     base={{ kind: 'edit', template: editorBase.template }}
                     onSaved={editorBase.onSaved}
+                    lockTarget={editorBase.onSaved !== undefined}
                     onClose={closeEditor}
                 />
             )}

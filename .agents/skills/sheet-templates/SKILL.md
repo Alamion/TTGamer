@@ -393,8 +393,15 @@ toolbar switches Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
   `<datalist>` is rendered once by the dialog.
 - `TemplateEditorDialog`: explicit save/discard; editing a default id saves through
   `setDefaultOverride`, everything else through `saveTemplate` then `onSaved` (user types and
-  settings record their pages). A user type's pages cannot change kind. Library: reset clears the
-  override; defaults cannot be deleted.
+  settings record their pages). Library: reset clears the override; defaults cannot be deleted.
+- Retarget (T-070): the header's "Type and setting" select (`listTemplateTargetGroups`, value
+  `system/kind[/settingId]`, `setDraftTarget`) moves a page to any system kind, user type, or a
+  user setting's core definition; bindings the target lacks become draft issues (save blocked).
+  On save `planTemplateRetarget` (`features/sheet/data/templateRetarget.ts`) releases documents
+  the page can no longer render (after a confirmation), moves user setting pages (a core
+  definition without a page adopts it), and repoints a type's `defaultTemplateId` to another of
+  its pages. Shipped overrides and caller-owned flows (`lockTarget`: a new type's first page, a
+  setting page) keep their target.
 - Test helpers: `tests/sheet_manager/helpers/editor.ts` (`resetEditorStores`, `pressShortcut`
   with `code` + layout `key`, `dragNode`).
 

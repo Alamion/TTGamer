@@ -2732,6 +2732,15 @@
     "ttgamer.ui.sheet.templates.editor.removed": {
         "message": "{label} removed. Press Ctrl+Z to undo."
     },
+    "ttgamer.ui.sheet.templates.editor.retargetConfirm": {
+        "message": "Move"
+    },
+    "ttgamer.ui.sheet.templates.editor.retargetDescription": {
+        "message": "{count} document opens on this page. After the move it opens on its default page.|{count} documents open on this page. After the move they open on their default page."
+    },
+    "ttgamer.ui.sheet.templates.editor.retargetTitle": {
+        "message": "Move the page?"
+    },
     "ttgamer.ui.sheet.templates.editor.sampleNote": {
         "message": "Sample data — dots, boxes, and text you change here never reach your documents."
     },
@@ -2782,6 +2791,12 @@
     },
     "ttgamer.ui.sheet.templates.editor.tableValueKey": {
         "message": "Shared value key (table rows)"
+    },
+    "ttgamer.ui.sheet.templates.editor.target": {
+        "message": "Type and setting"
+    },
+    "ttgamer.ui.sheet.templates.editor.targetLocked": {
+        "message": "This page's type and setting are fixed here"
     },
     "ttgamer.ui.sheet.templates.editor.trackerSource": {
         "message": "Tracks"
