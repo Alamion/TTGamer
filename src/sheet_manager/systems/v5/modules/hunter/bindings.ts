@@ -26,8 +26,11 @@ function field(key: string, path: string, extra: Partial<FieldBinding> & { label
     } satisfies FieldBinding;
 }
 
-/** Desperation and Danger: 0–5 dot ratings, the same resource row as other WoD pools. */
-function cellRating(id: 'desperation' | 'danger', label: string): ResourceBinding {
+/** Cell ratings and the hunter's gift/grip tracks: 0–5 dot rows, the same resource shape as other WoD pools. */
+function cellRating(
+    id: 'desperation' | 'danger' | 'gift' | 'grip',
+    label: string
+): ResourceBinding {
     return {
         key: `resource:${id}`,
         kind: 'resource',
@@ -43,6 +46,9 @@ function cellRating(id: 'desperation' | 'danger', label: string): ResourceBindin
 
 const hunterBindings: DocumentBindingDescriptor[] = [
     field('concept', 'concept', { label: hunter.fields.concept.message }),
+    field('patron', 'patron', { label: hunter.fields.patron.message }),
+    field('lik', 'lik', { label: hunter.fields.lik.message }),
+    field('role', 'role', { label: hunter.fields.role.message }),
     field('creed', 'creed', {
         label: hunter.fields.creed.message,
         suggestions: { catalogId: 'v5-hunter-creeds' },
@@ -55,9 +61,12 @@ const hunterBindings: DocumentBindingDescriptor[] = [
     field('desire', 'desire', { label: hunter.fields.desire.message }),
     field('redemption', 'redemption', { label: hunter.fields.redemption.message }),
     field('creed-fields', 'creedFields', { label: hunter.fields.creedFields.message }),
+    field('oath', 'oath', { label: hunter.fields.oath.message }),
     field('despair', 'despair', { label: hunter.fields.despair.message, valueType: 'boolean' }),
     cellRating('desperation', hunter.fields.desperation.message),
     cellRating('danger', hunter.fields.danger.message),
+    cellRating('gift', hunter.fields.gift.message),
+    cellRating('grip', hunter.fields.grip.message),
     {
         key: 'rows:edges',
         kind: 'rows',

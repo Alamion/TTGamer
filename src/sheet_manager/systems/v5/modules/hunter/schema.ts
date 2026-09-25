@@ -70,16 +70,23 @@ export const HunterModuleShape = {
     concept: text(V5_LIMITS.text.short),
     creed: text(V5_LIMITS.text.short),
     drive: text(V5_LIMITS.text.short),
+    patron: text(V5_LIMITS.text.short),
+    lik: text(V5_LIMITS.text.short),
+    role: text(V5_LIMITS.text.short),
     ambition: text(V5_LIMITS.text.medium),
     desire: text(V5_LIMITS.text.medium),
     redemption: text(V5_LIMITS.text.medium),
     creedFields: text(V5_LIMITS.text.long),
+    oath: text(V5_LIMITS.text.medium),
     edges: z.array(HunterEdgeSchema).max(HUNTER_LIMITS.edges).default([]),
     perks: z.array(HunterPerkSchema).max(HUNTER_LIMITS.perks).default([]),
     despair: z.boolean().default(false),
     /** Cell values: each hunter keeps a copy until cells exist as documents. */
     desperation: cellRating,
     danger: cellRating,
+    /** Gift and grip: the god-given power track and the hold it buys. */
+    gift: cellRating,
+    grip: cellRating,
 };
 
 const HunterObjectSchema = z.object({ ...V5CoreShape, ...HunterModuleShape });

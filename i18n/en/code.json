@@ -2241,16 +2241,16 @@
         "message": "Creed Fields"
     },
     "ttgamer.ui.sheet.v5Hunter.fields.danger": {
-        "message": "Danger"
+        "message": "Attention"
     },
     "ttgamer.ui.sheet.v5Hunter.fields.desire": {
         "message": "Desire"
     },
     "ttgamer.ui.sheet.v5Hunter.fields.despair": {
-        "message": "Despair"
+        "message": "Apostasy"
     },
     "ttgamer.ui.sheet.v5Hunter.fields.desperation": {
-        "message": "Desperation"
+        "message": "Zeal"
     },
     "ttgamer.ui.sheet.v5Hunter.fields.drive": {
         "message": "Drive"
@@ -2258,8 +2258,23 @@
     "ttgamer.ui.sheet.v5Hunter.fields.edge": {
         "message": "Edge"
     },
+    "ttgamer.ui.sheet.v5Hunter.fields.gift": {
+        "message": "Gift"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.grip": {
+        "message": "Grip"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.lik": {
+        "message": "Lik"
+    },
     "ttgamer.ui.sheet.v5Hunter.fields.note": {
         "message": "Notes"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.oath": {
+        "message": "Oath"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.patron": {
+        "message": "Patron"
     },
     "ttgamer.ui.sheet.v5Hunter.fields.perk": {
         "message": "Perk"
@@ -2269,6 +2284,9 @@
     },
     "ttgamer.ui.sheet.v5Hunter.fields.redemption": {
         "message": "Redemption"
+    },
+    "ttgamer.ui.sheet.v5Hunter.fields.role": {
+        "message": "Role"
     },
     "ttgamer.ui.sheet.v5Hunter.module": {
         "message": "Hunter: the Reckoning 5e"
@@ -2291,8 +2309,14 @@
     "ttgamer.ui.sheet.v5Hunter.sections.edges": {
         "message": "Edges and Perks"
     },
+    "ttgamer.ui.sheet.v5Hunter.sections.gift": {
+        "message": "Gift and Grip"
+    },
     "ttgamer.ui.sheet.v5Hunter.sections.hunter": {
         "message": "Hunter"
+    },
+    "ttgamer.ui.sheet.v5Hunter.sections.patron": {
+        "message": "Patron"
     },
     "ttgamer.ui.sheet.v5Hunter.sections.purpose": {
         "message": "Aims and Convictions"

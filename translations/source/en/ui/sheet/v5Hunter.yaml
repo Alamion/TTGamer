@@ -11,17 +11,25 @@ sections:
     purpose: Aims and Convictions
     aims: Aims
     creedDrive: Creed and Drive
+    patron: Patron
+    gift: Gift and Grip
 fields:
     concept: Concept
     creed: Creed
     drive: Drive
+    patron: Patron
+    lik: Lik
+    role: Role
     ambition: Ambition
     desire: Desire
     redemption: Redemption
     creedFields: Creed Fields
-    despair: Despair
-    desperation: Desperation
-    danger: Danger
+    oath: Oath
+    despair: Apostasy
+    desperation: Zeal
+    danger: Attention
+    gift: Gift
+    grip: Grip
     edge: Edge
     perks: Perks
     perk: Perk

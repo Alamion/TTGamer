@@ -2579,6 +2579,14 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.v5Hunter.sections.creedDrive',
                     message: 'Creed and Drive',
                 },
+                patron: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.sections.patron',
+                    message: 'Patron',
+                },
+                gift: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.sections.gift',
+                    message: 'Gift and Grip',
+                },
             },
             fields: {
                 concept: {
@@ -2592,6 +2600,18 @@ export const uiMessages = {
                 drive: {
                     id: 'ttgamer.ui.sheet.v5Hunter.fields.drive',
                     message: 'Drive',
+                },
+                patron: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.patron',
+                    message: 'Patron',
+                },
+                lik: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.lik',
+                    message: 'Lik',
+                },
+                role: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.role',
+                    message: 'Role',
                 },
                 ambition: {
                     id: 'ttgamer.ui.sheet.v5Hunter.fields.ambition',
@@ -2609,17 +2629,29 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.v5Hunter.fields.creedFields',
                     message: 'Creed Fields',
                 },
+                oath: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.oath',
+                    message: 'Oath',
+                },
                 despair: {
                     id: 'ttgamer.ui.sheet.v5Hunter.fields.despair',
-                    message: 'Despair',
+                    message: 'Apostasy',
                 },
                 desperation: {
                     id: 'ttgamer.ui.sheet.v5Hunter.fields.desperation',
-                    message: 'Desperation',
+                    message: 'Zeal',
                 },
                 danger: {
                     id: 'ttgamer.ui.sheet.v5Hunter.fields.danger',
-                    message: 'Danger',
+                    message: 'Attention',
+                },
+                gift: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.gift',
+                    message: 'Gift',
+                },
+                grip: {
+                    id: 'ttgamer.ui.sheet.v5Hunter.fields.grip',
+                    message: 'Grip',
                 },
                 edge: {
                     id: 'ttgamer.ui.sheet.v5Hunter.fields.edge',

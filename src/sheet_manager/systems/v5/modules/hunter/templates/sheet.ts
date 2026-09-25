@@ -63,6 +63,51 @@ export function hunterIdentityGroup(options: { compact?: boolean; column?: numbe
     );
 }
 
+/** Patron, lik, and role: which god the hunter serves and how the world names them. */
+export function hunterPatronGroup(options: { compact?: boolean; column?: number } = {}) {
+    const compact = options.compact ?? false;
+    return group(
+        'patron',
+        hunter.sections.patron.message,
+        [
+            v5Text('patron', 'patron', hunter.fields.patron, { compact }),
+            v5Text('lik', 'lik', hunter.fields.lik, { compact }),
+            v5Text('role', 'role', hunter.fields.role, { compact }),
+        ],
+        {
+            ...(options.column ? { column: options.column } : {}),
+            columns: compact ? 3 : 1,
+            labelMessage: hunter.sections.patron,
+        }
+    );
+}
+
+/** Gift and grip: the power the god gave and the hold it buys over the hunter. */
+export function hunterGiftGroup(options: { compact?: boolean; column?: number } = {}): GroupNode {
+    const compact = options.compact ?? false;
+    return group(
+        'gift',
+        hunter.sections.gift.message,
+        [
+            primitive('gift', 'resource:gift', {
+                label: hunter.fields.gift.message,
+                labelMessage: hunter.fields.gift,
+                compact,
+            }),
+            primitive('grip', 'resource:grip', {
+                label: hunter.fields.grip.message,
+                labelMessage: hunter.fields.grip,
+                compact,
+            }),
+        ],
+        {
+            ...(options.column ? { column: options.column } : {}),
+            hideTitle: compact,
+            labelMessage: hunter.sections.gift,
+        }
+    );
+}
+
 /** Despair, Desperation, and Danger: the hunter's and the cell's state. */
 export function hunterCellGroup(options: { compact?: boolean; column?: number } = {}): GroupNode {
     const compact = options.compact ?? false;
@@ -99,7 +144,12 @@ function hunterSection(): SectionNode {
         'hunter',
         hunter.sections.hunter.message,
         undefined,
-        [portraitGroup(1), hunterIdentityGroup({ column: 2 }), biographyGroup(2)],
+        [
+            portraitGroup(1),
+            hunterIdentityGroup({ column: 2 }),
+            hunterPatronGroup({ column: 2 }),
+            biographyGroup(2),
+        ],
         { columns: 2, columnWidths: [1, 2], labelMessage: hunter.sections.hunter }
     );
 }
@@ -113,9 +163,10 @@ export function hunterConditionSection(): SectionNode {
         [
             trackGroup('health', { column: 1 }),
             trackGroup('willpower', { column: 2 }),
-            hunterCellGroup({ column: 3 }),
+            hunterGiftGroup({ column: 3 }),
+            hunterCellGroup({ column: 4 }),
         ],
-        { columns: 3, labelMessage: v5.sections.condition }
+        { columns: 4, labelMessage: v5.sections.condition }
     );
 }
 
@@ -200,6 +251,9 @@ function hunterPurposeSection(): SectionNode {
                         multiline: true,
                     }),
                     v5Text('creed-fields', 'creed-fields', hunter.fields.creedFields, {
+                        multiline: true,
+                    }),
+                    v5Text('oath', 'oath', hunter.fields.oath, {
                         multiline: true,
                     }),
                 ],
