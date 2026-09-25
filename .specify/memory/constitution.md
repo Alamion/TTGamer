@@ -1,7 +1,21 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.4.0 -> 1.4.1 (clarification: a policy badge confirms the project accepts
+Version change: 1.4.1 -> 1.4.2 (clarification: the Dark Pack policy covers World of
+  Darkness 5th Edition material only; a policy is declared only where it actually grants rights
+  to the material, so classic World of Darkness engines and conversions built on them, such as
+  the Star Wars WoD 2e hybrid, declare no Dark Pack notice)
+
+Modified principles:
+  VIII. Respectful Use of Third-Party Material — Dark Pack scope corrected in the example list;
+    rule added that policies are declared only where they apply
+
+Runtime guidance updated: src/sheet_manager/systems/policies.ts (policy scope comment),
+  TODO.md (T-037 note)
+
+Deferred TODOs: none
+
+Previous: 1.4.0 -> 1.4.1 (clarification: a policy badge confirms the project accepts
   the policy; it is placed once in a prominent place per product surface that presents the
   material, not repeated on every view, and game mechanics alone need no notice)
 
@@ -228,9 +242,12 @@ republishing their books. Rules:
   Verbatim passages, tables, or art from published books MUST NOT be copied; trait,
   mechanic, and item names MAY be used.
 - Each ruleset and setting declares the publisher policies it relies on (e.g. Paradox
-  Dark Pack for World of Darkness engines and settings, the SRD CC-BY attribution for
+  Dark Pack for World of Darkness 5th Edition material, the SRD CC-BY attribution for
   D&D, R. Talsorian's Homebrew Content Policy for Cyberpunk RED) as machine-readable
-  metadata. Required notices and badges are rendered from that metadata, in the form the
+  metadata. A policy is declared only where it actually grants rights to the material: the
+  Dark Pack covers World of Darkness 5th Edition material only, so classic World of Darkness
+  engines and conversions built on them (such as the Star Wars WoD 2e hybrid) declare no Dark
+  Pack notice and rely on the own-words and trait-name rules above. Required notices and badges are rendered from that metadata, in the form the
   policy requires: a policy's full statement MAY live on one dedicated documentation page,
   with surfaces that use the material (sheets) showing the required badge linking to it, and
   exports carrying the notice text. A page MUST NOT carry notices or attributions for
@@ -315,4 +332,4 @@ is perceived, the principles govern and this table clarifies application.
   guidance file for day-to-day development; it must remain consistent with this
   constitution and defer to it on conflict.
 
-**Version**: 1.4.1 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-24
+**Version**: 1.4.2 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-25

@@ -7,7 +7,8 @@ import type { DocumentViewLabel, SystemPlugin } from './types';
  * policies their material relies on. Sheets show only the policy badge, linking to the policy's
  * docs page, which carries the full statement once; exported files carry the notice text.
  * Nothing is shown for documents that use no such material. One policy may serve several systems
- * (Dark Pack covers every World of Darkness engine), so policies live outside any system.
+ * (Dark Pack covers World of Darkness 5th Edition lines only, not classic WoD or conversions built
+ * on it), so policies live outside any system.
  */
 
 export type PolicyId = 'dark-pack';
