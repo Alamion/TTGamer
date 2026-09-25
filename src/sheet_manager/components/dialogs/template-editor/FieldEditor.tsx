@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { Plus, Trash2 } from 'lucide-react';
 
 import { kindLabel, listTemplateTargets } from '../../../features/sheet/data/documentLabels';
@@ -233,46 +234,30 @@ export function FieldEditor({
 
             {field.type === 'number' && (
                 <div className="flex items-center gap-2 text-xs text-textSecondary">
-                    <input
-                        type="number"
-                        value={field.min ?? ''}
-                        onChange={(event) =>
-                            callbacks.onUpdate(
-                                event.target.value === ''
-                                    ? { min: undefined }
-                                    : { min: Number(event.target.value) }
-                            )
-                        }
+                    <NumberInput
+                        value={field.min}
+                        max={field.max}
+                        onChange={(min) => callbacks.onUpdate({ min })}
                         placeholder={t(editor.numberMin)}
-                        aria-label={t(editor.numberMin)}
+                        label={t(editor.numberMin)}
                         className={`${inputClasses} w-20`}
                     />
-                    <input
-                        type="number"
-                        value={field.max ?? ''}
-                        onChange={(event) =>
-                            callbacks.onUpdate(
-                                event.target.value === ''
-                                    ? { max: undefined }
-                                    : { max: Number(event.target.value) }
-                            )
-                        }
+                    <NumberInput
+                        value={field.max}
+                        min={field.min}
+                        onChange={(max) => callbacks.onUpdate({ max })}
                         placeholder={t(editor.numberMax)}
-                        aria-label={t(editor.numberMax)}
+                        label={t(editor.numberMax)}
                         className={`${inputClasses} w-20`}
                     />
-                    <input
-                        type="number"
-                        value={field.step ?? ''}
-                        onChange={(event) =>
-                            callbacks.onUpdate(
-                                event.target.value === ''
-                                    ? { step: undefined }
-                                    : { step: Number(event.target.value) }
-                            )
+                    <NumberInput
+                        value={field.step}
+                        min={0}
+                        onChange={(step) =>
+                            callbacks.onUpdate({ step: step === 0 ? undefined : step })
                         }
                         placeholder={t(editor.numberStep)}
-                        aria-label={t(editor.numberStep)}
+                        label={t(editor.numberStep)}
                         className={`${inputClasses} w-20`}
                     />
                 </div>
@@ -292,6 +277,21 @@ export function FieldEditor({
                         />
                         {t(editor.multiple)}
                     </label>
+                    {field.multiple && (
+                        <label className="mt-1 flex items-center gap-2 text-xs text-textSecondary">
+                            <input
+                                type="checkbox"
+                                checked={field.hideUnselected === true}
+                                onChange={(event) =>
+                                    callbacks.onUpdate({
+                                        hideUnselected: event.target.checked || undefined,
+                                    })
+                                }
+                                className="h-3.5 w-3.5"
+                            />
+                            {t(editor.hideUnselected)}
+                        </label>
+                    )}
                     <div className="mt-2 space-y-1">
                         {field.options.map((option) => (
                             <div key={option.id} className="flex items-center gap-2">
@@ -338,15 +338,26 @@ export function FieldEditor({
 
             {!isTraitSource && field.type === 'rating' && (
                 <div className="flex items-center gap-2 text-xs text-textSecondary">
-                    <input
-                        type="number"
+                    <NumberInput
+                        value={field.min}
+                        min={0}
+                        max={field.max}
+                        step={1}
+                        optional={false}
+                        onChange={(min) => callbacks.onUpdate({ min: min ?? 0 })}
+                        placeholder={t(editor.numberMin)}
+                        label={t(editor.numberMin)}
+                        className={`${inputClasses} w-20`}
+                    />
+                    <NumberInput
                         value={field.max}
-                        min={1}
-                        max={100}
-                        onChange={(event) =>
-                            callbacks.onUpdate({ max: Number(event.target.value) })
-                        }
-                        aria-label={t(editor.numberMax)}
+                        min={Math.max(1, field.min)}
+                        max={TEMPLATE_LIMITS.ratingMax}
+                        step={1}
+                        optional={false}
+                        onChange={(max) => callbacks.onUpdate({ max: max ?? field.max })}
+                        placeholder={t(editor.numberMax)}
+                        label={t(editor.numberMax)}
                         className={`${inputClasses} w-20`}
                     />
                     <select
@@ -368,25 +379,26 @@ export function FieldEditor({
 
             {field.type === 'resource' && (
                 <div className="flex items-center gap-2 text-xs text-textSecondary">
-                    <input
-                        type="number"
+                    <NumberInput
                         value={field.min}
                         min={0}
-                        onChange={(event) =>
-                            callbacks.onUpdate({ min: Number(event.target.value) })
-                        }
-                        aria-label={t(editor.numberMin)}
+                        max={field.max}
+                        step={1}
+                        optional={false}
+                        onChange={(min) => callbacks.onUpdate({ min: min ?? 0 })}
+                        placeholder={t(editor.numberMin)}
+                        label={t(editor.numberMin)}
                         className={`${inputClasses} w-20`}
                     />
-                    <input
-                        type="number"
+                    <NumberInput
                         value={field.max}
-                        min={1}
-                        max={1_000_000}
-                        onChange={(event) =>
-                            callbacks.onUpdate({ max: Number(event.target.value) })
-                        }
-                        aria-label={t(editor.numberMax)}
+                        min={Math.max(1, field.min)}
+                        max={TEMPLATE_LIMITS.resourceMax}
+                        step={1}
+                        optional={false}
+                        onChange={(max) => callbacks.onUpdate({ max: max ?? field.max })}
+                        placeholder={t(editor.numberMax)}
+                        label={t(editor.numberMax)}
                         className={`${inputClasses} w-20`}
                     />
                 </div>

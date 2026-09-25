@@ -125,13 +125,14 @@ estimates, open questions. Priority ordering lives only in the section grouping.
     - Creating a setting or type no longer creates a default template for it.
     - Settings and their types import and export as JSON files like templates; in the tree, users pick which branches (a setting, some of its types, their pages) go into an export or are taken from an import. Extends the spec 012 type file (`ttgamer-document-type` v1), which carries one type.
     - 2026-09-25: the spec 012 review fixed the library labeling setting-owned types with the ruleset name instead of the setting's name.
-- [ ] ⬜ **T-072 — Template element fixes: toggle, choice, resource** (none) — template fields behave and look like the sheet's own controls. (task for roadmap path `gm-notes-templates`)
-    - 2026-09-25: done in the spec 012 review — typed numbers honor the minimum, maximum, and step (bounded on blur or Enter).
+- [x] ✅ **T-072 — Template element fixes: toggle, choice, resource** (none) — template fields behave and look like the sheet's own controls. (task for roadmap path `gm-notes-templates`)
+    - 2026-09-25: done in the spec 012 review — typed numbers honor the minimum, maximum, and step (bounded on blur or Enter); the shared `NumberInput` accepts only numeric text and steps with the arrow keys.
     - Toggle: a StatDot-style dot (transparent when off, filled when on) instead of a browser checkbox.
+    - 2026-09-25: done. Toggle reuses the `Checkbox` dot atom; multiple choice is a list of dots with an editor switch to hide unselected options behind an expand button; the resource is one framed `current / max` unit; `NumberInput` moved to `shared/components` and replaced every remaining browser number input (compact fields, merits/flaws, the docs difficulty table). Storybook entries for these controls go into T-069.
     - Multiple choice: an option to hide unselected options.
     - Resource: balanced sizes of the fixed glyphs and the inputs.
 - [ ] ⬜ **T-073 — Rating element parity with trait rows** (T-058) — a template rating looks and works like the attribute and skill rows. (task for roadmap path `gm-notes-templates`)
-    - 2026-09-25: done in the spec 012 review — one dot per point (1..max); the minimum is a floor, not a dot.
+    - 2026-09-25: done in the spec 012 review — one dot per point (1..max); the minimum is a floor, not a dot, and the editor sets it.
     - Optional current/maximum numbers on the right, off by default; optional label on the left like attributes; optional text input (for example a specialization) between the label and the dots.
     - The "cells" style must differ from dots in function or be removed; today it is only paler dots.
     - Both styles take a die symbol so the rating rolls, with its label in the roll details; the dot style also takes a specialization (SPE).

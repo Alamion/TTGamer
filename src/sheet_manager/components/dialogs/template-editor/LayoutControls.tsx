@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 
 import type { VisibleWhen } from '../../../types/template';
@@ -157,16 +158,15 @@ export function ColumnLayoutControl({
                         <div className="grid gap-1">
                             <div className="flex flex-wrap gap-2">
                                 {widths.map((width, index) => (
-                                    <input
+                                    <NumberInput
                                         key={index}
-                                        type="number"
                                         min={1}
                                         max={12}
+                                        step={1}
+                                        optional={false}
                                         value={width}
-                                        onChange={(event) =>
-                                            setWidth(index, Number(event.target.value))
-                                        }
-                                        aria-label={t(editor.columnWidth, { index: index + 1 })}
+                                        onChange={(value) => setWidth(index, value ?? width)}
+                                        label={t(editor.columnWidth, { index: index + 1 })}
                                         className={`${inputClasses} w-16`}
                                     />
                                 ))}

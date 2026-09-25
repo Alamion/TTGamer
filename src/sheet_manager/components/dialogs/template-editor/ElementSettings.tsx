@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { ArrowDown, ArrowUp, Copy, Plus, Trash2 } from 'lucide-react';
 import { memo } from 'react';
 
@@ -319,26 +320,28 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
                 className={`${inputClasses} w-full`}
             />
             <div className="flex items-center gap-2">
-                <input
-                    type="number"
+                <NumberInput
                     value={node.minRows}
                     min={0}
-                    max={1000}
-                    onChange={(event) =>
-                        callbacks.onUpdate(node.id, { minRows: Number(event.target.value) })
+                    max={node.maxRows}
+                    step={1}
+                    optional={false}
+                    onChange={(minRows) =>
+                        callbacks.onUpdate(node.id, { minRows: minRows ?? node.minRows })
                     }
-                    aria-label={t(editor.minRows)}
+                    label={t(editor.minRows)}
                     className={`${inputClasses} w-20`}
                 />
-                <input
-                    type="number"
+                <NumberInput
                     value={node.maxRows}
-                    min={1}
+                    min={Math.max(1, node.minRows)}
                     max={1000}
-                    onChange={(event) =>
-                        callbacks.onUpdate(node.id, { maxRows: Number(event.target.value) })
+                    step={1}
+                    optional={false}
+                    onChange={(maxRows) =>
+                        callbacks.onUpdate(node.id, { maxRows: maxRows ?? node.maxRows })
                     }
-                    aria-label={t(editor.maxRows)}
+                    label={t(editor.maxRows)}
                     className={`${inputClasses} w-20`}
                 />
             </div>
@@ -436,17 +439,17 @@ function ListPresetsEditor({
                         placeholder={t(primitives.presetLabel)}
                         className={`${inputClasses} flex-1`}
                     />
-                    <input
-                        type="number"
+                    <NumberInput
                         min={0}
                         max={20}
+                        step={1}
                         value={preset.value ?? 0}
-                        onChange={(event) => {
+                        onChange={(value) => {
                             const next = [...presets];
-                            next[index] = { ...preset, value: Number(event.target.value) || 0 };
+                            next[index] = { ...preset, value: value ?? 0 };
                             update(next);
                         }}
-                        aria-label={t(primitives.presetValue)}
+                        label={t(primitives.presetValue)}
                         className={`${inputClasses} w-16`}
                     />
                     <button

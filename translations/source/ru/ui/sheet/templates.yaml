@@ -115,6 +115,7 @@ editor:
     ratingNumber: Число
     referenceKinds: Разрешённые типы документов
     multiple: Несколько значений
+    hideUnselected: Скрывать невыбранные варианты
     moveUp: Переместить выше
     moveDown: Переместить ниже
     remove: Удалить
@@ -302,6 +303,9 @@ page:
     formulaReasonDivision: деление на ноль
     formulaReasonNonNumeric: одно из значений — не число
     formulaClamped: Ограничено связанным значением
+    chooseOptions: Выбрать варианты
+    chooseOptionsDone: Готово
+    noneSelected: Ничего не выбрано
     imageInvalid: Источник изображения недоступен или небезопасен.
     imageUpload: Загрузить изображение
     imageUrl: URL изображения

@@ -115,6 +115,7 @@ editor:
     ratingNumber: Number
     referenceKinds: Allowed document kinds
     multiple: Allow multiple values
+    hideUnselected: Hide unselected options
     moveUp: Move up
     moveDown: Move down
     remove: Remove
@@ -302,6 +303,9 @@ page:
     formulaReasonDivision: division by zero
     formulaReasonNonNumeric: a referenced value is not a number
     formulaClamped: Limited by a linked value
+    chooseOptions: Choose options
+    chooseOptionsDone: Done
+    noneSelected: Nothing selected
     imageInvalid: This image source is unavailable or insecure.
     imageUpload: Upload image
     imageUrl: Image URL

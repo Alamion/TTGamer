@@ -1391,6 +1391,9 @@
     "ttgamer.ui.sheet.controls.meritFlaw.meritPlaceholder": {
         "message": "Название достоинства..."
     },
+    "ttgamer.ui.sheet.controls.meritFlaw.points": {
+        "message": "Очки: {name}"
+    },
     "ttgamer.ui.sheet.controls.meritFlaw.remove": {
         "message": "Удалить запись"
     },
@@ -2501,6 +2504,9 @@
     "ttgamer.ui.sheet.templates.editor.hiddenTitleHint": {
         "message": "Группу без видимого заголовка нельзя свернуть."
     },
+    "ttgamer.ui.sheet.templates.editor.hideUnselected": {
+        "message": "Скрывать невыбранные варианты"
+    },
     "ttgamer.ui.sheet.templates.editor.inserted": {
         "message": "{label}: добавлено."
     },
@@ -3167,6 +3173,12 @@
     "ttgamer.ui.sheet.templates.library.userSettings": {
         "message": "Ваши сеттинги"
     },
+    "ttgamer.ui.sheet.templates.page.chooseOptions": {
+        "message": "Выбрать варианты"
+    },
+    "ttgamer.ui.sheet.templates.page.chooseOptionsDone": {
+        "message": "Готово"
+    },
     "ttgamer.ui.sheet.templates.page.embedNoDocument": {
         "message": "Создайте или откройте персонажа, чтобы заполнить эту часть листа прямо здесь."
     },
@@ -3208,6 +3220,9 @@
     },
     "ttgamer.ui.sheet.templates.page.imageUrl": {
         "message": "URL изображения"
+    },
+    "ttgamer.ui.sheet.templates.page.noneSelected": {
+        "message": "Ничего не выбрано"
     },
     "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
         "message": "Привязка «{binding}» недоступна на этом устройстве."

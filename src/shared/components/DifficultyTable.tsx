@@ -3,6 +3,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useMemo, useState } from 'react';
 
 import { usePluralMessage } from '../hooks/usePluralMessage';
+import { NumberInput } from './NumberInput';
 
 const messages = uiMessages.shared.difficultyTable;
 
@@ -84,14 +85,14 @@ export function DifficultyTable() {
             <div className="flex flex-wrap gap-4 items-end mb-4">
                 <label className="flex flex-col gap-1 text-sm">
                     {translate(messages.pool)}
-                    <input
-                        type="number"
+                    <NumberInput
                         min={1}
                         max={20}
+                        step={1}
+                        optional={false}
                         value={currentPool}
-                        onChange={(e) =>
-                            setCurrentPool(Math.max(1, Math.min(20, Number(e.target.value))))
-                        }
+                        onChange={(pool) => setCurrentPool(pool ?? currentPool)}
+                        label={translate(messages.pool)}
                         className="w-20 border rounded px-2 py-1 dark:bg-gray-800 dark:border-gray-600"
                     />
                 </label>

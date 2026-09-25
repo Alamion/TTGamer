@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 
 import type { PrimitiveNode, TemplateNode } from '../../../types/template';
 import type { NodeUpdates } from './draft';
@@ -180,13 +181,14 @@ export function PrimitiveConfig({
                 <div className="grid gap-2">
                     <label className="grid gap-1 text-xs text-textSecondary">
                         {t(primitives.trackLevels)}
-                        <input
-                            type="number"
-                            min={1}
+                        <NumberInput
+                            min={0}
                             max={20}
+                            step={1}
                             value={node.track?.levels ?? 0}
-                            onChange={(event) => {
-                                const count = Math.max(0, Number(event.target.value) || 0);
+                            label={t(primitives.trackLevels)}
+                            onChange={(value) => {
+                                const count = value ?? 0;
                                 if (count === 0) {
                                     update({ track: undefined });
                                     return;

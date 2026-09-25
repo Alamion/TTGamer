@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 
+import { boundNumber } from '@site/src/shared/components/NumberInput';
 import { CharacterContext } from '@site/src/sheet_manager/context/CharacterContext';
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import { countUnfilledRequired } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
-import { boundNumber } from '@site/src/sheet_manager/features/sheet/declarative/fieldControls';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
@@ -341,9 +341,11 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
         expect(stored()).toBe(10);
         expect(charge.value).toBe('10');
 
+        // A minimum of 0 leaves no room for a sign, so it cannot be typed at all.
         fireEvent.change(charge, { target: { value: '-3' } });
-        fireEvent.keyDown(charge, { key: 'Enter' });
-        expect(stored()).toBe(0);
+        expect(charge.value).toBe('10');
+        fireEvent.change(charge, { target: { value: 'ten' } });
+        expect(charge.value).toBe('10');
     });
 
     it('snaps numbers to the step grid anchored at the minimum', () => {
@@ -371,6 +373,90 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
         // Clicking the top filled dot lowers the rating by one, down to the minimum.
         fireEvent.click(screen.getByRole('button', { name: 'Force rating: 1' }));
         expect(stored()).toBe(0);
+    });
+
+    it('holds a rating minimum: the first dots stay filled at the floor', () => {
+        const template = buildTemplate();
+        const identity = template.children[0] as { children: Array<Record<string, unknown>> };
+        const rating = identity.children.find(({ id }) => id === 'force-rating')!;
+        rating.min = 2;
+        mount(template);
+        fireEvent.click(screen.getByRole('button', { name: 'Force rating: 1' }));
+        expect(useDocumentStore.getState().documents[0]!.templateValues?.['force-rating']).toBe(2);
+    });
+
+    it('shows a toggle as a dot switch', () => {
+        mount(buildTemplate());
+        const trained = screen.getByRole('checkbox', { name: 'Trained' });
+        expect(trained.tagName).toBe('BUTTON');
+        fireEvent.click(trained);
+        expect(trained.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('lists multiple-choice options as pressable words and keeps the option order', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'choice-kit',
+            name: 'Choice Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                field('langs', 'Languages', 'select', {
+                    multiple: true,
+                    options: [
+                        { id: 'basic', label: 'Basic' },
+                        { id: 'huttese', label: 'Huttese' },
+                        { id: 'binary', label: 'Binary' },
+                    ],
+                }),
+            ],
+        });
+        mount(template);
+        fireEvent.click(screen.getByRole('button', { name: 'Binary' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Basic' }));
+        expect(useDocumentStore.getState().documents[0]!.templateValues?.langs).toEqual([
+            'basic',
+            'binary',
+        ]);
+        expect(screen.getByRole('button', { name: 'Basic' }).getAttribute('aria-pressed')).toBe(
+            'true'
+        );
+        expect(screen.getByRole('button', { name: 'Huttese' }).getAttribute('aria-pressed')).toBe(
+            'false'
+        );
+    });
+
+    it('hides unselected options until the reader expands the choice', () => {
+        seedDocument({ langs: ['huttese'] });
+        const template = CustomTemplateSchema.parse({
+            id: 'choice-kit',
+            name: 'Choice Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                field('langs', 'Languages', 'select', {
+                    multiple: true,
+                    hideUnselected: true,
+                    options: [
+                        { id: 'basic', label: 'Basic' },
+                        { id: 'huttese', label: 'Huttese' },
+                    ],
+                }),
+            ],
+        });
+        mount(template);
+        expect(screen.queryByRole('button', { name: 'Basic' })).toBeNull();
+        expect(screen.getByRole('button', { name: 'Huttese' })).toBeTruthy();
+
+        const expand = screen.getByRole('button', { name: 'Choose options' });
+        expect(expand.getAttribute('aria-expanded')).toBe('false');
+        fireEvent.click(expand);
+        fireEvent.click(screen.getByRole('button', { name: 'Basic' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+        expect(screen.getByRole('button', { name: 'Basic' })).toBeTruthy();
+        expect(useDocumentStore.getState().documents[0]!.templateValues?.langs).toEqual([
+            'basic',
+            'huttese',
+        ]);
     });
 
     it('adds table rows and fills cells', () => {

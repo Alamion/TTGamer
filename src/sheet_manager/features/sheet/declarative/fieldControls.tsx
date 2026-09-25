@@ -1,10 +1,12 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 import { ExternalLink, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
+import { Checkbox } from '../../../components/controls/Checkbox';
 import { DocumentSearch } from '../../../components/controls/DocumentSearch';
 import { reportSheetIssue } from '../../../diagnostics';
 import {
@@ -119,96 +121,6 @@ function TextFieldControlRender({
     );
 }
 
-/** Clamps to the bounds and snaps to the step grid anchored at the minimum (or zero). */
-export function boundNumber(
-    value: number,
-    { min, max, step }: { min?: number; max?: number; step?: number }
-): number {
-    let next = value;
-    if (step !== undefined && step > 0) {
-        const origin = min ?? 0;
-        // Round away float noise (0.1 steps) before comparing against the bounds.
-        next = Number((origin + Math.round((next - origin) / step) * step).toFixed(10));
-    }
-    if (max !== undefined && next > max) next = max;
-    if (min !== undefined && next < min) next = min;
-    return next;
-}
-
-/**
- * The browser's `min`/`max`/`step` only bound the spinner, not typed text. Typing keeps a
- * draft; in-range values are written at once, anything else is bounded on blur or Enter.
- */
-function BoundedNumberInput({
-    className,
-    disabled,
-    label,
-    max,
-    min,
-    onChange,
-    step,
-    value,
-}: {
-    className: string;
-    disabled?: boolean;
-    label: string;
-    max?: number;
-    min?: number;
-    onChange: (value: number | undefined) => void;
-    step?: number;
-    value: number | undefined;
-}) {
-    const shown = value === undefined ? '' : String(value);
-    const [draft, setDraft] = useState(shown);
-    const [lastShown, setLastShown] = useState(shown);
-    if (shown !== lastShown) {
-        setLastShown(shown);
-        setDraft(shown);
-    }
-    const bounds = { min, max, step };
-
-    const commit = () => {
-        if (draft.trim() === '') {
-            onChange(undefined);
-            return;
-        }
-        const parsed = Number(draft);
-        const next = Number.isFinite(parsed) ? boundNumber(parsed, bounds) : value;
-        setDraft(next === undefined ? '' : String(next));
-        if (next !== value) onChange(next);
-    };
-
-    return (
-        <input
-            type="number"
-            inputMode="decimal"
-            value={draft}
-            min={min}
-            max={max}
-            step={step}
-            onChange={(event) => {
-                const text = event.target.value;
-                setDraft(text);
-                if (text === '') {
-                    onChange(undefined);
-                    return;
-                }
-                const parsed = Number(text);
-                if (Number.isFinite(parsed) && boundNumber(parsed, bounds) === parsed) {
-                    onChange(parsed);
-                }
-            }}
-            onBlur={commit}
-            onKeyDown={(event) => {
-                if (event.key === 'Enter') commit();
-            }}
-            disabled={disabled}
-            aria-label={label}
-            className={className}
-        />
-    );
-}
-
 export function NumberFieldControl(props: TemplateFieldControlProps) {
     const { field, ...rest } = props;
     return NumberFieldControlRender({ field: field as FieldType<'number'>, ...rest });
@@ -226,7 +138,7 @@ function NumberFieldControlRender({
     const current = typeof value === 'number' ? value : undefined;
     return (
         <div>
-            <BoundedNumberInput
+            <NumberInput
                 value={
                     current === undefined ? undefined : Math.min(current, effectiveMax ?? Infinity)
                 }
@@ -257,13 +169,12 @@ export function ToggleFieldControl({
     value,
 }: TemplateFieldControlProps) {
     return (
-        <input
-            type="checkbox"
+        <Checkbox
             checked={value === true}
-            onChange={(event) => onChange(event.target.checked)}
+            onChange={onChange}
             disabled={disabled}
-            aria-label={field.label}
-            className="h-4 w-4"
+            label={field.label}
+            hideLabel
         />
     );
 }
@@ -298,25 +209,14 @@ function SelectFieldControlRender({
     }
 
     if (field.multiple) {
-        const selected = Array.isArray(value) ? value : [];
         return (
-            <select
-                multiple
-                aria-label={field.label}
-                value={selected}
-                onChange={(event) =>
-                    onChange(Array.from(event.target.selectedOptions, (option) => option.value))
-                }
+            <MultipleChoiceControl
                 disabled={disabled}
-                className={`${inputClasses} w-full`}
-                size={Math.min(4, Math.max(2, options.length))}
-            >
-                {options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
+                field={field}
+                onChange={onChange}
+                options={options}
+                value={value}
+            />
         );
     }
 
@@ -337,6 +237,83 @@ function SelectFieldControlRender({
                 </option>
             ))}
         </select>
+    );
+}
+
+/**
+ * Multiple choice as a row of words; a thin primary border marks the chosen ones. With `hideUnselected` the sheet shows only the chosen
+ * options; the reader expands the full list to change them (read-only sheets never expand).
+ */
+function MultipleChoiceControl({
+    disabled,
+    field,
+    onChange,
+    options,
+    value,
+}: {
+    disabled: boolean;
+    field: FieldType<'select'>;
+    onChange: (value: unknown) => void;
+    options: ReadonlyArray<CatalogOption>;
+    value: unknown;
+}) {
+    const [expanded, setExpanded] = useState(false);
+    const selected = new Set(
+        Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string') : []
+    );
+    const collapsible = field.hideUnselected === true;
+    const showAll = !collapsible || (expanded && !disabled);
+    const shown = showAll ? options : options.filter((option) => selected.has(option.value));
+
+    const toggle = (optionValue: string, checked: boolean) => {
+        // Keep the options' order, not the click order.
+        onChange(
+            options
+                .map((option) => option.value)
+                .filter((id) => (id === optionValue ? checked : selected.has(id)))
+        );
+    };
+
+    return (
+        <div role="group" aria-label={field.label} className="grid gap-1">
+            {shown.length === 0 ? (
+                <span className="text-xs text-textSecondary">{translate(page.noneSelected)}</span>
+            ) : (
+                <div className="flex flex-wrap gap-1">
+                    {shown.map((option) => {
+                        const isSelected = selected.has(option.value);
+                        return (
+                            <button
+                                key={option.value}
+                                type="button"
+                                aria-pressed={isSelected}
+                                disabled={disabled}
+                                onClick={() => toggle(option.value, !isSelected)}
+                                className={clsx(
+                                    'rounded border px-2 py-0.5 text-sm transition-colors',
+                                    isSelected
+                                        ? 'border-primary text-textPrimary'
+                                        : 'border-transparent text-textSecondary hover:border-border hover:text-textPrimary',
+                                    disabled && 'cursor-not-allowed opacity-50'
+                                )}
+                            >
+                                {option.label}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+            {collapsible && !disabled && (
+                <button
+                    type="button"
+                    aria-expanded={expanded}
+                    onClick={() => setExpanded((open) => !open)}
+                    className="w-fit text-xs text-primary hover:underline"
+                >
+                    {translate(expanded ? page.chooseOptionsDone : page.chooseOptions)}
+                </button>
+            )}
+        </div>
     );
 }
 
@@ -406,7 +383,7 @@ function RatingFieldControlRender({
     if (field.presentation === 'number') {
         return (
             <div>
-                <BoundedNumberInput
+                <NumberInput
                     value={current}
                     min={field.min}
                     max={effectiveMax}
@@ -502,32 +479,44 @@ function ResourceFieldControlRender({
             ? (value as { current: number; max: number })
             : { current: field.min, max: field.max };
 
+    // One framed "current / max" unit: both numbers and the slash share a size and baseline.
+    const numberClasses =
+        'w-12 bg-transparent px-1 py-1 text-center text-sm tabular-nums text-textPrimary focus:outline-none';
     return (
-        <div className="flex items-center gap-2">
-            <input
-                type="number"
+        <div
+            className={clsx(
+                'inline-flex items-center rounded border border-border bg-bgSurface focus-within:ring-1 focus-within:ring-primary',
+                disabled && 'opacity-50'
+            )}
+        >
+            <NumberInput
                 value={resource.current}
                 min={field.min}
-                max={field.max}
-                onChange={(event) => onChange({ ...resource, current: Number(event.target.value) })}
+                max={resource.max}
+                step={1}
+                optional={false}
+                onChange={(current) => onChange({ ...resource, current: current ?? field.min })}
                 disabled={disabled}
-                aria-label={translate(uiMessages.sheet.controls.resourceCurrent, {
+                label={translate(uiMessages.sheet.controls.resourceCurrent, {
                     label: field.label,
                 })}
-                className={`${inputClasses} w-20`}
+                className={numberClasses}
             />
-            <span className="text-xs text-textSecondary">/</span>
-            <input
-                type="number"
+            <span className="text-sm text-textSecondary" aria-hidden="true">
+                /
+            </span>
+            <NumberInput
                 value={resource.max}
                 min={field.min}
                 max={field.max}
-                onChange={(event) => onChange({ ...resource, max: Number(event.target.value) })}
+                step={1}
+                optional={false}
+                onChange={(max) => onChange({ ...resource, max: max ?? field.max })}
                 disabled={disabled}
-                aria-label={translate(uiMessages.sheet.controls.resourceMax, {
+                label={translate(uiMessages.sheet.controls.resourceMax, {
                     label: field.label,
                 })}
-                className={`${inputClasses} w-20`}
+                className={numberClasses}
             />
         </div>
     );

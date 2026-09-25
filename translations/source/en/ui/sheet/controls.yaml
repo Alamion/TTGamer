@@ -21,3 +21,4 @@ meritFlaw:
     addAdvantage: Add Advantage
     addFlaw: Add Flaw
     remove: Remove entry
+    points: 'Points: {name}'

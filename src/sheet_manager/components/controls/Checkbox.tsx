@@ -9,6 +9,8 @@ interface CheckboxProps {
     label: string;
     id?: string;
     activeColor?: { bg?: string; border?: string };
+    /** The label only names the dot for assistive tech (the owner renders its own label). */
+    hideLabel?: boolean;
 }
 
 const sizeClasses = {
@@ -31,6 +33,7 @@ export function Checkbox({
     label,
     id,
     activeColor,
+    hideLabel = false,
 }: CheckboxProps) {
     const handleToggle = useCallback(() => {
         if (disabled) return;
@@ -63,7 +66,9 @@ export function Checkbox({
                     disabled && 'opacity-50 cursor-not-allowed'
                 )}
             />
-            <span className={clsx('text-textPrimary', labelSizeClasses[size])}>{label}</span>
+            {!hideLabel && (
+                <span className={clsx('text-textPrimary', labelSizeClasses[size])}>{label}</span>
+            )}
         </div>
     );
 }

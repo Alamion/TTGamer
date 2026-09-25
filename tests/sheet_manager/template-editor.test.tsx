@@ -870,6 +870,33 @@ describe('trait-sourced fields', () => {
             within(settings('luck')).getByLabelText('Maximum from value or formula (optional)')
         ).not.toBeNull();
     });
+
+    it('sets a rating minimum bounded by its maximum', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'luck-kit',
+            name: 'Luck Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [{ id: 'luck', type: 'rating', label: 'Luck', max: 5 }],
+        });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+        selectInOutline('luck');
+        const min = within(settings('luck')).getByLabelText('Min') as HTMLInputElement;
+        expect(min.value).toBe('0');
+        fireEvent.change(min, { target: { value: '9' } });
+        fireEvent.blur(min);
+        expect(min.value).toBe('5');
+        fireEvent.change(min, { target: { value: '2' } });
+        // The page redraws from the draft: five dots, the first two held by the minimum.
+        expect(within(pageFrame('luck')).getAllByRole('button', { name: /^Luck: / })).toHaveLength(
+            5
+        );
+    });
 });
 
 describe('duplicating elements and locating issues', () => {

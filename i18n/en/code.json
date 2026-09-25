@@ -1391,6 +1391,9 @@
     "ttgamer.ui.sheet.controls.meritFlaw.meritPlaceholder": {
         "message": "Merit name..."
     },
+    "ttgamer.ui.sheet.controls.meritFlaw.points": {
+        "message": "Points: {name}"
+    },
     "ttgamer.ui.sheet.controls.meritFlaw.remove": {
         "message": "Remove entry"
     },
@@ -2501,6 +2504,9 @@
     "ttgamer.ui.sheet.templates.editor.hiddenTitleHint": {
         "message": "A group without a visible title cannot be collapsed."
     },
+    "ttgamer.ui.sheet.templates.editor.hideUnselected": {
+        "message": "Hide unselected options"
+    },
     "ttgamer.ui.sheet.templates.editor.inserted": {
         "message": "{label} added."
     },
@@ -3167,6 +3173,12 @@
     "ttgamer.ui.sheet.templates.library.userSettings": {
         "message": "Your settings"
     },
+    "ttgamer.ui.sheet.templates.page.chooseOptions": {
+        "message": "Choose options"
+    },
+    "ttgamer.ui.sheet.templates.page.chooseOptionsDone": {
+        "message": "Done"
+    },
     "ttgamer.ui.sheet.templates.page.embedNoDocument": {
         "message": "Create or open a character to fill in this part of the sheet here."
     },
@@ -3208,6 +3220,9 @@
     },
     "ttgamer.ui.sheet.templates.page.imageUrl": {
         "message": "Image URL"
+    },
+    "ttgamer.ui.sheet.templates.page.noneSelected": {
+        "message": "Nothing selected"
     },
     "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
         "message": "Data binding \"{binding}\" is unavailable on this device."

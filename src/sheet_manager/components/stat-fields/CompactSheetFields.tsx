@@ -1,3 +1,4 @@
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 
 import type { ConditionMark } from '../../types/character';
@@ -49,17 +50,15 @@ export function CompactRating({
             <span className="min-w-0 flex-1 truncate text-textSecondary" title={label}>
                 <TermLabel text={label} {...term} />
             </span>
-            <input
-                type="number"
+            <NumberInput
                 min={0}
                 max={max}
                 step={1}
+                optional={false}
                 value={value}
                 disabled={disabled}
-                onChange={(event) =>
-                    onChange(Math.max(0, Math.min(max, Number(event.target.value) || 0)))
-                }
-                aria-label={label}
+                onChange={(next) => onChange(next ?? value)}
+                label={label}
                 className="h-7 w-11 rounded border border-border bg-bgBase px-1 text-center text-sm font-semibold text-textPrimary outline-none focus:border-primary disabled:opacity-70"
             />
         </label>
@@ -88,36 +87,30 @@ export function CompactResource({
     return (
         <div className="flex items-center gap-1.5 text-xs">
             <span className="min-w-0 flex-1 truncate text-textSecondary">{label}</span>
-            <input
-                type="number"
+            <NumberInput
                 min={0}
                 max={maximum}
+                step={1}
+                optional={false}
                 value={current}
                 disabled={disabled}
-                onChange={(event) =>
-                    onChange(
-                        Math.max(0, Math.min(maximum, Number(event.target.value) || 0)),
-                        maximum
-                    )
-                }
-                aria-label={`${label}: ${currentLabel}`}
+                onChange={(next) => onChange(next ?? current, maximum)}
+                label={`${label}: ${currentLabel}`}
                 className="h-7 w-10 rounded border border-border bg-bgBase px-1 text-center text-sm text-textPrimary disabled:opacity-70"
             />
             <span className="text-textSecondary">/</span>
-            <input
-                type="number"
+            <NumberInput
                 min={0}
                 max={limit}
+                step={1}
+                optional={false}
                 value={maximum}
                 disabled={disabled}
-                onChange={(event) => {
-                    const nextMaximum = Math.max(
-                        0,
-                        Math.min(limit, Number(event.target.value) || 0)
-                    );
+                onChange={(next) => {
+                    const nextMaximum = next ?? maximum;
                     onChange(Math.min(current, nextMaximum), nextMaximum);
                 }}
-                aria-label={`${label}: ${maximumLabel}`}
+                label={`${label}: ${maximumLabel}`}
                 className="h-7 w-10 rounded border border-border bg-bgBase px-1 text-center text-sm text-textPrimary disabled:opacity-70"
             />
         </div>

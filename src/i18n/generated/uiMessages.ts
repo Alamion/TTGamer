@@ -1678,6 +1678,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.controls.meritFlaw.remove',
                     message: 'Remove entry',
                 },
+                points: {
+                    id: 'ttgamer.ui.sheet.controls.meritFlaw.points',
+                    message: 'Points: {name}',
+                },
             },
         },
         documents: {
@@ -3176,6 +3180,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.multiple',
                     message: 'Allow multiple values',
                 },
+                hideUnselected: {
+                    id: 'ttgamer.ui.sheet.templates.editor.hideUnselected',
+                    message: 'Hide unselected options',
+                },
                 moveUp: {
                     id: 'ttgamer.ui.sheet.templates.editor.moveUp',
                     message: 'Move up',
@@ -3921,6 +3929,18 @@ export const uiMessages = {
                 formulaClamped: {
                     id: 'ttgamer.ui.sheet.templates.page.formulaClamped',
                     message: 'Limited by a linked value',
+                },
+                chooseOptions: {
+                    id: 'ttgamer.ui.sheet.templates.page.chooseOptions',
+                    message: 'Choose options',
+                },
+                chooseOptionsDone: {
+                    id: 'ttgamer.ui.sheet.templates.page.chooseOptionsDone',
+                    message: 'Done',
+                },
+                noneSelected: {
+                    id: 'ttgamer.ui.sheet.templates.page.noneSelected',
+                    message: 'Nothing selected',
                 },
                 imageInvalid: {
                     id: 'ttgamer.ui.sheet.templates.page.imageInvalid',

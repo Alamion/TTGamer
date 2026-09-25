@@ -17,7 +17,12 @@
 - **Edited default pages stay with their system (T-046)**: saved edits of shipped pages are keyed by system and page, so they can never attach to another system's page with the same name; existing edits move over on load
 - **Imported templates no longer replace a shipped page**: a template file whose id matches a shipped page is imported under a new id
 - **Catalogs offered by the editor belong to the template's system**, and reference fields let you choose which document types they point to
-- **Template number fields keep their limits**: a typed value above the maximum or below the minimum is brought into range when you leave the field, and it snaps to the field's step
+- **Template number fields keep their limits**: they accept only numbers, a typed value above the maximum or below the minimum is brought into range when you leave the field, it snaps to the field's step, and the arrow keys step it; the editor's own number settings work the same way
+- **Toggles are dots**: a template toggle is the same round dot as the sheet's other markers, transparent when off and filled when on
+- **Multiple choice as a row of words**: a thin border in the accent color marks the chosen ones, in the options' order; a new editor switch hides the options not chosen until the reader opens the full list
+- **Resources look balanced**: current and maximum sit in one frame with the slash at the same size
+- **Every number input accepts only numbers**, including compact ratings and resources, merit and flaw points, and the difficulty table in the docs
+- **Template ratings take a minimum**: set it in the editor next to the maximum; the dots up to it stay filled
 - **Template ratings show one dot per point**: a rating with a maximum of 5 shows five dots and the first dot means 1, like attribute and skill rows (it showed an extra dot for zero)
 - **Field types in the editor are translated**, and the type picker fits the settings panel
 - **Types in your settings show the setting's name** in the template library instead of the ruleset's

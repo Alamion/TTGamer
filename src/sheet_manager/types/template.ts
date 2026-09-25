@@ -14,6 +14,8 @@ export const TEMPLATE_LIMITS = {
     columnsMax: 4,
     tableColumnsMax: 60,
     listEntriesMax: 1_000,
+    ratingMax: 100,
+    resourceMax: 1_000_000,
 } as const;
 
 /** Template file/schema generation authored by this build (contracts/template-node-model.md). */
@@ -186,6 +188,8 @@ const SelectFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('select'),
     multiple: z.boolean().default(false),
+    /** Multiple choice only: the sheet shows the chosen options until the reader expands it. */
+    hideUnselected: z.boolean().optional(),
     options: z
         .array(
             z.object({
@@ -203,7 +207,7 @@ const RatingFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('rating'),
     min: z.number().int().min(0).default(0),
-    max: z.number().int().min(1).max(100),
+    max: z.number().int().min(1).max(TEMPLATE_LIMITS.ratingMax),
     presentation: z.enum(['dots', 'boxes', 'number']).default('dots'),
     ...maxFromShape,
 });
@@ -212,7 +216,7 @@ const ResourceFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('resource'),
     min: z.number().int().min(0).default(0),
-    max: z.number().int().min(1).max(1_000_000),
+    max: z.number().int().min(1).max(TEMPLATE_LIMITS.resourceMax),
 });
 
 const ReferenceFieldSchema = z.object({

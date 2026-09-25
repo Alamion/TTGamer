@@ -38,6 +38,11 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   (SectionCard surface, opt-in `collapsible`). Accents alternate by sibling parity, never stored.
 - Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `formula`, `select`,
   `rating`, `resource`, `reference`.
+    - Controls: `toggle` is the round `Checkbox` dot; multiple `select` is a row of pressable words
+      (thin primary border when chosen) in option order (`hideUnselected` shows only chosen ones until the reader expands it);
+      `rating` dots are 1..max with `min` as a filled floor; every numeric input (fields,
+      resource, editor settings) is `shared/components/NumberInput`: numeric text only,
+      bounded to min/max/step on blur or Enter, arrow keys step.
 - Other leaves: `table` (columns are fields; rows stored under `tableValueKey`), `list`
   (exactly one of `valueKey` or `bindingKey`), `primitive` (`bindingKey` into system data).
 - Any node may carry `visibleWhen: { coordinate, equals, not? }`: rendered only while the value
