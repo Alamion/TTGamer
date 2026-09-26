@@ -17,6 +17,8 @@ module.exports = {
                     light: `color-mix(in srgb, rgb(var(--primary)), white 25%)`,
                     lighter: `color-mix(in srgb, rgb(var(--primary)), white 50%)`,
                     lightest: `color-mix(in srgb, rgb(var(--primary)), white 75%)`,
+                    // Large fills and editor marks: toned toward the surface, more in dark mode.
+                    muted: `color-mix(in srgb, rgb(var(--primary)), rgb(var(--bg-surface)) var(--primary-mute))`,
                 },
                 secondary: {
                     DEFAULT: `rgb(var(--secondary) / 1)`,
@@ -39,7 +41,7 @@ module.exports = {
                 textSecondary: `rgb(var(--text-secondary) / 1)`,
                 border: `rgb(var(--border) / 1)`,
                 borderMoreContrast: `rgb(var(--border-more-contrast) / 1)`,
-                editor: `rgb(var(--editor) / <alpha-value>)`,
+                tertiary: `rgb(var(--tertiary) / <alpha-value>)`,
 
                 jediBlue: `rgb(var(--sw-jedi-blue) / 1)`,
                 jediGreen: `rgb(var(--sw-jedi-green) / 1)`,

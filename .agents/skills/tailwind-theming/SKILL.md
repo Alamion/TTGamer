@@ -27,9 +27,24 @@ Defined in `src/css/custom.css`:
 
 - **Primary** (red) and **secondary** (gold) carry every accent: selection, focus, pressed
   states, active tabs, badges, section bars. Prefer them wherever a color marks something.
-- **Tertiary** (violet, `--editor` today; T-081 renames it) is reserved for edge cases a user
-  must tell apart from ordinary accents — for example something added automatically on the
-  user's behalf. Never use it as the default accent of a surface, including the template editor.
+- **Tertiary** (violet, `--tertiary`, Tailwind `tertiary`) is reserved for edge cases a user
+  must tell apart from ordinary accents — today only the parts the library adds automatically to
+  an export or import. Never use it as the default accent of a surface, including the template
+  editor.
+- Template editor and library mapping (T-081):
+
+    | Mark                                                   | Class family                                                  |
+    | ------------------------------------------------------ | ------------------------------------------------------------- |
+    | Selection, selected element frame and chip, drop line  | `primary` (`bg-primary`, `outline-primary`, `border-primary`) |
+    | Insertion slot hover, pressed Edit/Preview, active tab | `primary` (`bg-primary/20`, `border-primary`)                 |
+    | Hovered element frame, row and menu hover, help notes  | `secondary` (`outline-secondary`, `bg-secondary/10`–`/15`)    |
+    | Parts added automatically (export and import)          | `tertiary`                                                    |
+
+- **`primary-muted`** is primary toned toward the surface (`--primary-mute`: 8% light, 30% dark).
+  Use it for large or emphatic red fills — primary buttons (New, Save, Create, Move, Import),
+  pressed segment switches, the editor's selected-element outline and chip — with `hover:bg-primary`
+  for feedback. Plain `primary` stays for thin marks, text, focus rings, and tints (`/10`–`/20`);
+  a selected row is a tint plus an inset primary edge, not a solid fill.
 - Semantic colors (`error`, `warning`, `success`, `info`) mean state, not decoration.
 
 ## Dark Mode

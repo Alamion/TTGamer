@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
-import { TemplateLibraryDialog } from '@site/src/sheet_manager/components/dialogs/TemplateLibraryDialog';
+import { LibraryDialog } from '@site/src/sheet_manager/components/dialogs/LibraryDialog';
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
@@ -33,29 +33,34 @@ function setting(id: string, name: string, systemId: string): UserSetting {
     };
 }
 
-function settingsSection() {
-    return screen.getByTestId('user-settings-section');
-}
+const openLibrary = () =>
+    render(createElement(LibraryDialog, { open: true, onOpenChange: () => {} }));
+const clickRow = (key: string) =>
+    fireEvent.click(document.querySelector(`[data-library-row="${key}"]`)!);
+const clickAction = (id: string) =>
+    fireEvent.click(document.querySelector(`[data-library-action="${id}"]`)!);
 
 describe('user settings (spec 012, US6)', () => {
     beforeEach(() => {
         resetEditorStores();
-        useDocumentTypeStore.setState({ types: {}, settings: {} });
+        useDocumentTypeStore.setState({ types: {}, settings: {}, defaultPages: {} });
     });
     afterEach(() => {
         cleanup();
-        useDocumentTypeStore.setState({ types: {}, settings: {} });
+        useDocumentTypeStore.setState({ types: {}, settings: {}, defaultPages: {} });
     });
 
-    it('builds settings only on rulesets with core definitions', () => {
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-        const ruleset = within(settingsSection()).getByLabelText('Ruleset') as HTMLSelectElement;
-        expect([...ruleset.options].map(({ value }) => value).sort()).toEqual(['wod-2e', 'wod-v5']);
-        fireEvent.change(ruleset, { target: { value: 'wod-v5' } });
-        fireEvent.change(within(settingsSection()).getByLabelText('Setting name'), {
-            target: { value: 'Ashen Realms' },
-        });
-        fireEvent.click(within(settingsSection()).getByRole('button', { name: /Create setting/ }));
+    it('builds settings on the rulesets of the library', () => {
+        openLibrary();
+        expect(
+            [...document.querySelectorAll('[data-library-row^="r:"]')].map((row) =>
+                row.getAttribute('data-library-row')
+            )
+        ).toEqual(['r:wod-2e', 'r:wod-v5']);
+        clickRow('r:wod-v5');
+        clickAction('newSetting');
+        fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Ashen Realms' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
         const [created] = Object.values(useDocumentTypeStore.getState().settings);
         expect(created).toMatchObject({ name: 'Ashen Realms', systemId: 'wod-v5' });
     });
@@ -66,8 +71,19 @@ describe('user settings (spec 012, US6)', () => {
                 'user-setting-ash00001': setting('user-setting-ash00001', 'Ashen Realms', 'wod-2e'),
             },
         });
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-        fireEvent.click(within(settingsSection()).getByRole('button', { name: /Page: Character/ }));
+        openLibrary();
+        fireEvent.click(
+            within(
+                document.querySelector<HTMLElement>(
+                    '[data-library-row="s:user:user-setting-ash00001"]'
+                )!
+            ).getByLabelText(/Expand/)
+        );
+        clickRow('t:core:user-setting-ash00001:wod2e-character');
+        clickAction('newPage');
+        fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Ashen character' } });
+        fireEvent.change(screen.getByLabelText('Start from'), { target: { value: 'blank' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
         const page =
             useDocumentTypeStore.getState().settings['user-setting-ash00001']!.pages[
@@ -156,11 +172,12 @@ describe('user settings (spec 012, US6)', () => {
         useDocumentStore
             .getState()
             .createDocument('wod-2e', 'wod2e-character', { settingId: 'user-setting-ash00001' });
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-        fireEvent.click(within(settingsSection()).getByRole('button', { name: /Delete setting/ }));
+        openLibrary();
+        clickRow('s:user:user-setting-ash00001');
+        clickAction('delete');
         const confirm = screen.getAllByRole('dialog').at(-1)!;
         expect(confirm.textContent).toContain('1 document belongs to it');
-        fireEvent.click(within(confirm).getByRole('button', { name: 'Delete setting' }));
+        fireEvent.click(within(confirm).getByRole('button', { name: 'Delete' }));
         expect(useDocumentTypeStore.getState().settings).toEqual({});
         expect(useDocumentStore.getState().documents).toHaveLength(1);
     });

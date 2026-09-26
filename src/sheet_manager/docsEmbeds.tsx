@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { reportSheetIssue } from './diagnostics';
 import { CatalogBrowser } from './features/docs/CatalogBrowser';
 import { DocsLinkVariants, ElementStorybook } from './features/docs/ElementStorybook';
+import { LibraryStorybook } from './features/docs/LibraryStorybook';
 import { CATALOG_BINDINGS } from './features/sheet/data/catalogBindings';
 import { DeclarativeSheetView } from './features/sheet/declarative/DeclarativeSheetView';
 import { CreateCharacterButton } from './features/sheet/shell/CreateCharacterButton';
@@ -135,6 +136,7 @@ export {
     CreateCharacterButton,
     DocsLinkVariants,
     ElementStorybook,
+    LibraryStorybook,
     PolicyStatement,
 };
 

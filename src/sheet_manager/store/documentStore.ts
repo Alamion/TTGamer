@@ -12,8 +12,9 @@ import {
 import { deletePortrait } from '../persistence/portraitStorage';
 import { systemRegistry } from '../systems';
 import { characterDocumentFromBase } from '../systems/star-wars-wod/characterDocument';
-import type { DocumentMetadata, UnknownDocumentEnvelope } from '../types/document';
-import { DocumentMetadataSchema } from '../types/document';
+import { isUserKind } from '../systems/userTypes';
+import type { DocumentMetadata, DocumentViewId, UnknownDocumentEnvelope } from '../types/document';
+import { DocumentMetadataSchema, SystemIdSchema } from '../types/document';
 import { collectTemplateFields, type CustomTemplate, fieldValueKey } from '../types/template';
 import type { TemplatePageValues } from '../types/templateValues';
 import { useTemplateStore } from './templateStore';
@@ -61,6 +62,17 @@ function flattenLegacyTemplateValues(
 }
 const MAX_RECOVERY_ENTRIES = 100;
 
+/**
+ * One document's part of a library move (spec 013): `null` clears the metadata field. Only
+ * documents of user types change system (their data is one empty shape).
+ */
+export interface DocumentRelocation {
+    id: string;
+    systemId?: string;
+    settingId?: string | null;
+    templateId?: string | null;
+}
+
 export interface DocumentStoreState {
     documents: UnknownDocumentEnvelope[];
     currentDocumentId: string | null;
@@ -70,10 +82,12 @@ export interface DocumentStoreState {
     createDocument: (
         systemId: string,
         definitionId: string,
-        options?: { settingId?: string; templateId?: string }
+        options?: { settingId?: string; templateId?: string; preferredViewId?: DocumentViewId }
     ) => UnknownDocumentEnvelope;
     updateDocumentData: (id: string, updater: (data: unknown) => unknown) => void;
     updateDocumentMetadata: (id: string, updates: Partial<DocumentMetadata>) => void;
+    /** Applies the document side of a library move in one write. */
+    relocateDocuments: (changes: readonly DocumentRelocation[]) => void;
     /** Writes the document-global value bag, validated against the rendered template. */
     updateTemplateValues: (
         id: string,
@@ -205,7 +219,7 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             metadata: {
                 title: '',
                 tags: [],
-                preferredViewId: definition.defaultViewId,
+                preferredViewId: options.preferredViewId ?? definition.defaultViewId,
                 ...(options.settingId ? { settingId: options.settingId } : {}),
                 ...(options.templateId ? { templateId: options.templateId } : {}),
             },
@@ -255,6 +269,29 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
                       }
                     : document
             ),
+        }));
+    },
+
+    relocateDocuments: (changes) => {
+        const byId = new Map(
+            changes.filter(({ id }) => !isPresetId(id)).map((change) => [change.id, change])
+        );
+        if (byId.size === 0) return;
+        set(({ documents }) => ({
+            documents: documents.map((document) => {
+                const change = byId.get(document.id);
+                if (!change) return document;
+                const metadata = { ...document.metadata };
+                if (change.settingId === null) delete metadata.settingId;
+                else if (change.settingId !== undefined) metadata.settingId = change.settingId;
+                if (change.templateId === null) delete metadata.templateId;
+                else if (change.templateId !== undefined) metadata.templateId = change.templateId;
+                const systemId =
+                    change.systemId && isUserKind(document.definitionId)
+                        ? SystemIdSchema.parse(change.systemId)
+                        : document.systemId;
+                return { ...document, systemId, metadata: DocumentMetadataSchema.parse(metadata) };
+            }),
         }));
     },
 

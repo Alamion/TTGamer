@@ -59,34 +59,6 @@ export function listTemplateTargets(): TemplateTarget[] {
     });
 }
 
-export interface SettingOption {
-    value: string;
-    systemId: string;
-    moduleId?: string;
-    label: string;
-}
-
-/** The shipped settings a user type can belong to: each system, or each module of a ruleset. */
-export function listShippedSettings(): SettingOption[] {
-    const seen = new Set<string>();
-    const options: SettingOption[] = [];
-    for (const system of systemRegistry.getSystems()) {
-        for (const definition of system.documents) {
-            const moduleId = definition.module?.id;
-            const value = `${system.id}|${moduleId ?? ''}`;
-            if (seen.has(value)) continue;
-            seen.add(value);
-            options.push({
-                value,
-                systemId: system.id,
-                moduleId,
-                label: translate(documentSettingLabel(system, definition)),
-            });
-        }
-    }
-    return options;
-}
-
 /** Where a template belongs: a system's document kind, in a user setting for core definitions. */
 export interface TemplateTargetRef {
     systemId: string;

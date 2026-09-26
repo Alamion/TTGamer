@@ -72,15 +72,22 @@ export function planTemplateRetarget(after: CustomTemplate, state: RetargetState
     );
     const types: UserDocumentType[] = [];
     for (const type of Object.values(state.types)) {
-        const pageOfType = (id: string) =>
+        const pageOfType = (id: string | undefined) =>
             templates.some((template) => template.id === id && template.documentKind === type.id);
         if (pageOfType(type.defaultTemplateId)) continue;
         const next =
             after.documentKind === type.id
                 ? after.id
                 : templates.find((template) => template.documentKind === type.id)?.id;
-        // No page left: the type keeps its id and shows stored values until it gets one.
-        if (next) types.push({ ...type, defaultTemplateId: next, updatedAt: now });
+        if (next === type.defaultTemplateId) continue;
+        // No page left: the type drops its default and shows stored values until it gets one.
+        const { defaultTemplateId: _dropped, ...rest } = type;
+        void _dropped;
+        types.push(
+            next
+                ? { ...rest, defaultTemplateId: next, updatedAt: now }
+                : { ...rest, updatedAt: now }
+        );
     }
 
     return { documentIds, settings, types };

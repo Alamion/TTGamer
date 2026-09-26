@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
-import { ElementStorybook } from '@site/src/sheet_manager/docsEmbeds';
+import { tailwindColors } from '@site/src/shared/components/Palette';
+import { ElementStorybook, LibraryStorybook } from '@site/src/sheet_manager/docsEmbeds';
 import { validateTemplateReferences } from '@site/src/sheet_manager/features/sheet/data/templateReferences';
 import {
     bindingSignature,
@@ -213,5 +214,40 @@ describe('element storybook (constitution VI, T-069)', () => {
         // The deliberate formula errors report; nothing else may.
         const unexpected = takeSheetIssues().filter(({ code }) => code !== 'formula-error');
         expect(unexpected).toEqual([]);
+    });
+});
+
+describe('palette accent roles (spec 013, T-081)', () => {
+    it('lists the violet as the tertiary color and no editor color', () => {
+        const names = tailwindColors().map(({ name }) => name);
+        expect(names).toContain('tertiary');
+        expect(names).not.toContain('editor');
+    });
+});
+
+describe('library storybook (spec 013)', () => {
+    afterEach(cleanup);
+
+    it('shows every row level and state and every tick state', () => {
+        render(createElement(LibraryStorybook));
+        for (const title of ['levels', 'states', 'ticks']) {
+            expect(document.querySelector(`[data-library-story="${title}"]`)).not.toBeNull();
+        }
+        const levels = [...document.querySelectorAll('[data-library-row]')].map((row) =>
+            row.getAttribute('aria-level')
+        );
+        expect(new Set(levels)).toEqual(new Set(['1', '2', '3', '4']));
+        const ticks = [...document.querySelectorAll('[role="checkbox"]')];
+        expect(ticks.map((box) => box.getAttribute('aria-checked'))).toEqual([
+            'false',
+            'true',
+            'mixed',
+            'true',
+            'false',
+        ]);
+        expect(ticks[3]!.getAttribute('data-auto')).toBe('true');
+        expect(screen.getByText('Edited full sheet')).toBeTruthy();
+        expect(screen.getByText('unavailable')).toBeTruthy();
+        expect(takeSheetIssues()).toEqual([]);
     });
 });

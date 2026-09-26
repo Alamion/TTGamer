@@ -83,7 +83,7 @@ export function ColumnSpanControl({
                             className={clsx(
                                 'min-w-8 rounded border px-2 py-1 text-xs transition-colors',
                                 selected
-                                    ? 'border-primary bg-primary text-white'
+                                    ? 'border-primary-muted bg-primary-muted text-white'
                                     : 'border-border bg-bgSurface text-textPrimary hover:border-primary'
                             )}
                         >
@@ -135,7 +135,7 @@ export function ColumnPlacementControl({
                             className={clsx(
                                 'min-w-8 rounded border px-2 py-1 text-xs transition-colors',
                                 selected
-                                    ? 'border-primary bg-primary text-white'
+                                    ? 'border-primary-muted bg-primary-muted text-white'
                                     : 'border-border bg-bgSurface text-textPrimary hover:border-primary'
                             )}
                         >

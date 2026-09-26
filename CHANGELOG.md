@@ -19,6 +19,10 @@
 - **Elements can span columns**: a new "Spans columns" setting stretches an element over 2–4 columns of its section or group, for a wide field beside a narrow one or a full-width row
 - **Documentation links in templates accept external pages**: a section or group links to `/docs/…` or any `https://` address
 
+- **Library (spec 013, T-071)**: the "Templates" list becomes one tree — rules, the settings on them (Rules only, Star Wars, Hunter, your own), their document types, and each type's pages — with details and actions beside it, search, "Only yours" and "Edited shipped" filters, a context menu, full keyboard navigation, and tabs on phones; creating a setting or a type no longer creates a page, and a type's default page is one click
+- **Move settings, types, and pages in the library**: drag a row onto its new place or use Move…; pages go to another type, types to another setting, settings to other rules; a move that changes the game system says first which bindings break and which documents stay (a setting's rules characters stay on their old rules, on the page they used)
+- **Share any part of the library**: export ticks whole branches or single items, adds the parents they need automatically, and never copies shipped content; import shows the file's tree first — new, already present, conflict (Replace or Keep both), unavailable — and installs only what you tick; older type and page files open the same way
+
 ### Fix
 
 - **Edited default pages stay with their system (T-046)**: saved edits of shipped pages are keyed by system and page, so they can never attach to another system's page with the same name; existing edits move over on load
@@ -34,12 +38,14 @@
 - **Field types in the editor are translated**, and the type picker fits the settings panel
 - **Documentation links open in your language**: the "?" beside a section opened the English page for Russian readers; links that are not documentation or `https://` addresses are no longer shown
 - **Types in your settings show the setting's name** in the template library instead of the ruleset's
+- **One set of accent colors in the editor and the library (T-081)**: selection, frames, insertion points, and pressed modes use the app's red and gold; large red fills (the selected element's frame, New, Save, and other main buttons) are toned down, most in the dark theme, and a selected outline row is tinted instead of filled; violet is now the tertiary color, kept for parts added automatically
 
 ### Chore
 
 - **Star Wars runs on the WoD 2e ruleset (T-041)**: the engine's schema, profile, bindings, and page parts moved to `systems/wod2e/ruleset/`, with every Star Wars identity frozen; parity tests prove stored documents, shipped pages, and dice pools are unchanged
 - **Dark Pack scope**: the policy covers World of Darkness 5th Edition material only (constitution 1.4.2); WoD 2e and Star Wars carry no badge
 - **Element storybook (T-069, constitution 1.5.0)**: draft-only docs pages under `docs/dev/storybook/` show every template element variant, every built-in part of every system, every documentation widget, and the full palette (read from the Tailwind config); a coverage test fails when a variant has no story
+- **Library internals (spec 013)**: systems declare the ruleset they are a setting of, the document type store (v2) records optional type defaults and shipped-type default pages, and the old template library, settings panel, template import dialog, and page skeletons are removed
 
 ## v3.10.0
 

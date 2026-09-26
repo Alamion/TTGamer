@@ -33,6 +33,8 @@
 
     --primary: 220 38 38;
     --on-primary: 255 255 255;
+    /* How much surface color tones down large or emphatic red fills (buttons, editor selection). */
+    --primary-mute: 8%;
     --secondary: 202 138 4;
     --on-secondary: 0 0 0;
 
@@ -42,8 +44,8 @@
     --warning: 245 158 11;
     --info: 2 132 199;
     --success: 21 128 61;
-    /* Template editor marks: distinct from the sheet's primary/secondary accents. */
-    --editor: 79 70 229;
+    /* Tertiary accent: edge cases only (e.g. parts added automatically); primary/secondary lead. */
+    --tertiary: 79 70 229;
 
     --sw-jedi-blue: 0 153 255;
     --sw-jedi-green: 0 255 64;
@@ -66,7 +68,8 @@
     --text-secondary: 148 163 184;
     --border: 51 65 85;
     --border-more-contrast: 71 85 105;
-    --editor: 129 140 248;
+    --primary-mute: 30%;
+    --tertiary: 129 140 248;
 }
 
 .header-github-link::before {

@@ -1,0 +1,193 @@
+title: Library
+button: Library
+buttonTitle: Rules, settings, document types, and their pages
+subtitle: Rules, settings, document types, and their pages
+close: Close the library
+help: Library guide
+treeLabel: Library
+rulesOnly: Rules only
+unavailable: Unavailable
+modes:
+    label: Library mode
+    browse: Browse
+    export: Export
+    import: Import
+search:
+    label: Search the library
+    placeholder: Search…
+    clear: Clear search
+    empty: Nothing matches "{query}".
+    emptyFilter: Nothing to show with this filter.
+filters:
+    label: Show
+    all: All
+    yours: Only yours
+    edited: Edited shipped
+tabs:
+    label: Library view
+    tree: Tree
+    details: Details
+    back: Back to the tree
+levels:
+    ruleset: Rules
+    setting: Setting
+    type: Document type
+    page: Page
+badges:
+    yours: yours
+    edited: edited
+    default: Default page
+    noSetting: no setting
+    unavailable: unavailable
+counts:
+    documents:
+        message: '{count} document|{count} documents'
+        plural: true
+    settings:
+        message: '{count} setting|{count} settings'
+        plural: true
+    types:
+        message: '{count} type|{count} types'
+        plural: true
+    pages:
+        message: '{count} page|{count} pages'
+        plural: true
+row:
+    expand: Expand {name}
+    collapse: Collapse {name}
+    actions: Actions for {name}
+details:
+    nothingSelected: Select an item of the tree to see what it is and what you can do with it.
+    path: In
+    rulesetIntro: The game engine — mechanics, dice, and its own characters. Rules are shipped with the app.
+    coreCharacters: 'Rules character: {names}. Every setting of yours on these rules has it.'
+    rulesOnlyNote: The rules' own characters without a setting. Their pages are the fallback for your settings whose rules character has no page of its own.
+    shippedSettingNote: A shipped setting. Add your own document types to it and your own pages to any of its types; the setting and its types themselves stay as shipped.
+    shippedTypeNote: A shipped document type. Add your own pages to it and choose which page new documents open on.
+    coreTypeNote: The rules character inside your setting. Give it pages of its own here; it cannot be moved or deleted.
+    shippedPageNote: A shipped page. Edit it in the editor; reset it to bring the original back.
+    storedValuesNote: No pages yet — its documents show their stored values until you add one.
+    rulesOnlyFallback: No page of its own yet — its documents open on the "Rules only" page.
+    defaultPage: 'Default page: {name}'
+    defaultChangesExisting: Choosing another default page also changes existing documents that have no page of their own.
+    defaultNewOnly: Choosing another default page applies to new documents; existing documents keep their page.
+    unavailableNote: Its rules are not available in this version of the app. It is kept, read-only, and comes back when they do.
+    isDefault: New documents of this type open on this page.
+    isEdited: You edited this shipped page.
+    name: Name
+    descriptionLabel: Description
+    noDescription: No description
+actions:
+    newSetting: New setting
+    newType: New document type
+    newPage: New page
+    edit: Edit name and description
+    save: Save
+    cancel: Cancel
+    move: Move…
+    export: Export
+    delete: Delete
+    open: Open in editor
+    duplicate: Duplicate
+    makeDefault: Make default
+    reset: Reset to original
+create:
+    settingTitle: New setting on {parent}
+    typeTitle: New document type in {parent}
+    pageTitle: New page for {parent}
+    name: Name
+    nameRequired: Enter a name.
+    descriptionField: Description (optional)
+    start: Start from
+    blank: Blank page
+    copyOf: Copy of "{name}"
+    submit: Create
+    noPageNote: No page is created — add pages when you need them.
+toasts:
+    created: Created "{name}"
+    saved: Saved "{name}"
+    deleted: Deleted "{name}"
+    duplicated: Duplicated "{name}"
+    defaultSet: '"{name}" is now the default page'
+    reset: Restored the original "{name}"
+    moved: Moved "{name}" to "{target}"
+delete:
+    settingTitle: Delete this setting?
+    settingDescription:
+        message: 'Delete the setting "{name}" with its document types and pages? {count} document belongs to it; it is kept.|Delete the setting "{name}" with its document types and pages? {count} documents belong to it; they are kept.'
+        plural: true
+    typeTitle: Delete this document type?
+    typeDescription:
+        message: 'Delete the type "{name}" and its pages? {count} document uses it; it is kept and shows its stored values.|Delete the type "{name}" and its pages? {count} documents use it; they are kept and show their stored values.'
+        plural: true
+    pageTitle: Delete this page?
+    pageDescription: '"{name}" will be deleted. Documents opened on it return to their default page.'
+reset:
+    title: Reset this shipped page?
+    body: '"{name}" returns to its original structure. Documents keep all their values.'
+move:
+    title: Move "{name}"
+    toRuleset: 'Where to: other rules.'
+    toSetting: 'Where to: another setting.'
+    toType: 'Where to: another document type.'
+    dragHint: You can also drag the row onto its new place in the tree.
+    targets: Destinations
+    noTargets: There is no other suitable place.
+    otherRules: other rules
+    warningTitle: Other rules
+    warning: 'Page bindings to "{from}" data are not found in "{to}": they show up as issues in the editor, and document values are kept.'
+    coreChanges: The rules character becomes the one of "{to}".
+    documentsMoving:
+        message: '{count} document moves with it.|{count} documents move with it.'
+        plural: true
+    documentsStaying:
+        message: '{count} document of the rules character stays on "{from}" and keeps opening on its page.|{count} documents of the rules character stay on "{from}" and keep opening on their pages.'
+        plural: true
+    pagesStaying:
+        message: '{count} page of the rules character stays on "{from}" among its "Rules only" pages.|{count} pages of the rules character stay on "{from}" among its "Rules only" pages.'
+        plural: true
+    pageNote: Documents opened on this page that cannot use the new type return to their default page.
+    confirm: Move
+    confirmTitle: Move to other rules?
+export:
+    title: Export
+    hint: Tick what goes into the file. Parents you need to install it are added automatically; shipped rules, settings, types, and pages travel only as the place your parts attach to.
+    tick: Export {name}
+    addedFor: added for "{child}"
+    nothingPicked: Tick what to export.
+    counts: 'In the file: {settings}, {types}, {pages}.'
+    addresses: Attaches to
+    preview: File preview
+    save: Save file
+    saved: Saved {filename}
+import:
+    title: Import
+    hint: Choose a library file (a spec 012 type file or a single page file works too). Nothing changes until you import the entries you tick.
+    choose: Choose file
+    fileLabel: Library file
+    tick: Import {name}
+    addedFor: needed for "{child}"
+    states:
+        new: new
+        same: already present
+        conflict: conflict
+        unavailable: unavailable
+    reasons:
+        rules: Its rules are not available here.
+        owner: Its setting is neither in the file nor here.
+        place: The type it belongs to is neither in the file nor here.
+        shippedPage: This shipped page does not exist here.
+    choiceLabel: What to do with "{name}"
+    replace: Replace
+    keepBoth: Keep both
+    suffix: (imported)
+    submit: Import selected
+    cancel: Cancel
+    nothingPicked: Nothing to import is ticked.
+    done: 'Imported {settings}, {types}, {pages}.'
+    errors:
+        parse: The file is not valid JSON.
+        format: This is not a library, type, or page file.
+        version: The file was made by a version of the app this one cannot read.
+        schema: The file has an invalid entry and was not imported.
+        schemaEntry: 'Entry "{entry}" is invalid; the file was not imported.'

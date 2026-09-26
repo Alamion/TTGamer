@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
+import { LibraryDialog } from '@site/src/sheet_manager/components/dialogs/LibraryDialog';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
-import { TemplateLibraryDialog } from '@site/src/sheet_manager/components/dialogs/TemplateLibraryDialog';
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
 import {
     migrateDocumentStoreState,
@@ -73,31 +73,36 @@ const selectInOutline = (nodeId: string) =>
 describe('user document types (spec 012, US4)', () => {
     beforeEach(() => {
         resetEditorStores();
-        useDocumentTypeStore.setState({ types: {}, settings: {} });
+        useDocumentTypeStore.setState({ types: {}, settings: {}, defaultPages: {} });
     });
     afterEach(() => {
         cleanup();
-        useDocumentTypeStore.setState({ types: {}, settings: {} });
+        useDocumentTypeStore.setState({ types: {}, settings: {}, defaultPages: {} });
     });
 
-    it('creates a type with its first page from the library', () => {
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-        fireEvent.change(screen.getByLabelText('Type name'), {
-            target: { value: 'Organization' },
-        });
-        fireEvent.click(screen.getByRole('button', { name: /Create type/ }));
-        expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('Organization');
-        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    it('creates a type in a shipped setting without a page, then gives it its first page', () => {
+        render(createElement(LibraryDialog, { open: true, onOpenChange: () => {} }));
+        fireEvent.click(document.querySelector('[data-library-row="s:system:star-wars-wod"]')!);
+        fireEvent.click(document.querySelector('[data-library-action="newType"]')!);
+        fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Organization' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
 
         const types = Object.values(useDocumentTypeStore.getState().types);
         expect(types).toHaveLength(1);
         const [type] = types;
-        expect(type!.name).toBe('Organization');
-        expect(type!.owner).toEqual({ systemId: 'star-wars-wod' });
+        expect(type).toMatchObject({ name: 'Organization', owner: { systemId: 'star-wars-wod' } });
+        expect(type!.defaultTemplateId).toBeUndefined();
+        expect(useTemplateStore.getState().templates).toEqual([]);
+
+        fireEvent.click(document.querySelector('[data-library-action="newPage"]')!);
+        fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Cell sheet' } });
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
         const [template] = useTemplateStore.getState().templates;
         expect(template!.documentKind).toBe(type!.id);
-        expect(type!.defaultTemplateId).toBe(template!.id);
-        expect(screen.getByRole('region', { name: /· Organization$/ })).not.toBeNull();
+        expect(useDocumentTypeStore.getState().types[type!.id]!.defaultTemplateId).toBe(
+            template!.id
+        );
     });
 
     it('lists the type in the create dialog under its setting with its description', () => {
@@ -160,11 +165,19 @@ describe('user document types (spec 012, US4)', () => {
                 motto: 'Hope',
             }));
 
-            render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-            fireEvent.click(screen.getByRole('button', { name: /Delete type/ }));
+            render(createElement(LibraryDialog, { open: true, onOpenChange: () => {} }));
+            fireEvent.click(
+                within(
+                    document.querySelector<HTMLElement>(
+                        '[data-library-row="s:system:star-wars-wod"]'
+                    )!
+                ).getByLabelText(/Expand/)
+            );
+            fireEvent.click(document.querySelector(`[data-library-row="t:user:${TYPE_ID}"]`)!);
+            fireEvent.click(document.querySelector('[data-library-action="delete"]')!);
             const confirm = screen.getAllByRole('dialog').at(-1)!;
             expect(confirm.textContent).toContain('1 document uses it');
-            fireEvent.click(within(confirm).getByRole('button', { name: 'Delete type' }));
+            fireEvent.click(within(confirm).getByRole('button', { name: 'Delete' }));
             expect(useDocumentTypeStore.getState().types).toEqual({});
             expect(useTemplateStore.getState().templates).toEqual([]);
             cleanup();

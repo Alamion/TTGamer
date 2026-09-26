@@ -347,11 +347,16 @@ counts as equal; `templateMatchesSetting`).
   own `systemId` on load). `setDefaultOverride(template)` keys by the template's system and id;
   `clearDefaultOverride(systemId, viewId)`. Entries failing the parse (including all pre-006
   shapes) move to quarantine and report `template-quarantined` with the Zod summary.
-- `documentTypeStore` v1 (`universal-document-type-storage`): user document types and user
-  settings plus a bounded quarantine (see "User document types and settings").
+- `documentTypeStore` v2 (`universal-document-type-storage`): user document types (their
+  `defaultTemplateId` is optional: a type may have no page), user settings, `defaultPages`
+  (`systemId:definitionId` → the view or user template new documents of a shipped type open on;
+  `setDefaultPage`, `dropDefaultPagesFor`), and a bounded quarantine.
 - `documentStore` v4: flat `templateValues`; v2 nested bags are flattened on load
   (`flattenLegacyTemplateValues`). Unparseable documents go to `recoveryEntries` (max 100) and
-  report `document-recovered`. `createDocument(systemId, definitionId, { settingId, templateId })`.
+  report `document-recovered`. `createDocument(systemId, definitionId, { settingId, templateId,
+preferredViewId })`; creation flows ask `newDocumentPage` (`features/sheet/data/libraryPages.ts`)
+  for a shipped type's chosen default. `relocateDocuments(changes)` applies the document side of a
+  library move in one write (`null` clears; only user-type documents change `systemId`).
 - `metadata.seededPresets`: list presets are copied once per document × template
   (copy-on-assign). The seeding effect in `useTemplatePage` writes bag, data, and metadata.
 
@@ -438,10 +443,54 @@ toolbar switches Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
   `templates`, `notices`), validated before any change; `typeInstallState` (new / same /
   conflict), `rewriteTypeIdentity` (keep both), `installTypePayload` (re-ids colliding templates).
   Document exports of user types embed `documentType`; imports install it first
-  (`SheetWorkspace`), template imports accept type files (`TemplateImportDialog`).
-- Library: "New document type" (owner = shipped setting or user setting), export / delete type
-  (confirmation counts documents; documents stay), and `UserSettingsPanel` (new setting, setting
-  page per core definition, delete setting).
+  (`SheetWorkspace`); the library import reads type files too (see "Library").
+- The library (spec 013) manages both; see "Library".
+
+## Library (spec 013, `components/dialogs/LibraryDialog.tsx` + `library/`)
+
+One tree replaces the page-template list: **ruleset → setting → document type → page**, derived
+on every change by `buildLibraryTree` (`features/sheet/data/libraryTree.ts`) from the registry,
+the type and template stores, and one-pass document counts (`countDocuments`). Nothing about the
+tree is stored.
+
+- Rulesets are plugins without `SystemPlugin.ruleset`; a setting system declares its ruleset
+  (Star Wars: `ruleset: 'wod-2e'`). Under a ruleset: "Rules only" (its definitions without a
+  module), one setting per module (Hunter), each setting system, then user settings. A user
+  setting lists the ruleset's core definitions (`t:core:<setting>:<definition>`, pages = templates
+  with that `settingId`, default = `setting.pages`) and its own types. A user template of a kind
+  shared by several definitions (droid and character) is listed once, under the first.
+  Unplaceable items go to a read-only "Unavailable" group (`r:unavailable`) and report
+  `library-placement`; they are never dropped.
+- Node keys (`libraryPages.ts`): `r:`, `s:rules|module|system|user:…`, `t:…`, `p:…`. Default
+  pages: user type `defaultTemplateId` (else its first page, else stored values), core type
+  `setting.pages`, shipped type `defaultPages` (else `defaultViewId`); `setDefaultWrites` picks
+  the right store.
+- Actions are pure plans returning `LibraryWrites` (`libraryActions.ts`: create setting/type —
+  never a page —, rename, `deletePlan` with document counts, `pageDepartureWrites`) committed by
+  `applyLibraryWrites` (one update per store). `availableActions` (`library/actions.ts`) feeds the
+  details pane and the context menu alike.
+- Moves (`libraryMoves.ts`): user pages → types (T-070 `planTemplateRetarget`), user types →
+  settings (owner, template `systemId`/`settingId`, documents follow), user settings → rulesets
+  (own types follow; the old core character's documents and pages stay on the old ruleset without
+  `settingId`, documents pinned to the page they used). `crossesSystem` (the item's `systemId`
+  changes, including Star Wars ↔ WoD 2e) requires the MovePanel confirmation; drag and drop
+  (MIME `application/x-ttgamer-library-node`) applies other moves at once.
+- Tree UI: flat WAI-ARIA `tree` of expanded rows (`LibraryTree`, `TreeRow`), roving tabindex,
+  arrows/Home/End/type-ahead, Enter opens a page, Shift+F10 / Menu opens `ContextMenu` (a Popover
+  rendered inside the dialog content so the focus trap keeps it), Delete deletes. Below `md` the
+  tree and details are tabs.
+- Files (`features/sheet/shell/libraryFile.ts`, `libraryImport.ts`): `ttgamer-library` v1 —
+  flat `settings`, `types`, `templates`, `overrides` (edited shipped pages), `included`
+  (`picked`/`auto`), informative `addresses`, `notices`. Export: tri-state ticks
+  (`tickState`/`toggleTick`), `exportClosure` adds the user parents a pick needs (tertiary in the
+  tree) and turns shipped ancestors into addresses; shipped content is never serialized. Import:
+  `parseLibraryFile` also reads `ttgamer-document-type` v1 and `ttgamer-template` v3; the preview
+  marks entries new / same / conflict / unavailable; Replace overwrites by id (a replaced type
+  keeps installed pages missing from the file), Keep both re-ids the entry and its picked
+  descendants with an "(imported)" suffix; templates colliding with shipped view ids or unrelated
+  templates get fresh ids. Nothing is written before `installImport`.
+- Help anchors: `EDITOR_GUIDE.library*` → `docs/template-editor/library.mdx`. Storybook: the
+  "Library" page (`features/docs/LibraryStorybook.tsx`).
 
 ## Import / export (`features/sheet/shell/templateFile.ts`)
 
@@ -557,34 +606,36 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 
 ## Tests map (`tests/sheet_manager/`)
 
-| Concern                           | File                                                                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Schema, tree guardrails           | `template-schema.test.ts`                                                                                                                   |
-| Value write path, validation      | `template-value-writes.test.ts`, `document-template-values.test.ts`                                                                         |
-| Renderer, bridging, catalogs      | `declarative-sheet.test.tsx`, `shared-values.test.tsx`                                                                                      |
-| Primitives, default renders       | `primitives.test.ts`, `primitive-parity.test.tsx`, `primitive-seeding.test.ts`                                                              |
-| Entity bindings, catalog adapters | `entity-bindings.test.ts`                                                                                                                   |
-| Entity pages, fills, neutrality   | `entity-templates.test.tsx`, `cohort-track.test.tsx`, `reference-controls.test.tsx`                                                         |
-| Documentation embeds, examples    | `docs-embeds.test.tsx`                                                                                                                      |
-| Bindings, document source         | `document-bindings.test.ts`, `document-source.test.ts`                                                                                      |
-| Lists, images                     | `template-lists-images.test.ts`                                                                                                             |
-| Formulas                          | `template-formulas.test.ts`                                                                                                                 |
-| Defaults, overrides, resolution   | `default-templates.test.ts`, `built-in-templates.test.ts` (views = templates), `view-resolution.test.ts`                                    |
-| Stores, quarantine                | `template-store.test.ts`, `template-store-migration.test.ts`                                                                                |
-| Editor                            | `template-editor.test.tsx`, `template-editor-{page,arrange,preview,history,shortcuts,move-targets}.test.*`, `template-editor.perf.test.tsx` |
-| User types, settings, files       | `user-document-types.test.{ts,tsx}`, `user-settings.test.tsx`, `type-file.test.ts`, `template-import-dialog.test.tsx`                       |
-| WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                       |
-| References                        | `template-references.test.ts`                                                                                                               |
-| File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                         |
+| Concern                           | File                                                                                                                                          |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Schema, tree guardrails           | `template-schema.test.ts`                                                                                                                     |
+| Value write path, validation      | `template-value-writes.test.ts`, `document-template-values.test.ts`                                                                           |
+| Renderer, bridging, catalogs      | `declarative-sheet.test.tsx`, `shared-values.test.tsx`                                                                                        |
+| Primitives, default renders       | `primitives.test.ts`, `primitive-parity.test.tsx`, `primitive-seeding.test.ts`                                                                |
+| Entity bindings, catalog adapters | `entity-bindings.test.ts`                                                                                                                     |
+| Entity pages, fills, neutrality   | `entity-templates.test.tsx`, `cohort-track.test.tsx`, `reference-controls.test.tsx`                                                           |
+| Documentation embeds, examples    | `docs-embeds.test.tsx`                                                                                                                        |
+| Bindings, document source         | `document-bindings.test.ts`, `document-source.test.ts`                                                                                        |
+| Lists, images                     | `template-lists-images.test.ts`                                                                                                               |
+| Formulas                          | `template-formulas.test.ts`                                                                                                                   |
+| Defaults, overrides, resolution   | `default-templates.test.ts`, `built-in-templates.test.ts` (views = templates), `view-resolution.test.ts`                                      |
+| Stores, quarantine                | `template-store.test.ts`, `template-store-migration.test.ts`                                                                                  |
+| Editor                            | `template-editor.test.tsx`, `template-editor-{page,arrange,preview,history,shortcuts,move-targets}.test.*`, `template-editor.perf.test.tsx`   |
+| User types, settings, files       | `user-document-types.test.{ts,tsx}`, `user-settings.test.tsx`, `type-file.test.ts`, `document-type-store.test.ts`                             |
+| Library tree, moves, files, UI    | `library-{tree,moves,file,import}.test.ts`, `library-dialog.test.tsx`, `document-store-relocate.test.ts`, `systems/registry-rulesets.test.ts` |
+| WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                         |
+| References                        | `template-references.test.ts`                                                                                                                 |
+| File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                           |
 
 ## History (read for rationale only)
 
-| Spec | What it introduced                                                                                                                      | Superseded parts                              |
-| ---- | --------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| 003  | Section → block → field templates, catalog bindings, file format v1                                                                     | Fixed hierarchy, file v1 (→ 006)              |
-| 004  | Views as default templates, overrides, `built-in` block placements                                                                      | View-derived defaults, placements (→ 005/006) |
-| 005  | Binding registry, primitives, preset seeding, hybrid defaults                                                                           | Hybrid defaults, placement path (→ 006)       |
-| 006  | Recursive tree v3, formulas, lists/images, pure defaults, quarantine                                                                    | Built-in layout path (→ 007)                  |
-| 007  | Entity templates, kind-independent bindings, member tracks, fills, `visibleWhen`, docs embeds, legacy retirement                        | Kind-only matching, SW-owned catalogs (→ 008) |
-| 008  | V5 ruleset + Hunter module, computed-length tracks, trait row options, plugin catalogs, policies/badges                                 | —                                             |
-| 012  | Visual editor (outline/page/settings, history, shortcuts), user types and settings, type files, composite override keys, WoD 2e ruleset | Recursive panel editor, view-id override keys |
+| Spec | What it introduced                                                                                                                      | Superseded parts                                      |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 003  | Section → block → field templates, catalog bindings, file format v1                                                                     | Fixed hierarchy, file v1 (→ 006)                      |
+| 004  | Views as default templates, overrides, `built-in` block placements                                                                      | View-derived defaults, placements (→ 005/006)         |
+| 005  | Binding registry, primitives, preset seeding, hybrid defaults                                                                           | Hybrid defaults, placement path (→ 006)               |
+| 006  | Recursive tree v3, formulas, lists/images, pure defaults, quarantine                                                                    | Built-in layout path (→ 007)                          |
+| 007  | Entity templates, kind-independent bindings, member tracks, fills, `visibleWhen`, docs embeds, legacy retirement                        | Kind-only matching, SW-owned catalogs (→ 008)         |
+| 008  | V5 ruleset + Hunter module, computed-length tracks, trait row options, plugin catalogs, policies/badges                                 | —                                                     |
+| 012  | Visual editor (outline/page/settings, history, shortcuts), user types and settings, type files, composite override keys, WoD 2e ruleset | Recursive panel editor, view-id override keys         |
+| 013  | Library tree (rules → settings → types → pages), moves, library files, default-page choice, tertiary accent                             | Page-template list, type-file export (→ library file) |

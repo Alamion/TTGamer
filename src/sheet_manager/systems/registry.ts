@@ -94,6 +94,31 @@ export class SystemRegistry {
             }
             this.#systems.set(system.id, system);
         }
+        // Rulesets are one level deep. A partial registry (tests, tools) may omit the ruleset.
+        for (const system of systems) {
+            if (!system.ruleset) continue;
+            if (system.ruleset === system.id || this.#systems.get(system.ruleset)?.ruleset) {
+                throw new Error(
+                    `System ${system.id} names ${system.ruleset} as its ruleset, which is itself a setting`
+                );
+            }
+        }
+    }
+
+    /** Systems that are rulesets themselves (spec 013), in registration order. */
+    listRulesets(): readonly SystemPlugin[] {
+        return this.getSystems().filter((system) => !system.ruleset);
+    }
+
+    /** Setting systems declared on a ruleset (Star Wars on WoD 2e). */
+    settingSystemsOf(rulesetId: string): readonly SystemPlugin[] {
+        return this.getSystems().filter((system) => system.ruleset === rulesetId);
+    }
+
+    /** The ruleset a system plays by: its declared ruleset, or itself. */
+    rulesetOf(systemId: string): SystemPlugin | undefined {
+        const system = this.getSystem(systemId);
+        return system?.ruleset ? this.getSystem(system.ruleset) : system;
     }
 
     getSystems(): readonly SystemPlugin[] {

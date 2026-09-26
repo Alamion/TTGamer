@@ -11,23 +11,38 @@ import {
     UserSettingSchema,
 } from '../systems/userTypes';
 
-/** Version 1 (spec 012): user document types and user settings. */
-const STORE_VERSION = 1;
+/**
+ * Version 1 (spec 012): user document types and user settings.
+ * Version 2 (spec 013): a type's default page is optional, and `defaultPages` records the chosen
+ * default page of shipped types (`systemId:definitionId` → view or user template id).
+ */
+const STORE_VERSION = 2;
 const MAX_QUARANTINE_ENTRIES = 100;
 
 export interface DocumentTypeStoreState {
     types: Record<string, UserDocumentType>;
     settings: Record<string, UserSetting>;
+    defaultPages: Record<string, string>;
     quarantine: unknown[];
     saveType: (type: UserDocumentType) => void;
     removeType: (id: string) => void;
     saveSetting: (setting: UserSetting) => void;
     removeSetting: (id: string) => void;
+    /** Records (or with `null` clears) the default page of a shipped type. */
+    setDefaultPage: (key: string, pageId: string | null) => void;
+    /** Forgets every default-page choice that names a deleted or moved page. */
+    dropDefaultPagesFor: (pageId: string) => void;
+}
+
+/** The `defaultPages` key of a shipped type. */
+export function defaultPageKey(systemId: string, definitionId: string): string {
+    return `${systemId}:${definitionId}`;
 }
 
 interface PersistedDocumentTypeState {
     types: Record<string, UserDocumentType>;
     settings: Record<string, UserSetting>;
+    defaultPages: Record<string, string>;
     quarantine: unknown[];
 }
 
@@ -75,13 +90,25 @@ export function migrateDocumentTypeStoreState(input: unknown): PersistedDocument
         settings: parseAll(isRecord(input) ? input.settings : undefined, (entry) =>
             UserSettingSchema.parse(entry)
         ),
+        defaultPages: parseDefaultPages(isRecord(input) ? input.defaultPages : undefined),
         quarantine,
     };
+}
+
+function parseDefaultPages(raw: unknown): Record<string, string> {
+    if (!isRecord(raw)) return {};
+    return Object.fromEntries(
+        Object.entries(raw).filter(
+            (entry): entry is [string, string] =>
+                typeof entry[1] === 'string' && entry[1].length > 0
+        )
+    );
 }
 
 const stateCreator: StateCreator<DocumentTypeStoreState, [], []> = (set) => ({
     types: {},
     settings: {},
+    defaultPages: {},
     quarantine: [],
 
     saveType: (type) => {
@@ -109,6 +136,26 @@ const stateCreator: StateCreator<DocumentTypeStoreState, [], []> = (set) => ({
             return { settings: next };
         });
     },
+
+    setDefaultPage: (key, pageId) => {
+        set(({ defaultPages }) => {
+            const next = { ...defaultPages };
+            if (pageId) next[key] = pageId;
+            else delete next[key];
+            return { defaultPages: next };
+        });
+    },
+
+    dropDefaultPagesFor: (pageId) => {
+        set(({ defaultPages }) => {
+            if (!Object.values(defaultPages).includes(pageId)) return {};
+            return {
+                defaultPages: Object.fromEntries(
+                    Object.entries(defaultPages).filter(([, id]) => id !== pageId)
+                ),
+            };
+        });
+    },
 });
 
 const isBrowser = typeof window !== 'undefined';
@@ -134,7 +181,12 @@ export const useDocumentTypeStore = isBrowser
                       await localforage.default.removeItem(name);
                   },
               })),
-              partialize: ({ types, settings, quarantine }) => ({ types, settings, quarantine }),
+              partialize: ({ types, settings, defaultPages, quarantine }) => ({
+                  types,
+                  settings,
+                  defaultPages,
+                  quarantine,
+              }),
           })
       )
     : create<DocumentTypeStoreState>()(stateCreator);

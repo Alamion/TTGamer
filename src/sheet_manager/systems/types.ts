@@ -96,6 +96,11 @@ export interface SystemPlugin {
      * own pages (spec 012).
      */
     coreDefinitions?: readonly DocumentDefinitionId[];
+    /**
+     * The ruleset this system is a setting of (spec 013): the library lists it under that
+     * ruleset. Absent on rulesets themselves.
+     */
+    ruleset?: SystemId;
 }
 
 export interface TraitPoolFlags {

@@ -73,11 +73,6 @@ export function serializeTypeFile(payload: TypePayload): string {
     );
 }
 
-export function buildTypeFilename(name: string): string {
-    const slug = name.trim().replace(/[^\p{L}\p{N}_-]+/gu, '_') || 'type';
-    return `ttgamer_type_${slug}.json`;
-}
-
 /** Validates a type payload (the body of a type file, or a document's `documentType`). */
 export function validateTypePayload(raw: unknown): ParsedTypePayload {
     if (!isRecord(raw)) return { ok: false, error: 'schema' };
@@ -99,7 +94,10 @@ export function validateTypePayload(raw: unknown): ParsedTypePayload {
     if ('settingId' in type.data.owner && settingData?.id !== type.data.owner.settingId) {
         return { ok: false, error: 'schema' };
     }
-    if (!templates.some(({ id }) => id === type.data.defaultTemplateId)) {
+    if (
+        type.data.defaultTemplateId !== undefined &&
+        !templates.some(({ id }) => id === type.data.defaultTemplateId)
+    ) {
         return { ok: false, error: 'schema' };
     }
     const systemId = ownerSystemId(type.data, settingData ? { [settingData.id]: settingData } : {});
@@ -138,10 +136,6 @@ export function parseTypeFile(text: string): ParsedTypePayload {
     if (!isRecord(raw) || raw.format !== TYPE_FILE_FORMAT) return { ok: false, error: 'format' };
     if (raw.version !== TYPE_FILE_VERSION) return { ok: false, error: 'version' };
     return validateTypePayload(raw);
-}
-
-export function isTypeFile(raw: unknown): boolean {
-    return isRecord(raw) && raw.format === TYPE_FILE_FORMAT;
 }
 
 function comparable(payload: TypePayload): string {
@@ -190,7 +184,12 @@ function reissueCollidingTemplates(payload: TypePayload): TypePayload {
     if (renamed.size === 0) return payload;
     const rename = (id: string) => renamed.get(id) ?? id;
     return {
-        type: { ...payload.type, defaultTemplateId: rename(payload.type.defaultTemplateId) },
+        type: {
+            ...payload.type,
+            ...(payload.type.defaultTemplateId
+                ? { defaultTemplateId: rename(payload.type.defaultTemplateId) }
+                : {}),
+        },
         ...(payload.setting
             ? {
                   setting: {

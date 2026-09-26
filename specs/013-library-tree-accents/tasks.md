@@ -26,8 +26,8 @@ file boundaries, and quickstart.md lists the suites.
 
 ## Phase 1: Setup
 
-- [ ] T001 Mark T-071 and T-081 as in progress (`[ ] 🟡`) in `TODO.md`, and add the follow-up entry "Core characters in shipped line settings" (research R3, deferred from prototype v3) with its reason. Run `yarn validate:backlog`.
-- [ ] T002 [P] Create `translations/source/en/ui/sheet/library.yaml` and `translations/source/ru/ui/sheet/library.yaml` with the key skeleton for:
+- [x] T001 Mark T-071 and T-081 as in progress (`[ ] 🟡`) in `TODO.md`, and add the follow-up entry "Core characters in shipped line settings" (research R3, deferred from prototype v3) with its reason. Run `yarn validate:backlog`.
+- [x] T002 [P] Create `translations/source/en/ui/sheet/library.yaml` and `translations/source/ru/ui/sheet/library.yaml` with the key skeleton for:
     - the dialog title and modes (browse, export, import);
     - search, filters, and levels;
     - badges, the empty state, and per-level details;
@@ -35,7 +35,7 @@ file boundaries, and quickstart.md lists the suites.
 
     Add the English and Russian text as each story lands. Run `yarn build:translations`.
 
-- [ ] T003 [P] Create `tests/sheet_manager/helpers/library.ts` with two helpers:
+- [x] T003 [P] Create `tests/sheet_manager/helpers/library.ts` with two helpers:
     - `seedLibrary()` installs the example library through the real stores:
         - user setting "Ashen Realms" on `wod-v5`, holding user type "Cult" with one page, one core-character page, and 3 `v5-character` documents with that `settingId`;
         - user type "Organization" owned by `{systemId: 'star-wars-wod'}`, with one page;
@@ -50,26 +50,26 @@ file boundaries, and quickstart.md lists the suites.
 
 ### Ruleset declaration (R1)
 
-- [ ] T004 Add `ruleset?: SystemId` with a doc comment to `SystemPlugin` in `src/sheet_manager/systems/types.ts`. In `src/sheet_manager/systems/registry.ts`:
+- [x] T004 Add `ruleset?: SystemId` with a doc comment to `SystemPlugin` in `src/sheet_manager/systems/types.ts`. In `src/sheet_manager/systems/registry.ts`:
     - make the constructor validate that `ruleset` names a registered plugin that has no `ruleset` itself, and throw otherwise, as for missing default views;
     - add `listRulesets()` (plugins without `ruleset`);
     - add `settingSystemsOf(rulesetId)`.
-- [ ] T005 Set `ruleset: WOD2E_SYSTEM_ID` on `starWarsWodSystem` in `src/sheet_manager/systems/star-wars-wod/index.ts`. Importing the id must stay within the existing ESLint allowance, or use the literal parsed with `SystemIdSchema`.
-- [ ] T006 [P] Create `tests/sheet_manager/systems/registry-rulesets.test.ts`:
+- [x] T005 Set `ruleset: WOD2E_SYSTEM_ID` on `starWarsWodSystem` in `src/sheet_manager/systems/star-wars-wod/index.ts`. Importing the id must stay within the existing ESLint allowance, or use the literal parsed with `SystemIdSchema`.
+- [x] T006 [P] Create `tests/sheet_manager/systems/registry-rulesets.test.ts`:
     - `listRulesets()` returns `wod-2e` and `wod-v5`;
     - `settingSystemsOf('wod-2e')` returns Star Wars;
     - an unknown or nested `ruleset` throws.
 
 ### Stores (R4, R5)
 
-- [ ] T007 In `src/sheet_manager/systems/userTypes.ts`:
+- [x] T007 In `src/sheet_manager/systems/userTypes.ts`:
     - make `defaultTemplateId` optional;
     - make `synthesizeUserDefinition` handle a missing default. The first page wins, and with no pages the definition falls back to the stored-values view.
-- [ ] T008 In `src/sheet_manager/store/documentTypeStore.ts`, bump to version 2:
+- [x] T008 In `src/sheet_manager/store/documentTypeStore.ts`, bump to version 2:
     - add `defaultPages: Record<string, string>` with the actions `setDefaultPage(key, pageId | null)` and `dropDefaultPagesFor(pageId)`;
     - make `migrateDocumentTypeStoreState` fill `defaultPages` with `{}` for v1 and keep quarantine behaviour;
     - include `defaultPages` in `partialize`.
-- [ ] T009 Add `relocateDocuments(changes: DocumentRelocation[])` to `src/sheet_manager/store/documentStore.ts`:
+- [x] T009 Add `relocateDocuments(changes: DocumentRelocation[])` to `src/sheet_manager/store/documentStore.ts`:
     - one `set`;
     - `null` clears `metadata.settingId` or `metadata.templateId`;
     - `systemId` is rewritten only for documents whose `definitionId` is a user kind (`isUserKind`);
@@ -77,26 +77,26 @@ file boundaries, and quickstart.md lists the suites.
 
     Export the `DocumentRelocation` type.
 
-- [ ] T010 Update the callers of the now-optional `defaultTemplateId`:
+- [x] T010 Update the callers of the now-optional `defaultTemplateId`:
     - `src/sheet_manager/features/sheet/shell/typeFile.ts`: validation requires the default only when present; `reissueCollidingTemplates` renames it only when present;
     - `src/sheet_manager/features/sheet/data/templateRetarget.ts`: a type with no page left drops `defaultTemplateId` instead of keeping a dangling id;
     - `src/sheet_manager/features/sheet/CharacterSheet.tsx`, if it reads the default.
-- [ ] T011 [P] Create `tests/sheet_manager/document-type-store.test.ts`:
+- [x] T011 [P] Create `tests/sheet_manager/document-type-store.test.ts`:
     - a v1 state (types with a default, settings, quarantine) migrates to v2 unchanged, with `defaultPages: {}`;
     - a type without `defaultTemplateId` parses;
     - `setDefaultPage` and `dropDefaultPagesFor` work.
-- [ ] T012 [P] Create `tests/sheet_manager/document-store-relocate.test.ts` for `relocateDocuments`:
+- [x] T012 [P] Create `tests/sheet_manager/document-store-relocate.test.ts` for `relocateDocuments`:
     - a batch changes several documents in one write;
     - `null` clears a field;
     - shipped-definition documents keep their `systemId`.
 
 ### Pure tree (data-model "library tree", R2, R3, R10)
 
-- [ ] T013 Create `src/sheet_manager/features/sheet/data/libraryPages.ts`:
+- [x] T013 Create `src/sheet_manager/features/sheet/data/libraryPages.ts`:
     - `pageNodeKey`, `typeNodeKey`, `settingNodeKey`, and `rulesetNodeKey` builders, plus a `parseNodeKey`, following data-model "Node keys";
     - `resolveDefaultPage(typeRef, state)`, which follows the order in data-model "Placement rules";
     - `newDocumentPage(systemId, definitionId, settingId, state)`, which returns `{ preferredViewId?, templateId? }` for the create flow.
-- [ ] T014 Create `src/sheet_manager/features/sheet/data/libraryTree.ts`:
+- [x] T014 Create `src/sheet_manager/features/sheet/data/libraryTree.ts`:
     - `buildLibraryTree({ registry, types, settings, templates, defaultOverrides, defaultPages, documentCounts })`, which returns `RulesetNode[]` following data-model "Placement rules":
         - "Rules only" first, then module settings, then setting systems, then user settings;
         - core types only under "Rules only" and user settings;
@@ -110,7 +110,7 @@ file boundaries, and quickstart.md lists the suites.
     - `flattenVisible(tree, expanded)` for keyboard navigation;
     - `findNode(tree, key)`, which returns `{ node, ancestors }`.
 
-- [ ] T015 [P] Create `tests/sheet_manager/library-tree.test.ts` using `seedLibrary()`:
+- [x] T015 [P] Create `tests/sheet_manager/library-tree.test.ts` using `seedLibrary()`:
     - the ruleset order and the settings order;
     - Star Wars under WoD 2e, Hunter under V5, Ashen Realms under V5 with its core type and Cult;
     - Organization under Star Wars;
@@ -134,7 +134,7 @@ file boundaries, and quickstart.md lists the suites.
 
 ### Tests for User Story 1
 
-- [ ] T016 [P] [US1] Create `tests/sheet_manager/library-dialog.test.tsx` with the browse-mode cases from contracts/library-ui.md:
+- [x] T016 [P] [US1] Create `tests/sheet_manager/library-dialog.test.tsx` with the browse-mode cases from contracts/library-ui.md:
     - tree roles and levels (`aria-level`, `aria-expanded`, `aria-selected`);
     - the keyboard table (arrows, Home/End, type-ahead);
     - selection shows details;
@@ -148,7 +148,7 @@ file boundaries, and quickstart.md lists the suites.
 
 ### Implementation for User Story 1
 
-- [ ] T017 [P] [US1] Create `src/sheet_manager/components/dialogs/library/TreeRow.tsx`. It renders one `treeitem`:
+- [x] T017 [P] [US1] Create `src/sheet_manager/components/dialogs/library/TreeRow.tsx`. It renders one `treeitem`:
     - a level icon (Lucide: Dices, Globe, FileType, FileText) and the name;
     - badges (yours, edited, ★ default, no setting, unavailable) and a count;
     - an expand toggle and a "⋯" button with `aria-label`;
@@ -156,26 +156,26 @@ file boundaries, and quickstart.md lists the suites.
 
     It takes props only and reads no store.
 
-- [ ] T018 [US1] Create `src/sheet_manager/components/dialogs/library/LibraryTree.tsx`, the `role="tree"` container:
+- [x] T018 [US1] Create `src/sheet_manager/components/dialogs/library/LibraryTree.tsx`, the `role="tree"` container:
     - expanded-set state, with rulesets and the selected path expanded initially;
     - renders only expanded branches;
     - roving `tabindex` over `flattenVisible`;
     - the keyboard handling from contracts/library-ui.md, with type-ahead matching the start of a name;
     - `onOpenPage` (Enter on a page), `onContextMenu`, and `onSelect` callbacks.
-- [ ] T019 [P] [US1] Create `src/sheet_manager/components/dialogs/library/CreateForm.tsx`, an inline form with:
+- [x] T019 [P] [US1] Create `src/sheet_manager/components/dialogs/library/CreateForm.tsx`, an inline form with:
     - a name (1–80 characters, trimmed, required, `role="alert"` error);
     - a description (up to 500 characters);
     - an optional "start from" select, Blank or a copy of another page of the same type.
 
     Create and Cancel buttons; Escape cancels.
 
-- [ ] T020 [US1] Create `src/sheet_manager/features/sheet/data/libraryActions.ts`, pure builders that return the writes for:
+- [x] T020 [US1] Create `src/sheet_manager/features/sheet/data/libraryActions.ts`, pure builders that return the writes for:
     - `createSetting(rulesetId, name, description)`;
     - `createType(settingRef, name, description)`, where the owner is `{settingId}` or `{systemId, moduleId?}` and no page is created;
     - `renameItem` and `describeItem`;
     - `deletePlan(nodeKey)`, which returns the affected document count and the writes. Deleting a setting removes it, its types, and their templates, keeps the documents, and clears `settingId` on the documents of its core character (through `relocateDocuments`). Deleting a type removes it and its templates. Deleting a page removes it and clears `templateId` on the documents opened on it.
     - `setDefault(typeNodeKey, pageNodeKey)`, which writes to the type, the setting's `pages`, or `defaultPages`.
-- [ ] T021 [US1] Create `src/sheet_manager/components/dialogs/library/DetailsPane.tsx`, with one section per level following the table in contracts/library-ui.md:
+- [x] T021 [US1] Create `src/sheet_manager/components/dialogs/library/DetailsPane.tsx`, with one section per level following the table in contracts/library-ui.md:
     - rulesets show the dice summary, taken from translated plugin text or omitted when the plugin has none, and the core character list;
     - settings show the "Rules only" and shipped notes;
     - types show the fallback note (stored values or "Rules only"), and for user types and core characters in user settings, that changing the default also changes existing documents without their own page;
@@ -183,19 +183,19 @@ file boundaries, and quickstart.md lists the suites.
 
     Buttons call the `libraryActions` builders and apply their writes. Deletes go through the existing `ConfirmDialog`.
 
-- [ ] T022 [US1] Create `src/sheet_manager/components/dialogs/LibraryDialog.tsx`:
+- [x] T022 [US1] Create `src/sheet_manager/components/dialogs/LibraryDialog.tsx`:
     - a Radix Dialog with a header (mode switch with only Browse active until US4 and US5, search, filter select, and a help link to the guide);
     - a body split into tree and details at `md` and above, and Tree and Details tabs below `md`, where selecting a row switches to Details;
     - memoized `buildLibraryTree` inputs from the four stores and `countDocuments`.
-- [ ] T023 [US1] Replace `TemplateLibraryDialog` with `LibraryDialog`:
+- [x] T023 [US1] Replace `TemplateLibraryDialog` with `LibraryDialog`:
     - in `src/sheet_manager/features/sheet/shell/SheetWorkspace.tsx` (`:268`);
     - in `src/sheet_manager/components/index.ts` (`:14`).
 
     Delete `src/sheet_manager/components/dialogs/TemplateLibraryDialog.tsx` and `src/sheet_manager/components/dialogs/UserSettingsPanel.tsx` once US2 covers the page actions. Until then, keep the page actions reachable through the new dialog.
 
-- [ ] T024 [US1] Use `newDocumentPage` in `src/sheet_manager/components/dialogs/DocumentCreateDialog.tsx` (`:87`) and `src/sheet_manager/features/sheet/shell/CreateCharacterButton.tsx` (`:23`), so that a chosen default page applies to new documents only (R4).
-- [ ] T025 [US1] Fill the en and ru strings for US1 in `translations/source/{en,ru}/ui/sheet/library.yaml` and run `yarn build:translations`.
-- [ ] T026 [US1] Move the still-relevant cases of `tests/sheet_manager/user-settings.test.tsx` and `tests/sheet_manager/user-document-types.test.tsx` into `tests/sheet_manager/library-dialog.test.tsx` and delete what the old dialogs covered. `yarn test` must stay green.
+- [x] T024 [US1] Use `newDocumentPage` in `src/sheet_manager/components/dialogs/DocumentCreateDialog.tsx` (`:87`) and `src/sheet_manager/features/sheet/shell/CreateCharacterButton.tsx` (`:23`), so that a chosen default page applies to new documents only (R4).
+- [x] T025 [US1] Fill the en and ru strings for US1 in `translations/source/{en,ru}/ui/sheet/library.yaml` and run `yarn build:translations`.
+- [x] T026 [US1] Move the still-relevant cases of `tests/sheet_manager/user-settings.test.tsx` and `tests/sheet_manager/user-document-types.test.tsx` into `tests/sheet_manager/library-dialog.test.tsx` and delete what the old dialogs covered. `yarn test` must stay green.
 
 **Checkpoint**: US1 is independently usable. The MVP replaces the old dialog.
 
@@ -207,13 +207,13 @@ file boundaries, and quickstart.md lists the suites.
 
 **Independent Test**: Create a copy of a shipped page for a shipped type from the tree, edit and save it in the editor, find it under that type, then reset an edited shipped page (spec US2).
 
-- [ ] T027 [P] [US2] Add US2 cases to `tests/sheet_manager/library-dialog.test.tsx`:
+- [x] T027 [P] [US2] Add US2 cases to `tests/sheet_manager/library-dialog.test.tsx`:
     - Enter or "Open in editor" opens `TemplateEditorDialog`, and the saved name shows in the tree;
     - Duplicate;
     - "New page" as "Copy of …" opens the editor on a new page of that type;
     - Reset restores the original, and the documents keep their values;
     - deleting a page returns its documents to their default page.
-- [ ] T028 [US2] In `src/sheet_manager/components/dialogs/library/DetailsPane.tsx` and `LibraryDialog.tsx`, add page actions by porting the behaviour of the deleted `TemplateLibraryDialog`:
+- [x] T028 [US2] In `src/sheet_manager/components/dialogs/library/DetailsPane.tsx` and `LibraryDialog.tsx`, add page actions by porting the behaviour of the deleted `TemplateLibraryDialog`:
     - open in the editor (reusing `TemplateEditorDialog` with `lockTarget` for new pages);
     - duplicate (`templateStore.duplicateTemplate`);
     - make default (T020);
@@ -222,8 +222,8 @@ file boundaries, and quickstart.md lists the suites.
 
     Also make "New page" start blank or as a copy. It creates the draft with the type's `systemId`, `documentKind`, and `settingId`.
 
-- [ ] T029 [US2] Deleting or moving a page calls `dropDefaultPagesFor(pageId)` and clears the type or setting default that pointed at it, per the edge case "default page deleted". Implement this in `src/sheet_manager/features/sheet/data/libraryActions.ts`.
-- [ ] T030 [US2] Finish T023: delete `TemplateLibraryDialog.tsx` and `UserSettingsPanel.tsx`, and fix every import. Run `yarn audit:dead-code`.
+- [x] T029 [US2] Deleting or moving a page calls `dropDefaultPagesFor(pageId)` and clears the type or setting default that pointed at it, per the edge case "default page deleted". Implement this in `src/sheet_manager/features/sheet/data/libraryActions.ts`.
+- [x] T030 [US2] Finish T023: delete `TemplateLibraryDialog.tsx` and `UserSettingsPanel.tsx`, and fix every import. Run `yarn audit:dead-code`.
 
 **Checkpoint**: US1 and US2 together replace the old library in full.
 
@@ -237,7 +237,7 @@ file boundaries, and quickstart.md lists the suites.
 
 ### Tests for User Story 3
 
-- [ ] T031 [P] [US3] Create `tests/sheet_manager/library-moves.test.ts` with these cases:
+- [x] T031 [P] [US3] Create `tests/sheet_manager/library-moves.test.ts` with these cases:
     - `canMove`, following the table in data-model: shipped items, core types, "Rules only", unavailable items, and the item itself, its descendants, and its current parent are all refused;
     - `planPageMove` equals the T-070 `planTemplateRetarget` result;
     - `planTypeMove` within a ruleset rewrites the owner and template `settingId`, and the documents follow;
@@ -252,18 +252,18 @@ file boundaries, and quickstart.md lists the suites.
 
 ### Implementation for User Story 3
 
-- [ ] T032 [US3] Create `src/sheet_manager/features/sheet/data/libraryMoves.ts` with:
+- [x] T032 [US3] Create `src/sheet_manager/features/sheet/data/libraryMoves.ts` with:
     - `canMove(subjectKey, targetKey, tree)` and `moveTargets(subjectKey, tree)`, which returns targets with a path and a `crossesSystem` flag;
     - `planPageMove`, which wraps `planTemplateRetarget`;
     - `planTypeMove`;
     - `planSettingMove`, following R6, which returns `MovePlan` (data-model);
     - `applyMovePlan(plan)`, which writes settings, then types, then templates, then documents (`relocateDocuments`), then `defaultPages`, one store call each.
-- [ ] T033 [P] [US3] Create `src/sheet_manager/components/dialogs/library/MovePanel.tsx`:
+- [x] T033 [P] [US3] Create `src/sheet_manager/components/dialogs/library/MovePanel.tsx`:
     - target buttons with a path and an _other rules_ badge;
     - a consequence note;
     - when `crossesSystem` is true, a warning callout in the secondary accent that names `documentsMoving`, `documentsStaying`, and `pagesStaying`;
     - a Move button disabled until a target is chosen.
-- [ ] T034 [US3] Add drag and drop to `src/sheet_manager/components/dialogs/library/TreeRow.tsx` and `LibraryTree.tsx`:
+- [x] T034 [US3] Add drag and drop to `src/sheet_manager/components/dialogs/library/TreeRow.tsx` and `LibraryTree.tsx`:
     - a library MIME type; only rows allowed by `canMove` are `draggable`;
     - `dragover` accepts only valid targets and shows a primary outline;
     - a drop with `crossesSystem` opens the MovePanel confirmation with that target preselected;
@@ -271,7 +271,7 @@ file boundaries, and quickstart.md lists the suites.
 
     Follow the pattern in `src/sheet_manager/components/dialogs/template-editor/OutlineTree.tsx` (`:32`, `:85`).
 
-- [ ] T035 [US3] Create `src/sheet_manager/components/dialogs/library/ContextMenu.tsx`:
+- [x] T035 [US3] Create `src/sheet_manager/components/dialogs/library/ContextMenu.tsx`:
     - a Radix Popover with `role="menu"`, anchored at the pointer or the "⋯" button;
     - it opens on right-click and on Shift+F10 or the Menu key;
     - its actions are the same as those in `DetailsPane`, including Move…;
@@ -279,13 +279,13 @@ file boundaries, and quickstart.md lists the suites.
 
     Wire it into `LibraryTree.tsx`.
 
-- [ ] T036 [US3] Add US3 UI cases to `tests/sheet_manager/library-dialog.test.tsx`:
+- [x] T036 [US3] Add US3 UI cases to `tests/sheet_manager/library-dialog.test.tsx`:
     - drag onto a valid target moves the item;
     - an invalid target refuses the drop;
     - a cross-system drop opens the confirmation and changes nothing before it;
     - the Move… picker and the context menu reach the same result;
     - shipped rows are not draggable and have no Move…
-- [ ] T037 [US3] Fill the US3 strings (en and ru) in `translations/source/{en,ru}/ui/sheet/library.yaml`.
+- [x] T037 [US3] Fill the US3 strings (en and ru) in `translations/source/{en,ru}/ui/sheet/library.yaml`.
 
 **Checkpoint**: Items can be moved at every level without losing values.
 
@@ -297,7 +297,7 @@ file boundaries, and quickstart.md lists the suites.
 
 **Independent Test**: Tick one page of a user type and export. The file contains the page, its type, and its setting, and nothing shipped except addresses (spec US4).
 
-- [ ] T038 [P] [US4] Create `tests/sheet_manager/library-file.test.ts` with these cases:
+- [x] T038 [P] [US4] Create `tests/sheet_manager/library-file.test.ts` with these cases:
     - `exportClosure`: picking one page auto-adds its user type and setting and lists the shipped ancestors as addresses;
     - tri-state is `checked`, `partial`, or `unchecked`;
     - an edited shipped page goes into `overrides`;
@@ -306,23 +306,23 @@ file boundaries, and quickstart.md lists the suites.
     - serialize and parse round-trip to equal collections;
     - `parseLibraryFile` covers every error code (parse, format, version, schema with the entry named);
     - the legacy adapters read a spec 012 type file (with and without `setting`) and a `ttgamer-template` v3 file.
-- [ ] T039 [US4] Create `src/sheet_manager/features/sheet/shell/libraryFile.ts`, following contracts/library-file-format.md:
+- [x] T039 [US4] Create `src/sheet_manager/features/sheet/shell/libraryFile.ts`, following contracts/library-file-format.md:
     - `LIBRARY_FILE_FORMAT` and `LIBRARY_FILE_VERSION`;
     - `tickState(node, picked)` and `exportClosure(tree, picked)`;
     - `buildLibraryPayload(closure, stores)`;
     - `serializeLibraryFile(payload)`, which adds `notices` through `resolveDocumentPolicies` or `exportNotices` for every touched system and definition;
     - `buildLibraryFilename(name | 'selection')`;
     - `parseLibraryFile(text)`, which returns `{ ok, payload, degradedCatalogFields } | { ok: false, error, entry? }`, runs the legacy adapters for `ttgamer-document-type` v1 and `ttgamer-template` v3, and applies `resolveImportedTemplate` to templates and overrides.
-- [ ] T040 [P] [US4] Create `src/sheet_manager/components/dialogs/library/ExportPanel.tsx`:
+- [x] T040 [P] [US4] Create `src/sheet_manager/components/dialogs/library/ExportPanel.tsx`:
     - a summary with counts per level and an addresses list;
     - a collapsible JSON preview;
     - **Save file**, disabled while nothing is picked, which downloads through the existing download helper used by `typeFile`/`templateFile` callers.
-- [ ] T041 [US4] Add export mode to `LibraryTree.tsx` / `TreeRow.tsx` and `LibraryDialog.tsx`:
+- [x] T041 [US4] Add export mode to `LibraryTree.tsx` / `TreeRow.tsx` and `LibraryDialog.tsx`:
     - tri-state checkboxes (`role="checkbox"`, `aria-checked` `mixed`) on exportable rows;
     - automatically added rows show a **tertiary** checked box and "added for {child}" (FR-023);
     - the mode switch enables Export;
     - a page's and a setting's or type's own "Export" actions (US1 and US2 details) open export mode with that node pre-picked.
-- [ ] T042 [US4] Add export UI cases to `tests/sheet_manager/library-dialog.test.tsx`: the tick states, the auto-added parent marked with the tertiary class, and Save disabled when empty. Fill the US4 strings (en and ru).
+- [x] T042 [US4] Add export UI cases to `tests/sheet_manager/library-dialog.test.tsx`: the tick states, the auto-added parent marked with the tertiary class, and Save disabled when empty. Fill the US4 strings (en and ru).
 
 ---
 
@@ -332,7 +332,7 @@ file boundaries, and quickstart.md lists the suites.
 
 **Independent Test**: Export a setting, change one of its pages, import the file back, choose Keep both for the conflicting page, and confirm that both pages exist (spec US5).
 
-- [ ] T043 [P] [US5] Create `tests/sheet_manager/library-import.test.ts` with these cases:
+- [x] T043 [P] [US5] Create `tests/sheet_manager/library-import.test.ts` with these cases:
     - the states new, same, conflict, and unavailable (an unknown system or a missing shipped definition), with an unavailable parent making its branch unavailable;
     - same and unavailable entries cannot be picked;
     - a picked child auto-picks a new parent;
@@ -341,14 +341,14 @@ file boundaries, and quickstart.md lists the suites.
     - a template id colliding with an unrelated template is re-issued;
     - nothing is written until `installImport` runs (SC-005);
     - importing an export into empty stores reproduces it (SC-004).
-- [ ] T044 [US5] Create `src/sheet_manager/features/sheet/shell/libraryImport.ts` with:
+- [x] T044 [US5] Create `src/sheet_manager/features/sheet/shell/libraryImport.ts` with:
     - `buildImportPreview(payload, stores)`, which returns an `ImportEntry[]` tree (data-model) placed with the same rules as `buildLibraryTree`;
     - `togglePick` and `setChoice` as pure updaters;
     - `installImport(preview, payload)`, which writes settings, then types, then templates, then overrides, one store call each, and returns a summary with counts.
 
     Reuse or refactor the helpers `comparable`, `rewriteTypeIdentity`, and `reissueCollidingTemplates` from `typeFile.ts` rather than copying them. Document import keeps using `typeFile.ts`: `tests/sheet_manager/type-file.test.ts` and `tests/sheet_manager/import-export.test.ts` must pass, with a new case for a document whose embedded type has no pages (FR-020).
 
-- [ ] T045 [US5] Create `src/sheet_manager/components/dialogs/library/ImportPreview.tsx`:
+- [x] T045 [US5] Create `src/sheet_manager/components/dialogs/library/ImportPreview.tsx`:
     - a file input with `accept=".json"`;
     - a rejection message with `role="alert"` that names the reason and the entry;
     - a preview tree with state badges, reasons, and the Replace / Keep both switch on conflicts;
@@ -358,7 +358,7 @@ file boundaries, and quickstart.md lists the suites.
 
     Enable Import in the `LibraryDialog.tsx` mode switch.
 
-- [ ] T046 [US5] Delete `src/sheet_manager/components/dialogs/TemplateImportDialog.tsx` and fold `tests/sheet_manager/template-import-dialog.test.tsx` into the import cases of `tests/sheet_manager/library-dialog.test.tsx`. The import cases cover:
+- [x] T046 [US5] Delete `src/sheet_manager/components/dialogs/TemplateImportDialog.tsx` and fold `tests/sheet_manager/template-import-dialog.test.tsx` into the import cases of `tests/sheet_manager/library-dialog.test.tsx`. The import cases cover:
     - the conflict choice;
     - Keep both;
     - a rejected file changes nothing;
@@ -366,7 +366,7 @@ file boundaries, and quickstart.md lists the suites.
 
     Keep the shipped-view-id collision rule from spec 012 T021. Remove the old dialog's entry points (toolbar or library) and run `yarn audit:dead-code`.
 
-- [ ] T047 [US5] Fill the US5 strings (en and ru) in `translations/source/{en,ru}/ui/sheet/library.yaml`.
+- [x] T047 [US5] Fill the US5 strings (en and ru) in `translations/source/{en,ru}/ui/sheet/library.yaml`.
 
 ---
 
@@ -376,8 +376,8 @@ file boundaries, and quickstart.md lists the suites.
 
 **Independent Test**: Open the editor and the library in both themes. No violet appears except on automatically added parts, and the palette lists `tertiary`.
 
-- [ ] T048 [P] [US6] Rename the `--editor` CSS variable to `--tertiary` (light and dark) in `src/css/custom.css` (`:45-46`, `:69`), and the Tailwind color `editor` to `tertiary` in `tailwind.config.cjs` (`:42`). Update the comment to say "edge cases only".
-- [ ] T049 [US6] Replace every `*-editor*` class with `primary` (selection, frames, insertion points, drop targets) or `secondary` (hover, pressed Edit/Preview, help), following the "Accent Roles" section of `.agents/skills/tailwind-theming/SKILL.md`. The files are:
+- [x] T048 [P] [US6] Rename the `--editor` CSS variable to `--tertiary` (light and dark) in `src/css/custom.css` (`:45-46`, `:69`), and the Tailwind color `editor` to `tertiary` in `tailwind.config.cjs` (`:42`). Update the comment to say "edge cases only".
+- [x] T049 [US6] Replace every `*-editor*` class with `primary` (selection, frames, insertion points, drop targets) or `secondary` (hover, pressed Edit/Preview, help), following the "Accent Roles" section of `.agents/skills/tailwind-theming/SKILL.md`. The files are:
     - `src/sheet_manager/components/dialogs/template-editor/EditorNodeFrame.tsx`;
     - `OutlineTree.tsx`;
     - `AddElementMenu.tsx`;
@@ -385,23 +385,23 @@ file boundaries, and quickstart.md lists the suites.
 
     Then check with `grep -rn "editor\b" src --include=*.tsx | grep -E "(bg|text|border|ring|outline)-editor"`, which must return nothing.
 
-- [ ] T050 [P] [US6] Extend `tests/sheet_manager/storybook.test.tsx`, or the palette test, so that `tertiary` is listed and `editor` is not. Add a test in `tests/sheet_manager/library-dialog.test.tsx` that export mode is the only place using `tertiary` classes in the library.
-- [ ] T051 [US6] Update `.agents/skills/tailwind-theming/SKILL.md`: the token name is `tertiary`, and the class mapping table is final.
+- [x] T050 [P] [US6] Extend `tests/sheet_manager/storybook.test.tsx`, or the palette test, so that `tertiary` is listed and `editor` is not. Add a test in `tests/sheet_manager/library-dialog.test.tsx` that export mode is the only place using `tertiary` classes in the library.
+- [x] T051 [US6] Update `.agents/skills/tailwind-theming/SKILL.md`: the token name is `tertiary`, and the class mapping table is final.
 
 ---
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T052 [P] Add library stories to `src/sheet_manager/storybook/stories.ts`, per the constitution VI storybook rule: tree rows at every level with all badges, export tri-state and tertiary auto boxes, and import state badges. Add the tags to `REQUIRED_VARIANTS` in `tests/sheet_manager/storybook.test.tsx`.
-- [ ] T053 [P] Write the guide page `docs/template-editor/library.mdx` and its ru mirror `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/library.mdx`, with escaped ids `\{#library}`, `\{#library-move}`, `\{#library-export}`, and `\{#library-import}`, and with prose in our own words. Add them to the sidebar or category if the folder uses one.
-- [ ] T054 Add `library`, `libraryMove`, `libraryExport`, and `libraryImport` to `EDITOR_GUIDE` in `src/sheet_manager/components/dialogs/template-editor/EditorHelp.tsx`. Link them from the `LibraryDialog` header, `MovePanel`, `ExportPanel`, and `ImportPreview`, and extend `tests/docs/template-editor-guide.test.ts` to check the anchors in both locales.
-- [ ] T055 [P] Update the current-state docs:
+- [x] T052 [P] Add library stories to `src/sheet_manager/storybook/stories.ts`, per the constitution VI storybook rule: tree rows at every level with all badges, export tri-state and tertiary auto boxes, and import state badges. Add the tags to `REQUIRED_VARIANTS` in `tests/sheet_manager/storybook.test.tsx`.
+- [x] T053 [P] Write the guide page `docs/template-editor/library.mdx` and its ru mirror `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/library.mdx`, with escaped ids `\{#library}`, `\{#library-move}`, `\{#library-export}`, and `\{#library-import}`, and with prose in our own words. Add them to the sidebar or category if the folder uses one.
+- [x] T054 Add `library`, `libraryMove`, `libraryExport`, and `libraryImport` to `EDITOR_GUIDE` in `src/sheet_manager/components/dialogs/template-editor/EditorHelp.tsx`. Link them from the `LibraryDialog` header, `MovePanel`, `ExportPanel`, and `ImportPreview`, and extend `tests/docs/template-editor-guide.test.ts` to check the anchors in both locales.
+- [x] T055 [P] Update the current-state docs:
     - `.agents/skills/sheet-templates/SKILL.md`: the library tree, placement, moves, default pages, and the library file;
     - `src/sheet_manager/AGENTS.md`: the structure line for `components/dialogs/library/` and `SystemPlugin.ruleset`;
     - the root `AGENTS.md` module-boundaries bullet about rulesets, if the wording needs `ruleset`;
     - a historical banner in `specs/012-*/contracts/type-file-format.md` saying the type-file export is superseded by the library file (spec 013).
-- [ ] T056 [P] Add CHANGELOG entries in the current version section of `CHANGELOG.md` for the library tree, moves, library files, and accents. Mark T-071 and T-081 done in `TODO.md` and run `yarn validate:backlog`.
-- [ ] T057 Run `yarn i18n:verify`, fix missing keys or add justified exceptions to `translations/i18n-exceptions.yaml`, then run `yarn verify:full`. Everything must pass: lint, typecheck, knip, tests, and the en and ru build.
+- [x] T056 [P] Add CHANGELOG entries in the current version section of `CHANGELOG.md` for the library tree, moves, library files, and accents. Mark T-071 and T-081 done in `TODO.md` and run `yarn validate:backlog`.
+- [x] T057 Run `yarn i18n:verify`, fix missing keys or add justified exceptions to `translations/i18n-exceptions.yaml`, then run `yarn verify:full`. Everything must pass: lint, typecheck, knip, tests, and the en and ru build.
 - [ ] T058 Walk through the manual scenarios in [quickstart.md](./quickstart.md) on the dev server at localhost:3000, after checking whether it is already running. This step is left to the maintainer if it cannot run here.
 
 ---

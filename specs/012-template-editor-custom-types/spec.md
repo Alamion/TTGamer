@@ -1,5 +1,7 @@
 # Feature Specification: Visual template editor and template-defined document types
 
+> **Change record.** Partly superseded by 013 (the library tree replaces the template library's type and setting controls; creating a type or setting no longer creates a page; library files supersede the type-file export). Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
+
 **Feature Branch**: `testing`
 
 **Created**: 2026-09-25

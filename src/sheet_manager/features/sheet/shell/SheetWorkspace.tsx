@@ -11,7 +11,7 @@ import {
     DocumentCreateDialog,
     DocumentManagerDialog,
     ImportConflictDialog,
-    TemplateLibraryDialog,
+    LibraryDialog,
 } from '../../../components';
 import { useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
@@ -265,10 +265,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
             />
             <DocumentManagerDialog open={managerDialogOpen} onOpenChange={setManagerDialogOpen} />
             <DocumentCreateDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
-            <TemplateLibraryDialog
-                open={templatesDialogOpen}
-                onOpenChange={setTemplatesDialogOpen}
-            />
+            <LibraryDialog open={templatesDialogOpen} onOpenChange={setTemplatesDialogOpen} />
             <ImportConflictDialog
                 open={importConflict !== null}
                 subject={importConflict ?? 'document'}

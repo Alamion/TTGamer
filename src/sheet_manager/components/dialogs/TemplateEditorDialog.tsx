@@ -588,7 +588,7 @@ export function TemplateEditorDialog({
                                     className={clsx(
                                         'px-3 py-1 text-sm',
                                         mode === value
-                                            ? 'bg-editor text-white'
+                                            ? 'bg-primary-muted text-white'
                                             : 'text-textSecondary hover:bg-bgBase'
                                     )}
                                 >
@@ -703,7 +703,7 @@ export function TemplateEditorDialog({
                                                         className={clsx(
                                                             'flex-1 px-3 py-2 text-sm',
                                                             area === id
-                                                                ? 'border-b-2 border-editor font-medium text-textPrimary'
+                                                                ? 'border-b-2 border-primary font-medium text-textPrimary'
                                                                 : 'text-textSecondary'
                                                         )}
                                                     >
@@ -839,7 +839,7 @@ export function TemplateEditorDialog({
                                 type="button"
                                 onClick={handleSave}
                                 disabled={draftIssues.length > 0}
-                                className="rounded border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40"
+                                className="rounded border border-transparent bg-primary-muted px-4 py-2 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
                             >
                                 {t(editor.save)}
                             </button>

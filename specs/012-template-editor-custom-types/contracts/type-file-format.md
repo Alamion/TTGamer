@@ -1,5 +1,7 @@
 # Contract: Type files and documents with embedded types
 
+> **Change record.** The library export of spec 013 (`ttgamer-library` v1) supersedes the type-file export; type files are still read by the library import, and documents keep embedding their type. Current behavior: `.agents/skills/sheet-templates/SKILL.md` ("Library").
+
 ## Type file
 
 Filename: `ttgamer_type_<slug-of-name>.json`.

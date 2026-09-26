@@ -69,7 +69,7 @@ export function ConfirmDialog({
                                 'rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors',
                                 variant === 'danger'
                                     ? 'bg-error hover:bg-error/80'
-                                    : 'bg-primary hover:bg-primary/80'
+                                    : 'bg-primary-muted hover:bg-primary'
                             )}
                         >
                             {confirmLabel}

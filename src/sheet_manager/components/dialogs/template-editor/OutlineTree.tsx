@@ -68,7 +68,7 @@ const OutlineItem = memo(function OutlineItem({
     return (
         <li
             {...handlers}
-            className={clsx('border-t-2', over ? 'border-editor' : 'border-transparent')}
+            className={clsx('border-t-2', over ? 'border-primary' : 'border-transparent')}
         >
             <div
                 data-outline-row={node.id}
@@ -76,7 +76,9 @@ const OutlineItem = memo(function OutlineItem({
                 aria-current={selected ? 'true' : undefined}
                 className={clsx(
                     'flex items-center gap-1 rounded pr-1 text-sm',
-                    selected ? 'bg-editor text-white' : 'text-textPrimary hover:bg-editor/10'
+                    selected
+                        ? 'bg-primary/15 font-medium text-textPrimary shadow-[inset_2px_0_0_0_rgb(var(--primary))]'
+                        : 'text-textPrimary hover:bg-secondary/15'
                 )}
                 style={{ paddingLeft: `${depth * 0.75}rem` }}
             >
@@ -134,7 +136,7 @@ function OutlineEnd({ placement }: { placement: OverlayPlacement }) {
         <li
             {...handlers}
             data-drop-zone={placement.parentId ?? 'root'}
-            className={clsx('min-h-2 border-t-2', over ? 'border-editor' : 'border-transparent')}
+            className={clsx('min-h-2 border-t-2', over ? 'border-primary' : 'border-transparent')}
         />
     );
 }

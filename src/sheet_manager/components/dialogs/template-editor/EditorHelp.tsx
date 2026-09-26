@@ -16,6 +16,10 @@ export const EDITOR_GUIDE = {
     displayConditions: '/docs/template-editor/values#display-conditions',
     catalogs: '/docs/template-editor/values#catalogs',
     movingPage: '/docs/template-editor/types-and-settings#moving-a-page',
+    library: '/docs/template-editor/library',
+    libraryMove: '/docs/template-editor/library#library-move',
+    libraryExport: '/docs/template-editor/library#library-export',
+    libraryImport: '/docs/template-editor/library#library-import',
 } as const;
 
 /** A small "?" next to an editor setting, opening its guide section in a new tab. */

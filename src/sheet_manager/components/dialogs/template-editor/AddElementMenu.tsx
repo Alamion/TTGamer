@@ -119,9 +119,9 @@ function MenuItems({
             }}
             disabled={disabled || !option.build}
             data-palette-option={option.key}
-            className="flex items-start gap-2 rounded p-2 text-left hover:bg-editor/10 focus:bg-editor/10 focus:outline-none disabled:opacity-40"
+            className="flex items-start gap-2 rounded p-2 text-left hover:bg-secondary/15 focus:bg-secondary/15 focus:outline-none disabled:opacity-40"
         >
-            <Plus className="mt-0.5 h-4 w-4 shrink-0 text-editor" aria-hidden="true" />
+            <Plus className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
             <span className="grid gap-0.5">
                 <span className="text-sm font-medium text-textPrimary">{option.label}</span>
                 <span className="text-xs text-textSecondary">{option.hint}</span>

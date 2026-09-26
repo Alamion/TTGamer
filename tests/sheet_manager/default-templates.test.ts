@@ -1,8 +1,4 @@
 import {
-    getSkeletonsForKind,
-    TEMPLATE_SKELETONS,
-} from '@site/src/sheet_manager/features/sheet/data/templateSkeletons';
-import {
     migrateTemplateStoreState,
     useTemplateStore,
 } from '@site/src/sheet_manager/store/templateStore';
@@ -428,42 +424,6 @@ describe('default template rendering and data safety', () => {
                 characterKind
             )?.template.name
         ).not.toBe('Renamed Full');
-    });
-});
-
-describe('skeletons mirror the real default structure', () => {
-    it('every definition with an explicit default yields a matching skeleton', () => {
-        for (const system of systemRegistry.getSystems()) {
-            const defaults = system.defaultTemplates ?? [];
-            for (const definition of system.documents) {
-                const skeletons = TEMPLATE_SKELETONS.filter(
-                    ({ id }) => id === `skeleton-${system.id}-${definition.id}`
-                );
-                const source = defaults.find(
-                    (template) => template.id === definition.defaultViewId
-                );
-                if (!source) {
-                    // Specialized pages have no declarative default and no skeleton.
-                    expect(skeletons).toHaveLength(0);
-                    continue;
-                }
-                expect(skeletons).toHaveLength(1);
-                const skeleton = skeletons[0]!;
-                // Identical structure, independent identity.
-                expect(skeleton.children).toEqual(source.children);
-                expect(skeleton.id).toBe(`skeleton-${system.id}-${definition.id}`);
-                expect(skeleton.id).not.toBe(source.id);
-                expect(skeleton.documentKind).toBe(definition.kind);
-            }
-        }
-    });
-
-    it('getSkeletonsForKind returns real-structure skeletons per kind', () => {
-        const characterSkeletons = getSkeletonsForKind(DocumentKindSchema.parse('character'));
-        expect(characterSkeletons.length).toBeGreaterThanOrEqual(2); // character + droid
-        for (const skeleton of characterSkeletons) {
-            expect(skeleton.documentKind).toBe('character');
-        }
     });
 });
 

@@ -71,18 +71,18 @@ export const InsertSlot = memo(function InsertSlot({
                     actions.moveTo(nodeId, placement);
                 }}
                 className={clsx(
-                    'group/slot flex w-full items-center justify-center rounded transition-colors focus:outline-none focus-visible:bg-editor/30',
+                    'group/slot flex w-full items-center justify-center rounded transition-colors focus:outline-none focus-visible:bg-primary/20',
                     emptyColumn
-                        ? 'min-h-14 border border-dashed border-borderMoreContrast p-2 text-center text-xs text-textSecondary hover:border-editor hover:text-editor'
-                        : 'h-2 hover:bg-editor/30',
-                    over && 'bg-editor/60 text-white'
+                        ? 'min-h-14 border border-dashed border-borderMoreContrast p-2 text-center text-xs text-textSecondary hover:border-primary hover:text-primary'
+                        : 'h-2 hover:bg-primary/20',
+                    over && 'bg-primary/40 text-textPrimary'
                 )}
             >
                 {emptyColumn ? (
                     label
                 ) : (
                     <Plus
-                        className="h-3.5 w-3.5 rounded-full bg-editor text-white opacity-0 group-hover/slot:opacity-100 group-focus-visible/slot:opacity-100"
+                        className="h-3.5 w-3.5 rounded-full bg-primary-muted text-white opacity-0 group-hover/slot:opacity-100 group-focus-visible/slot:opacity-100"
                         aria-hidden="true"
                     />
                 )}
@@ -142,8 +142,8 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                 className={clsx(
                     'relative rounded-md outline-offset-2',
                     selected
-                        ? 'outline outline-2 outline-editor'
-                        : '[&[data-hover]]:outline [&[data-hover]]:outline-1 [&[data-hover]]:outline-editor/50',
+                        ? 'outline outline-2 outline-primary-muted'
+                        : '[&[data-hover]]:outline [&[data-hover]]:outline-1 [&[data-hover]]:outline-secondary',
                     hasIssue && !selected && 'outline outline-1 outline-error',
                     conditionHidden &&
                         'bg-[repeating-linear-gradient(135deg,transparent_0_8px,rgb(var(--text-secondary)/0.08)_8px_16px)]',
@@ -152,7 +152,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
             >
                 <span
                     data-editor-chip=""
-                    className="absolute -top-3 left-2 z-10 hidden max-w-[80%] items-center gap-1 rounded bg-editor py-0.5 pl-0.5 pr-2 text-[11px] leading-none text-white shadow"
+                    className="absolute -top-3 left-2 z-10 hidden max-w-[80%] items-center gap-1 rounded bg-primary-muted py-0.5 pl-0.5 pr-2 text-[11px] leading-none text-white shadow"
                 >
                     <button
                         type="button"

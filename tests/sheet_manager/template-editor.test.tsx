@@ -17,7 +17,6 @@ import {
     updateNode,
 } from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
-import { TemplateLibraryDialog } from '@site/src/sheet_manager/components/dialogs/TemplateLibraryDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema, TEMPLATE_LIMITS } from '@site/src/sheet_manager/types/template';
@@ -367,38 +366,9 @@ describe('TemplateEditorDialog', () => {
     });
 });
 
-describe('TemplateLibraryDialog', () => {
-    beforeEach(() => {
-        useTemplateStore.setState({ templates: [savedTemplate()], quarantine: [] });
-    });
-
+describe('template editor catalog bindings', () => {
     afterEach(() => {
         cleanup();
-    });
-
-    it('lists saved templates grouped by kind', () => {
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-        expect(screen.getByText('Existing Kit')).not.toBeNull();
-    });
-
-    it('deletes a template after confirmation', () => {
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-
-        fireEvent.click(screen.getByLabelText('Delete: Existing Kit'));
-        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
-
-        expect(useTemplateStore.getState().templates).toHaveLength(0);
-    });
-
-    it('duplicates a template under a fresh identity', () => {
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-
-        fireEvent.click(screen.getByLabelText('Duplicate: Existing Kit'));
-
-        const templates = useTemplateStore.getState().templates;
-        expect(templates).toHaveLength(2);
-        expect(templates.map((template) => template.id)).toContain('tpl-existing');
-        expect(new Set(templates.map((template) => template.id)).size).toBe(2);
     });
 
     it('attaches a catalog binding to a choice field', () => {

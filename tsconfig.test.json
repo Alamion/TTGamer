@@ -4,5 +4,5 @@
         "composite": false,
         "types": ["@docusaurus/module-type-aliases", "node", "vitest/globals"]
     },
-    "include": ["scripts", "tests", "vitest.config.ts"]
+    "include": ["scripts", "tests", "vitest.config.ts", "src/@types/tailwind-config.d.ts"]
 }

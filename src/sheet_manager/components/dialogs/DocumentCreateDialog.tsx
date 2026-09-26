@@ -3,8 +3,10 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useState } from 'react';
 
+import { newDocumentPage } from '../../features/sheet/data/libraryPages';
 import { useDocumentStore } from '../../store/documentStore';
 import { useDocumentTypeStore } from '../../store/documentTypeStore';
+import { useTemplateStore } from '../../store/templateStore';
 import { documentSettingLabel, systemRegistry } from '../../systems';
 import { isUserKind, type UserSetting } from '../../systems/userTypes';
 
@@ -84,7 +86,16 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
         if (!systemId || !definitionId) return;
         // A core definition in a user setting opens on the setting's own page, when it has one.
         const templateId = settingId ? settings[settingId]?.pages[definitionId] : undefined;
-        createDocument(systemId, definitionId, { settingId, templateId });
+        // A shipped type opens on the page the library chose as its default (spec 013).
+        const page = newDocumentPage(systemRegistry, systemId, definitionId, settingId, {
+            templates: useTemplateStore.getState().templates,
+            defaultPages: useDocumentTypeStore.getState().defaultPages,
+        });
+        createDocument(systemId, definitionId, {
+            settingId,
+            templateId: templateId ?? page.templateId,
+            ...(page.preferredViewId ? { preferredViewId: page.preferredViewId } : {}),
+        });
         onOpenChange(false);
     };
 
@@ -157,7 +168,7 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
                         <button
                             type="button"
                             onClick={handleCreate}
-                            className="rounded border border-transparent bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary/90"
+                            className="rounded border border-transparent bg-primary-muted px-3 py-2 text-sm font-medium text-white hover:bg-primary"
                         >
                             <Translate id="ttgamer.ui.sheet.documents.create.confirm" />
                         </button>

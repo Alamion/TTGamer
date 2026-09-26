@@ -1,0 +1,63 @@
+---
+sidebar_position: 4
+title: Library
+description: The library tree of rules, settings, document types, and pages — creating, moving, choosing default pages, and sharing parts of it as files.
+---
+
+# Library \{#library}
+
+:::tip[In short]
+**Library** on the [character sheet](/universal_sheet) shows everything your documents are built from as one tree: rules, then the settings on them, then document types, then the pages that show those documents. Select any row to see what it is and what you can do with it.
+:::
+
+## The tree
+
+The tree has four fixed levels:
+
+1. **Rules** — the game engines the site ships: World of Darkness 2nd Edition and World of Darkness 5th Edition. You cannot create rules.
+2. **Settings** — a world on those rules. Every ruleset has **Rules only**, with the characters of the rules themselves; the shipped settings built on it (Star Wars on the 2nd Edition, Hunter: the Reckoning on the 5th); and your own settings, marked _yours_.
+3. **Document types** — what the documents are: a character, a droid, a vehicle, or one of your own types. Every setting of yours also lists the character of its rules.
+4. **Pages** — the templates that show documents of a type. ★ marks the page new documents open on; _edited_ marks a shipped page you changed.
+
+Search finds rows by name and description, with the branches that lead to them. **Only yours** shows your items; **Edited shipped** shows the shipped pages you changed.
+
+The keyboard works as in a file tree: the arrows move and open branches, Home and End jump to the first and last row, typing a name jumps to it, Enter opens a page in the editor, Shift+F10 or the Menu key opens the row's actions, and Delete asks to delete your item. On a phone the tree and the details are two tabs.
+
+## Creating
+
+- **New setting** on a ruleset creates your setting with the rules' character in it.
+- **New document type** in a setting — yours or a shipped one, but not **Rules only** — creates a type such as an organization or a ship.
+- **New page** on any document type starts a blank page or a copy of another page of the same type and opens it in the editor.
+
+Creating a setting or a document type never creates a page. Until a type has one, its documents show their stored values; until the character of your setting has one, its documents open on the page of **Rules only**.
+
+Your own items can be renamed and described with **Edit name and description**; shipped items stay as they are. Deleting a setting or a type says how many documents it touches — they are kept. Deleting a page sends the documents that opened on it back to their default page.
+
+## Default page \{#library-default-page}
+
+**Make default** chooses the page a type's new documents open on. For a shipped type, documents you already have keep their page. For your own type and for the character of your setting, documents without a page of their own follow the new default too.
+
+## Moving \{#library-move}
+
+Your pages move to another document type, your document types to another setting, and your settings to other rules: drag the row onto its new place, or use **Move…** in the details or the row's menu and pick the destination. Shipped items and the character of your setting's rules do not move.
+
+- A moved document type takes its pages and documents with it.
+- A moved page follows the rules of [moving a page](./types-and-settings#moving-a-page): documents that cannot use it return to their default page.
+- A move to other rules is confirmed first. Page values tied to the old rules' data show up as issues in the editor; document values are kept. The character of the rules changes, and the documents and pages of the old character stay on the old rules among its **Rules only** items, opening on the same page as before.
+
+Moving your setting between Star Wars and World of Darkness 2nd Edition also asks first: they share rules, but pages lose their ties to Star Wars data.
+
+## Export \{#library-export}
+
+**Export** turns the tree into a checklist. Tick whole branches or single items; a partly ticked branch shows a dash. Your setting or type that a ticked page needs is added automatically and marked in violet, "added for …". Shipped rules, settings, types, and pages are never copied — the file only names the place your parts attach to — but a shipped page you edited travels as your version of it. The summary shows what the file holds and a preview of it; **Save file** saves it.
+
+## Import \{#library-import}
+
+**Import** opens a file and shows its tree before anything changes:
+
+- _new_ — you do not have it; it is ticked;
+- _already present_ — you have exactly this; it cannot be ticked;
+- _conflict_ — you have an item with the same identity but different content; choose **Replace** or **Keep both** (the incoming one gets a new identity and "(imported)" after its name);
+- _unavailable_ — its rules or its place do not exist here; it cannot be ticked.
+
+Untick what you do not want and press **Import selected**. A ticked item whose new parent you left unticked brings that parent along, marked in violet. Files from earlier versions — a single document type or a single page — open the same way. A document of your own type still carries its type in its own file and is imported with the document.

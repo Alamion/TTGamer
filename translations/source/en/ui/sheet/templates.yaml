@@ -1,53 +1,6 @@
 library:
-    button: Templates
-    buttonTitle: Manage character page templates
     title: Page templates
-    empty: No templates yet. Create one to get started.
-    new: New template
-    edit: Edit
-    duplicate: Duplicate
-    delete: Delete
-    export: Export
-    kind: Kind
-    unnamedKind: Other
-    defaultBadge: Default
-    modifiedBadge: Modified
-    reset: Reset to original
-    resetConfirmTitle: Reset this default template?
-    resetConfirmDescription: '"{name}" will be restored to its original structure. Assigned documents keep all their data.'
-    deleteRefused: '"{name}" is a default page — it cannot be deleted. Duplicate it instead.'
-    duplicateId: '"{id}" is a built-in page — templates need their own identifier.'
-    incompatibleBadge: Incompatible format
-    incompatibleHint: Saved in a previous template format. Kept for recovery only — recreate it with the new editor.
-    skeletonName: '{label} page skeleton'
-    skeletonDescription: Starts from the current structure of the built-in {label} page.
-    blankSkeletonName: Blank page skeleton
-    skeletonIdentity: Identity
-    skeletonNameField: Name
-    newType: New document type
-    newTypeHint: A document type of its own in a setting, built from templates. Its documents keep all values in their pages.
-    typeName: Type name
-    typeSetting: Setting
-    createType: Create type
-    newPageFor: 'New page: {target}'
-    exportType: Export type
-    deleteType: Delete type
-    deleteTypeDescription:
-        message: 'Delete the type "{name}" and its pages? {count} document uses it; it is kept and shows its stored values.|Delete the type "{name}" and its pages? {count} documents use it; they are kept and show their stored values.'
-        plural: true
     noDescription: No description
-    typeBadge: Document type
-    newSetting: New setting
-    newSettingHint: A setting of your own on an existing ruleset. Its characters follow the ruleset's rules on pages you design, and it groups your document types.
-    settingName: Setting name
-    settingRuleset: Ruleset
-    createSetting: Create setting
-    settingPage: 'Page: {type}'
-    userSettings: Your settings
-    deleteSetting: Delete setting
-    deleteSettingDescription:
-        message: 'Delete the setting "{name}" with its document types and pages? {count} document belongs to it; it is kept.|Delete the setting "{name}" with its document types and pages? {count} documents belong to it; they are kept.'
-        plural: true
 primitives:
     groupIdentity: Identity fields
     groupTrait: Traits

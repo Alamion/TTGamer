@@ -64,7 +64,8 @@ export const UserDocumentTypeSchema = z.object({
     name: z.string().trim().min(1).max(80),
     description: z.string().max(500).optional(),
     owner: UserTypeOwnerSchema,
-    defaultTemplateId: z.string().min(1).max(64),
+    /** Missing while the type has no pages (spec 013): its documents show stored values. */
+    defaultTemplateId: z.string().min(1).max(64).optional(),
     createdAt: z.string().min(1),
     updatedAt: z.string().min(1),
 });

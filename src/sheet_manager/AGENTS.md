@@ -10,7 +10,8 @@ The universal sheet implementation supports Star Wars WEG/WoD characters, droids
 src/sheet_manager/
 ├── components/               # reusable UI, grouped by visual responsibility
 │   ├── controls/             # generic inputs: checkbox, textarea, catalog picker
-│   ├── dialogs/              # create/manage/confirm/import-conflict/template modal flows
+│   ├── dialogs/              # create/manage/confirm/import-conflict/library/editor modal flows
+│   │   ├── library/          # library tree, details, move, export and import panels (spec 013)
 │   │   └── template-editor/  # template editor subcomponents + pure draft model
 │   ├── sections/             # collapsible panels, cards, tables
 │   └── stat-fields/          # atomic traits, dots, labels, Force and merit/flaw rows
@@ -18,12 +19,13 @@ src/sheet_manager/
 ├── data/                     # bundled character presets
 ├── features/sheet/           # the assembled interactive sheet
 │   ├── shell/                # toolbar, view selector, workspace-level import/export state,
-│   │                         # template library entry, template file transfer module
+│   │                         # library entry, template/type/library file transfer modules
 │   ├── body/                 # character equipment and implant editors
 │   ├── declarative/          # template page renderer: fields, tables, primitives, member
 │   │                         # tracks, bound document access, page hook
 │   ├── registry/             # template field type → control mapping
-│   ├── data/                 # sheet-local catalog adapters + catalog binding registry
+│   ├── data/                 # sheet-local catalog adapters + catalog binding registry,
+│   │                         # pure library tree, actions, moves, retarget planners
 │   └── hooks/                # sheet-local behavior hooks
 ├── hooks/                    # useCharacter and update helpers
 ├── systems/                  # neutral contracts (registry, types, view, templateBindings,
@@ -32,7 +34,7 @@ src/sheet_manager/
 │   ├── star-wars-wod/        # Star Wars setting on the WoD 2e ruleset (identities frozen)
 │   └── v5/                   # V5 ruleset (`ruleset/`), engine character (`core/`), modules (`modules/hunter/`)
 ├── templates/                # setting-neutral template node builders
-├── store/                    # documentStore (v4) + templateStore (library, v5) + documentTypeStore (user types/settings, v1)
+├── store/                    # documentStore (v4) + templateStore (library, v5) + documentTypeStore (user types/settings, default pages, v2)
 └── types/                    # generic contracts, template schema, templateValues bag
 ```
 
@@ -117,6 +119,10 @@ Do not read `currentCharacter` directly inside a reusable sheet element. Direct 
   schema shape, profile, bindings, page parts; spec 012). Its identities — system id, definition
   ids, kinds, views, coordinates, data fields — are frozen; `tests/sheet_manager/systems/wod2e/`
   guards parse, page, and dice parity. The engine plugin `wod-2e` ships an engine-only character.
+- A setting system declares the ruleset it plays on (`SystemPlugin.ruleset`; Star Wars:
+  `wod-2e`); plugins without it are rulesets. The library (spec 013) groups by it: ruleset →
+  "Rules only", modules, setting systems, user settings. Current-state detail: the
+  sheet-templates skill ("Library").
 - User document types and settings (spec 012) reach generic code only through the registry
   overlay (`systems/userTypes.ts`, `SystemRegistry.setUserDocumentTypes`); `user-` documents keep
   every value in `templateValues`. Current-state detail: the sheet-templates skill.
