@@ -1,0 +1,19 @@
+---
+draft: true
+slug: ./
+title: Storybook (dev)
+sidebar_label: Storybook (dev)
+description: Dev-only reference of every template element, documentation widget, and color.
+---
+
+import DocCardList from '@theme/DocCardList';
+
+# Storybook (dev)
+
+Draft pages, never built for production. Every distinct element used in templates or documentation, with each of its variants, and every color the app defines appear here (constitution VI): a new or changed element is not done until it shows on one of these pages.
+
+- **Template elements** and **Built-in parts** render the stories in `src/sheet_manager/storybook/stories.ts` on sandbox documents; typed values never reach your documents. Built-in parts are generated from each system's bindings. `tests/sheet_manager/storybook.test.tsx` fails when a field type, option, container, or binding shape has no story.
+- **Documentation widgets** shows one example of each component the MDX pages embed.
+- **Palette** lists the Tailwind theme colors and every color variable in the current theme.
+
+<DocCardList />

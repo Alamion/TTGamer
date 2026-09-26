@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 
 import { reportSheetIssue } from './diagnostics';
 import { CatalogBrowser } from './features/docs/CatalogBrowser';
+import { DocsLinkVariants, ElementStorybook } from './features/docs/ElementStorybook';
 import { CATALOG_BINDINGS } from './features/sheet/data/catalogBindings';
 import { DeclarativeSheetView } from './features/sheet/declarative/DeclarativeSheetView';
 import { CreateCharacterButton } from './features/sheet/shell/CreateCharacterButton';
@@ -129,7 +130,13 @@ export function TemplatePreview({
 }
 
 export { JAX_VORN_PRESET } from './data/presets';
-export { CatalogBrowser, CreateCharacterButton, PolicyStatement };
+export {
+    CatalogBrowser,
+    CreateCharacterButton,
+    DocsLinkVariants,
+    ElementStorybook,
+    PolicyStatement,
+};
 
 /** Read-only example hunter (Lena Varga) used across the Hunter documentation. */
 export function hunterExampleDocument(): UnknownDocumentEnvelope {

@@ -1,6 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { parseDocsLink } from '@site/src/shared/utils/docsLink';
 import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
 import {
@@ -9,6 +10,7 @@ import {
     memo,
     type ReactNode,
     useContext,
+    useEffect,
     useMemo,
 } from 'react';
 
@@ -18,6 +20,7 @@ import { SectionCard } from '../../../components/sections/SectionCard';
 import { TermHintProvider } from '../../../components/terms/TermHintProvider';
 import { TermLabel } from '../../../components/terms/TermLabel';
 import { termLinkOf } from '../../../components/terms/termLink';
+import { reportSheetIssue } from '../../../diagnostics';
 import type { FieldBinding } from '../../../systems/templateBindings';
 import {
     clampFieldNumber,
@@ -53,6 +56,21 @@ const columnClasses: Record<number, string> = {
     3: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3',
     4: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4',
 };
+
+/**
+ * Column span classes per breakpoint, matching `columnClasses`: 3- and 4-column grids have two
+ * columns at `md`, so a wide span there covers the whole row; proportional grids have every
+ * column from `md`.
+ */
+function spanClass(span: number, columns: number, proportional: boolean): string | undefined {
+    const size = Math.min(span, columns);
+    if (size < 2) return undefined;
+    if (proportional) return ['', '', 'md:col-span-2', 'md:col-span-3', 'md:col-span-4'][size];
+    if (columns === 2) return 'md:col-span-2';
+    return size === 2
+        ? 'md:col-span-2'
+        : `md:col-span-2 ${size === 3 ? 'xl:col-span-3' : 'xl:col-span-4'}`;
+}
 
 function formulaErrorMessage(reason: FormulaEvaluationError | 'parse', coordinate = ''): string {
     switch (reason) {
@@ -425,6 +443,16 @@ const NodeView = memo(function NodeView({
     showHidden?: boolean;
 }) {
     const template = pageApi.template!;
+    const docsPath = node.type === 'section' || node.type === 'group' ? node.docsPath : undefined;
+    useEffect(() => {
+        // The editor lists a broken link among the draft's issues instead.
+        if (showHidden || !docsPath || parseDocsLink(docsPath)) return;
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'Documentation link is neither a site docs path nor an https:// address',
+            details: { templateId: template.id, nodeId: node.id, docsPath },
+        });
+    }, [docsPath, node.id, showHidden, template.id]);
     // The editor keeps its own collapse state so editing never folds the real page.
     const collapseKey = `${showHidden ? 'editor-' : ''}template-${template.id}-${node.id}`;
     if (!showHidden && node.visibleWhen && !pageApi.isVisible(node.visibleWhen, node.id)) {
@@ -561,7 +589,24 @@ function ChildrenGrid({
             : content;
     };
     const endSlot = overlay?.renderEndSlot({ parentId, index: nodes.length, column: null });
-    const children = [...nodes.map((node, index) => renderNode(node, index)), endSlot];
+    const isProportional = columns !== undefined && columns > 1 && columnWidths?.length === columns;
+    const children = [
+        ...nodes.map((node, index) => {
+            const rendered = renderNode(node, index);
+            const span =
+                columns && columns > 1 && node.span
+                    ? spanClass(node.span, columns, isProportional)
+                    : undefined;
+            return span ? (
+                <div key={node.id} className={span}>
+                    {rendered}
+                </div>
+            ) : (
+                rendered
+            );
+        }),
+        endSlot,
+    ];
     // Proportional widths (e.g. 2:1) apply from the md breakpoint; narrow screens stack.
     const proportional =
         columns && columns > 1 && columnWidths?.length === columns

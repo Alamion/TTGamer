@@ -1,0 +1,56 @@
+---
+sidebar_position: 2
+title: Values, formulas, and conditions
+description: Where a field keeps its value, how shared value keys link fields, and how formulas, limits, display conditions, and catalogs work.
+---
+
+# Values, formulas, and conditions
+
+:::tip[In short]
+Every field keeps its value under a key. Fields with the same key share one value — across pages too. Formulas compute numbers from those keys, and conditions show elements only while a value matches.
+:::
+
+## Where a value is kept \{#value-source}
+
+**Stores value in** chooses where a field's value lives:
+
+- **Custom value (this template)** — the field keeps its own value in the document;
+- a value the game already keeps for the document — **Traits**, **Resources**, **Character details**. The field then shows and changes that value, so the dice, other pages, and the rest of the sheet see the same number. Its type follows the game's value.
+
+## Shared value key \{#shared-value-key}
+
+Each custom value is stored under a key — by default, the field's own identifier. **Shared value key** sets that key yourself, in lowercase letters, digits, and dashes (`reputation`, `ship-name`).
+
+Fields with the same key share one value:
+
+- on **one page**, two fields with the key `reputation` show the same number, and changing one changes the other;
+- on **different pages** of the same document, a field keeps its value when the reader switches pages: a brief card and a full sheet can show the same `reputation`;
+- a key that matches a game value (for example `strength`) links the field to that value.
+
+Removing a field never deletes its value: bring the field back with the same key and the value is still there. Tables and lists have their own shared key for their rows.
+
+## Formulas \{#formulas}
+
+A **Derived value** shows a number computed from other values. Formulas use value keys, numbers, `+ - * /`, parentheses, and `min(…)` / `max(…)`:
+
+```text
+passion + self-control
+max(0, reputation - 2)
+willpower.max
+```
+
+For values with a current and a maximum, `.current` and `.max` pick one. The editor suggests the keys it knows. A formula that does not parse, refers to a value that does not exist, or depends on itself is listed as an issue; on the page, a failing formula says why instead of showing a wrong number.
+
+## Limits from values \{#limits-from-values}
+
+A rating or a number can take its maximum from a value or a formula: **Maximum from value or formula** with `willpower.max` keeps a rating at or below the current maximum. Built-in parts of a shipped page take a maximum the same way, and built-in resources a minimum too (**Minimum from value or formula**). When the limit drops, the page shows the value clamped but keeps what was stored; raise the limit and the old value is back.
+
+## Display conditions \{#display-conditions}
+
+**Show only when a value matches** hides an element unless a value equals the one you give: **Value key** names the value, **Comparison** picks equals or not equals, **Value** is what to compare with (`true`, `false`, a number, or text).
+
+The editor always shows conditional elements, hatched, and says whether the condition is met on the sample data. Hiding never deletes the element's values.
+
+## Catalogs \{#catalogs}
+
+A **Choice** field can take its options from one of the game's catalogs — weapons, merits, species. Choosing an entry can fill other fields of the page with the entry's details (damage, cost, description): pick which detail goes to which field. The filled values are copies; readers can still change them.

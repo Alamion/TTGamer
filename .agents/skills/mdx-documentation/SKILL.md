@@ -77,6 +77,13 @@ to it from other pages instead of repeating it.
 - Catalog embeds (`DataCatalog` filters, `EntityGrid` getters) use the exported descriptor-based
   configs from `src/data/*Config.tsx`, never literal labels.
 
+## Explicit heading ids
+
+When an anchor must match across locales (for example links from the app), give the heading an
+explicit id, escaped: `## Shared value key \{#shared-value-key}`. The site runs with
+`future.v4`, which drops MDX 1 compatibility, so an unescaped `{#id}` fails the build as a JS
+expression. Use the same id in the English page and its Russian mirror.
+
 ## Cross-References
 
 Use relative links: `[Dice Pools](../core-rules/dice-pools.mdx)` — never absolute.

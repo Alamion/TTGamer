@@ -4,6 +4,7 @@ import { NumberInput } from '@site/src/shared/components/NumberInput';
 
 import type { PrimitiveNode, TemplateNode } from '../../../types/template';
 import type { NodeUpdates } from './draft';
+import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
 import { ListSourceSelect, ValueSourceSelect } from './SourceControls';
@@ -118,7 +119,10 @@ export function PrimitiveConfig({
 
             {descriptor?.kind === 'resource' && (
                 <label className="grid gap-1 text-xs text-textSecondary">
-                    {t(editor.minFrom)}
+                    <span className="flex items-center gap-1">
+                        {t(editor.minFrom)}
+                        <EditorHelp topic="limitsFromValues" about={t(editor.minFrom)} />
+                    </span>
                     <input
                         value={node.minFrom ?? ''}
                         onChange={(event) =>
@@ -137,7 +141,10 @@ export function PrimitiveConfig({
 
             {descriptor?.kind === 'resource' && (
                 <label className="grid gap-1 text-xs text-textSecondary">
-                    {t(editorMaxFrom)}
+                    <span className="flex items-center gap-1">
+                        {t(editorMaxFrom)}
+                        <EditorHelp topic="limitsFromValues" about={t(editorMaxFrom)} />
+                    </span>
                     <input
                         value={node.maxFrom ?? ''}
                         onChange={(event) =>

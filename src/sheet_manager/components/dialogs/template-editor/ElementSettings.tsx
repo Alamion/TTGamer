@@ -14,10 +14,12 @@ import type {
 } from '../../../types/template';
 import { isContainerNode, isTemplateField, TEMPLATE_LIMITS } from '../../../types/template';
 import type { NodeUpdates } from './draft';
+import { EditorHelp } from './EditorHelp';
 import { FieldEditor } from './FieldEditor';
 import {
     ColumnLayoutControl,
     ColumnPlacementControl,
+    ColumnSpanControl,
     ToggleRow,
     VisibilityControl,
 } from './LayoutControls';
@@ -89,11 +91,14 @@ export const ElementSettings = memo(function ElementSettings({
     callbacks,
     node,
     parentColumns = 1,
+    pinnedSiblings = false,
 }: {
     actions: ElementActions;
     callbacks: ElementEditorCallbacks;
     node: TemplateNode;
     parentColumns?: number;
+    /** Some element of the same container is pinned to a column (spans do not apply). */
+    pinnedSiblings?: boolean;
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
     const iconButton =
@@ -145,6 +150,14 @@ export const ElementSettings = memo(function ElementSettings({
                     parentColumns={parentColumns}
                     value={node.column}
                     onChange={(column) => callbacks.onUpdate(node.id, { column })}
+                />
+            )}
+            {parentColumns > 1 && (
+                <ColumnSpanControl
+                    parentColumns={parentColumns}
+                    pinnedSiblings={pinnedSiblings}
+                    value={node.span}
+                    onChange={(span) => callbacks.onUpdate(node.id, { span })}
                 />
             )}
             <VisibilityControl
@@ -201,13 +214,20 @@ function SectionConfig({
                 aria-label={t(editor.sectionTitle)}
                 className={`${inputClasses} w-full font-medium`}
             />
-            <input
-                value={node.docsPath ?? ''}
-                onChange={(event) => callbacks.onUpdate(node.id, { docsPath: event.target.value })}
-                placeholder={t(editor.docsLink)}
-                aria-label={t(editor.docsLink)}
-                className={`${inputClasses} w-full`}
-            />
+            <div className="flex items-center gap-2">
+                <input
+                    value={node.docsPath ?? ''}
+                    onChange={(event) =>
+                        callbacks.onUpdate(node.id, {
+                            docsPath: event.target.value.trim() || undefined,
+                        })
+                    }
+                    placeholder={t(editor.docsLink)}
+                    aria-label={t(editor.docsLink)}
+                    className={`${inputClasses} min-w-0 flex-1`}
+                />
+                <EditorHelp topic="documentationLink" about={t(editor.docsLink)} />
+            </div>
             <ToggleRow
                 checked={node.defaultCollapsed === true}
                 label={t(editor.startsCollapsed)}
@@ -254,15 +274,20 @@ function GroupConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
                 />
             )}
             {!node.hideTitle && (
-                <input
-                    value={node.docsPath ?? ''}
-                    onChange={(event) =>
-                        callbacks.onUpdate(node.id, { docsPath: event.target.value })
-                    }
-                    placeholder={t(editor.docsLink)}
-                    aria-label={t(editor.docsLink)}
-                    className={`${inputClasses} w-full`}
-                />
+                <div className="flex items-center gap-2">
+                    <input
+                        value={node.docsPath ?? ''}
+                        onChange={(event) =>
+                            callbacks.onUpdate(node.id, {
+                                docsPath: event.target.value.trim() || undefined,
+                            })
+                        }
+                        placeholder={t(editor.docsLink)}
+                        aria-label={t(editor.docsLink)}
+                        className={`${inputClasses} min-w-0 flex-1`}
+                    />
+                    <EditorHelp topic="documentationLink" about={t(editor.docsLink)} />
+                </div>
             )}
             <ColumnLayoutControl
                 columns={node.columns}
@@ -312,13 +337,18 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
                 aria-label={t(editor.tableTitle)}
                 className={`${inputClasses} w-full`}
             />
-            <input
-                value={node.valueKey ?? ''}
-                onChange={(event) => callbacks.onUpdate(node.id, { valueKey: event.target.value })}
-                placeholder={t(editor.tableValueKey)}
-                aria-label={t(editor.tableValueKey)}
-                className={`${inputClasses} w-full`}
-            />
+            <div className="flex items-center gap-2">
+                <input
+                    value={node.valueKey ?? ''}
+                    onChange={(event) =>
+                        callbacks.onUpdate(node.id, { valueKey: event.target.value })
+                    }
+                    placeholder={t(editor.tableValueKey)}
+                    aria-label={t(editor.tableValueKey)}
+                    className={`${inputClasses} min-w-0 flex-1`}
+                />
+                <EditorHelp topic="sharedValueKey" about={t(editor.tableValueKey)} />
+            </div>
             <div className="flex items-center gap-2">
                 <NumberInput
                     value={node.minRows}

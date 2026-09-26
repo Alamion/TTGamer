@@ -76,6 +76,8 @@ export type VisibleWhen = z.infer<typeof VisibleWhenSchema>;
  */
 const placementShape = {
     column: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+    /** Flowing layouts only: how many parent columns the element spans (unset = 1). */
+    span: z.number().int().min(2).max(TEMPLATE_LIMITS.columnsMax).optional(),
     visibleWhen: VisibleWhenSchema.optional(),
 };
 
@@ -392,6 +394,7 @@ export interface SectionNode {
     title: string;
     labelMessage?: string;
     column?: number;
+    span?: number;
     visibleWhen?: VisibleWhen;
     /** Starts collapsed until the reader opens it (the choice is then remembered). */
     defaultCollapsed?: boolean;
@@ -409,6 +412,7 @@ export interface GroupNode {
     title: string;
     labelMessage?: string;
     column?: number;
+    span?: number;
     visibleWhen?: VisibleWhen;
     /** Title kept for the editor and accessibility but not shown on the card. */
     hideTitle?: boolean;

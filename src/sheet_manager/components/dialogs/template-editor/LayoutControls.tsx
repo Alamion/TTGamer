@@ -5,6 +5,7 @@ import { clsx } from 'clsx';
 
 import type { VisibleWhen } from '../../../types/template';
 import { TEMPLATE_LIMITS } from '../../../types/template';
+import { EditorHelp } from './EditorHelp';
 
 const editor = uiMessages.sheet.templates.editor;
 
@@ -46,6 +47,54 @@ export function ToggleRow({
                 {label}
             </label>
             {hint && <p className="pl-5 text-[11px] text-textSecondary">{hint}</p>}
+        </div>
+    );
+}
+
+/**
+ * How many columns of the parent this element spans. Spans apply in flowing layouts only: once
+ * an element of the container is pinned to a column, every element stacks in one column.
+ */
+export function ColumnSpanControl({
+    onChange,
+    parentColumns,
+    pinnedSiblings,
+    value,
+}: {
+    onChange: (span: number | undefined) => void;
+    parentColumns: number;
+    pinnedSiblings: boolean;
+    value: number | undefined;
+}) {
+    const current = value ?? 1;
+    return (
+        <div className="grid gap-1 text-xs text-textSecondary">
+            <span>{t(editor.columnSpan)}</span>
+            <div role="radiogroup" aria-label={t(editor.columnSpan)} className="flex gap-1">
+                {Array.from({ length: parentColumns }, (_, index) => index + 1).map((span) => {
+                    const selected = span === current;
+                    return (
+                        <button
+                            key={span}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            onClick={() => onChange(span === 1 ? undefined : span)}
+                            className={clsx(
+                                'min-w-8 rounded border px-2 py-1 text-xs transition-colors',
+                                selected
+                                    ? 'border-primary bg-primary text-white'
+                                    : 'border-border bg-bgSurface text-textPrimary hover:border-primary'
+                            )}
+                        >
+                            {span}
+                        </button>
+                    );
+                })}
+            </div>
+            {pinnedSiblings && current > 1 && (
+                <p className="text-[11px]">{t(editor.columnSpanPinnedHint)}</p>
+            )}
         </div>
     );
 }
@@ -124,24 +173,31 @@ export function ColumnLayoutControl({
 
     return (
         <div className="grid gap-2">
-            <select
-                value={count}
-                onChange={(event) => {
-                    const next = Number(event.target.value);
-                    // Widths belong to a specific column count; changing it resets them.
-                    onChange({ columns: next === 1 ? undefined : next, columnWidths: undefined });
-                }}
-                aria-label={t(editor.columns)}
-                className={inputClasses}
-            >
-                {Array.from({ length: TEMPLATE_LIMITS.columnsMax }, (_, index) => index + 1).map(
-                    (option) => (
+            <div className="flex items-center gap-2">
+                <select
+                    value={count}
+                    onChange={(event) => {
+                        const next = Number(event.target.value);
+                        // Widths belong to a specific column count; changing it resets them.
+                        onChange({
+                            columns: next === 1 ? undefined : next,
+                            columnWidths: undefined,
+                        });
+                    }}
+                    aria-label={t(editor.columns)}
+                    className={inputClasses}
+                >
+                    {Array.from(
+                        { length: TEMPLATE_LIMITS.columnsMax },
+                        (_, index) => index + 1
+                    ).map((option) => (
                         <option key={option} value={option}>
                             {t(editor.columns)}: {option}
                         </option>
-                    )
-                )}
-            </select>
+                    ))}
+                </select>
+                <EditorHelp topic="columns" about={t(editor.columns)} />
+            </div>
             {count > 1 && (
                 <>
                     <ToggleRow
@@ -212,13 +268,16 @@ export function VisibilityControl({
                 : raw;
     return (
         <div className="grid gap-1">
-            <ToggleRow
-                checked={value !== undefined}
-                label={t(editor.visibleWhen)}
-                onChange={(checked) =>
-                    onChange(checked ? { coordinate: 'value', equals: '' } : undefined)
-                }
-            />
+            <div className="flex items-center gap-1">
+                <ToggleRow
+                    checked={value !== undefined}
+                    label={t(editor.visibleWhen)}
+                    onChange={(checked) =>
+                        onChange(checked ? { coordinate: 'value', equals: '' } : undefined)
+                    }
+                />
+                <EditorHelp topic="displayConditions" about={t(editor.visibleWhen)} />
+            </div>
             {value && (
                 <div className="flex flex-wrap items-center gap-2 pl-5">
                     <input

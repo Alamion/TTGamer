@@ -1,8 +1,7 @@
-import { translate } from '@docusaurus/Translate';
-import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import { useExpandedState } from '../../hooks';
+import { DocsHelpLink, documentationFor } from '../controls/DocsHelpLink';
 
 export type AccentColor = 'primary' | 'secondary';
 
@@ -42,18 +41,7 @@ export function CollapsibleBlock({
                     <span className={`w-1 h-6 ${accentColorClasses[accentColor]} rounded-full`} />
                     {title}
                     {docsPath && (
-                        <a
-                            href={docsPath}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-textSecondary hover:text-textPrimary transition-colors"
-                            aria-label={translate(uiMessages.sheet.controls.documentationFor, {
-                                title,
-                            })}
-                        >
-                            <HelpCircle className="w-4 h-4" />
-                        </a>
+                        <DocsHelpLink docsPath={docsPath} label={documentationFor(title)} />
                     )}
                 </h2>
                 {isExpanded ? (

@@ -15,6 +15,10 @@
 - **Move a template to another type or setting**: the editor's "Type and setting" select moves a page to any document type, your own types, or a character of your setting; documents that opened on it return to their default page after a confirmation, setting pages follow it, and data links the new type lacks are listed before saving
 - **New templates for your settings**: the library's "New template" list is grouped by setting and includes your settings' characters
 
+- **Template editor guide**: a new documentation section explains the editor — areas, preview, arranging, elements, value keys, formulas, conditions, catalogs, and your own types and settings; a "?" beside the editor's settings opens the matching part
+- **Elements can span columns**: a new "Spans columns" setting stretches an element over 2–4 columns of its section or group, for a wide field beside a narrow one or a full-width row
+- **Documentation links in templates accept external pages**: a section or group links to `/docs/…` or any `https://` address
+
 ### Fix
 
 - **Edited default pages stay with their system (T-046)**: saved edits of shipped pages are keyed by system and page, so they can never attach to another system's page with the same name; existing edits move over on load
@@ -28,12 +32,14 @@
 - **Template ratings take a minimum**: set it in the editor next to the maximum; the dots up to it stay filled
 - **Template ratings show one dot per point**: a rating with a maximum of 5 shows five dots and the first dot means 1, like attribute and skill rows (it showed an extra dot for zero)
 - **Field types in the editor are translated**, and the type picker fits the settings panel
+- **Documentation links open in your language**: the "?" beside a section opened the English page for Russian readers; links that are not documentation or `https://` addresses are no longer shown
 - **Types in your settings show the setting's name** in the template library instead of the ruleset's
 
 ### Chore
 
 - **Star Wars runs on the WoD 2e ruleset (T-041)**: the engine's schema, profile, bindings, and page parts moved to `systems/wod2e/ruleset/`, with every Star Wars identity frozen; parity tests prove stored documents, shipped pages, and dice pools are unchanged
 - **Dark Pack scope**: the policy covers World of Darkness 5th Edition material only (constitution 1.4.2); WoD 2e and Star Wars carry no badge
+- **Element storybook (T-069, constitution 1.5.0)**: draft-only docs pages under `docs/dev/storybook/` show every template element variant, every built-in part of every system, every documentation widget, and the full palette (read from the Tailwind config); a coverage test fails when a variant has no story
 
 ## v3.10.0
 

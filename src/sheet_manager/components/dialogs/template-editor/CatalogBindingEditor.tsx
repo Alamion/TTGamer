@@ -8,6 +8,7 @@ import {
 } from '../../../features/sheet/data/catalogBindings';
 import { systemRegistry } from '../../../systems';
 import type { TemplateField } from '../../../types/template';
+import { EditorHelp } from './EditorHelp';
 import { type FillTarget, useEditorModel, useFillTargets } from './EditorModel';
 
 const bindingMessages = uiMessages.sheet.templates.binding;
@@ -50,21 +51,24 @@ export function CatalogBindingEditor({ callbacks, field, selfId }: CatalogBindin
 
     if (!field.binding) {
         return (
-            <select
-                value=""
-                onChange={(event) => {
-                    if (event.target.value) callbacks.onAttach(event.target.value);
-                }}
-                aria-label={t(bindingMessages.attach)}
-                className={inputClasses}
-            >
-                <option value="">{t(bindingMessages.attach)}</option>
-                {catalogOptions.map((binding) => (
-                    <option key={binding.catalogId} value={binding.catalogId}>
-                        {binding.catalogId}
-                    </option>
-                ))}
-            </select>
+            <div className="flex items-center gap-2">
+                <select
+                    value=""
+                    onChange={(event) => {
+                        if (event.target.value) callbacks.onAttach(event.target.value);
+                    }}
+                    aria-label={t(bindingMessages.attach)}
+                    className={inputClasses}
+                >
+                    <option value="">{t(bindingMessages.attach)}</option>
+                    {catalogOptions.map((binding) => (
+                        <option key={binding.catalogId} value={binding.catalogId}>
+                            {binding.catalogId}
+                        </option>
+                    ))}
+                </select>
+                <EditorHelp topic="catalogs" about={t(bindingMessages.attach)} />
+            </div>
         );
     }
 

@@ -68,6 +68,7 @@ import {
     type EditorSelection,
     EditorSelectionContext,
 } from './template-editor/editorActions';
+import { EditorHelp } from './template-editor/EditorHelp';
 import {
     EditorFillTargetsContext,
     type EditorModel,
@@ -142,6 +143,13 @@ function parentColumnsOf(draft: EditorDraft, nodeId: string): number {
     if (!position || position.parentId === null) return 1;
     const parent = findNode(draft, position.parentId);
     return parent && isContainerNode(parent) ? (parent.columns ?? 1) : 1;
+}
+
+/** Whether an element of the node's container is pinned to a column (spans stop applying). */
+function hasPinnedSiblings(draft: EditorDraft, nodeId: string): boolean {
+    return (
+        findNodePosition(draft, nodeId)?.siblings.some((node) => node.column !== undefined) ?? false
+    );
 }
 
 function labelIn(draft: EditorDraft, nodeId: string): string {
@@ -428,6 +436,7 @@ export function TemplateEditorDialog({
                 unknownCatalog: t(editor.unknownCatalog),
                 unknownFillTarget: t(editor.unknownFillTarget),
                 unknownLabelMessage: t(editor.unknownLabelMessage),
+                invalidDocsLink: t(editor.invalidDocsLink),
             }),
         [draft, t]
     );
@@ -587,6 +596,7 @@ export function TemplateEditorDialog({
                                 </button>
                             ))}
                         </div>
+                        <EditorHelp topic="overview" about={t(editor.guide)} />
                         <button
                             type="button"
                             onClick={undoChange}
@@ -651,6 +661,7 @@ export function TemplateEditorDialog({
                                         </optgroup>
                                     ))}
                                 </select>
+                                <EditorHelp topic="movingPage" about={t(editor.target)} />
                             </div>
                             <input
                                 value={draft.description ?? ''}
@@ -758,6 +769,10 @@ export function TemplateEditorDialog({
                                                             callbacks={callbacks}
                                                             node={selectedNode}
                                                             parentColumns={parentColumnsOf(
+                                                                draft,
+                                                                selectedNode.id
+                                                            )}
+                                                            pinnedSiblings={hasPinnedSiblings(
                                                                 draft,
                                                                 selectedNode.id
                                                             )}

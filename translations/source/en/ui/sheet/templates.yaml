@@ -165,7 +165,9 @@ editor:
     trackerSource: Tracks
     gripHandle: Drag handle — grab to move
     groupTitle: Group title
-    docsLink: Documentation link (optional)
+    docsLink: 'Documentation link (optional): /docs/… or https://…'
+    helpAbout: 'Help: {setting}'
+    guide: Template editor guide
     groupCollapsible: Collapsible (expanded state is remembered)
     tableTitle: Table title (optional)
     listTitle: List title (optional)
@@ -180,6 +182,8 @@ editor:
     layoutHeading: Layout
     columnPlacement: Column in parent
     columnAuto: Auto
+    columnSpan: Spans columns
+    columnSpanPinnedHint: 'Spanning applies while no element of this container is pinned to a column.'
     equalWidths: Equal column widths
     columnWidth: Column {index} width
     columnWidthsHint: 'Widths are proportional: 2 and 1 make the first column twice as wide.'
@@ -203,6 +207,7 @@ editor:
     unknownCatalog: Unknown catalog or catalog detail "{id}".
     unknownFillTarget: 'Auto-fill targets a field that does not exist: "{id}".'
     unknownLabelMessage: Unknown translation reference "{id}".
+    invalidDocsLink: 'Documentation link "{id}" is not a site docs path (/docs/…) or an https:// address.'
     depthMessage: Nesting limit reached — {limit} levels maximum.
     countMessage: Element limit reached — {limit} elements maximum.
     newSection: New section

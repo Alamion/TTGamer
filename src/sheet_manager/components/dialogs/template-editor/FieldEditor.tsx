@@ -7,6 +7,7 @@ import { kindLabel, listTemplateTargets } from '../../../features/sheet/data/doc
 import type { TemplateField, TemplateNode } from '../../../types/template';
 import { TEMPLATE_FIELD_TYPES, TEMPLATE_LIMITS } from '../../../types/template';
 import { CatalogBindingEditor } from './CatalogBindingEditor';
+import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
 import { ValueSourceSelect } from './SourceControls';
@@ -108,19 +109,22 @@ export function FieldEditor({
             )}
 
             {isCustom && (
-                <input
-                    value={field.valueKey ?? ''}
-                    onChange={(event) =>
-                        callbacks.onUpdate(
-                            event.target.value.length > 0
-                                ? { valueKey: event.target.value as TemplateField['valueKey'] }
-                                : { valueKey: undefined }
-                        )
-                    }
-                    placeholder={t(editor.valueKeyLabel)}
-                    aria-label={t(editor.valueKeyLabel)}
-                    className={`${inputClasses} w-full`}
-                />
+                <div className="flex items-center gap-2">
+                    <input
+                        value={field.valueKey ?? ''}
+                        onChange={(event) =>
+                            callbacks.onUpdate(
+                                event.target.value.length > 0
+                                    ? { valueKey: event.target.value as TemplateField['valueKey'] }
+                                    : { valueKey: undefined }
+                            )
+                        }
+                        placeholder={t(editor.valueKeyLabel)}
+                        aria-label={t(editor.valueKeyLabel)}
+                        className={`${inputClasses} min-w-0 flex-1`}
+                    />
+                    <EditorHelp topic="sharedValueKey" about={t(editor.valueKeyLabel)} />
+                </div>
             )}
 
             <label className="flex items-center gap-2 text-xs text-textSecondary">
@@ -162,7 +166,10 @@ export function FieldEditor({
 
             {field.type === 'formula' && (
                 <label className="grid gap-1 text-xs text-textSecondary">
-                    {t(editor.formula)}
+                    <span className="flex items-center gap-1">
+                        {t(editor.formula)}
+                        <EditorHelp topic="formulas" about={t(editor.formula)} />
+                    </span>
                     <input
                         value={field.formula}
                         onChange={(event) => callbacks.onUpdate({ formula: event.target.value })}
@@ -201,7 +208,10 @@ export function FieldEditor({
 
             {!isTraitSource && (field.type === 'number' || field.type === 'rating') && (
                 <label className="grid gap-1 text-xs text-textSecondary">
-                    {t(editor.maxFrom)}
+                    <span className="flex items-center gap-1">
+                        {t(editor.maxFrom)}
+                        <EditorHelp topic="limitsFromValues" about={t(editor.maxFrom)} />
+                    </span>
                     <input
                         value={field.maxFrom ?? ''}
                         onChange={(event) =>

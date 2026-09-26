@@ -43,6 +43,7 @@ export type NodeUpdates = {
     columns?: number;
     columnWidths?: number[];
     column?: number;
+    span?: number;
     hideTitle?: boolean;
     hideLabel?: boolean;
     /** `false` turns the book-term hint off (spec 009); `undefined` restores it. */
@@ -467,7 +468,7 @@ export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpda
                 delete (merged as Record<string, unknown>)[key];
             }
         }
-        for (const key of ['visibleWhen', 'defaultCollapsed'] as const) {
+        for (const key of ['visibleWhen', 'defaultCollapsed', 'span'] as const) {
             if (key in updates && !updates[key]) delete (merged as Record<string, unknown>)[key];
         }
         // Fewer columns: children placed past the new last column move into it.
@@ -610,6 +611,7 @@ export interface DraftIssueMessages {
     unknownCatalog: string;
     unknownFillTarget: string;
     unknownLabelMessage: string;
+    invalidDocsLink: string;
 }
 
 function referenceIssueMessage(
@@ -629,6 +631,8 @@ function referenceIssueMessage(
             return interpolate(messages.unknownCoordinate, { id: issue.key });
         case 'unknown-label-message':
             return interpolate(messages.unknownLabelMessage, { id: issue.key });
+        case 'invalid-docs-link':
+            return interpolate(messages.invalidDocsLink, { id: issue.key });
     }
 }
 

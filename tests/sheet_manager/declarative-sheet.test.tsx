@@ -13,6 +13,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
+import { setTestLocale } from '../stubs/testLocale';
 
 function field(id: string, label: string, type: string, extra: Record<string, unknown> = {}) {
     return { id, label, type, required: false, compact: false, ...extra };
@@ -623,6 +624,97 @@ describe('presentation mapping (US3)', () => {
 
         fireEvent.click(link);
         expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it("opens site docs in the reader's locale and external pages as written", () => {
+        const withLinks = (docsPath: string) =>
+            CustomTemplateSchema.parse({
+                id: 'links-kit',
+                name: 'Links Kit',
+                documentKind: 'character',
+                schemaVersion: 3,
+                children: [
+                    {
+                        id: 'linked',
+                        type: 'section',
+                        title: 'Linked',
+                        docsPath,
+                        children: [field('f-a', 'Field A', 'text')],
+                    },
+                ],
+            });
+        const href = () => screen.getByLabelText('Documentation for Linked').getAttribute('href');
+
+        mount(withLinks('/docs/wod-v5/rules/dice-pools#reading-the-dice'));
+        expect(href()).toBe('/docs/wod-v5/rules/dice-pools#reading-the-dice');
+        cleanup();
+
+        setTestLocale('ru');
+        try {
+            mount(withLinks('/docs/wod-v5/rules/dice-pools#reading-the-dice'));
+            expect(
+                screen.getByLabelText('Документация: Linked', { exact: false }).getAttribute('href')
+            ).toBe('/ru/docs/wod-v5/rules/dice-pools#reading-the-dice');
+        } finally {
+            cleanup();
+            setTestLocale('en');
+        }
+
+        mount(withLinks('https://example.org/wiki/Hunter'));
+        expect(href()).toBe('https://example.org/wiki/Hunter');
+    });
+
+    it('drops a documentation link that is not a docs path or https and reports it', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'bad-link-kit',
+            name: 'Bad Link Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'unsafe',
+                    type: 'section',
+                    title: 'Unsafe',
+                    docsPath: 'javascript:alert(1)',
+                    children: [field('f-a', 'Field A', 'text')],
+                },
+            ],
+        });
+        mount(template);
+        expect(screen.queryByLabelText('Documentation for Unsafe')).toBeNull();
+        expect(takeSheetIssues()).toContainEqual(
+            expect.objectContaining({
+                code: 'template-reference-invalid',
+                details: expect.objectContaining({ docsPath: 'javascript:alert(1)' }),
+            })
+        );
+    });
+
+    it('stretches a node over columns in a flowing layout, per breakpoint', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'span-kit',
+            name: 'Span Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'three',
+                    type: 'section',
+                    title: 'Three',
+                    columns: 3,
+                    children: [
+                        field('wide', 'Wide', 'text', { span: 2 }),
+                        field('narrow', 'Narrow', 'text'),
+                        field('full', 'Full', 'text', { span: 3 }),
+                    ],
+                },
+            ],
+        });
+        mount(template);
+        const cell = (label: string) => screen.getByLabelText(label).closest('.md\\:col-span-2');
+        expect(cell('Wide')?.className).toBe('md:col-span-2');
+        expect(cell('Full')?.className).toBe('md:col-span-2 xl:col-span-3');
+        expect(cell('Narrow')).toBeNull();
     });
 
     it('lays out direct section children in a column grid', () => {

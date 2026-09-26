@@ -41,6 +41,7 @@ const ISSUE_MESSAGES = {
     unknownCatalog: 'Unknown catalog "{id}".',
     unknownFillTarget: 'Missing fill target "{id}".',
     unknownLabelMessage: 'Unknown translation "{id}".',
+    invalidDocsLink: 'Invalid docs link "{id}".',
 };
 
 /** Asserts success so subsequent `.draft` accesses typecheck. */
@@ -869,6 +870,55 @@ describe('trait-sourced fields', () => {
         expect(
             within(settings('luck')).getByLabelText('Maximum from value or formula (optional)')
         ).not.toBeNull();
+    });
+
+    it('stretches an element over parent columns and warns when a sibling is pinned', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'span-kit',
+            name: 'Span Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'grid',
+                    type: 'section',
+                    title: 'Grid',
+                    columns: 3,
+                    children: [
+                        { id: 'wide', type: 'text', label: 'Wide' },
+                        { id: 'other', type: 'text', label: 'Other' },
+                    ],
+                },
+            ],
+        });
+        useTemplateStore.setState({ templates: [template], quarantine: [], defaultOverrides: {} });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+        selectInOutline('wide');
+        const spans = within(settings('wide')).getByRole('radiogroup', { name: 'Spans columns' });
+        fireEvent.click(within(spans).getByRole('radio', { name: '2' }));
+        expect(
+            within(settings('wide')).queryByText(/no element of this container is pinned/)
+        ).toBeNull();
+
+        selectInOutline('other');
+        const placement = within(settings('other')).getByRole('radiogroup', {
+            name: 'Column in parent',
+        });
+        fireEvent.click(within(placement).getByRole('radio', { name: '3' }));
+        selectInOutline('wide');
+        expect(
+            within(settings('wide')).getByText(/no element of this container is pinned/)
+        ).toBeTruthy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore.getState().templates[0]!;
+        const grid = saved.children[0] as { children: Array<{ id: string; span?: number }> };
+        expect(grid.children.find(({ id }) => id === 'wide')?.span).toBe(2);
     });
 
     it('sets a rating minimum bounded by its maximum', () => {

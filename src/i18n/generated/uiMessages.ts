@@ -3377,7 +3377,15 @@ export const uiMessages = {
                 },
                 docsLink: {
                     id: 'ttgamer.ui.sheet.templates.editor.docsLink',
-                    message: 'Documentation link (optional)',
+                    message: 'Documentation link (optional): /docs/… or https://…',
+                },
+                helpAbout: {
+                    id: 'ttgamer.ui.sheet.templates.editor.helpAbout',
+                    message: 'Help: {setting}',
+                },
+                guide: {
+                    id: 'ttgamer.ui.sheet.templates.editor.guide',
+                    message: 'Template editor guide',
                 },
                 groupCollapsible: {
                     id: 'ttgamer.ui.sheet.templates.editor.groupCollapsible',
@@ -3434,6 +3442,15 @@ export const uiMessages = {
                 columnAuto: {
                     id: 'ttgamer.ui.sheet.templates.editor.columnAuto',
                     message: 'Auto',
+                },
+                columnSpan: {
+                    id: 'ttgamer.ui.sheet.templates.editor.columnSpan',
+                    message: 'Spans columns',
+                },
+                columnSpanPinnedHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.columnSpanPinnedHint',
+                    message:
+                        'Spanning applies while no element of this container is pinned to a column.',
                 },
                 equalWidths: {
                     id: 'ttgamer.ui.sheet.templates.editor.equalWidths',
@@ -3527,6 +3544,11 @@ export const uiMessages = {
                 unknownLabelMessage: {
                     id: 'ttgamer.ui.sheet.templates.editor.unknownLabelMessage',
                     message: 'Unknown translation reference "{id}".',
+                },
+                invalidDocsLink: {
+                    id: 'ttgamer.ui.sheet.templates.editor.invalidDocsLink',
+                    message:
+                        'Documentation link "{id}" is not a site docs path (/docs/…) or an https:// address.',
                 },
                 depthMessage: {
                     id: 'ttgamer.ui.sheet.templates.editor.depthMessage',

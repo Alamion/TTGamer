@@ -2399,6 +2399,12 @@
     "ttgamer.ui.sheet.templates.editor.columns": {
         "message": "Columns"
     },
+    "ttgamer.ui.sheet.templates.editor.columnSpan": {
+        "message": "Spans columns"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnSpanPinnedHint": {
+        "message": "Spanning applies while no element of this container is pinned to a column."
+    },
     "ttgamer.ui.sheet.templates.editor.columnWidth": {
         "message": "Column {index} width"
     },
@@ -2436,7 +2442,7 @@
         "message": "Discard"
     },
     "ttgamer.ui.sheet.templates.editor.docsLink": {
-        "message": "Documentation link (optional)"
+        "message": "Documentation link (optional): /docs/… or https://…"
     },
     "ttgamer.ui.sheet.templates.editor.duplicate": {
         "message": "Duplicate"
@@ -2498,6 +2504,12 @@
     "ttgamer.ui.sheet.templates.editor.groupTitle": {
         "message": "Group title"
     },
+    "ttgamer.ui.sheet.templates.editor.guide": {
+        "message": "Template editor guide"
+    },
+    "ttgamer.ui.sheet.templates.editor.helpAbout": {
+        "message": "Help: {setting}"
+    },
     "ttgamer.ui.sheet.templates.editor.hiddenByCondition": {
         "message": "Hidden by a condition: shown only when \"{coordinate}\" is {value}. Readers do not see it now."
     },
@@ -2515,6 +2527,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.invalidBounds": {
         "message": "Minimum cannot exceed maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidDocsLink": {
+        "message": "Documentation link \"{id}\" is not a site docs path (/docs/…) or an https:// address."
     },
     "ttgamer.ui.sheet.templates.editor.invalidFormula": {
         "message": "Invalid formula in \"{id}\" — check the expression."

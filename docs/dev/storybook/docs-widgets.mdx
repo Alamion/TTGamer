@@ -1,0 +1,143 @@
+---
+draft: true
+sidebar_position: 3
+title: Documentation widgets
+description: One example of every component the documentation pages embed.
+---
+
+import { TWWrapper } from '@site/src/shared/components/TWWrapper';
+import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
+import { CharRoll } from '@site/src/integrations/docs-character-rolls/CharRoll';
+import WodTab from '@site/src/dice_roller/components/dice_pool/DiceTabWod';
+import RollControls from '@site/src/dice_roller/components/dice_pool/RollControls';
+import { DataCatalog } from '@site/src/shared/components/DataCatalog';
+import { EntityGrid } from '@site/src/shared/components/EntityCard';
+import { ScaleChart } from '@site/src/shared/components/ScaleChart';
+import { DifficultyTable } from '@site/src/shared/components/DifficultyTable';
+import { TERMINOLOGY } from '@site/src/data/terminologyData';
+import {
+    TERMINOLOGY_COLUMNS,
+    TERMINOLOGY_FILTERS,
+    renderTerminologyDetail,
+} from '@site/src/data/terminologyConfig';
+import { FORCE_SKILLS } from '@site/src/data/forceSkills';
+import { FORCE_SKILL_GRID, renderForceSkillDetail } from '@site/src/data/forceSkillsConfig';
+import {
+    CatalogBrowser,
+    CatalogSummaryTable,
+    CreateCharacterButton,
+    DocsLinkVariants,
+    PolicyStatement,
+    TemplateFragment,
+    TemplatePreview,
+    hunterExampleDocument,
+} from '@site/src/sheet_manager/docsEmbeds';
+
+# Documentation widgets
+
+## Dice
+
+`InlineRoll` in each variant, with fixed results:
+
+<TWWrapper>
+    <p>
+        simple: <InlineRoll notation={'4d10>=6f=1@7,9,3,6'} preroll /> · details:{' '}
+        <InlineRoll notation={'4d10>=6f=1@7,9,3,6'} variant="details" preroll /> · formatted:{' '}
+        <InlineRoll notation={'4d10>=6f=1@7,9,3,6'} variant="formatted" preroll />
+    </p>
+    <InlineRoll notation={'4d10>=6f=1@7,9,3,6'} variant="full" multiline preroll />
+</TWWrapper>
+
+`CharRoll` reads the open Star Wars character. Change **Dexterity**, **Blaster**, or **Self Control** below and the pools follow:
+
+<TWWrapper>
+    <p>
+        Dexterity + Blaster: <CharRoll attr="Dexterity" skill="Blaster" /> · Self Control:{' '}
+        <CharRoll params={['virtues.Self Control.value']} />
+    </p>
+    <TemplateFragment node="attributes" />
+    <br />
+    <TemplateFragment node="skills" />
+    <br />
+    <TemplateFragment node="force-virtues" />
+</TWWrapper>
+
+The dice pool builder (`WodTab` + `RollControls`):
+
+<TWWrapper>
+    <div className="max-w-[375px]">
+        <WodTab />
+        <RollControls />
+    </div>
+</TWWrapper>
+
+## Catalogs and tables
+
+`DataCatalog` (table with search, filters, and details):
+
+<TWWrapper>
+    <DataCatalog
+        data={TERMINOLOGY}
+        columns={TERMINOLOGY_COLUMNS}
+        renderDetail={renderTerminologyDetail}
+        searchPlaceholder="Search terms..."
+        filters={TERMINOLOGY_FILTERS}
+        id="storybook-terminology"
+    />
+</TWWrapper>
+
+`EntityGrid` (cards with details):
+
+<TWWrapper>
+    <EntityGrid
+        entities={FORCE_SKILLS}
+        renderDetail={renderForceSkillDetail}
+        {...FORCE_SKILL_GRID}
+    />
+</TWWrapper>
+
+`CatalogBrowser` and `CatalogSummaryTable`:
+
+<TWWrapper>
+    <CatalogBrowser catalogId="v5-hunter-weapons" />
+    <br />
+    <CatalogSummaryTable catalogId="v5-hunter-creeds" />
+</TWWrapper>
+
+`DifficultyTable` and the Star Wars `ScaleChart` (object size comparison):
+
+<TWWrapper>
+    <DifficultyTable />
+    <br />
+    <ScaleChart />
+</TWWrapper>
+
+## Sheet embeds
+
+`TemplateFragment` (the open document) and `TemplatePreview` (a fixed document):
+
+<TWWrapper>
+    <TemplateFragment node="attributes" />
+    <br />
+    <TemplatePreview
+        systemId="wod-v5"
+        template="v5-hunter-brief"
+        document={hunterExampleDocument()}
+    />
+</TWWrapper>
+
+`CreateCharacterButton` and `PolicyStatement`:
+
+<TWWrapper>
+    <CreateCharacterButton />
+    <br />
+    <PolicyStatement policy="dark-pack" />
+</TWWrapper>
+
+## Help links
+
+`DocsHelpLink` (the "?" of sections, groups, and editor settings), in both sizes:
+
+<TWWrapper>
+    <DocsLinkVariants />
+</TWWrapper>

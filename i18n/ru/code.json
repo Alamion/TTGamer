@@ -2399,6 +2399,12 @@
     "ttgamer.ui.sheet.templates.editor.columns": {
         "message": "Колонки"
     },
+    "ttgamer.ui.sheet.templates.editor.columnSpan": {
+        "message": "Занимает колонок"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnSpanPinnedHint": {
+        "message": "Растягивание работает, пока ни один элемент контейнера не закреплён за колонкой."
+    },
     "ttgamer.ui.sheet.templates.editor.columnWidth": {
         "message": "Ширина колонки {index}"
     },
@@ -2436,7 +2442,7 @@
         "message": "Отменить"
     },
     "ttgamer.ui.sheet.templates.editor.docsLink": {
-        "message": "Ссылка на документацию (необязательно)"
+        "message": "Ссылка на документацию (необязательно): /docs/… или https://…"
     },
     "ttgamer.ui.sheet.templates.editor.duplicate": {
         "message": "Дублировать"
@@ -2498,6 +2504,12 @@
     "ttgamer.ui.sheet.templates.editor.groupTitle": {
         "message": "Название группы"
     },
+    "ttgamer.ui.sheet.templates.editor.guide": {
+        "message": "Руководство по редактору шаблонов"
+    },
+    "ttgamer.ui.sheet.templates.editor.helpAbout": {
+        "message": "Справка: {setting}"
+    },
     "ttgamer.ui.sheet.templates.editor.hiddenByCondition": {
         "message": "Скрыто условием: показывается, только когда «{coordinate}» = {value}. Сейчас читатель этого не видит."
     },
@@ -2515,6 +2527,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.invalidBounds": {
         "message": "Минимум не может превышать максимум."
+    },
+    "ttgamer.ui.sheet.templates.editor.invalidDocsLink": {
+        "message": "Ссылка на документацию «{id}» — не путь в документации сайта (/docs/…) и не адрес https://."
     },
     "ttgamer.ui.sheet.templates.editor.invalidFormula": {
         "message": "Неверная формула в «{id}» — проверьте выражение."

@@ -1,0 +1,69 @@
+---
+sidebar_position: 4
+slug: ./
+title: Template editor
+sidebar_label: Template editor
+description: How to build and change the pages of your documents — the editor's areas, preview, arranging elements, and saving.
+---
+
+import DocCardList from '@theme/DocCardList';
+
+# Template editor
+
+:::tip[In short]
+A template is the layout of a document's page. Open **Templates** on the [character sheet](/universal_sheet), pick a page, and change it on the page itself: select an element to see its settings, drag it to move it, press **Save** when the issues list is empty.
+:::
+
+Every document opens on a page: which blocks it shows, where they sit, and which values they keep. The pages that come with a game are **shipped pages**; you can change them, copy them, or build your own from scratch. The **?** next to a setting in the editor opens the matching part of this guide.
+
+## The three areas \{#areas}
+
+| Area         | What it is for                                                                                                 |
+| ------------ | -------------------------------------------------------------------------------------------------------------- |
+| **Outline**  | The tree of every element on the page. Click a row to select an element; drag the handle to move it.           |
+| **Page**     | The page exactly as a reader sees it, filled with sample data. Click an element to select it.                  |
+| **Settings** | Everything the selected element can do: its label, where its value is stored, layout, conditions, and actions. |
+
+On a narrow screen the three areas become tabs. Elements hidden by a display condition stay visible in the editor, hatched, so you can still select them.
+
+The sample data is only for looking: dots, boxes, and text you change on the editor's page never reach your documents.
+
+## Edit and preview \{#preview}
+
+The **Edit / Preview** switch at the top shows the page without editor marks. In **Preview** you choose the data it shows:
+
+- **Open document** — the document open on the sheet, if it fits this page;
+- a shipped **example** for the document type, when the game provides one;
+- **Blank document** — every value empty, to check how the page starts.
+
+The preview never changes the chosen document.
+
+## Arranging elements \{#arranging}
+
+- **Add**: every **+** between elements and every empty column inserts a new element there — a section, a field group, a field, a table, a list, or a tracker.
+- **Move**: drag an element by its chip on the page or by its handle in the outline, into another place or another column.
+- **Keyboard**: the shortcuts work with any keyboard layout.
+
+| Keys                | Action                                           |
+| ------------------- | ------------------------------------------------ |
+| `Alt+↑` / `Alt+↓`   | Move the element up or down                      |
+| `Alt+←` / `Alt+→`   | Move it out of its group or into the group above |
+| `Alt+Shift+←` / `→` | Move it to the previous or next column           |
+| `Ctrl+D`            | Duplicate                                        |
+| `Delete`            | Remove                                           |
+| `Ctrl+Z`            | Undo                                             |
+| `Ctrl+Shift+Z`      | Redo                                             |
+
+Undo covers every change since the editor opened; typing in one field counts as one step.
+
+## Saving and issues \{#saving}
+
+Changes stay in the editor until you press **Save**. Above the button, the editor lists what would make the page break: an empty label, a formula that does not parse, a value it cannot find, a broken documentation link. Click an issue to select the element it belongs to. **Save** stays disabled until the list is empty.
+
+Closing the editor with unsaved changes asks before throwing them away.
+
+## Shipped pages \{#shipped-pages}
+
+Changing a shipped page saves your version of it; every document using that page shows your version at once. **Reset to original** in the template library brings the original back — documents keep their values. Shipped pages cannot be deleted; **Duplicate** one to start your own page from it.
+
+<DocCardList />

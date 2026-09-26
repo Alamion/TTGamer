@@ -50,6 +50,14 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   affects storage; the editor always shows the node (condition control on every panel). An
   unknown coordinate hides the node and reports `binding-unresolved`; `validateTemplateReferences`
   flags it as `unknown-coordinate`.
+- `docsPath` (sections, groups) is `/docs/<path>[#anchor]` or an `https://` address
+  (`shared/utils/docsLink.ts`); site paths render under the reader's locale base URL
+  (`useSitePath`) through the `DocsHelpLink` atom. Anything else is an `invalid-docs-link`
+  reference issue (editor issue, import report) and renders no link (`template-reference-invalid`
+  at render outside the editor). The schema stays lenient so old templates never quarantine.
+- Placement: `column` pins a node to a parent column (then every sibling stacks per column,
+  unpinned ones in column 1); `span` (2–4) stretches a node over columns in flowing layouts only,
+  with per-breakpoint classes (`spanClass`: 3/4-column grids have two columns at `md`).
 - Sections and collapsible groups may set `defaultCollapsed` (collapsed until opened, then
   remembered). Select options may carry their own `labelMessage`.
 - Guardrails (`TEMPLATE_LIMITS`, `collectTreeIssues`): depth 10, 200 nodes, one id namespace
@@ -402,6 +410,10 @@ toolbar switches Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
   definition without a page adopts it), and repoints a type's `defaultTemplateId` to another of
   its pages. Shipped overrides and caller-owned flows (`lockTarget`: a new type's first page, a
   setting page) keep their target.
+- In-editor help (T-068): `EditorHelp` puts a "?" next to non-obvious settings, linking the
+  guide `docs/template-editor/` (en + ru, explicit `\{#anchor}` heading ids) through
+  `EDITOR_GUIDE`; `tests/docs/template-editor-guide.test.ts` fails when an anchor disappears
+  from either locale. A new or renamed setting worth explaining gets a guide section and a topic.
 - Test helpers: `tests/sheet_manager/helpers/editor.ts` (`resetEditorStores`, `pressShortcut`
   with `code` + layout `key`, `dragNode`).
 
@@ -460,7 +472,13 @@ array (ignored on import). Filenames: `ttgamer_template_<id>.json`.
 ## Extension checklists
 
 Every checklist below ends with the element storybook (constitution VI): the new or changed
-element and each of its variants appear in the draft-only docs storybook (T-069 builds it). A
+element and each of its variants appear in the draft-only docs storybook `docs/dev/storybook/`.
+Handwritten stories live in `src/sheet_manager/storybook/stories.ts` (containers, fields,
+catalog choice, collections, on sandbox documents); built-in parts are generated per system from
+`bindingSignature` (a new binding shape needs a case there when it renders differently). A new
+option or presentation also gets a tag in `REQUIRED_VARIANTS` of
+`tests/sheet_manager/storybook.test.tsx`. A new docs widget gets an example on
+`docs/dev/storybook/docs-widgets.mdx`; colors come from `tailwind.config.cjs` automatically. A
 setting's missing element is added as an editor-configurable template element, preferably as an
 option on an existing field or primitive rather than a similar new one.
 

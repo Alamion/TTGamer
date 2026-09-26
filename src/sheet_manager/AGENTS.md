@@ -166,7 +166,8 @@ duplicate template facts here. Invariants that must never be broken:
 - Model WoD-family differences as definition-owned configuration and block composition (trait groups, resource tracks, special-power blocks, labels, limits), not copied sheet pages. Reserve bespoke React blocks for genuinely different interaction models.
 - An element a setting needs is built as a template element user templates can configure in
   the editor, preferably as an option on an existing element; it and its variants appear in
-  the draft-only element storybook (constitution VI, T-069).
+  the draft-only element storybook (constitution VI): a story in `storybook/stories.ts` (built-in
+  parts are generated from bindings) and a tag in `tests/sheet_manager/storybook.test.tsx`.
 - `TraitRowWithInput` is controlled by `specializationText`; parent/store changes must appear immediately.
 - Icon-only actions require accessible labels.
 - Use Radix primitives for new modal behavior. A modal must label itself, trap focus, close on Escape, and restore focus to its trigger.

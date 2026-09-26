@@ -13,8 +13,7 @@ Modified principles:
 Runtime guidance updated: AGENTS.md (§8 Module Boundaries), src/sheet_manager/AGENTS.md
   (UI Rules), .agents/skills/sheet-templates/SKILL.md
 
-Deferred TODOs: T-069 builds the storybook; until it lands, new or changed elements record
-  their storybook entry in that task
+Deferred TODOs: none (T-069 built the storybook: `docs/dev/storybook/`)
 
 Previous: 1.4.1 -> 1.4.2 (clarification: the Dark Pack policy covers World of
   Darkness 5th Edition material only; a policy is declared only where it actually grants rights
