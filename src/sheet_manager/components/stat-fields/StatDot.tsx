@@ -1,11 +1,16 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { useSheetDiceActions } from '@site/src/integrations/sheet-dice/useSheetDiceActions';
 import { clsx } from 'clsx';
-import { Dices, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useCallback } from 'react';
 
-import { useDocumentRollSource } from '../../hooks/useDocumentSource';
+import { RATING_FLAGS, type RatingFlag } from '../../types/template';
+import {
+    StatDiceButton,
+    statDotPixels,
+    statFlagSizeClasses,
+    type TraitDiceRoll,
+} from './StatDiceButton';
 
 interface StatDotProps {
     value: number;
@@ -19,21 +24,38 @@ interface StatDotProps {
     disabled?: boolean;
     size?: 'sm' | 'md' | 'lg';
     minimal?: number;
+    /** All three S/P/E flags; `flags` picks a subset instead. */
     showFlags?: boolean;
+    flags?: readonly RatingFlag[];
     specialization?: boolean | null;
     experienced?: boolean | null;
     practiced?: boolean | null;
     activeColor?: { bg?: string; border?: string };
     onRemove?: () => void;
-    onDiceRoll?: (
-        value: number,
-        specialization: boolean | null,
-        experienced: boolean | null,
-        practiced: boolean | null
-    ) => string | undefined;
+    onDiceRoll?: TraitDiceRoll;
     statLabel?: string;
     characterName?: string;
+    /** Accessible name of each dot, by its value (for example "Renown: 3"). */
+    dotLabel?: (level: number) => string;
 }
+
+const FLAG_UI: Record<RatingFlag, { letter: string; activeClass: string }> = {
+    specialization: { letter: 'S', activeClass: 'text-jediBlue' },
+    practiced: { letter: 'P', activeClass: 'text-droidGold' },
+    experienced: { letter: 'E', activeClass: 'text-jediRed' },
+};
+
+const flagTitles = {
+    specialization: uiMessages.sheet.controls.statDot.specialization,
+    practiced: uiMessages.sheet.controls.statDot.practiced,
+    experienced: uiMessages.sheet.controls.statDot.experienced,
+};
+
+const dotSizeClasses = {
+    sm: 'w-3 h-3',
+    md: 'w-4 h-4',
+    lg: 'w-5 h-5',
+};
 
 export function StatDot({
     value,
@@ -43,6 +65,7 @@ export function StatDot({
     size = 'md',
     minimal,
     showFlags = false,
+    flags,
     specialization = null,
     experienced = null,
     practiced = null,
@@ -51,31 +74,16 @@ export function StatDot({
     onDiceRoll,
     statLabel,
     characterName,
+    dotLabel,
 }: StatDotProps) {
-    const rollSource = useDocumentRollSource();
-    const { queueNotation, rollImmediately } = useSheetDiceActions({
-        characterName,
-        statLabel,
-        rollSource,
-    });
+    const visibleFlags = flags
+        ? RATING_FLAGS.filter((flag) => flags.includes(flag))
+        : showFlags
+          ? RATING_FLAGS
+          : [];
+    const hasFlags = visibleFlags.length > 0;
+    const flagValues = { specialization, experienced, practiced };
 
-    const handleDiceLeftClick = useCallback(() => {
-        if (disabled || !onDiceRoll) return;
-        const notation = onDiceRoll(value, specialization, experienced, practiced);
-        if (notation) queueNotation(notation);
-    }, [disabled, onDiceRoll, value, specialization, experienced, practiced, queueNotation]);
-
-    const handleDiceRightClick = useCallback(
-        (e: React.MouseEvent) => {
-            e.preventDefault();
-            if (disabled || !onDiceRoll) return;
-            const notation = onDiceRoll(value, specialization, experienced, practiced);
-            if (notation) {
-                void rollImmediately(notation);
-            }
-        },
-        [disabled, onDiceRoll, value, specialization, experienced, practiced, rollImmediately]
-    );
     const handleClick = useCallback(
         (index: number) => {
             if (disabled) return;
@@ -89,117 +97,63 @@ export function StatDot({
     );
 
     const handleFlagToggle = useCallback(
-        (flag: 'specialization' | 'experienced' | 'practiced') => {
+        (flag: RatingFlag) => {
             if (disabled) return;
-            const currentValue =
-                flag === 'specialization'
-                    ? specialization
-                    : flag === 'experienced'
-                      ? experienced
-                      : practiced;
-            const newValue = !currentValue;
-            if (flag === 'specialization') {
-                onChange?.(value, newValue, experienced, practiced);
-            } else if (flag === 'experienced') {
-                onChange?.(value, specialization, newValue, practiced);
-            } else {
-                onChange?.(value, specialization, experienced, newValue);
-            }
+            onChange?.(
+                value,
+                flag === 'specialization' ? !specialization : specialization,
+                flag === 'experienced' ? !experienced : experienced,
+                flag === 'practiced' ? !practiced : practiced
+            );
         },
         [disabled, onChange, value, specialization, experienced, practiced]
     );
 
-    const sizeClasses = {
-        sm: 'w-3 h-3',
-        md: 'w-4 h-4',
-        lg: 'w-5 h-5',
-    };
-
-    const flagSizeClasses = {
-        sm: 'w-3 h-3 text-[8px]',
-        md: 'w-4 h-4 text-[10px]',
-        lg: 'w-5 h-5 text-xs',
-    };
-
-    const dotPixel = size === 'sm' ? 12 : size === 'lg' ? 20 : 16;
-
     return (
         <div
-            className="flex flex-col items-center gap-1"
+            className="flex min-w-0 flex-col items-center gap-1"
             role="radiogroup"
             aria-label={translate(uiMessages.sheet.controls.statDot.group)}
         >
-            {(showFlags || onRemove || onDiceRoll) && (
+            {(hasFlags || onRemove || onDiceRoll) && (
                 <div className="flex w-full">
                     {onDiceRoll ? (
-                        <button
-                            type="button"
-                            onClick={handleDiceLeftClick}
-                            onContextMenu={handleDiceRightClick}
+                        <StatDiceButton
+                            onDiceRoll={onDiceRoll}
+                            value={value}
+                            specialization={specialization}
+                            experienced={experienced}
+                            practiced={practiced}
                             disabled={disabled}
-                            className={clsx(
-                                'rounded font-bold transition-all duration-200 flex items-center justify-center',
-                                flagSizeClasses[size],
-                                'text-textSecondary opacity-40 hover:opacity-70',
-                                disabled && 'cursor-not-allowed'
-                            )}
-                            title={translate(uiMessages.sheet.controls.statDot.diceTitle)}
-                        >
-                            <Dices size={dotPixel - 2} />
-                        </button>
-                    ) : showFlags && onRemove ? (
-                        <div className={clsx('invisible', flagSizeClasses[size])} />
+                            size={size}
+                            statLabel={statLabel}
+                            characterName={characterName}
+                        />
+                    ) : hasFlags && onRemove ? (
+                        <div className={clsx('invisible', statFlagSizeClasses[size])} />
                     ) : null}
-                    {showFlags && (
+                    {hasFlags && (
                         <div className="flex gap-1 mx-auto">
-                            <button
-                                type="button"
-                                onClick={() => handleFlagToggle('specialization')}
-                                disabled={disabled}
-                                className={clsx(
-                                    'rounded font-bold transition-all duration-200',
-                                    flagSizeClasses[size],
-                                    specialization
-                                        ? 'text-jediBlue opacity-100'
-                                        : 'text-textSecondary opacity-40 hover:opacity-70',
-                                    disabled && 'cursor-not-allowed'
-                                )}
-                                title={translate(uiMessages.sheet.controls.statDot.specialization)}
-                            >
-                                S
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleFlagToggle('practiced')}
-                                disabled={disabled}
-                                className={clsx(
-                                    'rounded font-bold transition-all duration-200',
-                                    flagSizeClasses[size],
-                                    practiced
-                                        ? 'text-droidGold opacity-100'
-                                        : 'text-textSecondary opacity-40 hover:opacity-70',
-                                    disabled && 'cursor-not-allowed'
-                                )}
-                                title={translate(uiMessages.sheet.controls.statDot.practiced)}
-                            >
-                                P
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleFlagToggle('experienced')}
-                                disabled={disabled}
-                                className={clsx(
-                                    'rounded font-bold transition-all duration-200',
-                                    flagSizeClasses[size],
-                                    experienced
-                                        ? 'text-jediRed opacity-100'
-                                        : 'text-textSecondary opacity-40 hover:opacity-70',
-                                    disabled && 'cursor-not-allowed'
-                                )}
-                                title={translate(uiMessages.sheet.controls.statDot.experienced)}
-                            >
-                                E
-                            </button>
+                            {visibleFlags.map((flag) => (
+                                <button
+                                    key={flag}
+                                    type="button"
+                                    onClick={() => handleFlagToggle(flag)}
+                                    disabled={disabled}
+                                    aria-pressed={Boolean(flagValues[flag])}
+                                    className={clsx(
+                                        'rounded font-bold transition-all duration-200',
+                                        statFlagSizeClasses[size],
+                                        flagValues[flag]
+                                            ? `${FLAG_UI[flag].activeClass} opacity-100`
+                                            : 'text-textSecondary opacity-40 hover:opacity-70',
+                                        disabled && 'cursor-not-allowed'
+                                    )}
+                                    title={translate(flagTitles[flag])}
+                                >
+                                    {FLAG_UI[flag].letter}
+                                </button>
+                            ))}
                         </div>
                     )}
                     {onRemove ? (
@@ -209,7 +163,7 @@ export function StatDot({
                             disabled={disabled}
                             className={clsx(
                                 'ml-auto rounded font-bold transition-all duration-200 flex items-center justify-center',
-                                flagSizeClasses[size],
+                                statFlagSizeClasses[size],
                                 // Destructive at rest, unmistakable under pointer or keyboard focus.
                                 'text-error opacity-50 hover:opacity-100 focus-visible:opacity-100',
                                 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-error',
@@ -218,14 +172,17 @@ export function StatDot({
                             aria-label={translate(uiMessages.sheet.controls.statDot.remove)}
                             title={translate(uiMessages.sheet.controls.statDot.remove)}
                         >
-                            <X size={dotPixel - 2} />
+                            <X size={statDotPixels[size] - 2} />
                         </button>
-                    ) : showFlags && onDiceRoll ? (
-                        <div className={clsx('invisible', flagSizeClasses[size])} />
+                    ) : hasFlags && onDiceRoll ? (
+                        <div className={clsx('invisible', statFlagSizeClasses[size])} />
                     ) : null}
                 </div>
             )}
-            <div className="flex gap-1">
+            {/* Each dot's button spans its half of the gaps on both sides, so the row has no
+                dead space; the negative margin keeps the old outer width. Too many dots for
+                the row narrow into pills instead of wrapping. */}
+            <div className="flex max-w-full -mx-0.5">
                 {Array.from({ length: maxValue }, (_, i) => {
                     const isActive = i + 1 <= value;
                     const isMinimal = minimal !== undefined && i + 1 <= minimal;
@@ -235,21 +192,29 @@ export function StatDot({
                             type="button"
                             role="radio"
                             aria-checked={i + 1 === value}
+                            aria-label={dotLabel?.(i + 1)}
                             disabled={disabled}
                             onClick={() => handleClick(i)}
                             className={clsx(
-                                'rounded-full transition-all duration-200 border-2',
-                                sizeClasses[size],
-                                isActive
-                                    ? isMinimal
-                                        ? 'bg-primary-darker border-primary-darker'
-                                        : activeColor
-                                          ? `${activeColor.bg} ${activeColor.border}`
-                                          : 'bg-primary border-primary'
-                                    : 'bg-transparent hover:border-primary/80',
-                                disabled && 'opacity-50 cursor-not-allowed'
+                                'group/dot flex min-w-0 shrink items-center px-0.5',
+                                disabled && 'cursor-not-allowed'
                             )}
-                        />
+                        >
+                            <span
+                                className={clsx(
+                                    'block max-w-full rounded-full transition-all duration-200 border-2',
+                                    dotSizeClasses[size],
+                                    isActive
+                                        ? isMinimal
+                                            ? 'bg-primary-darker border-primary-darker'
+                                            : activeColor
+                                              ? `${activeColor.bg} ${activeColor.border}`
+                                              : 'bg-primary border-primary'
+                                        : 'bg-transparent border-border group-hover/dot:border-primary/80',
+                                    disabled && 'opacity-50'
+                                )}
+                            />
+                        </button>
                     );
                 })}
             </div>

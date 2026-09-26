@@ -9,6 +9,8 @@ resourceMax: '{label} — max'
 statDot:
     group: Stat value
     diceTitle: 'Left-click: set notation | Right-click: roll'
+    roll: Roll dice
+    rollStat: 'Roll {stat}'
     specialization: Specialization
     practiced: Practiced
     experienced: Experienced

@@ -2,21 +2,9 @@ import { z } from 'zod';
 
 import type { DocumentKind, SystemId } from './document';
 import { DocumentKindSchema, SystemIdSchema } from './document';
+import { TEMPLATE_LIMITS } from './templateLimits';
 
-export const TEMPLATE_LIMITS = {
-    /** Nesting guardrail (spec A2): root children are depth 1. */
-    maxDepth: 10,
-    /** Total nodes across the whole tree (spec FR-3 authoring-time rejection). */
-    nodesPerTemplate: 200,
-    optionsPerField: 100,
-    fillMappingsPerField: 100,
-    presetsPerList: 30,
-    columnsMax: 4,
-    tableColumnsMax: 60,
-    listEntriesMax: 1_000,
-    ratingMax: 100,
-    resourceMax: 1_000_000,
-} as const;
+export { TEMPLATE_LIMITS };
 
 /** Template file/schema generation authored by this build (contracts/template-node-model.md). */
 export const TEMPLATE_SCHEMA_VERSION = 3;
@@ -89,6 +77,8 @@ const fieldBaseShape = {
     ...placementShape,
     /** Keep the label for accessibility and the editor, but do not show it on the page. */
     hideLabel: z.boolean().optional(),
+    /** Label above the value or beside it; unset uses the type's default (`fieldLabelPosition`). */
+    labelPosition: z.enum(['top', 'left']).optional(),
     description: z.string().max(500).optional(),
     required: z.boolean().default(false),
     /**
@@ -169,6 +159,10 @@ function hasUniqueIds(values: readonly { id: string }[]) {
     return new Set(values.map(({ id }) => id)).size === values.length;
 }
 
+function hasUniqueValues(values: readonly string[]) {
+    return new Set(values).size === values.length;
+}
+
 export const CatalogFillRuleSchema = z.object({
     targetFieldId: templateIdentifierSchema,
     disabled: z.boolean().optional(),
@@ -205,12 +199,28 @@ const SelectFieldSchema = z.object({
     binding: CatalogBindingSchema.optional(),
 });
 
+/** Trait-row flags a rating may show, in display order (S, P, E). */
+export const RATING_FLAGS = ['specialization', 'practiced', 'experienced'] as const;
+
+export type RatingFlag = (typeof RATING_FLAGS)[number];
+
 const RatingFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('rating'),
     min: z.number().int().min(0).default(0),
     max: z.number().int().min(1).max(TEMPLATE_LIMITS.ratingMax),
-    presentation: z.enum(['dots', 'boxes', 'number']).default('dots'),
+    // The retired "boxes" style was paler dots; stored templates keep working as dots.
+    presentation: z
+        .preprocess((value) => (value === 'boxes' ? 'dots' : value), z.enum(['dots', 'number']))
+        .default('dots'),
+    /** Free text between the label and the value (for example a specialization). */
+    textInput: z.boolean().optional(),
+    /** "current / maximum" after the value. */
+    showNumbers: z.boolean().optional(),
+    /** Die symbol rolling the value through the document system's trait pool. */
+    dice: z.boolean().optional(),
+    /** Trait-row flags shown on the dot style. */
+    flags: z.array(z.enum(RATING_FLAGS)).max(RATING_FLAGS.length).optional(),
     ...maxFromShape,
 });
 
@@ -254,6 +264,9 @@ function refineField(field: TemplateFieldObject, context: z.RefinementCtx): void
         case 'rating':
         case 'resource':
             if (!hasValidBounds(field)) issue('Minimum cannot exceed maximum', ['min']);
+            if (field.type === 'rating' && field.flags && !hasUniqueValues(field.flags)) {
+                issue('Rating flags must be unique', ['flags']);
+            }
             return;
         case 'select':
             if (!hasUniqueIds(field.options)) {
@@ -281,6 +294,18 @@ export const TemplateFieldSchema = z
     .superRefine(refineField);
 
 export type TemplateField = z.infer<typeof TemplateFieldSchema>;
+
+export type FieldLabelPosition = 'top' | 'left';
+
+/** Ratings and derived values read as rows (label beside the value); other fields stack. */
+export function fieldLabelPosition(
+    field: Pick<TemplateField, 'type' | 'labelPosition'>
+): FieldLabelPosition {
+    return (
+        field.labelPosition ??
+        (field.type === 'rating' || field.type === 'formula' ? 'left' : 'top')
+    );
+}
 
 /** Every leaf field type — the single list editors, pickers, and predicates derive from. */
 export const TEMPLATE_FIELD_TYPES = [

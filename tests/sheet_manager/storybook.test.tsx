@@ -32,6 +32,7 @@ function variantsOf(node: TemplateNode): string[] {
         if (record[key] !== undefined && record[key] !== false) tags.push(`${node.type}:${tag}`);
     };
     flag('visibleWhen');
+    if (typeof record.labelPosition === 'string') tags.push(`label-${record.labelPosition}`);
     if ((record.visibleWhen as { not?: boolean } | undefined)?.not) tags.push('visibleWhen:not');
     flag('column');
     flag('span');
@@ -73,7 +74,17 @@ function variantsOf(node: TemplateNode): string[] {
         case 'rating':
             tags.push(`rating:${node.presentation}`);
             flag('maxFrom');
+            flag('hideLabel');
+            flag('textInput');
+            flag('showNumbers');
+            flag('dice');
+            if (node.dice && node.presentation === 'number') tags.push('rating:dice-number');
+            if (node.showNumbers && node.presentation === 'number') {
+                tags.push('rating:number-framed');
+            }
+            for (const trait of node.flags ?? []) tags.push(`rating:flag-${trait}`);
             if (node.min > 0) tags.push('rating:min');
+            if (node.max >= 30) tags.push('rating:many');
             break;
         case 'formula':
             flag('prefix');
@@ -138,8 +149,19 @@ const REQUIRED_VARIANTS = [
     'select:binding',
     'select:searchable',
     'rating:dots',
-    'rating:boxes',
     'rating:number',
+    'rating:hideLabel',
+    'rating:textInput',
+    'rating:showNumbers',
+    'rating:dice',
+    'rating:dice-number',
+    'rating:flag-specialization',
+    'rating:flag-practiced',
+    'rating:flag-experienced',
+    'rating:many',
+    'rating:number-framed',
+    'label-left',
+    'label-top',
     'rating:min',
     'rating:maxFrom',
     'formula:prefix',

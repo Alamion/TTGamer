@@ -33,7 +33,7 @@ Pages, sections, and groups lay out their elements in 1 to 4 **Columns**. With *
 
 ## Fields \{#fields}
 
-A field holds one value. Its **Field label** is shown next to it (**Show label** hides it), **Help text** explains it on hover, and **Required** marks it for the reader without blocking anything.
+A field holds one value. Its **Field label** is shown next to it (**Show label** hides it), **Help text** explains it on hover, and **Required** marks it for the reader without blocking anything. **Label position** puts the label **Above the value** in small grey type, or **Beside the value** in the larger type of the sheet's attribute rows; ratings and derived values start beside, other fields above.
 
 | Type                   | What the reader gets                                                                                                                                                                                     |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -41,11 +41,24 @@ A field holds one value. Its **Field label** is shown next to it (**Show label**
 | **Number**             | A number kept within **Min**, **Max**, and **Step**; arrow keys step it.                                                                                                                                 |
 | **Toggle**             | A dot: transparent when off, filled when on.                                                                                                                                                             |
 | **Choice**             | One option from a list, or several with **Allow multiple values**; **Hide unselected options** shows only the chosen ones until the reader opens the list. A choice can take its options from a catalog. |
-| **Rating**             | Dots, boxes, or a number from **Min** to **Max**; the dots up to the minimum stay filled.                                                                                                                |
+| **Rating**             | A row like the sheet's attributes: dots or a number from **Min** to **Max**; see [Ratings](#rating).                                                                                                     |
 | **Resource**           | A current value and a maximum, such as a pool of points.                                                                                                                                                 |
 | **Derived value**      | A number computed by a [formula](./values.mdx#formulas); readers cannot type into it.                                                                                                                    |
 | **Image**              | A picture from the device or an `https://` address.                                                                                                                                                      |
 | **Document reference** | Links to other documents of the allowed types; readers open them from the field.                                                                                                                         |
+
+## Ratings \{#rating}
+
+A rating reads like an attribute row on the shipped sheets: the label on the left, the dots on the right. **Presentation** chooses **Dots** (one dot per point) or **Number** (a number box). Templates saved with the older "boxes" presentation open as dots and keep their values.
+
+- **Min** is a floor, not a dot: the dots up to it stay filled in a darker shade, and the reader cannot go below it.
+- **Max** sets the number of dots. A [maximum from a value or formula](./values.mdx#limits-from-values) replaces it while it can be computed, up to 100 dots; when it drops below the stored value, the value is kept and shown in parentheses until the maximum rises again.
+- **Text input (for example a specialization)** adds a line between the label and the dots; on narrow screens it moves under the label.
+- **Show current / maximum** writes "3 / 5" after the dots; with **Number** it adds "/ 5" inside the number box, like a resource whose maximum cannot be edited.
+- **Die symbol (roll the rating)** rolls the value the way the document's game rolls an attribute of the same value; the roll names the rating.
+- **Flags** (dots only): **S** (specialization), **P** (practiced), and **E** (experienced) add the same switches as a trait row. They change the roll only where the game's dice rule uses them: the Star Wars sheet does, V5 does not.
+
+Formulas and display conditions read the rating's number; its text and flags do not change it. Ratings with the same [shared value key](./values.mdx#shared-value-key) share the number, the text, and the flags.
 
 ## Tables \{#tables}
 

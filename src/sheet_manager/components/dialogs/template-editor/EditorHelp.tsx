@@ -9,6 +9,7 @@ export const EDITOR_GUIDE = {
     preview: '/docs/template-editor#preview',
     documentationLink: '/docs/template-editor/elements#documentation-link',
     columns: '/docs/template-editor/elements#columns',
+    rating: '/docs/template-editor/elements#rating',
     valueSource: '/docs/template-editor/values#value-source',
     sharedValueKey: '/docs/template-editor/values#shared-value-key',
     formulas: '/docs/template-editor/values#formulas',

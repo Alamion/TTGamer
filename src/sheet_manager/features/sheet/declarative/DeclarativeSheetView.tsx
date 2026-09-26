@@ -7,6 +7,7 @@ import { Plus, X } from 'lucide-react';
 import {
     createElement,
     type CSSProperties,
+    Fragment,
     memo,
     type ReactNode,
     useContext,
@@ -15,11 +16,11 @@ import {
 } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
+import { FieldLabel } from '../../../components/controls/FieldLabel';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
 import { TermHintProvider } from '../../../components/terms/TermHintProvider';
-import { TermLabel } from '../../../components/terms/TermLabel';
-import { termLinkOf } from '../../../components/terms/termLink';
+import { type TermLink, termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
 import type { FieldBinding } from '../../../systems/templateBindings';
 import {
@@ -29,9 +30,19 @@ import {
     resolveDataBindingByCoordinate,
 } from '../../../systems/templateBindings';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
-import { fieldValueKey, isTemplateField, tableValueKey } from '../../../types/template';
+import {
+    fieldLabelPosition,
+    fieldValueKey,
+    isTemplateField,
+    tableValueKey,
+} from '../../../types/template';
 import { listValueKey } from '../../../types/template';
-import { coerceStoredValue } from '../../../types/templateValues';
+import {
+    coerceStoredValue,
+    type RatingDetail,
+    ratingDetailKey,
+    readRatingDetail,
+} from '../../../types/templateValues';
 import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import { useBoundDocument } from './boundDocument';
@@ -179,9 +190,16 @@ function FieldCell({
         pageApi.setValue(fieldValueKey(field), next);
     };
 
+    const detailKey = field.type === 'rating' ? ratingDetailKey(fieldValueKey(field)) : undefined;
     const controlElement = createElement(control, {
         field,
         value,
+        ...(detailKey
+            ? {
+                  ratingDetail: readRatingDetail(pageApi.values[detailKey]),
+                  onDetailChange: (next: RatingDetail) => pageApi.setValue(detailKey, next),
+              }
+            : {}),
         onChange: handleChange,
         disabled: pageApi.disabled,
         resolvedMax: maxState?.resolvedMax,
@@ -194,34 +212,73 @@ function FieldCell({
     });
     // Computed values read as "label … value" rows; the control renders both.
     if (field.type === 'formula') return controlElement;
+    // Ratings are trait rows: the label sits beside the dots (spec 014).
+    if (field.type === 'rating') {
+        return (
+            <div className="grid grid-cols-1 gap-1">
+                {controlElement}
+                {field.description && (
+                    <span className="text-xs text-textSecondary">{field.description}</span>
+                )}
+            </div>
+        );
+    }
 
     return (
-        <div className="grid grid-cols-1 gap-1">
-            <span
-                className={clsx(
-                    'text-xs font-medium text-textSecondary',
-                    field.hideLabel && 'sr-only'
-                )}
-            >
-                <TermLabel text={field.label} {...termLinkOf(field)} />
-                {field.required && (
-                    <span
-                        aria-label={translate(editor.fieldRequired)}
-                        className="ml-0.5 text-error"
-                    >
-                        *
-                    </span>
-                )}
-            </span>
+        <LabeledField field={field} term={termLinkOf(field)}>
             {controlElement}
             {runtime?.degraded && (
                 <p role="alert" className="text-xs text-error">
                     {translate(binding.degraded, { catalog: runtime.catalogId })}
                 </p>
             )}
-            {field.description && (
-                <span className="text-xs text-textSecondary">{field.description}</span>
-            )}
+        </LabeledField>
+    );
+}
+
+/**
+ * A field's label and control in the field's label position (spec 014): stacked above, or
+ * beside the control like a trait row; the description stays under both.
+ */
+function LabeledField({
+    field,
+    term,
+    children,
+}: {
+    field: TemplateField;
+    term?: TermLink;
+    children: ReactNode;
+}) {
+    const position = fieldLabelPosition(field);
+    const label = (
+        <FieldLabel
+            label={field.label}
+            term={term}
+            required={field.required}
+            position={position}
+            hidden={field.hideLabel}
+            className={clsx(position === 'left' && 'min-w-0 max-w-[50%] shrink-0 pt-1.5')}
+        />
+    );
+    const description = field.description && (
+        <span className="text-xs text-textSecondary">{field.description}</span>
+    );
+    if (position === 'top' || field.hideLabel) {
+        return (
+            <div className="grid grid-cols-1 gap-1">
+                {label}
+                {children}
+                {description}
+            </div>
+        );
+    }
+    return (
+        <div className="grid grid-cols-1 gap-1">
+            <div className="flex items-start gap-3">
+                {label}
+                <div className="grid min-w-0 flex-1 gap-1">{children}</div>
+            </div>
+            {description}
         </div>
     );
 }
@@ -259,15 +316,7 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
         if (binding.syncsTitle && typeof typed === 'string') bound.setTitle(typed);
     };
     return (
-        <div className="grid grid-cols-1 gap-1">
-            <span
-                className={clsx(
-                    'text-xs font-medium text-textSecondary',
-                    field.hideLabel && 'sr-only'
-                )}
-            >
-                {field.label}
-            </span>
+        <LabeledField field={field}>
             {binding.suggestions && field.type === 'text' ? (
                 <CatalogSuggest
                     catalog={suggestions}
@@ -288,10 +337,7 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
                     disabled: readOnly,
                 })
             )}
-            {field.description && (
-                <span className="text-xs text-textSecondary">{field.description}</span>
-            )}
-        </div>
+        </LabeledField>
     );
 }
 
@@ -344,7 +390,12 @@ function TableBlock({
                                 return (
                                     <td key={column.id} className="px-2 py-1.5 align-top">
                                         <Control
-                                            field={column}
+                                            // The column header already names a rating cell.
+                                            field={
+                                                column.type === 'rating'
+                                                    ? { ...column, hideLabel: true }
+                                                    : column
+                                            }
                                             value={coerceStoredValue(column, row[column.id])}
                                             onChange={(next) =>
                                                 pageApi.setRowValue(
@@ -605,7 +656,7 @@ function ChildrenGrid({
                 rendered
             );
         }),
-        endSlot,
+        endSlot && <Fragment key="end-slot">{endSlot}</Fragment>,
     ];
     // Proportional widths (e.g. 2:1) apply from the md breakpoint; narrow screens stack.
     const proportional =

@@ -913,7 +913,7 @@ describe('trait-sourced fields', () => {
         expect(min.value).toBe('5');
         fireEvent.change(min, { target: { value: '2' } });
         // The page redraws from the draft: five dots, the first two held by the minimum.
-        expect(within(pageFrame('luck')).getAllByRole('button', { name: /^Luck: / })).toHaveLength(
+        expect(within(pageFrame('luck')).getAllByRole('radio', { name: /^Luck: / })).toHaveLength(
             5
         );
     });
@@ -1009,5 +1009,68 @@ describe('duplicating elements and locating issues', () => {
         expect(issues).toContainEqual({ message: ISSUE_MESSAGES.emptyLabel, nodeId: 'mood' });
         const unnamed = collectDraftIssues({ ...draft, name: '' }, ISSUE_MESSAGES);
         expect(unnamed[0]).toEqual({ message: ISSUE_MESSAGES.emptyName });
+    });
+});
+
+describe('rating settings (spec 014)', () => {
+    afterEach(() => {
+        cleanup();
+        useTemplateStore.setState({ templates: [], quarantine: [] });
+    });
+
+    const boxesTemplate = () =>
+        CustomTemplateSchema.parse({
+            id: 'luck-kit',
+            name: 'Luck Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                { id: 'luck', type: 'rating', label: 'Luck', max: 5, presentation: 'boxes' },
+            ],
+        });
+
+    it('opens a template saved with boxes as dots, without issues', () => {
+        const template = boxesTemplate();
+        expect(template.children[0]).toMatchObject({ presentation: 'dots' });
+        expect(collectDraftIssues(createDraftFromTemplate(template), ISSUE_MESSAGES)).toEqual([]);
+    });
+
+    it('toggles every rating switch and shows S/P/E only for dots', () => {
+        useTemplateStore.setState({ templates: [boxesTemplate()], quarantine: [] });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template: boxesTemplate() },
+                onClose: () => {},
+            })
+        );
+        selectInOutline('luck');
+        const panel = settings('luck');
+        const style = within(panel).getByLabelText('Presentation') as HTMLSelectElement;
+        expect([...style.options].map(({ value }) => value)).toEqual(['dots', 'number']);
+
+        fireEvent.click(within(panel).getByLabelText('Text input (for example a specialization)'));
+        fireEvent.click(within(panel).getByLabelText('Show current / maximum'));
+        fireEvent.click(within(panel).getByLabelText('Die symbol (roll the rating)'));
+        fireEvent.click(within(panel).getByRole('button', { name: 'Specialization' }));
+        fireEvent.click(within(panel).getByRole('button', { name: 'Experienced' }));
+
+        const frame = pageFrame('luck');
+        expect(within(frame).getByRole('textbox', { name: 'Luck: text' })).toBeTruthy();
+        expect(within(frame).getByText('— / 5')).toBeTruthy();
+        expect(within(frame).getAllByTitle(/Specialization|Experienced/)).toHaveLength(2);
+
+        fireEvent.change(style, { target: { value: 'number' } });
+        expect(
+            within(settings('luck')).queryByRole('button', { name: 'Specialization' })
+        ).toBeNull();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(useTemplateStore.getState().templates[0]!.children[0]).toMatchObject({
+            presentation: 'number',
+            textInput: true,
+            showNumbers: true,
+            dice: true,
+            flags: ['specialization', 'experienced'],
+        });
     });
 });

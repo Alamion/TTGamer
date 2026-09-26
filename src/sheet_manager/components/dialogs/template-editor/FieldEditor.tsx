@@ -1,11 +1,22 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
+import { clsx } from 'clsx';
 import { Plus, Trash2 } from 'lucide-react';
 
 import { kindLabel, listTemplateTargets } from '../../../features/sheet/data/documentLabels';
-import type { TemplateField, TemplateNode } from '../../../types/template';
-import { TEMPLATE_FIELD_TYPES, TEMPLATE_LIMITS } from '../../../types/template';
+import type {
+    FieldLabelPosition,
+    RatingFlag,
+    TemplateField,
+    TemplateNode,
+} from '../../../types/template';
+import {
+    fieldLabelPosition,
+    RATING_FLAGS,
+    TEMPLATE_FIELD_TYPES,
+    TEMPLATE_LIMITS,
+} from '../../../types/template';
 import { CatalogBindingEditor } from './CatalogBindingEditor';
 import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
@@ -144,6 +155,25 @@ export function FieldEditor({
                     callbacks.onUpdate({ hideLabel: checked ? undefined : true })
                 }
             />
+            <label className="flex items-center gap-2 text-xs text-textSecondary">
+                {t(editor.labelPosition)}
+                <select
+                    value={fieldLabelPosition(field)}
+                    disabled={field.hideLabel === true}
+                    onChange={(event) => {
+                        const position = event.target.value as FieldLabelPosition;
+                        // The type's own default is not stored, so it can change with the type.
+                        const fallback = fieldLabelPosition({ type: field.type });
+                        callbacks.onUpdate({
+                            labelPosition: position === fallback ? undefined : position,
+                        });
+                    }}
+                    className={`${inputClasses} py-1 disabled:opacity-50`}
+                >
+                    <option value="top">{t(editor.labelTop)}</option>
+                    <option value="left">{t(editor.labelLeft)}</option>
+                </select>
+            </label>
             <TermHintControl
                 node={field}
                 onChange={(termHint) => callbacks.onUpdate({ termHint })}
@@ -374,17 +404,21 @@ export function FieldEditor({
                         value={field.presentation}
                         onChange={(event) =>
                             callbacks.onUpdate({
-                                presentation: event.target.value as 'dots' | 'boxes' | 'number',
+                                presentation: event.target.value as 'dots' | 'number',
                             })
                         }
                         aria-label={t(editor.presentation)}
                         className={inputClasses}
                     >
                         <option value="dots">{t(editor.ratingDots)}</option>
-                        <option value="boxes">{t(editor.ratingBoxes)}</option>
                         <option value="number">{t(editor.ratingNumber)}</option>
                     </select>
+                    <EditorHelp topic="rating" about={t(editor.presentation)} />
                 </div>
+            )}
+
+            {!isTraitSource && field.type === 'rating' && (
+                <RatingSwitches field={field} onUpdate={callbacks.onUpdate} />
             )}
 
             {field.type === 'resource' && (
@@ -484,5 +518,75 @@ function ReferenceKindsControl({
                 </label>
             ))}
         </fieldset>
+    );
+}
+
+const flagMessages = uiMessages.sheet.controls.statDot;
+
+const RATING_FLAG_UI = {
+    specialization: { letter: 'S', title: flagMessages.specialization },
+    practiced: { letter: 'P', title: flagMessages.practiced },
+    experienced: { letter: 'E', title: flagMessages.experienced },
+} as const;
+
+/** Trait-row switches of a rating (spec 014): text, numbers, die, and S/P/E on the dot style. */
+function RatingSwitches({
+    field,
+    onUpdate,
+}: {
+    field: Extract<TemplateField, { type: 'rating' }>;
+    onUpdate: FieldEditorCallbacks['onUpdate'];
+}) {
+    const t = (descriptor: { message: string }) => translate(descriptor);
+    const switches = [
+        ['textInput', editor.ratingTextInput],
+        ['showNumbers', editor.ratingShowNumbers],
+        ['dice', editor.ratingDice],
+    ] as const;
+    const flags = field.flags ?? [];
+    const toggleFlag = (flag: RatingFlag) => {
+        const next = RATING_FLAGS.filter((candidate) =>
+            candidate === flag ? !flags.includes(flag) : flags.includes(candidate)
+        );
+        onUpdate({ flags: next.length > 0 ? next : undefined });
+    };
+    return (
+        <div className="space-y-1 text-xs text-textSecondary">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                {switches.map(([key, label]) => (
+                    <ToggleRow
+                        key={key}
+                        checked={field[key] === true}
+                        label={t(label)}
+                        onChange={(checked) => onUpdate({ [key]: checked || undefined })}
+                    />
+                ))}
+                <EditorHelp topic="rating" about={t(editor.ratingDice)} />
+            </div>
+            {field.presentation === 'dots' && (
+                <div className="flex flex-wrap items-center gap-2">
+                    <span>{t(editor.ratingFlags)}</span>
+                    {RATING_FLAGS.map((flag) => (
+                        <button
+                            key={flag}
+                            type="button"
+                            aria-pressed={flags.includes(flag)}
+                            title={t(RATING_FLAG_UI[flag].title)}
+                            aria-label={t(RATING_FLAG_UI[flag].title)}
+                            onClick={() => toggleFlag(flag)}
+                            className={clsx(
+                                'h-6 w-6 rounded border text-xs font-bold transition-colors',
+                                flags.includes(flag)
+                                    ? 'border-primary bg-primary-muted text-textPrimary'
+                                    : 'border-border text-textSecondary hover:border-primary/60'
+                            )}
+                        >
+                            {RATING_FLAG_UI[flag].letter}
+                        </button>
+                    ))}
+                    <span className="basis-full text-[11px]">{t(editor.ratingFlagsHint)}</span>
+                </div>
+            )}
+        </div>
     );
 }

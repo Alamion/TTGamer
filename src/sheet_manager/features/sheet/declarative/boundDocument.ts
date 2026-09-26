@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
+import type { TraitDiceRoll } from '../../../components/stat-fields/StatDiceButton';
 import { useCharacterContext } from '../../../context/CharacterContext';
 import { describeError, reportSheetIssue } from '../../../diagnostics';
 import { useDocumentSource } from '../../../hooks/useDocumentSource';
@@ -106,13 +107,6 @@ export function useBoundDocument(): BoundDocument | undefined {
         };
     }, [capability, character, document, readOnly, setTitle, update]);
 }
-
-export type TraitDiceRoll = (
-    value: number,
-    specialization: boolean | null,
-    experienced: boolean | null,
-    practiced: boolean | null
-) => string | undefined;
 
 /** The document system's stat pool builder; `undefined` when the system rolls no stat dice. */
 export function useDocumentTraitDiceRoll(): TraitDiceRoll | undefined {

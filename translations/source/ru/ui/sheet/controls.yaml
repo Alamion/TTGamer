@@ -9,6 +9,8 @@ resourceMax: '{label} — максимум'
 statDot:
     group: Значение характеристики
     diceTitle: 'Левый клик: подставить формулу | Правый клик: бросить'
+    roll: Бросить кубики
+    rollStat: 'Бросить: {stat}'
     specialization: Специализация
     practiced: Натренированность
     experienced: Опытность

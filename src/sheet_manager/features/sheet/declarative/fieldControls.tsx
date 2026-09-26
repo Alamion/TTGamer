@@ -8,14 +8,19 @@ import { useEffect, useState } from 'react';
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { Checkbox } from '../../../components/controls/Checkbox';
 import { DocumentSearch } from '../../../components/controls/DocumentSearch';
+import { RatingRow } from '../../../components/stat-fields/RatingRow';
+import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
+import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import {
     getSafePortraitUrl,
     loadPortrait,
     savePortrait,
 } from '../../../persistence/portraitStorage';
 import type { TemplateField } from '../../../types/template';
-import type { TemplateImageValue } from '../../../types/templateValues';
+import { fieldLabelPosition, TEMPLATE_LIMITS } from '../../../types/template';
+import type { RatingDetail, TemplateImageValue } from '../../../types/templateValues';
+import { useDocumentTraitDiceRoll } from './boundDocument';
 
 const page = uiMessages.sheet.templates.page;
 const referenceMessages = uiMessages.sheet.templates.reference;
@@ -75,6 +80,9 @@ export interface TemplateFieldControlProps {
     catalogOptions?: ReadonlyArray<CatalogOption>;
     /** Documents available for a reference control (provided by the hook layer). */
     documentOptions?: ReadonlyArray<DocumentOption>;
+    /** Rating only: the stored text and flags (spec 014) and their writer. */
+    ratingDetail?: RatingDetail;
+    onDetailChange?: (next: RatingDetail) => void;
     /** Opens a referenced document in the workspace. */
     onOpenDocument?: (documentId: string) => void;
     /** Fixed preview rendering: missing reference targets are expected, not reported. */
@@ -371,86 +379,51 @@ function RatingFieldControlRender({
     field,
     maxDegraded,
     onChange,
+    onDetailChange,
+    ratingDetail = {},
     resolvedMax,
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'rating'> }) {
-    const effectiveMax = resolvedMax ?? field.max;
+    const traitDiceRoll = useDocumentTraitDiceRoll();
+    const characterName = useDocumentSource().document?.metadata.title || undefined;
+    const effectiveMax = ratingEffectiveMax(field, resolvedMax);
     const stored = typeof value === 'number' ? value : undefined;
     // Display clamp (A4): a lowered computed maximum hides the excess without rewriting
     // the stored value; raising the maximum re-exposes the full range.
     const current = stored === undefined ? undefined : Math.min(stored, effectiveMax);
-
-    if (field.presentation === 'number') {
-        return (
-            <div>
-                <NumberInput
-                    value={current}
-                    min={field.min}
-                    max={effectiveMax}
-                    step={1}
-                    onChange={onChange}
-                    disabled={disabled}
-                    label={field.label}
-                    className={`${inputClasses} w-20`}
-                />
-                {maxDegraded && (
-                    <p role="alert" className="text-xs text-error">
-                        {translate(page.formulaDegraded, {
-                            field: field.label,
-                            reason: translate(page.formulaReasonUnknown).replace(
-                                '{coordinate}',
-                                ''
-                            ),
-                        })}
-                    </p>
-                )}
-            </div>
-        );
-    }
-
-    // One dot per point, like trait rows: dots 1..max; the minimum is a floor, not a dot.
-    const levels = Array.from({ length: Math.max(0, effectiveMax) }, (_, index) => index + 1);
+    const flags = field.presentation === 'dots' ? (field.flags ?? []) : [];
 
     return (
-        <div>
-            <div className="flex items-center gap-1" role="group" aria-label={field.label}>
-                {levels.map((level) => {
-                    const active = current !== undefined && level <= current;
-                    const shape =
-                        field.presentation === 'dots'
-                            ? active
-                                ? 'bg-primary border-primary'
-                                : 'bg-bgSurface border-border'
-                            : active
-                              ? 'bg-primary/30 border-primary'
-                              : 'bg-bgSurface border-border';
-                    return (
-                        <button
-                            key={level}
-                            type="button"
-                            disabled={disabled}
-                            aria-label={`${field.label}: ${level}`}
-                            aria-pressed={active}
-                            onClick={() =>
-                                onChange(Math.max(field.min, current === level ? level - 1 : level))
-                            }
-                            className={clsx(
-                                'h-4 w-4 rounded-full border transition-colors',
-                                shape,
-                                'hover:border-primary'
-                            )}
-                        />
-                    );
-                })}
-                <span className="ml-2 text-xs text-textSecondary">
-                    {current ?? '—'}/{effectiveMax}
-                    {stored !== undefined && stored > current! && (
-                        <span className="ml-1 text-error" title={translate(page.formulaClamped)}>
-                            ({stored})
-                        </span>
-                    )}
-                </span>
-            </div>
+        <RatingRow
+            label={field.label}
+            term={termLinkOf(field)}
+            hideLabel={field.hideLabel}
+            labelPosition={fieldLabelPosition(field)}
+            required={field.required}
+            presentation={field.presentation}
+            value={current}
+            clampedFrom={stored !== undefined && stored > effectiveMax ? stored : undefined}
+            min={field.min}
+            max={effectiveMax}
+            disabled={disabled}
+            onChange={(next) =>
+                onChange(
+                    next === undefined
+                        ? undefined
+                        : Math.min(effectiveMax, Math.max(field.min, next))
+                )
+            }
+            text={ratingDetail.text}
+            onTextChange={
+                field.textInput ? (text) => onDetailChange?.({ ...ratingDetail, text }) : undefined
+            }
+            showNumbers={field.showNumbers}
+            onDiceRoll={field.dice ? traitDiceRoll : undefined}
+            flags={flags}
+            flagValues={ratingDetail}
+            onFlagsChange={(next) => onDetailChange?.({ ...ratingDetail, ...next })}
+            characterName={characterName}
+        >
             {maxDegraded && (
                 <p role="alert" className="text-xs text-error">
                     {translate(page.formulaDegraded, {
@@ -459,7 +432,22 @@ function RatingFieldControlRender({
                     })}
                 </p>
             )}
-        </div>
+        </RatingRow>
+    );
+}
+
+/**
+ * The rating's range (spec 014, R3): a resolved computed maximum decides, up to the schema
+ * limit; the static maximum applies without one or when its source is unavailable.
+ */
+export function ratingEffectiveMax(
+    field: Pick<FieldType<'rating'>, 'min' | 'max'>,
+    resolvedMax: number | undefined
+): number {
+    if (resolvedMax === undefined || !Number.isFinite(resolvedMax)) return field.max;
+    return Math.min(
+        TEMPLATE_LIMITS.ratingMax,
+        Math.max(Math.max(1, field.min), Math.floor(resolvedMax))
     );
 }
 
@@ -760,14 +748,20 @@ function FormulaFieldControlRender({
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'formula'> }) {
     // Read-only computed value (FR-13): never stored, always recomputed by the hook layer;
     // failures surface as explicit labeled error states, never a silently wrong number.
+    const top = fieldLabelPosition(field) === 'top';
     return (
         <div
             className={clsx(
-                'flex items-baseline justify-between gap-3',
+                top ? 'grid gap-1' : 'flex items-baseline justify-between gap-3',
                 field.compact ? 'text-xs' : 'text-sm'
             )}
         >
-            <span className={clsx('text-textSecondary', field.hideLabel && 'sr-only')}>
+            <span
+                className={clsx(
+                    top ? 'text-xs font-medium text-textSecondary' : 'text-textSecondary',
+                    field.hideLabel && 'sr-only'
+                )}
+            >
                 {field.label}
             </span>
             {formulaResult?.state === 'ok' ? (

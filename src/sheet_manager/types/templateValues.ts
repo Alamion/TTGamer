@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import type { TemplateField } from './template';
+import { TEMPLATE_LIMITS } from './templateLimits';
 
 /**
  * Envelope-layer limits for the per-document template value bag. The bag is intentionally
@@ -70,14 +71,51 @@ export const TemplateTableRowsSchema = z.record(z.string().min(1).max(64), Templ
 
 export type TemplateTableRows = z.infer<typeof TemplateTableRowsSchema>;
 
+/**
+ * A rating's text and trait flags (spec 014, R1). Stored beside the rating's number under
+ * `ratingDetailKey(valueKey)`, so formulas, conditions, and shared keys keep reading a number.
+ */
+export const RatingDetailSchema = z
+    .object({
+        text: boundedString.optional(),
+        specialization: z.boolean().optional(),
+        practiced: z.boolean().optional(),
+        experienced: z.boolean().optional(),
+    })
+    .strict();
+
+export type RatingDetail = z.infer<typeof RatingDetailSchema>;
+
+const RATING_DETAIL_SUFFIX = '#detail';
+
+/** `#` never occurs in a template identifier, so the key cannot collide with a value key. */
+export function ratingDetailKey(valueKey: string): string {
+    return `${valueKey}${RATING_DETAIL_SUFFIX}`;
+}
+
+/** The rating's value key for a detail key, or `undefined` for any other key. */
+export function ratingDetailBase(key: string): string | undefined {
+    return key.endsWith(RATING_DETAIL_SUFFIX)
+        ? key.slice(0, -RATING_DETAIL_SUFFIX.length)
+        : undefined;
+}
+
+/** Stored detail, or empty text with all flags off when missing or malformed. */
+export function readRatingDetail(value: unknown): RatingDetail {
+    const parsed = RatingDetailSchema.safeParse(value);
+    return parsed.success ? parsed.data : {};
+}
+
 /** One template's page values: field/block id → value (sparse; only filled entries exist). */
 export const TemplatePageValuesSchema = z
     .record(
-        z.string().min(1).max(64),
+        // A 64-character value key plus the rating detail suffix.
+        z.string().min(1).max(72),
         z.union([
             PrimitiveValueSchema,
             TemplateResourceValueSchema,
             TemplateTableRowsSchema,
+            RatingDetailSchema,
             TemplateListValueSchema,
             TemplateImageValueSchema,
         ])
@@ -162,7 +200,10 @@ function validateRating(
     value: unknown
 ): ValidateValueResult {
     if (typeof value !== 'number' || !Number.isInteger(value)) return { ok: false, reason: 'type' };
-    if (value < field.min || value > field.max) return { ok: false, reason: 'bounds' };
+    // The static maximum is not a storage bound: a computed maximum may exceed it (spec 014, R3).
+    if (value < field.min || value > TEMPLATE_LIMITS.ratingMax) {
+        return { ok: false, reason: 'bounds' };
+    }
     return { ok: true, value };
 }
 

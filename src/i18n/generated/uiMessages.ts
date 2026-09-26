@@ -1632,6 +1632,14 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.controls.statDot.diceTitle',
                     message: 'Left-click: set notation | Right-click: roll',
                 },
+                roll: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.roll',
+                    message: 'Roll dice',
+                },
+                rollStat: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.rollStat',
+                    message: 'Roll {stat}',
+                },
                 specialization: {
                     id: 'ttgamer.ui.sheet.controls.statDot.specialization',
                     message: 'Specialization',
@@ -3677,13 +3685,30 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.ratingDots',
                     message: 'Dots',
                 },
-                ratingBoxes: {
-                    id: 'ttgamer.ui.sheet.templates.editor.ratingBoxes',
-                    message: 'Boxes',
-                },
                 ratingNumber: {
                     id: 'ttgamer.ui.sheet.templates.editor.ratingNumber',
                     message: 'Number',
+                },
+                ratingTextInput: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingTextInput',
+                    message: 'Text input (for example a specialization)',
+                },
+                ratingShowNumbers: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingShowNumbers',
+                    message: 'Show current / maximum',
+                },
+                ratingDice: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingDice',
+                    message: 'Die symbol (roll the rating)',
+                },
+                ratingFlags: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingFlags',
+                    message: 'Flags:',
+                },
+                ratingFlagsHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingFlagsHint',
+                    message:
+                        "S, P, and E change the roll only where the system's dice rule uses them (Star Wars does, V5 does not).",
                 },
                 referenceKinds: {
                     id: 'ttgamer.ui.sheet.templates.editor.referenceKinds',
@@ -3989,6 +4014,18 @@ export const uiMessages = {
                 showLabel: {
                     id: 'ttgamer.ui.sheet.templates.editor.showLabel',
                     message: 'Show label',
+                },
+                labelPosition: {
+                    id: 'ttgamer.ui.sheet.templates.editor.labelPosition',
+                    message: 'Label position',
+                },
+                labelTop: {
+                    id: 'ttgamer.ui.sheet.templates.editor.labelTop',
+                    message: 'Above the value',
+                },
+                labelLeft: {
+                    id: 'ttgamer.ui.sheet.templates.editor.labelLeft',
+                    message: 'Beside the value',
                 },
                 placeholderText: {
                     id: 'ttgamer.ui.sheet.templates.editor.placeholderText',
@@ -4486,6 +4523,18 @@ export const uiMessages = {
                 formulaClamped: {
                     id: 'ttgamer.ui.sheet.templates.page.formulaClamped',
                     message: 'Limited by a linked value',
+                },
+                ratingText: {
+                    id: 'ttgamer.ui.sheet.templates.page.ratingText',
+                    message: '{label}: text',
+                },
+                ratingClamped: {
+                    id: 'ttgamer.ui.sheet.templates.page.ratingClamped',
+                    message: 'Stored value {value} is above the current maximum',
+                },
+                ratingMaximum: {
+                    id: 'ttgamer.ui.sheet.templates.page.ratingMaximum',
+                    message: 'Maximum {max}',
                 },
                 chooseOptions: {
                     id: 'ttgamer.ui.sheet.templates.page.chooseOptions',

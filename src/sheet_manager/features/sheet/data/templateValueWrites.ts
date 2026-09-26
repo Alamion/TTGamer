@@ -8,6 +8,8 @@ import {
     walkTemplateNodes,
 } from '../../../types/template';
 import {
+    ratingDetailBase,
+    RatingDetailSchema,
     TEMPLATE_VALUES_LIMITS,
     type TemplateFieldValue,
     type TemplatePageValues,
@@ -67,6 +69,14 @@ function validateTemplatePageValues(
             const result = validateTemplateValue(field, value);
             if (!result.ok) return { ok: false, key, reason: result.reason };
             validated[key] = result.value;
+            continue;
+        }
+
+        const ratingKey = ratingDetailBase(key);
+        if (ratingKey !== undefined && fieldDefs.get(ratingKey)?.type === 'rating') {
+            const detail = RatingDetailSchema.safeParse(value);
+            if (!detail.success) return { ok: false, key, reason: 'type' };
+            validated[key] = detail.data;
             continue;
         }
 

@@ -110,7 +110,8 @@ Do not read `currentCharacter` directly inside a reusable sheet element. Direct 
   `systems/v5/ruleset/dice.ts`) adds critical pairs and reads special-dice outcomes. Each V5
   module contributes its dice line (`modules/hunter/dice.ts` Desperation,
   `modules/vampire/dice.ts` Hunger, awaiting the vampire sheet). Primitives resolve the builder
-  with `useDocumentTraitDiceRoll()`; `StatDot` sends the document as the roll source
+  with `useDocumentTraitDiceRoll()`, and so do template ratings with a die; the die is
+  `StatDiceButton` (used by `StatDot` and `RatingRow`), which sends the document as the roll source
   (`useDocumentRollSource()`), and `SheetWorkspace` publishes the shown document
   (`integrations/sheet-dice/shownDocument.ts`). Publisher badges never appear on dice surfaces.
 - Shipped view ids are unique across systems (prefix them with the system, e.g.

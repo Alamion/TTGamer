@@ -1421,6 +1421,12 @@
     "ttgamer.ui.sheet.controls.statDot.remove": {
         "message": "Удалить"
     },
+    "ttgamer.ui.sheet.controls.statDot.roll": {
+        "message": "Бросить кубики"
+    },
+    "ttgamer.ui.sheet.controls.statDot.rollStat": {
+        "message": "Бросить: {stat}"
+    },
     "ttgamer.ui.sheet.controls.statDot.specialization": {
         "message": "Специализация"
     },
@@ -3002,6 +3008,15 @@
     "ttgamer.ui.sheet.templates.editor.invalidKey": {
         "message": "Неверный ключ «{id}» — используйте строчные буквы, цифры и дефисы."
     },
+    "ttgamer.ui.sheet.templates.editor.labelLeft": {
+        "message": "Слева от значения"
+    },
+    "ttgamer.ui.sheet.templates.editor.labelPosition": {
+        "message": "Положение подписи"
+    },
+    "ttgamer.ui.sheet.templates.editor.labelTop": {
+        "message": "Над значением"
+    },
     "ttgamer.ui.sheet.templates.editor.layoutHeading": {
         "message": "Раскладка"
     },
@@ -3185,14 +3200,26 @@
     "ttgamer.ui.sheet.templates.editor.primitivePart": {
         "message": "Редактирует"
     },
-    "ttgamer.ui.sheet.templates.editor.ratingBoxes": {
-        "message": "Клетки"
+    "ttgamer.ui.sheet.templates.editor.ratingDice": {
+        "message": "Значок кубика (бросок рейтинга)"
     },
     "ttgamer.ui.sheet.templates.editor.ratingDots": {
         "message": "Точки"
     },
+    "ttgamer.ui.sheet.templates.editor.ratingFlags": {
+        "message": "Флаги:"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingFlagsHint": {
+        "message": "S, P и E меняют бросок только там, где их учитывает правило бросков системы (Star Wars — да, V5 — нет)."
+    },
     "ttgamer.ui.sheet.templates.editor.ratingNumber": {
         "message": "Число"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingShowNumbers": {
+        "message": "Показывать текущее / максимум"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingTextInput": {
+        "message": "Текстовое поле (например, специализация)"
     },
     "ttgamer.ui.sheet.templates.editor.redo": {
         "message": "Повторить"
@@ -3592,6 +3619,15 @@
     },
     "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
         "message": "Привязка «{binding}» недоступна на этом устройстве."
+    },
+    "ttgamer.ui.sheet.templates.page.ratingClamped": {
+        "message": "Сохранённое значение {value} выше текущего максимума"
+    },
+    "ttgamer.ui.sheet.templates.page.ratingMaximum": {
+        "message": "Максимум {max}"
+    },
+    "ttgamer.ui.sheet.templates.page.ratingText": {
+        "message": "{label}: текст"
     },
     "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
         "message": "{count} обязательное поле ещё не заполнено.|{count} обязательных поля ещё не заполнены.|{count} обязательных полей ещё не заполнено."

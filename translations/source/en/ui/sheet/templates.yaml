@@ -64,8 +64,12 @@ editor:
     accentPrimary: Primary accent
     accentSecondary: Secondary accent
     ratingDots: Dots
-    ratingBoxes: Boxes
     ratingNumber: Number
+    ratingTextInput: Text input (for example a specialization)
+    ratingShowNumbers: Show current / maximum
+    ratingDice: Die symbol (roll the rating)
+    ratingFlags: 'Flags:'
+    ratingFlagsHint: S, P, and E change the roll only where the system's dice rule uses them (Star Wars does, V5 does not).
     referenceKinds: Allowed document kinds
     multiple: Allow multiple values
     hideUnselected: Hide unselected options
@@ -143,6 +147,9 @@ editor:
     showTitle: Show title
     hiddenTitleHint: A group without a visible title cannot be collapsed.
     showLabel: Show label
+    labelPosition: Label position
+    labelTop: Above the value
+    labelLeft: Beside the value
     placeholderText: Placeholder text (optional)
     formulaPrefix: Before value (e.g. ×)
     formulaSuffix: After value (e.g. m)
@@ -268,6 +275,9 @@ page:
     formulaReasonDivision: division by zero
     formulaReasonNonNumeric: a referenced value is not a number
     formulaClamped: Limited by a linked value
+    ratingText: '{label}: text'
+    ratingClamped: 'Stored value {value} is above the current maximum'
+    ratingMaximum: 'Maximum {max}'
     chooseOptions: Choose options
     chooseOptionsDone: Done
     noneSelected: Nothing selected

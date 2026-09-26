@@ -1,5 +1,20 @@
 # Changelog
 
+## v3.12.0
+
+### Minor feat
+
+- **Template ratings are trait rows (spec 014, T-073)**: a rating shows its label beside the dots like the sheet's attributes and skills, with optional extras chosen in the editor — a text line for a specialization, "current / maximum" numbers (off by default; a number rating shows its maximum inside the box, like a resource), a die that rolls it the way the game rolls an attribute of the same value, and the S, P, and E switches on dots; the roll names the rating
+- **Choose where a field's label goes**: every template field can show its label above the value (small caption) or beside it (like an attribute row); ratings and derived values start beside, other fields above
+- **Dots are easier to hit**: every dot of a rating or trait row answers a click anywhere in its slot, gaps included; long rows still narrow into a compact line instead of wrapping
+
+### Fix
+
+- **A computed maximum decides a rating's range**: a maximum from a value or formula above the rating's own maximum makes every shown dot selectable (up to 100); when it drops below the stored value, the value is kept and shown in parentheses
+- **The "boxes" rating style is gone**: it looked like paler dots; templates that used it open as dots with their values
+- **No console warning in the template editor**: the insert slot at the end of a container had no React key
+- **Dice buttons have names**: screen readers announce "Roll <stat>" instead of the click hint
+
 ## v3.11.0
 
 ### Minor feat

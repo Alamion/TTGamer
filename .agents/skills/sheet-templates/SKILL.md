@@ -40,7 +40,17 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   `rating`, `resource`, `reference`.
     - Controls: `toggle` is the round `Checkbox` dot; multiple `select` is a row of pressable words
       (thin primary border when chosen) in option order (`hideUnselected` shows only chosen ones until the reader expands it);
-      `rating` dots are 1..max with `min` as a filled floor; every numeric input (fields,
+      `rating` is a trait row (`components/stat-fields/RatingRow`, the same atoms as `TraitRow`):
+      `presentation` `dots` (1..max, `min` a filled floor) or `number` (`'boxes'` parses as dots);
+      optional `textInput`, `showNumbers`, `dice` (the system's `traitPool` through
+      `StatDiceButton`), and `flags` (S/P/E subset, dots only). Text and flags live beside the
+      number under `ratingDetailKey(valueKey)` (`<key>#detail`, `RatingDetailSchema`), so
+      formulas, conditions, and shared keys keep reading a number. Stored ratings are bounded by
+      `min` and `TEMPLATE_LIMITS.ratingMax` (100), not the static `max`: a resolved `maxFrom`
+      decides the range (`ratingEffectiveMax`). In table cells the column header names the
+      rating; a number rating with `showNumbers` frames a read-only "/ max" like a resource.
+      Every field has `labelPosition` (`top` caption or `left` trait-row label, `FieldLabel`);
+      unset uses `fieldLabelPosition` (rating and formula: left, others: top). Every numeric input (fields,
       resource, editor settings) is `shared/components/NumberInput`: numeric text only,
       bounded to min/max/step on blur or Enter, arrow keys step.
 - Other leaves: `table` (columns are fields; rows stored under `tableValueKey`), `list`
@@ -277,7 +287,8 @@ document. Wrap a subtree in `DocumentSourceContext.Provider` with:
 - One coordinate space: bag numbers plus system traits/pools (`readBoundNumber`, called from
   `resolveBase` in `hooks.ts`).
 - `formula` fields are read-only and never stored. `maxFrom` (rating/number/primitive) clamps
-  the display; stored values are clamped only when the bounded value itself is edited.
+  the display; stored values are clamped only when the bounded value itself is edited. For a
+  rating the resolved maximum also raises the range above the static `max`, up to 100.
 - Errors are labeled in the UI (`unknown-coordinate` names the coordinate, `circular`,
   `division-by-zero`, `non-numeric`). Unparseable formulas also report `formula-error`.
 - Cycles are rejected at authoring (`collectDraftIssues`); at render the evaluator in

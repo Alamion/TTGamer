@@ -64,8 +64,12 @@ editor:
     accentPrimary: Основной акцент
     accentSecondary: Дополнительный акцент
     ratingDots: Точки
-    ratingBoxes: Клетки
     ratingNumber: Число
+    ratingTextInput: Текстовое поле (например, специализация)
+    ratingShowNumbers: Показывать текущее / максимум
+    ratingDice: Значок кубика (бросок рейтинга)
+    ratingFlags: 'Флаги:'
+    ratingFlagsHint: S, P и E меняют бросок только там, где их учитывает правило бросков системы (Star Wars — да, V5 — нет).
     referenceKinds: Разрешённые типы документов
     multiple: Несколько значений
     hideUnselected: Скрывать невыбранные варианты
@@ -143,6 +147,9 @@ editor:
     showTitle: Показывать заголовок
     hiddenTitleHint: Группу без видимого заголовка нельзя свернуть.
     showLabel: Показывать подпись
+    labelPosition: Положение подписи
+    labelTop: Над значением
+    labelLeft: Слева от значения
     placeholderText: Текст-подсказка (необязательно)
     formulaPrefix: Перед значением (например, ×)
     formulaSuffix: После значения (например, м)
@@ -268,6 +275,9 @@ page:
     formulaReasonDivision: деление на ноль
     formulaReasonNonNumeric: одно из значений — не число
     formulaClamped: Ограничено связанным значением
+    ratingText: '{label}: текст'
+    ratingClamped: 'Сохранённое значение {value} выше текущего максимума'
+    ratingMaximum: 'Максимум {max}'
     chooseOptions: Выбрать варианты
     chooseOptionsDone: Готово
     noneSelected: Ничего не выбрано

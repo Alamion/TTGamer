@@ -358,7 +358,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
 
     it('draws one rating dot per point, so the first dot is 1', () => {
         mount(buildTemplate());
-        const dots = screen.getAllByRole('button', { name: /^Force rating: / });
+        const dots = screen.getAllByRole('radio', { name: /^Force rating: / });
         expect(dots.map((dot) => dot.getAttribute('aria-label'))).toEqual([
             'Force rating: 1',
             'Force rating: 2',
@@ -372,7 +372,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
         fireEvent.click(dots[0]!);
         expect(stored()).toBe(1);
         // Clicking the top filled dot lowers the rating by one, down to the minimum.
-        fireEvent.click(screen.getByRole('button', { name: 'Force rating: 1' }));
+        fireEvent.click(screen.getByRole('radio', { name: 'Force rating: 1' }));
         expect(stored()).toBe(0);
     });
 
@@ -382,7 +382,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
         const rating = identity.children.find(({ id }) => id === 'force-rating')!;
         rating.min = 2;
         mount(template);
-        fireEvent.click(screen.getByRole('button', { name: 'Force rating: 1' }));
+        fireEvent.click(screen.getByRole('radio', { name: 'Force rating: 1' }));
         expect(useDocumentStore.getState().documents[0]!.templateValues?.['force-rating']).toBe(2);
     });
 

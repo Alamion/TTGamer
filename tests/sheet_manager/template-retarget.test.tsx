@@ -16,8 +16,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetEditorStores } from './helpers/editor';
 
-// Full editor renders are slow under a loaded test run.
-vi.setConfig({ testTimeout: 20_000 });
+// Full editor renders are slow under a loaded test run (the shipped Star Wars page took >20 s).
+vi.setConfig({ testTimeout: 60_000 });
 
 const NOW = '2026-09-25T10:00:00.000Z';
 const TYPE_ID = 'user-org00001';

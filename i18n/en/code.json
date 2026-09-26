@@ -1421,6 +1421,12 @@
     "ttgamer.ui.sheet.controls.statDot.remove": {
         "message": "Remove"
     },
+    "ttgamer.ui.sheet.controls.statDot.roll": {
+        "message": "Roll dice"
+    },
+    "ttgamer.ui.sheet.controls.statDot.rollStat": {
+        "message": "Roll {stat}"
+    },
     "ttgamer.ui.sheet.controls.statDot.specialization": {
         "message": "Specialization"
     },
@@ -3002,6 +3008,15 @@
     "ttgamer.ui.sheet.templates.editor.invalidKey": {
         "message": "Invalid key \"{id}\" — use lowercase letters, digits, and dashes."
     },
+    "ttgamer.ui.sheet.templates.editor.labelLeft": {
+        "message": "Beside the value"
+    },
+    "ttgamer.ui.sheet.templates.editor.labelPosition": {
+        "message": "Label position"
+    },
+    "ttgamer.ui.sheet.templates.editor.labelTop": {
+        "message": "Above the value"
+    },
     "ttgamer.ui.sheet.templates.editor.layoutHeading": {
         "message": "Layout"
     },
@@ -3185,14 +3200,26 @@
     "ttgamer.ui.sheet.templates.editor.primitivePart": {
         "message": "Edits"
     },
-    "ttgamer.ui.sheet.templates.editor.ratingBoxes": {
-        "message": "Boxes"
+    "ttgamer.ui.sheet.templates.editor.ratingDice": {
+        "message": "Die symbol (roll the rating)"
     },
     "ttgamer.ui.sheet.templates.editor.ratingDots": {
         "message": "Dots"
     },
+    "ttgamer.ui.sheet.templates.editor.ratingFlags": {
+        "message": "Flags:"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingFlagsHint": {
+        "message": "S, P, and E change the roll only where the system's dice rule uses them (Star Wars does, V5 does not)."
+    },
     "ttgamer.ui.sheet.templates.editor.ratingNumber": {
         "message": "Number"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingShowNumbers": {
+        "message": "Show current / maximum"
+    },
+    "ttgamer.ui.sheet.templates.editor.ratingTextInput": {
+        "message": "Text input (for example a specialization)"
     },
     "ttgamer.ui.sheet.templates.editor.redo": {
         "message": "Redo"
@@ -3592,6 +3619,15 @@
     },
     "ttgamer.ui.sheet.templates.page.primitiveDegraded": {
         "message": "Data binding \"{binding}\" is unavailable on this device."
+    },
+    "ttgamer.ui.sheet.templates.page.ratingClamped": {
+        "message": "Stored value {value} is above the current maximum"
+    },
+    "ttgamer.ui.sheet.templates.page.ratingMaximum": {
+        "message": "Maximum {max}"
+    },
+    "ttgamer.ui.sheet.templates.page.ratingText": {
+        "message": "{label}: text"
     },
     "ttgamer.ui.sheet.templates.page.requiredUnfilled": {
         "message": "{count} required field is still empty.|{count} required fields are still empty."
