@@ -1,29 +1,6 @@
 library:
-    button: Шаблоны
-    buttonTitle: Управление шаблонами страниц персонажа
     title: Шаблоны страниц
-    empty: Шаблонов пока нет. Создайте первый.
-    new: Новый шаблон
-    edit: Изменить
-    duplicate: Дублировать
-    delete: Удалить
-    export: Экспорт
-    kind: Тип
-    unnamedKind: Другое
-    defaultBadge: Стандартный
-    modifiedBadge: Изменён
-    reset: Вернуть оригинал
-    resetConfirmTitle: Вернуть стандартный шаблон к оригиналу?
-    resetConfirmDescription: '«{name}» будет восстановлен в исходном виде. Данные документов сохранятся.'
-    deleteRefused: '«{name}» — стандартная страница, её нельзя удалить. Вместо этого сделайте копию.'
-    duplicateId: '«{id}» — встроенная страница; шаблонам нужен собственный идентификатор.'
-    incompatibleBadge: Несовместимый формат
-    incompatibleHint: Сохранено в предыдущем формате шаблонов. Хранится только для восстановления — пересоздайте в новом редакторе.
-    skeletonName: 'Каркас страницы: {label}'
-    skeletonDescription: Начинается с текущей структуры встроенной страницы «{label}».
-    blankSkeletonName: Пустой каркас страницы
-    skeletonIdentity: Основные сведения
-    skeletonNameField: Имя
+    noDescription: Без описания
 primitives:
     groupIdentity: Поля личности
     groupTrait: Трейты
@@ -91,12 +68,20 @@ editor:
     ratingNumber: Число
     referenceKinds: Разрешённые типы документов
     multiple: Несколько значений
+    hideUnselected: Скрывать невыбранные варианты
     moveUp: Переместить выше
     moveDown: Переместить ниже
     remove: Удалить
     removeConfirmTitle: Отменить изменения?
     removeConfirmDescription: Есть несохранённые правки. Отменить их?
     discard: Отменить
+    target: Тип и сеттинг
+    targetLocked: Тип и сеттинг этой страницы здесь не меняются
+    retargetTitle: Перенести страницу?
+    retargetDescription:
+        message: '{count} документ открывается на этой странице. После переноса он откроется на своей странице по умолчанию.|{count} документа открываются на этой странице. После переноса они откроются на своих страницах по умолчанию.|{count} документов открываются на этой странице. После переноса они откроются на своих страницах по умолчанию.'
+        plural: true
+    retargetConfirm: Перенести
     save: Сохранить
     cancel: Отмена
     duplicateId: Дубликат идентификатора «{id}» — идентификаторы должны быть уникальны в своей области.
@@ -133,7 +118,9 @@ editor:
     trackerSource: Отслеживает
     gripHandle: Рукоять перемещения — потяните, чтобы передвинуть
     groupTitle: Название группы
-    docsLink: Ссылка на документацию (необязательно)
+    docsLink: 'Ссылка на документацию (необязательно): /docs/… или https://…'
+    helpAbout: 'Справка: {setting}'
+    guide: Руководство по редактору шаблонов
     groupCollapsible: Сворачиваемая (состояние запоминается)
     tableTitle: Название таблицы (необязательно)
     listTitle: Заголовок списка (необязательно)
@@ -148,6 +135,8 @@ editor:
     layoutHeading: Раскладка
     columnPlacement: Колонка в родителе
     columnAuto: Авто
+    columnSpan: Занимает колонок
+    columnSpanPinnedHint: 'Растягивание работает, пока ни один элемент контейнера не закреплён за колонкой.'
     equalWidths: Колонки одинаковой ширины
     columnWidth: Ширина колонки {index}
     columnWidthsHint: 'Ширины пропорциональны: 2 и 1 делают первую колонку вдвое шире.'
@@ -171,6 +160,7 @@ editor:
     unknownCatalog: Неизвестный каталог или поле каталога «{id}».
     unknownFillTarget: Автозаполнение ссылается на несуществующее поле «{id}».
     unknownLabelMessage: Неизвестная ссылка на перевод «{id}».
+    invalidDocsLink: 'Ссылка на документацию «{id}» — не путь в документации сайта (/docs/…) и не адрес https://.'
     depthMessage: Достигнут предел вложенности — максимум {limit} уровней.
     countMessage: Достигнут предел элементов — максимум {limit}.
     newSection: Новая секция
@@ -179,6 +169,38 @@ editor:
     bookTerm: 'Книжный термин: {term}'
     showTermHint: Показывать книжное название
     newOption: Вариант {index}
+    copySuffix: '{label} (копия)'
+    areaOutline: Структура
+    areaPage: Страница
+    areaSettings: Настройки
+    areaTabs: Области редактора
+    sampleNote: Пробные данные — точки, клетки и текст, изменённые здесь, не попадают в ваши документы.
+    noSampleDocument: Тип документа этого шаблона недоступен, поэтому страницу нельзя показать.
+    hiddenByCondition: 'Скрыто условием: показывается, только когда «{coordinate}» = {value}. Сейчас читатель этого не видит.'
+    conditionMet: Условие выполнено
+    conditionNotMet: Условие не выполнено
+    elementIssue: У этого элемента есть проблема
+    insertHere: Вставить элемент сюда
+    emptyColumn: Колонка {column} пуста — перетащите сюда элемент или вставьте новый.
+    selectPrompt: Выберите элемент на странице или в структуре, чтобы изменить его настройки.
+    modeEdit: Правка
+    modePreview: Превью
+    modeLabel: Режим редактора
+    previewData: Данные превью
+    previewOpenDocument: 'Открытый документ: {title}'
+    previewBlank: Пустой документ
+    previewFallback: Выбранный документ больше недоступен; показан пустой документ.
+    undo: Отменить
+    redo: Повторить
+    duplicate: Дублировать
+    moveOut: Вынести из группы
+    moveIn: Перенести в предыдущую группу
+    moved: '{label}: перемещено.'
+    movedColumn: '{label}: перемещено в колонку {column}.'
+    removed: '{label}: удалено. Ctrl+Z — вернуть.'
+    duplicated: '{label}: создана копия.'
+    inserted: '{label}: добавлено.'
+    shortcutsHint: 'Клавиши: Alt+↑/↓ — переместить · Alt+←/→ — из группы или в группу · Alt+Shift+←/→ — колонка · Ctrl+D — дублировать · Delete — удалить · Ctrl+Z — отменить · Ctrl+Shift+Z — повторить'
     coordinateCurrent: '{label} (текущее)'
     coordinateMax: '{label} (максимум)'
 fieldTypes:
@@ -233,6 +255,9 @@ page:
     embedNoDocument: Создайте или откройте персонажа, чтобы заполнить эту часть листа прямо здесь.
     fallbackTitle: Страница шаблона недоступна
     fallbackDescription: Назначенный шаблон отсутствует. Показана стандартная страница — можно выбрать другую ниже.
+    typeMissingTitle: Тип документа не установлен
+    typeMissingDescription: Тип этого документа здесь не установлен, поэтому показаны его сохранённые значения. Импортируйте тип, чтобы вернуть его страницу.
+    typeLoading: Загрузка типов документов…
     requiredUnfilled:
         message: '{count} обязательное поле ещё не заполнено.|{count} обязательных поля ещё не заполнены.|{count} обязательных полей ещё не заполнено.'
         plural: true
@@ -243,6 +268,9 @@ page:
     formulaReasonDivision: деление на ноль
     formulaReasonNonNumeric: одно из значений — не число
     formulaClamped: Ограничено связанным значением
+    chooseOptions: Выбрать варианты
+    chooseOptionsDone: Готово
+    noneSelected: Ничего не выбрано
     imageInvalid: Источник изображения недоступен или небезопасен.
     imageUpload: Загрузить изображение
     imageUrl: URL изображения

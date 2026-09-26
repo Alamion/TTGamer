@@ -1,8 +1,4 @@
 import {
-    getSkeletonsForKind,
-    TEMPLATE_SKELETONS,
-} from '@site/src/sheet_manager/features/sheet/data/templateSkeletons';
-import {
     migrateTemplateStoreState,
     useTemplateStore,
 } from '@site/src/sheet_manager/store/templateStore';
@@ -210,7 +206,7 @@ describe('effective template resolution (feature 004/006)', () => {
 
         const overriddenState = {
             templates: [],
-            defaultOverrides: { 'full-sheet': modifiedOverride('full-sheet') },
+            defaultOverrides: { 'star-wars-wod:full-sheet': modifiedOverride('full-sheet') },
         };
         const modified = resolveEffectiveTemplate(
             'full-sheet',
@@ -268,8 +264,10 @@ describe('effective template resolution (feature 004/006)', () => {
         const { setDefaultOverride, clearDefaultOverride } = useTemplateStore.getState();
         useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
 
-        setDefaultOverride('full-sheet', modifiedOverride('full-sheet'));
-        expect(useTemplateStore.getState().defaultOverrides['full-sheet']).toBeDefined();
+        setDefaultOverride(modifiedOverride('full-sheet'));
+        expect(
+            useTemplateStore.getState().defaultOverrides['star-wars-wod:full-sheet']
+        ).toBeDefined();
         expect(
             resolveEffectiveTemplate(
                 'full-sheet',
@@ -279,8 +277,10 @@ describe('effective template resolution (feature 004/006)', () => {
             )?.modified
         ).toBe(true);
 
-        clearDefaultOverride('full-sheet');
-        expect(useTemplateStore.getState().defaultOverrides['full-sheet']).toBeUndefined();
+        clearDefaultOverride('star-wars-wod', 'full-sheet');
+        expect(
+            useTemplateStore.getState().defaultOverrides['star-wars-wod:full-sheet']
+        ).toBeUndefined();
         expect(
             resolveEffectiveTemplate(
                 'full-sheet',
@@ -306,14 +306,16 @@ describe('effective template resolution (feature 004/006)', () => {
         useTemplateStore.setState({
             templates: [],
             quarantine: [],
-            defaultOverrides: { 'full-sheet': modifiedOverride('full-sheet') },
+            defaultOverrides: { 'star-wars-wod:full-sheet': modifiedOverride('full-sheet') },
         });
-        const copy = useTemplateStore.getState().duplicateTemplate('full-sheet', 'my-copy');
+        const copy = useTemplateStore
+            .getState()
+            .duplicateTemplate('full-sheet', 'my-copy', modifiedOverride('full-sheet'));
         expect(copy).toBeDefined();
         expect(copy?.name).toBe('Renamed Full');
         expect(copy?.id).toBe('my-copy');
         // The duplicate is independent — clearing the override leaves the copy untouched.
-        useTemplateStore.getState().clearDefaultOverride('full-sheet');
+        useTemplateStore.getState().clearDefaultOverride('star-wars-wod', 'full-sheet');
         expect(useTemplateStore.getState().templates.find(({ id }) => id === 'my-copy')?.name).toBe(
             'Renamed Full'
         );
@@ -327,7 +329,7 @@ describe('effective template resolution (feature 004/006)', () => {
             quarantine: [],
             defaultOverrides: { 'full-sheet': valid, broken: { nope: true } },
         });
-        expect(migrated.defaultOverrides['full-sheet']).toBeDefined();
+        expect(migrated.defaultOverrides['star-wars-wod:full-sheet']).toBeDefined();
         expect(migrated.defaultOverrides['broken']).toBeUndefined();
         expect(migrated.quarantine).toContainEqual({ nope: true });
         expect(new Set(takeSheetIssues().map(({ code }) => code))).toEqual(
@@ -409,9 +411,11 @@ describe('default template rendering and data safety', () => {
         });
         expect(character.health).toBeDefined();
         // Reset: override deleted → pristine derived from the registry.
-        useTemplateStore.getState().setDefaultOverride('full-sheet', override);
-        useTemplateStore.getState().clearDefaultOverride('full-sheet');
-        expect(useTemplateStore.getState().defaultOverrides['full-sheet']).toBeUndefined();
+        useTemplateStore.getState().setDefaultOverride(override);
+        useTemplateStore.getState().clearDefaultOverride('star-wars-wod', 'full-sheet');
+        expect(
+            useTemplateStore.getState().defaultOverrides['star-wars-wod:full-sheet']
+        ).toBeUndefined();
         expect(
             resolveEffectiveTemplate(
                 'full-sheet',
@@ -420,42 +424,6 @@ describe('default template rendering and data safety', () => {
                 characterKind
             )?.template.name
         ).not.toBe('Renamed Full');
-    });
-});
-
-describe('skeletons mirror the real default structure', () => {
-    it('every definition with an explicit default yields a matching skeleton', () => {
-        for (const system of systemRegistry.getSystems()) {
-            const defaults = system.defaultTemplates ?? [];
-            for (const definition of system.documents) {
-                const skeletons = TEMPLATE_SKELETONS.filter(
-                    ({ id }) => id === `skeleton-${system.id}-${definition.id}`
-                );
-                const source = defaults.find(
-                    (template) => template.id === definition.defaultViewId
-                );
-                if (!source) {
-                    // Specialized pages have no declarative default and no skeleton.
-                    expect(skeletons).toHaveLength(0);
-                    continue;
-                }
-                expect(skeletons).toHaveLength(1);
-                const skeleton = skeletons[0]!;
-                // Identical structure, independent identity.
-                expect(skeleton.children).toEqual(source.children);
-                expect(skeleton.id).toBe(`skeleton-${system.id}-${definition.id}`);
-                expect(skeleton.id).not.toBe(source.id);
-                expect(skeleton.documentKind).toBe(definition.kind);
-            }
-        }
-    });
-
-    it('getSkeletonsForKind returns real-structure skeletons per kind', () => {
-        const characterSkeletons = getSkeletonsForKind(DocumentKindSchema.parse('character'));
-        expect(characterSkeletons.length).toBeGreaterThanOrEqual(2); // character + droid
-        for (const skeleton of characterSkeletons) {
-            expect(skeleton.documentKind).toBe('character');
-        }
     });
 });
 

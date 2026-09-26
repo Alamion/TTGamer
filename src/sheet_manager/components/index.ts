@@ -11,5 +11,5 @@ export { DocumentCreateDialog } from './dialogs/DocumentCreateDialog.tsx';
 export type { DocumentManagerDialogProps } from './dialogs/DocumentManagerDialog.tsx';
 export { DocumentManagerDialog } from './dialogs/DocumentManagerDialog.tsx';
 export { ImportConflictDialog } from './dialogs/ImportConflictDialog.tsx';
-export { TemplateLibraryDialog } from './dialogs/TemplateLibraryDialog.tsx';
+export { LibraryDialog } from './dialogs/LibraryDialog.tsx';
 export { CollapsibleItem } from './sections/CollapsibleItem.tsx';

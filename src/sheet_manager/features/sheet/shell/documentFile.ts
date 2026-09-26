@@ -1,6 +1,8 @@
 import { migrateDocumentStoreState } from '../../../store/documentStore';
 import { exportNotices, resolveDocumentPolicies, systemRegistry } from '../../../systems';
+import { isUserKind } from '../../../systems/userTypes';
 import type { UnknownDocumentEnvelope } from '../../../types/document';
+import { buildTypePayload, type ParsedTypePayload, validateTypePayload } from './typeFile';
 
 /**
  * Document file format: the envelope as stored, minus device-only images, plus the publisher
@@ -24,11 +26,24 @@ export function buildDocumentExport(document: UnknownDocumentEnvelope): Record<s
         Object.entries(values).filter(([, value]) => !isDeviceImage(value))
     );
     const policies = resolveDocumentPolicies(systemRegistry, document);
+    // A user type travels with its documents so they open where the type is not installed.
+    const documentType = isUserKind(document.definitionId)
+        ? buildTypePayload(document.definitionId)
+        : undefined;
     return {
         ...document,
         templateValues: exportableValues,
         ...(policies.length > 0 ? { notices: exportNotices(policies) } : {}),
+        ...(documentType ? { documentType } : {}),
     };
+}
+
+/** The user type a document file carries, validated; `undefined` when it carries none. */
+export function readEmbeddedType(input: unknown): ParsedTypePayload | undefined {
+    if (input === null || typeof input !== 'object' || !('documentType' in input)) {
+        return undefined;
+    }
+    return validateTypePayload((input as { documentType: unknown }).documentType);
 }
 
 /** JSON text of an export; device portrait ids never leave the device. */

@@ -2,7 +2,7 @@ import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 /** Documentation trees whose English pages must have Russian counterparts. */
-export const DOCUMENT_ROOTS = ['star-wars-wod-2e', 'wod-v5'] as const;
+export const DOCUMENT_ROOTS = ['star-wars-wod-2e', 'wod-v5', 'template-editor'] as const;
 /** Top-level pages outside the trees (the docs landing page). */
 export const ROOT_DOCUMENTS = ['index.mdx'] as const;
 export const TRANSLATION_DOCS_ROOT = 'i18n/ru/docusaurus-plugin-content-docs/current';

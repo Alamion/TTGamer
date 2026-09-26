@@ -1,9 +1,10 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
-import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import { useLocalStorageState } from '../../hooks';
+import { DocsHelpLink, documentationFor } from '../controls/DocsHelpLink';
 
 interface SectionCardProps {
     title?: string;
@@ -29,18 +30,7 @@ export function SectionCard({
 
     const renderDocsIcon = () =>
         docsPath ? (
-            <a
-                href={docsPath}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-textSecondary hover:text-textPrimary transition-colors"
-                aria-label={translate(uiMessages.sheet.controls.documentationFor, {
-                    title: title ?? '',
-                })}
-            >
-                <HelpCircle className="w-4 h-4" />
-            </a>
+            <DocsHelpLink docsPath={docsPath} label={documentationFor(title ?? '')} />
         ) : null;
 
     const storageHeader = (

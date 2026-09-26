@@ -1,17 +1,35 @@
 import { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
+import { clsx } from 'clsx';
+import { Redo2, Undo2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import {
+    listTemplateTargetGroups,
+    parseTemplateTargetValue,
+    templateTargetValue,
+} from '../../features/sheet/data/documentLabels';
 import { listTemplateNumericCoordinates } from '../../features/sheet/data/templateReferences';
+import {
+    planTemplateRetarget,
+    type RetargetPlan,
+} from '../../features/sheet/data/templateRetarget';
+import type { OverlayPlacement } from '../../features/sheet/declarative/editorOverlay';
+import { useDocumentStore } from '../../store/documentStore';
+import { useDocumentTypeStore } from '../../store/documentTypeStore';
 import { useTemplateStore } from '../../store/templateStore';
 import { listDocumentBindings } from '../../systems/templateBindings';
+import { isDefaultTemplateId } from '../../systems/view';
 import {
     collectTemplateFields,
     collectTemplateNodes,
     type CustomTemplate,
     CustomTemplateSchema,
+    isContainerNode,
     TEMPLATE_LIMITS,
+    type TemplateNode,
 } from '../../types/template';
 import { ConfirmDialog } from './ConfirmDialog';
 import {
@@ -25,28 +43,59 @@ import {
     describeDraft,
     detachCatalog,
     type DraftOpResult,
+    duplicateNode,
     type EditorDraft,
+    findNode,
+    findNodePosition,
     generateDraftId,
-    insertNode,
+    insertAtPlacement,
+    materializeColumns,
     moveNode,
+    placeNode,
     removeNode,
     removeOption,
     removeTableColumn,
     replaceNode,
-    setDraftKind,
+    setDraftTarget,
     updateField,
     updateFill,
     updateNode,
     updateOption,
 } from './template-editor/draft';
 import {
+    type EditorActions,
+    EditorActionsContext,
+    type EditorSelection,
+    EditorSelectionContext,
+} from './template-editor/editorActions';
+import { EditorHelp } from './template-editor/EditorHelp';
+import {
     EditorFillTargetsContext,
     type EditorModel,
     EditorModelContext,
     type FillTarget,
 } from './template-editor/EditorModel';
-import { ChildrenList, type ElementEditorCallbacks } from './template-editor/ElementEditor';
-import { isDefaultTemplateId } from './TemplateLibraryDialog';
+import { EditorPage } from './template-editor/EditorPage';
+import { EditorPreview } from './template-editor/EditorPreview';
+import {
+    type ElementEditorCallbacks,
+    ElementSettings,
+    nodeDisplayName,
+} from './template-editor/ElementSettings';
+import {
+    applyChange,
+    canRedo,
+    canUndo,
+    createHistory,
+    type DraftChangeMeta,
+    type EditorHistory,
+    redo,
+    select,
+    undo,
+} from './template-editor/history';
+import { type MoveCommand, resolveMoveTarget } from './template-editor/moveTargets';
+import { OutlineTree } from './template-editor/OutlineTree';
+import { type EditorShortcutHandlers, useEditorShortcuts } from './template-editor/shortcuts';
 
 const editor = uiMessages.sheet.templates.editor;
 const library = uiMessages.sheet.templates.library;
@@ -54,17 +103,74 @@ const library = uiMessages.sheet.templates.library;
 const inputClasses =
     'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
 
-const DOCUMENT_KINDS = ['character', 'creature', 'vehicle', 'group'] as const;
+type EditorArea = 'page' | 'outline' | 'settings';
+type EditorMode = 'edit' | 'preview';
 
 export interface TemplateEditorDialogProps {
     base:
-        | { kind: 'empty'; documentKind?: string; systemId?: string }
+        | {
+              kind: 'empty';
+              documentKind?: string;
+              systemId?: string;
+              settingId?: string;
+              name?: string;
+          }
         | { kind: 'skeleton'; documentKind: string; template: CustomTemplate }
         | { kind: 'duplicate' | 'edit'; template: CustomTemplate };
     onClose: () => void;
+    /** Called with the saved template (user templates only; e.g. to create a user type). */
+    onSaved?: (template: CustomTemplate) => void;
+    /** The caller owns the page's place (a new type's first page, a setting's page). */
+    lockTarget?: boolean;
 }
 
-export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProps) {
+function initialDraft(base: TemplateEditorDialogProps['base']): EditorDraft {
+    if (base.kind === 'empty') {
+        const draft = createEmptyDraft(base.documentKind ?? 'character', base.systemId);
+        return {
+            ...draft,
+            ...(base.name ? { name: base.name } : {}),
+            ...(base.settingId ? { settingId: base.settingId } : {}),
+        };
+    }
+    if (base.kind === 'edit') return createDraftFromTemplate(base.template);
+    return createDraftFromTemplate(base.template, { id: generateDraftId('tpl') });
+}
+
+/** The column count of a node's parent (1 at the page root or for single-column parents). */
+function parentColumnsOf(draft: EditorDraft, nodeId: string): number {
+    const position = findNodePosition(draft, nodeId);
+    if (!position || position.parentId === null) return 1;
+    const parent = findNode(draft, position.parentId);
+    return parent && isContainerNode(parent) ? (parent.columns ?? 1) : 1;
+}
+
+/** Whether an element of the node's container is pinned to a column (spans stop applying). */
+function hasPinnedSiblings(draft: EditorDraft, nodeId: string): boolean {
+    return (
+        findNodePosition(draft, nodeId)?.siblings.some((node) => node.column !== undefined) ?? false
+    );
+}
+
+function labelIn(draft: EditorDraft, nodeId: string): string {
+    const node = findNode(draft, nodeId);
+    return node ? nodeDisplayName(node) : nodeId;
+}
+
+function reveal(selector: string, block: ScrollLogicalPosition) {
+    const element = document.querySelector(selector);
+    const reduced =
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    element?.scrollIntoView?.({ block, behavior: reduced ? 'auto' : 'smooth' });
+}
+
+export function TemplateEditorDialog({
+    base,
+    lockTarget = false,
+    onClose,
+    onSaved,
+}: TemplateEditorDialogProps) {
     const { saveTemplate, setDefaultOverride } = useTemplateStore();
     const t = useCallback((descriptor: { message: string }) => translate(descriptor), []);
     const modalRoot =
@@ -74,48 +180,247 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
     const editingDefault =
         base.kind === 'edit' && isDefaultTemplateId(base.template.id, base.template.systemId);
 
-    const [draft, setDraft] = useState<EditorDraft>(() => {
-        if (base.kind === 'empty') {
-            return createEmptyDraft(base.documentKind ?? 'character', base.systemId);
-        }
-        if (base.kind === 'edit') return createDraftFromTemplate(base.template);
-        if (base.kind === 'skeleton') {
-            return createDraftFromTemplate(base.template, { id: generateDraftId('tpl') });
-        }
-        return createDraftFromTemplate(base.template, { id: generateDraftId('tpl') });
-    });
+    const [history, setHistory] = useState<EditorHistory>(() =>
+        createHistory(initialDraft(base), null)
+    );
+    const draft = history.present.draft;
+    const selectedId = history.present.selectedId;
+    const [mode, setMode] = useState<EditorMode>('edit');
+    const [area, setArea] = useState<EditorArea>('page');
     const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false);
+    const [pendingRetarget, setPendingRetarget] = useState<{
+        template: CustomTemplate;
+        plan: RetargetPlan;
+    } | null>(null);
+    const plural = usePluralMessage();
     const [saveIssues, setSaveIssues] = useState<readonly string[]>([]);
+    const [announcement, setAnnouncement] = useState('');
     const [initialJson] = useState(() => JSON.stringify(draft));
     const isDirty = JSON.stringify(draft) !== initialJson;
+    const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null);
 
-    // Callbacks must keep their identity across edits (memoized panels), so structural ops read
-    // the latest draft from a ref instead of a render-time closure.
-    const draftRef = useRef(draft);
+    // Callbacks keep their identity across edits (memoized panels and frames), so they read the
+    // latest state from a ref instead of a render-time closure.
+    const historyRef = useRef(history);
     useEffect(() => {
-        draftRef.current = draft;
-    }, [draft]);
+        historyRef.current = history;
+    }, [history]);
+    const commit = useCallback((next: EditorHistory) => {
+        historyRef.current = next;
+        setHistory(next);
+    }, []);
 
-    const applyOp = useCallback(
-        (result: DraftOpResult) => {
-            if (result.ok) {
-                draftRef.current = result.draft;
-                setDraft(result.draft);
-                setSaveIssues([]);
-                return;
-            }
-            setSaveIssues([
-                result.error === 'depth'
-                    ? t(editor.depthMessage).replace('{limit}', String(result.limit ?? 0))
-                    : result.error === 'count'
-                      ? t(editor.countMessage).replace('{limit}', String(result.limit ?? 0))
-                      : t(editor.cannotMoveIntoItself),
-            ]);
+    const change = useCallback(
+        (update: (current: EditorDraft) => EditorDraft, meta?: DraftChangeMeta) => {
+            const current = historyRef.current;
+            commit(applyChange(current, update(current.present.draft), meta));
+            setSaveIssues([]);
         },
+        [commit]
+    );
+
+    const describeFailure = useCallback(
+        (result: Extract<DraftOpResult, { ok: false }>) =>
+            result.error === 'depth'
+                ? t(editor.depthMessage).replace('{limit}', String(result.limit ?? 0))
+                : result.error === 'count'
+                  ? t(editor.countMessage).replace('{limit}', String(result.limit ?? 0))
+                  : t(editor.cannotMoveIntoItself),
         [t]
     );
 
-    const issueMessages = useMemo(
+    /** Structural operations that may be refused (limits, moving into itself). */
+    const applyOp = useCallback(
+        (
+            operation: (current: EditorDraft) => DraftOpResult,
+            meta: DraftChangeMeta & { announce?: string } = {}
+        ) => {
+            const current = historyRef.current;
+            const result = operation(current.present.draft);
+            if (!result.ok) {
+                const message = describeFailure(result);
+                setSaveIssues([message]);
+                setAnnouncement(message);
+                return false;
+            }
+            commit(applyChange(current, result.draft, meta));
+            setSaveIssues([]);
+            if (meta.announce) setAnnouncement(meta.announce);
+            return true;
+        },
+        [commit, describeFailure]
+    );
+
+    const selectNode = useCallback(
+        (nodeId: string | null, origin?: 'page' | 'outline') => {
+            commit(select(historyRef.current, nodeId));
+            if (!nodeId) return;
+            if (origin === 'page') reveal(`[data-outline-row="${nodeId}"]`, 'nearest');
+            if (origin === 'outline')
+                reveal(`[data-editor-frame][data-node-id="${nodeId}"]`, 'center');
+        },
+        [commit]
+    );
+
+    const removeSelected = useCallback(
+        (nodeId: string) => {
+            const current = historyRef.current.present.draft;
+            const position = findNodePosition(current, nodeId);
+            if (!position) return;
+            const next =
+                position.siblings[position.index + 1]?.id ??
+                position.siblings[position.index - 1]?.id ??
+                position.parentId;
+            const label = labelIn(historyRef.current.present.draft, nodeId);
+            change((draftNow) => removeNode(draftNow, nodeId), { selectedId: next });
+            setAnnouncement(translate(editor.removed, { label }));
+        },
+        // labelOf reads the ref only.
+
+        [change]
+    );
+
+    const duplicate = useCallback(
+        (nodeId: string) => {
+            const label = labelIn(historyRef.current.present.draft, nodeId);
+            let copyId: string | undefined;
+            applyOp(
+                (current) => {
+                    const result = duplicateNode(current, nodeId);
+                    copyId = result.copyId;
+                    return result;
+                },
+                { announce: translate(editor.duplicated, { label }) }
+            );
+            if (copyId) commit(select(historyRef.current, copyId));
+        },
+
+        [applyOp, commit]
+    );
+
+    const moveByCommand = useCallback(
+        (nodeId: string, command: MoveCommand) => {
+            const current = historyRef.current.present.draft;
+            const position = findNodePosition(current, nodeId);
+            const columnMove = command === 'column-prev' || command === 'column-next';
+            const prepared = columnMove
+                ? materializeColumns(current, position?.parentId ?? null)
+                : current;
+            const target = resolveMoveTarget(prepared, nodeId, command);
+            if (!target) return;
+            const label = labelIn(historyRef.current.present.draft, nodeId);
+            applyOp(
+                () => {
+                    const moved = moveNode(prepared, nodeId, target.parentId, target.index);
+                    if (!moved.ok || target.column === undefined) return moved;
+                    return {
+                        ok: true,
+                        draft: updateNode(moved.draft, nodeId, {
+                            column: target.column ?? undefined,
+                        }),
+                    };
+                },
+                {
+                    announce:
+                        columnMove && target.column
+                            ? translate(editor.movedColumn, { label, column: target.column })
+                            : translate(editor.moved, { label }),
+                }
+            );
+        },
+
+        [applyOp]
+    );
+
+    const actions = useMemo<EditorActions>(
+        () => ({
+            select: selectNode,
+            insertAt: (placement: OverlayPlacement, node: TemplateNode) =>
+                applyOp((current) => insertAtPlacement(current, placement, node), {
+                    selectedId: node.id,
+                    announce: translate(editor.inserted, { label: nodeDisplayName(node) }),
+                }),
+            moveTo: (nodeId: string, placement: OverlayPlacement) =>
+                applyOp((current) => placeNode(current, nodeId, placement), {
+                    selectedId: nodeId,
+                    announce: placement.column
+                        ? translate(editor.movedColumn, {
+                              label: labelIn(historyRef.current.present.draft, nodeId),
+                              column: placement.column,
+                          })
+                        : translate(editor.moved, {
+                              label: labelIn(historyRef.current.present.draft, nodeId),
+                          }),
+                }),
+        }),
+
+        [applyOp, selectNode]
+    );
+
+    const callbacks = useMemo<ElementEditorCallbacks>(
+        () => ({
+            onUpdate: (nodeId, updates) =>
+                change((current) => updateNode(current, nodeId, updates), {
+                    coalesceKey: `${nodeId}:${Object.keys(updates).join(',')}`,
+                }),
+            onInsert: (parentId, index, node) =>
+                applyOp((current) =>
+                    insertAtPlacement(current, { parentId, index, column: null }, node)
+                ),
+            onRemove: (nodeId) => removeSelected(nodeId),
+            onMove: (nodeId, targetParentId, index) =>
+                applyOp((current) => moveNode(current, nodeId, targetParentId, index)),
+            onFieldUpdate: (fieldId, updates) =>
+                change((current) => updateField(current, fieldId, updates), {
+                    coalesceKey: `${fieldId}:${Object.keys(updates).join(',')}`,
+                }),
+            onFieldTypeChange: (fieldId, type) =>
+                change((current) => changeFieldType(current, fieldId, type)),
+            onAddOption: (fieldId) => change((current) => addOption(current, fieldId)),
+            onUpdateOption: (fieldId, optionId, label) =>
+                change((current) => updateOption(current, fieldId, optionId, label), {
+                    coalesceKey: `${fieldId}:option:${optionId}`,
+                }),
+            onRemoveOption: (fieldId, optionId) =>
+                change((current) => removeOption(current, fieldId, optionId)),
+            onAttachCatalog: (fieldId, catalogId) =>
+                change((current) => attachCatalog(current, fieldId, catalogId)),
+            onDetachCatalog: (fieldId) => change((current) => detachCatalog(current, fieldId)),
+            onUpdateFill: (fieldId, detailKey, rule) =>
+                change((current) => updateFill(current, fieldId, detailKey, rule)),
+            onAddTableColumn: (tableId) => change((current) => addTableColumn(current, tableId)),
+            onRemoveTableColumn: (tableId, columnId) =>
+                change((current) => removeTableColumn(current, tableId, columnId)),
+            onReplace: (nodeId, next) => change((current) => replaceNode(current, nodeId, next)),
+        }),
+        [applyOp, change, removeSelected]
+    );
+
+    const undoChange = useCallback(() => commit(undo(historyRef.current)), [commit]);
+    const redoChange = useCallback(() => commit(redo(historyRef.current)), [commit]);
+    const onSelection = useCallback((run: (nodeId: string) => void) => {
+        const nodeId = historyRef.current.present.selectedId;
+        if (nodeId) run(nodeId);
+    }, []);
+    const shortcutHandlers = useMemo<EditorShortcutHandlers>(() => {
+        const move = (command: MoveCommand) => () =>
+            onSelection((nodeId) => moveByCommand(nodeId, command));
+        return {
+            undo: undoChange,
+            redo: redoChange,
+            duplicate: () => onSelection(duplicate),
+            delete: () => onSelection(removeSelected),
+            'move-up': move('move-up'),
+            'move-down': move('move-down'),
+            'move-out': move('move-out'),
+            'move-in': move('move-in'),
+            'column-prev': move('column-prev'),
+            'column-next': move('column-next'),
+        };
+    }, [duplicate, moveByCommand, onSelection, redoChange, removeSelected, undoChange]);
+    useEditorShortcuts(contentElement, mode === 'edit' ? shortcutHandlers : {});
+
+    const draftIssues = useMemo(
         () =>
             collectDraftIssues(draft, {
                 emptyName: t(editor.emptyName),
@@ -131,9 +436,32 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
                 unknownCatalog: t(editor.unknownCatalog),
                 unknownFillTarget: t(editor.unknownFillTarget),
                 unknownLabelMessage: t(editor.unknownLabelMessage),
-            }).map((issue) => issue.message),
+                invalidDocsLink: t(editor.invalidDocsLink),
+            }),
         [draft, t]
     );
+    const issueNodeKey = draftIssues
+        .map(({ nodeId }) => nodeId)
+        .filter(Boolean)
+        .join('|');
+    const selection = useMemo<EditorSelection>(
+        () => ({
+            selectedId,
+            issueNodeIds: new Set(issueNodeKey ? issueNodeKey.split('|') : []),
+        }),
+        [selectedId, issueNodeKey]
+    );
+
+    const saveUserTemplate = (template: CustomTemplate, plan: RetargetPlan) => {
+        saveTemplate(template);
+        const types = useDocumentTypeStore.getState();
+        for (const setting of plan.settings) types.saveSetting(setting);
+        for (const type of plan.types) types.saveType(type);
+        const { updateDocumentMetadata } = useDocumentStore.getState();
+        for (const id of plan.documentIds) updateDocumentMetadata(id, { templateId: undefined });
+        onSaved?.(template);
+        onClose();
+    };
 
     const handleSave = () => {
         try {
@@ -141,11 +469,20 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
             if (editingDefault) {
                 // Draft-until-save (FR-9): the override lands only on explicit save; assigned
                 // documents then render the saved version (live propagation, clarification Q2).
-                setDefaultOverride(parsed.id, parsed);
-            } else {
-                saveTemplate(parsed);
+                setDefaultOverride(parsed);
+                onClose();
+                return;
             }
-            onClose();
+            // A page moved to another type or setting (T-070) takes its assignments along.
+            const { settings, types } = useDocumentTypeStore.getState();
+            const plan = planTemplateRetarget(parsed, {
+                documents: useDocumentStore.getState().documents,
+                settings,
+                types,
+                templates: useTemplateStore.getState().templates,
+            });
+            if (plan.documentIds.length > 0) setPendingRetarget({ template: parsed, plan });
+            else saveUserTemplate(parsed, plan);
         } catch (error) {
             const fallback =
                 error instanceof Error && error.message.length > 0 ? [error.message] : [];
@@ -157,39 +494,6 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
         if (isDirty) setDiscardConfirmOpen(true);
         else onClose();
     };
-
-    const callbacks = useMemo<ElementEditorCallbacks>(
-        () => ({
-            onUpdate: (nodeId, updates) =>
-                setDraft((current) => updateNode(current, nodeId, updates)),
-            onInsert: (parentId, index, node) =>
-                applyOp(insertNode(draftRef.current, parentId, index, node)),
-            onRemove: (nodeId) => setDraft((current) => removeNode(current, nodeId)),
-            onMove: (nodeId, targetParentId, index) =>
-                applyOp(moveNode(draftRef.current, nodeId, targetParentId, index)),
-            onFieldUpdate: (fieldId, updates) =>
-                setDraft((current) => updateField(current, fieldId, updates)),
-            onFieldTypeChange: (fieldId, type) =>
-                setDraft((current) => changeFieldType(current, fieldId, type)),
-            onAddOption: (fieldId) => setDraft((current) => addOption(current, fieldId)),
-            onUpdateOption: (fieldId, optionId, label) =>
-                setDraft((current) => updateOption(current, fieldId, optionId, label)),
-            onRemoveOption: (fieldId, optionId) =>
-                setDraft((current) => removeOption(current, fieldId, optionId)),
-            onAttachCatalog: (fieldId, catalogId) =>
-                setDraft((current) => attachCatalog(current, fieldId, catalogId)),
-            onDetachCatalog: (fieldId) => setDraft((current) => detachCatalog(current, fieldId)),
-            onUpdateFill: (fieldId, detailKey, rule) =>
-                setDraft((current) => updateFill(current, fieldId, detailKey, rule)),
-            onAddTableColumn: (tableId) => setDraft((current) => addTableColumn(current, tableId)),
-            onRemoveTableColumn: (tableId, columnId) =>
-                setDraft((current) => removeTableColumn(current, tableId, columnId)),
-            onReplace: (nodeId, next) => setDraft((current) => replaceNode(current, nodeId, next)),
-        }),
-        [applyOp]
-    );
-
-    const visibleIssues = [...issueMessages, ...saveIssues];
 
     const atNodeLimit = collectTemplateNodes(draft).length >= TEMPLATE_LIMITS.nodesPerTemplate;
     const editorModel = useMemo<EditorModel>(
@@ -228,6 +532,31 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
         [coordinatesKey]
     );
 
+    const targetGroups = listTemplateTargetGroups();
+    const targetValue = templateTargetValue(draft);
+    const targetKnown = targetGroups.some(({ options }) =>
+        options.some(({ value }) => value === targetValue)
+    );
+    const targetFixed = editingDefault || lockTarget;
+
+    const selectedNode = selectedId ? findNode(draft, selectedId) : undefined;
+    const selectedPosition = selectedId ? findNodePosition(draft, selectedId) : undefined;
+    const canMoveUp = selectedPosition !== undefined && selectedPosition.index > 0;
+    const canMoveDown =
+        selectedPosition !== undefined &&
+        selectedPosition.index < selectedPosition.siblings.length - 1;
+
+    const areas: ReadonlyArray<{ id: EditorArea; label: string }> = [
+        { id: 'page', label: t(editor.areaPage) },
+        { id: 'outline', label: t(editor.areaOutline) },
+        { id: 'settings', label: t(editor.areaSettings) },
+    ];
+    const paneClasses = (id: EditorArea) =>
+        clsx('min-h-0 overflow-y-auto', area === id ? 'block' : 'hidden', 'md:block');
+    const visibleIssues = [...draftIssues.map(({ message }) => message), ...saveIssues];
+    const toolbarButton =
+        'flex items-center gap-1 rounded border border-border px-2 py-1 text-xs text-textSecondary hover:bg-bgBase hover:text-textPrimary disabled:opacity-40';
+
     return (
         <Dialog.Root
             open
@@ -237,76 +566,267 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
         >
             <Dialog.Portal container={modalRoot ?? undefined}>
                 <Dialog.Overlay className="fixed inset-0 z-[9998] bg-black/50" />
-                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] flex h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[110rem] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-border bg-bgSurface shadow-xl focus:outline-none">
-                    <Dialog.Title className="border-b border-border p-4 text-lg font-semibold text-textPrimary">
-                        {draft.name.trim().length > 0 ? draft.name : t(editor.untitledName)}
-                    </Dialog.Title>
+                <Dialog.Content
+                    ref={setContentElement}
+                    className="fixed left-1/2 top-1/2 z-[9999] flex h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[110rem] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-border bg-bgSurface shadow-xl focus:outline-none"
+                >
+                    <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
+                        <Dialog.Title className="mr-auto min-w-0 truncate text-lg font-semibold text-textPrimary">
+                            {draft.name.trim().length > 0 ? draft.name : t(editor.untitledName)}
+                        </Dialog.Title>
+                        <div
+                            role="group"
+                            aria-label={t(editor.modeLabel)}
+                            className="flex overflow-hidden rounded border border-border"
+                        >
+                            {(['edit', 'preview'] as const).map((value) => (
+                                <button
+                                    key={value}
+                                    type="button"
+                                    aria-pressed={mode === value}
+                                    onClick={() => setMode(value)}
+                                    className={clsx(
+                                        'px-3 py-1 text-sm',
+                                        mode === value
+                                            ? 'bg-primary-muted text-white'
+                                            : 'text-textSecondary hover:bg-bgBase'
+                                    )}
+                                >
+                                    {value === 'edit' ? t(editor.modeEdit) : t(editor.modePreview)}
+                                </button>
+                            ))}
+                        </div>
+                        <EditorHelp topic="overview" about={t(editor.guide)} />
+                        <button
+                            type="button"
+                            onClick={undoChange}
+                            disabled={mode !== 'edit' || !canUndo(history)}
+                            aria-label={t(editor.undo)}
+                            title={t(editor.undo)}
+                            className={toolbarButton}
+                        >
+                            <Undo2 className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={redoChange}
+                            disabled={mode !== 'edit' || !canRedo(history)}
+                            aria-label={t(editor.redo)}
+                            title={t(editor.redo)}
+                            className={toolbarButton}
+                        >
+                            <Redo2 className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                    </div>
                     <Dialog.Description className="sr-only">{t(library.title)}</Dialog.Description>
 
-                    <div className="border-b border-border p-4">
-                        <div className="flex flex-wrap items-center gap-2">
-                            <input
-                                value={draft.name}
-                                onChange={(event) => {
-                                    const name = event.target.value;
-                                    setDraft((current) => ({ ...current, name }));
-                                }}
-                                placeholder={t(editor.namePlaceholder)}
-                                aria-label={t(editor.name)}
-                                className={`${inputClasses} min-w-0 flex-1 font-medium`}
-                            />
-                            <select
-                                value={draft.documentKind}
-                                onChange={(event) => {
-                                    const kind = event.target.value;
-                                    setDraft((current) => setDraftKind(current, kind));
-                                }}
-                                aria-label={t(library.kind)}
-                                className={inputClasses}
-                            >
-                                {DOCUMENT_KINDS.map((kind) => (
-                                    <option key={kind} value={kind}>
-                                        {kind}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <input
-                            value={draft.description ?? ''}
-                            onChange={(event) => {
-                                const description = event.target.value;
-                                setDraft((current) => describeDraft(current, description));
-                            }}
-                            placeholder={t(editor.descriptionPlaceholder)}
-                            aria-label={t(editor.descriptionLabel)}
-                            className={`${inputClasses} mt-2 w-full`}
-                        />
-                    </div>
-
-                    <div className="flex-1 space-y-4 overflow-y-auto p-4">
-                        <EditorModelContext.Provider value={editorModel}>
-                            <EditorFillTargetsContext.Provider value={fillTargets}>
-                                <ChildrenList
-                                    callbacks={callbacks}
-                                    depth={1}
-                                    nodes={draft.children}
-                                    parentId={null}
+                    {mode === 'edit' && (
+                        <div className="border-b border-border p-3">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <input
+                                    value={draft.name}
+                                    onChange={(event) => {
+                                        const name = event.target.value;
+                                        change((current) => ({ ...current, name }), {
+                                            coalesceKey: 'template:name',
+                                        });
+                                    }}
+                                    placeholder={t(editor.namePlaceholder)}
+                                    aria-label={t(editor.name)}
+                                    className={`${inputClasses} min-w-0 flex-1 font-medium`}
                                 />
-                            </EditorFillTargetsContext.Provider>
-                        </EditorModelContext.Provider>
-                        <datalist id={editorModel.coordinateListId}>{coordinateOptions}</datalist>
-                    </div>
+                                <select
+                                    value={targetValue}
+                                    onChange={(event) => {
+                                        const target = parseTemplateTargetValue(event.target.value);
+                                        if (target) {
+                                            change((current) => setDraftTarget(current, target));
+                                        }
+                                    }}
+                                    disabled={targetFixed}
+                                    title={targetFixed ? t(editor.targetLocked) : undefined}
+                                    aria-label={t(editor.target)}
+                                    className={`${inputClasses} max-w-full`}
+                                >
+                                    {!targetKnown && (
+                                        <option value={targetValue}>{draft.documentKind}</option>
+                                    )}
+                                    {targetGroups.map((group) => (
+                                        <optgroup key={group.key} label={group.label}>
+                                            {group.options.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </optgroup>
+                                    ))}
+                                </select>
+                                <EditorHelp topic="movingPage" about={t(editor.target)} />
+                            </div>
+                            <input
+                                value={draft.description ?? ''}
+                                onChange={(event) => {
+                                    const description = event.target.value;
+                                    change((current) => describeDraft(current, description), {
+                                        coalesceKey: 'template:description',
+                                    });
+                                }}
+                                placeholder={t(editor.descriptionPlaceholder)}
+                                aria-label={t(editor.descriptionLabel)}
+                                className={`${inputClasses} mt-2 w-full`}
+                            />
+                        </div>
+                    )}
 
-                    <div className="border-t border-border p-4">
+                    <EditorModelContext.Provider value={editorModel}>
+                        <EditorFillTargetsContext.Provider value={fillTargets}>
+                            <EditorActionsContext.Provider value={actions}>
+                                <EditorSelectionContext.Provider value={selection}>
+                                    {mode === 'preview' ? (
+                                        <div className="min-h-0 flex-1 overflow-y-auto bg-bgBase">
+                                            <EditorPreview draft={draft} />
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <div
+                                                role="tablist"
+                                                aria-label={t(editor.areaTabs)}
+                                                className="flex border-b border-border md:hidden"
+                                            >
+                                                {areas.map(({ id, label }) => (
+                                                    <button
+                                                        key={id}
+                                                        type="button"
+                                                        role="tab"
+                                                        aria-selected={area === id}
+                                                        onClick={() => setArea(id)}
+                                                        className={clsx(
+                                                            'flex-1 px-3 py-2 text-sm',
+                                                            area === id
+                                                                ? 'border-b-2 border-primary font-medium text-textPrimary'
+                                                                : 'text-textSecondary'
+                                                        )}
+                                                    >
+                                                        {label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)_20rem]">
+                                                <section
+                                                    aria-label={t(editor.areaOutline)}
+                                                    className={clsx(
+                                                        paneClasses('outline'),
+                                                        'border-border p-2 md:border-r'
+                                                    )}
+                                                >
+                                                    <h3 className="mb-1 hidden px-1 text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
+                                                        {t(editor.areaOutline)}
+                                                    </h3>
+                                                    <OutlineTree nodes={draft.children} />
+                                                </section>
+                                                <section
+                                                    aria-label={t(editor.areaPage)}
+                                                    className={clsx(
+                                                        paneClasses('page'),
+                                                        'bg-bgBase'
+                                                    )}
+                                                >
+                                                    <EditorPage draft={draft} />
+                                                </section>
+                                                <section
+                                                    aria-label={t(editor.areaSettings)}
+                                                    className={clsx(
+                                                        paneClasses('settings'),
+                                                        'space-y-4 border-border p-3 md:border-l'
+                                                    )}
+                                                >
+                                                    <h3 className="hidden text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
+                                                        {t(editor.areaSettings)}
+                                                    </h3>
+                                                    {selectedNode ? (
+                                                        <ElementSettings
+                                                            key={selectedNode.id}
+                                                            actions={{
+                                                                onMoveUp: canMoveUp
+                                                                    ? () =>
+                                                                          moveByCommand(
+                                                                              selectedNode.id,
+                                                                              'move-up'
+                                                                          )
+                                                                    : undefined,
+                                                                onMoveDown: canMoveDown
+                                                                    ? () =>
+                                                                          moveByCommand(
+                                                                              selectedNode.id,
+                                                                              'move-down'
+                                                                          )
+                                                                    : undefined,
+                                                                onDuplicate: () =>
+                                                                    duplicate(selectedNode.id),
+                                                                onRemove: () =>
+                                                                    removeSelected(selectedNode.id),
+                                                            }}
+                                                            callbacks={callbacks}
+                                                            node={selectedNode}
+                                                            parentColumns={parentColumnsOf(
+                                                                draft,
+                                                                selectedNode.id
+                                                            )}
+                                                            pinnedSiblings={hasPinnedSiblings(
+                                                                draft,
+                                                                selectedNode.id
+                                                            )}
+                                                        />
+                                                    ) : (
+                                                        <p className="text-sm text-textSecondary">
+                                                            {t(editor.selectPrompt)}
+                                                        </p>
+                                                    )}
+                                                    <p className="text-xs leading-relaxed text-textSecondary">
+                                                        {t(editor.shortcutsHint)}
+                                                    </p>
+                                                </section>
+                                            </div>
+                                        </>
+                                    )}
+                                </EditorSelectionContext.Provider>
+                            </EditorActionsContext.Provider>
+                        </EditorFillTargetsContext.Provider>
+                    </EditorModelContext.Provider>
+                    <datalist id={editorModel.coordinateListId}>{coordinateOptions}</datalist>
+
+                    <div className="border-t border-border p-3">
                         <div role="alert" aria-live="polite">
                             {visibleIssues.length > 0 && (
-                                <ul className="mb-3 space-y-1 text-xs text-error">
-                                    {visibleIssues.map((message, index) => (
-                                        <li key={index}>{message}</li>
+                                <ul className="mb-3 max-h-24 space-y-1 overflow-y-auto text-xs text-error">
+                                    {draftIssues.map(({ message, nodeId }, index) => (
+                                        <li key={`draft-${index}`}>
+                                            {nodeId ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setMode('edit');
+                                                        setArea('settings');
+                                                        selectNode(nodeId, 'outline');
+                                                    }}
+                                                    className="text-left underline decoration-dotted"
+                                                >
+                                                    {message}
+                                                </button>
+                                            ) : (
+                                                message
+                                            )}
+                                        </li>
+                                    ))}
+                                    {saveIssues.map((message, index) => (
+                                        <li key={`save-${index}`}>{message}</li>
                                     ))}
                                 </ul>
                             )}
                         </div>
+                        <p className="sr-only" aria-live="polite" data-editor-announcer="">
+                            {announcement}
+                        </p>
                         <div className="flex justify-end gap-2">
                             <button
                                 type="button"
@@ -318,8 +838,8 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
                             <button
                                 type="button"
                                 onClick={handleSave}
-                                disabled={issueMessages.length > 0}
-                                className="rounded border border-transparent bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-40"
+                                disabled={draftIssues.length > 0}
+                                className="rounded border border-transparent bg-primary-muted px-4 py-2 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
                             >
                                 {t(editor.save)}
                             </button>
@@ -328,6 +848,29 @@ export function TemplateEditorDialog({ base, onClose }: TemplateEditorDialogProp
                 </Dialog.Content>
             </Dialog.Portal>
 
+            <ConfirmDialog
+                open={pendingRetarget !== null}
+                onOpenChange={(open) => {
+                    if (!open) setPendingRetarget(null);
+                }}
+                onConfirm={() => {
+                    if (pendingRetarget) {
+                        saveUserTemplate(pendingRetarget.template, pendingRetarget.plan);
+                    }
+                    setPendingRetarget(null);
+                }}
+                title={t(editor.retargetTitle)}
+                description={
+                    pendingRetarget
+                        ? plural(
+                              editor.retargetDescription,
+                              pendingRetarget.plan.documentIds.length
+                          )
+                        : ''
+                }
+                confirmLabel={t(editor.retargetConfirm)}
+                cancelLabel={t(editor.cancel)}
+            />
             <ConfirmDialog
                 open={discardConfirmOpen}
                 onOpenChange={setDiscardConfirmOpen}

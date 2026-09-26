@@ -1,13 +1,14 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import type { DocumentViewLabel, SystemPlugin } from './types';
+import type { DocumentDefinition, DocumentViewLabel, SystemPlugin } from './types';
 
 /**
  * Publisher community policies (constitution VIII). Rulesets, modules, and settings declare the
  * policies their material relies on. Sheets show only the policy badge, linking to the policy's
  * docs page, which carries the full statement once; exported files carry the notice text.
  * Nothing is shown for documents that use no such material. One policy may serve several systems
- * (Dark Pack covers every World of Darkness engine), so policies live outside any system.
+ * (Dark Pack covers World of Darkness 5th Edition lines only, not classic WoD or conversions built
+ * on it), so policies live outside any system.
  */
 
 export type PolicyId = 'dark-pack';
@@ -51,6 +52,7 @@ export function isPolicyId(id: string): id is PolicyId {
 
 interface PolicyRegistry {
     getSystem(systemId: string): SystemPlugin | undefined;
+    getDocumentDefinition?(systemId: string, definitionId: string): DocumentDefinition | undefined;
 }
 
 function toPolicies(ids: readonly PolicyId[]): PublisherPolicy[] {
@@ -71,7 +73,10 @@ export function resolveDocumentPolicies(
     document: { systemId: string; definitionId: string }
 ): PublisherPolicy[] {
     const system = registry.getSystem(document.systemId);
-    const definition = system?.documents.find(({ id }) => id === document.definitionId);
+    // Through the registry when it offers the lookup, so user types resolve too (spec 012).
+    const definition =
+        registry.getDocumentDefinition?.(document.systemId, document.definitionId) ??
+        system?.documents.find(({ id }) => id === document.definitionId);
     return toPolicies([...(system?.policies ?? []), ...(definition?.module?.policies ?? [])]);
 }
 

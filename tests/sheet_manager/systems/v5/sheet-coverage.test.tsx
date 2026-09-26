@@ -9,7 +9,8 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { currentHunter, hunterData, seedHunter } from './hunterFixtures';
 
-const RENDER_TIMEOUT = 20_000;
+// A full Hunter sheet renders in ~4 s alone; a loaded full-suite run can take several times that.
+const RENDER_TIMEOUT = 40_000;
 
 afterEach(cleanup);
 

@@ -21,3 +21,4 @@ meritFlaw:
     addAdvantage: Добавить достоинство
     addFlaw: Добавить недостаток
     remove: Удалить запись
+    points: 'Очки: {name}'

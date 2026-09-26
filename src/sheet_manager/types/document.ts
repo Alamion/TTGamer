@@ -34,6 +34,8 @@ export const DocumentMetadataSchema = z.object({
     tags: z.array(z.string().min(1).max(64)).max(50).default([]),
     /** Feature 005: template ids whose preset entries were seeded into this document (FR-16). */
     seededPresets: z.array(z.string()).optional(),
+    /** Spec 012: the user setting the document was created in. */
+    settingId: z.string().min(1).max(64).optional(),
 });
 
 const DocumentEnvelopeBaseSchema = z.object({

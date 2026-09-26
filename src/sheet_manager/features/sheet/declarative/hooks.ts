@@ -317,7 +317,7 @@ export function useTemplatePage(
         [documentData, fieldCoords, template, values]
     );
 
-    const previewSource = source.readOnly;
+    const previewSource = source.preview;
     const openDocument = useCallback(
         (documentId: string) => {
             if (previewSource) return;
@@ -652,24 +652,44 @@ export function useTemplatePage(
         updateTemplateValues,
     ]);
 
-    return {
-        addRow,
-        applyWrites,
-        isVisible,
-        openDocument,
-        previewSource,
-        disabled: readOnly,
-        documentOptions,
-        formulaState,
-        removeRow,
-        resolveCatalogField,
-        resolveSystemList,
-        setRowValue,
-        setValue,
-        status: template ? 'ready' : 'none',
-        template,
-        values,
-    };
+    // One stable object per state, so memoized node views skip unchanged renders.
+    return useMemo<UseTemplatePageResult>(
+        () => ({
+            addRow,
+            applyWrites,
+            isVisible,
+            openDocument,
+            previewSource,
+            disabled: readOnly,
+            documentOptions,
+            formulaState,
+            removeRow,
+            resolveCatalogField,
+            resolveSystemList,
+            setRowValue,
+            setValue,
+            status: template ? 'ready' : 'none',
+            template,
+            values,
+        }),
+        [
+            addRow,
+            applyWrites,
+            isVisible,
+            openDocument,
+            previewSource,
+            readOnly,
+            documentOptions,
+            formulaState,
+            removeRow,
+            resolveCatalogField,
+            resolveSystemList,
+            setRowValue,
+            setValue,
+            template,
+            values,
+        ]
+    );
 }
 
 function collectDependenciesSafe(expr: Expr): string[] {

@@ -1,6 +1,6 @@
 # Feature Specification: Built-in Views as Default Templates
 
-> **Historical record.** Default derivation and block placements were replaced by specs 005–006. Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
+> **Historical record.** Default derivation and block placements were replaced by specs 005–006; overrides keyed by view id were replaced by `systemId:viewId` keys in spec 012 (T-046). Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
 
 **Feature Branch**: `004-default-view-templates`
 

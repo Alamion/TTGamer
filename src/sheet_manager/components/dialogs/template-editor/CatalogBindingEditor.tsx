@@ -6,8 +6,10 @@ import {
     CATALOG_BINDINGS,
     type CatalogFillKind,
 } from '../../../features/sheet/data/catalogBindings';
+import { systemRegistry } from '../../../systems';
 import type { TemplateField } from '../../../types/template';
-import { type FillTarget, useFillTargets } from './EditorModel';
+import { EditorHelp } from './EditorHelp';
+import { type FillTarget, useEditorModel, useFillTargets } from './EditorModel';
 
 const bindingMessages = uiMessages.sheet.templates.binding;
 
@@ -36,26 +38,37 @@ interface CatalogBindingEditorProps {
 
 export function CatalogBindingEditor({ callbacks, field, selfId }: CatalogBindingEditorProps) {
     const fillTargets = useFillTargets();
+    const { systemId } = useEditorModel();
     const t = (descriptor: { message: string }) => translate(descriptor);
-    const catalogOptions = [...CATALOG_BINDINGS.values()];
+    // Only the template's own system's catalogs are offered (validation stays global, so older
+    // templates bound to another system's catalog keep working).
+    const systemCatalogs = new Set(
+        (systemRegistry.getSystem(systemId)?.catalogs ?? []).map(({ catalogId }) => catalogId)
+    );
+    const catalogOptions = [...CATALOG_BINDINGS.values()].filter(({ catalogId }) =>
+        systemCatalogs.has(catalogId)
+    );
 
     if (!field.binding) {
         return (
-            <select
-                value=""
-                onChange={(event) => {
-                    if (event.target.value) callbacks.onAttach(event.target.value);
-                }}
-                aria-label={t(bindingMessages.attach)}
-                className={inputClasses}
-            >
-                <option value="">{t(bindingMessages.attach)}</option>
-                {catalogOptions.map((binding) => (
-                    <option key={binding.catalogId} value={binding.catalogId}>
-                        {binding.catalogId}
-                    </option>
-                ))}
-            </select>
+            <div className="flex items-center gap-2">
+                <select
+                    value=""
+                    onChange={(event) => {
+                        if (event.target.value) callbacks.onAttach(event.target.value);
+                    }}
+                    aria-label={t(bindingMessages.attach)}
+                    className={inputClasses}
+                >
+                    <option value="">{t(bindingMessages.attach)}</option>
+                    {catalogOptions.map((binding) => (
+                        <option key={binding.catalogId} value={binding.catalogId}>
+                            {binding.catalogId}
+                        </option>
+                    ))}
+                </select>
+                <EditorHelp topic="catalogs" about={t(bindingMessages.attach)} />
+            </div>
         );
     }
 

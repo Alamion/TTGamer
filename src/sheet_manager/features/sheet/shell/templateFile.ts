@@ -121,18 +121,28 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
         return { ok: false, error: 'system' };
     }
 
-    // FR-21 (003): templates referencing unavailable catalogs still import; the affected
-    // fields degrade to manual choice fields (binding stripped) and the user is told which.
-    const { template: resolved, degradedFields } = stripUnavailableBindings(template);
-    // Remaining broken references still import (they degrade at render); report each one.
-    for (const issue of validateTemplateReferences(resolved)) {
+    const { template: resolved, degradedFields } = resolveImportedTemplate(template);
+    return { ok: true, template: resolved, degradedCatalogFields: degradedFields };
+}
+
+/**
+ * The shared import step of every file that carries templates (template and type files):
+ * templates referencing unavailable catalogs still import with those fields degraded to manual
+ * choice (FR-21, 003); remaining broken references are reported and degrade at render.
+ */
+export function resolveImportedTemplate(template: CustomTemplate): {
+    template: CustomTemplate;
+    degradedFields: readonly string[];
+} {
+    const stripped = stripUnavailableBindings(template);
+    for (const issue of validateTemplateReferences(stripped.template)) {
         reportSheetIssue({
             code: 'template-reference-invalid',
             message: 'Imported template references something this build does not provide',
-            details: { templateId: resolved.id, ...issue },
+            details: { templateId: stripped.template.id, ...issue },
         });
     }
-    return { ok: true, template: resolved, degradedCatalogFields: degradedFields };
+    return stripped;
 }
 
 /** Human-facing labels for the degradation report (field labels, never raw ids). */

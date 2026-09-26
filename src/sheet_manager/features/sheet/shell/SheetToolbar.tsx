@@ -18,7 +18,7 @@ const buttonBase =
     'flex items-center justify-center gap-1.5 rounded border px-3 py-1.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50';
 const secondaryButton = `${buttonBase} border-border bg-bgSurface text-textPrimary hover:bg-bgBase`;
 const dangerButton = `${buttonBase} border-border bg-bgSurface text-error hover:bg-bgBase`;
-const primaryButton = `${buttonBase} border-transparent bg-primary text-white hover:bg-primary/90`;
+const primaryButton = `${buttonBase} border-transparent bg-primary-muted text-white hover:bg-primary`;
 
 export function SheetToolbar({
     hasDocument,
@@ -31,7 +31,6 @@ export function SheetToolbar({
     viewMode,
 }: SheetToolbarProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const templates = uiMessages.sheet.templates;
 
     return (
         <div className="flex flex-col gap-4 pb-4 sm:flex-row sm:items-center sm:pb-0">
@@ -62,10 +61,10 @@ export function SheetToolbar({
                         type="button"
                         onClick={onManageTemplates}
                         className={secondaryButton}
-                        title={translate(templates.library.buttonTitle)}
+                        title={translate(uiMessages.sheet.library.buttonTitle)}
                     >
                         <LayoutTemplate className="h-3.5 w-3.5" aria-hidden="true" />
-                        {translate(templates.library.button)}
+                        {translate(uiMessages.sheet.library.button)}
                     </button>
                     <button
                         type="button"

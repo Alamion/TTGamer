@@ -5,6 +5,7 @@ import {
     collectDraftIssues,
     createDraftFromTemplate,
     createEmptyDraft,
+    duplicateNode,
     insertNode,
     moveNode,
     newField,
@@ -16,13 +17,14 @@ import {
     updateNode,
 } from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
-import { TemplateLibraryDialog } from '@site/src/sheet_manager/components/dialogs/TemplateLibraryDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema, TEMPLATE_LIMITS } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { dragNode } from './helpers/editor';
 
 const ISSUE_MESSAGES = {
     emptyName: 'Template name is required.',
@@ -38,6 +40,7 @@ const ISSUE_MESSAGES = {
     unknownCatalog: 'Unknown catalog "{id}".',
     unknownFillTarget: 'Missing fill target "{id}".',
     unknownLabelMessage: 'Unknown translation "{id}".',
+    invalidDocsLink: 'Invalid docs link "{id}".',
 };
 
 /** Asserts success so subsequent `.draft` accesses typecheck. */
@@ -50,6 +53,33 @@ function insert(
     const result = insertNode(draft, parentId, index, node);
     if (!result.ok) throw new Error(`insert failed: ${result.error}`);
     return result.draft;
+}
+
+function outlineRow(nodeId: string): HTMLElement {
+    return document.querySelector(`[data-outline-row="${nodeId}"]`) as HTMLElement;
+}
+
+/** Clicks the element's name in the outline (the keyboard-reachable way to select it). */
+function selectInOutline(nodeId: string): void {
+    const row = outlineRow(nodeId);
+    const name = [...row.querySelectorAll('button')].find(
+        (button) => !button.hasAttribute('draggable')
+    )!;
+    fireEvent.click(name);
+}
+
+function settings(nodeId: string): HTMLElement {
+    return document.querySelector(`[data-settings-for="${nodeId}"]`) as HTMLElement;
+}
+
+function pageFrame(nodeId: string): HTMLElement {
+    return document.querySelector(`[data-editor-frame][data-node-id="${nodeId}"]`) as HTMLElement;
+}
+
+function outlineChildIds(parentId: string): string[] {
+    return [
+        ...document.querySelectorAll(`[data-children-of="${parentId}"] > li > [data-outline-row]`),
+    ].map((element) => element.getAttribute('data-outline-row')!);
 }
 
 function savedTemplate() {
@@ -304,11 +334,12 @@ describe('TemplateEditorDialog', () => {
         expect(templates[0]?.name).toBe('My Kit');
     });
 
-    it('offers the add-element palette at the root and inside nested containers', () => {
+    it('offers insertion points at the root and inside nested containers', () => {
         render(createElement(TemplateEditorDialog, { base: { kind: 'empty' }, onClose: () => {} }));
 
-        const paletteButtons = screen.getAllByRole('button', { name: 'Add element' });
-        expect(paletteButtons.length).toBeGreaterThanOrEqual(1);
+        const slots = screen.getAllByRole('button', { name: 'Insert an element here' });
+        expect(slots.length).toBeGreaterThanOrEqual(2);
+        expect(document.querySelector('[data-insert-slot^="root:"]')).not.toBeNull();
     });
 
     it('asks for confirmation before discarding unsaved edits', () => {
@@ -335,38 +366,9 @@ describe('TemplateEditorDialog', () => {
     });
 });
 
-describe('TemplateLibraryDialog', () => {
-    beforeEach(() => {
-        useTemplateStore.setState({ templates: [savedTemplate()], quarantine: [] });
-    });
-
+describe('template editor catalog bindings', () => {
     afterEach(() => {
         cleanup();
-    });
-
-    it('lists saved templates grouped by kind', () => {
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-        expect(screen.getByText('Existing Kit')).not.toBeNull();
-    });
-
-    it('deletes a template after confirmation', () => {
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-
-        fireEvent.click(screen.getByLabelText('Delete: Existing Kit'));
-        fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
-
-        expect(useTemplateStore.getState().templates).toHaveLength(0);
-    });
-
-    it('duplicates a template under a fresh identity', () => {
-        render(createElement(TemplateLibraryDialog, { open: true, onOpenChange: () => {} }));
-
-        fireEvent.click(screen.getByLabelText('Duplicate: Existing Kit'));
-
-        const templates = useTemplateStore.getState().templates;
-        expect(templates).toHaveLength(2);
-        expect(templates.map((template) => template.id)).toContain('tpl-existing');
-        expect(new Set(templates.map((template) => template.id)).size).toBe(2);
     });
 
     it('attaches a catalog binding to a choice field', () => {
@@ -374,6 +376,10 @@ describe('TemplateLibraryDialog', () => {
         render(createElement(TemplateEditorDialog, { base: { kind: 'empty' }, onClose: () => {} }));
 
         fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Bound Kit' } });
+        // The seeded draft is a section holding one field: select the field in the outline.
+        selectInOutline(
+            document.querySelectorAll('[data-outline-row]')[1]!.getAttribute('data-outline-row')!
+        );
 
         const typeSelect = screen.getByLabelText('Field type') as HTMLSelectElement;
         fireEvent.change(typeSelect, { target: { value: 'select' } });
@@ -397,16 +403,12 @@ describe('TemplateLibraryDialog', () => {
     });
 });
 
-describe('editor affordances (US2)', () => {
+describe('editor outline and settings (spec 012)', () => {
     afterEach(() => {
         cleanup();
     });
 
-    function findNodePanel(nodeId: string): HTMLElement {
-        return document.querySelector(`[data-node-id="${nodeId}"]`) as HTMLElement;
-    }
-
-    it('keeps the grip before the collapse chevron in DOM order at every depth', () => {
+    it('gives every outline row a labelled grip and selects its element', () => {
         let draft = createEmptyDraft('character');
         const seededSection = draft.children[0]!;
         const group = newGroupNode();
@@ -421,19 +423,15 @@ describe('editor affordances (US2)', () => {
         );
 
         for (const nodeId of [seededSection.id, group.id]) {
-            const panel = findNodePanel(nodeId);
-            const grip = within(panel).getByTestId(`grip-${nodeId}`);
-            const collapse = within(panel).getByTestId(`collapse-${nodeId}`);
-            // jsdom has no layout: DOM order (grip precedes chevron) proves the sides differ.
-            expect(
-                grip.compareDocumentPosition(collapse) & Node.DOCUMENT_POSITION_FOLLOWING
-            ).toBeTruthy();
-            expect(grip.getAttribute('aria-label')).toBeTruthy();
-            expect(collapse.getAttribute('aria-expanded')).toBe('true');
+            expect(screen.getByTestId(`grip-${nodeId}`).getAttribute('aria-label')).toBeTruthy();
         }
+        selectInOutline(group.id);
+        expect(outlineRow(group.id).getAttribute('aria-current')).toBe('true');
+        expect(settings(group.id)).not.toBeNull();
+        expect(pageFrame(group.id).hasAttribute('data-selected')).toBe(true);
     });
 
-    it('reorders with the move buttons without toggling collapse state', () => {
+    it('reorders with the move buttons of the selected element', () => {
         let draft = createEmptyDraft('character');
         const second = newSectionNode();
         draft = insert(draft, null, 1, second);
@@ -446,21 +444,10 @@ describe('editor affordances (US2)', () => {
             })
         );
 
-        const panelBefore = findNodePanel(second.id);
-        const collapsedBefore = within(panelBefore)
-            .getByTestId(`collapse-${second.id}`)
-            .getAttribute('aria-expanded');
-
-        // Collapse the second section, then move it up.
-        fireEvent.click(within(panelBefore).getByTestId(`collapse-${second.id}`));
-        const panel = findNodePanel(second.id);
-        fireEvent.click(within(panel).getByRole('button', { name: 'Move up' }));
-
-        // Move buttons reorder; the collapse state change came only from the explicit toggle.
-        const secondPanel = findNodePanel(second.id);
-        expect(
-            within(secondPanel).getByTestId(`collapse-${second.id}`).getAttribute('aria-expanded')
-        ).toBe(collapsedBefore === 'true' ? 'false' : 'true');
+        selectInOutline(second.id);
+        fireEvent.click(within(settings(second.id)).getByRole('button', { name: 'Move up' }));
+        expect(outlineChildIds('root')).toEqual([second.id, draft.children[0]!.id]);
+        expect(outlineRow(second.id).getAttribute('aria-current')).toBe('true');
     });
 });
 
@@ -473,8 +460,11 @@ describe('editor layout and presentation controls', () => {
         cleanup();
     });
 
-    const panel = (nodeId: string) =>
-        document.querySelector(`[data-node-id="${nodeId}"]`) as HTMLElement;
+    /** Selects the element and returns its settings pane. */
+    const panel = (nodeId: string) => {
+        selectInOutline(nodeId);
+        return settings(nodeId);
+    };
 
     function openEditor() {
         const template = CustomTemplateSchema.parse({
@@ -538,13 +528,12 @@ describe('editor layout and presentation controls', () => {
     it('offers column placement only inside multi-column containers', () => {
         openEditor();
         expect(
-            within(panel('identity')).getAllByRole('radiogroup', { name: 'Column in parent' })
-        ).toHaveLength(1); // the group itself; its single-column children get none
+            within(panel('bio')).queryByRole('radiogroup', { name: 'Column in parent' })
+        ).toBeNull();
+        const identity = panel('identity');
         fireEvent.click(
             within(
-                within(panel('identity')).getAllByRole('radiogroup', {
-                    name: 'Column in parent',
-                })[0]!
+                within(identity).getByRole('radiogroup', { name: 'Column in parent' })
             ).getByRole('radio', { name: '2' })
         );
         expect(saved()('identity')?.column).toBe(2);
@@ -610,7 +599,7 @@ describe('editor layout and presentation controls', () => {
     });
 });
 
-describe('editor drag and drop, headers, and rendering health', () => {
+describe('editor drag and drop, outline, and rendering health', () => {
     beforeEach(() => {
         useTemplateStore.setState({ templates: [], quarantine: [] });
     });
@@ -620,16 +609,8 @@ describe('editor drag and drop, headers, and rendering health', () => {
         vi.restoreAllMocks();
     });
 
-    const NODE_MIME = 'application/x-ttgamer-template-node';
-    const panel = (nodeId: string) =>
-        document.querySelector(`[data-node-id="${nodeId}"]`) as HTMLElement;
-    /** The drop target wrapping a panel inside its parent list. */
-    const slot = (nodeId: string) => panel(nodeId).parentElement as HTMLElement;
-    const dataTransfer = (nodeId: string) => ({
-        types: [NODE_MIME],
-        getData: (type: string) => (type === NODE_MIME ? nodeId : ''),
-        dropEffect: 'none',
-    });
+    /** The outline drop target "before this element". */
+    const slot = (nodeId: string) => outlineRow(nodeId).parentElement as HTMLElement;
 
     function openEditor() {
         const template = CustomTemplateSchema.parse({
@@ -664,35 +645,30 @@ describe('editor drag and drop, headers, and rendering health', () => {
         );
     }
 
-    const childIds = (parentId: string) =>
-        [
-            ...document.querySelectorAll(`[data-children-of="${parentId}"] > div > [data-node-id]`),
-        ].map((element) => element.getAttribute('data-node-id'));
-
     it('reorders a field above its upper sibling without leaving the group', () => {
         openEditor();
-        fireEvent.dragOver(slot('first'), { dataTransfer: dataTransfer('second') });
-        fireEvent.drop(slot('first'), { dataTransfer: dataTransfer('second') });
-        expect(childIds('identity')).toEqual(['second', 'first']);
-        expect(childIds('page')).toEqual(['identity']);
+        dragNode('second', slot('first'));
+        expect(outlineChildIds('identity')).toEqual(['second', 'first']);
+        expect(outlineChildIds('page')).toEqual(['identity']);
     });
 
     it('refuses to move a group inside itself with a clear message', () => {
         openEditor();
-        fireEvent.drop(slot('first'), { dataTransfer: dataTransfer('identity') });
-        expect(childIds('page')).toEqual(['identity']);
-        expect(childIds('identity')).toEqual(['first', 'second']);
+        dragNode('identity', slot('first'));
+        expect(outlineChildIds('page')).toEqual(['identity']);
+        expect(outlineChildIds('identity')).toEqual(['first', 'second']);
         expect(screen.getByRole('alert').textContent).toContain(
             'An element cannot be moved inside itself.'
         );
         expect(screen.getByRole('alert').textContent).not.toContain('Duplicate identifier');
     });
 
-    it('keeps container titles in collapsed panel headers', () => {
+    it('names containers in the outline and shows settings only for the selection', () => {
         openEditor();
-        fireEvent.click(within(panel('identity')).getByTestId('collapse-identity'));
-        expect(within(panel('identity')).getByText('Identity group')).not.toBeNull();
-        expect(within(panel('identity')).queryByLabelText('Show title')).toBeNull();
+        expect(within(outlineRow('identity')).getByText('Identity group')).not.toBeNull();
+        expect(document.querySelector('[data-settings-for]')).toBeNull();
+        selectInOutline('identity');
+        expect(within(settings('identity')).getAllByLabelText('Show title')).toHaveLength(1);
     });
 
     it('renders the shipped sheet in the editor without duplicate React keys', async () => {
@@ -709,7 +685,7 @@ describe('editor drag and drop, headers, and rendering health', () => {
             String(call[0]).includes('same key')
         );
         expect(keyWarnings).toHaveLength(0);
-        expect(document.querySelectorAll('datalist')).toHaveLength(1);
+        expect(document.querySelectorAll(`datalist[id^="template-coordinates-"]`)).toHaveLength(1);
     }, 20_000);
 });
 
@@ -722,12 +698,10 @@ describe('add-element menu and element sources', () => {
         cleanup();
     });
 
-    const panel = (nodeId: string) =>
-        document.querySelector(`[data-node-id="${nodeId}"]`) as HTMLElement;
-    const rootIds = () =>
-        [...document.querySelectorAll('[data-children-of="root"] > div > [data-node-id]')].map(
-            (element) => element as HTMLElement
-        );
+    const panel = (nodeId: string) => {
+        selectInOutline(nodeId);
+        return settings(nodeId);
+    };
 
     function openEmpty() {
         const template = CustomTemplateSchema.parse({
@@ -745,18 +719,21 @@ describe('add-element menu and element sources', () => {
         );
     }
 
+    function openRootMenu() {
+        const slots = document.querySelectorAll('[data-insert-slot^="root:"]');
+        fireEvent.click(slots[slots.length - 1]!);
+    }
+
     function addFromRootMenu(option: string): HTMLElement {
-        const menus = screen.getAllByRole('button', { name: 'Add element' });
-        fireEvent.click(menus[menus.length - 1]!);
+        openRootMenu();
         fireEvent.click(document.querySelector(`[data-palette-option="${option}"]`)!);
-        const panels = rootIds();
-        return panels[panels.length - 1]!;
+        const ids = outlineChildIds('root');
+        return outlineRow(ids[ids.length - 1]!);
     }
 
     it('offers exactly the six element kinds with descriptions', () => {
         openEmpty();
-        const menus = screen.getAllByRole('button', { name: 'Add element' });
-        fireEvent.click(menus[menus.length - 1]!);
+        openRootMenu();
         const options = [...document.querySelectorAll('[data-palette-option]')].map((element) =>
             element.getAttribute('data-palette-option')
         );
@@ -766,7 +743,7 @@ describe('add-element menu and element sources', () => {
         expect(menu.textContent).not.toContain('Strength');
     });
 
-    it('adds each kind as a valid element', () => {
+    it('adds each kind as a valid element and selects it', () => {
         openEmpty();
         expect(addFromRootMenu('section').getAttribute('data-node-type')).toBe('section');
         expect(addFromRootMenu('group').getAttribute('data-node-type')).toBe('group');
@@ -775,9 +752,11 @@ describe('add-element menu and element sources', () => {
         expect(addFromRootMenu('list').getAttribute('data-node-type')).toBe('list');
         const tracker = addFromRootMenu('tracker');
         expect(tracker.getAttribute('data-node-type')).toBe('primitive');
-        expect((within(tracker).getByLabelText('Tracks') as HTMLSelectElement).value).toBe(
-            'track:health'
-        );
+        expect(tracker.getAttribute('aria-current')).toBe('true');
+        const trackerId = tracker.getAttribute('data-outline-row')!;
+        expect(
+            (within(settings(trackerId)).getByLabelText('Tracks') as HTMLSelectElement).value
+        ).toBe('track:health');
         // Every added element passes the draft checks: saving succeeds.
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
         expect(useTemplateStore.getState().templates).toHaveLength(1);
@@ -787,19 +766,19 @@ describe('add-element menu and element sources', () => {
         openEmpty();
         const source = () => within(panel('start')).getByLabelText('Stores value in');
         fireEvent.change(source(), { target: { value: 'trait:physical:Strength' } });
-        expect(panel('start').getAttribute('data-node-type')).toBe('rating');
+        expect(outlineRow('start').getAttribute('data-node-type')).toBe('rating');
         expect(
             (within(panel('start')).getByLabelText('Field type') as HTMLSelectElement).disabled
         ).toBe(true);
 
         fireEvent.change(source(), { target: { value: 'resource:willpower' } });
-        expect(panel('start').getAttribute('data-node-type')).toBe('primitive');
+        expect(outlineRow('start').getAttribute('data-node-type')).toBe('primitive');
         expect(
             within(panel('start')).getByLabelText('Minimum from value or formula (optional)')
         ).not.toBeNull();
 
         fireEvent.change(source(), { target: { value: 'field:biography' } });
-        expect(panel('start').getAttribute('data-node-type')).toBe('text');
+        expect(outlineRow('start').getAttribute('data-node-type')).toBe('text');
 
         fireEvent.change(source(), { target: { value: 'custom' } });
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
@@ -810,16 +789,15 @@ describe('add-element menu and element sources', () => {
 
     it('switches a list between custom entries, character lists, and equipment', () => {
         openEmpty();
-        const list = addFromRootMenu('list');
-        const id = list.getAttribute('data-node-id')!;
+        const id = addFromRootMenu('list').getAttribute('data-outline-row')!;
         const entries = () => within(panel(id)).getByLabelText('Entries');
         fireEvent.change(entries(), { target: { value: 'list:merits' } });
-        expect(panel(id).getAttribute('data-node-type')).toBe('list');
+        expect(outlineRow(id).getAttribute('data-node-type')).toBe('list');
         fireEvent.change(entries(), { target: { value: 'equipment:weapons' } });
-        expect(panel(id).getAttribute('data-node-type')).toBe('primitive');
+        expect(outlineRow(id).getAttribute('data-node-type')).toBe('primitive');
         expect((entries() as HTMLSelectElement).value).toBe('equipment:weapons');
         fireEvent.change(entries(), { target: { value: 'custom' } });
-        expect(panel(id).getAttribute('data-node-type')).toBe('list');
+        expect(outlineRow(id).getAttribute('data-node-type')).toBe('list');
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
         const saved = useTemplateStore
             .getState()
@@ -854,13 +832,182 @@ describe('trait-sourced fields', () => {
                 onClose: () => {},
             })
         );
-        const panelOf = (id: string) =>
-            document.querySelector(`[data-node-id="${id}"]`) as HTMLElement;
+        selectInOutline('str');
         expect(
-            within(panelOf('str')).queryByLabelText('Maximum from value or formula (optional)')
+            within(settings('str')).queryByLabelText('Maximum from value or formula (optional)')
         ).toBeNull();
+        selectInOutline('luck');
         expect(
-            within(panelOf('luck')).getByLabelText('Maximum from value or formula (optional)')
+            within(settings('luck')).getByLabelText('Maximum from value or formula (optional)')
         ).not.toBeNull();
+    });
+
+    it('stretches an element over parent columns and warns when a sibling is pinned', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'span-kit',
+            name: 'Span Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'grid',
+                    type: 'section',
+                    title: 'Grid',
+                    columns: 3,
+                    children: [
+                        { id: 'wide', type: 'text', label: 'Wide' },
+                        { id: 'other', type: 'text', label: 'Other' },
+                    ],
+                },
+            ],
+        });
+        useTemplateStore.setState({ templates: [template], quarantine: [], defaultOverrides: {} });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+        selectInOutline('wide');
+        const spans = within(settings('wide')).getByRole('radiogroup', { name: 'Spans columns' });
+        fireEvent.click(within(spans).getByRole('radio', { name: '2' }));
+        expect(
+            within(settings('wide')).queryByText(/no element of this container is pinned/)
+        ).toBeNull();
+
+        selectInOutline('other');
+        const placement = within(settings('other')).getByRole('radiogroup', {
+            name: 'Column in parent',
+        });
+        fireEvent.click(within(placement).getByRole('radio', { name: '3' }));
+        selectInOutline('wide');
+        expect(
+            within(settings('wide')).getByText(/no element of this container is pinned/)
+        ).toBeTruthy();
+
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore.getState().templates[0]!;
+        const grid = saved.children[0] as { children: Array<{ id: string; span?: number }> };
+        expect(grid.children.find(({ id }) => id === 'wide')?.span).toBe(2);
+    });
+
+    it('sets a rating minimum bounded by its maximum', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'luck-kit',
+            name: 'Luck Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [{ id: 'luck', type: 'rating', label: 'Luck', max: 5 }],
+        });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+        selectInOutline('luck');
+        const min = within(settings('luck')).getByLabelText('Min') as HTMLInputElement;
+        expect(min.value).toBe('0');
+        fireEvent.change(min, { target: { value: '9' } });
+        fireEvent.blur(min);
+        expect(min.value).toBe('5');
+        fireEvent.change(min, { target: { value: '2' } });
+        // The page redraws from the draft: five dots, the first two held by the minimum.
+        expect(within(pageFrame('luck')).getAllByRole('button', { name: /^Luck: / })).toHaveLength(
+            5
+        );
+    });
+});
+
+describe('duplicating elements and locating issues', () => {
+    const source = () =>
+        CustomTemplateSchema.parse({
+            id: 'dup-kit',
+            name: 'Dup Kit',
+            systemId: 'star-wars-wod',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'stats',
+                    type: 'group',
+                    title: 'Stats',
+                    children: [
+                        { id: 'strength', type: 'rating', label: 'Strength', min: 0, max: 5 },
+                        { id: 'mood', type: 'text', label: 'Mood', valueKey: 'mood-key' },
+                        {
+                            id: 'pick',
+                            type: 'select',
+                            label: 'Pick',
+                            options: [{ id: 'one', label: 'One' }],
+                        },
+                        {
+                            id: 'gear',
+                            type: 'table',
+                            columns: [{ id: 'item', type: 'text', label: 'Item' }],
+                        },
+                    ],
+                },
+            ],
+        });
+
+    it('copies a subtree with fresh ids and no shared custom values', () => {
+        const draft = source();
+        const result = duplicateNode(draft, 'stats');
+        if (!result.ok) throw new Error(result.error);
+        expect(result.draft.children).toHaveLength(2);
+        const copy = result.draft.children[1]!;
+        expect(copy.id).toBe(result.copyId);
+        expect((copy as { title: string }).title).toBe('Stats (copy)');
+
+        const originalIds = new Set<string>();
+        const collect = (node: unknown, into: Set<string>) => {
+            const record = node as {
+                id: string;
+                children?: unknown[];
+                options?: Array<{ id: string }>;
+                columns?: Array<{ id: string }>;
+            };
+            into.add(record.id);
+            record.options?.forEach(({ id }) => into.add(id));
+            record.columns?.forEach(({ id }) => into.add(id));
+            record.children?.forEach((child) => collect(child, into));
+        };
+        collect(draft.children[0], originalIds);
+        const copyIds = new Set<string>();
+        collect(copy, copyIds);
+        expect([...copyIds].filter((id) => originalIds.has(id))).toEqual([]);
+
+        const children = (copy as { children: Array<{ label?: string; valueKey?: string }> })
+            .children;
+        // The bridged trait keeps its coordinate; the custom key is dropped.
+        expect(children[0]!.valueKey).toBe('strength');
+        expect(children[1]!.valueKey).toBeUndefined();
+        expect(
+            collectDraftIssues(result.draft, ISSUE_MESSAGES).map(({ message }) => message)
+        ).toEqual([]);
+    });
+
+    it('refuses a copy past the element limit', () => {
+        const draft = source();
+        const fields = Array.from({ length: TEMPLATE_LIMITS.nodesPerTemplate - 7 }, (_, index) => ({
+            id: `pad-${index}`,
+            type: 'text' as const,
+            label: `Pad ${index}`,
+            required: false,
+            compact: false,
+            multiline: false,
+        }));
+        const padded = { ...draft, children: [...draft.children, ...fields] };
+        const result = duplicateNode(padded, 'stats');
+        expect(result.ok).toBe(false);
+    });
+
+    it('attaches the node id to element issues', () => {
+        const draft = updateField(source(), 'mood', { label: '' });
+        const issues = collectDraftIssues(draft, ISSUE_MESSAGES);
+        expect(issues).toContainEqual({ message: ISSUE_MESSAGES.emptyLabel, nodeId: 'mood' });
+        const unnamed = collectDraftIssues({ ...draft, name: '' }, ISSUE_MESSAGES);
+        expect(unnamed[0]).toEqual({ message: ISSUE_MESSAGES.emptyName });
     });
 });

@@ -1,0 +1,64 @@
+---
+sidebar_position: 1
+title: Elements
+description: Sections, field groups, fields, tables, lists, and trackers — what each element does and the settings it takes.
+---
+
+# Elements
+
+:::tip[In short]
+Sections and field groups arrange the page; fields, tables, lists, and trackers hold values. Containers split into up to four columns, and a section or group can link to a documentation page.
+:::
+
+## Sections \{#sections}
+
+A section is a large block with a heading and a colored bar. Readers fold and unfold it; **Starts collapsed** keeps it folded until the reader opens it once (the choice is then remembered). Neighbouring sections alternate the bar's color by themselves.
+
+## Field groups \{#groups}
+
+A field group is a titled card inside a page or section. **Show title** hides the heading while keeping the card; **Collapsible** lets readers fold it (only with a visible title).
+
+## Documentation link \{#documentation-link}
+
+Sections and field groups take a **Documentation link**: a **?** next to the heading opens that page in a new tab. Two forms are accepted:
+
+- **A page of this site's documentation**: the address from the browser after the domain, starting with `/docs/`, for example `/docs/wod-v5/rules/dice-pools#reading-the-dice`. The part after `#` jumps to a heading: open the page, hover a heading, and copy its link. Readers get the page in their own language — write the English address and Russian readers land on the Russian page.
+- **An external page**: a full address starting with `https://`, for example a wiki article.
+
+Anything else — an address without `/docs/`, `http://`, or another scheme — is listed as an issue and is not shown on the page.
+
+## Columns \{#columns}
+
+Pages, sections, and groups lay out their elements in 1 to 4 **Columns**. With **Equal column widths** off, each column gets a width: widths are proportional, so 2 and 1 make the first column twice as wide. Without pinned elements, elements fill the columns in order. **Column in parent** pins an element to one column; once any element of a container is pinned, the elements left on **Auto** stack in the first column. **Spans columns** stretches an element over 2 to 4 columns — a wide field beside a narrow one, or a full-width row; spans work while no element of the container is pinned. On a phone every container shows one column. An empty column shows a drop zone in the editor.
+
+## Fields \{#fields}
+
+A field holds one value. Its **Field label** is shown next to it (**Show label** hides it), **Help text** explains it on hover, and **Required** marks it for the reader without blocking anything.
+
+| Type                   | What the reader gets                                                                                                                                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Text**               | A line of text, or a larger box with **Multiline**; a **Placeholder** shows while it is empty.                                                                                                           |
+| **Number**             | A number kept within **Min**, **Max**, and **Step**; arrow keys step it.                                                                                                                                 |
+| **Toggle**             | A dot: transparent when off, filled when on.                                                                                                                                                             |
+| **Choice**             | One option from a list, or several with **Allow multiple values**; **Hide unselected options** shows only the chosen ones until the reader opens the list. A choice can take its options from a catalog. |
+| **Rating**             | Dots, boxes, or a number from **Min** to **Max**; the dots up to the minimum stay filled.                                                                                                                |
+| **Resource**           | A current value and a maximum, such as a pool of points.                                                                                                                                                 |
+| **Derived value**      | A number computed by a [formula](./values.mdx#formulas); readers cannot type into it.                                                                                                                    |
+| **Image**              | A picture from the device or an `https://` address.                                                                                                                                                      |
+| **Document reference** | Links to other documents of the allowed types; readers open them from the field.                                                                                                                         |
+
+## Tables \{#tables}
+
+A table holds rows of values with the same columns; every column is a field. **Min rows** and **Max rows** bound how many rows readers can add.
+
+## Lists \{#lists}
+
+A list holds entries added one by one: your own entries, or a list the game already keeps for the document (skills, merits and flaws, equipment). **Preset entries** start a new document with ready rows.
+
+## Trackers \{#trackers}
+
+A tracker shows the game's health or damage levels with their penalties, as a table of levels or a line of boxes.
+
+## Built-in page parts \{#built-in-parts}
+
+Shipped pages also use built-in parts: traits, resources, and lists the game itself keeps for the document. They look like the fields above and store their values in the document, so every page of that document shows the same numbers.

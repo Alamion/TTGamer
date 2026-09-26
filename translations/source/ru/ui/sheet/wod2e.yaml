@@ -1,0 +1,49 @@
+system: Мир Тьмы 2-я редакция
+views:
+    sheet: Полный лист
+    brief: Краткий лист
+identity:
+    chronicle: Хроника
+traits:
+    strength: Сила
+    dexterity: Ловкость
+    stamina: Выносливость
+    charisma: Обаяние
+    manipulation: Манипуляция
+    appearance: Внешность
+    perception: Восприятие
+    intelligence: Интеллект
+    wits: Смекалка
+    alertness: Бдительность
+    athletics: Атлетика
+    brawl: Драка
+    dodge: Уклонение
+    empathy: Эмпатия
+    expression: Экспрессия
+    intimidation: Запугивание
+    leadership: Лидерство
+    streetwise: Знание улиц
+    subterfuge: Обман
+    animalKen: Обращение с животными
+    crafts: Ремёсла
+    drive: Вождение
+    etiquette: Этикет
+    firearms: Стрельба
+    melee: Холодное оружие
+    performance: Исполнение
+    security: Взлом
+    stealth: Скрытность
+    survival: Выживание
+    academics: Гуманитарные науки
+    computer: Компьютеры
+    finance: Финансы
+    investigation: Расследование
+    law: Право
+    linguistics: Лингвистика
+    medicine: Медицина
+    occult: Оккультизм
+    politics: Политика
+    science: Наука
+    conscience: Совесть
+    selfControl: Самоконтроль
+    courage: Мужество

@@ -1,9 +1,11 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 
 import type { VisibleWhen } from '../../../types/template';
 import { TEMPLATE_LIMITS } from '../../../types/template';
+import { EditorHelp } from './EditorHelp';
 
 const editor = uiMessages.sheet.templates.editor;
 
@@ -50,6 +52,54 @@ export function ToggleRow({
 }
 
 /**
+ * How many columns of the parent this element spans. Spans apply in flowing layouts only: once
+ * an element of the container is pinned to a column, every element stacks in one column.
+ */
+export function ColumnSpanControl({
+    onChange,
+    parentColumns,
+    pinnedSiblings,
+    value,
+}: {
+    onChange: (span: number | undefined) => void;
+    parentColumns: number;
+    pinnedSiblings: boolean;
+    value: number | undefined;
+}) {
+    const current = value ?? 1;
+    return (
+        <div className="grid gap-1 text-xs text-textSecondary">
+            <span>{t(editor.columnSpan)}</span>
+            <div role="radiogroup" aria-label={t(editor.columnSpan)} className="flex gap-1">
+                {Array.from({ length: parentColumns }, (_, index) => index + 1).map((span) => {
+                    const selected = span === current;
+                    return (
+                        <button
+                            key={span}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            onClick={() => onChange(span === 1 ? undefined : span)}
+                            className={clsx(
+                                'min-w-8 rounded border px-2 py-1 text-xs transition-colors',
+                                selected
+                                    ? 'border-primary-muted bg-primary-muted text-white'
+                                    : 'border-border bg-bgSurface text-textPrimary hover:border-primary'
+                            )}
+                        >
+                            {span}
+                        </button>
+                    );
+                })}
+            </div>
+            {pinnedSiblings && current > 1 && (
+                <p className="text-[11px]">{t(editor.columnSpanPinnedHint)}</p>
+            )}
+        </div>
+    );
+}
+
+/**
  * Which column of the parent this element sits in. Shown only when the parent is split into
  * columns; "Auto" lets elements flow through the columns in order.
  */
@@ -85,7 +135,7 @@ export function ColumnPlacementControl({
                             className={clsx(
                                 'min-w-8 rounded border px-2 py-1 text-xs transition-colors',
                                 selected
-                                    ? 'border-primary bg-primary text-white'
+                                    ? 'border-primary-muted bg-primary-muted text-white'
                                     : 'border-border bg-bgSurface text-textPrimary hover:border-primary'
                             )}
                         >
@@ -123,24 +173,31 @@ export function ColumnLayoutControl({
 
     return (
         <div className="grid gap-2">
-            <select
-                value={count}
-                onChange={(event) => {
-                    const next = Number(event.target.value);
-                    // Widths belong to a specific column count; changing it resets them.
-                    onChange({ columns: next === 1 ? undefined : next, columnWidths: undefined });
-                }}
-                aria-label={t(editor.columns)}
-                className={inputClasses}
-            >
-                {Array.from({ length: TEMPLATE_LIMITS.columnsMax }, (_, index) => index + 1).map(
-                    (option) => (
+            <div className="flex items-center gap-2">
+                <select
+                    value={count}
+                    onChange={(event) => {
+                        const next = Number(event.target.value);
+                        // Widths belong to a specific column count; changing it resets them.
+                        onChange({
+                            columns: next === 1 ? undefined : next,
+                            columnWidths: undefined,
+                        });
+                    }}
+                    aria-label={t(editor.columns)}
+                    className={inputClasses}
+                >
+                    {Array.from(
+                        { length: TEMPLATE_LIMITS.columnsMax },
+                        (_, index) => index + 1
+                    ).map((option) => (
                         <option key={option} value={option}>
                             {t(editor.columns)}: {option}
                         </option>
-                    )
-                )}
-            </select>
+                    ))}
+                </select>
+                <EditorHelp topic="columns" about={t(editor.columns)} />
+            </div>
             {count > 1 && (
                 <>
                     <ToggleRow
@@ -157,16 +214,15 @@ export function ColumnLayoutControl({
                         <div className="grid gap-1">
                             <div className="flex flex-wrap gap-2">
                                 {widths.map((width, index) => (
-                                    <input
+                                    <NumberInput
                                         key={index}
-                                        type="number"
                                         min={1}
                                         max={12}
+                                        step={1}
+                                        optional={false}
                                         value={width}
-                                        onChange={(event) =>
-                                            setWidth(index, Number(event.target.value))
-                                        }
-                                        aria-label={t(editor.columnWidth, { index: index + 1 })}
+                                        onChange={(value) => setWidth(index, value ?? width)}
+                                        label={t(editor.columnWidth, { index: index + 1 })}
                                         className={`${inputClasses} w-16`}
                                     />
                                 ))}
@@ -212,13 +268,16 @@ export function VisibilityControl({
                 : raw;
     return (
         <div className="grid gap-1">
-            <ToggleRow
-                checked={value !== undefined}
-                label={t(editor.visibleWhen)}
-                onChange={(checked) =>
-                    onChange(checked ? { coordinate: 'value', equals: '' } : undefined)
-                }
-            />
+            <div className="flex items-center gap-1">
+                <ToggleRow
+                    checked={value !== undefined}
+                    label={t(editor.visibleWhen)}
+                    onChange={(checked) =>
+                        onChange(checked ? { coordinate: 'value', equals: '' } : undefined)
+                    }
+                />
+                <EditorHelp topic="displayConditions" about={t(editor.visibleWhen)} />
+            </div>
             {value && (
                 <div className="flex flex-wrap items-center gap-2 pl-5">
                     <input

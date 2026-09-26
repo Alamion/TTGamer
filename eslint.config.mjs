@@ -25,6 +25,11 @@ export default defineConfig([
         },
         rules: {
             ...jsxA11y.flatConfigs.recommended.rules,
+            // Custom inputs that render a native <input> a wrapping <label> names.
+            'jsx-a11y/label-has-associated-control': [
+                'error',
+                { controlComponents: ['NumberInput'], depth: 3 },
+            ],
             'simple-import-sort/exports': 'error',
             'simple-import-sort/imports': 'error',
         },

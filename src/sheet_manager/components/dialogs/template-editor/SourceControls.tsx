@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import type { ListNode, PrimitiveNode, TemplateField, TemplateNode } from '../../../types/template';
+import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import {
     currentListSource,
@@ -42,7 +43,10 @@ export function ValueSourceSelect({
 
     return (
         <label className="grid gap-1 text-xs text-textSecondary">
-            {t(editor.valueSource)}
+            <span className="flex items-center gap-1">
+                {t(editor.valueSource)}
+                <EditorHelp topic="valueSource" about={t(editor.valueSource)} />
+            </span>
             <select
                 value={current}
                 onChange={(event) => {

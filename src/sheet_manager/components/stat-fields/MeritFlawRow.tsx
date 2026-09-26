@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { Plus, X } from 'lucide-react';
 
 import type { CatalogEntry } from '../controls/CatalogSuggest.tsx';
@@ -76,16 +77,18 @@ export function MeritFlawList({
                         <span className="font-mono font-bold text-md text-textPrimary">
                             {isMerit ? '+' : '-'}
                         </span>
-                        <input
-                            type="number"
+                        <NumberInput
                             value={item.points}
-                            onChange={(e) =>
-                                onChange(item.id, parseInt(e.target.value) || 0, item.label)
+                            onChange={(points) =>
+                                onChange(item.id, points ?? item.points, item.label)
                             }
                             disabled={disabled}
-                            className="w-8 bg-bgSurface border rounded px-2 py-0.5 text-center text-sm font-mono text-textPrimary"
+                            label={translate(messages.points, { name: item.label })}
+                            className="w-8 bg-bgSurface border rounded px-1 py-0.5 text-center text-sm font-mono text-textPrimary"
                             min={1}
                             max={5}
+                            step={1}
+                            optional={false}
                         />
                         {catalog && onCatalogSelect ? (
                             <CatalogSuggest

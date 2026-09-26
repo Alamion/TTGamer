@@ -82,3 +82,9 @@ dice:
         bestialFailure: Bestial failure
         bestialFailureDetail: The roll failed and a Hunger die shows 1 — the Beast takes its due.
         bestialFailureConditional: Bestial failure if the roll misses the Difficulty
+core:
+    type: Mortal
+    section: Mortal
+    views:
+        sheet: Full sheet
+        brief: Brief

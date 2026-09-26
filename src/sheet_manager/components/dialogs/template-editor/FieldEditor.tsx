@@ -1,10 +1,13 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { Plus, Trash2 } from 'lucide-react';
 
+import { kindLabel, listTemplateTargets } from '../../../features/sheet/data/documentLabels';
 import type { TemplateField, TemplateNode } from '../../../types/template';
 import { TEMPLATE_FIELD_TYPES, TEMPLATE_LIMITS } from '../../../types/template';
 import { CatalogBindingEditor } from './CatalogBindingEditor';
+import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
 import { ValueSourceSelect } from './SourceControls';
@@ -16,9 +19,6 @@ const fieldTypes = uiMessages.sheet.templates.fieldTypes;
 
 const inputClasses =
     'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
-
-const FIELD_TYPE_OPTIONS: ReadonlyArray<{ value: TemplateField['type']; label: string }> =
-    TEMPLATE_FIELD_TYPES.map((type) => ({ value: type, label: fieldTypes[type].message }));
 
 const optionalText = (value: string) => (value.length > 0 ? value : undefined);
 
@@ -63,13 +63,13 @@ export function FieldEditor({
             className="space-y-2 rounded border border-border bg-bgSurface p-3"
             data-field-id={field.id}
         >
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
                 <input
                     value={field.label}
                     onChange={(event) => callbacks.onUpdate({ label: event.target.value })}
                     placeholder={t(editor.fieldLabel)}
                     aria-label={t(editor.fieldLabel)}
-                    className={`${inputClasses} flex-1`}
+                    className={`${inputClasses} min-w-0 flex-[2_1_8rem]`}
                 />
                 <select
                     value={field.type}
@@ -79,11 +79,11 @@ export function FieldEditor({
                         callbacks.onChangeType(event.target.value as TemplateField['type'])
                     }
                     aria-label={t(editor.fieldType)}
-                    className={`${inputClasses} disabled:opacity-60`}
+                    className={`${inputClasses} min-w-0 flex-[1_1_7rem] disabled:opacity-60`}
                 >
-                    {FIELD_TYPE_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
+                    {TEMPLATE_FIELD_TYPES.map((type) => (
+                        <option key={type} value={type}>
+                            {t(fieldTypes[type])}
                         </option>
                     ))}
                 </select>
@@ -109,19 +109,22 @@ export function FieldEditor({
             )}
 
             {isCustom && (
-                <input
-                    value={field.valueKey ?? ''}
-                    onChange={(event) =>
-                        callbacks.onUpdate(
-                            event.target.value.length > 0
-                                ? { valueKey: event.target.value as TemplateField['valueKey'] }
-                                : { valueKey: undefined }
-                        )
-                    }
-                    placeholder={t(editor.valueKeyLabel)}
-                    aria-label={t(editor.valueKeyLabel)}
-                    className={`${inputClasses} w-full`}
-                />
+                <div className="flex items-center gap-2">
+                    <input
+                        value={field.valueKey ?? ''}
+                        onChange={(event) =>
+                            callbacks.onUpdate(
+                                event.target.value.length > 0
+                                    ? { valueKey: event.target.value as TemplateField['valueKey'] }
+                                    : { valueKey: undefined }
+                            )
+                        }
+                        placeholder={t(editor.valueKeyLabel)}
+                        aria-label={t(editor.valueKeyLabel)}
+                        className={`${inputClasses} min-w-0 flex-1`}
+                    />
+                    <EditorHelp topic="sharedValueKey" about={t(editor.valueKeyLabel)} />
+                </div>
             )}
 
             <label className="flex items-center gap-2 text-xs text-textSecondary">
@@ -163,7 +166,10 @@ export function FieldEditor({
 
             {field.type === 'formula' && (
                 <label className="grid gap-1 text-xs text-textSecondary">
-                    {t(editor.formula)}
+                    <span className="flex items-center gap-1">
+                        {t(editor.formula)}
+                        <EditorHelp topic="formulas" about={t(editor.formula)} />
+                    </span>
                     <input
                         value={field.formula}
                         onChange={(event) => callbacks.onUpdate({ formula: event.target.value })}
@@ -202,7 +208,10 @@ export function FieldEditor({
 
             {!isTraitSource && (field.type === 'number' || field.type === 'rating') && (
                 <label className="grid gap-1 text-xs text-textSecondary">
-                    {t(editor.maxFrom)}
+                    <span className="flex items-center gap-1">
+                        {t(editor.maxFrom)}
+                        <EditorHelp topic="limitsFromValues" about={t(editor.maxFrom)} />
+                    </span>
                     <input
                         value={field.maxFrom ?? ''}
                         onChange={(event) =>
@@ -235,46 +244,30 @@ export function FieldEditor({
 
             {field.type === 'number' && (
                 <div className="flex items-center gap-2 text-xs text-textSecondary">
-                    <input
-                        type="number"
-                        value={field.min ?? ''}
-                        onChange={(event) =>
-                            callbacks.onUpdate(
-                                event.target.value === ''
-                                    ? { min: undefined }
-                                    : { min: Number(event.target.value) }
-                            )
-                        }
+                    <NumberInput
+                        value={field.min}
+                        max={field.max}
+                        onChange={(min) => callbacks.onUpdate({ min })}
                         placeholder={t(editor.numberMin)}
-                        aria-label={t(editor.numberMin)}
+                        label={t(editor.numberMin)}
                         className={`${inputClasses} w-20`}
                     />
-                    <input
-                        type="number"
-                        value={field.max ?? ''}
-                        onChange={(event) =>
-                            callbacks.onUpdate(
-                                event.target.value === ''
-                                    ? { max: undefined }
-                                    : { max: Number(event.target.value) }
-                            )
-                        }
+                    <NumberInput
+                        value={field.max}
+                        min={field.min}
+                        onChange={(max) => callbacks.onUpdate({ max })}
                         placeholder={t(editor.numberMax)}
-                        aria-label={t(editor.numberMax)}
+                        label={t(editor.numberMax)}
                         className={`${inputClasses} w-20`}
                     />
-                    <input
-                        type="number"
-                        value={field.step ?? ''}
-                        onChange={(event) =>
-                            callbacks.onUpdate(
-                                event.target.value === ''
-                                    ? { step: undefined }
-                                    : { step: Number(event.target.value) }
-                            )
+                    <NumberInput
+                        value={field.step}
+                        min={0}
+                        onChange={(step) =>
+                            callbacks.onUpdate({ step: step === 0 ? undefined : step })
                         }
                         placeholder={t(editor.numberStep)}
-                        aria-label={t(editor.numberStep)}
+                        label={t(editor.numberStep)}
                         className={`${inputClasses} w-20`}
                     />
                 </div>
@@ -294,6 +287,21 @@ export function FieldEditor({
                         />
                         {t(editor.multiple)}
                     </label>
+                    {field.multiple && (
+                        <label className="mt-1 flex items-center gap-2 text-xs text-textSecondary">
+                            <input
+                                type="checkbox"
+                                checked={field.hideUnselected === true}
+                                onChange={(event) =>
+                                    callbacks.onUpdate({
+                                        hideUnselected: event.target.checked || undefined,
+                                    })
+                                }
+                                className="h-3.5 w-3.5"
+                            />
+                            {t(editor.hideUnselected)}
+                        </label>
+                    )}
                     <div className="mt-2 space-y-1">
                         {field.options.map((option) => (
                             <div key={option.id} className="flex items-center gap-2">
@@ -340,15 +348,26 @@ export function FieldEditor({
 
             {!isTraitSource && field.type === 'rating' && (
                 <div className="flex items-center gap-2 text-xs text-textSecondary">
-                    <input
-                        type="number"
+                    <NumberInput
+                        value={field.min}
+                        min={0}
+                        max={field.max}
+                        step={1}
+                        optional={false}
+                        onChange={(min) => callbacks.onUpdate({ min: min ?? 0 })}
+                        placeholder={t(editor.numberMin)}
+                        label={t(editor.numberMin)}
+                        className={`${inputClasses} w-20`}
+                    />
+                    <NumberInput
                         value={field.max}
-                        min={1}
-                        max={100}
-                        onChange={(event) =>
-                            callbacks.onUpdate({ max: Number(event.target.value) })
-                        }
-                        aria-label={t(editor.numberMax)}
+                        min={Math.max(1, field.min)}
+                        max={TEMPLATE_LIMITS.ratingMax}
+                        step={1}
+                        optional={false}
+                        onChange={(max) => callbacks.onUpdate({ max: max ?? field.max })}
+                        placeholder={t(editor.numberMax)}
+                        label={t(editor.numberMax)}
                         className={`${inputClasses} w-20`}
                     />
                     <select
@@ -370,41 +389,100 @@ export function FieldEditor({
 
             {field.type === 'resource' && (
                 <div className="flex items-center gap-2 text-xs text-textSecondary">
-                    <input
-                        type="number"
+                    <NumberInput
                         value={field.min}
                         min={0}
-                        onChange={(event) =>
-                            callbacks.onUpdate({ min: Number(event.target.value) })
-                        }
-                        aria-label={t(editor.numberMin)}
+                        max={field.max}
+                        step={1}
+                        optional={false}
+                        onChange={(min) => callbacks.onUpdate({ min: min ?? 0 })}
+                        placeholder={t(editor.numberMin)}
+                        label={t(editor.numberMin)}
                         className={`${inputClasses} w-20`}
                     />
-                    <input
-                        type="number"
+                    <NumberInput
                         value={field.max}
-                        min={1}
-                        max={1_000_000}
-                        onChange={(event) =>
-                            callbacks.onUpdate({ max: Number(event.target.value) })
-                        }
-                        aria-label={t(editor.numberMax)}
+                        min={Math.max(1, field.min)}
+                        max={TEMPLATE_LIMITS.resourceMax}
+                        step={1}
+                        optional={false}
+                        onChange={(max) => callbacks.onUpdate({ max: max ?? field.max })}
+                        placeholder={t(editor.numberMax)}
+                        label={t(editor.numberMax)}
                         className={`${inputClasses} w-20`}
                     />
                 </div>
             )}
 
             {field.type === 'reference' && (
-                <label className="flex items-center gap-2 text-xs text-textSecondary">
-                    <input
-                        type="checkbox"
-                        checked={field.multiple}
-                        onChange={(event) => callbacks.onUpdate({ multiple: event.target.checked })}
-                        className="h-3.5 w-3.5"
+                <>
+                    <ReferenceKindsControl
+                        value={field.targetKinds}
+                        onChange={(targetKinds) =>
+                            callbacks.onUpdate({
+                                targetKinds: targetKinds as typeof field.targetKinds,
+                            })
+                        }
                     />
-                    {t(editor.multiple)}
-                </label>
+                    <label className="flex items-center gap-2 text-xs text-textSecondary">
+                        <input
+                            type="checkbox"
+                            checked={field.multiple}
+                            onChange={(event) =>
+                                callbacks.onUpdate({ multiple: event.target.checked })
+                            }
+                            className="h-3.5 w-3.5"
+                        />
+                        {t(editor.multiple)}
+                    </label>
+                </>
             )}
         </div>
+    );
+}
+
+/** The document kinds a reference may point to: shipped kinds and user types (at least one). */
+function ReferenceKindsControl({
+    onChange,
+    value,
+}: {
+    onChange: (kinds: string[]) => void;
+    value: readonly string[];
+}) {
+    // Kinds are shared across systems (a reference lists documents of any system).
+    const seen = new Set<string>();
+    const kinds: Array<{ kind: string; label: string }> = [];
+    for (const { kind, systemId } of listTemplateTargets()) {
+        if (seen.has(kind)) continue;
+        seen.add(kind);
+        kinds.push({ kind, label: kindLabel(systemId, kind) });
+    }
+    for (const kind of value) {
+        if (!seen.has(kind)) kinds.push({ kind, label: kind });
+    }
+    return (
+        <fieldset className="grid gap-1">
+            <legend className="text-xs text-textSecondary">
+                {translate(uiMessages.sheet.templates.editor.referenceKinds)}
+            </legend>
+            {kinds.map(({ kind, label }) => (
+                <label key={kind} className="flex items-center gap-2 text-xs text-textPrimary">
+                    <input
+                        type="checkbox"
+                        checked={value.includes(kind)}
+                        disabled={value.length === 1 && value.includes(kind)}
+                        onChange={(event) =>
+                            onChange(
+                                event.target.checked
+                                    ? [...value, kind]
+                                    : value.filter((candidate) => candidate !== kind)
+                            )
+                        }
+                        className="h-3.5 w-3.5"
+                    />
+                    {label}
+                </label>
+            ))}
+        </fieldset>
     );
 }

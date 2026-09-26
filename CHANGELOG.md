@@ -1,5 +1,52 @@
 # Changelog
 
+## v3.11.0
+
+### Minor feat
+
+- **See the page while editing a template (spec 012, T-054)**: the template editor shows the page exactly as the sheet renders it — real sections, columns, dots, and tracks on sample data — next to an outline of the template and the settings of the selected element; clicking an element on the page selects it, and elements hidden by a display condition stay visible, hatched, and selectable; typing on the page only changes the sample data
+- **Arrange elements on the page**: drag an element by its chip into another place or column, drop it into an empty column, or insert a new one at any "+" between elements; column counts and widths change the page at once, and every move also works from the keyboard (Alt+arrows, Alt+Shift+arrows for columns) and is announced to screen readers
+- **Quick preview, undo, and duplicate**: a Preview switch shows the page as a reader sees it on the open document, a shipped example, or a blank document; every edit can be undone and redone (typing in one field is one step), elements can be duplicated with fresh identities, and the shortcuts work on any keyboard layout, including Russian
+- **Your own document types**: create a document type in any setting (for example "Organization" for Star Wars), design its pages in the editor, and create documents of it from the usual dialog; its documents keep every value when the page changes, and deleting a type keeps its documents on a page that lists their stored values
+- **Share types by file**: export a type with its pages and import it elsewhere; a document of your type carries the type inside its file, so it opens where the type is not installed, and a different version of an installed type asks to replace, keep both, or cancel
+- **Your own settings**: build a named setting on the World of Darkness 2nd or 5th Edition rules, give its character your own page, and group your document types in it; its characters roll and validate by the chosen rules
+- **World of Darkness 2nd Edition and V5 mortal characters**: the classic WoD 2e engine is now its own system with an engine-only character (classic abilities, no Force), and V5 gains a mortal character without a supernatural module; both are the bases for your settings
+
+- **Move a template to another type or setting**: the editor's "Type and setting" select moves a page to any document type, your own types, or a character of your setting; documents that opened on it return to their default page after a confirmation, setting pages follow it, and data links the new type lacks are listed before saving
+- **New templates for your settings**: the library's "New template" list is grouped by setting and includes your settings' characters
+
+- **Template editor guide**: a new documentation section explains the editor — areas, preview, arranging, elements, value keys, formulas, conditions, catalogs, and your own types and settings; a "?" beside the editor's settings opens the matching part
+- **Elements can span columns**: a new "Spans columns" setting stretches an element over 2–4 columns of its section or group, for a wide field beside a narrow one or a full-width row
+- **Documentation links in templates accept external pages**: a section or group links to `/docs/…` or any `https://` address
+
+- **Library (spec 013, T-071)**: the "Templates" list becomes one tree — rules, the settings on them (Rules only, Star Wars, Hunter, your own), their document types, and each type's pages — with details and actions beside it, search, "Only yours" and "Edited shipped" filters, a context menu, full keyboard navigation, and tabs on phones; creating a setting or a type no longer creates a page, and a type's default page is one click
+- **Move settings, types, and pages in the library**: drag a row onto its new place or use Move…; pages go to another type, types to another setting, settings to other rules; a move that changes the game system says first which bindings break and which documents stay (a setting's rules characters stay on their old rules, on the page they used)
+- **Share any part of the library**: export ticks whole branches or single items, adds the parents they need automatically, and never copies shipped content; import shows the file's tree first — new, already present, conflict (Replace or Keep both), unavailable — and installs only what you tick; older type and page files open the same way
+
+### Fix
+
+- **Edited default pages stay with their system (T-046)**: saved edits of shipped pages are keyed by system and page, so they can never attach to another system's page with the same name; existing edits move over on load
+- **Imported templates no longer replace a shipped page**: a template file whose id matches a shipped page is imported under a new id
+- **Catalogs offered by the editor belong to the template's system**, and reference fields let you choose which document types they point to
+- **Template number fields keep their limits**: they accept only numbers, a typed value above the maximum or below the minimum is brought into range when you leave the field, it snaps to the field's step, and the arrow keys step it; the editor's own number settings work the same way
+- **Toggles are dots**: a template toggle is the same round dot as the sheet's other markers, transparent when off and filled when on
+- **Multiple choice as a row of words**: a thin border in the accent color marks the chosen ones, in the options' order; a new editor switch hides the options not chosen until the reader opens the full list
+- **Resources look balanced**: current and maximum sit in one frame with the slash at the same size
+- **Every number input accepts only numbers**, including compact ratings and resources, merit and flaw points, and the difficulty table in the docs
+- **Template ratings take a minimum**: set it in the editor next to the maximum; the dots up to it stay filled
+- **Template ratings show one dot per point**: a rating with a maximum of 5 shows five dots and the first dot means 1, like attribute and skill rows (it showed an extra dot for zero)
+- **Field types in the editor are translated**, and the type picker fits the settings panel
+- **Documentation links open in your language**: the "?" beside a section opened the English page for Russian readers; links that are not documentation or `https://` addresses are no longer shown
+- **Types in your settings show the setting's name** in the template library instead of the ruleset's
+- **One set of accent colors in the editor and the library (T-081)**: selection, frames, insertion points, and pressed modes use the app's red and gold; large red fills (the selected element's frame, New, Save, and other main buttons) are toned down, most in the dark theme, and a selected outline row is tinted instead of filled; violet is now the tertiary color, kept for parts added automatically
+
+### Chore
+
+- **Star Wars runs on the WoD 2e ruleset (T-041)**: the engine's schema, profile, bindings, and page parts moved to `systems/wod2e/ruleset/`, with every Star Wars identity frozen; parity tests prove stored documents, shipped pages, and dice pools are unchanged
+- **Dark Pack scope**: the policy covers World of Darkness 5th Edition material only (constitution 1.4.2); WoD 2e and Star Wars carry no badge
+- **Element storybook (T-069, constitution 1.5.0)**: draft-only docs pages under `docs/dev/storybook/` show every template element variant, every built-in part of every system, every documentation widget, and the full palette (read from the Tailwind config); a coverage test fails when a variant has no story
+- **Library internals (spec 013)**: systems declare the ruleset they are a setting of, the document type store (v2) records optional type defaults and shipped-type default pages, and the old template library, settings panel, template import dialog, and page skeletons are removed
+
 ## v3.10.0
 
 ### Minor feat

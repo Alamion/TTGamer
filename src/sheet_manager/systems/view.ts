@@ -1,3 +1,4 @@
+import { overrideKey } from '../store/templateStore';
 import type { DocumentKind, DocumentViewId } from '../types/document';
 import type { CustomTemplate } from '../types/template';
 import { systemRegistry } from './index';
@@ -70,7 +71,7 @@ export function resolveEffectiveTemplate(
     if (!explicit || explicit.documentKind !== documentKind) return undefined;
     // Overrides belong to the canonical page: a legacy alias shared by several kinds (`brief`)
     // must not pick up another kind's edited default.
-    const override = state.defaultOverrides[canonicalId];
+    const override = state.defaultOverrides[overrideKey(systemId, canonicalId)];
     if (override) return { template: override, isDefault: true, modified: true };
     return { template: explicit, isDefault: true, modified: false };
 }
@@ -114,4 +115,17 @@ export function isTemplateCompatible(
     document: { systemId: string; kind: string }
 ): boolean {
     return template.systemId === document.systemId && template.documentKind === document.kind;
+}
+
+/**
+ * True when the id is a registered view id (default template identity, FR-11) — of the given
+ * system, or of any system when omitted (view ids are unique across systems).
+ */
+export function isDefaultTemplateId(id: string, systemId?: string): boolean {
+    return systemRegistry
+        .getSystems()
+        .filter((system) => systemId === undefined || system.id === systemId)
+        .some((system) =>
+            system.documents.some((definition) => definition.views.some((view) => view.id === id))
+        );
 }

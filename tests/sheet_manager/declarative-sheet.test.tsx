@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 
+import { boundNumber } from '@site/src/shared/components/NumberInput';
 import { CharacterContext } from '@site/src/sheet_manager/context/CharacterContext';
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import { countUnfilledRequired } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
@@ -12,6 +13,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
+import { setTestLocale } from '../stubs/testLocale';
 
 function field(id: string, label: string, type: string, extra: Record<string, unknown> = {}) {
     return { id, label, type, required: false, compact: false, ...extra };
@@ -326,6 +328,138 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
         expect(values?.rank).toBe('veteran');
     });
 
+    it('bounds a typed number to the field limits on blur, writing in-range values at once', () => {
+        mount(buildTemplate());
+        const charge = screen.getByLabelText('Charge') as HTMLInputElement;
+        const stored = () => useDocumentStore.getState().documents[0]!.templateValues?.charge;
+
+        fireEvent.change(charge, { target: { value: '7' } });
+        expect(stored()).toBe(7);
+
+        fireEvent.change(charge, { target: { value: '42' } });
+        expect(stored()).toBe(7);
+        fireEvent.blur(charge);
+        expect(stored()).toBe(10);
+        expect(charge.value).toBe('10');
+
+        // A minimum of 0 leaves no room for a sign, so it cannot be typed at all.
+        fireEvent.change(charge, { target: { value: '-3' } });
+        expect(charge.value).toBe('10');
+        fireEvent.change(charge, { target: { value: 'ten' } });
+        expect(charge.value).toBe('10');
+    });
+
+    it('snaps numbers to the step grid anchored at the minimum', () => {
+        expect(boundNumber(7, { min: 1, step: 2 })).toBe(7);
+        expect(boundNumber(6.2, { min: 1, step: 2 })).toBe(7);
+        expect(boundNumber(0.30000000000000004, { step: 0.1 })).toBe(0.3);
+        expect(boundNumber(11, { min: 0, max: 10, step: 5 })).toBe(10);
+    });
+
+    it('draws one rating dot per point, so the first dot is 1', () => {
+        mount(buildTemplate());
+        const dots = screen.getAllByRole('button', { name: /^Force rating: / });
+        expect(dots.map((dot) => dot.getAttribute('aria-label'))).toEqual([
+            'Force rating: 1',
+            'Force rating: 2',
+            'Force rating: 3',
+            'Force rating: 4',
+            'Force rating: 5',
+        ]);
+        const stored = () =>
+            useDocumentStore.getState().documents[0]!.templateValues?.['force-rating'];
+
+        fireEvent.click(dots[0]!);
+        expect(stored()).toBe(1);
+        // Clicking the top filled dot lowers the rating by one, down to the minimum.
+        fireEvent.click(screen.getByRole('button', { name: 'Force rating: 1' }));
+        expect(stored()).toBe(0);
+    });
+
+    it('holds a rating minimum: the first dots stay filled at the floor', () => {
+        const template = buildTemplate();
+        const identity = template.children[0] as { children: Array<Record<string, unknown>> };
+        const rating = identity.children.find(({ id }) => id === 'force-rating')!;
+        rating.min = 2;
+        mount(template);
+        fireEvent.click(screen.getByRole('button', { name: 'Force rating: 1' }));
+        expect(useDocumentStore.getState().documents[0]!.templateValues?.['force-rating']).toBe(2);
+    });
+
+    it('shows a toggle as a dot switch', () => {
+        mount(buildTemplate());
+        const trained = screen.getByRole('checkbox', { name: 'Trained' });
+        expect(trained.tagName).toBe('BUTTON');
+        fireEvent.click(trained);
+        expect(trained.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('lists multiple-choice options as pressable words and keeps the option order', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'choice-kit',
+            name: 'Choice Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                field('langs', 'Languages', 'select', {
+                    multiple: true,
+                    options: [
+                        { id: 'basic', label: 'Basic' },
+                        { id: 'huttese', label: 'Huttese' },
+                        { id: 'binary', label: 'Binary' },
+                    ],
+                }),
+            ],
+        });
+        mount(template);
+        fireEvent.click(screen.getByRole('button', { name: 'Binary' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Basic' }));
+        expect(useDocumentStore.getState().documents[0]!.templateValues?.langs).toEqual([
+            'basic',
+            'binary',
+        ]);
+        expect(screen.getByRole('button', { name: 'Basic' }).getAttribute('aria-pressed')).toBe(
+            'true'
+        );
+        expect(screen.getByRole('button', { name: 'Huttese' }).getAttribute('aria-pressed')).toBe(
+            'false'
+        );
+    });
+
+    it('hides unselected options until the reader expands the choice', () => {
+        seedDocument({ langs: ['huttese'] });
+        const template = CustomTemplateSchema.parse({
+            id: 'choice-kit',
+            name: 'Choice Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                field('langs', 'Languages', 'select', {
+                    multiple: true,
+                    hideUnselected: true,
+                    options: [
+                        { id: 'basic', label: 'Basic' },
+                        { id: 'huttese', label: 'Huttese' },
+                    ],
+                }),
+            ],
+        });
+        mount(template);
+        expect(screen.queryByRole('button', { name: 'Basic' })).toBeNull();
+        expect(screen.getByRole('button', { name: 'Huttese' })).toBeTruthy();
+
+        const expand = screen.getByRole('button', { name: 'Choose options' });
+        expect(expand.getAttribute('aria-expanded')).toBe('false');
+        fireEvent.click(expand);
+        fireEvent.click(screen.getByRole('button', { name: 'Basic' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+        expect(screen.getByRole('button', { name: 'Basic' })).toBeTruthy();
+        expect(useDocumentStore.getState().documents[0]!.templateValues?.langs).toEqual([
+            'basic',
+            'huttese',
+        ]);
+    });
+
     it('adds table rows and fills cells', () => {
         mount(buildTemplate());
 
@@ -490,6 +624,97 @@ describe('presentation mapping (US3)', () => {
 
         fireEvent.click(link);
         expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it("opens site docs in the reader's locale and external pages as written", () => {
+        const withLinks = (docsPath: string) =>
+            CustomTemplateSchema.parse({
+                id: 'links-kit',
+                name: 'Links Kit',
+                documentKind: 'character',
+                schemaVersion: 3,
+                children: [
+                    {
+                        id: 'linked',
+                        type: 'section',
+                        title: 'Linked',
+                        docsPath,
+                        children: [field('f-a', 'Field A', 'text')],
+                    },
+                ],
+            });
+        const href = () => screen.getByLabelText('Documentation for Linked').getAttribute('href');
+
+        mount(withLinks('/docs/wod-v5/rules/dice-pools#reading-the-dice'));
+        expect(href()).toBe('/docs/wod-v5/rules/dice-pools#reading-the-dice');
+        cleanup();
+
+        setTestLocale('ru');
+        try {
+            mount(withLinks('/docs/wod-v5/rules/dice-pools#reading-the-dice'));
+            expect(
+                screen.getByLabelText('Документация: Linked', { exact: false }).getAttribute('href')
+            ).toBe('/ru/docs/wod-v5/rules/dice-pools#reading-the-dice');
+        } finally {
+            cleanup();
+            setTestLocale('en');
+        }
+
+        mount(withLinks('https://example.org/wiki/Hunter'));
+        expect(href()).toBe('https://example.org/wiki/Hunter');
+    });
+
+    it('drops a documentation link that is not a docs path or https and reports it', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'bad-link-kit',
+            name: 'Bad Link Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'unsafe',
+                    type: 'section',
+                    title: 'Unsafe',
+                    docsPath: 'javascript:alert(1)',
+                    children: [field('f-a', 'Field A', 'text')],
+                },
+            ],
+        });
+        mount(template);
+        expect(screen.queryByLabelText('Documentation for Unsafe')).toBeNull();
+        expect(takeSheetIssues()).toContainEqual(
+            expect.objectContaining({
+                code: 'template-reference-invalid',
+                details: expect.objectContaining({ docsPath: 'javascript:alert(1)' }),
+            })
+        );
+    });
+
+    it('stretches a node over columns in a flowing layout, per breakpoint', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'span-kit',
+            name: 'Span Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'three',
+                    type: 'section',
+                    title: 'Three',
+                    columns: 3,
+                    children: [
+                        field('wide', 'Wide', 'text', { span: 2 }),
+                        field('narrow', 'Narrow', 'text'),
+                        field('full', 'Full', 'text', { span: 3 }),
+                    ],
+                },
+            ],
+        });
+        mount(template);
+        const cell = (label: string) => screen.getByLabelText(label).closest('.md\\:col-span-2');
+        expect(cell('Wide')?.className).toBe('md:col-span-2');
+        expect(cell('Full')?.className).toBe('md:col-span-2 xl:col-span-3');
+        expect(cell('Narrow')).toBeNull();
     });
 
     it('lays out direct section children in a column grid', () => {

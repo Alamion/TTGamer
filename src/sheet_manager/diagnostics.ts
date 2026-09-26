@@ -22,7 +22,9 @@ export type SheetIssueCode =
     /** A catalog value was clamped or dropped while filling a sheet. */
     | 'catalog-detail-out-of-range'
     /** A template was applied to a document of another system or kind; its default page rendered. */
-    | 'template-incompatible';
+    | 'template-incompatible'
+    /** A library item could not be placed in the tree where its references say (spec 013). */
+    | 'library-placement';
 
 export interface SheetIssue {
     code: SheetIssueCode;

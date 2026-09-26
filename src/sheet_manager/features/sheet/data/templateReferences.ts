@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { parseDocsLink } from '@site/src/shared/utils/docsLink';
 
 import {
     listDocumentBindings,
@@ -31,7 +32,8 @@ export type TemplateReferenceIssue =
     | { code: 'unknown-fill-detail'; nodeId: string; key: string }
     | { code: 'unknown-fill-target'; nodeId: string; key: string }
     | { code: 'unknown-coordinate'; nodeId: string; key: string }
-    | { code: 'unknown-label-message'; nodeId: string; key: string };
+    | { code: 'unknown-label-message'; nodeId: string; key: string }
+    | { code: 'invalid-docs-link'; nodeId: string; key: string };
 
 export interface NumericCoordinateOption {
     coordinate: string;
@@ -171,6 +173,13 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
                     });
                 }
             }
+        }
+        if (
+            (node.type === 'section' || node.type === 'group') &&
+            node.docsPath &&
+            !parseDocsLink(node.docsPath)
+        ) {
+            issues.push({ code: 'invalid-docs-link', nodeId: node.id, key: node.docsPath });
         }
         if (node.visibleWhen && !isStorageCoordinate(node.visibleWhen.coordinate)) {
             issues.push({

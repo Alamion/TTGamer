@@ -21,6 +21,16 @@
   file: src/pages/index.tsx
   match: React 19 + Docusaurus 3.10
   reason: technology names and versions
+- rule: interface
+  file: src/sheet_manager/features/docs/LibraryStorybook.tsx
+  match: /.*/
+  reason: dev-only library row and tick states on a draft docs page (storybook, constitution VI),
+      never built for production readers
+- rule: interface
+  file: src/shared/components/Palette.tsx
+  match: /.*/
+  reason: dev-only palette on a draft docs page (storybook, constitution VI), never built for
+      production readers
 - rule: identical
   match: https://example.com/portrait.webp
   reason: example URL shown as an input placeholder

@@ -1,16 +1,10 @@
 import { translate } from '@docusaurus/Translate';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { useSitePath } from '@site/src/shared/hooks/useSitePath';
 
 import { type PolicyId, PUBLISHER_POLICIES, type PublisherPolicy } from '../../../systems';
 
 const notice = uiMessages.sheet.policies.notice;
-
-/** Site-relative path under the current locale's base URL (`/ru/...` in the Russian build). */
-function useSitePath() {
-    const baseUrl = useDocusaurusContext().siteConfig.baseUrl ?? '/';
-    return (path: string) => `${baseUrl.replace(/\/$/, '')}${path}`;
-}
 
 function uniquePolicies(policies: readonly PublisherPolicy[]) {
     return policies.filter(

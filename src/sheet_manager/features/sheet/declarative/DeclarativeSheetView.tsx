@@ -1,9 +1,18 @@
 import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { parseDocsLink } from '@site/src/shared/utils/docsLink';
 import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
-import { createElement, type CSSProperties, useMemo } from 'react';
+import {
+    createElement,
+    type CSSProperties,
+    memo,
+    type ReactNode,
+    useContext,
+    useEffect,
+    useMemo,
+} from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
@@ -11,6 +20,7 @@ import { SectionCard } from '../../../components/sections/SectionCard';
 import { TermHintProvider } from '../../../components/terms/TermHintProvider';
 import { TermLabel } from '../../../components/terms/TermLabel';
 import { termLinkOf } from '../../../components/terms/termLink';
+import { reportSheetIssue } from '../../../diagnostics';
 import type { FieldBinding } from '../../../systems/templateBindings';
 import {
     clampFieldNumber,
@@ -26,6 +36,11 @@ import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import { useBoundDocument } from './boundDocument';
 import { useCatalogSuggestions } from './catalogSuggestions';
+import {
+    OverlayVersionContext,
+    type TemplateEditorOverlay,
+    useTemplateEditorOverlay,
+} from './editorOverlay';
 import type { FormulaEvaluationError } from './formula';
 import { useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { localizeTemplate } from './localizeTemplate';
@@ -41,6 +56,21 @@ const columnClasses: Record<number, string> = {
     3: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3',
     4: 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4',
 };
+
+/**
+ * Column span classes per breakpoint, matching `columnClasses`: 3- and 4-column grids have two
+ * columns at `md`, so a wide span there covers the whole row; proportional grids have every
+ * column from `md`.
+ */
+function spanClass(span: number, columns: number, proportional: boolean): string | undefined {
+    const size = Math.min(span, columns);
+    if (size < 2) return undefined;
+    if (proportional) return ['', '', 'md:col-span-2', 'md:col-span-3', 'md:col-span-4'][size];
+    if (columns === 2) return 'md:col-span-2';
+    return size === 2
+        ? 'md:col-span-2'
+        : `md:col-span-2 ${size === 3 ? 'xl:col-span-3' : 'xl:col-span-4'}`;
+}
 
 function formulaErrorMessage(reason: FormulaEvaluationError | 'parse', coordinate = ''): string {
     switch (reason) {
@@ -400,17 +430,34 @@ function ListView({
     );
 }
 
-function NodeView({
+const NodeView = memo(function NodeView({
     node,
     pageApi,
     accentColor,
+    showHidden = false,
 }: {
     node: TemplateNode;
     pageApi: UseTemplatePageResult;
     accentColor: 'primary' | 'secondary';
+    /** The template editor renders condition-hidden nodes (marked by its frame). */
+    showHidden?: boolean;
 }) {
     const template = pageApi.template!;
-    if (node.visibleWhen && !pageApi.isVisible(node.visibleWhen, node.id)) return null;
+    const docsPath = node.type === 'section' || node.type === 'group' ? node.docsPath : undefined;
+    useEffect(() => {
+        // The editor lists a broken link among the draft's issues instead.
+        if (showHidden || !docsPath || parseDocsLink(docsPath)) return;
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'Documentation link is neither a site docs path nor an https:// address',
+            details: { templateId: template.id, nodeId: node.id, docsPath },
+        });
+    }, [docsPath, node.id, showHidden, template.id]);
+    // The editor keeps its own collapse state so editing never folds the real page.
+    const collapseKey = `${showHidden ? 'editor-' : ''}template-${template.id}-${node.id}`;
+    if (!showHidden && node.visibleWhen && !pageApi.isVisible(node.visibleWhen, node.id)) {
+        return null;
+    }
 
     if (node.type === 'section') {
         // Presentation (US3): a section is a collapsible block without a background box;
@@ -418,12 +465,13 @@ function NodeView({
         return (
             <CollapsibleBlock
                 title={node.title}
-                storageKey={`template-${template.id}-${node.id}`}
+                storageKey={collapseKey}
                 docsPath={node.docsPath}
                 accentColor={accentColor}
                 defaultExpanded={!node.defaultCollapsed}
             >
                 <ChildrenGrid
+                    parentId={node.id}
                     nodes={node.children}
                     pageApi={pageApi}
                     columns={node.columns}
@@ -440,14 +488,11 @@ function NodeView({
             <SectionCard
                 title={node.hideTitle ? undefined : node.title}
                 docsPath={node.hideTitle ? undefined : node.docsPath}
-                storageKey={
-                    node.collapsible && !node.hideTitle
-                        ? `template-${template.id}-${node.id}`
-                        : undefined
-                }
+                storageKey={node.collapsible && !node.hideTitle ? collapseKey : undefined}
                 defaultExpanded={!(node.collapsible && node.defaultCollapsed)}
             >
                 <ChildrenGrid
+                    parentId={node.id}
                     nodes={node.children}
                     pageApi={pageApi}
                     columns={node.columns}
@@ -483,30 +528,85 @@ function NodeView({
             value={coerceStoredValue(node, pageApi.values[fieldValueKey(node)])}
         />
     );
+});
+
+function framedNode(
+    overlay: TemplateEditorOverlay,
+    pageApi: UseTemplatePageResult,
+    version: unknown,
+    node: TemplateNode,
+    parentId: string | null,
+    index: number,
+    column: number | null,
+    content: ReactNode
+): ReactNode {
+    const conditionHidden =
+        node.visibleWhen !== undefined && !pageApi.isVisible(node.visibleWhen, node.id);
+    return (
+        <div key={node.id} className="min-w-0">
+            {overlay.renderFrame({
+                node,
+                parentId,
+                index,
+                column,
+                conditionHidden,
+                content,
+                version,
+            })}
+        </div>
+    );
 }
 
 function ChildrenGrid({
+    parentId = null,
     nodes,
     pageApi,
     columns,
     columnWidths,
 }: {
+    parentId?: string | null;
     nodes: readonly TemplateNode[];
     pageApi: UseTemplatePageResult;
     columns?: number;
     columnWidths?: readonly number[];
 }) {
-    if (nodes.length === 0) return null;
-    const renderNode = (node: TemplateNode, index: number) => (
-        <NodeView
-            key={node.id}
-            node={node}
-            pageApi={pageApi}
-            // Accent alternation is automatic (by sibling parity), never stored (FR-11).
-            accentColor={index % 2 === 0 ? 'primary' : 'secondary'}
-        />
-    );
-    const children = nodes.map(renderNode);
+    const overlay = useTemplateEditorOverlay();
+    const version = useContext(OverlayVersionContext);
+    if (nodes.length === 0 && !overlay) return null;
+    const renderNode = (node: TemplateNode, index: number, column: number | null = null) => {
+        const content = (
+            <NodeView
+                key={node.id}
+                node={node}
+                pageApi={pageApi}
+                // Accent alternation is automatic (by sibling parity), never stored (FR-11).
+                accentColor={index % 2 === 0 ? 'primary' : 'secondary'}
+                showHidden={overlay !== null}
+            />
+        );
+        return overlay
+            ? framedNode(overlay, pageApi, version, node, parentId, index, column, content)
+            : content;
+    };
+    const endSlot = overlay?.renderEndSlot({ parentId, index: nodes.length, column: null });
+    const isProportional = columns !== undefined && columns > 1 && columnWidths?.length === columns;
+    const children = [
+        ...nodes.map((node, index) => {
+            const rendered = renderNode(node, index);
+            const span =
+                columns && columns > 1 && node.span
+                    ? spanClass(node.span, columns, isProportional)
+                    : undefined;
+            return span ? (
+                <div key={node.id} className={span}>
+                    {rendered}
+                </div>
+            ) : (
+                rendered
+            );
+        }),
+        endSlot,
+    ];
     // Proportional widths (e.g. 2:1) apply from the md breakpoint; narrow screens stack.
     const proportional =
         columns && columns > 1 && columnWidths?.length === columns
@@ -521,7 +621,10 @@ function ChildrenGrid({
               }
             : undefined;
     // Explicit placement: children stack inside their assigned column (unplaced → column 1).
-    if (columns && columns > 1 && nodes.some((node) => node.column !== undefined)) {
+    // An empty container in the editor stacks too, so each column offers a drop zone.
+    const stacked =
+        nodes.some((node) => node.column !== undefined) || (overlay !== null && nodes.length === 0);
+    if (columns && columns > 1 && stacked) {
         const stacks = Array.from({ length: columns }, (_, columnIndex) =>
             nodes
                 .map((node, index) => ({ node, index }))
@@ -535,15 +638,28 @@ function ChildrenGrid({
                 }
                 style={proportional?.style}
             >
-                {stacks.map((stack, columnIndex) => (
-                    <div
-                        key={columnIndex}
-                        className="grid grid-cols-1 content-start gap-4"
-                        data-column={columnIndex + 1}
-                    >
-                        {stack.map(({ node, index }) => renderNode(node, index))}
-                    </div>
-                ))}
+                {stacks.map((stack, columnIndex) => {
+                    const column = columnIndex + 1;
+                    const last = stack[stack.length - 1];
+                    const placement = {
+                        parentId,
+                        index: last ? last.index + 1 : nodes.length,
+                        column,
+                    };
+                    return (
+                        <div
+                            key={columnIndex}
+                            className="grid grid-cols-1 content-start gap-4"
+                            data-column={column}
+                        >
+                            {stack.map(({ node, index }) => renderNode(node, index, column))}
+                            {overlay &&
+                                (stack.length === 0
+                                    ? overlay.renderEmptyColumn(placement)
+                                    : overlay.renderEndSlot(placement))}
+                        </div>
+                    );
+                })}
             </div>
         );
     }
@@ -605,6 +721,18 @@ export function DeclarativeSheetView({
     // Translated display copy; ids and storage coordinates are identical to the source.
     const localized = useMemo(() => localizeTemplate(template, locale), [template, locale]);
     const pageApi = useTemplatePage(localized, { seedPresets: !embedded });
+    // Editor only: a version that ignores template-only changes (see OverlayFrameArgs.version).
+    const formulaSignature = useMemo(
+        () =>
+            JSON.stringify([
+                [...pageApi.formulaState.results],
+                [...pageApi.formulaState.maxima],
+                [...pageApi.formulaState.minima],
+            ]),
+        [pageApi.formulaState]
+    );
+    const values = pageApi.values;
+    const version = useMemo(() => ({ values, formulaSignature }), [values, formulaSignature]);
 
     return (
         <div
@@ -613,7 +741,9 @@ export function DeclarativeSheetView({
             }
         >
             <TermHintProvider>
-                <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                <OverlayVersionContext.Provider value={version}>
+                    <ChildrenGrid nodes={localized.children} pageApi={pageApi} />
+                </OverlayVersionContext.Provider>
             </TermHintProvider>
         </div>
     );

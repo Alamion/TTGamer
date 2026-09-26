@@ -1,29 +1,6 @@
 library:
-    button: Templates
-    buttonTitle: Manage character page templates
     title: Page templates
-    empty: No templates yet. Create one to get started.
-    new: New template
-    edit: Edit
-    duplicate: Duplicate
-    delete: Delete
-    export: Export
-    kind: Kind
-    unnamedKind: Other
-    defaultBadge: Default
-    modifiedBadge: Modified
-    reset: Reset to original
-    resetConfirmTitle: Reset this default template?
-    resetConfirmDescription: '"{name}" will be restored to its original structure. Assigned documents keep all their data.'
-    deleteRefused: '"{name}" is a default page — it cannot be deleted. Duplicate it instead.'
-    duplicateId: '"{id}" is a built-in page — templates need their own identifier.'
-    incompatibleBadge: Incompatible format
-    incompatibleHint: Saved in a previous template format. Kept for recovery only — recreate it with the new editor.
-    skeletonName: '{label} page skeleton'
-    skeletonDescription: Starts from the current structure of the built-in {label} page.
-    blankSkeletonName: Blank page skeleton
-    skeletonIdentity: Identity
-    skeletonNameField: Name
+    noDescription: No description
 primitives:
     groupIdentity: Identity fields
     groupTrait: Traits
@@ -91,12 +68,20 @@ editor:
     ratingNumber: Number
     referenceKinds: Allowed document kinds
     multiple: Allow multiple values
+    hideUnselected: Hide unselected options
     moveUp: Move up
     moveDown: Move down
     remove: Remove
     removeConfirmTitle: Discard changes?
     removeConfirmDescription: You have unsaved edits. Discard them?
     discard: Discard
+    target: Type and setting
+    targetLocked: This page's type and setting are fixed here
+    retargetTitle: Move the page?
+    retargetDescription:
+        message: '{count} document opens on this page. After the move it opens on its default page.|{count} documents open on this page. After the move they open on their default page.'
+        plural: true
+    retargetConfirm: Move
     save: Save
     cancel: Cancel
     duplicateId: Duplicate identifier "{id}" — identifiers must be unique within their scope.
@@ -133,7 +118,9 @@ editor:
     trackerSource: Tracks
     gripHandle: Drag handle — grab to move
     groupTitle: Group title
-    docsLink: Documentation link (optional)
+    docsLink: 'Documentation link (optional): /docs/… or https://…'
+    helpAbout: 'Help: {setting}'
+    guide: Template editor guide
     groupCollapsible: Collapsible (expanded state is remembered)
     tableTitle: Table title (optional)
     listTitle: List title (optional)
@@ -148,6 +135,8 @@ editor:
     layoutHeading: Layout
     columnPlacement: Column in parent
     columnAuto: Auto
+    columnSpan: Spans columns
+    columnSpanPinnedHint: 'Spanning applies while no element of this container is pinned to a column.'
     equalWidths: Equal column widths
     columnWidth: Column {index} width
     columnWidthsHint: 'Widths are proportional: 2 and 1 make the first column twice as wide.'
@@ -171,6 +160,7 @@ editor:
     unknownCatalog: Unknown catalog or catalog detail "{id}".
     unknownFillTarget: 'Auto-fill targets a field that does not exist: "{id}".'
     unknownLabelMessage: Unknown translation reference "{id}".
+    invalidDocsLink: 'Documentation link "{id}" is not a site docs path (/docs/…) or an https:// address.'
     depthMessage: Nesting limit reached — {limit} levels maximum.
     countMessage: Element limit reached — {limit} elements maximum.
     newSection: New section
@@ -179,6 +169,38 @@ editor:
     bookTerm: 'Book term: {term}'
     showTermHint: Show book name hint
     newOption: Option {index}
+    copySuffix: '{label} (copy)'
+    areaOutline: Outline
+    areaPage: Page
+    areaSettings: Settings
+    areaTabs: Editor areas
+    sampleNote: Sample data — dots, boxes, and text you change here never reach your documents.
+    noSampleDocument: This template's document type is not available, so the page cannot be shown.
+    hiddenByCondition: 'Hidden by a condition: shown only when "{coordinate}" is {value}. Readers do not see it now.'
+    conditionMet: Condition met
+    conditionNotMet: Condition not met
+    elementIssue: This element has an issue
+    insertHere: Insert an element here
+    emptyColumn: Column {column} is empty — drop an element here or insert one.
+    selectPrompt: Select an element on the page or in the outline to change its settings.
+    modeEdit: Edit
+    modePreview: Preview
+    modeLabel: Editor mode
+    previewData: Preview data
+    previewOpenDocument: 'Open document: {title}'
+    previewBlank: Blank document
+    previewFallback: The chosen document is no longer available; showing a blank document.
+    undo: Undo
+    redo: Redo
+    duplicate: Duplicate
+    moveOut: Move out of the group
+    moveIn: Move into the previous group
+    moved: '{label} moved.'
+    movedColumn: '{label} moved to column {column}.'
+    removed: '{label} removed. Press Ctrl+Z to undo.'
+    duplicated: '{label} copied.'
+    inserted: '{label} added.'
+    shortcutsHint: 'Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo'
     coordinateCurrent: '{label} (current)'
     coordinateMax: '{label} (max)'
 fieldTypes:
@@ -233,6 +255,9 @@ page:
     embedNoDocument: Create or open a character to fill in this part of the sheet here.
     fallbackTitle: Template page unavailable
     fallbackDescription: The template assigned to this page is missing. Showing the standard page instead — you can pick another page below.
+    typeMissingTitle: Document type not installed
+    typeMissingDescription: This document's type is not installed here, so its stored values are listed instead. Import the type to get its page back.
+    typeLoading: Loading document types…
     requiredUnfilled:
         message: '{count} required field is still empty.|{count} required fields are still empty.'
         plural: true
@@ -243,6 +268,9 @@ page:
     formulaReasonDivision: division by zero
     formulaReasonNonNumeric: a referenced value is not a number
     formulaClamped: Limited by a linked value
+    chooseOptions: Choose options
+    chooseOptionsDone: Done
+    noneSelected: Nothing selected
     imageInvalid: This image source is unavailable or insecure.
     imageUpload: Upload image
     imageUrl: Image URL

@@ -14,6 +14,8 @@ export const TEMPLATE_LIMITS = {
     columnsMax: 4,
     tableColumnsMax: 60,
     listEntriesMax: 1_000,
+    ratingMax: 100,
+    resourceMax: 1_000_000,
 } as const;
 
 /** Template file/schema generation authored by this build (contracts/template-node-model.md). */
@@ -74,6 +76,8 @@ export type VisibleWhen = z.infer<typeof VisibleWhenSchema>;
  */
 const placementShape = {
     column: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
+    /** Flowing layouts only: how many parent columns the element spans (unset = 1). */
+    span: z.number().int().min(2).max(TEMPLATE_LIMITS.columnsMax).optional(),
     visibleWhen: VisibleWhenSchema.optional(),
 };
 
@@ -186,6 +190,8 @@ const SelectFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('select'),
     multiple: z.boolean().default(false),
+    /** Multiple choice only: the sheet shows the chosen options until the reader expands it. */
+    hideUnselected: z.boolean().optional(),
     options: z
         .array(
             z.object({
@@ -203,7 +209,7 @@ const RatingFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('rating'),
     min: z.number().int().min(0).default(0),
-    max: z.number().int().min(1).max(100),
+    max: z.number().int().min(1).max(TEMPLATE_LIMITS.ratingMax),
     presentation: z.enum(['dots', 'boxes', 'number']).default('dots'),
     ...maxFromShape,
 });
@@ -212,7 +218,7 @@ const ResourceFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('resource'),
     min: z.number().int().min(0).default(0),
-    max: z.number().int().min(1).max(1_000_000),
+    max: z.number().int().min(1).max(TEMPLATE_LIMITS.resourceMax),
 });
 
 const ReferenceFieldSchema = z.object({
@@ -388,6 +394,7 @@ export interface SectionNode {
     title: string;
     labelMessage?: string;
     column?: number;
+    span?: number;
     visibleWhen?: VisibleWhen;
     /** Starts collapsed until the reader opens it (the choice is then remembered). */
     defaultCollapsed?: boolean;
@@ -405,6 +412,7 @@ export interface GroupNode {
     title: string;
     labelMessage?: string;
     column?: number;
+    span?: number;
     visibleWhen?: VisibleWhen;
     /** Title kept for the editor and accessibility but not shown on the card. */
     hideTitle?: boolean;
@@ -537,6 +545,8 @@ export interface CustomTemplate {
     /** Owning system: page assignment and library listing match system + kind. */
     systemId: SystemId;
     documentKind: DocumentKind;
+    /** A page made for a user setting (spec 012): offered only to that setting's documents. */
+    settingId?: string;
     schemaVersion: number;
     children: TemplateNode[];
 }
@@ -690,6 +700,7 @@ export const CustomTemplateSchema = z
         description: z.string().max(1_000).optional(),
         systemId: SystemIdSchema.optional().default(SystemIdSchema.parse('star-wars-wod')),
         documentKind: DocumentKindSchema,
+        settingId: z.string().min(1).max(64).optional(),
         schemaVersion: z.number().int().positive().max(1_000_000),
         children: z.array(templateNodeSchema).min(1).max(TEMPLATE_LIMITS.nodesPerTemplate),
     })

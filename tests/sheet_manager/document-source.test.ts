@@ -2,16 +2,23 @@
 
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import {
+    createScratchDocumentSource,
     createStaticDocumentSource,
     DocumentSourceContext,
+    type ScratchDocumentSource,
 } from '@site/src/sheet_manager/hooks/useDocumentSource';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
+import {
+    createDefaultStarWarsCharacterData,
+    starWarsCharacterDefinition,
+} from '@site/src/sheet_manager/systems/star-wars-wod';
 import type { UnknownDocumentEnvelope } from '@site/src/sheet_manager/types/document';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { takeSheetIssues } from '../setup/sheetIssues';
 
 function characterDocument(id: string, name: string, extra: Record<string, unknown> = {}) {
     const data = createDefaultStarWarsCharacterData();
@@ -76,5 +83,75 @@ describe('document source seam', () => {
             forcePowerItems: Array<{ id: string }>;
         };
         expect(data.forcePowerItems.map(({ id }) => id)).toEqual(['preset-source-kit-sense']);
+    });
+});
+
+describe('scratch document source (template editor sample data)', () => {
+    const scratchTemplate = CustomTemplateSchema.parse({
+        ...template,
+        id: 'scratch-kit',
+        children: [
+            ...template.children.filter(({ id }) => id !== 'powers'),
+            { id: 'rank', type: 'number', label: 'Rank', min: 0, max: 5 },
+        ],
+    });
+
+    function ScratchView({ scratch }: { scratch: ScratchDocumentSource }) {
+        return createElement(
+            DocumentSourceContext.Provider,
+            { value: scratch.useSource() },
+            createElement(DeclarativeSheetView, { template: scratchTemplate, embedded: true })
+        );
+    }
+
+    beforeEach(() => {
+        useDocumentStore.setState({
+            documents: [characterDocument('store-doc', 'Store Hero')],
+            currentDocumentId: 'store-doc',
+        });
+    });
+    afterEach(cleanup);
+
+    it('writes values and data to the scratch copy only', () => {
+        const before = useDocumentStore.getState().documents;
+        const scratch = createScratchDocumentSource(
+            characterDocument('sample', 'Sample Hero'),
+            starWarsCharacterDefinition
+        );
+        render(createElement(ScratchView, { scratch }));
+
+        const name = screen.getByLabelText('Name') as HTMLInputElement;
+        expect(name.disabled).toBe(false);
+        fireEvent.change(name, { target: { value: 'Renamed' } });
+        fireEvent.change(screen.getByLabelText('Origin'), { target: { value: 'Tatooine' } });
+
+        const sample = scratch.getDocument();
+        expect(sample.templateValues.origin).toBe('Tatooine');
+        expect((sample.data as { metadata: { name: string } }).metadata.name).toBe('Renamed');
+        expect(useDocumentStore.getState().documents).toBe(before);
+    });
+
+    it('rejects invalid values like the store does and marks itself a preview', () => {
+        const scratch = createScratchDocumentSource(
+            characterDocument('sample', 'Sample Hero'),
+            starWarsCharacterDefinition
+        );
+        let source: ReturnType<ScratchDocumentSource['useSource']> | undefined;
+        function Probe() {
+            source = scratch.useSource();
+            return null;
+        }
+        render(createElement(Probe));
+        expect(source?.preview).toBe(true);
+        expect(source?.readOnly).toBe(false);
+
+        source?.updateTemplateValues('sample', scratchTemplate, (values) => ({
+            ...values,
+            rank: 9,
+        }));
+        expect(scratch.getDocument().templateValues.rank).toBeUndefined();
+        expect(takeSheetIssues().map(({ code }) => code)).toEqual([
+            'template-value-write-rejected',
+        ]);
     });
 });
