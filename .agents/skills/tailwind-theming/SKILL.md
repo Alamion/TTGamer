@@ -23,6 +23,15 @@ Defined in `src/css/custom.css`:
 | `--info`           | `2 132 199`   | Info states             |
 | `--success`        | `21 128 61`   | Success states          |
 
+## Accent Roles
+
+- **Primary** (red) and **secondary** (gold) carry every accent: selection, focus, pressed
+  states, active tabs, badges, section bars. Prefer them wherever a color marks something.
+- **Tertiary** (violet, `--editor` today; T-081 renames it) is reserved for edge cases a user
+  must tell apart from ordinary accents — for example something added automatically on the
+  user's behalf. Never use it as the default accent of a surface, including the template editor.
+- Semantic colors (`error`, `warning`, `success`, `info`) mean state, not decoration.
+
 ## Dark Mode
 
 Dark mode overrides `--bg-base`, `--bg-surface`, `--text-primary`, `--text-secondary`, `--border` via `[data-theme='dark']` selectors in `custom.css`.

@@ -26,10 +26,6 @@
   match: /.*/
   reason: dev-only palette on a draft docs page (storybook, constitution VI), never built for
       production readers
-- rule: interface
-  file: src/sheet_manager/features/docs/ElementStorybook.tsx
-  match: /.*/
-  reason: dev-only element storybook on draft docs pages, never built for production readers
 - rule: identical
   match: https://example.com/portrait.webp
   reason: example URL shown as an input placeholder
