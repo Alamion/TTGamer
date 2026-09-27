@@ -217,7 +217,7 @@ description: 'Task list for feature 014: rating element parity with trait rows'
 - [x] T027 [P] Add a v3.12.0 entry to `CHANGELOG.md` and set `package.json` to 3.12.0. Run `yarn check:version`.
 - [x] T028 Mark T-073 done (`[x] ✅`) in `TODO.md`, with a dated note on what shipped and that T-058 stays open. Run `yarn validate:backlog`.
 - [x] T029 Run `yarn verify:full` and fix every failure: lint, typecheck, knip, i18n coverage, tests, and the en and ru build.
-- [ ] T030 Walk through the quickstart manually (the maintainer, on the dev server).
+- [x] T030 Walk through the quickstart manually (the maintainer, on the dev server).
 
 ---
 
