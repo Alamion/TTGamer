@@ -4,6 +4,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import type {
     CatalogBindingEntry,
     CatalogDetailValue,
+    CatalogFillKind,
     CatalogLike,
     SystemPlugin,
 } from '../../../systems';
@@ -168,4 +169,21 @@ export function validateBindingFills(
     const allowed = new Set(binding.fillableDetails.map((detail) => detail.key));
     const unknownKeys = Object.keys(fills).filter((key) => !allowed.has(key));
     return unknownKeys.length === 0 ? { ok: true } : { ok: false, unknownKeys };
+}
+
+/**
+ * A catalog detail a list's "value from" may copy into an entry of this type (spec 016, R8):
+ * numbers into numbers, ratings, and a resource's current value; text into text; toggles.
+ */
+export function catalogKindFitsListItem(kind: CatalogFillKind, itemType: string): boolean {
+    switch (kind) {
+        case 'number':
+            return itemType === 'number' || itemType === 'rating' || itemType === 'resource';
+        case 'text':
+            return itemType === 'text';
+        case 'boolean':
+            return itemType === 'toggle';
+        case 'rows':
+            return false;
+    }
 }

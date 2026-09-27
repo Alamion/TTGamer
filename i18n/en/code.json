@@ -3284,14 +3284,41 @@
     "ttgamer.ui.sheet.templates.editor.limitReached": {
         "message": "Limit reached — {limit} {subject} maximum."
     },
+    "ttgamer.ui.sheet.templates.editor.listCatalogNeedsNames": {
+        "message": "Suggestions need entry names."
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeConfirm": {
+        "message": "Save anyway"
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeNames": {
+        "message": "{title}: {count} entry name will no longer be shown.|{title}: {count} entry names will no longer be shown."
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeNote": {
+        "message": "The values stay stored; changing the entry back shows them again, except for entries edited in between."
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeSheets": {
+        "message": "{count} sheet|{count} sheets"
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeTitle": {
+        "message": "Change list entries?"
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeValues": {
+        "message": "{title}: {count} stored value in {documents} will no longer be shown.|{title}: {count} stored values in {documents} will no longer be shown."
+    },
     "ttgamer.ui.sheet.templates.editor.listColumns": {
         "message": "Columns"
     },
     "ttgamer.ui.sheet.templates.editor.listCustomKey": {
         "message": "List value key"
     },
+    "ttgamer.ui.sheet.templates.editor.listEntry": {
+        "message": "Entry"
+    },
     "ttgamer.ui.sheet.templates.editor.listFramed": {
         "message": "Draw a border around the list"
+    },
+    "ttgamer.ui.sheet.templates.editor.listNamed": {
+        "message": "Entries are named"
     },
     "ttgamer.ui.sheet.templates.editor.listShowTitle": {
         "message": "Show list title"
@@ -3826,6 +3853,21 @@
     },
     "ttgamer.ui.sheet.templates.library.title": {
         "message": "Page templates"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.limit": {
+        "message": "At most {max} entries"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.name": {
+        "message": "{list} — name"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.nth": {
+        "message": "{list}, entry {n}"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.remove": {
+        "message": "Remove {name}"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.removeNth": {
+        "message": "Remove {list}, entry {n}"
     },
     "ttgamer.ui.sheet.templates.page.catalogEmpty": {
         "message": "No entries yet"

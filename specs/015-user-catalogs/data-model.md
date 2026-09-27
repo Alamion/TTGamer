@@ -1,5 +1,7 @@
 # Data Model: User-created catalogs
 
+> **Change record.** Partly superseded by 016 (list entries keep the item field's value; `valueFrom` copies any column that fits the entry type). Current behavior: `.agents/skills/sheet-templates/SKILL.md`.
+
 ## UserCatalog (`systems/userCatalogs.ts`, stored in `documentTypeStore.catalogs`)
 
 | Field         | Type                                                            | Rules                                         |

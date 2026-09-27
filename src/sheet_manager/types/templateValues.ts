@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { TemplateField } from './template';
+import type { ListItemField, TemplateField } from './template';
 import { TEMPLATE_LIMITS } from './templateLimits';
 
 /**
@@ -33,19 +33,6 @@ export const TemplateResourceValueSchema = z
     .strict();
 
 export type TemplateResourceValue = z.infer<typeof TemplateResourceValueSchema>;
-
-/** One custom-list entry (feature 006): stable id, name, optional rating. */
-export const TemplateListEntrySchema = z.object({
-    id: z.string().min(1).max(64),
-    label: z.string().min(1).max(120),
-    value: z.number().int().min(0).max(20).optional(),
-});
-
-export const TemplateListValueSchema = z
-    .array(TemplateListEntrySchema)
-    .max(TEMPLATE_VALUES_LIMITS.listEntriesMax);
-
-export type TemplateListValue = z.infer<typeof TemplateListValueSchema>;
 
 /**
  * Per-document image value (feature 006): device-local blob reference (IndexedDB, excluded
@@ -117,6 +104,27 @@ export function pickLabelBase(key: string): string | undefined {
 }
 
 export const PickLabelSchema = z.string().max(120);
+
+/**
+ * One custom-list entry (spec 016): stable id, the typed name (named lists), and one value of
+ * the list's entry template, with the companions a page field keeps under `#detail` / `#label`.
+ * Entries saved before spec 016 (`{id, label, value: 0–20}`) are legacy rating entries as is.
+ */
+export const TemplateListEntrySchema = z.object({
+    id: z.string().min(1).max(64),
+    label: z.string().max(120).optional(),
+    value: z.union([TemplateTableCellSchema, TemplateImageValueSchema]).optional(),
+    detail: RatingDetailSchema.optional(),
+    pickLabel: PickLabelSchema.optional(),
+});
+
+export type TemplateListEntry = z.infer<typeof TemplateListEntrySchema>;
+
+export const TemplateListValueSchema = z
+    .array(TemplateListEntrySchema)
+    .max(TEMPLATE_VALUES_LIMITS.listEntriesMax);
+
+export type TemplateListValue = z.infer<typeof TemplateListValueSchema>;
 
 /** Stored detail, or empty text with all flags off when missing or malformed. */
 export function readRatingDetail(value: unknown): RatingDetail {
@@ -351,5 +359,77 @@ export function coerceStoredValue(
                 return value[0];
             }
             return undefined;
+    }
+}
+
+function clamp(value: number, min: number, max: number): number {
+    return Math.min(max, Math.max(min, value));
+}
+
+/**
+ * A stored list entry value as the list's current entry template can show it (spec 016, R6):
+ * numbers move between number, rating, and a resource's current value; anything the template
+ * cannot show reads as `undefined` and stays stored until the entry is edited.
+ */
+export function coerceListValue(item: ListItemField, value: unknown): unknown {
+    if (value === undefined || value === null) return undefined;
+    const resource = isResourceCandidate(value) ? value : undefined;
+    const number =
+        typeof value === 'number' && Number.isFinite(value)
+            ? value
+            : typeof resource?.current === 'number'
+              ? resource.current
+              : undefined;
+    switch (item.type) {
+        case 'number':
+            if (number === undefined) return undefined;
+            return clamp(number, item.min ?? -Infinity, item.max ?? Infinity);
+        case 'rating':
+            // The static maximum is not a storage bound (a computed maximum may exceed it).
+            return number === undefined
+                ? undefined
+                : clamp(Math.round(number), item.min, TEMPLATE_LIMITS.ratingMax);
+        case 'resource': {
+            if (number === undefined) return undefined;
+            const max =
+                typeof resource?.max === 'number'
+                    ? clamp(resource.max, item.min, item.max)
+                    : item.max;
+            return { current: clamp(Math.round(number), item.min, max), max };
+        }
+        case 'text':
+            return typeof value === 'string' ? value : undefined;
+        case 'toggle':
+            return typeof value === 'boolean' ? value : undefined;
+        case 'select':
+        case 'reference':
+            return validateTemplateValue(item, value).ok ? value : undefined;
+        case 'image':
+            return TemplateImageValueSchema.safeParse(value).success ? value : undefined;
+    }
+}
+
+/**
+ * A list preset as a starting entry (spec 016, R11): its name, and its number where the entry
+ * holds one (a resource starts at that current value under its field maximum).
+ */
+export function presetListEntry(
+    item: ListItemField,
+    preset: { label: string; value?: number },
+    id: string
+): TemplateListEntry {
+    const value = preset.value ?? 0;
+    switch (item.type) {
+        case 'number':
+        case 'rating':
+            return { id, label: preset.label, value: coerceListValue(item, value) as number };
+        case 'resource':
+            return {
+                id,
+                label: preset.label,
+                value: coerceListValue(item, value) as TemplateResourceValue,
+            };
+        default:
+            return { id, label: preset.label };
     }
 }

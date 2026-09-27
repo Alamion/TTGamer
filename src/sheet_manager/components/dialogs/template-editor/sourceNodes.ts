@@ -152,5 +152,8 @@ export function listFromSource(
               ...shared,
               valueKey:
                   node.type === 'list' && node.valueKey ? node.valueKey : `${node.id}-entries`,
+              // The entry template stays with the custom list (system lists have none).
+              ...(node.type === 'list' && node.item ? { item: node.item } : {}),
+              ...(node.type === 'list' && node.named === false ? { named: false } : {}),
           };
 }

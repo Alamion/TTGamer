@@ -4424,6 +4424,48 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.listFramed',
                     message: 'Draw a border around the list',
                 },
+                listNamed: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listNamed',
+                    message: 'Entries are named',
+                },
+                listEntry: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listEntry',
+                    message: 'Entry',
+                },
+                listCatalogNeedsNames: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listCatalogNeedsNames',
+                    message: 'Suggestions need entry names.',
+                },
+                listChangeTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeTitle',
+                    message: 'Change list entries?',
+                },
+                listChangeValues: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeValues',
+                    message:
+                        '{title}: {count} stored value in {documents} will no longer be shown.|{title}: {count} stored values in {documents} will no longer be shown.',
+                    plural: true,
+                },
+                listChangeSheets: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeSheets',
+                    message: '{count} sheet|{count} sheets',
+                    plural: true,
+                },
+                listChangeNames: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeNames',
+                    message:
+                        '{title}: {count} entry name will no longer be shown.|{title}: {count} entry names will no longer be shown.',
+                    plural: true,
+                },
+                listChangeNote: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeNote',
+                    message:
+                        'The values stay stored; changing the entry back shows them again, except for entries edited in between.',
+                },
+                listChangeConfirm: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeConfirm',
+                    message: 'Save anyway',
+                },
                 invalidFormula: {
                     id: 'ttgamer.ui.sheet.templates.editor.invalidFormula',
                     message: 'Invalid formula in "{id}" — check the expression.',
@@ -4928,6 +4970,28 @@ export const uiMessages = {
                 imageAlt: {
                     id: 'ttgamer.ui.sheet.templates.page.imageAlt',
                     message: 'Template image',
+                },
+            },
+            listEntry: {
+                limit: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.limit',
+                    message: 'At most {max} entries',
+                },
+                remove: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.remove',
+                    message: 'Remove {name}',
+                },
+                removeNth: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.removeNth',
+                    message: 'Remove {list}, entry {n}',
+                },
+                nth: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.nth',
+                    message: '{list}, entry {n}',
+                },
+                name: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.name',
+                    message: '{list} — name',
                 },
             },
             binding: {

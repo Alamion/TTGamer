@@ -11,6 +11,7 @@ import {
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { listDocumentBindings } from '@site/src/sheet_manager/systems/templateBindings';
 import {
+    LIST_ITEM_TYPES,
     TEMPLATE_FIELD_TYPES,
     type TemplateNode,
     walkTemplateNodes,
@@ -103,6 +104,8 @@ function variantsOf(node: TemplateNode): string[] {
             flag('presets');
             if (node.columns > 1) tags.push('list:columns');
             flag('catalog');
+            if (node.item) tags.push(`list:item:${node.item.type}`);
+            if (node.named === false) tags.push('list:unnamed');
             break;
         case 'table':
             for (const column of node.columns) tags.push(...variantsOf(column));
@@ -183,6 +186,8 @@ const REQUIRED_VARIANTS = [
     'list:framed',
     'list:presets',
     'list:columns',
+    ...LIST_ITEM_TYPES.map((type) => `list:item:${type}`),
+    'list:unnamed',
     'primitive:compact',
     'primitive:part',
     'primitive:trackLayout:table',
@@ -236,6 +241,7 @@ describe('element storybook (constitution VI, T-069)', () => {
             'catalog-fields',
             'user-catalog',
             'collections',
+            'list-entries',
         ]);
     });
 

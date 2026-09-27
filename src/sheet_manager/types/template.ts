@@ -295,12 +295,38 @@ export const TemplateFieldSchema = z
 
 export type TemplateField = z.infer<typeof TemplateFieldSchema>;
 
+/**
+ * The entry template of a custom list (spec 016): any field type except a formula, which has
+ * nothing of its own to compute from inside an entry.
+ */
+export const ListItemFieldSchema = z
+    .discriminatedUnion('type', [
+        TextFieldSchema,
+        NumberFieldSchema,
+        ToggleFieldSchema,
+        ImageFieldSchema,
+        SelectFieldSchema,
+        RatingFieldSchema,
+        ResourceFieldSchema,
+        ReferenceFieldSchema,
+    ])
+    .superRefine(refineField);
+
+export type ListItemField = Exclude<TemplateField, { type: 'formula' }>;
+
 export type FieldLabelPosition = 'top' | 'left';
+
+/** Whether the editor offers "label beside the value" for this field type (not for images). */
+export function hasLabelPositionChoice(type: TemplateField['type']): boolean {
+    return type !== 'image';
+}
 
 /** Ratings and derived values read as rows (label beside the value); other fields stack. */
 export function fieldLabelPosition(
     field: Pick<TemplateField, 'type' | 'labelPosition'>
 ): FieldLabelPosition {
+    // A picture with its upload and address controls needs the full width of its column.
+    if (!hasLabelPositionChoice(field.type)) return 'top';
     return (
         field.labelPosition ??
         (field.type === 'rating' || field.type === 'formula' ? 'left' : 'top')
@@ -409,6 +435,10 @@ const ListNodeSchema = z.object({
             valueFrom: z.string().min(1).max(64).optional(),
         })
         .optional(),
+    /** Own-value lists only (spec 016): what one entry is; unset reads as `legacyListItem`. */
+    item: ListItemFieldSchema.optional(),
+    /** Own-value lists only: `false` when entries have no typed name (unset = named). */
+    named: z.boolean().optional(),
 });
 
 const TableNodeSchema = z.object({
@@ -516,6 +546,9 @@ function refineNode(node: TemplateNode, context: z.RefinementCtx): void {
             }
             if (node.catalog && node.valueKey === undefined) {
                 issue('Only a list with its own values can suggest catalog entries', ['catalog']);
+            }
+            if (node.bindingKey !== undefined && (node.item || node.named !== undefined)) {
+                issue('Only a list with its own values has an entry template', ['item']);
             }
             return;
         case 'section':
@@ -639,10 +672,11 @@ export function collectTreeIssues(template: CustomTemplate): TemplateTreeIssue[]
                 limit: TEMPLATE_LIMITS.maxDepth,
             });
         }
-        if (seenIds.has(node.id)) {
-            issues.push({ code: 'duplicate-id', nodeId: node.id });
+        const ids = node.type === 'list' && node.item ? [node.id, node.item.id] : [node.id];
+        for (const id of ids) {
+            if (seenIds.has(id)) issues.push({ code: 'duplicate-id', nodeId: id });
+            seenIds.add(id);
         }
-        seenIds.add(node.id);
     });
     if (count > TEMPLATE_LIMITS.nodesPerTemplate) {
         issues.push({ code: 'count', actual: count, limit: TEMPLATE_LIMITS.nodesPerTemplate });
@@ -678,6 +712,41 @@ export function collectTemplateFields(template: CustomTemplate): Map<string, Tem
     return fields;
 }
 
+/** Entry types a custom list offers: every field type except a formula. */
+export const LIST_ITEM_TYPES = TEMPLATE_FIELD_TYPES.filter(
+    (type): type is ListItemField['type'] => type !== 'formula'
+);
+
+/**
+ * The entry of a list saved before spec 016: a named trait row (dots 0–5, S/P/E, die), as the
+ * old custom list drew it.
+ */
+export function legacyListItem(list: Pick<ListNode, 'id' | 'title'>): ListItemField {
+    return {
+        id: `${list.id}-item`,
+        type: 'rating',
+        label: list.title ?? list.id,
+        labelPosition: 'left',
+        required: false,
+        compact: false,
+        min: 0,
+        max: 5,
+        presentation: 'dots',
+        dice: true,
+        flags: [...RATING_FLAGS],
+    };
+}
+
+/** What one entry of a custom list is: its own item, or the legacy trait row. */
+export function listItemField(list: ListNode): ListItemField {
+    return list.item ?? legacyListItem(list);
+}
+
+/** Whether entries carry a name typed by the sheet user (the default). */
+export function listIsNamed(list: Pick<ListNode, 'named'>): boolean {
+    return list.named !== false;
+}
+
 export function collectListNodes(template: CustomTemplate): ListNode[] {
     const lists: ListNode[] = [];
     walkTemplateNodes(template.children, (node) => {
@@ -711,6 +780,10 @@ export function collectFormulaDependencies(template: CustomTemplate): FormulaDep
         ) {
             const parsed = parseFormulaSafe(node.maxFrom);
             if (parsed) sources.push({ id: node.id, reads: parsed });
+        }
+        if (node.type === 'list' && node.item && 'maxFrom' in node.item && node.item.maxFrom) {
+            const parsed = parseFormulaSafe(node.item.maxFrom);
+            if (parsed) sources.push({ id: node.item.id, reads: parsed });
         }
         if (node.type === 'primitive' && node.minFrom) {
             const parsed = parseFormulaSafe(node.minFrom);

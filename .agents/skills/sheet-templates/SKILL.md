@@ -55,6 +55,24 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
       bounded to min/max/step on blur or Enter, arrow keys step.
 - Other leaves: `table` (columns are fields; rows stored under `tableValueKey`), `list`
   (exactly one of `valueKey` or `bindingKey`), `primitive` (`bindingKey` into system data).
+- Custom lists (`valueKey`, spec 016): `item` is the entry template — any field except a
+  formula (`ListItemFieldSchema`, `LIST_ITEM_TYPES`) — and `named: false` drops the typed entry
+  name. Read both only through `listItemField(list)` (unset = `legacyListItem`: named dot rating
+  0–5 with S/P/E and the die, the look of every list saved before 016) and `listIsNamed`. The
+  item id shares the template's identifier namespace (`collectTreeIssues`) but is not a page
+  field (`collectTemplateFields` skips it; draft `mapFieldItems` reaches it, so the field editor
+  callbacks work by id; `FieldEditor itemOfList` hides storage, required, and formula). Entries
+  are `TemplateListEntry` `{ id, label?, value?, detail?, pickLabel? }` under `listValueKey`:
+  `value` has the item field's own shape, `detail` is a rating's text and flags, `pickLabel` a
+  user-catalog pick's name. The write path validates changed entries only (by reference) against
+  the item; `coerceListValue(item, value)` shows stored values under a changed item (numbers move
+  between number, rating, and resource current) and anything else reads empty and reports
+  `list-entry-unreadable`. Rendering: `features/sheet/declarative/listEntries.tsx`
+  (`CustomListView`, memoized `ListEntryRow`, `pageApi.updateList` for stable callbacks); every
+  control takes `nameSlot`, `rollLabel`, and `removeSlot` and places the remove button by
+  `listEntryShape` (row: end of row; block: `LabeledField` trailing). Saving a template whose
+  list item or naming changed runs `listItemChangeReport` (compatible documents' stored
+  entries) and asks first; stored values are never rewritten by the change.
 - Any node may carry `visibleWhen: { coordinate, equals, not? }`: rendered only while the value
   at the coordinate (bag value or bound document data) equals `equals` (`not` inverts). Never
   affects storage; the editor always shows the node (condition control on every panel). An
@@ -269,7 +287,9 @@ item array through the same molecules (V5 `weapons`, `inventory`).
 - A pick from a user catalog stores the entry id and the name in `<valueKey>#label` (in a table
   row: `<columnId>#label`; `pickLabelKey`); the select shows the live name, or `#label` once the
   entry or catalog is gone. Other use sites: a value-bag list's `catalog: { catalogId, valueFrom? }`
-  (names suggest entries; `valueFrom` copies a number column into the 0–20 value), and a table
+  (named lists only: names suggest entries; `valueFrom` copies a column that fits the item type
+  — `catalogKindFitsListItem` — into the entry value; a mismatch reports `unknown-fill-detail`,
+  a catalog on an unnamed list `list-catalog-unnamed`), and a table
   `select` column's `binding`, whose fills target sibling column ids and write only that row
   (`pageApi.setRowValues`). Template import keeps user catalog bindings (they may arrive later).
 - Fill semantics (`readCatalogDetails` + `pageApi.applyWrites`): picking an entry **overwrites**
@@ -391,7 +411,7 @@ preferredViewId })`; creation flows ask `newDocumentPage` (`features/sheet/data/
   for a shipped type's chosen default. `relocateDocuments(changes)` applies the document side of a
   library move in one write (`null` clears; only user-type documents change `systemId`).
 - `metadata.seededPresets`: list presets are copied once per document × template
-  (copy-on-assign). The seeding effect in `useTemplatePage` writes bag, data, and metadata.
+  (copy-on-assign); custom lists seed only when named, through `presetListEntry(item, …)`. The seeding effect in `useTemplatePage` writes bag, data, and metadata.
 
 ## Editor (`components/dialogs/template-editor/`)
 

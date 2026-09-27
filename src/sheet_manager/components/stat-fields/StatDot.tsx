@@ -2,7 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { X } from 'lucide-react';
-import { useCallback } from 'react';
+import { type ReactNode, useCallback } from 'react';
 
 import { RATING_FLAGS, type RatingFlag } from '../../types/template';
 import {
@@ -32,6 +32,8 @@ interface StatDotProps {
     practiced?: boolean | null;
     activeColor?: { bg?: string; border?: string };
     onRemove?: () => void;
+    /** A caller's own remove control, in the place of the built-in one (list entries). */
+    removeSlot?: ReactNode;
     onDiceRoll?: TraitDiceRoll;
     statLabel?: string;
     characterName?: string;
@@ -71,6 +73,7 @@ export function StatDot({
     practiced = null,
     activeColor,
     onRemove,
+    removeSlot,
     onDiceRoll,
     statLabel,
     characterName,
@@ -83,6 +86,7 @@ export function StatDot({
           : [];
     const hasFlags = visibleFlags.length > 0;
     const flagValues = { specialization, experienced, practiced };
+    const removable = Boolean(onRemove || removeSlot);
 
     const handleClick = useCallback(
         (index: number) => {
@@ -115,7 +119,7 @@ export function StatDot({
             role="radiogroup"
             aria-label={translate(uiMessages.sheet.controls.statDot.group)}
         >
-            {(hasFlags || onRemove || onDiceRoll) && (
+            {(hasFlags || removable || onDiceRoll) && (
                 <div className="flex w-full">
                     {onDiceRoll ? (
                         <StatDiceButton
@@ -129,7 +133,7 @@ export function StatDot({
                             statLabel={statLabel}
                             characterName={characterName}
                         />
-                    ) : hasFlags && onRemove ? (
+                    ) : hasFlags && removable ? (
                         <div className={clsx('invisible', statFlagSizeClasses[size])} />
                     ) : null}
                     {hasFlags && (
@@ -156,7 +160,9 @@ export function StatDot({
                             ))}
                         </div>
                     )}
-                    {onRemove ? (
+                    {removeSlot ? (
+                        <div className="ml-auto flex">{removeSlot}</div>
+                    ) : onRemove ? (
                         <button
                             type="button"
                             onClick={onRemove}

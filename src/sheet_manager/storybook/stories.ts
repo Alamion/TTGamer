@@ -561,6 +561,114 @@ const collections = story(
     ]
 );
 
+const listEntries = story(
+    'list-entries',
+    'Custom list entries',
+    'One list per entry type: each entry is a copy of one field. Notes and pictures have no typed name.',
+    ENGINE,
+    [
+        {
+            id: 'section-entries',
+            type: 'section',
+            title: 'Entry types',
+            columns: 2,
+            children: [
+                {
+                    id: 'entries-text',
+                    type: 'list',
+                    title: 'Contacts (text)',
+                    showTitle: true,
+                    valueKey: 'entries-text',
+                    item: text('entries-text-item', 'Note'),
+                },
+                {
+                    id: 'entries-notes',
+                    type: 'list',
+                    title: 'Notes (multi-line, unnamed)',
+                    showTitle: true,
+                    valueKey: 'entries-notes',
+                    named: false,
+                    item: text('entries-notes-item', 'Note', { multiline: true, hideLabel: true }),
+                },
+                {
+                    id: 'entries-number',
+                    type: 'list',
+                    title: 'Debts (number)',
+                    showTitle: true,
+                    valueKey: 'entries-number',
+                    item: { id: 'entries-number-item', type: 'number', label: 'Amount', min: 0 },
+                },
+                {
+                    id: 'entries-toggle',
+                    type: 'list',
+                    title: 'Oaths kept (toggle)',
+                    showTitle: true,
+                    valueKey: 'entries-toggle',
+                    item: { id: 'entries-toggle-item', type: 'toggle', label: 'Kept' },
+                },
+                {
+                    id: 'entries-select',
+                    type: 'list',
+                    title: 'Rituals (choice)',
+                    showTitle: true,
+                    valueKey: 'entries-select',
+                    item: {
+                        id: 'entries-select-item',
+                        type: 'select',
+                        label: 'Level',
+                        options: options(3),
+                    },
+                },
+                {
+                    id: 'entries-rating',
+                    type: 'list',
+                    title: 'Backgrounds (rating, number style)',
+                    showTitle: true,
+                    valueKey: 'entries-rating',
+                    item: {
+                        id: 'entries-rating-item',
+                        type: 'rating',
+                        label: 'Dots',
+                        presentation: 'number',
+                        max: 10,
+                        showNumbers: true,
+                    },
+                },
+                {
+                    id: 'entries-resource',
+                    type: 'list',
+                    title: 'Bonds (resource)',
+                    showTitle: true,
+                    valueKey: 'entries-resource',
+                    item: { id: 'entries-resource-item', type: 'resource', label: 'Bond', max: 10 },
+                },
+                {
+                    id: 'entries-reference',
+                    type: 'list',
+                    title: 'Allies (document reference)',
+                    showTitle: true,
+                    valueKey: 'entries-reference',
+                    item: {
+                        id: 'entries-reference-item',
+                        type: 'reference',
+                        label: 'Ally',
+                        targetKinds: ['character'],
+                    },
+                },
+                {
+                    id: 'entries-image',
+                    type: 'list',
+                    title: 'Mementos (image, unnamed)',
+                    showTitle: true,
+                    valueKey: 'entries-image',
+                    named: false,
+                    item: { id: 'entries-image-item', type: 'image', label: 'Memento' },
+                },
+            ],
+        },
+    ]
+);
+
 /**
  * One variant per binding shape: the kind plus what changes its rendering (pool or rating
  * resource, member or computed-length track, field value type, equipment section).
@@ -666,6 +774,7 @@ export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     catalogFields,
     userCatalogFields,
     collections,
+    listEntries,
 ];
 
 let allStories: readonly ElementStory[] | undefined;

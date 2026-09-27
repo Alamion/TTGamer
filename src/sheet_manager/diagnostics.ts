@@ -13,6 +13,7 @@ export type SheetIssueCode =
     | 'document-recovered'
     | 'binding-unresolved'
     | 'catalog-unavailable'
+    | 'list-entry-unreadable'
     | 'formula-error'
     | 'template-reference-invalid'
     /** A document rendered a page other than the one it asked for (stale id, kind mismatch). */

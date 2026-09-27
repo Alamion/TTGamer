@@ -17,8 +17,9 @@ import {
     updateNode,
 } from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
+import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
-import type { TemplateNode } from '@site/src/sheet_manager/types/template';
+import type { ListNode, TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema, TEMPLATE_LIMITS } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
@@ -40,6 +41,7 @@ const ISSUE_MESSAGES = {
     unknownBinding: 'Unknown binding "{id}".',
     unknownCatalog: 'Unknown catalog "{id}".',
     unknownFillTarget: 'Missing fill target "{id}".',
+    listCatalogUnnamed: 'Suggestions need entry names.',
     unknownLabelMessage: 'Unknown translation "{id}".',
     invalidDocsLink: 'Invalid docs link "{id}".',
 };
@@ -1124,5 +1126,111 @@ describe('catalog picker scope (spec 015)', () => {
         const panel = settings('relic');
         expect(within(panel).getByText('Power')).toBeTruthy();
         expect(within(panel).getByText('Cursed')).toBeTruthy();
+    });
+});
+
+describe('list entry settings (spec 016)', () => {
+    afterEach(() => {
+        cleanup();
+        useTemplateStore.setState({ templates: [], quarantine: [] });
+    });
+
+    const listTemplate = () =>
+        CustomTemplateSchema.parse({
+            id: 'list-kit',
+            name: 'List Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [{ id: 'skills', type: 'list', valueKey: 'skills', title: 'Skills' }],
+        });
+
+    function open() {
+        useTemplateStore.setState({ templates: [listTemplate()], quarantine: [] });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template: listTemplate() },
+                onClose: () => {},
+            })
+        );
+        selectInOutline('skills');
+        return settings('skills');
+    }
+
+    const saved = () => useTemplateStore.getState().templates[0]!.children[0] as ListNode;
+
+    it('offers eight entry types and hides settings that cannot repeat', () => {
+        const panel = open();
+        const type = within(panel).getByLabelText('Field type') as HTMLSelectElement;
+        expect(type.value).toBe('rating');
+        expect([...type.options].map(({ value }) => value)).toEqual([
+            'text',
+            'number',
+            'toggle',
+            'select',
+            'rating',
+            'resource',
+            'reference',
+            'image',
+        ]);
+        expect(within(panel).queryByLabelText(/Shared value key/)).toBeNull();
+        expect(within(panel).queryByText('Required (advisory marker)')).toBeNull();
+    });
+
+    it('materializes the legacy entry on the first edit and saves the new type', () => {
+        const panel = open();
+        fireEvent.change(within(panel).getByLabelText('Field type'), {
+            target: { value: 'resource' },
+        });
+        fireEvent.click(within(settings('skills')).getByLabelText('Entries are named'));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(saved()).toMatchObject({
+            named: false,
+            item: { id: 'skills-item', type: 'resource' },
+        });
+    });
+
+    it('asks before saving an entry type that hides stored values', () => {
+        useDocumentStore.setState({
+            documents: [
+                {
+                    id: 'doc-skills',
+                    kind: 'character',
+                    systemId: 'star-wars-wod',
+                    definitionId: 'sentient',
+                    schemaVersion: 1,
+                    metadata: { title: 'Kira', tags: [] },
+                    templateValues: { skills: [{ id: 'e1', label: 'Brawl', value: 2 }] },
+                    data: {},
+                } as never,
+            ],
+        });
+        const panel = open();
+        fireEvent.change(within(panel).getByLabelText('Field type'), {
+            target: { value: 'image' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const dialog = screen.getByRole('dialog', { name: 'Change list entries?' });
+        expect(dialog.textContent).toContain(
+            'Skills: 1 stored value in 1 sheet will no longer be shown.'
+        );
+        fireEvent.click(within(dialog).getAllByRole('button', { name: 'Cancel' })[0]!);
+        expect(saved().item).toBeUndefined();
+
+        fireEvent.change(within(settings('skills')).getByLabelText('Field type'), {
+            target: { value: 'number' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(screen.queryByRole('dialog', { name: 'Change list entries?' })).toBeNull();
+        expect(saved().item).toMatchObject({ type: 'number' });
+        useDocumentStore.setState({ documents: [] });
+    });
+
+    it('hides presets and disables the catalog on unnamed lists', () => {
+        const panel = open();
+        expect(within(panel).queryByText('Preset entries')).not.toBeNull();
+        fireEvent.click(within(panel).getByLabelText('Entries are named'));
+        const after = settings('skills');
+        expect(within(after).queryByText('Preset entries')).toBeNull();
+        expect(within(after).getByText('Suggestions need entry names.')).toBeTruthy();
     });
 });

@@ -4,7 +4,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Plus } from 'lucide-react';
 import { type ReactNode, useState } from 'react';
 
-import type { TemplateNode } from '../../../types/template';
+import { legacyListItem, type TemplateNode } from '../../../types/template';
 import { generateDraftId, newField } from './draft';
 import { useEditorModel } from './EditorModel';
 
@@ -75,12 +75,15 @@ function useElementOptions(): readonly ElementOption[] {
             hint: t(editor.paletteListHint),
             build: () => {
                 const id = generateDraftId('lst');
+                const title = t(editor.paletteList);
                 return {
                     id,
                     type: 'list',
-                    title: t(editor.paletteList),
+                    title,
                     columns: 1,
                     valueKey: `${id}-entries`,
+                    // Starts as the classic trait row; the author picks another entry type.
+                    item: { ...legacyListItem({ id, title }), id: generateDraftId('f') },
                 };
             },
         },

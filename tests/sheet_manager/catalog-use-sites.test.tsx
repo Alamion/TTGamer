@@ -281,3 +281,65 @@ describe('lists and table columns bound to a user catalog (spec 015, US3)', () =
         expect(validateTemplateReferences(tablePage())).toEqual([]);
     });
 });
+
+describe('list entry types filled from a catalog (spec 016, US5)', () => {
+    const listWith = (item: Record<string, unknown>, valueFrom: string, extra = {}) =>
+        page([
+            {
+                id: 'carried',
+                type: 'list',
+                valueKey: 'carried',
+                title: 'Relics carried',
+                item: { id: 'relic-entry', label: 'Relic', ...item },
+                catalog: { catalogId: RELICS_ID, valueFrom },
+                ...extra,
+            },
+        ]);
+
+    const pick = (typed: string, name: RegExp) => {
+        const input = screen.getByPlaceholderText('Relics carried');
+        fireEvent.focus(input);
+        fireEvent.change(input, { target: { value: typed } });
+        fireEvent.click(screen.getByRole('option', { name }));
+    };
+
+    it('copies a number column into a number entry', () => {
+        mount(listWith({ type: 'number' }, POWER_COLUMN), {
+            carried: [{ id: 'row-1', label: '' }],
+        });
+        pick('Bl', /Black Mirror/);
+        expect(values().carried).toEqual([{ id: 'row-1', label: 'Black Mirror', value: 4 }]);
+    });
+
+    it('copies a number column into a resource entry and keeps its maximum', () => {
+        mount(listWith({ type: 'resource', max: 10 }, POWER_COLUMN), {
+            carried: [{ id: 'row-1', label: '', value: { current: 0, max: 6 } }],
+        });
+        pick('Bo', /Bone Flute/);
+        expect(values().carried).toEqual([
+            { id: 'row-1', label: 'Bone Flute', value: { current: 2, max: 6 } },
+        ]);
+    });
+
+    it('copies a toggle column into a toggle entry', () => {
+        mount(listWith({ type: 'toggle' }, CURSED_COLUMN), {
+            carried: [{ id: 'row-1', label: '' }],
+        });
+        pick('Bl', /Black Mirror/);
+        expect(values().carried).toEqual([{ id: 'row-1', label: 'Black Mirror', value: true }]);
+    });
+
+    it('reports a value column that does not fit and a catalog on an unnamed list', () => {
+        expect(
+            validateTemplateReferences(listWith({ type: 'image' }, POWER_COLUMN))
+        ).toContainEqual({
+            code: 'unknown-fill-detail',
+            nodeId: 'carried',
+            key: POWER_COLUMN,
+        });
+        expect(validateTemplateReferences(listWith({ type: 'toggle' }, CURSED_COLUMN))).toEqual([]);
+        expect(
+            validateTemplateReferences(listWith({ type: 'text' }, POWER_COLUMN, { named: false }))
+        ).toContainEqual({ code: 'list-catalog-unnamed', nodeId: 'carried', key: RELICS_ID });
+    });
+});

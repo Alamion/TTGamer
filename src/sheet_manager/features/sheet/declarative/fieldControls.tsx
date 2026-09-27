@@ -3,7 +3,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 import { ExternalLink, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { Checkbox } from '../../../components/controls/Checkbox';
@@ -91,6 +91,41 @@ export interface TemplateFieldControlProps {
     onOpenDocument?: (documentId: string) => void;
     /** Fixed preview rendering: missing reference targets are expected, not reported. */
     previewSource?: boolean;
+    /** List entries (spec 016): the typed name, shown in the label's place by a rating. */
+    nameSlot?: ReactNode;
+    /** Rating only: the name the die and the dots announce (the entry's name). */
+    rollLabel?: string;
+    /** List entries: the remove control, placed by row-shaped controls at the end of the row. */
+    removeSlot?: ReactNode;
+}
+
+/**
+ * How a control sits in a list entry (spec 016, R9): a row ends with the remove control; a
+ * block (several lines, a picture, a set of choices) leaves it to the entry's label row.
+ */
+export function listEntryShape(field: TemplateField): 'row' | 'block' {
+    switch (field.type) {
+        case 'text':
+            return field.multiline ? 'block' : 'row';
+        case 'select':
+        case 'reference':
+            return field.multiple ? 'block' : 'row';
+        case 'image':
+            return 'block';
+        default:
+            return 'row';
+    }
+}
+
+/** A row-shaped control followed by its list entry's remove control. */
+function EndsWithRemove({ removeSlot, children }: { removeSlot?: ReactNode; children: ReactNode }) {
+    if (!removeSlot) return children;
+    return (
+        <div className="flex min-w-0 items-center gap-2">
+            <div className="min-w-0 flex-1">{children}</div>
+            {removeSlot}
+        </div>
+    );
 }
 
 function toDisplay(value: unknown): string {
@@ -98,8 +133,13 @@ function toDisplay(value: unknown): string {
 }
 
 export function TextFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return TextFieldControlRender({ field: field as FieldType<'text'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = TextFieldControlRender({ field: field as FieldType<'text'>, ...rest });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function TextFieldControlRender({
@@ -134,8 +174,13 @@ function TextFieldControlRender({
 }
 
 export function NumberFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return NumberFieldControlRender({ field: field as FieldType<'number'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = NumberFieldControlRender({ field: field as FieldType<'number'>, ...rest });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function NumberFieldControlRender({
@@ -178,22 +223,30 @@ export function ToggleFieldControl({
     disabled,
     field,
     onChange,
+    removeSlot,
     value,
 }: TemplateFieldControlProps) {
     return (
-        <Checkbox
-            checked={value === true}
-            onChange={onChange}
-            disabled={disabled}
-            label={field.label}
-            hideLabel
-        />
+        <EndsWithRemove removeSlot={removeSlot}>
+            <Checkbox
+                checked={value === true}
+                onChange={onChange}
+                disabled={disabled}
+                label={field.label}
+                hideLabel
+            />
+        </EndsWithRemove>
     );
 }
 
 export function SelectFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return SelectFieldControlRender({ field: field as FieldType<'select'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = SelectFieldControlRender({ field: field as FieldType<'select'>, ...rest });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function SelectFieldControlRender({
@@ -395,10 +448,13 @@ function RatingFieldControlRender({
     disabled,
     field,
     maxDegraded,
+    nameSlot,
     onChange,
     onDetailChange,
     ratingDetail = {},
+    removeSlot,
     resolvedMax,
+    rollLabel,
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'rating'> }) {
     const traitDiceRoll = useDocumentTraitDiceRoll();
@@ -440,6 +496,9 @@ function RatingFieldControlRender({
             flagValues={ratingDetail}
             onFlagsChange={(next) => onDetailChange?.({ ...ratingDetail, ...next })}
             characterName={characterName}
+            labelSlot={nameSlot}
+            rollLabel={rollLabel}
+            removeSlot={removeSlot}
         >
             {maxDegraded && (
                 <p role="alert" className="text-xs text-error">
@@ -469,8 +528,13 @@ export function ratingEffectiveMax(
 }
 
 export function ResourceFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return ResourceFieldControlRender({ field: field as FieldType<'resource'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = ResourceFieldControlRender({ field: field as FieldType<'resource'>, ...rest });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function ResourceFieldControlRender({
@@ -528,8 +592,16 @@ function ResourceFieldControlRender({
 }
 
 export function ReferenceFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return ReferenceFieldControlRender({ field: field as FieldType<'reference'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = ReferenceFieldControlRender({
+        field: field as FieldType<'reference'>,
+        ...rest,
+    });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function ReferenceFieldControlRender({
@@ -696,13 +768,13 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
     };
 
     return (
-        <div className="grid gap-2">
+        <div className="grid min-w-0 gap-2">
             {src && (
                 <img
                     src={src}
                     alt={t(page.imageAlt)}
                     referrerPolicy="no-referrer"
-                    className="max-h-64 w-auto rounded border border-border"
+                    className="max-h-64 w-auto max-w-full rounded border border-border"
                 />
             )}
             {image && !src && (
@@ -741,7 +813,7 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
                         placeholder={t(uiMessages.sheet.base.portrait.urlPlaceholder)}
                         aria-label={t(page.imageUrl)}
                         disabled={disabled}
-                        className={`${inputClasses} w-64`}
+                        className={`${inputClasses} w-64 min-w-0 max-w-full`}
                     />
                     {image && (
                         <button

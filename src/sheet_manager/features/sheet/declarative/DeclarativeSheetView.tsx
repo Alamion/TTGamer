@@ -16,11 +16,10 @@ import {
 } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
-import { FieldLabel } from '../../../components/controls/FieldLabel';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
 import { TermHintProvider } from '../../../components/terms/TermHintProvider';
-import { type TermLink, termLinkOf } from '../../../components/terms/termLink';
+import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
 import type { FieldBinding } from '../../../systems/templateBindings';
 import {
@@ -31,13 +30,7 @@ import {
 } from '../../../systems/templateBindings';
 import { isUserCatalogId } from '../../../systems/userCatalogs';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
-import {
-    fieldLabelPosition,
-    fieldValueKey,
-    isTemplateField,
-    tableValueKey,
-} from '../../../types/template';
-import { listValueKey } from '../../../types/template';
+import { fieldValueKey, isTemplateField, tableValueKey } from '../../../types/template';
 import {
     coerceStoredValue,
     pickLabelKey,
@@ -56,8 +49,10 @@ import {
 } from './editorOverlay';
 import type { FormulaEvaluationError } from './formula';
 import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
+import { LabeledField } from './LabeledField';
+import { CustomListView } from './listEntries';
 import { localizeTemplate } from './localizeTemplate';
-import { CustomListView, PrimitiveNodeView, SystemListView } from './primitives';
+import { PrimitiveNodeView, SystemListView } from './primitives';
 
 const editor = uiMessages.sheet.templates.editor;
 const page = uiMessages.sheet.templates.page;
@@ -248,53 +243,6 @@ function FieldCell({
                 </p>
             )}
         </LabeledField>
-    );
-}
-
-/**
- * A field's label and control in the field's label position (spec 014): stacked above, or
- * beside the control like a trait row; the description stays under both.
- */
-function LabeledField({
-    field,
-    term,
-    children,
-}: {
-    field: TemplateField;
-    term?: TermLink;
-    children: ReactNode;
-}) {
-    const position = fieldLabelPosition(field);
-    const label = (
-        <FieldLabel
-            label={field.label}
-            term={term}
-            required={field.required}
-            position={position}
-            hidden={field.hideLabel}
-            className={clsx(position === 'left' && 'min-w-0 max-w-[50%] shrink-0 pt-1.5')}
-        />
-    );
-    const description = field.description && (
-        <span className="text-xs text-textSecondary">{field.description}</span>
-    );
-    if (position === 'top' || field.hideLabel) {
-        return (
-            <div className="grid grid-cols-1 gap-1">
-                {label}
-                {children}
-                {description}
-            </div>
-        );
-    }
-    return (
-        <div className="grid grid-cols-1 gap-1">
-            <div className="flex items-start gap-3">
-                {label}
-                <div className="grid min-w-0 flex-1 gap-1">{children}</div>
-            </div>
-            {description}
-        </div>
     );
 }
 
@@ -526,27 +474,7 @@ function ListView({
             />
         );
     }
-    const stored: unknown = pageApi.values[listValueKey(node)];
-    const entries = Array.isArray(stored)
-        ? (stored as Array<{ id: string; label: string; value?: number }>).map((entry) => ({
-              id: entry.id,
-              label: entry.label,
-              value: typeof entry.value === 'number' ? entry.value : 0,
-          }))
-        : [];
-    return (
-        <div className="grid grid-cols-1 gap-1" data-list-columns={node.columns}>
-            {node.showTitle && node.title && (
-                <h3 className="text-sm font-semibold text-textPrimary">{node.title}</h3>
-            )}
-            <CustomListView
-                list={node}
-                entries={entries}
-                disabled={pageApi.disabled}
-                onChange={(next) => pageApi.setValue(listValueKey(node), next)}
-            />
-        </div>
-    );
+    return <CustomListView list={node} pageApi={pageApi} />;
 }
 
 const NodeView = memo(function NodeView({

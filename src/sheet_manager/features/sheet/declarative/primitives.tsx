@@ -146,10 +146,7 @@ function IdentityField({
 
 type TraitListEntry = { id: string; label: string; value: number };
 
-/** Custom list entries keep a 0–20 value (`TemplateListEntrySchema`). */
-const LIST_VALUE_MAX = 20;
-
-function toCatalogEntries(
+export function toCatalogEntries(
     catalog: CatalogBindingEntry,
     locale: string,
     filter?: { key: string; value: string }
@@ -356,66 +353,6 @@ function SystemListBody({
         <SectionCard title={showTitle ? title : undefined} docsPath={docsPath}>
             {list}
         </SectionCard>
-    );
-}
-
-/** Custom (value-bag) list: entries stored under the list's own coordinate. */
-export function CustomListView({
-    list,
-    entries,
-    disabled,
-    onChange,
-}: {
-    list: ListNode;
-    entries: readonly TraitListEntry[];
-    disabled: boolean;
-    onChange: (next: TraitListEntry[]) => void;
-}) {
-    const catalog = list.catalog;
-    // A catalog pick names the entry and, with `valueFrom`, copies its number (spec 015, R9).
-    const onCatalogSelect = catalog
-        ? (id: string, entry: CatalogEntry) => {
-              const detail = catalog.valueFrom
-                  ? readCatalogDetails(catalog.catalogId, entry.id)?.[catalog.valueFrom]
-                  : undefined;
-              const value =
-                  typeof detail === 'number'
-                      ? Math.max(0, Math.min(LIST_VALUE_MAX, Math.round(detail)))
-                      : undefined;
-              onChange(
-                  entries.map((item) =>
-                      item.id === id
-                          ? {
-                                ...item,
-                                label: entry.name,
-                                ...(value !== undefined ? { value } : {}),
-                            }
-                          : item
-                  )
-              );
-          }
-        : undefined;
-    return (
-        <TraitListBindingView
-            binding={
-                {
-                    key: `list:${list.id}`,
-                    kind: 'list',
-                    label: list.title ?? list.id,
-                    documentKinds: new Set<string>(),
-                    listId: list.id,
-                    dataKey: listValueKey(list),
-                    entryShape: 'trait',
-                    ...(catalog ? { catalog: { catalogId: catalog.catalogId } } : {}),
-                } satisfies ListBinding
-            }
-            items={entries}
-            disabled={disabled}
-            onChange={onChange}
-            onCatalogSelect={onCatalogSelect}
-            placeholder={list.title}
-            columns={list.columns as 1 | 2 | 3 | 4}
-        />
     );
 }
 

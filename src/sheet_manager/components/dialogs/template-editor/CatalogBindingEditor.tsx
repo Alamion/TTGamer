@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import {
     catalogDisplayName,
     type CatalogFillKind,
+    catalogKindFitsListItem,
     getCatalogBinding,
     listCatalogBindingsFor,
 } from '../../../features/sheet/data/catalogBindings';
@@ -88,21 +89,32 @@ function useCatalogOptions(bound: string | undefined) {
     );
 }
 
-/** A custom list's catalog: names suggest its entries, and a number column may set the value. */
+/**
+ * A custom list's catalog: names suggest its entries, and a column that fits the entry type may
+ * set the entry's value (spec 016, R8).
+ */
 export function ListCatalogPicker({
     catalog,
+    itemType,
+    disabledNote,
     onChange,
 }: {
     catalog: { catalogId: string; valueFrom?: string } | undefined;
+    itemType: string;
+    /** Why the catalog cannot be set (unnamed entries have no name to suggest into). */
+    disabledNote?: string;
     onChange: (next: { catalogId: string; valueFrom?: string } | undefined) => void;
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
     const options = useCatalogOptions(catalog?.catalogId);
-    const numbers = catalog
-        ? (getCatalogBinding(catalog.catalogId)?.fillableDetails ?? []).filter(
-              ({ kind }) => kind === 'number'
+    const fitting = catalog
+        ? (getCatalogBinding(catalog.catalogId)?.fillableDetails ?? []).filter(({ kind }) =>
+              catalogKindFitsListItem(kind, itemType)
           )
         : [];
+    if (disabledNote) {
+        return <p className="text-[11px] text-textSecondary">{disabledNote}</p>;
+    }
     return (
         <div className="flex flex-wrap items-center gap-2">
             <select
@@ -131,7 +143,7 @@ export function ListCatalogPicker({
                     <option value="">
                         {t(bindingMessages.valueFrom)}: {t(bindingMessages.none)}
                     </option>
-                    {numbers.map(({ key, label }) => (
+                    {fitting.map(({ key, label }) => (
                         <option key={key} value={key}>
                             {label}
                         </option>

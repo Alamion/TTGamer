@@ -12,7 +12,13 @@ import type {
     TemplateField,
     TemplateNode,
 } from '../../../types/template';
-import { isContainerNode, isTemplateField, TEMPLATE_LIMITS } from '../../../types/template';
+import {
+    isContainerNode,
+    isTemplateField,
+    listIsNamed,
+    listItemField,
+    TEMPLATE_LIMITS,
+} from '../../../types/template';
 import { ListCatalogPicker } from './CatalogBindingEditor';
 import type { NodeUpdates } from './draft';
 import { EditorHelp } from './EditorHelp';
@@ -430,10 +436,15 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
     );
 }
 
+const NO_FILL_TARGETS: readonly never[] = [];
+
 function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; node: ListNode }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
     const listUpdate = (updates: Partial<ListNode>) =>
         callbacks.onUpdate(node.id, updates as NodeUpdates);
+    const custom = node.valueKey !== undefined;
+    const named = !custom || listIsNamed(node);
+    const item = listItemField(node);
     return (
         <div className="space-y-2">
             <input
@@ -444,11 +455,33 @@ function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; no
                 className={`${inputClasses} w-full`}
             />
             <ListSourceSelect node={node} onReplace={callbacks.onReplace} />
-            {node.valueKey !== undefined && (
-                <ListCatalogPicker
-                    catalog={node.catalog}
-                    onChange={(catalog) => listUpdate({ catalog })}
-                />
+            {custom && (
+                <>
+                    <ToggleRow
+                        checked={named}
+                        label={t(editor.listNamed)}
+                        onChange={(checked) => listUpdate({ named: checked ? undefined : false })}
+                    />
+                    <details open className="rounded border border-border">
+                        <summary className="cursor-pointer px-2 py-1 text-xs font-medium text-textSecondary">
+                            {t(editor.listEntry)}
+                        </summary>
+                        {/* An entry is one field: a choice's catalog has no sibling to fill. */}
+                        <EditorFillTargetsContext.Provider value={NO_FILL_TARGETS}>
+                            <FieldEditor
+                                callbacks={fieldCallbacks(callbacks, item.id)}
+                                field={item}
+                                itemOfList
+                            />
+                        </EditorFillTargetsContext.Provider>
+                    </details>
+                    <ListCatalogPicker
+                        catalog={node.catalog}
+                        itemType={item.type}
+                        disabledNote={named ? undefined : t(editor.listCatalogNeedsNames)}
+                        onChange={(catalog) => listUpdate({ catalog })}
+                    />
+                </>
             )}
             <ColumnSelect
                 onChange={(columns) => listUpdate({ columns: columns ?? 1 })}
@@ -464,7 +497,7 @@ function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; no
                 label={t(editor.listFramed)}
                 onChange={(checked) => listUpdate({ framed: checked || undefined })}
             />
-            <ListPresetsEditor callbacks={callbacks} node={node} />
+            {named && <ListPresetsEditor callbacks={callbacks} node={node} />}
         </div>
     );
 }

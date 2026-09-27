@@ -13,6 +13,8 @@ import type {
 } from '../../../types/template';
 import {
     fieldLabelPosition,
+    hasLabelPositionChoice,
+    LIST_ITEM_TYPES,
     RATING_FLAGS,
     TEMPLATE_FIELD_TYPES,
     TEMPLATE_LIMITS,
@@ -56,14 +58,21 @@ export interface FieldEditorCallbacks {
 export function FieldEditor({
     callbacks,
     field,
+    itemOfList = false,
 }: {
     callbacks: FieldEditorCallbacks;
     field: TemplateField;
+    /**
+     * A custom list's entry template (spec 016): settings that cannot apply to repeated copies
+     * (storage, required) are hidden, and a formula is not offered.
+     */
+    itemOfList?: boolean;
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
     const { bindings, coordinateListId: coordinateDatalist } = useEditorModel();
     const sourceKey = currentValueSource(field, bindings);
-    const isCustom = sourceKey === CUSTOM_SOURCE;
+    const isCustom = itemOfList || sourceKey === CUSTOM_SOURCE;
+    const types = itemOfList ? LIST_ITEM_TYPES : TEMPLATE_FIELD_TYPES;
     // Trait values render with the sheet's own trait row: rating bounds and maxFrom do not apply.
     const isTraitSource = bindings.some(
         (binding) => binding.key === sourceKey && binding.kind === 'trait'
@@ -92,7 +101,7 @@ export function FieldEditor({
                     aria-label={t(editor.fieldType)}
                     className={`${inputClasses} min-w-0 flex-[1_1_7rem] disabled:opacity-60`}
                 >
-                    {TEMPLATE_FIELD_TYPES.map((type) => (
+                    {types.map((type) => (
                         <option key={type} value={type}>
                             {t(fieldTypes[type])}
                         </option>
@@ -114,12 +123,17 @@ export function FieldEditor({
                 className={`${inputClasses} w-full`}
             />
 
-            <ValueSourceSelect node={field} onReplace={(_, next) => callbacks.onReplace(next)} />
+            {!itemOfList && (
+                <ValueSourceSelect
+                    node={field}
+                    onReplace={(_, next) => callbacks.onReplace(next)}
+                />
+            )}
             {!isCustom && (
                 <p className="text-[11px] text-textSecondary">{t(editor.sourceTypeLocked)}</p>
             )}
 
-            {isCustom && (
+            {isCustom && !itemOfList && (
                 <div className="flex items-center gap-2">
                     <input
                         value={field.valueKey ?? ''}
@@ -138,15 +152,17 @@ export function FieldEditor({
                 </div>
             )}
 
-            <label className="flex items-center gap-2 text-xs text-textSecondary">
-                <input
-                    type="checkbox"
-                    checked={field.required}
-                    onChange={(event) => callbacks.onUpdate({ required: event.target.checked })}
-                    className="h-3.5 w-3.5"
-                />
-                {t(editor.fieldRequired)}
-            </label>
+            {!itemOfList && (
+                <label className="flex items-center gap-2 text-xs text-textSecondary">
+                    <input
+                        type="checkbox"
+                        checked={field.required}
+                        onChange={(event) => callbacks.onUpdate({ required: event.target.checked })}
+                        className="h-3.5 w-3.5"
+                    />
+                    {t(editor.fieldRequired)}
+                </label>
+            )}
 
             <ToggleRow
                 checked={!field.hideLabel}
@@ -155,25 +171,27 @@ export function FieldEditor({
                     callbacks.onUpdate({ hideLabel: checked ? undefined : true })
                 }
             />
-            <label className="flex items-center gap-2 text-xs text-textSecondary">
-                {t(editor.labelPosition)}
-                <select
-                    value={fieldLabelPosition(field)}
-                    disabled={field.hideLabel === true}
-                    onChange={(event) => {
-                        const position = event.target.value as FieldLabelPosition;
-                        // The type's own default is not stored, so it can change with the type.
-                        const fallback = fieldLabelPosition({ type: field.type });
-                        callbacks.onUpdate({
-                            labelPosition: position === fallback ? undefined : position,
-                        });
-                    }}
-                    className={`${inputClasses} py-1 disabled:opacity-50`}
-                >
-                    <option value="top">{t(editor.labelTop)}</option>
-                    <option value="left">{t(editor.labelLeft)}</option>
-                </select>
-            </label>
+            {hasLabelPositionChoice(field.type) && (
+                <label className="flex items-center gap-2 text-xs text-textSecondary">
+                    {t(editor.labelPosition)}
+                    <select
+                        value={fieldLabelPosition(field)}
+                        disabled={field.hideLabel === true}
+                        onChange={(event) => {
+                            const position = event.target.value as FieldLabelPosition;
+                            // The type's own default is not stored, so it can change with the type.
+                            const fallback = fieldLabelPosition({ type: field.type });
+                            callbacks.onUpdate({
+                                labelPosition: position === fallback ? undefined : position,
+                            });
+                        }}
+                        className={`${inputClasses} py-1 disabled:opacity-50`}
+                    >
+                        <option value="top">{t(editor.labelTop)}</option>
+                        <option value="left">{t(editor.labelLeft)}</option>
+                    </select>
+                </label>
+            )}
             <TermHintControl
                 node={field}
                 onChange={(termHint) => callbacks.onUpdate({ termHint })}

@@ -33,7 +33,7 @@ Pages, sections, and groups lay out their elements in 1 to 4 **Columns**. With *
 
 ## Fields \{#fields}
 
-A field holds one value. Its **Field label** is shown next to it (**Show label** hides it), **Help text** explains it on hover, and **Required** marks it for the reader without blocking anything. **Label position** puts the label **Above the value** in small grey type, or **Beside the value** in the larger type of the sheet's attribute rows; ratings and derived values start beside, other fields above.
+A field holds one value. Its **Field label** is shown next to it (**Show label** hides it), **Help text** explains it on hover, and **Required** marks it for the reader without blocking anything. **Label position** puts the label **Above the value** in small grey type, or **Beside the value** in the larger type of the sheet's attribute rows; ratings and derived values start beside, other fields above. An image always keeps its label above: the picture and its upload controls need the whole width.
 
 | Type                   | What the reader gets                                                                                                                                                                                     |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -66,7 +66,15 @@ A table holds rows of values with the same columns; every column is a field. **M
 
 ## Lists \{#lists}
 
-A list holds entries added one by one: your own entries, or a list the game already keeps for the document (skills, merits and flaws, equipment). **Preset entries** start a new document with ready rows.
+A list holds entries added one by one: your own entries, or a list the game already keeps for the document (skills, merits and flaws, equipment).
+
+A list with its own entries sets up one **Entry**: pick its type — text, number, toggle, choice, rating, resource, document reference, or image — and its settings, as for a field of that type. Every entry the reader adds is a copy of it. A new list starts with the classic trait row: a rating with dots, the S/P/E flags, and a die.
+
+- **Entries are named**: each entry gets a name the reader types, such as "Firearms" next to its dots. Turn it off for lists of notes or pictures: then each entry shows the entry's label, or nothing when **Show label** is off.
+- **Preset entries** start a new document with ready rows: their names, and their numbers where the entry holds one. Presets need named entries.
+- Each entry has its own remove button: at the end of the row, or above a block such as a picture or several lines of text.
+
+Changing the entry type or turning names off can hide values readers already stored. **Save** then lists how many values or names each list would stop showing and asks first. The values stay stored: changing the entry back shows them again, except for entries edited in between.
 
 ## Trackers \{#trackers}
 

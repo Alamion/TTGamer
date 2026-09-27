@@ -21,9 +21,15 @@ import {
     collectListNodes,
     collectTemplateFields,
     fieldValueKey,
+    listIsNamed,
+    listItemField,
     walkTemplateNodes,
 } from '../../../types/template';
-import type { TemplatePageValues } from '../../../types/templateValues';
+import {
+    presetListEntry,
+    type TemplateListEntry,
+    type TemplatePageValues,
+} from '../../../types/templateValues';
 import {
     type CatalogFillableDetail,
     getCatalogBinding,
@@ -101,6 +107,14 @@ export interface UseTemplatePageResult {
     ) => void;
     /** Writes by storage coordinate (valueKey); resolves template field ids internally. */
     setValue: (fieldOrKey: string, value: unknown) => void;
+    /**
+     * Rewrites a custom list's entries from their current stored state (spec 016), so entry
+     * callbacks stay stable instead of closing over one render's array.
+     */
+    updateList: (
+        listKey: string,
+        update: (entries: readonly TemplateListEntry[]) => TemplateListEntry[]
+    ) => void;
     status: TemplatePageStatus;
     template: CustomTemplate | undefined;
     values: TemplatePageValues;
@@ -187,6 +201,23 @@ export function useTemplatePage(
             }));
         },
         [currentDocumentId, template, readOnly, updateTemplateValues, fieldCoords]
+    );
+
+    const updateList = useCallback(
+        (
+            listKey: string,
+            update: (entries: readonly TemplateListEntry[]) => TemplateListEntry[]
+        ) => {
+            if (!currentDocumentId || !template || readOnly) return;
+            updateTemplateValues(currentDocumentId, template, (page) => {
+                const stored = page[listKey];
+                return {
+                    ...page,
+                    [listKey]: update(Array.isArray(stored) ? (stored as TemplateListEntry[]) : []),
+                };
+            });
+        },
+        [currentDocumentId, template, readOnly, updateTemplateValues]
     );
 
     /** Several cells of one row in one write; `undefined` or `null` empties a cell. */
@@ -490,6 +521,15 @@ export function useTemplatePage(
                     resolvedMax === undefined ? { degraded: true } : { resolvedMax }
                 );
             }
+            // A list entry's rating or number takes its range like the same field on the page.
+            const item = node.type === 'list' ? node.item : undefined;
+            if ((item?.type === 'rating' || item?.type === 'number') && item.maxFrom) {
+                const resolvedMax = evaluateBound(item, item.maxFrom, 'maxFrom');
+                maxima.set(
+                    item.id,
+                    resolvedMax === undefined ? { degraded: true } : { resolvedMax }
+                );
+            }
             if (node.type === 'primitive' && node.minFrom) {
                 const resolvedMin = evaluateBound(node, node.minFrom, 'minFrom');
                 if (resolvedMin !== undefined) minima.set(node.id, resolvedMin);
@@ -604,20 +644,18 @@ export function useTemplatePage(
                         presets: list.presets,
                     });
                 }
-            } else if (list.valueKey) {
-                // Value-coordinate lists seed into the bag as ordinary starting entries.
+            } else if (list.valueKey && listIsNamed(list)) {
+                // Value-coordinate lists seed into the bag as ordinary starting entries; presets
+                // are names, so unnamed lists have nothing to seed (spec 016, R11).
                 const stored: unknown = values[list.valueKey];
-                const entries = Array.isArray(stored)
-                    ? (stored as Array<{ id: string; label: string; value?: number }>)
-                    : [];
+                const entries = Array.isArray(stored) ? (stored as TemplateListEntry[]) : [];
                 const known = new Set(entries.map((entry) => String(entry.id ?? '')));
+                const item = listItemField(list);
                 const seeded = list.presets
                     .filter((preset) => !known.has(`preset-${template.id}-${preset.key}`))
-                    .map((preset) => ({
-                        id: `preset-${template.id}-${preset.key}`,
-                        label: preset.label,
-                        value: preset.value ?? 0,
-                    }));
+                    .map((preset) =>
+                        presetListEntry(item, preset, `preset-${template.id}-${preset.key}`)
+                    );
                 if (seeded.length > 0) {
                     updateTemplateValues(currentDocumentId, template, (page) => ({
                         ...page,
@@ -688,6 +726,7 @@ export function useTemplatePage(
             setValue,
             status: template ? 'ready' : 'none',
             template,
+            updateList,
             values,
         }),
         [
@@ -706,6 +745,7 @@ export function useTemplatePage(
             setRowValues,
             setValue,
             template,
+            updateList,
             values,
         ]
     );

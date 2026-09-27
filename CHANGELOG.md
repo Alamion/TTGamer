@@ -1,5 +1,21 @@
 # Changelog
 
+## v3.14.0
+
+### Minor feat
+
+- **Choose what a list entry is (spec 016, T-077)**: a custom list in a template sets up one entry — text, number, toggle, choice, rating, resource, document reference, or image — with the same settings as a field of that type, and every entry the reader adds is a copy of it: contacts with a note, bonds with a current and maximum value, rituals with a level, mementos as pictures
+- **Named or unnamed entries**: a list can ask for a name per entry (like "Firearms ●●●") or show just the field, for lists of notes or pictures; presets keep their names and numbers on named lists
+- **Every entry type can be removed**: each entry has its own remove button at the end of its row, or above a picture or a multi-line note, reachable from the keyboard and never covering the field
+- **Catalogs fill any entry type**: a list's catalog copies a number column into a number, a rating, or a resource's current value, a text column into a text, and a toggle column into a toggle
+- **Changing a list's entries asks first**: saving a new entry type, or turning names off, says how many stored values or names each list would stop showing; the values stay stored and come back when the entry is changed back
+
+### Fix
+
+- **S, P, and E on custom list entries are kept**: the flags toggled on a custom list's entries are stored instead of dropped on the next read
+- **Custom lists can be framed**: the "Draw a border around the list" setting now applies to lists with their own entries too
+- **Images keep their label above**: an image field or list entry no longer offers the label beside the value, which pushed its upload controls out of a narrow column
+
 ## v3.13.0
 
 ### Minor feat

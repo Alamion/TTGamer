@@ -24,8 +24,8 @@ changes, and for user-visible sheet flows.
 
 ## Phase 1: Setup
 
-- [ ] T001 Mark T-077 as in progress (`[ ] 🟡`) in `TODO.md`, then run `yarn validate:backlog`.
-- [ ] T002 [P] Add key skeletons to `translations/source/{en,ru}/ui/sheet/templates.yaml`
+- [x] T001 Mark T-077 as in progress (`[ ] 🟡`) in `TODO.md`, then run `yarn validate:backlog`.
+- [x] T002 [P] Add key skeletons to `translations/source/{en,ru}/ui/sheet/templates.yaml`
       (contract "Strings"):
     - the editor strings: "Entries are named", "Entry", "Entry settings", "Suggestions need entry names", "At most 1000 entries";
     - the sheet strings: "Remove {name}", "Remove {list}, entry {n}", "{list}, entry {n}", and "{list} — name";
@@ -37,7 +37,7 @@ changes, and for user-visible sheet flows.
 
 ## Phase 2: Foundational (blocks all stories)
 
-- [ ] T003 Extend `src/sheet_manager/types/template.ts` (R1, data-model "ListNode"):
+- [x] T003 Extend `src/sheet_manager/types/template.ts` (R1, data-model "ListNode"):
     - add `ListItemFieldSchema`, which is `TemplateFieldSchema` minus `formula`, and the `ListItemField` type;
     - add `item` and `named` to `ListNodeSchema`;
     - add a refine: reject `item` or `named` on a list with `bindingKey`;
@@ -47,7 +47,7 @@ changes, and for user-visible sheet flows.
 
     `collectTemplateFields` must NOT return list items.
 
-- [ ] T004 [P] Widen `TemplateListEntrySchema` in `src/sheet_manager/types/templateValues.ts`
+- [x] T004 [P] Widen `TemplateListEntrySchema` in `src/sheet_manager/types/templateValues.ts`
       (R2):
     - `label` becomes 0–120 and optional;
     - `value` becomes the table cell value union or the image value;
@@ -55,7 +55,7 @@ changes, and for user-visible sheet flows.
 
     Add a pure `coerceListValue(item, value)` following the data-model coercion table (clamping to the item's range). Export `TemplateListEntry`. Old entries must still parse unchanged.
 
-- [ ] T005 Add a custom-list branch to `validateTemplatePageValues` in
+- [x] T005 Add a custom-list branch to `validateTemplatePageValues` in
       `src/sheet_manager/features/sheet/data/templateValueWrites.ts` (R3). It is keyed by
       `listValueKey` for lists without `bindingKey`, and checks:
     - the array and at most 1000 entries;
@@ -65,21 +65,21 @@ changes, and for user-visible sheet flows.
 
     It returns `{ok:false,key:'<list>[<id>]…'}` on failure.
 
-- [ ] T006 [P] Write `tests/sheet_manager/list-item-change.test.ts` (part 1):
+- [x] T006 [P] Write `tests/sheet_manager/list-item-change.test.ts` (part 1):
     - the schema defaults and helpers from T003, including the refine;
     - the envelope entry parse: old entries, the new shapes, and an empty label;
     - `coerceListValue` over the whole data-model table;
     - write validation per item type: valid, invalid, and an unchanged invalid entry passing through.
-- [ ] T007 Move `LabeledField` out of `DeclarativeSheetView.tsx` into
+- [x] T007 Move `LabeledField` out of `DeclarativeSheetView.tsx` into
       `src/sheet_manager/features/sheet/declarative/LabeledField.tsx`, adding
       `nameSlot?: ReactNode`, which replaces the `FieldLabel` at the same position, and
       `trailing?: ReactNode`, which sits at the right end of the label row, or in a header row when
       there is no label. Update the imports in `DeclarativeSheetView.tsx`.
-- [ ] T008 Add slots to `RatingRow` in `src/sheet_manager/components/stat-fields/RatingRow.tsx`:
+- [x] T008 Add slots to `RatingRow` in `src/sheet_manager/components/stat-fields/RatingRow.tsx`:
     - `labelSlot?: ReactNode`, which replaces the label text in the same place and layout;
     - `trailing?: ReactNode`, the last element of the row, after the die;
     - `rollLabel?: string`, the stat name for the die, defaulting to `label`.
-- [ ] T009 Extend `TemplateFieldControlProps` in
+- [x] T009 Extend `TemplateFieldControlProps` in
       `src/sheet_manager/features/sheet/declarative/fieldControls.tsx` with `nameSlot`,
       `rollLabel`, and `removeSlot` (contract "Sheet: one entry"), and place `removeSlot` per
       control (R9, contract "Remove control placement"):
@@ -101,7 +101,7 @@ field.
 **Independent Test**: a list of resources with a maximum of 10: add three entries, edit them, and
 reload. The values are kept, and each shows "/ 10".
 
-- [ ] T010 [US1] Create `src/sheet_manager/features/sheet/declarative/listEntries.tsx`
+- [x] T010 [US1] Create `src/sheet_manager/features/sheet/declarative/listEntries.tsx`
       (R4, R10):
     - `CustomListView`: it reads the entries under `listValueKey`, has an add button (disabled at 1000 with the hint), respects columns, title, and frame, and memoizes the list runtime;
     - `ListEntryRow`: `memo`, one `templateFieldControl(item.type)` with the value from `coerceListValue`, `ratingDetail` from `entry.detail`, and `documentOptions`/`onOpenDocument`;
@@ -111,7 +111,7 @@ reload. The values are kept, and each shows "/ 10".
 
     Switch `ListView` in `DeclarativeSheetView.tsx` to it, and remove the old `CustomListView` from `primitives.tsx`; system lists stay as they are.
 
-- [ ] T011 [US1] Add the entry editor to `ListConfig` in
+- [x] T011 [US1] Add the entry editor to `ListConfig` in
       `src/sheet_manager/components/dialogs/template-editor/ElementSettings.tsx` (R7, contract
       "Editor"). It is an "Entry" `<details>` block (open for new lists) containing:
     - a type select of `LIST_ITEM_TYPES`;
@@ -119,18 +119,18 @@ reload. The values are kept, and each shows "/ 10".
 
     Add the `itemOfList` prop to `FieldEditor` in `src/sheet_manager/components/dialogs/template-editor/FieldEditor.tsx`: it hides the value key, visibility, required, and placement, and removes `formula` from the type list.
 
-- [ ] T012 [US1] Make the draft model find list items: in
+- [x] T012 [US1] Make the draft model find list items: in
       `src/sheet_manager/components/dialogs/template-editor/draft.ts`, extend `mapFieldItems` (used
       by `updateField`, `changeFieldType`, `addOption`, `updateOption`, and the catalog and fill
       helpers) to also reach `list.item`, so update, type change, options, and catalog callbacks
       work by id. The first edit of a list
       without `item` materializes `legacyListItem(list)` into it. A newly added custom list gets a
       fresh generated item id.
-- [ ] T013 [US1] Check item references in
+- [x] T013 [US1] Check item references in
       `src/sheet_manager/features/sheet/data/templateReferences.ts`: the item's select options
       and catalog scope, the reference targets, and the rating `maxFrom`, reported with the
       list's node id. The item id counts as a used identifier (no duplicate with fields).
-- [ ] T014 [P] [US1] Write `tests/sheet_manager/list-items.test.tsx` (part 1). For each of the
+- [x] T014 [P] [US1] Write `tests/sheet_manager/list-items.test.tsx` (part 1). For each of the
       8 item types:
     - render a named list;
     - add an entry, edit it through the real control, and check the stored entry shape;
@@ -140,7 +140,7 @@ reload. The values are kept, and each shows "/ 10".
     - a reference entry whose target document was deleted shows the same missing state as a reference field;
     - a stored value the item rejects shows empty and reports `list-entry-unreadable` (expected with `takeSheetIssues`);
     - SC-006: with 1000 stored entries, editing one entry leaves every other entry object identical (`===`) in the stored array.
-- [ ] T015 [P] [US1] Extend `tests/sheet_manager/template-editor.test.tsx`:
+- [x] T015 [P] [US1] Extend `tests/sheet_manager/template-editor.test.tsx`:
     - the type select offers 8 types and no formula;
     - changing the item type and a setting updates `list.item`;
     - the hidden settings are absent;
@@ -157,14 +157,14 @@ reload. The values are kept, and each shows "/ 10".
 **Independent Test**: two text lists, one named and one unnamed: only the named one shows a name
 box.
 
-- [ ] T016 [US2] In `listEntries.tsx`, build the `nameSlot`:
+- [x] T016 [US2] In `listEntries.tsx`, build the `nameSlot`:
     - it is a `CatalogSuggest` when the list has a catalog, otherwise a text input;
     - its placeholder is the list title, and its accessible name is "{list} — name";
     - the item label is hidden on named entries.
 
     On unnamed lists, show the item label, or none plus the accessible fallback "{list}, entry {n}". Pass `rollLabel` (the name, or the item label). The write keeps `label` only for named lists.
 
-- [ ] T017 [US2] Presets and seeding (R11):
+- [x] T017 [US2] Presets and seeding (R11):
     - `createListEntry`/seeding in `src/sheet_manager/features/sheet/declarative/hooks.ts` and the shared entry factory build entries from the item: the name, and for number items the value (number, rating, or resource `{current, max}`);
     - seeding is skipped for unnamed lists.
 
@@ -173,7 +173,7 @@ box.
     - hide `ListPresetsEditor` on unnamed lists;
     - disable `ListCatalogPicker` with the note on unnamed lists.
 
-- [ ] T018 [P] [US2] Extend `list-items.test.tsx` (part 2):
+- [x] T018 [P] [US2] Extend `list-items.test.tsx` (part 2):
     - named versus unnamed rendering;
     - an image list with no name box;
     - the accessible fallback name;
@@ -189,14 +189,14 @@ box.
 **Independent Test**: for every type, remove the first of two entries with the keyboard only;
 the second keeps its value.
 
-- [ ] T019 [US3] Add the `ListEntryRemove` atom in `listEntries.tsx` (R9, contract):
+- [x] T019 [US3] Add the `ListEntryRemove` atom in `listEntries.tsx` (R9, contract):
     - an icon button with a Lucide `X`;
     - a 32 px target and the shared focus ring;
     - the name "Remove {name}", or "Remove {list}, entry {n}".
 
     Pass it as `removeSlot` unless the list is disabled or read-only. Removing an entry writes the array without it, and its other entries keep their identity. For block-shaped items, route the slot into `LabeledField.trailing`.
 
-- [ ] T020 [P] [US3] Extend `list-items.test.tsx` (part 3):
+- [x] T020 [P] [US3] Extend `list-items.test.tsx` (part 3):
     - for each type, remove the first of two entries via Tab and Enter;
     - no remove or add control is shown on a read-only sheet;
     - for block types (multi-line text, image, multiple choice), the button is outside the input's container.
@@ -212,7 +212,7 @@ the second keeps its value.
 **Independent Test**: an old list renders as before; changing rating → image lists the affected
 entries at save.
 
-- [ ] T021 [US4] Legacy parity (R5): a list without `item` renders `legacyListItem` through
+- [x] T021 [US4] Legacy parity (R5): a list without `item` renders `legacyListItem` through
       `RatingRow` with the name slot: 5 dots, S/P/E, the die, and the remove control. The flags
       are now stored in `entry.detail`. Add a component test to `list-items.test.tsx` that
       pins:
@@ -224,23 +224,23 @@ entries at save.
     - an old stored `{id,label,value}` showing its value;
     - an old value above 5 (for example 8 from a preset) stays stored and shows 5 dots, as `StatDot` did;
     - a flag toggle surviving a re-render from the store.
-- [ ] T022 [P] [US4] Create `src/sheet_manager/features/sheet/data/listItemChanges.ts` with
+- [x] T022 [P] [US4] Create `src/sheet_manager/features/sheet/data/listItemChanges.ts` with
       `listItemChangeReport(before, after, documents)` (R6, data-model): per list id present in
       both versions, count the documents, `lostValues`, and `hiddenNames`, using
       `coerceListValue`.
-- [ ] T023 [US4] Save confirmation in
+- [x] T023 [US4] Save confirmation in
       `src/sheet_manager/components/dialogs/TemplateEditorDialog.tsx` (contract "Editor: save
       confirmation"):
-    - compute the report next to `planTemplateRetarget` over the documents this template renders: those that open with it through the same effective-template resolution the sheet uses (explicit `metadata.templateId` or the default page of their type and setting);
+    - compute the report next to `planTemplateRetarget` over the documents the template can render (same system and kind) that store entries under the list's key; entries live in the shared value bag, so this is exactly the data that stops showing;
     - when it is non-empty, open one `ConfirmDialog` with the per-list lines and the note;
     - a pending retarget's description joins the same dialog;
     - cancelling keeps the draft.
-- [ ] T024 [P] [US4] Extend `list-item-change.test.ts` (part 2) and `template-editor.test.tsx`:
+- [x] T024 [P] [US4] Extend `list-item-change.test.ts` (part 2) and `template-editor.test.tsx`:
     - report counts for rating → image (lost), rating → number (none), number → resource (none), and named → unnamed (hidden names);
     - the dialog shows and cancels;
     - no dialog appears for compatible changes;
     - the values of entries not edited in between come back after changing the type back.
-- [ ] T025 [P] [US4] Files: in `tests/sheet_manager/template-file.test.ts` and
+- [x] T025 [P] [US4] Files: in `tests/sheet_manager/template-file.test.ts` and
       `tests/sheet_manager/library-file.test.ts`, check that importing a template or library file with an old list
       (no `item`) loads as legacy, and that a list with `item` round-trips unchanged.
 
@@ -253,7 +253,7 @@ entries at save.
 **Independent Test**: a named text list with a catalog text column as "value from": a pick fills
 the name and the text.
 
-- [ ] T026 [US5] In `listEntries.tsx`, handle a catalog pick. It sets `label` and, when `valueFrom`
+- [x] T026 [US5] In `listEntries.tsx`, handle a catalog pick. It sets `label` and, when `valueFrom`
       fits the item type (data-model "value from fit"), the value:
     - number and rating: clamped;
     - resource: `current`, keeping `max`;
@@ -262,13 +262,13 @@ the name and the text.
 
     One write per pick. A choice item with its own catalog stores `pickLabel` and ignores fills.
 
-- [ ] T027 [US5] Filter the "Value from" options in `ListCatalogPicker`
+- [x] T027 [US5] Filter the "Value from" options in `ListCatalogPicker`
       (`src/sheet_manager/components/dialogs/template-editor/CatalogBindingEditor.tsx`) by
       `listItemField(list).type`: none for image, reference, and choice. Pass the item type from
       `ListConfig`. In `templateReferences.ts`, report `unknown-fill-detail` for a `valueFrom`
       that does not fit, and `list-catalog-unnamed` for a catalog on an unnamed list. Replace the
       old `LIST_VALUE_MAX` clamp in `primitives.tsx` or remove it with the old view.
-- [ ] T028 [P] [US5] Extend `tests/sheet_manager/catalog-use-sites.test.tsx`:
+- [x] T028 [P] [US5] Extend `tests/sheet_manager/catalog-use-sites.test.tsx`:
     - a number item with a number column;
     - a text item with a text column;
     - a resource item keeping its `max`;
@@ -280,7 +280,7 @@ the name and the text.
 
 ## Phase 8: Polish & Cross-Cutting
 
-- [ ] T029 [P] Storybook (FR-016, contract "Storybook") in
+- [x] T029 [P] Storybook (FR-016, contract "Storybook") in
       `src/sheet_manager/storybook/stories.ts`:
     - one custom list story per item type (8), with image and multi-line text unnamed;
     - one named list with a catalog and "value from";
@@ -288,22 +288,22 @@ the name and the text.
 
     Update the guard expectations in `tests/sheet_manager/storybook.test.tsx`.
 
-- [ ] T030 [P] Editor guide: the list part of `docs/template-editor/elements.mdx` and the catalog
+- [x] T030 [P] Editor guide: the list part of `docs/template-editor/elements.mdx` and the catalog
       "value from" part of `docs/template-editor/values.mdx`, plus their ru mirrors under
       `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/`. Cover the entry type,
       named and unnamed entries, "value from" per type, and the save warning. Run
       `yarn validate:i18n`.
-- [ ] T031 [P] Update the current-state docs:
+- [x] T031 [P] Update the current-state docs:
     - `.agents/skills/sheet-templates/SKILL.md` (Lists: `item`, `named`, the entry shape, the legacy item, coercion, the change report);
     - `src/sheet_manager/AGENTS.md`, if it describes lists;
     - add a historical banner where spec 006 or 015 docs describe the custom list entry shape as current.
-- [ ] T032 [P] Add a v3.14.0 entry to `CHANGELOG.md` and bump `package.json`, then run
+- [x] T032 [P] Add a v3.14.0 entry to `CHANGELOG.md` and bump `package.json`, then run
       `yarn check:version`.
-- [ ] T033 Mark T-077 done (`[x] ✅`) in `TODO.md` with a dated note, then run
+- [x] T033 Mark T-077 done (`[x] ✅`) in `TODO.md` with a dated note, then run
       `yarn validate:backlog`.
-- [ ] T034 Run `yarn verify:full` and fix everything it reports, including unused exports left
+- [x] T034 Run `yarn verify:full` and fix everything it reports, including unused exports left
       by the removed list path (knip).
-- [ ] T035 Walk through the quickstart manually (the maintainer).
+- [x] T035 Walk through the quickstart manually (the maintainer).
 
 ---
 

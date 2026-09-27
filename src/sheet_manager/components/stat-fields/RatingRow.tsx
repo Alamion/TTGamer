@@ -42,6 +42,12 @@ interface RatingRowProps {
     flagValues?: RatingFlags;
     onFlagsChange?: (flags: RatingFlags) => void;
     characterName?: string;
+    /** Replaces the label in its place (a list entry's name input, spec 016). */
+    labelSlot?: ReactNode;
+    /** The name the die and the dots announce; defaults to `label`. */
+    rollLabel?: string;
+    /** A remove control: above the dots like a trait row's, or after the number. */
+    removeSlot?: ReactNode;
     /** Notices under the row (for example an unavailable computed maximum). */
     children?: ReactNode;
 }
@@ -71,6 +77,9 @@ export function RatingRow({
     flagValues = {},
     onFlagsChange,
     characterName,
+    labelSlot,
+    rollLabel = label,
+    removeSlot,
     children,
 }: RatingRowProps) {
     const flagOf = (flag: RatingFlag) => (flags.includes(flag) ? Boolean(flagValues[flag]) : false);
@@ -89,7 +98,7 @@ export function RatingRow({
                         experienced={false}
                         practiced={false}
                         disabled={disabled}
-                        statLabel={label}
+                        statLabel={rollLabel}
                         characterName={characterName}
                     />
                 )}
@@ -108,7 +117,7 @@ export function RatingRow({
                             step={1}
                             onChange={onChange}
                             disabled={disabled}
-                            label={label}
+                            label={rollLabel}
                             className="w-12 bg-transparent px-1 py-1 text-center text-sm tabular-nums text-textPrimary focus:outline-none"
                         />
                         <span
@@ -126,10 +135,11 @@ export function RatingRow({
                         step={1}
                         onChange={onChange}
                         disabled={disabled}
-                        label={label}
+                        label={rollLabel}
                         className="w-16 rounded border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
                     />
                 )}
+                {removeSlot}
             </div>
         ) : (
             <StatDot
@@ -157,9 +167,10 @@ export function RatingRow({
                     }
                 }}
                 onDiceRoll={onDiceRoll}
-                statLabel={label}
+                removeSlot={removeSlot}
+                statLabel={rollLabel}
                 characterName={characterName}
-                dotLabel={(level) => `${label}: ${level}`}
+                dotLabel={(level) => `${rollLabel}: ${level}`}
             />
         );
 
@@ -183,7 +194,8 @@ export function RatingRow({
     const top = labelPosition === 'top';
     return (
         <div className={clsx('term-row py-1', onTextChange && 'term-row-specialty')}>
-            {top && (
+            {top && labelSlot && <div className="mb-1">{labelSlot}</div>}
+            {top && !labelSlot && (
                 <FieldLabel
                     label={label}
                     term={term}
@@ -199,7 +211,9 @@ export function RatingRow({
                     onTextChange ? 'term-row-inner' : top ? 'justify-start' : 'justify-between'
                 )}
             >
-                {!top && (
+                {/* Like a trait row's name input: it takes only the room the value leaves. */}
+                {!top && labelSlot && <div className="min-w-0 flex-1">{labelSlot}</div>}
+                {!top && !labelSlot && (
                     <StatLabel
                         label={label}
                         term={term}
@@ -216,7 +230,7 @@ export function RatingRow({
                             if (event.key === 'Enter') event.currentTarget.blur();
                         }}
                         disabled={disabled}
-                        aria-label={translate(page.ratingText, { label })}
+                        aria-label={translate(page.ratingText, { label: rollLabel })}
                         className={clsx(
                             'w-0 flex-1 bg-transparent border-b px-2 text-sm text-textPrimary transition-colors min-w-[8ch]',
                             disabled && 'opacity-50 cursor-not-allowed'

@@ -3284,14 +3284,41 @@
     "ttgamer.ui.sheet.templates.editor.limitReached": {
         "message": "Достигнут лимит — максимум {limit} ({subject})."
     },
+    "ttgamer.ui.sheet.templates.editor.listCatalogNeedsNames": {
+        "message": "Подсказкам нужны имена записей."
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeConfirm": {
+        "message": "Всё равно сохранить"
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeNames": {
+        "message": "{title}: {count} имя записи больше не будет показано.|{title}: {count} имени записей больше не будут показаны.|{title}: {count} имён записей больше не будут показаны."
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeNote": {
+        "message": "Значения остаются сохранёнными; если вернуть прежний тип записи, они снова появятся — кроме записей, изменённых за это время."
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeSheets": {
+        "message": "{count} листе|{count} листах|{count} листах"
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeTitle": {
+        "message": "Изменить записи списка?"
+    },
+    "ttgamer.ui.sheet.templates.editor.listChangeValues": {
+        "message": "{title}: {count} сохранённое значение в {documents} больше не будет показано.|{title}: {count} сохранённых значения в {documents} больше не будут показаны.|{title}: {count} сохранённых значений в {documents} больше не будут показаны."
+    },
     "ttgamer.ui.sheet.templates.editor.listColumns": {
         "message": "Колонки"
     },
     "ttgamer.ui.sheet.templates.editor.listCustomKey": {
         "message": "Ключ значения списка"
     },
+    "ttgamer.ui.sheet.templates.editor.listEntry": {
+        "message": "Запись"
+    },
     "ttgamer.ui.sheet.templates.editor.listFramed": {
         "message": "Рамка вокруг списка"
+    },
+    "ttgamer.ui.sheet.templates.editor.listNamed": {
+        "message": "У записей есть имена"
     },
     "ttgamer.ui.sheet.templates.editor.listShowTitle": {
         "message": "Показывать заголовок списка"
@@ -3826,6 +3853,21 @@
     },
     "ttgamer.ui.sheet.templates.library.title": {
         "message": "Шаблоны страниц"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.limit": {
+        "message": "Не больше {max} записей"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.name": {
+        "message": "{list} — имя"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.nth": {
+        "message": "{list}, запись {n}"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.remove": {
+        "message": "Удалить «{name}»"
+    },
+    "ttgamer.ui.sheet.templates.listEntry.removeNth": {
+        "message": "Удалить запись {n} списка «{list}»"
     },
     "ttgamer.ui.sheet.templates.page.catalogEmpty": {
         "message": "Записей пока нет"

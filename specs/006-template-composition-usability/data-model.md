@@ -1,5 +1,7 @@
 # Data Model: Template Composition Usability
 
+> **Change record.** Partly superseded by 016 (custom list entries are one configurable field; the entry shape is `TemplateListEntry` with `detail` and `pickLabel`). Current behavior: `.agents/skills/sheet-templates/SKILL.md`.
+
 **Feature**: 006-template-composition-usability | **Date**: 2026-09-06
 **Spec**: [spec.md](./spec.md) | **Research**: [research.md](./research.md)
 

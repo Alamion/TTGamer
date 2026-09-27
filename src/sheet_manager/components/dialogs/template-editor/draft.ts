@@ -16,6 +16,7 @@ import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import type {
     CustomTemplate,
     GroupNode,
+    ListItemField,
     PrimitivePreset,
     PrimitiveTrackOverride,
     SectionNode,
@@ -30,6 +31,7 @@ import {
     collectTreeIssues,
     isContainerNode,
     isTemplateField,
+    listItemField,
     TEMPLATE_LIMITS,
     TEMPLATE_SCHEMA_VERSION,
     walkTemplateNodes,
@@ -311,6 +313,20 @@ function cloneWithFreshIds(draft: EditorDraft, original: TemplateNode): Template
         node.id = newId(idPrefixFor(node));
         if (node.type === 'select') {
             node.options = node.options.map((option) => ({ ...option, id: newId('opt') }));
+        }
+        if (node.type === 'list' && node.item) {
+            node.item = {
+                ...node.item,
+                id: newId('f'),
+                ...(node.item.type === 'select'
+                    ? {
+                          options: node.item.options.map((option) => ({
+                              ...option,
+                              id: newId('opt'),
+                          })),
+                      }
+                    : {}),
+            } as ListItemField;
         }
         if (node.type === 'table') {
             node.columns = node.columns.map((column) => {
@@ -610,6 +626,7 @@ export interface DraftIssueMessages {
     unknownBinding: string;
     unknownCatalog: string;
     unknownFillTarget: string;
+    listCatalogUnnamed: string;
     unknownLabelMessage: string;
     invalidDocsLink: string;
 }
@@ -627,6 +644,8 @@ function referenceIssueMessage(
             return interpolate(messages.unknownCatalog, { id: issue.key });
         case 'unknown-fill-target':
             return interpolate(messages.unknownFillTarget, { id: issue.key });
+        case 'list-catalog-unnamed':
+            return messages.listCatalogUnnamed;
         case 'unknown-coordinate':
             return interpolate(messages.unknownCoordinate, { id: issue.key });
         case 'unknown-label-message':
@@ -818,6 +837,13 @@ function mapFieldItems(
                         column.id === fieldId ? map(column) : column
                     ),
                 };
+            }
+            // A custom list's entry template (spec 016); a legacy list gets its item on first edit.
+            if (node.type === 'list' && node.valueKey !== undefined) {
+                const item = listItemField(node);
+                if (item.id !== fieldId) return node;
+                const next = map(item);
+                return next.type === 'formula' ? node : { ...node, item: next };
             }
             return isTemplateField(node) && node.id === fieldId ? map(node) : node;
         })

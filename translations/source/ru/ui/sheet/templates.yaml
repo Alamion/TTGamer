@@ -161,6 +161,21 @@ editor:
     minFromPlaceholder: например, self-control
     listShowTitle: Показывать заголовок списка
     listFramed: Рамка вокруг списка
+    listNamed: У записей есть имена
+    listEntry: Запись
+    listCatalogNeedsNames: Подсказкам нужны имена записей.
+    listChangeTitle: Изменить записи списка?
+    listChangeValues:
+        message: '{title}: {count} сохранённое значение в {documents} больше не будет показано.|{title}: {count} сохранённых значения в {documents} больше не будут показаны.|{title}: {count} сохранённых значений в {documents} больше не будут показаны.'
+        plural: true
+    listChangeSheets:
+        message: '{count} листе|{count} листах|{count} листах'
+        plural: true
+    listChangeNames:
+        message: '{title}: {count} имя записи больше не будет показано.|{title}: {count} имени записей больше не будут показаны.|{title}: {count} имён записей больше не будут показаны.'
+        plural: true
+    listChangeNote: Значения остаются сохранёнными; если вернуть прежний тип записи, они снова появятся — кроме записей, изменённых за это время.
+    listChangeConfirm: Всё равно сохранить
     invalidFormula: Неверная формула в «{id}» — проверьте выражение.
     unknownCoordinate: Неизвестное значение «{id}» в формуле.
     circularDependency: 'Обнаружена циклическая зависимость: {id}'
@@ -288,6 +303,12 @@ page:
     imageUrl: URL изображения
     imageRemove: Удалить изображение
     imageAlt: Изображение шаблона
+listEntry:
+    limit: Не больше {max} записей
+    remove: Удалить «{name}»
+    removeNth: Удалить запись {n} списка «{list}»
+    nth: '{list}, запись {n}'
+    name: '{list} — имя'
 binding:
     attach: Привязать каталог
     groupSetting: Этот сеттинг

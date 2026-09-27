@@ -11,12 +11,14 @@ import type { CustomTemplate } from '../../../types/template';
 import {
     fieldValueKey,
     isTemplateField,
+    listIsNamed,
+    listItemField,
     listValueKey,
     walkTemplateNodes,
 } from '../../../types/template';
 import { parseFormula } from '../declarative/formula';
 import { isKnownLabelMessage } from '../declarative/localizeTemplate';
-import { getCatalogBinding, isCatalogInScope } from './catalogBindings';
+import { catalogKindFitsListItem, getCatalogBinding, isCatalogInScope } from './catalogBindings';
 
 /**
  * Reference integrity for templates: every string key a template persists (binding keys,
@@ -31,6 +33,7 @@ export type TemplateReferenceIssue =
     | { code: 'unknown-catalog'; nodeId: string; key: string }
     | { code: 'unknown-fill-detail'; nodeId: string; key: string }
     | { code: 'unknown-fill-target'; nodeId: string; key: string }
+    | { code: 'list-catalog-unnamed'; nodeId: string; key: string }
     | { code: 'unknown-coordinate'; nodeId: string; key: string }
     | { code: 'unknown-label-message'; nodeId: string; key: string }
     | { code: 'invalid-docs-link'; nodeId: string; key: string };
@@ -103,6 +106,7 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
         }
         if (node.type === 'list' && node.valueKey !== undefined) {
             storageCoordinates.add(listValueKey(node));
+            fieldIds.add(listItemField(node).id);
         }
         if (node.type === 'table') for (const column of node.columns) fieldIds.add(column.id);
     });
@@ -129,11 +133,12 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
 
     /**
      * `siblingColumns`: the field is a table column, so its catalog fills write the other
-     * columns of the same row (spec 015, R10) instead of page coordinates.
+     * columns of the same row (spec 015, R10) instead of page coordinates. A list entry has no
+     * siblings: its choice's fills are ignored (spec 016, FR-011), so they are not checked.
      */
     const checkFieldReferences = (
         field: Parameters<typeof isTemplateField>[0],
-        siblingColumns?: ReadonlySet<string>
+        siblingColumns?: ReadonlySet<string> | 'list-entry'
     ) => {
         if (!isTemplateField(field)) return;
         if (field.type === 'formula') checkCoordinates(field.id, field.formula);
@@ -150,6 +155,7 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
             });
             return;
         }
+        if (siblingColumns === 'list-entry') return;
         const details = new Set(catalog.fillableDetails.map(({ key }) => key));
         for (const [detailKey, rule] of Object.entries(field.binding.fills)) {
             if (!details.has(detailKey)) {
@@ -169,7 +175,12 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
     };
 
     walkTemplateNodes(template.children, (node) => {
-        const labelNodes = node.type === 'table' ? [node, ...node.columns] : [node];
+        const labelNodes =
+            node.type === 'table'
+                ? [node, ...node.columns]
+                : node.type === 'list' && node.item
+                  ? [node, node.item]
+                  : [node];
         for (const labelled of labelNodes) {
             const references = [
                 labelled.labelMessage,
@@ -223,7 +234,18 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
         } else if (node.type === 'table') {
             const columnIds = new Set(node.columns.map(({ id }) => id));
             for (const column of node.columns) checkFieldReferences(column, columnIds);
-        } else if (node.type === 'list' && node.catalog) {
+        } else if (node.type === 'list') {
+            const item = listItemField(node);
+            checkFieldReferences(item, 'list-entry');
+            if (!node.catalog) return;
+            if (!listIsNamed(node)) {
+                issues.push({
+                    code: 'list-catalog-unnamed',
+                    nodeId: node.id,
+                    key: node.catalog.catalogId,
+                });
+                return;
+            }
             const catalog = catalogInScope(node.catalog.catalogId);
             if (!catalog) {
                 issues.push({
@@ -234,7 +256,8 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
             } else if (
                 node.catalog.valueFrom &&
                 !catalog.fillableDetails.some(
-                    ({ key, kind }) => key === node.catalog?.valueFrom && kind === 'number'
+                    ({ key, kind }) =>
+                        key === node.catalog?.valueFrom && catalogKindFitsListItem(kind, item.type)
                 )
             ) {
                 issues.push({

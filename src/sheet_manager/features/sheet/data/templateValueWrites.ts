@@ -1,7 +1,12 @@
 import {
+    collectListNodes,
     collectTemplateFields,
     type CustomTemplate,
     fieldValueKey,
+    listIsNamed,
+    listItemField,
+    type ListNode,
+    listValueKey,
     type TableNode,
     tableValueKey,
     type TemplateField,
@@ -14,6 +19,8 @@ import {
     RatingDetailSchema,
     TEMPLATE_VALUES_LIMITS,
     type TemplateFieldValue,
+    type TemplateListEntry,
+    TemplateListEntrySchema,
     type TemplatePageValues,
     type TemplateTableRows,
     TemplateTableRowSchema,
@@ -41,6 +48,63 @@ export function collectTableBlocks(template: CustomTemplate): Map<string, TableN
     return blocks;
 }
 
+type ListValidation =
+    | { ok: true; value: TemplateListEntry[] }
+    | { ok: false; key: string; reason: string };
+
+/**
+ * A custom list's entries against its entry template (spec 016, R3). Only changed entries are
+ * checked, so a value an earlier template version stored never blocks edits to other entries;
+ * companions the current template has no use for (a name on an unnamed list, a stale detail)
+ * are dropped from the changed entry.
+ */
+function validateListEntries(
+    list: ListNode,
+    key: string,
+    value: unknown,
+    previous: unknown
+): ListValidation {
+    if (!Array.isArray(value)) return { ok: false, key, reason: 'list-not-array' };
+    if (value.length > TEMPLATE_VALUES_LIMITS.listEntriesMax) {
+        return { ok: false, key, reason: 'list-max-entries' };
+    }
+    const before = new Map<string, unknown>();
+    if (Array.isArray(previous)) {
+        for (const entry of previous) {
+            if (isRecord(entry) && typeof entry.id === 'string') before.set(entry.id, entry);
+        }
+    }
+    const item = listItemField(list);
+    const named = listIsNamed(list);
+    const seen = new Set<string>();
+    const entries: TemplateListEntry[] = [];
+    for (const raw of value) {
+        const parsed = TemplateListEntrySchema.safeParse(raw);
+        if (!parsed.success) return { ok: false, key, reason: 'entry-schema' };
+        const entry = parsed.data;
+        const entryKey = `${key}[${entry.id}]`;
+        if (seen.has(entry.id)) return { ok: false, key: entryKey, reason: 'duplicate-entry' };
+        seen.add(entry.id);
+        if (before.get(entry.id) === raw) {
+            entries.push(raw as TemplateListEntry);
+            continue;
+        }
+        const next: TemplateListEntry = { id: entry.id };
+        if (named && entry.label !== undefined) next.label = entry.label;
+        if (entry.value !== undefined) {
+            const result = validateTemplateValue(item, entry.value);
+            if (!result.ok) return { ok: false, key: entryKey, reason: result.reason };
+            next.value = result.value as TemplateListEntry['value'];
+        }
+        if (item.type === 'rating' && entry.detail !== undefined) next.detail = entry.detail;
+        if (isCatalogSelect(item) && entry.pickLabel !== undefined) {
+            next.pickLabel = entry.pickLabel;
+        }
+        entries.push(next);
+    }
+    return { ok: true, value: entries };
+}
+
 /**
  * Strict write path: changed entries whose storage key (valueKey) matches a template field or
  * table are validated against the template's own definitions. Unchanged entries pass through,
@@ -60,6 +124,10 @@ function validateTemplatePageValues(
     const tableBlocks = new Map<string, TableNode>();
     for (const block of collectTableBlocks(template).values()) {
         tableBlocks.set(tableValueKey(block), block);
+    }
+    const customLists = new Map<string, ListNode>();
+    for (const list of collectListNodes(template)) {
+        if (list.bindingKey === undefined) customLists.set(listValueKey(list), list);
     }
     const validated: TemplatePageValues = {};
 
@@ -132,6 +200,14 @@ function validateTemplatePageValues(
                 rows[rowIndex] = parsedRow.data;
             }
             validated[key] = rows;
+            continue;
+        }
+
+        const list = customLists.get(key);
+        if (list) {
+            const result = validateListEntries(list, key, value, previous[key]);
+            if (!result.ok) return result;
+            validated[key] = result.value;
             continue;
         }
 
