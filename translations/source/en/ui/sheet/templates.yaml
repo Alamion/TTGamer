@@ -290,6 +290,7 @@ page:
     formulaReasonCircular: circular dependency
     formulaReasonDivision: division by zero
     formulaReasonNonNumeric: a referenced value is not a number
+    formulaReasonInvalid: the formula is not valid
     formulaClamped: Limited by a linked value
     catalogEmpty: No entries yet
     ratingText: '{label}: text'

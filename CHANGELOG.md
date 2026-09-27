@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.14.1
+
+### Fix
+
+- **Derived values name the right problem (T-076)**: a formula that reads a missing value says which value is unavailable instead of "circular dependency"; a formula that reads text or a toggle says a value is not a number; a formula that reads itself is a circular dependency; a formula that does not parse says so instead of naming an empty value
+
 ## v3.14.0
 
 ### Minor feat

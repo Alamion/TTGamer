@@ -330,8 +330,12 @@ document. Wrap a subtree in `DocumentSourceContext.Provider` with:
 - `formula` fields are read-only and never stored. `maxFrom` (rating/number/primitive) clamps
   the display; stored values are clamped only when the bounded value itself is edited. For a
   rating the resolved maximum also raises the range above the static `max`, up to 100.
-- Errors are labeled in the UI (`unknown-coordinate` names the coordinate, `circular`,
-  `division-by-zero`, `non-numeric`). Unparseable formulas also report `formula-error`.
+- Errors are labeled in the UI (`unknown-coordinate` names the coordinate, `circular` for a
+  real cycle or a formula reading itself, `division-by-zero`, `non-numeric` for a stored value
+  that is not a number, `parse` for a formula that does not parse, which also reports
+  `formula-error`). A missing value is final for the render pass, never a cycle. Behavior tests:
+  `template-formulas.test.ts` (grammar), `derived-values.test.tsx` (sheet), the "derived values"
+  block of `template-editor.test.tsx` (draft issues and live preview).
 - Cycles are rejected at authoring (`collectDraftIssues`); at render the evaluator in
   `useTemplatePage` re-orders by dependency with its own cycle guard.
 - `collectFormulaDependencies` in `types/template.ts` uses a regex, not the parser (import

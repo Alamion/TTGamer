@@ -88,8 +88,9 @@ function formulaErrorMessage(reason: FormulaEvaluationError | 'parse', coordinat
             return translate(page.formulaReasonDivision);
         case 'non-numeric':
             return translate(page.formulaReasonNonNumeric);
-        case 'unknown-coordinate':
         case 'parse':
+            return translate(page.formulaReasonInvalid);
+        case 'unknown-coordinate':
         default:
             return translate(page.formulaReasonUnknown).replace('{coordinate}', coordinate);
     }

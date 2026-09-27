@@ -290,6 +290,7 @@ page:
     formulaReasonCircular: циклическая зависимость
     formulaReasonDivision: деление на ноль
     formulaReasonNonNumeric: одно из значений — не число
+    formulaReasonInvalid: формула записана с ошибкой
     formulaClamped: Ограничено связанным значением
     catalogEmpty: Записей пока нет
     ratingText: '{label}: текст'

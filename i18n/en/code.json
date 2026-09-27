@@ -3899,6 +3899,9 @@
     "ttgamer.ui.sheet.templates.page.formulaReasonDivision": {
         "message": "division by zero"
     },
+    "ttgamer.ui.sheet.templates.page.formulaReasonInvalid": {
+        "message": "the formula is not valid"
+    },
     "ttgamer.ui.sheet.templates.page.formulaReasonNonNumeric": {
         "message": "a referenced value is not a number"
     },

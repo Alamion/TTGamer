@@ -4919,6 +4919,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.page.formulaReasonNonNumeric',
                     message: 'a referenced value is not a number',
                 },
+                formulaReasonInvalid: {
+                    id: 'ttgamer.ui.sheet.templates.page.formulaReasonInvalid',
+                    message: 'the formula is not valid',
+                },
                 formulaClamped: {
                     id: 'ttgamer.ui.sheet.templates.page.formulaClamped',
                     message: 'Limited by a linked value',

@@ -392,7 +392,9 @@ export function useTemplatePage(
                     if (part === 'max') return pool.max;
                     return part === 'current' ? pool.current : pool.current;
                 }
-                return undefined;
+                // A stored value that is not a number (text, a toggle, a choice) is "not a
+                // number", not "unavailable" — the evaluator reports NaN as non-numeric.
+                return stored === undefined ? undefined : Number.NaN;
             };
 
             // System-bound coordinates (traits, pool parts) read document data.
@@ -448,6 +450,14 @@ export function useTemplatePage(
                         coordinate !== entry.coordinate
                 );
                 if (unresolved) continue;
+                if (collectDependenciesSafe(entry.expr).includes(entry.coordinate)) {
+                    // A formula reading its own result can never settle.
+                    results.set(entry.coordinate, { state: 'error', reason: 'circular' });
+                    computed.add(entry.coordinate);
+                    pending.delete(entry.coordinate);
+                    progressed = true;
+                    continue;
+                }
                 const resolution = evaluateFormula(entry.expr, (path) => {
                     if (path === entry.coordinate) return undefined; // self-reference → unknown
                     const computedEntry = formulaFields.find(
@@ -469,11 +479,11 @@ export function useTemplatePage(
                               coordinate: resolution.coordinate,
                           }
                 );
-                if (resolution.ok || resolution.error !== 'unknown-coordinate') {
-                    computed.add(entry.coordinate);
-                    pending.delete(entry.coordinate);
-                    progressed = true;
-                }
+                // Every dependency was settled first, so any result is final: a value that is
+                // missing now stays missing in this pass (it is not a cycle).
+                computed.add(entry.coordinate);
+                pending.delete(entry.coordinate);
+                progressed = true;
             }
             if (!progressed) {
                 // Remaining coordinates are circular (or reference a broken chain).

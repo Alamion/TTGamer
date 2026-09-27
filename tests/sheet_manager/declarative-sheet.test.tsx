@@ -830,11 +830,14 @@ describe('derived fields and clamps (US4)', () => {
 
     it('degrades a cycle between formula fields with a labeled error', () => {
         const template = formulaTemplate([
-            field('left', 'Left', 'formula', { formula: 'derived-right + 1' }),
-            field('right', 'Right', 'formula', { formula: 'derived-left + 1' }),
+            field('left', 'Left', 'formula', { formula: 'right + 1' }),
+            field('right', 'Right', 'formula', { formula: 'left + 1' }),
         ]);
         mount(template);
         const alerts = screen.getAllByRole('alert');
-        expect(alerts.length).toBe(2);
+        expect(alerts.map(({ textContent }) => textContent)).toEqual([
+            'circular dependency',
+            'circular dependency',
+        ]);
     });
 });

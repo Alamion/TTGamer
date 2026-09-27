@@ -1234,3 +1234,75 @@ describe('list entry settings (spec 016)', () => {
         expect(within(after).getByText('Suggestions need entry names.')).toBeTruthy();
     });
 });
+
+describe('derived values in the editor (T-076)', () => {
+    afterEach(() => {
+        cleanup();
+        useTemplateStore.setState({ templates: [], quarantine: [] });
+    });
+
+    const formulaKit = (children: unknown[]) =>
+        CustomTemplateSchema.parse({
+            id: 'formula-kit',
+            name: 'Formula Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children,
+        });
+
+    const issuesOf = (children: unknown[]) =>
+        collectDraftIssues(createDraftFromTemplate(formulaKit(children)), ISSUE_MESSAGES);
+
+    it('accepts functions and the numbers of the page', () => {
+        expect(
+            issuesOf([
+                { id: 'base', type: 'number', label: 'Base' },
+                { id: 'best', type: 'formula', label: 'Best', formula: 'max(base, 2) + min(1, 3)' },
+            ])
+        ).toEqual([]);
+    });
+
+    it('lists a formula that does not parse, on its element', () => {
+        expect(
+            issuesOf([{ id: 'total', type: 'formula', label: 'Total', formula: 'base +' }])
+        ).toContainEqual({ message: 'Invalid formula in "Total".', nodeId: 'total' });
+        expect(
+            issuesOf([{ id: 'luck', type: 'rating', label: 'Luck', max: 5, maxFrom: 'min(' }])
+        ).toContainEqual({ message: 'Invalid formula in "Luck".', nodeId: 'luck' });
+    });
+
+    it('lists a value the formula reads that the page does not have', () => {
+        expect(
+            issuesOf([{ id: 'total', type: 'formula', label: 'Total', formula: 'missing + 1' }])
+        ).toContainEqual({ message: 'Unknown value "missing".', nodeId: 'total' });
+    });
+
+    it('lists a circular dependency', () => {
+        const issues = issuesOf([
+            { id: 'left', type: 'formula', label: 'Left', formula: 'right + 1' },
+            { id: 'right', type: 'formula', label: 'Right', formula: 'left + 1' },
+        ]);
+        expect(issues.map(({ message }) => message)).toContainEqual(
+            expect.stringMatching(/^Circular dependency: (left → right|right → left)/)
+        );
+    });
+
+    it('shows the new result on the page as the formula is typed', () => {
+        const template = formulaKit([
+            { id: 'total', type: 'formula', label: 'Total', formula: '1 + 1' },
+        ]);
+        useTemplateStore.setState({ templates: [template], quarantine: [] });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+        expect(within(pageFrame('total')).getByText('2')).toBeTruthy();
+        selectInOutline('total');
+        fireEvent.change(within(settings('total')).getByLabelText(/^Formula/), {
+            target: { value: 'max(2, 3) * 4' },
+        });
+        expect(within(pageFrame('total')).getByText('12')).toBeTruthy();
+    });
+});

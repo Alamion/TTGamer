@@ -3899,6 +3899,9 @@
     "ttgamer.ui.sheet.templates.page.formulaReasonDivision": {
         "message": "деление на ноль"
     },
+    "ttgamer.ui.sheet.templates.page.formulaReasonInvalid": {
+        "message": "формула записана с ошибкой"
+    },
     "ttgamer.ui.sheet.templates.page.formulaReasonNonNumeric": {
         "message": "одно из значений — не число"
     },

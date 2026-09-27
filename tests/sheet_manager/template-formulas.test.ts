@@ -148,3 +148,64 @@ describe('cycle detection (T005)', () => {
         if (parsed.ok) expect([...collectDependencies(parsed.expr)].sort()).toEqual(['a', 'b']);
     });
 });
+
+describe('min and max (T-076)', () => {
+    const values: Record<string, number> = { a: 3, b: 7, 'pool.current': 2, 'pool.max': 9 };
+    const evaluate = (source: string) => {
+        const parsed = parseFormula(source);
+        if (!parsed.ok) throw new Error(parsed.error.message);
+        return evaluateFormula(parsed.expr, (path) => values[path]);
+    };
+
+    it('takes the smallest or the largest of any number of arguments', () => {
+        expect(evaluate('min(a, b)')).toEqual({ ok: true, value: 3 });
+        expect(evaluate('max(a, b, 10)')).toEqual({ ok: true, value: 10 });
+        expect(evaluate('min(5)')).toEqual({ ok: true, value: 5 });
+        expect(evaluate('min(max(a, b), pool.max) + 1')).toEqual({ ok: true, value: 8 });
+        expect(evaluate('max(0, pool.current - 5)')).toEqual({ ok: true, value: 0 });
+    });
+
+    it('lists the coordinates read inside functions', () => {
+        const parsed = parseFormula('min(a, max(b, pool.current)) * 2');
+        expect(parsed.ok && [...parsed.coords].sort()).toEqual(['a', 'b', 'pool.current']);
+    });
+
+    it('passes an argument error through the function', () => {
+        expect(evaluate('min(a, 1 / 0)')).toMatchObject({ ok: false, error: 'division-by-zero' });
+        expect(evaluate('max(a, missing)')).toMatchObject({
+            ok: false,
+            error: 'unknown-coordinate',
+            coordinate: 'missing',
+        });
+    });
+
+    it('rejects malformed calls with a message', () => {
+        for (const source of ['min()', 'min(1,)', 'min(1 2)', 'min 1', 'max(1, 2', 'min(,1)']) {
+            const parsed = parseFormula(source);
+            expect(parsed.ok, source).toBe(false);
+            if (!parsed.ok) expect(parsed.error.message.length, source).toBeGreaterThan(0);
+        }
+    });
+});
+
+describe('numbers and signs (T-076)', () => {
+    const evaluate = (source: string) => {
+        const parsed = parseFormula(source);
+        if (!parsed.ok) throw new Error(parsed.error.message);
+        return evaluateFormula(parsed.expr, (path) => ({ a: 4 })[path]);
+    };
+
+    it('reads decimals, negation, and spacing', () => {
+        expect(evaluate('1.5 * 2')).toEqual({ ok: true, value: 3 });
+        expect(evaluate('2 * -a')).toEqual({ ok: true, value: -8 });
+        expect(evaluate('  a   /   2  ')).toEqual({ ok: true, value: 2 });
+        expect(evaluate('-(a + 1)')).toEqual({ ok: true, value: -5 });
+    });
+
+    it('rejects numbers and suffixes it cannot read', () => {
+        expect(parseFormula('1.').ok).toBe(false);
+        expect(parseFormula('.5').ok).toBe(false);
+        expect(parseFormula('pool.total').ok).toBe(false);
+        expect(parseFormula('Wits').ok).toBe(false);
+    });
+});
