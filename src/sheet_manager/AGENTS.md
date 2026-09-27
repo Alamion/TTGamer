@@ -29,12 +29,12 @@ src/sheet_manager/
 │   └── hooks/                # sheet-local behavior hooks
 ├── hooks/                    # useCharacter and update helpers
 ├── systems/                  # neutral contracts (registry, types, view, templateBindings,
-│   │                         # catalogs, policies, userTypes) + one folder per system plugin:
+│   │                         # catalogs, policies, userTypes, userCatalogs) + one folder per system plugin:
 │   ├── wod2e/                # classic WoD 2e ruleset (`ruleset/`) + the engine plugin `wod-2e`
 │   ├── star-wars-wod/        # Star Wars setting on the WoD 2e ruleset (identities frozen)
 │   └── v5/                   # V5 ruleset (`ruleset/`), engine character (`core/`), modules (`modules/hunter/`)
 ├── templates/                # setting-neutral template node builders
-├── store/                    # documentStore (v4) + templateStore (library, v5) + documentTypeStore (user types/settings, default pages, v2)
+├── store/                    # documentStore (v4) + templateStore (library, v5) + documentTypeStore (user types/settings, default pages, catalogs, v3)
 └── types/                    # generic contracts, template schema, templateValues bag
 ```
 
@@ -126,7 +126,9 @@ Do not read `currentCharacter` directly inside a reusable sheet element. Direct 
   sheet-templates skill ("Library").
 - User document types and settings (spec 012) reach generic code only through the registry
   overlay (`systems/userTypes.ts`, `SystemRegistry.setUserDocumentTypes`); `user-` documents keep
-  every value in `templateValues`. Current-state detail: the sheet-templates skill.
+  every value in `templateValues`. User catalogs (spec 015) do the same through
+  `setUserCatalogs` and are read with `getCatalogBinding`. Current-state detail: the
+  sheet-templates skill.
 
 ## Schema and Import/Export
 

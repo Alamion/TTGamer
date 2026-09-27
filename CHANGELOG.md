@@ -1,5 +1,19 @@
 # Changelog
 
+## v3.13.0
+
+### Minor feat
+
+- **Your own catalogs (spec 015, T-074)**: make a catalog in the library — on one of your settings, on a shipped setting such as Star Wars, or on a ruleset so every setting on those rules shares it — and fill it like a small spreadsheet: your own text, number, and toggle columns, entries added one by one or pasted from a spreadsheet, columns renamed, reordered, or retyped with a warning before values are lost
+- **Use your catalogs in templates**: a choice field picks from them and fills the fields you map its columns to; a list with its own values suggests entries while you type a name and can copy a number column into the value; a choice column in a table fills the other columns of its own row. The picker groups this setting's catalogs, its rules' catalogs, and the game's own
+- **Catalogs in the library**: they sit beside document types (and on rulesets, beside settings), move, delete, export, and import like your types; a move or delete names the templates that would lose the catalog; exporting a page takes the catalogs it uses along; the game's own catalogs are listed read-only with their entries
+- **Documents keep what they picked**: renaming an entry renames it on every sheet, and deleting an entry or a catalog keeps the picked name visible
+
+### Fix
+
+- **Catalog names in the editor**: the catalog picker shows catalog names instead of their internal ids
+- **Table columns have settings**: each column of a template table opens the usual field settings (type, options, catalog)
+
 ## v3.12.0
 
 ### Minor feat

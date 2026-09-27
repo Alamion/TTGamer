@@ -5,6 +5,7 @@ import { useCharacterContext } from '../../../context/CharacterContext';
 import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import { useDocumentStore } from '../../../store/documentStore';
+import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import type { DocumentBindingDescriptor } from '../../../systems/templateBindings';
 import type { SystemListShape } from '../../../systems/templateBindings';
 import {
@@ -24,8 +25,8 @@ import {
 } from '../../../types/template';
 import type { TemplatePageValues } from '../../../types/templateValues';
 import {
-    CATALOG_BINDINGS,
     type CatalogFillableDetail,
+    getCatalogBinding,
     readDetailValue,
 } from '../data/catalogBindings';
 import { useBoundDocument } from './boundDocument';
@@ -93,6 +94,11 @@ export interface UseTemplatePageResult {
     resolveCatalogField: (field: TemplateField) => CatalogFieldRuntime | undefined;
     resolveSystemList: (list: ListNode) => SystemListRuntime | undefined;
     setRowValue: (blockId: string, rowIndex: string, columnId: string, value: unknown) => void;
+    setRowValues: (
+        blockId: string,
+        rowIndex: string,
+        cells: Readonly<Record<string, unknown>>
+    ) => void;
     /** Writes by storage coordinate (valueKey); resolves template field ids internally. */
     setValue: (fieldOrKey: string, value: unknown) => void;
     status: TemplatePageStatus;
@@ -183,22 +189,30 @@ export function useTemplatePage(
         [currentDocumentId, template, readOnly, updateTemplateValues, fieldCoords]
     );
 
-    const setRowValue = useCallback(
-        (blockId: string, rowIndex: string, columnId: string, value: unknown) => {
+    /** Several cells of one row in one write; `undefined` or `null` empties a cell. */
+    const setRowValues = useCallback(
+        (blockId: string, rowIndex: string, cells: Readonly<Record<string, unknown>>) => {
             if (!currentDocumentId || !template || readOnly) return;
             updateTemplateValues(currentDocumentId, template, (page) => {
                 const rows = readRows(page[blockId]);
-                const row = rows[rowIndex] ?? {};
+                const row: Record<string, unknown> = { ...(rows[rowIndex] ?? {}) };
+                for (const [columnId, value] of Object.entries(cells)) {
+                    if (value === undefined || value === null) delete row[columnId];
+                    else row[columnId] = value;
+                }
                 return {
                     ...page,
-                    [blockId]: {
-                        ...rows,
-                        [rowIndex]: { ...row, [columnId]: value as TemplatePageValues[string] },
-                    },
+                    [blockId]: { ...rows, [rowIndex]: row },
                 } as TemplatePageValues;
             });
         },
         [currentDocumentId, template, readOnly, updateTemplateValues]
+    );
+
+    const setRowValue = useCallback(
+        (blockId: string, rowIndex: string, columnId: string, value: unknown) =>
+            setRowValues(blockId, rowIndex, { [columnId]: value }),
+        [setRowValues]
     );
 
     const addRow = useCallback(
@@ -524,11 +538,14 @@ export function useTemplatePage(
         [document, documentData, template, currentDocumentId, readOnly, updateDocumentData]
     );
 
+    // User catalogs answer through the registry overlay; their edits re-resolve bound fields (R5).
+    const userCatalogs = useDocumentTypeStore((state) => state.catalogs);
+
     const resolveCatalogField = useCallback(
         (field: TemplateField): CatalogFieldRuntime | undefined => {
             if (field.type !== 'select' || !field.binding) return undefined;
             const catalogId = field.binding.catalogId;
-            const binding = CATALOG_BINDINGS.get(catalogId);
+            const binding = getCatalogBinding(catalogId, userCatalogs);
             if (!binding) {
                 // FR-21 degradation: manual fallback with static options, binding retained.
                 reportSheetIssue({
@@ -557,7 +574,7 @@ export function useTemplatePage(
                 readDetail: readDetailValue,
             };
         },
-        [locale]
+        [locale, userCatalogs]
     );
 
     // Preset seeding (feature 005, FR-19): copy-on-assign, once per document×template.
@@ -667,6 +684,7 @@ export function useTemplatePage(
             resolveCatalogField,
             resolveSystemList,
             setRowValue,
+            setRowValues,
             setValue,
             status: template ? 'ready' : 'none',
             template,
@@ -685,6 +703,7 @@ export function useTemplatePage(
             resolveCatalogField,
             resolveSystemList,
             setRowValue,
+            setRowValues,
             setValue,
             template,
             values,

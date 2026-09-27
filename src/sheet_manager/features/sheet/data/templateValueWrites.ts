@@ -8,6 +8,8 @@ import {
     walkTemplateNodes,
 } from '../../../types/template';
 import {
+    pickLabelBase,
+    PickLabelSchema,
     ratingDetailBase,
     RatingDetailSchema,
     TEMPLATE_VALUES_LIMITS,
@@ -21,6 +23,11 @@ import {
 export type TemplateValueWriteResult =
     | { ok: true; values: TemplatePageValues }
     | { ok: false; key: string; reason: string };
+
+/** A choice field bound to a catalog: picks from it may keep the picked name beside the id. */
+function isCatalogSelect(field: TemplateField | undefined): boolean {
+    return field?.type === 'select' && field.binding !== undefined;
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -72,6 +79,14 @@ function validateTemplatePageValues(
             continue;
         }
 
+        const pickedKey = pickLabelBase(key);
+        if (pickedKey !== undefined && isCatalogSelect(fieldDefs.get(pickedKey))) {
+            const label = PickLabelSchema.safeParse(value);
+            if (!label.success) return { ok: false, key, reason: 'type' };
+            validated[key] = label.data;
+            continue;
+        }
+
         const ratingKey = ratingDetailBase(key);
         if (ratingKey !== undefined && fieldDefs.get(ratingKey)?.type === 'rating') {
             const detail = RatingDetailSchema.safeParse(value);
@@ -94,8 +109,15 @@ function validateTemplatePageValues(
                 const cells: Record<string, TemplateFieldValue> = {};
                 for (const [columnId, cell] of Object.entries(row)) {
                     if (cell === undefined) continue;
-                    const column = columns.get(columnId);
                     const cellKey = `${rowKey}.${columnId}`;
+                    const pickedColumn = pickLabelBase(columnId);
+                    if (pickedColumn !== undefined && isCatalogSelect(columns.get(pickedColumn))) {
+                        const label = PickLabelSchema.safeParse(cell);
+                        if (!label.success) return { ok: false, key: cellKey, reason: 'type' };
+                        cells[columnId] = label.data;
+                        continue;
+                    }
+                    const column = columns.get(columnId);
                     if (!column) return { ok: false, key: cellKey, reason: 'unknown-column' };
                     const result = validateTemplateValue(column, cell);
                     if (!result.ok) return { ok: false, key: cellKey, reason: result.reason };

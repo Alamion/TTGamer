@@ -1,8 +1,9 @@
 import { reportSheetIssue } from '../../../diagnostics';
 import { exportNotices, resolveSystemPolicies, systemRegistry } from '../../../systems';
+import { isUserCatalogId } from '../../../systems/userCatalogs';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
 import { CustomTemplateSchema, isTemplateField, walkTemplateNodes } from '../../../types/template';
-import { CATALOG_BINDINGS } from '../data/catalogBindings';
+import { getCatalogBinding } from '../data/catalogBindings';
 import { validateTemplateReferences } from '../data/templateReferences';
 
 /**
@@ -70,7 +71,10 @@ function stripUnavailableBindings(template: CustomTemplate): {
             if (
                 field.type !== 'select' ||
                 !field.binding ||
-                CATALOG_BINDINGS.has(field.binding.catalogId)
+                getCatalogBinding(field.binding.catalogId) !== undefined ||
+                // A user catalog may arrive with the same library file, or later (spec 015): the
+                // binding stays and degrades to manual choice until it does.
+                isUserCatalogId(field.binding.catalogId)
             ) {
                 return field;
             }

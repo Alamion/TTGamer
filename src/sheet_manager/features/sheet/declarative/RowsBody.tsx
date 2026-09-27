@@ -8,7 +8,7 @@ import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import type { BindingOption, RowsBinding, RowsColumn } from '../../../systems/templateBindings';
 import { createRowId } from '../../../systems/templateBindings';
 import type { PrimitiveNode } from '../../../types/template';
-import { CATALOG_BINDINGS, readCatalogDetails } from '../data/catalogBindings';
+import { CATALOG_LOOKUP, readCatalogDetails } from '../data/catalogBindings';
 import { useBoundDocument } from './boundDocument';
 import { parentName, type RowSuggestion, rowSuggestions, suggestionsForRow } from './rowsCatalog';
 
@@ -103,7 +103,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
     const locale = useDocusaurusContext().i18n.currentLocale;
     const catalog = descriptor.catalog;
     const suggestions = useMemo(
-        () => (catalog ? rowSuggestions(CATALOG_BINDINGS, catalog, locale) : []),
+        () => (catalog ? rowSuggestions(CATALOG_LOOKUP, catalog, locale) : []),
         [catalog, locale]
     );
     if (!bound) return null;
@@ -139,7 +139,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
         updates[catalog.column] = suggestion.name;
         if (catalog.parent && suggestion.parentId) {
             updates[catalog.parent.column] = parentName(
-                CATALOG_BINDINGS,
+                CATALOG_LOOKUP,
                 catalog.parent,
                 suggestion.parentId,
                 locale
@@ -211,7 +211,7 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                                 <CatalogSuggest
                                                     catalog={[
                                                         ...suggestionsForRow(
-                                                            CATALOG_BINDINGS,
+                                                            CATALOG_LOOKUP,
                                                             catalog,
                                                             suggestions,
                                                             row,

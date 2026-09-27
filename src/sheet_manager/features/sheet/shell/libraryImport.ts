@@ -5,6 +5,7 @@ import { generateDraftId } from '../../../components/dialogs/template-editor/dra
 import { useTemplateStore } from '../../../store/templateStore';
 import type { SystemRegistry } from '../../../systems/registry';
 import type { DocumentDefinition } from '../../../systems/types';
+import { catalogOwnerKey, newUserCatalogId, type UserCatalog } from '../../../systems/userCatalogs';
 import {
     isUserKind,
     newUserSettingId,
@@ -12,7 +13,14 @@ import {
     type UserDocumentType,
     type UserSetting,
 } from '../../../systems/userTypes';
-import type { CustomTemplate } from '../../../types/template';
+import {
+    type CustomTemplate,
+    isContainerNode,
+    isTemplateField,
+    type TemplateField,
+    type TemplateNode,
+} from '../../../types/template';
+import { TEMPLATE_LIMITS } from '../../../types/templateLimits';
 import { applyLibraryWrites } from '../data/libraryActions';
 import type { LibraryLevel } from '../data/libraryTree';
 import { type LibraryPayload, overrideRecordId } from './libraryFile';
@@ -24,7 +32,7 @@ import { type LibraryPayload, overrideRecordId } from './libraryFile';
  */
 export type ImportState = 'new' | 'same' | 'conflict' | 'unavailable';
 export type ImportChoice = 'replace' | 'keep-both';
-export type RecordKind = 'setting' | 'type' | 'template' | 'override';
+export type RecordKind = 'setting' | 'type' | 'template' | 'override' | 'catalog';
 
 type ReasonId = keyof typeof uiMessages.sheet.library.import.reasons;
 
@@ -42,6 +50,7 @@ export interface ImportInstalled {
     types: Readonly<Record<string, UserDocumentType>>;
     templates: readonly CustomTemplate[];
     defaultOverrides: Readonly<Record<string, CustomTemplate>>;
+    catalogs: Readonly<Record<string, UserCatalog>>;
 }
 
 export const recordKey = (kind: RecordKind, id: string) => `${kind}:${id}`;
@@ -190,6 +199,39 @@ export function buildImportPreview(
     for (const setting of payload.settings) settingEntry(setting.id);
     for (const type of payload.types) typeEntry(type.id);
 
+    // Catalogs sit under their owner: a ruleset, a shipped setting, or a user setting (spec 015).
+    const installedPerOwner = new Map<string, number>();
+    for (const catalog of Object.values(installed.catalogs)) {
+        const key = catalogOwnerKey(catalog.owner);
+        installedPerOwner.set(key, (installedPerOwner.get(key) ?? 0) + 1);
+    }
+    for (const catalog of payload.catalogs) {
+        const { owner } = catalog;
+        const parent =
+            'settingId' in owner
+                ? settingEntry(owner.settingId)
+                : 'rulesetId' in owner
+                  ? rulesetIds.has(owner.rulesetId)
+                      ? rulesetEntry(owner.rulesetId)
+                      : undefined
+                  : shippedSetting(owner.systemId, owner.moduleId);
+        const current = installed.catalogs[catalog.id];
+        const ownerKey = catalogOwnerKey(owner);
+        // A new catalog counts against its owner's limit; a replaced one does not.
+        const full =
+            !current && (installedPerOwner.get(ownerKey) ?? 0) >= TEMPLATE_LIMITS.catalogsPerOwner;
+        if (!current && !full)
+            installedPerOwner.set(ownerKey, (installedPerOwner.get(ownerKey) ?? 0) + 1);
+        const unavailable = !parent || parent.record?.state === 'unavailable';
+        const reason: ReasonId | undefined = unavailable ? 'owner' : full ? 'limit' : undefined;
+        node(parent ?? unavailableRoot(), `c:user:${catalog.id}`, 'catalog', catalog.name, {
+            kind: 'catalog',
+            id: catalog.id,
+            state: reason ? 'unavailable' : compare(catalog, current),
+            ...(reason ? { reason } : {}),
+        });
+    }
+
     const pageParent = (template: CustomTemplate): ImportEntry | undefined => {
         if (isUserKind(template.documentKind)) return typeEntry(template.documentKind);
         const definition = definitionByKind(template.systemId, template.documentKind);
@@ -255,6 +297,13 @@ export function buildImportPreview(
             }
         );
     }
+
+    // Catalogs lead their siblings, as in the library tree.
+    const catalogsFirst = (entries: ImportEntry[]) => {
+        entries.sort((a, b) => Number(b.level === 'catalog') - Number(a.level === 'catalog'));
+        for (const entry of entries) catalogsFirst(entry.children);
+    };
+    catalogsFirst(roots);
 
     // Available rulesets first, in registry order; the unavailable group last.
     const order = [...rulesetIds].map((id) => `r:${id}`);
@@ -372,6 +421,7 @@ export interface ImportSummary {
     settings: number;
     types: number;
     pages: number;
+    catalogs: number;
 }
 
 function withSuffix(name: string): string {
@@ -395,6 +445,12 @@ export function installImport(
     const settingIds = new Map<string, string>();
     const typeIds = new Map<string, string>();
     const templateIds = new Map<string, string>();
+    const catalogIds = new Map<string, string>();
+    for (const catalog of payload.catalogs) {
+        if (take('catalog', catalog.id) && fresh('catalog', catalog.id)) {
+            catalogIds.set(catalog.id, newUserCatalogId());
+        }
+    }
     for (const setting of payload.settings) {
         if (take('setting', setting.id) && fresh('setting', setting.id)) {
             settingIds.set(setting.id, newUserSettingId());
@@ -451,8 +507,21 @@ export function installImport(
                 ? { defaultTemplateId: page(entry.defaultTemplateId) }
                 : {}),
         }));
+    const catalogs = payload.catalogs
+        .filter(({ id }) => take('catalog', id))
+        .map((entry) => ({
+            ...entry,
+            id: catalogIds.get(entry.id) ?? entry.id,
+            ...(catalogIds.has(entry.id) ? { name: withSuffix(entry.name) } : {}),
+            owner:
+                'settingId' in entry.owner
+                    ? { settingId: setting(entry.owner.settingId) }
+                    : entry.owner,
+        }));
     const templates = payload.templates
         .filter(({ id }) => take('template', id))
+        // A catalog kept as a copy takes this file's pages that bind it along (spec 015, R11).
+        .map((entry) => rebindCatalogs(entry, catalogIds))
         .map((entry) => ({
             ...entry,
             id: page(entry.id),
@@ -477,6 +546,7 @@ export function installImport(
         saveSettings: settings,
         saveTypes: types,
         saveTemplates: [...templates, ...keptOverrides],
+        saveCatalogs: catalogs,
     });
     if (replacedOverrides.length > 0) {
         const { setDefaultOverride } = useTemplateStore.getState();
@@ -486,5 +556,31 @@ export function installImport(
         settings: settings.length,
         types: types.length,
         pages: templates.length + overrides.length,
+        catalogs: catalogs.length,
     };
+}
+
+/** A template with its catalog bindings (fields, table columns, lists) renamed by `ids`. */
+function rebindCatalogs(
+    template: CustomTemplate,
+    ids: ReadonlyMap<string, string>
+): CustomTemplate {
+    if (ids.size === 0) return template;
+    const field = (node: TemplateField): TemplateField =>
+        node.type === 'select' && node.binding && ids.has(node.binding.catalogId)
+            ? { ...node, binding: { ...node.binding, catalogId: ids.get(node.binding.catalogId)! } }
+            : node;
+    const visit = (nodes: readonly TemplateNode[]): TemplateNode[] =>
+        nodes.map((node) => {
+            if (isContainerNode(node)) return { ...node, children: visit(node.children) };
+            if (node.type === 'table') return { ...node, columns: node.columns.map(field) };
+            if (node.type === 'list' && node.catalog && ids.has(node.catalog.catalogId)) {
+                return {
+                    ...node,
+                    catalog: { ...node.catalog, catalogId: ids.get(node.catalog.catalogId)! },
+                };
+            }
+            return isTemplateField(node) ? field(node) : node;
+        });
+    return { ...template, children: visit(template.children) };
 }

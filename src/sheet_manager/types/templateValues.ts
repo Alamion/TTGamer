@@ -64,7 +64,8 @@ export type TemplateImageValue = z.infer<typeof TemplateImageValueSchema>;
 export const TemplateTableCellSchema = z.union([PrimitiveValueSchema, TemplateResourceValueSchema]);
 
 /** One table row: column id → cell. */
-export const TemplateTableRowSchema = z.record(z.string().min(1).max(64), TemplateTableCellSchema);
+// A 64-character column id plus the picked-name suffix (`#label`, spec 015).
+export const TemplateTableRowSchema = z.record(z.string().min(1).max(72), TemplateTableCellSchema);
 
 /** Table block value stored under the block id: row index → row. */
 export const TemplateTableRowsSchema = z.record(z.string().min(1).max(64), TemplateTableRowSchema);
@@ -99,6 +100,23 @@ export function ratingDetailBase(key: string): string | undefined {
         ? key.slice(0, -RATING_DETAIL_SUFFIX.length)
         : undefined;
 }
+
+const PICK_LABEL_SUFFIX = '#label';
+
+/**
+ * Where a pick from a user catalog keeps the entry's name (spec 015, R3): beside the stored entry
+ * id, so a document still shows what it picked after the entry or catalog is deleted.
+ */
+export function pickLabelKey(key: string): string {
+    return `${key}${PICK_LABEL_SUFFIX}`;
+}
+
+/** The value key (or column id) of a picked-name key, or `undefined` for any other key. */
+export function pickLabelBase(key: string): string | undefined {
+    return key.endsWith(PICK_LABEL_SUFFIX) ? key.slice(0, -PICK_LABEL_SUFFIX.length) : undefined;
+}
+
+export const PickLabelSchema = z.string().max(120);
 
 /** Stored detail, or empty text with all flags off when missing or malformed. */
 export function readRatingDetail(value: unknown): RatingDetail {

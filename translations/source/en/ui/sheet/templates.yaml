@@ -45,6 +45,7 @@ editor:
     sectionTitle: Section title
     blockTitle: Block title (optional)
     fieldLabel: Field label
+    columnSettings: 'Settings of {label}'
     valueKeyLabel: Shared value key (fields with the same key share one value)
 
     fieldDescription: Help text (optional)
@@ -275,6 +276,7 @@ page:
     formulaReasonDivision: division by zero
     formulaReasonNonNumeric: a referenced value is not a number
     formulaClamped: Limited by a linked value
+    catalogEmpty: No entries yet
     ratingText: '{label}: text'
     ratingClamped: 'Stored value {value} is above the current maximum'
     ratingMaximum: 'Maximum {max}'
@@ -288,6 +290,11 @@ page:
     imageAlt: Template image
 binding:
     attach: Attach catalog
+    groupSetting: This setting
+    groupShipped: '{system} catalogs'
+    listCatalog: Suggest from catalog
+    valueFrom: Value from
+    none: None
     catalog: Catalog
     fills: Auto-fill mapping
     fillTarget: Fill into

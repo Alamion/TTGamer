@@ -25,6 +25,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { dragNode } from './helpers/editor';
+import { ASHEN_ID, RELICS_ID, resetLibraryStores, seedLibrary } from './helpers/library';
 
 const ISSUE_MESSAGES = {
     emptyName: 'Template name is required.',
@@ -1072,5 +1073,56 @@ describe('rating settings (spec 014)', () => {
             dice: true,
             flags: ['specialization', 'experienced'],
         });
+    });
+});
+
+describe('catalog picker scope (spec 015)', () => {
+    beforeEach(seedLibrary);
+    afterEach(() => {
+        cleanup();
+        resetLibraryStores();
+    });
+
+    it('groups the setting, ruleset, and shipped catalogs and maps user columns', () => {
+        const template = CustomTemplateSchema.parse({
+            id: 'tpl-ashenpg1',
+            name: 'Ashen page',
+            systemId: 'wod-v5',
+            documentKind: 'mortal',
+            settingId: ASHEN_ID,
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'relic',
+                    type: 'select',
+                    label: 'Relic',
+                    options: [{ id: 'none', label: 'None' }],
+                },
+                { id: 'relic-power', type: 'number', label: 'Relic power' },
+            ],
+        });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+        selectInOutline('relic');
+        const attach = within(settings('relic')).getByLabelText(
+            'Attach catalog'
+        ) as HTMLSelectElement;
+        const groups = [...attach.querySelectorAll('optgroup')].map((group) => [
+            group.label,
+            [...group.querySelectorAll('option')].map(({ text }) => text),
+        ]);
+        expect(groups[0]).toEqual(['This setting', ['Relics']]);
+        expect(groups[1]).toEqual(['World of Darkness 5th Edition', ['Common firearms']]);
+        expect(groups[2]![0]).toBe('World of Darkness 5th Edition catalogs');
+        expect(groups[2]![1]).toContain('Edges');
+
+        fireEvent.change(attach, { target: { value: RELICS_ID } });
+        const panel = settings('relic');
+        expect(within(panel).getByText('Power')).toBeTruthy();
+        expect(within(panel).getByText('Cursed')).toBeTruthy();
     });
 });

@@ -54,3 +54,15 @@ The editor always shows conditional elements, hatched, and says whether the cond
 ## Catalogs \{#catalogs}
 
 A **Choice** field can take its options from one of the game's catalogs — weapons, merits, species. Choosing an entry can fill other fields of the page with the entry's details (damage, cost, description): pick which detail goes to which field. The filled values are copies; readers can still change them.
+
+### Your own catalogs \{#your-catalogs}
+
+Make your own catalogs in the [library](./library.mdx): **New catalog** on a setting, or on a ruleset when every setting on those rules should share it. A catalog is a small table: every entry has a **Name** and a value in each of your columns — **Text**, **Number**, or **Toggle**. Add entries one by one, or **Paste rows** copied from a spreadsheet: one entry per line, the name first, then the columns in order. Changing a column's type warns before values that do not fit are emptied.
+
+The catalog picker lists **This setting**'s catalogs, then the catalogs of its rules, then the game's own. Pages of another setting or of other rules cannot bind yours. Use a catalog in three places:
+
+- a **Choice** field: picking an entry fills the fields you map its columns to;
+- a table column set to **Choice**: open **Settings** of the column; its columns fill the other columns of the same row only;
+- a list with its own values: **Suggest from catalog** offers entries while the reader types a name, and **Value from** copies a number column into the entry's value. Typing a name that is not in the catalog still works.
+
+Documents remember which entry they picked: renaming the entry renames it on every sheet. Deleting an entry or the whole catalog keeps the picked name on the sheets, and the fields go back to their own list of options. Moving a catalog to a place some pages cannot see is confirmed first and names those pages. The game's own catalogs are listed in the library read-only.

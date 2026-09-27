@@ -80,6 +80,10 @@ export interface TemplateFieldControlProps {
     catalogOptions?: ReadonlyArray<CatalogOption>;
     /** Documents available for a reference control (provided by the hook layer). */
     documentOptions?: ReadonlyArray<DocumentOption>;
+    /** Catalog choice only (spec 015): the name kept at pick time, shown once the entry is gone. */
+    pickedLabel?: string;
+    /** Catalog choice only: the bound catalog exists but has no entries yet. */
+    catalogEmpty?: boolean;
     /** Rating only: the stored text and flags (spec 014) and their writer. */
     ratingDetail?: RatingDetail;
     onDetailChange?: (next: RatingDetail) => void;
@@ -193,16 +197,29 @@ export function SelectFieldControl(props: TemplateFieldControlProps) {
 }
 
 function SelectFieldControlRender({
+    catalogEmpty,
     catalogOptions,
     disabled,
     field,
     onChange,
+    pickedLabel,
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'select'> }) {
-    const options =
+    if (catalogEmpty) {
+        return <p className="text-xs text-textSecondary">{translate(page.catalogEmpty)}</p>;
+    }
+    const offered =
         field.binding && catalogOptions && catalogOptions.length > 0
             ? catalogOptions
             : field.options.map((option) => ({ value: option.id, label: option.label }));
+    // A picked entry that is gone (deleted, or its catalog is) keeps showing its last name.
+    const options =
+        typeof value === 'string' &&
+        value !== '' &&
+        pickedLabel &&
+        !offered.some((option) => option.value === value)
+            ? [{ value, label: pickedLabel }, ...offered]
+            : offered;
 
     if (usesSearchableSelect(field, options)) {
         return (

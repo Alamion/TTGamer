@@ -27,6 +27,14 @@ export type PageRef =
     | { kind: 'shipped'; systemId: string; viewId: string; edited: boolean }
     | { kind: 'user'; templateId: string };
 
+export type CatalogRef =
+    | { kind: 'user'; catalogId: string }
+    | { kind: 'shipped'; systemId: string; catalogId: string };
+
+export function catalogNodeKey(ref: CatalogRef): string {
+    return ref.kind === 'user' ? `c:user:${ref.catalogId}` : `c:${ref.systemId}:${ref.catalogId}`;
+}
+
 export function settingNodeKey(ref: SettingRef): string {
     switch (ref.kind) {
         case 'rules':

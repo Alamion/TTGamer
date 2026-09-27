@@ -45,6 +45,7 @@ editor:
     sectionTitle: Заголовок секции
     blockTitle: Заголовок блока (необязательно)
     fieldLabel: Название поля
+    columnSettings: 'Настройки «{label}»'
     valueKeyLabel: Общий ключ значения (одинаковый ключ = одно значение между шаблонами)
 
     fieldDescription: Подсказка (необязательно)
@@ -275,6 +276,7 @@ page:
     formulaReasonDivision: деление на ноль
     formulaReasonNonNumeric: одно из значений — не число
     formulaClamped: Ограничено связанным значением
+    catalogEmpty: Записей пока нет
     ratingText: '{label}: текст'
     ratingClamped: 'Сохранённое значение {value} выше текущего максимума'
     ratingMaximum: 'Максимум {max}'
@@ -288,6 +290,11 @@ page:
     imageAlt: Изображение шаблона
 binding:
     attach: Привязать каталог
+    groupSetting: Этот сеттинг
+    groupShipped: 'Каталоги: {system}'
+    listCatalog: Подсказки из каталога
+    valueFrom: Значение из
+    none: Нет
     catalog: Каталог
     fills: Автозаполнение
     fillTarget: Записывать в

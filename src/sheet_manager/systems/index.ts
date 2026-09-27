@@ -9,7 +9,8 @@ export const systemRegistry = new SystemRegistry([starWarsWodSystem, wod2eSystem
 
 /** Keeps the registry's user-type overlay in step with the type and template stores. */
 function syncUserDocumentTypes(): void {
-    const { types, settings } = useDocumentTypeStore.getState();
+    const { types, settings, catalogs } = useDocumentTypeStore.getState();
+    systemRegistry.setUserCatalogs(catalogs);
     systemRegistry.setUserDocumentTypes({
         types,
         settings,
@@ -83,6 +84,14 @@ export type {
     SystemPlugin,
     TraitPoolFlags,
 } from './types';
+export type {
+    CatalogColumn,
+    CatalogColumnType,
+    CatalogEntry,
+    CatalogScope,
+    UserCatalog,
+    UserCatalogOwner,
+} from './userCatalogs';
 export type { EffectiveTemplate, ResolvedCustomTemplate } from './view';
 export {
     isTemplateCompatible,

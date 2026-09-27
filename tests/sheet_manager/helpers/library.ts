@@ -2,6 +2,7 @@ import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
+import { type UserCatalog, UserCatalogSchema } from '@site/src/sheet_manager/systems/userCatalogs';
 import type { UserDocumentType, UserSetting } from '@site/src/sheet_manager/systems/userTypes';
 import type { UnknownDocumentEnvelope } from '@site/src/sheet_manager/types/document';
 import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
@@ -15,6 +16,12 @@ export const CULT_PAGE_ID = 'tpl-cultpag1';
 export const ASHEN_MORTAL_PAGE_ID = 'tpl-ashmort1';
 export const ORG_PAGE_ID = 'tpl-orgpage1';
 export const EDITED_SHIPPED_VIEW = 'full-sheet';
+export const RELICS_ID = 'user-catalog-relics01';
+export const FIREARMS_ID = 'user-catalog-guns0001';
+export const POWER_COLUMN = 'c-power001';
+export const CURSED_COLUMN = 'c-cursed01';
+export const BONE_FLUTE = 'e-bonefl01';
+export const BLACK_MIRROR = 'e-mirror01';
 
 export function libraryPage(
     id: string,
@@ -40,6 +47,45 @@ export function userSetting(overrides: Partial<UserSetting> = {}): UserSetting {
         updatedAt: NOW,
         ...overrides,
     };
+}
+
+/** "Relics" on Ashen Realms: Power (number), Cursed (toggle), two entries. */
+export function userCatalog(overrides: Partial<UserCatalog> = {}): UserCatalog {
+    return UserCatalogSchema.parse({
+        id: RELICS_ID,
+        name: 'Relics',
+        owner: { settingId: ASHEN_ID },
+        columns: [
+            { id: POWER_COLUMN, name: 'Power', type: 'number' },
+            { id: CURSED_COLUMN, name: 'Cursed', type: 'toggle' },
+        ],
+        entries: [
+            {
+                id: BONE_FLUTE,
+                name: 'Bone Flute',
+                values: { [POWER_COLUMN]: 2, [CURSED_COLUMN]: false },
+            },
+            {
+                id: BLACK_MIRROR,
+                name: 'Black Mirror',
+                values: { [POWER_COLUMN]: 4, [CURSED_COLUMN]: true },
+            },
+        ],
+        createdAt: NOW,
+        updatedAt: NOW,
+        ...overrides,
+    });
+}
+
+/** "Common firearms" on the V5 ruleset itself: shared by every V5 setting. */
+export function rulesetCatalog(): UserCatalog {
+    return userCatalog({
+        id: FIREARMS_ID,
+        name: 'Common firearms',
+        owner: { rulesetId: 'wod-v5' as never },
+        columns: [{ id: 'c-damage01', name: 'Damage', type: 'number' }],
+        entries: [{ id: 'e-pistol01', name: 'Pistol', values: { 'c-damage01': 2 } }],
+    });
 }
 
 export function userType(overrides: Partial<UserDocumentType> = {}): UserDocumentType {
@@ -76,7 +122,13 @@ export function libraryDocument(
 export function resetLibraryStores(): void {
     useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
     useDocumentStore.setState({ documents: [], currentDocumentId: null, recoveryEntries: [] });
-    useDocumentTypeStore.setState({ types: {}, settings: {}, defaultPages: {}, quarantine: [] });
+    useDocumentTypeStore.setState({
+        types: {},
+        settings: {},
+        defaultPages: {},
+        catalogs: {},
+        quarantine: [],
+    });
 }
 
 /**
@@ -122,6 +174,7 @@ export function seedLibrary(): void {
         },
         settings: { [ASHEN_ID]: userSetting() },
         defaultPages: {},
+        catalogs: { [RELICS_ID]: userCatalog(), [FIREARMS_ID]: rulesetCatalog() },
         quarantine: [],
     });
     const mortal = { systemId: 'wod-v5', definitionId: 'v5-character' };

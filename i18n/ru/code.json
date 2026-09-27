@@ -1364,6 +1364,63 @@
     "ttgamer.ui.sheet.catalogBrowser.search": {
         "message": "Поиск по каталогу..."
     },
+    "ttgamer.ui.sheet.catalogNames.armor": {
+        "message": "Броня"
+    },
+    "ttgamer.ui.sheet.catalogNames.backgrounds": {
+        "message": "Дополнения"
+    },
+    "ttgamer.ui.sheet.catalogNames.creatures": {
+        "message": "Существа"
+    },
+    "ttgamer.ui.sheet.catalogNames.force-powers": {
+        "message": "Техники Силы"
+    },
+    "ttgamer.ui.sheet.catalogNames.force-skills": {
+        "message": "Навыки Силы"
+    },
+    "ttgamer.ui.sheet.catalogNames.melee-weapons": {
+        "message": "Холодное оружие"
+    },
+    "ttgamer.ui.sheet.catalogNames.merits-flaws": {
+        "message": "Достоинства и недостатки"
+    },
+    "ttgamer.ui.sheet.catalogNames.ranged-weapons": {
+        "message": "Дистанционное оружие"
+    },
+    "ttgamer.ui.sheet.catalogNames.species": {
+        "message": "Виды"
+    },
+    "ttgamer.ui.sheet.catalogNames.tools-gear": {
+        "message": "Инструменты и снаряжение"
+    },
+    "ttgamer.ui.sheet.catalogNames.v5-hunter-advantages": {
+        "message": "Достоинства"
+    },
+    "ttgamer.ui.sheet.catalogNames.v5-hunter-armor": {
+        "message": "Броня"
+    },
+    "ttgamer.ui.sheet.catalogNames.v5-hunter-creeds": {
+        "message": "Кредо"
+    },
+    "ttgamer.ui.sheet.catalogNames.v5-hunter-drives": {
+        "message": "Мотивы"
+    },
+    "ttgamer.ui.sheet.catalogNames.v5-hunter-edges": {
+        "message": "Грани"
+    },
+    "ttgamer.ui.sheet.catalogNames.v5-hunter-gear": {
+        "message": "Снаряжение"
+    },
+    "ttgamer.ui.sheet.catalogNames.v5-hunter-perks": {
+        "message": "Умения"
+    },
+    "ttgamer.ui.sheet.catalogNames.v5-hunter-weapons": {
+        "message": "Оружие"
+    },
+    "ttgamer.ui.sheet.catalogNames.vehicles": {
+        "message": "Транспорт"
+    },
     "ttgamer.ui.sheet.controls.add": {
         "message": "Добавить"
     },
@@ -2192,6 +2249,9 @@
     "ttgamer.ui.sheet.library.actions.move": {
         "message": "Перенести…"
     },
+    "ttgamer.ui.sheet.library.actions.newCatalog": {
+        "message": "Новый каталог"
+    },
     "ttgamer.ui.sheet.library.actions.newPage": {
         "message": "Новая страница"
     },
@@ -2231,11 +2291,152 @@
     "ttgamer.ui.sheet.library.buttonTitle": {
         "message": "Правила, сеттинги, типы документов и их страницы"
     },
+    "ttgamer.ui.sheet.library.catalogTable.addColumn": {
+        "message": "Добавить колонку"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.addEntry": {
+        "message": "Добавить запись"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.cancel": {
+        "message": "Отмена"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.cell": {
+        "message": "{column}: «{name}»"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.columnName": {
+        "message": "Название колонки"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.columnType": {
+        "message": "Тип колонки «{column}»"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.confirm": {
+        "message": "Продолжить"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.deleteColumn": {
+        "message": "Удалить «{column}»"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.deleteColumnBody": {
+        "message": "«{column}» сопоставлена в {count} шаблоне: {names}. Сопоставление станет проблемой в редакторе.|«{column}» сопоставлена в {count} шаблонах: {names}. Сопоставления станут проблемами в редакторе.|«{column}» сопоставлена в {count} шаблонах: {names}. Сопоставления станут проблемами в редакторе."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.deleteColumnTitle": {
+        "message": "Удалить колонку?"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.deleteEntry": {
+        "message": "Удалить «{name}»"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.deleteSelected": {
+        "message": "Удалить отмеченные"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.duplicate": {
+        "message": "У другой записи такое же название."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.empty": {
+        "message": "Записей пока нет. Добавьте запись или вставьте строки из таблицы."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.emptyName": {
+        "message": "Введите название."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.entryName": {
+        "message": "Название записи {number}"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.label": {
+        "message": "Записи каталога «{name}»"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.limits.catalogs": {
+        "message": "Здесь может быть не больше {limit} каталогов."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.limits.columns": {
+        "message": "В каталоге может быть не больше {limit} колонок."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.limits.entries": {
+        "message": "В каталоге может быть не больше {limit} записей."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.moveColumnLeft": {
+        "message": "Сдвинуть «{column}» влево"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.moveColumnRight": {
+        "message": "Сдвинуть «{column}» вправо"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.moveEntryDown": {
+        "message": "Опустить «{name}»"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.moveEntryUp": {
+        "message": "Поднять «{name}»"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.nameColumn": {
+        "message": "Название"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.newColumn": {
+        "message": "Колонка {number}"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.newEntry": {
+        "message": "Новая запись"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.paste": {
+        "message": "Вставить строки"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.pasteAdd": {
+        "message": "Добавить {count} запись|Добавить {count} записи|Добавить {count} записей"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.pasteHint": {
+        "message": "Одна запись на строку: название, затем колонки по порядку через табуляцию — так копирует электронная таблица."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.pasteLabel": {
+        "message": "Строки для добавления"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.pasteRejected": {
+        "message": "{count} строка пропущена:|{count} строки пропущены:|{count} строк пропущено:"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.pasteTitle": {
+        "message": "Вставить строки"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.readOnly": {
+        "message": "Встроенные каталоги нельзя изменить."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.rejectLine": {
+        "message": "Строка {line}: {reason}"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.rejectReasons.bad-value": {
+        "message": "значение не подходит колонке"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.rejectReasons.empty-name": {
+        "message": "нет названия"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.rejectReasons.entries-limit": {
+        "message": "каталог заполнен"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.rejectReasons.extra-cells": {
+        "message": "ячеек больше, чем колонок"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.retypeBody": {
+        "message": "{count} значение не подходит новому типу и будет очищено.|{count} значения не подходят новому типу и будут очищены.|{count} значений не подходят новому типу и будут очищены."
+    },
+    "ttgamer.ui.sheet.library.catalogTable.retypeTitle": {
+        "message": "Сменить тип колонки?"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.selectEntry": {
+        "message": "Отметить «{name}»"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.types.number": {
+        "message": "Число"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.types.text": {
+        "message": "Текст"
+    },
+    "ttgamer.ui.sheet.library.catalogTable.types.toggle": {
+        "message": "Флажок"
+    },
     "ttgamer.ui.sheet.library.close": {
         "message": "Закрыть библиотеку"
     },
+    "ttgamer.ui.sheet.library.counts.catalogs": {
+        "message": "{count} каталог|{count} каталога|{count} каталогов"
+    },
     "ttgamer.ui.sheet.library.counts.documents": {
         "message": "{count} документ|{count} документа|{count} документов"
+    },
+    "ttgamer.ui.sheet.library.counts.entries": {
+        "message": "{count} запись|{count} записи|{count} записей"
     },
     "ttgamer.ui.sheet.library.counts.pages": {
         "message": "{count} страница|{count} страницы|{count} страниц"
@@ -2248,6 +2449,9 @@
     },
     "ttgamer.ui.sheet.library.create.blank": {
         "message": "Пустой страницы"
+    },
+    "ttgamer.ui.sheet.library.create.catalogTitle": {
+        "message": "Новый каталог в «{parent}»"
     },
     "ttgamer.ui.sheet.library.create.copyOf": {
         "message": "Копии «{name}»"
@@ -2279,11 +2483,20 @@
     "ttgamer.ui.sheet.library.create.typeTitle": {
         "message": "Новый тип документа в «{parent}»"
     },
+    "ttgamer.ui.sheet.library.delete.catalogDescription": {
+        "message": "Удалить каталог «{name}»? Его использует {count} шаблон; его поля перейдут на ручной выбор, а документы сохранят выбранное.|Удалить каталог «{name}»? Его используют {count} шаблона; их поля перейдут на ручной выбор, а документы сохранят выбранное.|Удалить каталог «{name}»? Его используют {count} шаблонов; их поля перейдут на ручной выбор, а документы сохранят выбранное."
+    },
+    "ttgamer.ui.sheet.library.delete.catalogTitle": {
+        "message": "Удалить каталог?"
+    },
     "ttgamer.ui.sheet.library.delete.pageDescription": {
         "message": "«{name}» будет удалена. Документы, открытые на ней, вернутся к странице по умолчанию."
     },
     "ttgamer.ui.sheet.library.delete.pageTitle": {
         "message": "Удалить страницу?"
+    },
+    "ttgamer.ui.sheet.library.delete.settingCatalogs": {
+        "message": "Его {count} каталог тоже будет удалён.|Его {count} каталога тоже будут удалены.|Его {count} каталогов тоже будут удалены."
     },
     "ttgamer.ui.sheet.library.delete.settingDescription": {
         "message": "Удалить сеттинг «{name}» вместе с его типами документов и страницами? К нему относится {count} документ; он останется.|Удалить сеттинг «{name}» вместе с его типами документов и страницами? К нему относятся {count} документа; они останутся.|Удалить сеттинг «{name}» вместе с его типами документов и страницами? К нему относятся {count} документов; они останутся."
@@ -2296,6 +2509,9 @@
     },
     "ttgamer.ui.sheet.library.delete.typeTitle": {
         "message": "Удалить тип документа?"
+    },
+    "ttgamer.ui.sheet.library.details.catalogNote": {
+        "message": "Ваш каталог — именованные записи со своими колонками. Из него могут выбирать поля выбора, списки и колонки таблиц страниц этого места."
     },
     "ttgamer.ui.sheet.library.details.coreCharacters": {
         "message": "Персонаж правил: {names}. Он есть в каждом вашем сеттинге на этих правилах."
@@ -2333,6 +2549,9 @@
     "ttgamer.ui.sheet.library.details.path": {
         "message": "Где"
     },
+    "ttgamer.ui.sheet.library.details.rulesetCatalogNote": {
+        "message": "Каталог правил — им может пользоваться каждый сеттинг на этих правилах."
+    },
     "ttgamer.ui.sheet.library.details.rulesetIntro": {
         "message": "Игровой движок — механика, кубики и собственные персонажи. Правила поставляются с приложением."
     },
@@ -2341,6 +2560,9 @@
     },
     "ttgamer.ui.sheet.library.details.rulesOnlyNote": {
         "message": "Собственные персонажи правил без сеттинга. Их страницы служат запасными для ваших сеттингов, где у персонажа правил ещё нет своей страницы."
+    },
+    "ttgamer.ui.sheet.library.details.shippedCatalogNote": {
+        "message": "Встроенный каталог. Он только для чтения; привязывайте его в редакторе, как любой каталог."
     },
     "ttgamer.ui.sheet.library.details.shippedPageNote": {
         "message": "Встроенная страница. Её можно изменить в редакторе и сбросить к исходной."
@@ -2357,6 +2579,9 @@
     "ttgamer.ui.sheet.library.details.unavailableNote": {
         "message": "Его правила недоступны в этой версии приложения. Он сохранён только для чтения и вернётся вместе с ними."
     },
+    "ttgamer.ui.sheet.library.details.usedBy": {
+        "message": "Используется в {count} шаблоне.|Используется в {count} шаблонах.|Используется в {count} шаблонах."
+    },
     "ttgamer.ui.sheet.library.export.addedFor": {
         "message": "добавлено для «{child}»"
     },
@@ -2364,7 +2589,7 @@
         "message": "Крепится к"
     },
     "ttgamer.ui.sheet.library.export.counts": {
-        "message": "В файле: {settings}, {types}, {pages}."
+        "message": "В файле: {settings}, {types}, {pages}, {catalogs}."
     },
     "ttgamer.ui.sheet.library.export.hint": {
         "message": "Отметьте, что попадёт в файл. Ваши родительские элементы, без которых его не установить, добавятся сами; встроенные правила, сеттинги, типы и страницы попадают в файл только как место, к которому крепятся ваши части."
@@ -2415,7 +2640,7 @@
         "message": "Выбрать файл"
     },
     "ttgamer.ui.sheet.library.import.done": {
-        "message": "Импортировано: {settings}, {types}, {pages}."
+        "message": "Импортировано: {settings}, {types}, {pages}, {catalogs}."
     },
     "ttgamer.ui.sheet.library.import.errors.format": {
         "message": "Это не файл библиотеки, типа или страницы."
@@ -2443,6 +2668,9 @@
     },
     "ttgamer.ui.sheet.library.import.nothingPicked": {
         "message": "Ничего не отмечено для импорта."
+    },
+    "ttgamer.ui.sheet.library.import.reasons.limit": {
+        "message": "Здесь уже столько каталогов, сколько можно."
     },
     "ttgamer.ui.sheet.library.import.reasons.owner": {
         "message": "Его сеттинга нет ни в файле, ни здесь."
@@ -2483,6 +2711,9 @@
     "ttgamer.ui.sheet.library.import.title": {
         "message": "Импорт"
     },
+    "ttgamer.ui.sheet.library.levels.catalog": {
+        "message": "Каталог"
+    },
     "ttgamer.ui.sheet.library.levels.page": {
         "message": "Страница"
     },
@@ -2507,6 +2738,12 @@
     "ttgamer.ui.sheet.library.modes.label": {
         "message": "Режим библиотеки"
     },
+    "ttgamer.ui.sheet.library.move.catalogConfirmTitle": {
+        "message": "Перенести каталог туда, где его не увидят?"
+    },
+    "ttgamer.ui.sheet.library.move.catalogsMoving": {
+        "message": "{count} каталог переедет вместе с ним.|{count} каталога переедут вместе с ним.|{count} каталогов переедут вместе с ним."
+    },
     "ttgamer.ui.sheet.library.move.confirm": {
         "message": "Перенести"
     },
@@ -2525,6 +2762,9 @@
     "ttgamer.ui.sheet.library.move.dragHint": {
         "message": "Можно и перетащить строку на новое место в дереве."
     },
+    "ttgamer.ui.sheet.library.move.lostBy": {
+        "message": "{count} шаблон больше не увидит каталог: {names}. Его поля перейдут на ручной выбор.|{count} шаблона больше не увидят каталог: {names}. Их поля перейдут на ручной выбор.|{count} шаблонов больше не увидят каталог: {names}. Их поля перейдут на ручной выбор."
+    },
     "ttgamer.ui.sheet.library.move.noTargets": {
         "message": "Другого подходящего места нет."
     },
@@ -2542,6 +2782,9 @@
     },
     "ttgamer.ui.sheet.library.move.title": {
         "message": "Перенести «{name}»"
+    },
+    "ttgamer.ui.sheet.library.move.toCatalog": {
+        "message": "Куда: другие правила (для всех их сеттингов) или сеттинг."
     },
     "ttgamer.ui.sheet.library.move.toRuleset": {
         "message": "Куда: другие правила."
@@ -2662,6 +2905,21 @@
     },
     "ttgamer.ui.sheet.templates.binding.fillTarget": {
         "message": "Записывать в"
+    },
+    "ttgamer.ui.sheet.templates.binding.groupSetting": {
+        "message": "Этот сеттинг"
+    },
+    "ttgamer.ui.sheet.templates.binding.groupShipped": {
+        "message": "Каталоги: {system}"
+    },
+    "ttgamer.ui.sheet.templates.binding.listCatalog": {
+        "message": "Подсказки из каталога"
+    },
+    "ttgamer.ui.sheet.templates.binding.none": {
+        "message": "Нет"
+    },
+    "ttgamer.ui.sheet.templates.binding.valueFrom": {
+        "message": "Значение из"
     },
     "ttgamer.ui.sheet.templates.cohort.addMember": {
         "message": "Добавить участника"
@@ -2869,6 +3127,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.columns": {
         "message": "Колонки"
+    },
+    "ttgamer.ui.sheet.templates.editor.columnSettings": {
+        "message": "Настройки «{label}»"
     },
     "ttgamer.ui.sheet.templates.editor.columnSpan": {
         "message": "Занимает колонок"
@@ -3565,6 +3826,9 @@
     },
     "ttgamer.ui.sheet.templates.library.title": {
         "message": "Шаблоны страниц"
+    },
+    "ttgamer.ui.sheet.templates.page.catalogEmpty": {
+        "message": "Записей пока нет"
     },
     "ttgamer.ui.sheet.templates.page.chooseOptions": {
         "message": "Выбрать варианты"

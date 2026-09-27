@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { describeError, reportSheetIssue } from '../diagnostics';
+import { type UserCatalog, UserCatalogSchema } from '../systems/userCatalogs';
 import {
     type UserDocumentType,
     UserDocumentTypeSchema,
@@ -15,14 +16,16 @@ import {
  * Version 1 (spec 012): user document types and user settings.
  * Version 2 (spec 013): a type's default page is optional, and `defaultPages` records the chosen
  * default page of shipped types (`systemId:definitionId` → view or user template id).
+ * Version 3 (spec 015): user catalogs.
  */
-const STORE_VERSION = 2;
+const STORE_VERSION = 3;
 const MAX_QUARANTINE_ENTRIES = 100;
 
 export interface DocumentTypeStoreState {
     types: Record<string, UserDocumentType>;
     settings: Record<string, UserSetting>;
     defaultPages: Record<string, string>;
+    catalogs: Record<string, UserCatalog>;
     quarantine: unknown[];
     saveType: (type: UserDocumentType) => void;
     removeType: (id: string) => void;
@@ -32,6 +35,10 @@ export interface DocumentTypeStoreState {
     setDefaultPage: (key: string, pageId: string | null) => void;
     /** Forgets every default-page choice that names a deleted or moved page. */
     dropDefaultPagesFor: (pageId: string) => void;
+    saveCatalog: (catalog: UserCatalog) => void;
+    removeCatalog: (id: string) => void;
+    /** Replaces the whole catalog set (library bulk writes: moves, deletes, imports). */
+    replaceCatalogs: (catalogs: Record<string, UserCatalog>) => void;
 }
 
 /** The `defaultPages` key of a shipped type. */
@@ -43,6 +50,7 @@ interface PersistedDocumentTypeState {
     types: Record<string, UserDocumentType>;
     settings: Record<string, UserSetting>;
     defaultPages: Record<string, string>;
+    catalogs: Record<string, UserCatalog>;
     quarantine: unknown[];
 }
 
@@ -62,8 +70,8 @@ export function migrateDocumentTypeStoreState(input: unknown): PersistedDocument
         reportSheetIssue({
             code: 'template-quarantined',
             message: retained
-                ? 'Persisted document type failed to parse and moved to quarantine'
-                : 'Persisted document type failed to parse and was dropped (quarantine is full)',
+                ? 'Persisted library entry failed to parse and moved to quarantine'
+                : 'Persisted library entry failed to parse and was dropped (quarantine is full)',
             details: { id: isRecord(entry) ? entry.id : undefined, error: describeError(error) },
         });
     };
@@ -91,6 +99,9 @@ export function migrateDocumentTypeStoreState(input: unknown): PersistedDocument
             UserSettingSchema.parse(entry)
         ),
         defaultPages: parseDefaultPages(isRecord(input) ? input.defaultPages : undefined),
+        catalogs: parseAll(isRecord(input) ? input.catalogs : undefined, (entry) =>
+            UserCatalogSchema.parse(entry)
+        ),
         quarantine,
     };
 }
@@ -109,6 +120,7 @@ const stateCreator: StateCreator<DocumentTypeStoreState, [], []> = (set) => ({
     types: {},
     settings: {},
     defaultPages: {},
+    catalogs: {},
     quarantine: [],
 
     saveType: (type) => {
@@ -143,6 +155,30 @@ const stateCreator: StateCreator<DocumentTypeStoreState, [], []> = (set) => ({
             if (pageId) next[key] = pageId;
             else delete next[key];
             return { defaultPages: next };
+        });
+    },
+
+    saveCatalog: (catalog) => {
+        const parsed = UserCatalogSchema.parse(catalog);
+        set(({ catalogs }) => ({ catalogs: { ...catalogs, [parsed.id]: parsed } }));
+    },
+
+    removeCatalog: (id) => {
+        set(({ catalogs }) => {
+            const next = { ...catalogs };
+            delete next[id];
+            return { catalogs: next };
+        });
+    },
+
+    replaceCatalogs: (catalogs) => {
+        set({
+            catalogs: Object.fromEntries(
+                Object.values(catalogs).map((catalog) => {
+                    const parsed = UserCatalogSchema.parse(catalog);
+                    return [parsed.id, parsed];
+                })
+            ),
         });
     },
 
@@ -181,10 +217,11 @@ export const useDocumentTypeStore = isBrowser
                       await localforage.default.removeItem(name);
                   },
               })),
-              partialize: ({ types, settings, defaultPages, quarantine }) => ({
+              partialize: ({ types, settings, defaultPages, catalogs, quarantine }) => ({
                   types,
                   settings,
                   defaultPages,
+                  catalogs,
                   quarantine,
               }),
           })

@@ -12,4 +12,8 @@ export const TEMPLATE_LIMITS = {
     listEntriesMax: 1_000,
     ratingMax: 100,
     resourceMax: 1_000_000,
+    /** User catalogs (spec 015): per catalog, and per owner (a setting or a ruleset). */
+    catalogEntriesMax: 1_000,
+    catalogColumnsMax: 20,
+    catalogsPerOwner: 50,
 } as const;

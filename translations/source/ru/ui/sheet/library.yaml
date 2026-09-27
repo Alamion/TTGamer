@@ -33,6 +33,7 @@ levels:
     setting: Сеттинг
     type: Тип документа
     page: Страница
+    catalog: Каталог
 badges:
     yours: ваше
     edited: изменено
@@ -51,6 +52,12 @@ counts:
         plural: true
     pages:
         message: '{count} страница|{count} страницы|{count} страниц'
+        plural: true
+    entries:
+        message: '{count} запись|{count} записи|{count} записей'
+        plural: true
+    catalogs:
+        message: '{count} каталог|{count} каталога|{count} каталогов'
         plural: true
 row:
     expand: Развернуть «{name}»
@@ -77,10 +84,17 @@ details:
     name: Название
     descriptionLabel: Описание
     noDescription: Без описания
+    catalogNote: Ваш каталог — именованные записи со своими колонками. Из него могут выбирать поля выбора, списки и колонки таблиц страниц этого места.
+    rulesetCatalogNote: Каталог правил — им может пользоваться каждый сеттинг на этих правилах.
+    shippedCatalogNote: Встроенный каталог. Он только для чтения; привязывайте его в редакторе, как любой каталог.
+    usedBy:
+        message: 'Используется в {count} шаблоне.|Используется в {count} шаблонах.|Используется в {count} шаблонах.'
+        plural: true
 actions:
     newSetting: Новый сеттинг
     newType: Новый тип документа
     newPage: Новая страница
+    newCatalog: Новый каталог
     edit: Изменить название и описание
     save: Сохранить
     cancel: Отмена
@@ -95,6 +109,7 @@ create:
     settingTitle: Новый сеттинг на правилах «{parent}»
     typeTitle: Новый тип документа в «{parent}»
     pageTitle: Новая страница для «{parent}»
+    catalogTitle: Новый каталог в «{parent}»
     name: Название
     nameRequired: Введите название.
     descriptionField: Описание (необязательно)
@@ -122,6 +137,13 @@ delete:
         plural: true
     pageTitle: Удалить страницу?
     pageDescription: '«{name}» будет удалена. Документы, открытые на ней, вернутся к странице по умолчанию.'
+    catalogTitle: Удалить каталог?
+    catalogDescription:
+        message: 'Удалить каталог «{name}»? Его использует {count} шаблон; его поля перейдут на ручной выбор, а документы сохранят выбранное.|Удалить каталог «{name}»? Его используют {count} шаблона; их поля перейдут на ручной выбор, а документы сохранят выбранное.|Удалить каталог «{name}»? Его используют {count} шаблонов; их поля перейдут на ручной выбор, а документы сохранят выбранное.'
+        plural: true
+    settingCatalogs:
+        message: 'Его {count} каталог тоже будет удалён.|Его {count} каталога тоже будут удалены.|Его {count} каталогов тоже будут удалены.'
+        plural: true
 reset:
     title: Вернуть оригинал встроенной страницы?
     body: '«{name}» вернётся к исходной структуре. Документы сохранят все значения.'
@@ -149,13 +171,21 @@ move:
     pageNote: Документы, открытые на этой странице и не подходящие новому типу, вернутся к своей странице по умолчанию.
     confirm: Перенести
     confirmTitle: Перенести на другие правила?
+    toCatalog: 'Куда: другие правила (для всех их сеттингов) или сеттинг.'
+    lostBy:
+        message: '{count} шаблон больше не увидит каталог: {names}. Его поля перейдут на ручной выбор.|{count} шаблона больше не увидят каталог: {names}. Их поля перейдут на ручной выбор.|{count} шаблонов больше не увидят каталог: {names}. Их поля перейдут на ручной выбор.'
+        plural: true
+    catalogsMoving:
+        message: '{count} каталог переедет вместе с ним.|{count} каталога переедут вместе с ним.|{count} каталогов переедут вместе с ним.'
+        plural: true
+    catalogConfirmTitle: Перенести каталог туда, где его не увидят?
 export:
     title: Экспорт
     hint: Отметьте, что попадёт в файл. Ваши родительские элементы, без которых его не установить, добавятся сами; встроенные правила, сеттинги, типы и страницы попадают в файл только как место, к которому крепятся ваши части.
     tick: Экспортировать «{name}»
     addedFor: добавлено для «{child}»
     nothingPicked: Отметьте, что экспортировать.
-    counts: 'В файле: {settings}, {types}, {pages}.'
+    counts: 'В файле: {settings}, {types}, {pages}, {catalogs}.'
     addresses: Крепится к
     preview: Предпросмотр файла
     save: Сохранить файл
@@ -177,6 +207,7 @@ import:
         owner: Его сеттинга нет ни в файле, ни здесь.
         place: Типа, к которому он относится, нет ни в файле, ни здесь.
         shippedPage: Такой встроенной страницы здесь нет.
+        limit: Здесь уже столько каталогов, сколько можно.
     choiceLabel: Что сделать с «{name}»
     replace: Заменить
     keepBoth: Оставить оба
@@ -184,10 +215,67 @@ import:
     submit: Импортировать отмеченное
     cancel: Отмена
     nothingPicked: Ничего не отмечено для импорта.
-    done: 'Импортировано: {settings}, {types}, {pages}.'
+    done: 'Импортировано: {settings}, {types}, {pages}, {catalogs}.'
     errors:
         parse: Файл не является корректным JSON.
         format: Это не файл библиотеки, типа или страницы.
         version: Файл создан версией приложения, которую эта не умеет читать.
         schema: В файле есть некорректная запись, он не импортирован.
         schemaEntry: 'Запись «{entry}» некорректна; файл не импортирован.'
+catalogTable:
+    label: Записи каталога «{name}»
+    readOnly: Встроенные каталоги нельзя изменить.
+    nameColumn: Название
+    addEntry: Добавить запись
+    addColumn: Добавить колонку
+    paste: Вставить строки
+    deleteSelected: Удалить отмеченные
+    newEntry: Новая запись
+    newColumn: Колонка {number}
+    empty: Записей пока нет. Добавьте запись или вставьте строки из таблицы.
+    emptyName: Введите название.
+    duplicate: У другой записи такое же название.
+    selectEntry: Отметить «{name}»
+    entryName: Название записи {number}
+    cell: '{column}: «{name}»'
+    columnName: Название колонки
+    columnType: Тип колонки «{column}»
+    moveColumnLeft: Сдвинуть «{column}» влево
+    moveColumnRight: Сдвинуть «{column}» вправо
+    deleteColumn: Удалить «{column}»
+    moveEntryUp: Поднять «{name}»
+    moveEntryDown: Опустить «{name}»
+    deleteEntry: Удалить «{name}»
+    types:
+        text: Текст
+        number: Число
+        toggle: Флажок
+    limits:
+        entries: В каталоге может быть не больше {limit} записей.
+        columns: В каталоге может быть не больше {limit} колонок.
+        catalogs: Здесь может быть не больше {limit} каталогов.
+    pasteTitle: Вставить строки
+    pasteHint: 'Одна запись на строку: название, затем колонки по порядку через табуляцию — так копирует электронная таблица.'
+    pasteLabel: Строки для добавления
+    pasteAdd:
+        message: 'Добавить {count} запись|Добавить {count} записи|Добавить {count} записей'
+        plural: true
+    pasteRejected:
+        message: '{count} строка пропущена:|{count} строки пропущены:|{count} строк пропущено:'
+        plural: true
+    rejectLine: 'Строка {line}: {reason}'
+    rejectReasons:
+        empty-name: нет названия
+        extra-cells: ячеек больше, чем колонок
+        bad-value: значение не подходит колонке
+        entries-limit: каталог заполнен
+    retypeTitle: Сменить тип колонки?
+    retypeBody:
+        message: '{count} значение не подходит новому типу и будет очищено.|{count} значения не подходят новому типу и будут очищены.|{count} значений не подходят новому типу и будут очищены.'
+        plural: true
+    deleteColumnTitle: Удалить колонку?
+    deleteColumnBody:
+        message: '«{column}» сопоставлена в {count} шаблоне: {names}. Сопоставление станет проблемой в редакторе.|«{column}» сопоставлена в {count} шаблонах: {names}. Сопоставления станут проблемами в редакторе.|«{column}» сопоставлена в {count} шаблонах: {names}. Сопоставления станут проблемами в редакторе.'
+        plural: true
+    confirm: Продолжить
+    cancel: Отмена

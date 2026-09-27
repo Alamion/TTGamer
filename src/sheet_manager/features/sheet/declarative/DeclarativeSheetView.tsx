@@ -29,6 +29,7 @@ import {
     readDataPath,
     resolveDataBindingByCoordinate,
 } from '../../../systems/templateBindings';
+import { isUserCatalogId } from '../../../systems/userCatalogs';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
 import {
     fieldLabelPosition,
@@ -39,6 +40,7 @@ import {
 import { listValueKey } from '../../../types/template';
 import {
     coerceStoredValue,
+    pickLabelKey,
     type RatingDetail,
     ratingDetailKey,
     readRatingDetail,
@@ -53,7 +55,7 @@ import {
     useTemplateEditorOverlay,
 } from './editorOverlay';
 import type { FormulaEvaluationError } from './formula';
-import { useTemplatePage, type UseTemplatePageResult } from './hooks';
+import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { localizeTemplate } from './localizeTemplate';
 import { CustomListView, PrimitiveNodeView, SystemListView } from './primitives';
 
@@ -184,16 +186,29 @@ function FieldCell({
                           value: details[detailKey],
                       }))
                 : [];
-            pageApi.applyWrites([{ target: fieldValueKey(field), value: next }, ...fills]);
+            // A user catalog pick also keeps the entry's name, shown if the entry is later deleted.
+            const picked = isUserCatalogId(runtime.catalogId)
+                ? runtime.options.find((option) => option.value === next)?.label
+                : undefined;
+            pageApi.applyWrites([
+                { target: fieldValueKey(field), value: next },
+                ...(picked ? [{ target: pickLabelKey(fieldValueKey(field)), value: picked }] : []),
+                ...fills,
+            ]);
             return;
         }
         pageApi.setValue(fieldValueKey(field), next);
     };
 
     const detailKey = field.type === 'rating' ? ratingDetailKey(fieldValueKey(field)) : undefined;
+    const pickedLabel = runtime ? pageApi.values[pickLabelKey(fieldValueKey(field))] : undefined;
     const controlElement = createElement(control, {
         field,
         value,
+        ...(typeof pickedLabel === 'string' ? { pickedLabel } : {}),
+        ...(runtime && !runtime.degraded && runtime.options.length === 0
+            ? { catalogEmpty: true }
+            : {}),
         ...(detailKey
             ? {
                   ratingDetail: readRatingDetail(pageApi.values[detailKey]),
@@ -357,6 +372,50 @@ function TableBlock({
             ? (stored as Record<string, Record<string, unknown>>)
             : {};
     const rowEntries = Object.entries(rows).sort(([left], [right]) => Number(left) - Number(right));
+    const blockKey = tableValueKey(node);
+    const catalogs = new Map(
+        node.columns.flatMap((column) => {
+            const runtime = pageApi.resolveCatalogField(column);
+            return runtime ? [[column.id, runtime] as const] : [];
+        })
+    );
+    /**
+     * A catalog pick in a choice column fills that row's mapped sibling columns in one write
+     * (spec 015, R10); other rows never change.
+     */
+    const writeCell = (
+        column: TemplateField,
+        catalog: CatalogFieldRuntime | undefined,
+        rowIndex: string,
+        next: unknown
+    ) => {
+        if (
+            !catalog ||
+            catalog.degraded ||
+            column.type !== 'select' ||
+            !column.binding ||
+            typeof next !== 'string' ||
+            next === ''
+        ) {
+            pageApi.setRowValue(blockKey, rowIndex, column.id, next);
+            return;
+        }
+        const details = readCatalogDetails(catalog.catalogId, next) ?? {};
+        const siblings = new Set(node.columns.map(({ id }) => id));
+        const cells: Record<string, unknown> = { [column.id]: next };
+        if (isUserCatalogId(catalog.catalogId)) {
+            cells[pickLabelKey(column.id)] = catalog.options.find(
+                (option) => option.value === next
+            )?.label;
+        }
+        for (const [detailKey, rule] of Object.entries(column.binding.fills)) {
+            if (rule.disabled || !siblings.has(rule.targetFieldId)) continue;
+            const value = details[detailKey];
+            if (value === undefined || Array.isArray(value)) continue;
+            cells[rule.targetFieldId] = value === '' ? null : value;
+        }
+        pageApi.setRowValues(blockKey, rowIndex, cells);
+    };
 
     return (
         <div className="overflow-x-auto">
@@ -387,6 +446,8 @@ function TableBlock({
                         <tr key={rowIndex} data-row={rowIndex}>
                             {node.columns.map((column) => {
                                 const Control = templateFieldControl(column.type);
+                                const catalog = catalogs.get(column.id);
+                                const picked = row[pickLabelKey(column.id)];
                                 return (
                                     <td key={column.id} className="px-2 py-1.5 align-top">
                                         <Control
@@ -398,14 +459,21 @@ function TableBlock({
                                             }
                                             value={coerceStoredValue(column, row[column.id])}
                                             onChange={(next) =>
-                                                pageApi.setRowValue(
-                                                    tableValueKey(node),
-                                                    rowIndex,
-                                                    column.id,
-                                                    next
-                                                )
+                                                writeCell(column, catalog, rowIndex, next)
                                             }
                                             disabled={pageApi.disabled}
+                                            {...(catalog
+                                                ? {
+                                                      catalogOptions: catalog.options,
+                                                      ...(typeof picked === 'string'
+                                                          ? { pickedLabel: picked }
+                                                          : {}),
+                                                      ...(!catalog.degraded &&
+                                                      catalog.options.length === 0
+                                                          ? { catalogEmpty: true }
+                                                          : {}),
+                                                  }
+                                                : {})}
                                             documentOptions={pageApi.documentOptions}
                                             onOpenDocument={pageApi.openDocument}
                                             previewSource={pageApi.previewSource}

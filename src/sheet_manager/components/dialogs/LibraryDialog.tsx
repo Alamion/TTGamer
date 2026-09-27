@@ -10,6 +10,8 @@ import toast from 'react-hot-toast';
 
 import {
     applyLibraryWrites,
+    catalogOwnerFor,
+    createCatalog,
     createSetting,
     createType,
     deletePlan,
@@ -24,7 +26,11 @@ import {
     moveTargets,
     planMove,
 } from '../../features/sheet/data/libraryMoves';
-import { settingNodeKey, typeNodeKey } from '../../features/sheet/data/libraryPages';
+import {
+    catalogNodeKey,
+    settingNodeKey,
+    typeNodeKey,
+} from '../../features/sheet/data/libraryPages';
 import {
     buildLibraryTree,
     containerKeys,
@@ -41,6 +47,7 @@ import { useDocumentTypeStore } from '../../store/documentTypeStore';
 import { useTemplateStore } from '../../store/templateStore';
 import { systemRegistry } from '../../systems';
 import type { CustomTemplate } from '../../types/template';
+import { TEMPLATE_LIMITS } from '../../types/templateLimits';
 import { DocsHelpLink } from '../controls/DocsHelpLink';
 import { ConfirmDialog } from './ConfirmDialog';
 import { availableActions, type LibraryActionId } from './library/actions';
@@ -61,7 +68,10 @@ const LIBRARY_MIME = 'application/x-ttgamer-library-node';
 export type LibraryMode = 'browse' | 'export' | 'import';
 
 type Panel =
-    | { kind: 'create-setting' | 'create-type' | 'create-page' | 'edit'; key: string }
+    | {
+          kind: 'create-setting' | 'create-type' | 'create-page' | 'create-catalog' | 'edit';
+          key: string;
+      }
     | { kind: 'move'; key: string; target?: string };
 
 interface EditorRequest {
@@ -89,6 +99,7 @@ function useLibraryTree() {
     const types = useDocumentTypeStore((state) => state.types);
     const settings = useDocumentTypeStore((state) => state.settings);
     const defaultPages = useDocumentTypeStore((state) => state.defaultPages);
+    const catalogs = useDocumentTypeStore((state) => state.catalogs);
     const templates = useTemplateStore((state) => state.templates);
     const defaultOverrides = useTemplateStore((state) => state.defaultOverrides);
     const documents = useDocumentStore((state) => state.documents);
@@ -103,8 +114,9 @@ function useLibraryTree() {
                 defaultOverrides,
                 defaultPages,
                 counts,
+                catalogs,
             }),
-        [types, settings, templates, defaultOverrides, defaultPages, counts]
+        [types, settings, templates, defaultOverrides, defaultPages, counts, catalogs]
     );
 }
 
@@ -266,22 +278,41 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
     const requestDelete = (node: LibraryNode) => {
         const deletion = deletePlan(node, state());
         if (!deletion) return;
+        const templateNames = deletion.boundTemplates.map(({ name }) => name).join(', ');
         const description =
             node.level === 'setting'
-                ? plural(labels.delete.settingDescription, deletion.documentCount, {
-                      name: node.name,
-                  })
+                ? [
+                      plural(labels.delete.settingDescription, deletion.documentCount, {
+                          name: node.name,
+                      }),
+                      deletion.catalogs.length > 0
+                          ? plural(labels.delete.settingCatalogs, deletion.catalogs.length)
+                          : '',
+                  ]
+                      .filter(Boolean)
+                      .join(' ')
                 : node.level === 'type'
                   ? plural(labels.delete.typeDescription, deletion.documentCount, {
                         name: node.name,
                     })
-                  : translate(labels.delete.pageDescription, { name: node.name });
+                  : node.level === 'catalog'
+                    ? [
+                          plural(labels.delete.catalogDescription, deletion.boundTemplates.length, {
+                              name: node.name,
+                          }),
+                          templateNames,
+                      ]
+                          .filter(Boolean)
+                          .join(' ')
+                    : translate(labels.delete.pageDescription, { name: node.name });
         const title =
             node.level === 'setting'
                 ? labels.delete.settingTitle
                 : node.level === 'type'
                   ? labels.delete.typeTitle
-                  : labels.delete.pageTitle;
+                  : node.level === 'catalog'
+                    ? labels.delete.catalogTitle
+                    : labels.delete.pageTitle;
         setConfirmation({
             title: translate(title),
             description,
@@ -308,6 +339,9 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                 break;
             case 'newPage':
                 setPanel({ kind: 'create-page', key: node.key });
+                break;
+            case 'newCatalog':
+                setPanel({ kind: 'create-catalog', key: node.key });
                 break;
             case 'edit':
                 setPanel({ kind: 'edit', key: node.key });
@@ -384,6 +418,21 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
             toast.success(translate(labels.toasts.created, { name: type.name }));
         } else if (current.kind === 'create-page' && node.level === 'type') {
             startPage(node, values);
+        } else if (current.kind === 'create-catalog') {
+            const owner = catalogOwnerFor(node);
+            if (!owner) return;
+            const catalog = createCatalog(owner, values.name, state(), values.description);
+            if (!catalog) {
+                toast.error(
+                    translate(labels.catalogTable.limits.catalogs, {
+                        limit: TEMPLATE_LIMITS.catalogsPerOwner,
+                    })
+                );
+                return;
+            }
+            applyLibraryWrites({ saveCatalogs: [catalog] });
+            reveal(catalogNodeKey({ kind: 'user', catalogId: catalog.id }), pathKeys(node.key));
+            toast.success(translate(labels.toasts.created, { name: catalog.name }));
         } else if (current.kind === 'edit') {
             applyLibraryWrites(renameItem(node, values.name, values.description, state()));
             toast.success(translate(labels.toasts.saved, { name: values.name }));
@@ -483,6 +532,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
             'create-setting': labels.create.settingTitle,
             'create-type': labels.create.typeTitle,
             'create-page': labels.create.pageTitle,
+            'create-catalog': labels.create.catalogTitle,
             edit: labels.actions.edit,
         } as const;
         const startOptions =

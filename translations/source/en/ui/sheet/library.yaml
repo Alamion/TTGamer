@@ -33,6 +33,7 @@ levels:
     setting: Setting
     type: Document type
     page: Page
+    catalog: Catalog
 badges:
     yours: yours
     edited: edited
@@ -51,6 +52,12 @@ counts:
         plural: true
     pages:
         message: '{count} page|{count} pages'
+        plural: true
+    entries:
+        message: '{count} entry|{count} entries'
+        plural: true
+    catalogs:
+        message: '{count} catalog|{count} catalogs'
         plural: true
 row:
     expand: Expand {name}
@@ -77,10 +84,17 @@ details:
     name: Name
     descriptionLabel: Description
     noDescription: No description
+    catalogNote: Your catalog — named entries with your own columns. Choice fields, lists, and table columns of this place's pages can pick from it.
+    rulesetCatalogNote: A catalog of the rules — every setting on these rules can use it.
+    shippedCatalogNote: A shipped catalog. It is read-only; bind it in the editor like any catalog.
+    usedBy:
+        message: 'Used by {count} template.|Used by {count} templates.'
+        plural: true
 actions:
     newSetting: New setting
     newType: New document type
     newPage: New page
+    newCatalog: New catalog
     edit: Edit name and description
     save: Save
     cancel: Cancel
@@ -95,6 +109,7 @@ create:
     settingTitle: New setting on {parent}
     typeTitle: New document type in {parent}
     pageTitle: New page for {parent}
+    catalogTitle: New catalog in {parent}
     name: Name
     nameRequired: Enter a name.
     descriptionField: Description (optional)
@@ -122,6 +137,13 @@ delete:
         plural: true
     pageTitle: Delete this page?
     pageDescription: '"{name}" will be deleted. Documents opened on it return to their default page.'
+    catalogTitle: Delete this catalog?
+    catalogDescription:
+        message: 'Delete the catalog "{name}"? {count} template uses it; its fields fall back to manual choice, and documents keep what they picked.|Delete the catalog "{name}"? {count} templates use it; their fields fall back to manual choice, and documents keep what they picked.'
+        plural: true
+    settingCatalogs:
+        message: 'Its {count} catalog is deleted too.|Its {count} catalogs are deleted too.'
+        plural: true
 reset:
     title: Reset this shipped page?
     body: '"{name}" returns to its original structure. Documents keep all their values.'
@@ -149,13 +171,21 @@ move:
     pageNote: Documents opened on this page that cannot use the new type return to their default page.
     confirm: Move
     confirmTitle: Move to other rules?
+    toCatalog: 'Where to: other rules (shared by all their settings) or a setting.'
+    lostBy:
+        message: '{count} template will no longer see the catalog: {names}. Its fields fall back to manual choice.|{count} templates will no longer see the catalog: {names}. Their fields fall back to manual choice.'
+        plural: true
+    catalogsMoving:
+        message: '{count} catalog moves with it.|{count} catalogs move with it.'
+        plural: true
+    catalogConfirmTitle: Move the catalog out of reach?
 export:
     title: Export
     hint: Tick what goes into the file. Parents you need to install it are added automatically; shipped rules, settings, types, and pages travel only as the place your parts attach to.
     tick: Export {name}
     addedFor: added for "{child}"
     nothingPicked: Tick what to export.
-    counts: 'In the file: {settings}, {types}, {pages}.'
+    counts: 'In the file: {settings}, {types}, {pages}, {catalogs}.'
     addresses: Attaches to
     preview: File preview
     save: Save file
@@ -177,6 +207,7 @@ import:
         owner: Its setting is neither in the file nor here.
         place: The type it belongs to is neither in the file nor here.
         shippedPage: This shipped page does not exist here.
+        limit: This place already has as many catalogs as it can hold.
     choiceLabel: What to do with "{name}"
     replace: Replace
     keepBoth: Keep both
@@ -184,10 +215,67 @@ import:
     submit: Import selected
     cancel: Cancel
     nothingPicked: Nothing to import is ticked.
-    done: 'Imported {settings}, {types}, {pages}.'
+    done: 'Imported {settings}, {types}, {pages}, {catalogs}.'
     errors:
         parse: The file is not valid JSON.
         format: This is not a library, type, or page file.
         version: The file was made by a version of the app this one cannot read.
         schema: The file has an invalid entry and was not imported.
         schemaEntry: 'Entry "{entry}" is invalid; the file was not imported.'
+catalogTable:
+    label: Entries of {name}
+    readOnly: Shipped catalogs cannot be changed.
+    nameColumn: Name
+    addEntry: Add entry
+    addColumn: Add column
+    paste: Paste rows
+    deleteSelected: Delete selected
+    newEntry: New entry
+    newColumn: Column {number}
+    empty: No entries yet. Add one or paste rows from a spreadsheet.
+    emptyName: Enter a name.
+    duplicate: Another entry has the same name.
+    selectEntry: Select {name}
+    entryName: Name of entry {number}
+    cell: '{column} of {name}'
+    columnName: Column name
+    columnType: Type of {column}
+    moveColumnLeft: Move {column} left
+    moveColumnRight: Move {column} right
+    deleteColumn: Delete {column}
+    moveEntryUp: Move {name} up
+    moveEntryDown: Move {name} down
+    deleteEntry: Delete {name}
+    types:
+        text: Text
+        number: Number
+        toggle: Toggle
+    limits:
+        entries: A catalog holds at most {limit} entries.
+        columns: A catalog holds at most {limit} columns.
+        catalogs: This place holds at most {limit} catalogs.
+    pasteTitle: Paste rows
+    pasteHint: 'One entry per line: the name, then the columns in order, separated by tabs — what a spreadsheet copies.'
+    pasteLabel: Rows to add
+    pasteAdd:
+        message: 'Add {count} entry|Add {count} entries'
+        plural: true
+    pasteRejected:
+        message: '{count} line is skipped:|{count} lines are skipped:'
+        plural: true
+    rejectLine: 'Line {line}: {reason}'
+    rejectReasons:
+        empty-name: no name
+        extra-cells: more cells than columns
+        bad-value: a value does not fit its column
+        entries-limit: the catalog is full
+    retypeTitle: Change the column type?
+    retypeBody:
+        message: '{count} value does not fit the new type and will be emptied.|{count} values do not fit the new type and will be emptied.'
+        plural: true
+    deleteColumnTitle: Delete this column?
+    deleteColumnBody:
+        message: '"{column}" is mapped by {count} template: {names}. The mapping becomes an issue in the editor.|"{column}" is mapped by {count} templates: {names}. The mappings become issues in the editor.'
+        plural: true
+    confirm: Continue
+    cancel: Cancel

@@ -501,11 +501,12 @@ export function TemplateEditorDialog({
             draftId: draft.id,
             systemId: draft.systemId,
             documentKind: draft.documentKind,
+            settingId: draft.settingId,
             bindings: listDocumentBindings(draft.systemId, draft.documentKind),
             coordinateListId: `template-coordinates-${draft.id}`,
             atNodeLimit,
         }),
-        [draft.id, draft.systemId, draft.documentKind, atNodeLimit]
+        [draft.id, draft.systemId, draft.documentKind, draft.settingId, atNodeLimit]
     );
 
     // Keyed by content so the context value changes only when a fill target actually changes.

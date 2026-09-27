@@ -25,8 +25,8 @@ file, moves and deletes, and the copy-on-select paths.
 
 ## Phase 1: Setup
 
-- [ ] T001 Mark T-074 as in progress (`[ ] 🟡`) in `TODO.md`, then run `yarn validate:backlog`.
-- [ ] T002 [P] Add the key skeletons to `translations/source/{en,ru}/ui/sheet/library.yaml`:
+- [x] T001 Mark T-074 as in progress (`[ ] 🟡`) in `TODO.md`, then run `yarn validate:backlog`.
+- [x] T002 [P] Add the key skeletons to `translations/source/{en,ru}/ui/sheet/library.yaml`:
     - a `catalogs` group with create, rename, the details pane toolbar, the column types, the paste dialog, limits, confirmations, "used by", the counts plural, and the read-only note;
     - the owner path text.
 
@@ -37,7 +37,7 @@ file, moves and deletes, and the copy-on-select paths.
 
     Nested keys must not be named `message`, `description`, or `plural`. Run `yarn build:translations`.
 
-- [ ] T003 [P] Extend `tests/sheet_manager/helpers/library.ts`:
+- [x] T003 [P] Extend `tests/sheet_manager/helpers/library.ts`:
     - add `RELICS_ID` and a `userCatalog(overrides)` fixture: owned by Ashen Realms, with columns Power (number) and Cursed (toggle), and entries Bone Flute (2, off) and Black Mirror (4, on);
     - add `FIREARMS_ID`, a ruleset-owned `{ rulesetId: 'wod-v5' }` catalog;
     - seed both in `seedLibrary()`;
@@ -47,42 +47,42 @@ file, moves and deletes, and the copy-on-select paths.
 
 ## Phase 2: Foundational (blocks all stories)
 
-- [ ] T004 Add `catalogEntriesMax: 1000`, `catalogColumnsMax: 20`, and `catalogsPerOwner: 50` to `src/sheet_manager/types/templateLimits.ts` (R12).
-- [ ] T005 Create `src/sheet_manager/systems/userCatalogs.ts` (R2–R4, data-model):
+- [x] T004 Add `catalogEntriesMax: 1000`, `catalogColumnsMax: 20`, and `catalogsPerOwner: 50` to `src/sheet_manager/types/templateLimits.ts` (R12).
+- [x] T005 Create `src/sheet_manager/systems/userCatalogs.ts` (R2–R4, data-model):
     - schemas: `CatalogColumnSchema`, `CatalogEntrySchema` (values must match column types; unknown column keys are dropped in a `superRefine`/transform against `columns`), `UserCatalogOwnerSchema` (three shapes), and `UserCatalogSchema`;
     - id generators: `newUserCatalogId`, `newCatalogColumnId`, and `newCatalogEntryId`;
     - `isUserCatalogId`;
     - `catalogOwnerKey(owner)`, a stable string used to compare and count owners;
     - `userCatalogBinding(catalog)`, which adapts a catalog to `CatalogBindingEntry` and is memoized in a `WeakMap`.
-- [ ] T006 Add the catalog overlay to `src/sheet_manager/systems/registry.ts`: `setUserCatalogs(catalogs)`, `getUserCatalog(id)`, and `listUserCatalogs()`. Add `catalogScopeOf(registry, template)` to `src/sheet_manager/systems/userCatalogs.ts`: it returns `{ setting: owner, ruleset: rulesetId } | undefined` from the template's `settingId`, its user type's owner, or the module of its definition, using `rulesetOf` and `getDocumentDefinition`.
+- [x] T006 Add the catalog overlay to `src/sheet_manager/systems/registry.ts`: `setUserCatalogs(catalogs)`, `getUserCatalog(id)`, and `listUserCatalogs()`. Add `catalogScopeOf(registry, template)` to `src/sheet_manager/systems/userCatalogs.ts`: it returns `{ setting: owner, ruleset: rulesetId } | undefined` from the template's `settingId`, its user type's owner, or the module of its definition, using `rulesetOf` and `getDocumentDefinition`.
 
     In `src/sheet_manager/systems/index.ts`, sync the catalogs from `useDocumentTypeStore` in the existing subscription. Export the new types from `systems/index.ts`.
 
-- [ ] T007 Bump `src/sheet_manager/store/documentTypeStore.ts` to v3 (R1):
+- [x] T007 Bump `src/sheet_manager/store/documentTypeStore.ts` to v3 (R1):
     - add `catalogs`, plus `saveCatalog`, `removeCatalog`, and `replaceCatalogs(next)`;
     - the migration parses `catalogs` with quarantine and reports `template-quarantined`;
     - older states load with `catalogs: {}`.
-- [ ] T008 Change `src/sheet_manager/features/sheet/data/catalogBindings.ts` (R4):
+- [x] T008 Change `src/sheet_manager/features/sheet/data/catalogBindings.ts` (R4):
     - add `getCatalogBinding(id)`, which checks shipped catalogs first, then `userCatalogBinding(registry.getUserCatalog(id))`;
     - add `listCatalogBindingsFor(template)`, which returns `{ setting: [...user], ruleset: [...user], shipped: [...plugin catalogs of template.systemId] }`;
     - `readCatalogDetails` and `validateBindingFills` use the lookup.
 
     Replace every other `CATALOG_BINDINGS.get` and `CATALOG_BINDINGS` iteration outside docs embeds with the lookup: `hooks.ts`, `primitives.tsx`, `RowsBody.tsx`, `catalogSuggestions.ts`, `itemDisplay.ts`, `templateReferences.ts`, `templateFile.ts`, and `CatalogBindingEditor.tsx`. Docs embeds keep shipped-only iteration.
 
-- [ ] T009 [P] Add the `#label` companion to `src/sheet_manager/types/templateValues.ts` (R3):
+- [x] T009 [P] Add the `#label` companion to `src/sheet_manager/types/templateValues.ts` (R3):
     - `pickLabelKey(key)` and `pickLabelBase(key)`;
     - raise the `TemplateTableRowSchema` key limit to 72.
 
     In `src/sheet_manager/features/sheet/data/templateValueWrites.ts`, validate `#label` bag writes as bounded strings when the base key is a catalog-bound select, and allow `<columnId>#label` cells in rows of a table whose column is a catalog-bound select.
 
-- [ ] T010 In `useTemplatePage` (`src/sheet_manager/features/sheet/declarative/hooks.ts`), subscribe to `useDocumentTypeStore((s) => s.catalogs)` and add it to the dependencies of `resolveCatalogField` and every catalog resolver (R5).
-- [ ] T011 [P] Create `tests/sheet_manager/user-catalogs.test.ts`:
+- [x] T010 In `useTemplatePage` (`src/sheet_manager/features/sheet/declarative/hooks.ts`), subscribe to `useDocumentTypeStore((s) => s.catalogs)` and add it to the dependencies of `resolveCatalogField` and every catalog resolver (R5).
+- [x] T011 [P] Create `tests/sheet_manager/user-catalogs.test.ts`:
     - schema: types, unknown columns dropped, limits;
     - owner shapes, `catalogOwnerKey`;
     - `catalogScopeOf` for a user setting page, a user type page in a user setting, a Rules only page, a Hunter page, a Star Wars page, and a user type owned by Star Wars;
     - the adapter's entries, `fillableDetails`, and labels;
     - the overlay lookup with `getCatalogBinding`: user and shipped ids, a missing id.
-- [ ] T012 [P] Extend `tests/sheet_manager/document-type-store.test.ts`: the v2 → v3 migration, a malformed catalog quarantined, and save and remove.
+- [x] T012 [P] Extend `tests/sheet_manager/document-type-store.test.ts`: the v2 → v3 migration, a malformed catalog quarantined, and save and remove.
 
 **Checkpoint**: user catalogs exist in the store and resolve through `getCatalogBinding`. Existing tests pass (`yarn vitest run tests/sheet_manager`).
 
@@ -94,19 +94,19 @@ file, moves and deletes, and the copy-on-select paths.
 
 **Independent test**: `library-tree` catalog cases, `catalog-edit.test.ts`, and the library dialog create and edit flow.
 
-- [ ] T013 [P] [US1] Create `src/sheet_manager/features/sheet/data/catalogEdit.ts` (R8):
+- [x] T013 [P] [US1] Create `src/sheet_manager/features/sheet/data/catalogEdit.ts` (R8):
     - `addColumn`, `renameColumn`, `retypeColumn` with `retypeLosses`, `moveColumn`, and `removeColumn`;
     - `addEntry`, `updateEntry`, `moveEntry`, `removeEntry`, and `duplicateNames`;
     - `parsePastedEntries(text, columns)`, which returns `{ entries, rejected }`;
     - `convertValue(value, from, to)`, following the R8 table;
     - `catalogUsage(catalogId, templates)`, which returns the templates that bind the catalog (fields, lists, table columns) and, per column id, the mappings that use it; the details pane, the column delete, and the library delete and move plans all read it;
     - every function is pure over `UserCatalog`, and the limits are checked through the `TEMPLATE_LIMITS` catalog constants.
-- [ ] T014 [P] [US1] Create `tests/sheet_manager/catalog-edit.test.ts` with the operations and the limits:
+- [x] T014 [P] [US1] Create `tests/sheet_manager/catalog-edit.test.ts` with the operations and the limits:
     - every conversion path;
     - paste with tabs, CRLF, missing and extra cells, a non-numeric number, and an empty name;
     - duplicate detection;
     - `catalogUsage` finds a field, a list, and a table column binding, and the mappings of each column.
-- [ ] T015 [US1] Extend `src/sheet_manager/features/sheet/data/libraryPages.ts` and `libraryTree.ts` (R6):
+- [x] T015 [US1] Extend `src/sheet_manager/features/sheet/data/libraryPages.ts` and `libraryTree.ts` (R6):
     - `CatalogRef` and `catalogNodeKey` (`c:user:<id>`, `c:<systemId>:<catalogId>`);
     - `CatalogNode` with `level: 'catalog'`;
     - `catalogs` on `RulesetNode` and `SettingNode`;
@@ -115,25 +115,25 @@ file, moves and deletes, and the copy-on-select paths.
     - `LibraryInput.catalogs`;
     - `childrenOf` lists catalogs first;
     - `filterTree`, `findNode`, `flattenVisible`, `hasUserContent`, and `containerKeys` handle the new level.
-- [ ] T016 [US1] Extend `tests/sheet_manager/library-tree.test.ts`:
+- [x] T016 [US1] Extend `tests/sheet_manager/library-tree.test.ts`:
     - Relics under Ashen Realms and Firearms under WoD 5e, before the settings;
     - the shipped Star Wars catalogs under Star Wars, read-only, and the V5 catalogs under the ruleset;
     - the "Only yours" filter keeps user catalogs;
     - search finds a catalog by name;
     - an unknown owner is listed under "Unavailable".
-- [ ] T017 [US1] Add `createCatalog(owner, name, state)` to `src/sheet_manager/features/sheet/data/libraryActions.ts`:
+- [x] T017 [US1] Add `createCatalog(owner, name, state)` to `src/sheet_manager/features/sheet/data/libraryActions.ts`:
     - it returns `LibraryWrites` with `catalogs`;
     - it refuses when the owner already has 50 catalogs;
     - `renameItem` covers catalogs;
     - `LibraryWrites` and `applyLibraryWrites` carry catalog changes through `replaceCatalogs`;
     - `readLibraryState` includes `catalogs`.
-- [ ] T018 [US1] Update the library UI for the catalog level:
+- [x] T018 [US1] Update the library UI for the catalog level:
     - `components/dialogs/library/TreeRow.tsx`: the `Table2` icon and the entries count plural;
     - `LibraryTree.tsx`;
     - `actions.ts` and `ContextMenu.tsx`: "New catalog" on rulesets and settings; Rename, Move…, Export, and Delete on user catalogs; nothing on shipped catalogs;
     - `CreateForm.tsx`: the catalog variant, name only;
     - `LibraryDialog.tsx`: wire the creation, reveal the new node, and include catalogs in the store selectors passed to `buildLibraryTree`.
-- [ ] T019 [US1] Create `src/sheet_manager/components/dialogs/library/CatalogTable.tsx` following contracts/catalog-ui.md "Catalog details pane", and render it from `DetailsPane.tsx` for catalog nodes:
+- [x] T019 [US1] Create `src/sheet_manager/components/dialogs/library/CatalogTable.tsx` following contracts/catalog-ui.md "Catalog details pane", and render it from `DetailsPane.tsx` for catalog nodes:
     - header, toolbar, and table;
     - column header controls, typed cells, row moves and delete, and the duplicate and empty-name marks;
     - the paste dialog with its preview;
@@ -143,7 +143,7 @@ file, moves and deletes, and the copy-on-select paths.
     - every edit goes through `catalogEdit.ts` and one `saveCatalog`;
     - `th scope="col"` and labelled icon buttons;
     - rows are memoized components keyed by entry id, so editing one cell re-renders only its row (plan performance goal).
-- [ ] T020 [US1] Extend `tests/sheet_manager/library-dialog.test.tsx`:
+- [x] T020 [US1] Extend `tests/sheet_manager/library-dialog.test.tsx`:
     - create "Relics" on Ashen Realms and "Common firearms" on the ruleset;
     - add a column and an entry;
     - paste two lines plus one rejected line;
@@ -162,19 +162,19 @@ Documents store the entry id plus `#label`.
 
 **Independent test**: the field cases of `catalog-use-sites.test.tsx` and the editor picker test.
 
-- [ ] T021 [US2] Change `src/sheet_manager/components/dialogs/template-editor/CatalogBindingEditor.tsx`:
+- [x] T021 [US2] Change `src/sheet_manager/components/dialogs/template-editor/CatalogBindingEditor.tsx`:
     - the picker uses `listCatalogBindingsFor(draft template)` with the option groups "This setting", "<ruleset>", and "<system> catalogs";
     - a "?" link goes to `EDITOR_GUIDE.catalogs`;
     - user catalog details are labelled by column name.
 
     Also make `validateTemplateReferences` in `src/sheet_manager/features/sheet/data/templateReferences.ts` resolve catalogs in the template's scope: a user catalog outside the scope becomes `unknown-catalog`.
 
-- [ ] T022 [US2] Update `src/sheet_manager/features/sheet/declarative/DeclarativeSheetView.tsx` (`FieldCell.handleChange`) and `fieldControls.tsx`:
+- [x] T022 [US2] Update `src/sheet_manager/features/sheet/declarative/DeclarativeSheetView.tsx` (`FieldCell.handleChange`) and `fieldControls.tsx`:
     - picking an entry of a user catalog also writes `pickLabelKey(valueKey)` with the entry name, in the same `applyWrites`;
     - the select and the searchable pick show the live entry name, or the `#label` text when the entry or catalog is missing (a disabled extra option or the suggest text);
     - `coerceStoredValue` keeps unknown ids for bound selects;
     - a catalog with no entries shows the "No entries yet" text instead of an empty choice.
-- [ ] T023 [US2] Create `tests/sheet_manager/catalog-use-sites.test.tsx` (the field part):
+- [x] T023 [US2] Create `tests/sheet_manager/catalog-use-sites.test.tsx` (the field part):
     - picking Black Mirror writes the id, `#label`, 4, and on in one change;
     - a rename shows the new name;
     - deleting the catalog shows "Black Mirror" and reports `catalog-unavailable`;
@@ -182,7 +182,7 @@ Documents store the entry id plus `#label`.
     - a Hunter page can bind the ruleset's Firearms;
     - above 12 entries the pick is searchable;
     - a catalog with no entries shows "No entries yet".
-- [ ] T024 [US2] Extend `tests/sheet_manager/template-editor.test.tsx`: the picker groups for an Ashen Realms draft list Relics, Firearms, and the V5 shipped catalogs, and the Relics mapping editor lists Power and Cursed.
+- [x] T024 [US2] Extend `tests/sheet_manager/template-editor.test.tsx`: the picker groups for an Ashen Realms draft list Relics, Firearms, and the V5 shipped catalogs, and the Relics mapping editor lists Power and Cursed.
 
 **Checkpoint**: US1 + US2 make up the MVP.
 
@@ -195,20 +195,20 @@ fill their own row.
 
 **Independent test**: the list and table cases of `catalog-use-sites.test.tsx`.
 
-- [ ] T025 [US3] Add `catalog?: { catalogId, valueFrom? }` to `ListNodeSchema` in `src/sheet_manager/types/template.ts`. A refine rejects it without `valueKey`. In `templateReferences.ts`, check that the catalog is known and in scope, and that `valueFrom` names a number column (or a number detail of a shipped catalog).
-- [ ] T026 [US3] In the value-bag custom list body (`primitives.tsx`, the `CustomTraitList` call), pass `catalog` entries (id, name) and `onCatalogSelect`:
+- [x] T025 [US3] Add `catalog?: { catalogId, valueFrom? }` to `ListNodeSchema` in `src/sheet_manager/types/template.ts`. A refine rejects it without `valueKey`. In `templateReferences.ts`, check that the catalog is known and in scope, and that `valueFrom` names a number column (or a number detail of a shipped catalog).
+- [x] T026 [US3] In the value-bag custom list body (`primitives.tsx`, the `CustomTraitList` call), pass `catalog` entries (id, name) and `onCatalogSelect`:
     - a pick sets `label` to the name;
     - with `valueFrom`, it also sets `value` to that column, clamped to 0–20;
     - free text stays allowed.
 
     Add the list catalog picker and the "Value from" select to the list settings in `src/sheet_manager/components/dialogs/template-editor/ElementSettings.tsx`, or its list section.
 
-- [ ] T027 [US3] Table choice columns (R10):
+- [x] T027 [US3] Table choice columns (R10):
     - add `setRowValues(blockId, rowIndex, cells)` to `useTemplatePage` (`hooks.ts`);
     - in the table cell `onChange` of `DeclarativeSheetView.tsx`, a bound select column writes its value, `#label` for user catalogs, and every fill whose target is a sibling column id, in one call;
     - `templateReferences.ts` validates column fill targets against the table's columns;
     - `CatalogBindingEditor.tsx` offers only sibling columns as targets when the field is a table column (pass the sibling columns in through the column editor).
-- [ ] T028 [US3] Extend `tests/sheet_manager/catalog-use-sites.test.tsx`:
+- [x] T028 [US3] Extend `tests/sheet_manager/catalog-use-sites.test.tsx`:
     - list: typing "Bo" suggests Bone Flute, and picking it sets the name and 2; free text is kept;
     - table: picking in row 2 fills only row 2; the value and `#label` are stored in the row;
     - a fill target outside the table is a reference issue.
@@ -221,7 +221,7 @@ fill their own row.
 
 **Independent test**: `library-moves`, `library-file`, and `library-import` catalog cases.
 
-- [ ] T029 [US4] Extend `src/sheet_manager/features/sheet/data/libraryMoves.ts` (R7):
+- [x] T029 [US4] Extend `src/sheet_manager/features/sheet/data/libraryMoves.ts` (R7):
     - catalog targets are rulesets and settings;
     - `canMove` rejects the current owner and "Unavailable";
     - `planMove` for catalogs rewrites the owner and computes `lostBy` (the templates that bind the catalog and would lose it from their scope);
@@ -235,14 +235,14 @@ fill their own row.
 
     Surface the consequences in `MovePanel.tsx` (`MoveConsequences`) and the delete confirmation.
 
-- [ ] T030 [US4] Extend `tests/sheet_manager/library-moves.test.ts`:
+- [x] T030 [US4] Extend `tests/sheet_manager/library-moves.test.ts`:
     - Relics to a Star Wars setting lists the Ashen Realms templates that bind it;
     - Firearms from the ruleset down to Ashen Realms lists a Hunter template;
     - Relics up to WoD 5e loses nothing;
     - moving Ashen Realms carries Relics, and moving it to WoD 2e lists its templates that bind the V5 ruleset's Firearms;
     - deleting Ashen Realms deletes Relics;
     - deleting Relics lists its templates.
-- [ ] T031 [US4] Library file v2 (R11), in `src/sheet_manager/features/sheet/shell/libraryFile.ts`:
+- [x] T031 [US4] Library file v2 (R11), in `src/sheet_manager/features/sheet/shell/libraryFile.ts`:
     - bump to version 2 and add `catalogs` to the payload and the schema;
     - the `exportableKeys` and `tickState` catalog nodes are pickable;
     - `exportClosure` adds catalogs bound by picked templates as `auto`, adds their user setting as `auto`, and turns a ruleset or shipped owner into an address;
@@ -256,7 +256,7 @@ fill their own row.
 
     Show catalog rows in `ImportPreview.tsx` and `ExportPanel.tsx`.
 
-- [ ] T032 [US4] Extend `tests/sheet_manager/library-file.test.ts` and `tests/sheet_manager/library-import.test.ts`:
+- [x] T032 [US4] Extend `tests/sheet_manager/library-file.test.ts` and `tests/sheet_manager/library-import.test.ts`:
     - the v2 round trip;
     - v1 still imports;
     - the closure adds Relics for a picked template bound to it, and Firearms as an address;
@@ -272,7 +272,7 @@ fill their own row.
 
 **Independent test**: the storybook guard, and `yarn validate:i18n`.
 
-- [ ] T033 [P] [US5] Guide: in `docs/template-editor/values.mdx` (the Catalogs section, "Your own catalogs") and `docs/template-editor/library.mdx`, plus their mirrors under `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/`, describe:
+- [x] T033 [P] [US5] Guide: in `docs/template-editor/values.mdx` (the Catalogs section, "Your own catalogs") and `docs/template-editor/library.mdx`, plus their mirrors under `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/`, describe:
     - where catalogs live (a setting or a ruleset, and scope);
     - columns and entries, and pasting;
     - binding fields, lists, and table columns;
@@ -281,7 +281,7 @@ fill their own row.
 
     Run `yarn validate:i18n`.
 
-- [ ] T034 [P] [US5] Storybook:
+- [x] T034 [P] [US5] Storybook:
     - `src/sheet_manager/storybook/stories.ts` gets a sample user catalog, installed in the story sandbox through the registry overlay, with no store write in docs;
     - add a choice field, a custom list, and a table with a choice column, all bound to it;
     - `tests/sheet_manager/storybook.test.tsx` requires the tags `select:user-catalog`, `list:catalog`, and `table:catalog-column`.
@@ -292,15 +292,15 @@ fill their own row.
 
 ## Phase 8: Polish & Cross-Cutting
 
-- [ ] T035 [P] Update the current-state docs:
+- [x] T035 [P] Update the current-state docs:
     - `.agents/skills/sheet-templates/SKILL.md`: the Catalogs part (user catalogs, the owner and scope, `getCatalogBinding`, `#label`, list and table use) and the Library part (the catalog level, the file v2);
     - the overlay line in `src/sheet_manager/AGENTS.md`;
     - `AGENTS.md` section 8, if it names catalogs;
     - historical banners (constitution "Current-state documentation"): on `specs/013-library-tree-accents/contracts/library-file-format.md` and in `specs/013-library-tree-accents/spec.md`, saying the library file is now version 2 (spec 015, catalogs) and pointing at the sheet-templates skill.
-- [ ] T036 [P] Add a v3.13.0 entry to `CHANGELOG.md` and bump the version in `package.json`, then run `yarn check:version`.
-- [ ] T037 Mark T-074 done (`[x] ✅`) in `TODO.md` with a dated note, then run `yarn validate:backlog`.
-- [ ] T038 Run `yarn verify:full` and fix everything it reports.
-- [ ] T039 Walk through the quickstart manually (the maintainer).
+- [x] T036 [P] Add a v3.13.0 entry to `CHANGELOG.md` and bump the version in `package.json`, then run `yarn check:version`.
+- [x] T037 Mark T-074 done (`[x] ✅`) in `TODO.md` with a dated note, then run `yarn validate:backlog`.
+- [x] T038 Run `yarn verify:full` and fix everything it reports.
+- [x] T039 Walk through the quickstart manually (the maintainer).
 
 ---
 

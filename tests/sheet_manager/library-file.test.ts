@@ -131,7 +131,7 @@ describe('library export (spec 013, US4)', () => {
     it('rejects broken files with the reason and the entry', () => {
         expect(parseLibraryFile('{')).toEqual({ ok: false, error: 'parse' });
         expect(parseLibraryFile('{"format":"x"}')).toEqual({ ok: false, error: 'format' });
-        expect(parseLibraryFile('{"format":"ttgamer-library","version":2}')).toEqual({
+        expect(parseLibraryFile('{"format":"ttgamer-library","version":3}')).toEqual({
             ok: false,
             error: 'version',
         });

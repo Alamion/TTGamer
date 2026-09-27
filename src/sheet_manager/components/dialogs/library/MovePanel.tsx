@@ -24,6 +24,28 @@ export interface MovePanelProps {
 export function MoveConsequences({ plan }: { plan: MovePlan }) {
     const plural = usePluralMessage();
     const values = { from: plan.fromName, to: plan.toName };
+    const catalog = plan.subject.level === 'catalog';
+    const lost = plan.lostBy.length > 0 && (
+        <p>
+            {plural(labels.move.lostBy, plan.lostBy.length, {
+                names: plan.lostBy.map(({ name }) => name).join(', '),
+            })}
+        </p>
+    );
+    if (catalog) {
+        return lost ? (
+            <div
+                role="note"
+                className="space-y-1 rounded border border-secondary/60 bg-secondary/10 px-3 py-2 text-xs text-textPrimary"
+            >
+                <p className="flex items-center gap-1.5 font-semibold">
+                    <AlertTriangle className="h-3.5 w-3.5 text-secondary" aria-hidden="true" />
+                    {translate(labels.move.catalogConfirmTitle)}
+                </p>
+                {lost}
+            </div>
+        ) : null;
+    }
     return (
         <div className="space-y-1.5 text-xs text-textPrimary">
             {plan.crossesSystem && (
@@ -45,7 +67,13 @@ export function MoveConsequences({ plan }: { plan: MovePlan }) {
                     {plan.pagesStaying > 0 && (
                         <p>{plural(labels.move.pagesStaying, plan.pagesStaying, values)}</p>
                     )}
+                    {lost}
                 </div>
+            )}
+            {plan.catalogsMoving > 0 && (
+                <p className="text-textSecondary">
+                    {plural(labels.move.catalogsMoving, plan.catalogsMoving)}
+                </p>
             )}
             {plan.subject.level === 'page' ? (
                 <p className="text-textSecondary">{translate(labels.move.pageNote)}</p>
@@ -73,7 +101,9 @@ export function MovePanel({
             ? labels.move.toRuleset
             : subject.level === 'type'
               ? labels.move.toSetting
-              : labels.move.toType;
+              : subject.level === 'catalog'
+                ? labels.move.toCatalog
+                : labels.move.toType;
     return (
         <div
             className="space-y-3 rounded-lg border border-border bg-bgBase p-3"

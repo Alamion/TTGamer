@@ -247,10 +247,31 @@ item array through the same molecules (V5 `weapons`, `inventory`).
   `systems/catalogs.ts`; Star Wars in `systems/star-wars-wod/catalogs.ts`, Hunter in
   `systems/v5/modules/hunter/catalogs.ts`). `features/sheet/data/catalogBindings.ts`
   (`CATALOG_BINDINGS`) only aggregates them from the registry (a duplicate id throws); entry
-  names localize from `translations/source/<locale>/data/<catalogId>.yaml`. They are the only path
-  from system data into templates: select fields persist `catalogId` + fill mappings and system
-  lists resolve `binding.catalog.catalogId` from the same registry. Unknown catalogs degrade to
-  manual choice and report `catalog-unavailable`.
+  names localize from `translations/source/<locale>/data/<catalogId>.yaml`, catalog names from
+  `ui/sheet/catalogNames.yaml` (`catalogDisplayName`). They are the only path from system data
+  into templates: select fields persist `catalogId` + fill mappings and system lists resolve
+  `binding.catalog.catalogId` from the same registry. Unknown catalogs degrade to manual choice
+  and report `catalog-unavailable`.
+- User catalogs (spec 015, `systems/userCatalogs.ts`): `user-catalog-<8>` ids, typed columns
+  (`c-<8>`: text / number / toggle) and entries (`e-<8>`, a name plus values by column id; values
+  of unknown columns or the wrong type are dropped on parse). The owner is a user setting
+  (`{ settingId }`), a shipped setting (`{ systemId, moduleId? }`: Rules only, a line, a setting
+  system), or a ruleset (`{ rulesetId }`, shared by every setting on it). They reach generic code
+  through the registry overlay (`setUserCatalogs`, synced in `systems/index.ts`; the storybook
+  adds `registerSampleCatalogs`) adapted by `userCatalogBinding` to `CatalogBindingEntry`, so
+  every consumer goes through **`getCatalogBinding(id, storeCatalogs?)`** (shipped first) — never
+  `CATALOG_BINDINGS.get` outside docs embeds. React callers pass the store's `catalogs` so edits
+  re-resolve. Scope: `catalogScopeOf(registry, template)` → the template's setting and its
+  ruleset; `listCatalogBindingsFor` groups the editor picker (setting / ruleset / shipped),
+  `isCatalogInScope` makes an out-of-scope user catalog an `unknown-catalog` reference issue.
+  Limits: `TEMPLATE_LIMITS.catalogEntriesMax` 1000, `catalogColumnsMax` 20, `catalogsPerOwner` 50. Editing is pure (`features/sheet/data/catalogEdit.ts`: columns, entries, `convertValue`,
+  `parsePastedEntries`, `catalogUsage`, `boundCatalogIds`).
+- A pick from a user catalog stores the entry id and the name in `<valueKey>#label` (in a table
+  row: `<columnId>#label`; `pickLabelKey`); the select shows the live name, or `#label` once the
+  entry or catalog is gone. Other use sites: a value-bag list's `catalog: { catalogId, valueFrom? }`
+  (names suggest entries; `valueFrom` copies a number column into the 0–20 value), and a table
+  `select` column's `binding`, whose fills target sibling column ids and write only that row
+  (`pageApi.setRowValues`). Template import keeps user catalog bindings (they may arrive later).
 - Fill semantics (`readCatalogDetails` + `pageApi.applyWrites`): picking an entry **overwrites**
   every mapped target in one change — a detail the entry lacks (`undefined`) leaves its target
   untouched, `null`/`''` clears it; clearing the select writes nothing. Fill targets may be
@@ -358,10 +379,11 @@ counts as equal; `templateMatchesSetting`).
   own `systemId` on load). `setDefaultOverride(template)` keys by the template's system and id;
   `clearDefaultOverride(systemId, viewId)`. Entries failing the parse (including all pre-006
   shapes) move to quarantine and report `template-quarantined` with the Zod summary.
-- `documentTypeStore` v2 (`universal-document-type-storage`): user document types (their
+- `documentTypeStore` v3 (`universal-document-type-storage`): user document types (their
   `defaultTemplateId` is optional: a type may have no page), user settings, `defaultPages`
   (`systemId:definitionId` → the view or user template new documents of a shipped type open on;
-  `setDefaultPage`, `dropDefaultPagesFor`), and a bounded quarantine.
+  `setDefaultPage`, `dropDefaultPagesFor`), user catalogs (spec 015; `saveCatalog`,
+  `removeCatalog`, `replaceCatalogs`), and a bounded quarantine shared by all of them.
 - `documentStore` v4: flat `templateValues`; v2 nested bags are flattened on load
   (`flattenLegacyTemplateValues`). Unparseable documents go to `recoveryEntries` (max 100) and
   report `document-recovered`. `createDocument(systemId, definitionId, { settingId, templateId,
@@ -490,8 +512,10 @@ tree is stored.
   arrows/Home/End/type-ahead, Enter opens a page, Shift+F10 / Menu opens `ContextMenu` (a Popover
   rendered inside the dialog content so the focus trap keeps it), Delete deletes. Below `md` the
   tree and details are tabs.
-- Files (`features/sheet/shell/libraryFile.ts`, `libraryImport.ts`): `ttgamer-library` v1 —
-  flat `settings`, `types`, `templates`, `overrides` (edited shipped pages), `included`
+- Files (`features/sheet/shell/libraryFile.ts`, `libraryImport.ts`): `ttgamer-library` v2 (v1
+  still reads) — flat `settings`, `types`, `templates`, `overrides` (edited shipped pages),
+  `catalogs` (a picked page auto-adds the user catalogs it binds; Keep both rebinds the file's
+  pages to the copy; beyond the owner limit an entry is unavailable, reason `limit`), `included`
   (`picked`/`auto`), informative `addresses`, `notices`. Export: tri-state ticks
   (`tickState`/`toggleTick`), `exportClosure` adds the user parents a pick needs (tertiary in the
   tree) and turns shipped ancestors into addresses; shipped content is never serialized. Import:
@@ -500,8 +524,17 @@ tree is stored.
   keeps installed pages missing from the file), Keep both re-ids the entry and its picked
   descendants with an "(imported)" suffix; templates colliding with shipped view ids or unrelated
   templates get fresh ids. Nothing is written before `installImport`.
-- Help anchors: `EDITOR_GUIDE.library*` → `docs/template-editor/library.mdx`. Storybook: the
-  "Library" page (`features/docs/LibraryStorybook.tsx`).
+- Catalogs (spec 015) are leaves: `RulesetNode.catalogs` (the ruleset's own, then the ruleset
+  plugin's shipped catalogs) before its settings, `SettingNode.catalogs` (then a setting system's
+  shipped catalogs) before its types; key `c:user:<id>` or `c:<systemId>:<catalogId>`. Shipped
+  ones are read-only. `catalogOwnerFor(node)`, `createCatalog` (per-owner limit), rename,
+  `deletePlan` (catalogs of a deleted setting go with it; a catalog delete names its bound
+  templates), moves to any ruleset or setting (`lostBy`: templates that would no longer see it;
+  a setting moved to other rules loses the old ruleset's catalogs). The details pane edits a
+  catalog with `library/CatalogTable.tsx` (memoized rows keyed by entry id).
+- Help anchors: `EDITOR_GUIDE.library*` → `docs/template-editor/library.mdx`; user catalogs →
+  `values.mdx#your-catalogs`. Storybook: the "Library" page
+  (`features/docs/LibraryStorybook.tsx`) and the "Your own catalog" element story.
 
 ## Import / export (`features/sheet/shell/templateFile.ts`)
 
@@ -634,6 +667,7 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 | Editor                            | `template-editor.test.tsx`, `template-editor-{page,arrange,preview,history,shortcuts,move-targets}.test.*`, `template-editor.perf.test.tsx`   |
 | User types, settings, files       | `user-document-types.test.{ts,tsx}`, `user-settings.test.tsx`, `type-file.test.ts`, `document-type-store.test.ts`                             |
 | Library tree, moves, files, UI    | `library-{tree,moves,file,import}.test.ts`, `library-dialog.test.tsx`, `document-store-relocate.test.ts`, `systems/registry-rulesets.test.ts` |
+| User catalogs                     | `user-catalogs.test.ts`, `catalog-edit.test.ts`, `catalog-use-sites.test.tsx`                                                                 |
 | WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                         |
 | References                        | `template-references.test.ts`                                                                                                                 |
 | File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                           |

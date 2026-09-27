@@ -1,5 +1,6 @@
 import { systemRegistry } from '../systems';
 import { type DocumentBindingDescriptor, listDocumentBindings } from '../systems/templateBindings';
+import { type UserCatalog, UserCatalogSchema } from '../systems/userCatalogs';
 import { type CustomTemplate, CustomTemplateSchema, type TemplateNode } from '../types/template';
 
 /**
@@ -416,6 +417,94 @@ const catalogFields = story(
     ]
 );
 
+/** A user catalog for the stories below (spec 015): registered on the registry, never stored. */
+export const SAMPLE_CATALOG_ID = 'user-catalog-storybk1';
+const SAMPLE_POWER = 'c-power001';
+const SAMPLE_CURSED = 'c-cursed01';
+
+export const SAMPLE_CATALOG: UserCatalog = UserCatalogSchema.parse({
+    id: SAMPLE_CATALOG_ID,
+    name: 'Sample relics',
+    owner: { rulesetId: ENGINE.systemId },
+    columns: [
+        { id: SAMPLE_POWER, name: 'Power', type: 'number' },
+        { id: SAMPLE_CURSED, name: 'Cursed', type: 'toggle' },
+    ],
+    entries: [
+        {
+            id: 'e-bonefl01',
+            name: 'Bone Flute',
+            values: { [SAMPLE_POWER]: 2, [SAMPLE_CURSED]: false },
+        },
+        {
+            id: 'e-mirror01',
+            name: 'Black Mirror',
+            values: { [SAMPLE_POWER]: 4, [SAMPLE_CURSED]: true },
+        },
+        { id: 'e-candle01', name: 'Grave Candle', values: { [SAMPLE_POWER]: 1 } },
+    ],
+    createdAt: '2026-09-27T00:00:00.000Z',
+    updatedAt: '2026-09-27T00:00:00.000Z',
+});
+
+const userCatalogFields = story(
+    'user-catalog',
+    'Your own catalog',
+    'A choice field, a list, and a table column bound to a user catalog: picking fills the mapped fields, the list value, or the same row.',
+    ENGINE,
+    [
+        group('user-catalog-field', 'Choice field', [
+            {
+                id: 'relic-pick',
+                type: 'select',
+                label: 'Relic',
+                options: [{ id: 'placeholder', label: 'Placeholder' }],
+                binding: {
+                    catalogId: SAMPLE_CATALOG_ID,
+                    fills: {
+                        [SAMPLE_POWER]: { targetFieldId: 'relic-power' },
+                        [SAMPLE_CURSED]: { targetFieldId: 'relic-cursed' },
+                    },
+                },
+            },
+            { id: 'relic-power', type: 'number', label: 'Power' },
+            { id: 'relic-cursed', type: 'toggle', label: 'Cursed' },
+        ]),
+        {
+            id: 'relic-list',
+            type: 'list',
+            title: 'Relics carried',
+            showTitle: true,
+            valueKey: 'relic-list',
+            catalog: { catalogId: SAMPLE_CATALOG_ID, valueFrom: SAMPLE_POWER },
+        },
+        {
+            id: 'relic-table',
+            type: 'table',
+            title: 'Relic table',
+            minRows: 2,
+            maxRows: 5,
+            columns: [
+                {
+                    id: 'relic-item',
+                    type: 'select',
+                    label: 'Relic',
+                    options: [{ id: 'placeholder', label: 'Placeholder' }],
+                    binding: {
+                        catalogId: SAMPLE_CATALOG_ID,
+                        fills: {
+                            [SAMPLE_POWER]: { targetFieldId: 'relic-item-power' },
+                            [SAMPLE_CURSED]: { targetFieldId: 'relic-item-cursed' },
+                        },
+                    },
+                },
+                { id: 'relic-item-power', type: 'number', label: 'Power' },
+                { id: 'relic-item-cursed', type: 'toggle', label: 'Cursed' },
+            ],
+        },
+    ]
+);
+
 const collections = story(
     'collections',
     'Tables and custom lists',
@@ -575,6 +664,7 @@ export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     containers,
     fields,
     catalogFields,
+    userCatalogFields,
     collections,
 ];
 
@@ -582,6 +672,7 @@ let allStories: readonly ElementStory[] | undefined;
 
 /** Every story, handwritten first; bound parts are built on first use (the registry is ready). */
 export function listElementStories(): readonly ElementStory[] {
+    systemRegistry.registerSampleCatalogs([SAMPLE_CATALOG]);
     allStories ??= [...HANDWRITTEN_STORIES, ...boundPartStories()];
     return allStories;
 }

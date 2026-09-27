@@ -70,6 +70,9 @@ function variantsOf(node: TemplateNode): string[] {
             flag('hideUnselected');
             flag('binding');
             if (node.options.length > 12) tags.push('select:searchable');
+            if (node.binding?.catalogId.startsWith('user-catalog-')) {
+                tags.push('select:user-catalog');
+            }
             break;
         case 'rating':
             tags.push(`rating:${node.presentation}`);
@@ -99,9 +102,13 @@ function variantsOf(node: TemplateNode): string[] {
             flag('framed');
             flag('presets');
             if (node.columns > 1) tags.push('list:columns');
+            flag('catalog');
             break;
         case 'table':
             for (const column of node.columns) tags.push(...variantsOf(column));
+            if (node.columns.some((column) => column.type === 'select' && column.binding)) {
+                tags.push('table:catalog-column');
+            }
             break;
         case 'primitive':
             flag('compact');
@@ -160,6 +167,9 @@ const REQUIRED_VARIANTS = [
     'rating:flag-experienced',
     'rating:many',
     'rating:number-framed',
+    'select:user-catalog',
+    'list:catalog',
+    'table:catalog-column',
     'label-left',
     'label-top',
     'rating:min',
@@ -224,6 +234,7 @@ describe('element storybook (constitution VI, T-069)', () => {
             'containers',
             'fields',
             'catalog-fields',
+            'user-catalog',
             'collections',
         ]);
     });
@@ -252,9 +263,14 @@ describe('library storybook (spec 013)', () => {
 
     it('shows every row level and state and every tick state', () => {
         render(createElement(LibraryStorybook));
-        for (const title of ['levels', 'states', 'ticks']) {
+        for (const title of ['levels', 'catalogs', 'states', 'ticks']) {
             expect(document.querySelector(`[data-library-story="${title}"]`)).not.toBeNull();
         }
+        // Spec 015: a user catalog row and a read-only shipped one.
+        expect(document.querySelector('[data-library-row^="c:user:"]')).not.toBeNull();
+        expect(
+            document.querySelector('[data-library-row="c:star-wars-wod:melee-weapons"]')
+        ).not.toBeNull();
         const levels = [...document.querySelectorAll('[data-library-row]')].map((row) =>
             row.getAttribute('aria-level')
         );

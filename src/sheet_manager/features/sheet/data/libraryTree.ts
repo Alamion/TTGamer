@@ -6,9 +6,17 @@ import { reportSheetIssue } from '../../../diagnostics';
 import { overrideKey } from '../../../store/templateStore';
 import type { SystemRegistry } from '../../../systems/registry';
 import type { DocumentDefinition, SystemPlugin } from '../../../systems/types';
+import {
+    catalogOwnerKey,
+    type CatalogOwnerRef,
+    type UserCatalog,
+} from '../../../systems/userCatalogs';
 import { isUserKind, type UserDocumentType, type UserSetting } from '../../../systems/userTypes';
 import type { CustomTemplate } from '../../../types/template';
+import { catalogDisplayName } from './catalogBindings';
 import {
+    catalogNodeKey,
+    type CatalogRef,
     pageNodeKey,
     type PageRef,
     rulesetNodeKey,
@@ -24,7 +32,7 @@ import {
  * The library tree (spec 013): ruleset → setting → document type → page, derived from the
  * registry and the user stores on every change; nothing about the tree is stored.
  */
-export type LibraryLevel = 'ruleset' | 'setting' | 'type' | 'page';
+export type LibraryLevel = 'ruleset' | 'setting' | 'type' | 'page' | 'catalog';
 export type Ownership = 'shipped' | 'user';
 
 interface LibraryNodeBase {
@@ -41,6 +49,8 @@ interface LibraryNodeBase {
 export interface RulesetNode extends LibraryNodeBase {
     level: 'ruleset';
     systemId: string;
+    /** Catalogs of the ruleset itself (spec 015), listed before its settings. */
+    catalogs: CatalogNode[];
     settings: SettingNode[];
 }
 
@@ -49,6 +59,8 @@ export interface SettingNode extends LibraryNodeBase {
     ref: SettingRef;
     /** The system its documents and pages use (`undefined` when unavailable). */
     systemId: string | undefined;
+    /** The setting's catalogs (spec 015), listed before its types. */
+    catalogs: CatalogNode[];
     types: TypeNode[];
 }
 
@@ -73,7 +85,16 @@ export interface PageNode extends LibraryNodeBase {
     template: CustomTemplate;
 }
 
-export type LibraryNode = RulesetNode | SettingNode | TypeNode | PageNode;
+/** A catalog (spec 015): a leaf under a ruleset or a setting; shipped ones are read-only. */
+export interface CatalogNode extends LibraryNodeBase {
+    level: 'catalog';
+    ref: CatalogRef;
+    entryCount: number;
+    /** The user's catalog; absent for shipped ones. */
+    catalog?: UserCatalog;
+}
+
+export type LibraryNode = RulesetNode | SettingNode | TypeNode | PageNode | CatalogNode;
 
 export interface DocumentCounts {
     /** `systemId|definitionId|settingId` → count. */
@@ -119,6 +140,8 @@ export interface LibraryInput {
     defaultOverrides: Readonly<Record<string, CustomTemplate>>;
     defaultPages: Readonly<Record<string, string>>;
     counts: DocumentCounts;
+    /** User catalogs (spec 015). */
+    catalogs?: Readonly<Record<string, UserCatalog>>;
 }
 
 const labels = uiMessages.sheet.library;
@@ -268,7 +291,7 @@ function settingNode(
     name: string,
     systemId: string | undefined,
     types: TypeNode[],
-    extra: Partial<Pick<SettingNode, 'description' | 'ownership' | 'unavailable'>> = {}
+    extra: Partial<Pick<SettingNode, 'description' | 'ownership' | 'unavailable' | 'catalogs'>> = {}
 ): SettingNode {
     return {
         key: settingNodeKey(ref),
@@ -278,9 +301,44 @@ function settingNode(
         documentCount: sum(types),
         ref,
         systemId,
+        catalogs: [],
         types,
         ...extra,
     };
+}
+
+function userCatalogNode(catalog: UserCatalog, unavailable = false): CatalogNode {
+    return {
+        key: catalogNodeKey({ kind: 'user', catalogId: catalog.id }),
+        level: 'catalog',
+        name: catalog.name,
+        ...(catalog.description ? { description: catalog.description } : {}),
+        ownership: 'user',
+        documentCount: 0,
+        ref: { kind: 'user', catalogId: catalog.id },
+        entryCount: catalog.entries.length,
+        catalog,
+        ...(unavailable ? { unavailable } : {}),
+    };
+}
+
+/** The shipped catalogs a plugin declares, read-only (placed under that plugin's node). */
+function shippedCatalogNodes(system: SystemPlugin): CatalogNode[] {
+    return (system.catalogs ?? []).map(
+        (binding): CatalogNode => ({
+            key: catalogNodeKey({
+                kind: 'shipped',
+                systemId: system.id,
+                catalogId: binding.catalogId,
+            }),
+            level: 'catalog',
+            name: catalogDisplayName(binding.catalogId),
+            ownership: 'shipped',
+            documentCount: 0,
+            ref: { kind: 'shipped', systemId: system.id, catalogId: binding.catalogId },
+            entryCount: binding.entries.length,
+        })
+    );
 }
 
 /**
@@ -293,6 +351,20 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
     const placedTypes = new Set<string>();
     const userTypesOwnedBy = (predicate: (type: UserDocumentType) => boolean) =>
         Object.values(types).filter(predicate);
+    const placedCatalogs = new Set<string>();
+    const userCatalogList = Object.values(input.catalogs ?? {}).sort((a, b) =>
+        a.name.localeCompare(b.name)
+    );
+    /** The user catalogs of one owner, marked placed. */
+    const catalogsOf = (owner: CatalogOwnerRef) => {
+        const key = catalogOwnerKey(owner);
+        return userCatalogList
+            .filter((catalog) => catalogOwnerKey(catalog.owner) === key)
+            .map((catalog) => {
+                placedCatalogs.add(catalog.id);
+                return userCatalogNode(catalog);
+            });
+    };
 
     /**
      * User pages of a shipped definition, outside any user setting. Definitions may share a kind
@@ -338,7 +410,8 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
                     ),
                     ruleset.id
                 ),
-            ]
+            ],
+            { catalogs: catalogsOf({ systemId: ruleset.id }) }
         );
 
         const modules = new Map<string, DocumentDefinition[]>();
@@ -365,7 +438,8 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
                         ),
                         ruleset.id
                     ),
-                ]
+                ],
+                { catalogs: catalogsOf({ systemId: ruleset.id, moduleId }) }
             )
         );
 
@@ -382,7 +456,13 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
                         ),
                         system.id
                     ),
-                ]
+                ],
+                {
+                    catalogs: [
+                        ...catalogsOf({ systemId: system.id }),
+                        ...shippedCatalogNodes(system),
+                    ],
+                }
             )
         );
 
@@ -414,6 +494,7 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
                     {
                         ownership: 'user',
                         ...(setting.description ? { description: setting.description } : {}),
+                        catalogs: catalogsOf({ settingId: setting.id }),
                     }
                 );
             });
@@ -426,6 +507,7 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
             ownership: 'shipped',
             documentCount: sum(settingNodes),
             systemId: ruleset.id,
+            catalogs: [...catalogsOf({ rulesetId: ruleset.id }), ...shippedCatalogNodes(ruleset)],
             settings: settingNodes,
         };
     });
@@ -448,12 +530,20 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
                     placedTypes.add(type.id);
                     return userTypeNode(type, undefined, input, true);
                 }),
-                { ownership: 'user', unavailable: true }
+                {
+                    ownership: 'user',
+                    unavailable: true,
+                    catalogs: catalogsOf({ settingId: setting.id }).map((node) => ({
+                        ...node,
+                        unavailable: true,
+                    })),
+                }
             )
         );
     }
     const strays = Object.values(types).filter(({ id }) => !placedTypes.has(id));
-    if (strays.length > 0) {
+    const strayCatalogs = userCatalogList.filter(({ id }) => !placedCatalogs.has(id));
+    if (strays.length > 0 || strayCatalogs.length > 0) {
         reportSheetIssue({
             code: 'library-placement',
             message: 'User document types whose owner is not available are listed as unavailable',
@@ -465,7 +555,11 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
                 translate(labels.unavailable),
                 undefined,
                 strays.map((type) => userTypeNode(type, undefined, input, true)),
-                { ownership: 'user', unavailable: true }
+                {
+                    ownership: 'user',
+                    unavailable: true,
+                    catalogs: strayCatalogs.map((catalog) => userCatalogNode(catalog, true)),
+                }
             )
         );
         for (const type of strays) {
@@ -493,6 +587,7 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
             documentCount: sum(unavailable),
             unavailable: true,
             systemId: '',
+            catalogs: [],
             settings: unavailable,
         },
     ];
@@ -501,12 +596,13 @@ export function buildLibraryTree(input: LibraryInput): RulesetNode[] {
 export function childrenOf(node: LibraryNode): readonly LibraryNode[] {
     switch (node.level) {
         case 'ruleset':
-            return node.settings;
+            return [...node.catalogs, ...node.settings];
         case 'setting':
-            return node.types;
+            return [...node.catalogs, ...node.types];
         case 'type':
             return node.pages;
         case 'page':
+        case 'catalog':
             return [];
     }
 }
@@ -515,6 +611,7 @@ export function childrenOf(node: LibraryNode): readonly LibraryNode[] {
 export function hasUserContent(node: LibraryNode): boolean {
     if (node.ownership === 'user') return true;
     if (node.level === 'page') return node.ref.kind === 'shipped' && node.ref.edited;
+    if (node.level === 'catalog') return false;
     return childrenOf(node).some(hasUserContent);
 }
 
@@ -551,9 +648,17 @@ export function filterTree(
         const kept = hit && filter === 'all' ? childrenOf(node) : children;
         switch (node.level) {
             case 'ruleset':
-                return { ...node, settings: kept as SettingNode[] };
+                return {
+                    ...node,
+                    catalogs: kept.filter((child) => child.level === 'catalog'),
+                    settings: kept.filter((child) => child.level === 'setting'),
+                };
             case 'setting':
-                return { ...node, types: kept as TypeNode[] };
+                return {
+                    ...node,
+                    catalogs: kept.filter((child) => child.level === 'catalog'),
+                    types: kept.filter((child) => child.level === 'type'),
+                };
             case 'type':
                 return { ...node, pages: kept as PageNode[] };
             default:
@@ -611,7 +716,7 @@ export function containerKeys(tree: readonly LibraryNode[]): string[] {
     const keys: string[] = [];
     const walk = (nodes: readonly LibraryNode[]) => {
         for (const node of nodes) {
-            if (node.level === 'page') continue;
+            if (node.level === 'page' || node.level === 'catalog') continue;
             keys.push(node.key);
             walk(childrenOf(node));
         }

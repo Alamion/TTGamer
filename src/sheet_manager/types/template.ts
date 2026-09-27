@@ -399,6 +399,16 @@ const ListNodeSchema = z.object({
     showTitle: z.boolean().optional(),
     /** Draw the list's own bordered card (off: entries sit directly in the parent). */
     framed: z.boolean().optional(),
+    /**
+     * Own-value lists only (spec 015): entry names suggest this catalog's entries; a pick sets the
+     * name and, with `valueFrom` (a number column or detail), the entry's value.
+     */
+    catalog: z
+        .object({
+            catalogId: templateIdentifierSchema,
+            valueFrom: z.string().min(1).max(64).optional(),
+        })
+        .optional(),
 });
 
 const TableNodeSchema = z.object({
@@ -503,6 +513,9 @@ function refineNode(node: TemplateNode, context: z.RefinementCtx): void {
         case 'list':
             if ((node.valueKey === undefined) === (node.bindingKey === undefined)) {
                 issue('A list must use exactly one storage mode: valueKey or bindingKey');
+            }
+            if (node.catalog && node.valueKey === undefined) {
+                issue('Only a list with its own values can suggest catalog entries', ['catalog']);
             }
             return;
         case 'section':

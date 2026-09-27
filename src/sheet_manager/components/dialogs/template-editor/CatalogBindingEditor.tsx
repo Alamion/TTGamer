@@ -1,11 +1,15 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Link2Off } from 'lucide-react';
+import { useMemo } from 'react';
 
 import {
-    CATALOG_BINDINGS,
+    catalogDisplayName,
     type CatalogFillKind,
+    getCatalogBinding,
+    listCatalogBindingsFor,
 } from '../../../features/sheet/data/catalogBindings';
+import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { systemRegistry } from '../../../systems';
 import type { TemplateField } from '../../../types/template';
 import { EditorHelp } from './EditorHelp';
@@ -36,18 +40,113 @@ interface CatalogBindingEditorProps {
     selfId: string;
 }
 
+/**
+ * The catalogs a draft may bind, as `<option>`s grouped by owner (spec 015): this setting, its
+ * ruleset, then the system's shipped catalogs. A bound catalog outside that scope stays listed.
+ */
+function useCatalogOptions(bound: string | undefined) {
+    const { systemId, documentKind, settingId } = useEditorModel();
+    const t = (descriptor: { message: string }) => translate(descriptor);
+    // Re-list when the user's catalogs change (created or renamed in the library).
+    const userCatalogs = useDocumentTypeStore((state) => state.catalogs);
+    const groups = useMemo(() => {
+        const scoped = listCatalogBindingsFor({ systemId, documentKind, settingId });
+        const ruleset = scoped.rulesetId ? systemRegistry.getSystem(scoped.rulesetId) : undefined;
+        const system = systemRegistry.getSystem(systemId);
+        return [
+            { label: t(bindingMessages.groupSetting), catalogs: scoped.setting },
+            {
+                label: ruleset ? translate(ruleset.label) : t(bindingMessages.groupSetting),
+                catalogs: scoped.ruleset,
+            },
+            {
+                label: translate(bindingMessages.groupShipped, {
+                    system: system ? translate(system.label) : systemId,
+                }),
+                catalogs: scoped.shipped,
+            },
+        ].filter(({ catalogs }) => catalogs.length > 0);
+        // userCatalogs: the scoped list reads the registry overlay, which follows the store.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [systemId, documentKind, settingId, userCatalogs]);
+    const listed = new Set(groups.flatMap(({ catalogs }) => catalogs.map((c) => c.catalogId)));
+    return (
+        <>
+            {bound && !listed.has(bound) && (
+                <option value={bound}>{catalogDisplayName(bound)}</option>
+            )}
+            {groups.map(({ label, catalogs }) => (
+                <optgroup key={label} label={label}>
+                    {catalogs.map(({ catalogId }) => (
+                        <option key={catalogId} value={catalogId}>
+                            {catalogDisplayName(catalogId)}
+                        </option>
+                    ))}
+                </optgroup>
+            ))}
+        </>
+    );
+}
+
+/** A custom list's catalog: names suggest its entries, and a number column may set the value. */
+export function ListCatalogPicker({
+    catalog,
+    onChange,
+}: {
+    catalog: { catalogId: string; valueFrom?: string } | undefined;
+    onChange: (next: { catalogId: string; valueFrom?: string } | undefined) => void;
+}) {
+    const t = (descriptor: { message: string }) => translate(descriptor);
+    const options = useCatalogOptions(catalog?.catalogId);
+    const numbers = catalog
+        ? (getCatalogBinding(catalog.catalogId)?.fillableDetails ?? []).filter(
+              ({ kind }) => kind === 'number'
+          )
+        : [];
+    return (
+        <div className="flex flex-wrap items-center gap-2">
+            <select
+                value={catalog?.catalogId ?? ''}
+                onChange={(event) =>
+                    onChange(event.target.value ? { catalogId: event.target.value } : undefined)
+                }
+                aria-label={t(bindingMessages.listCatalog)}
+                className={inputClasses}
+            >
+                <option value="">{t(bindingMessages.listCatalog)}</option>
+                {options}
+            </select>
+            {catalog && (
+                <select
+                    value={catalog.valueFrom ?? ''}
+                    onChange={(event) =>
+                        onChange({
+                            catalogId: catalog.catalogId,
+                            ...(event.target.value ? { valueFrom: event.target.value } : {}),
+                        })
+                    }
+                    aria-label={t(bindingMessages.valueFrom)}
+                    className={inputClasses}
+                >
+                    <option value="">
+                        {t(bindingMessages.valueFrom)}: {t(bindingMessages.none)}
+                    </option>
+                    {numbers.map(({ key, label }) => (
+                        <option key={key} value={key}>
+                            {label}
+                        </option>
+                    ))}
+                </select>
+            )}
+            <EditorHelp topic="catalogs" about={t(bindingMessages.listCatalog)} />
+        </div>
+    );
+}
+
 export function CatalogBindingEditor({ callbacks, field, selfId }: CatalogBindingEditorProps) {
     const fillTargets = useFillTargets();
-    const { systemId } = useEditorModel();
     const t = (descriptor: { message: string }) => translate(descriptor);
-    // Only the template's own system's catalogs are offered (validation stays global, so older
-    // templates bound to another system's catalog keep working).
-    const systemCatalogs = new Set(
-        (systemRegistry.getSystem(systemId)?.catalogs ?? []).map(({ catalogId }) => catalogId)
-    );
-    const catalogOptions = [...CATALOG_BINDINGS.values()].filter(({ catalogId }) =>
-        systemCatalogs.has(catalogId)
-    );
+    const options = useCatalogOptions(field.binding?.catalogId);
 
     if (!field.binding) {
         return (
@@ -61,18 +160,14 @@ export function CatalogBindingEditor({ callbacks, field, selfId }: CatalogBindin
                     className={inputClasses}
                 >
                     <option value="">{t(bindingMessages.attach)}</option>
-                    {catalogOptions.map((binding) => (
-                        <option key={binding.catalogId} value={binding.catalogId}>
-                            {binding.catalogId}
-                        </option>
-                    ))}
+                    {options}
                 </select>
                 <EditorHelp topic="catalogs" about={t(bindingMessages.attach)} />
             </div>
         );
     }
 
-    const binding = CATALOG_BINDINGS.get(field.binding.catalogId);
+    const binding = getCatalogBinding(field.binding.catalogId);
     const targets = fillTargets
         .filter((target) => target.id !== selfId)
         .map((target) => [target.id, target] as const);
@@ -86,12 +181,9 @@ export function CatalogBindingEditor({ callbacks, field, selfId }: CatalogBindin
                     aria-label={t(bindingMessages.catalog)}
                     className={inputClasses}
                 >
-                    {catalogOptions.map((option) => (
-                        <option key={option.catalogId} value={option.catalogId}>
-                            {option.catalogId}
-                        </option>
-                    ))}
+                    {options}
                 </select>
+                <EditorHelp topic="catalogs" about={t(bindingMessages.catalog)} />
                 <button
                     type="button"
                     onClick={callbacks.onDetach}

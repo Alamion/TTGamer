@@ -5,6 +5,7 @@ import {
     resolveSystemPolicies,
     systemRegistry,
 } from '../../../systems';
+import { type UserCatalog, UserCatalogSchema } from '../../../systems/userCatalogs';
 import {
     ownerSystemId,
     type UserDocumentType,
@@ -13,7 +14,9 @@ import {
     UserSettingSchema,
 } from '../../../systems/userTypes';
 import { type CustomTemplate, CustomTemplateSchema } from '../../../types/template';
+import { boundCatalogIds } from '../data/catalogEdit';
 import type { LibraryState } from '../data/libraryActions';
+import { catalogNodeKey } from '../data/libraryPages';
 import {
     childrenOf,
     findNode,
@@ -25,11 +28,14 @@ import { resolveImportedTemplate } from './templateFile';
 
 /**
  * Library files (spec 013, contracts/library-file-format.md): the user's settings, types, pages,
- * and edited shipped pages, with the addresses of the shipped places they attach to. Shipped
- * content is never serialized. Everything is validated before any state change.
+ * catalogs (version 2, spec 015), and edited shipped pages, with the addresses of the shipped
+ * places they attach to. Shipped content is never serialized. Everything is validated before any
+ * state change.
  */
 export const LIBRARY_FILE_FORMAT = 'ttgamer-library';
-export const LIBRARY_FILE_VERSION = 1;
+export const LIBRARY_FILE_VERSION = 2;
+/** Version 1 files (spec 013) carry no catalogs and still import. */
+const READABLE_LIBRARY_VERSIONS = new Set([1, 2]);
 const TYPE_FILE_FORMAT = 'ttgamer-document-type';
 const TEMPLATE_FILE_FORMAT = 'ttgamer-template';
 
@@ -48,6 +54,7 @@ export interface LibraryPayload {
     templates: CustomTemplate[];
     /** Edited shipped pages: `systemId` + `id` name the shipped page they replace. */
     overrides: CustomTemplate[];
+    catalogs: UserCatalog[];
     /** Record id (override: `systemId:viewId`) → how it got into the file. */
     included: Record<string, Inclusion>;
     addresses: LibraryAddress[];
@@ -61,6 +68,7 @@ function isItem(node: LibraryNode): boolean {
     if (node.level === 'page') {
         return node.ref.kind === 'user' || node.ref.edited;
     }
+    // Shipped catalogs are code-owned: never an export item, never an address either.
     return node.ownership === 'user' && node.level !== 'ruleset';
 }
 
@@ -118,6 +126,8 @@ function addressOf(node: LibraryNode): LibraryAddress | undefined {
             return node.ref.kind === 'shipped'
                 ? { systemId: node.ref.systemId, viewId: node.ref.viewId }
                 : undefined;
+        case 'catalog':
+            return undefined;
     }
 }
 
@@ -128,14 +138,21 @@ export function exportClosure(
 ): ExportClosure {
     const auto = new Map<string, string>();
     const addresses = new Map<string, LibraryAddress>();
-    for (const key of picked) {
+    // Auto-added items need their own parents too (a bound catalog's setting), so work a queue.
+    const queue = [...picked];
+    for (let index = 0; index < queue.length; index += 1) {
+        const key = queue[index]!;
         const found = findNode(tree, key);
         if (!found) continue;
+        const need = (itemKey: string) => {
+            if (!picked.has(itemKey) && !auto.has(itemKey)) {
+                auto.set(itemKey, found.node.name);
+                queue.push(itemKey);
+            }
+        };
         for (const ancestor of found.ancestors) {
             if (ancestor.ownership === 'user' && isItem(ancestor)) {
-                if (!picked.has(ancestor.key) && !auto.has(ancestor.key)) {
-                    auto.set(ancestor.key, found.node.name);
-                }
+                need(ancestor.key);
             } else {
                 const address = addressOf(ancestor);
                 if (address) addresses.set(JSON.stringify(address), address);
@@ -144,6 +161,14 @@ export function exportClosure(
         if (found.node.level === 'page' && found.node.ref.kind === 'shipped') {
             const address = addressOf(found.node);
             if (address) addresses.set(JSON.stringify(address), address);
+        }
+        // A page installs with the user catalogs it binds (spec 015, FR-017).
+        if (found.node.level === 'page') {
+            for (const catalogId of boundCatalogIds(found.node.template)) {
+                const catalogKey = catalogNodeKey({ kind: 'user', catalogId });
+                const catalog = findNode(tree, catalogKey)?.node;
+                if (catalog && isItem(catalog)) need(catalogKey);
+            }
         }
     }
     return { picked: new Set(picked), auto, addresses: [...addresses.values()] };
@@ -157,13 +182,14 @@ export function overrideRecordId(template: Pick<CustomTemplate, 'systemId' | 'id
 export function buildLibraryPayload(
     tree: readonly RulesetNode[],
     closure: ExportClosure,
-    state: Pick<LibraryState, 'settings' | 'types' | 'templates'>
+    state: Pick<LibraryState, 'settings' | 'types' | 'templates' | 'catalogs'>
 ): LibraryPayload {
     const payload: LibraryPayload = {
         settings: [],
         types: [],
         templates: [],
         overrides: [],
+        catalogs: [],
         included: {},
         addresses: closure.addresses,
     };
@@ -190,6 +216,12 @@ export function buildLibraryPayload(
         } else if (node.level === 'page' && node.ref.kind === 'shipped' && node.ref.edited) {
             payload.overrides.push(node.template);
             payload.included[overrideRecordId(node.template)] = inclusion;
+        } else if (node.level === 'catalog' && node.ref.kind === 'user') {
+            const catalog = state.catalogs[node.ref.catalogId];
+            if (catalog) {
+                payload.catalogs.push(catalog);
+                payload.included[catalog.id] = inclusion;
+            }
         }
     }
     const templateIds = new Set(payload.templates.map(({ id }) => id));
@@ -264,6 +296,7 @@ export function serializeLibraryFile(payload: LibraryPayload, exportedAt = new D
             types: payload.types,
             templates: payload.templates,
             overrides: payload.overrides,
+            catalogs: payload.catalogs,
             included: payload.included,
             addresses: payload.addresses,
             ...(policies.length > 0 ? { notices: exportNotices(policies) } : {}),
@@ -307,7 +340,10 @@ function entryName(raw: unknown, index: number, collection: string): string {
     return `${collection}[${index}]`;
 }
 
-type RawPayload = Record<'settings' | 'types' | 'templates' | 'overrides', unknown[]> & {
+type RawPayload = Record<
+    'settings' | 'types' | 'templates' | 'overrides' | 'catalogs',
+    unknown[]
+> & {
     included?: unknown;
     addresses?: unknown;
 };
@@ -315,13 +351,16 @@ type RawPayload = Record<'settings' | 'types' | 'templates' | 'overrides', unkno
 /** Older files open in the same preview (contracts "Backward compatibility"). */
 function adaptLegacy(raw: Record<string, unknown>): RawPayload | LibraryFileError {
     if (raw.format === LIBRARY_FILE_FORMAT) {
-        if (raw.version !== LIBRARY_FILE_VERSION) return 'version';
+        if (typeof raw.version !== 'number' || !READABLE_LIBRARY_VERSIONS.has(raw.version)) {
+            return 'version';
+        }
         const list = (value: unknown) => (value === undefined ? [] : value);
         const collections = {
             settings: list(raw.settings),
             types: list(raw.types),
             templates: list(raw.templates),
             overrides: list(raw.overrides),
+            catalogs: list(raw.catalogs),
         };
         if (!Object.values(collections).every(Array.isArray)) return 'schema';
         return {
@@ -338,11 +377,18 @@ function adaptLegacy(raw: Record<string, unknown>): RawPayload | LibraryFileErro
             types: [raw.type],
             templates: raw.templates,
             overrides: [],
+            catalogs: [],
         };
     }
     if (raw.format === TEMPLATE_FILE_FORMAT) {
         if (raw.formatVersion !== 3) return 'version';
-        return { settings: [], types: [], templates: [raw.template], overrides: [] };
+        return {
+            settings: [],
+            types: [],
+            templates: [raw.template],
+            overrides: [],
+            catalogs: [],
+        };
     }
     return 'format';
 }
@@ -380,7 +426,7 @@ export function parseLibraryFile(text: string): ParsedLibraryFile {
     if (typeof adapted === 'string') return { ok: false, error: adapted };
 
     const parseAll = <T>(
-        collection: 'settings' | 'types' | 'templates' | 'overrides',
+        collection: 'settings' | 'types' | 'templates' | 'overrides' | 'catalogs',
         parse: (entry: unknown) => { success: true; data: T } | { success: false }
     ): T[] | { entry: string } => {
         const parsed: T[] = [];
@@ -395,7 +441,8 @@ export function parseLibraryFile(text: string): ParsedLibraryFile {
     const types = parseAll('types', (entry) => UserDocumentTypeSchema.safeParse(entry));
     const templates = parseAll('templates', (entry) => CustomTemplateSchema.safeParse(entry));
     const overrides = parseAll('overrides', (entry) => CustomTemplateSchema.safeParse(entry));
-    for (const result of [settings, types, templates, overrides]) {
+    const catalogs = parseAll('catalogs', (entry) => UserCatalogSchema.safeParse(entry));
+    for (const result of [settings, types, templates, overrides, catalogs]) {
         if (!Array.isArray(result)) return { ok: false, error: 'schema', entry: result.entry };
     }
     const lists = {
@@ -403,6 +450,7 @@ export function parseLibraryFile(text: string): ParsedLibraryFile {
         types: types as UserDocumentType[],
         templates: templates as CustomTemplate[],
         overrides: overrides as CustomTemplate[],
+        catalogs: catalogs as UserCatalog[],
     };
     if (Object.values(lists).every((list) => list.length === 0)) {
         return { ok: false, error: 'schema' };

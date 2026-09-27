@@ -65,8 +65,8 @@ import {
     buildWeaponsCatalog,
 } from '../data/bodyEquipmentCatalogs';
 import {
-    CATALOG_BINDINGS,
     type CatalogBindingEntry,
+    getCatalogBinding,
     readCatalogDetails,
 } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
@@ -146,6 +146,9 @@ function IdentityField({
 
 type TraitListEntry = { id: string; label: string; value: number };
 
+/** Custom list entries keep a 0–20 value (`TemplateListEntrySchema`). */
+const LIST_VALUE_MAX = 20;
+
 function toCatalogEntries(
     catalog: CatalogBindingEntry,
     locale: string,
@@ -168,7 +171,7 @@ function toCatalogEntries(
 function listCatalog(binding: ListBinding, locale: string): CatalogEntry[] | undefined {
     if (!binding.catalog) return undefined;
     const { catalogId, catalogFilter } = binding.catalog;
-    const catalog = CATALOG_BINDINGS.get(catalogId);
+    const catalog = getCatalogBinding(catalogId);
     if (!catalog) {
         reportSheetIssue({
             code: 'catalog-unavailable',
@@ -368,6 +371,30 @@ export function CustomListView({
     disabled: boolean;
     onChange: (next: TraitListEntry[]) => void;
 }) {
+    const catalog = list.catalog;
+    // A catalog pick names the entry and, with `valueFrom`, copies its number (spec 015, R9).
+    const onCatalogSelect = catalog
+        ? (id: string, entry: CatalogEntry) => {
+              const detail = catalog.valueFrom
+                  ? readCatalogDetails(catalog.catalogId, entry.id)?.[catalog.valueFrom]
+                  : undefined;
+              const value =
+                  typeof detail === 'number'
+                      ? Math.max(0, Math.min(LIST_VALUE_MAX, Math.round(detail)))
+                      : undefined;
+              onChange(
+                  entries.map((item) =>
+                      item.id === id
+                          ? {
+                                ...item,
+                                label: entry.name,
+                                ...(value !== undefined ? { value } : {}),
+                            }
+                          : item
+                  )
+              );
+          }
+        : undefined;
     return (
         <TraitListBindingView
             binding={
@@ -379,11 +406,13 @@ export function CustomListView({
                     listId: list.id,
                     dataKey: listValueKey(list),
                     entryShape: 'trait',
+                    ...(catalog ? { catalog: { catalogId: catalog.catalogId } } : {}),
                 } satisfies ListBinding
             }
             items={entries}
             disabled={disabled}
             onChange={onChange}
+            onCatalogSelect={onCatalogSelect}
             placeholder={list.title}
             columns={list.columns as 1 | 2 | 3 | 4}
         />
@@ -528,7 +557,7 @@ function BoundEquipmentBody({
     const suggestions = useMemo<CatalogEntry[]>(
         () =>
             (catalog?.catalogIds ?? []).flatMap((catalogId) => {
-                const source = CATALOG_BINDINGS.get(catalogId);
+                const source = getCatalogBinding(catalogId);
                 return (source?.entries ?? []).map((entry) => ({
                     id: `${catalogId}/${entry.id}`,
                     name: source!.pickLabel(entry, locale),
@@ -559,7 +588,7 @@ function BoundEquipmentBody({
                 if (!catalog || !details) return;
                 let next = items;
                 for (const [detailKey, field] of Object.entries(catalog.fills)) {
-                    const source = CATALOG_BINDINGS.get(catalogId);
+                    const source = getCatalogBinding(catalogId);
                     const entry = source?.entries.find((candidate) => candidate.id === entryId);
                     const localized = entry && source?.entryText(entry, detailKey, locale);
                     // Names are stored in English with the entry reference and shown in the
