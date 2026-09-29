@@ -10,7 +10,7 @@
 
 ### Fix
 
-- **Library arrows stay in place**: the expand arrow of a library row no longer jumps to the top-left corner when the row opens
+- **Expand arrows turn in place**: the arrow of a library row no longer jumps to the top-left corner when the row opens; library rows, sheet sections, field groups, and item cards now turn their arrow smoothly like the documentation sidebar (no animation when the system asks for reduced motion)
 
 ## v3.14.1
 

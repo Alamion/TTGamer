@@ -1,4 +1,5 @@
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { clsx } from 'clsx';
+import { ChevronDown } from 'lucide-react';
 
 import { useExpandedState } from '../../hooks';
 import { DocsHelpLink, documentationFor } from '../controls/DocsHelpLink';
@@ -44,11 +45,13 @@ export function CollapsibleBlock({
                         <DocsHelpLink docsPath={docsPath} label={documentationFor(title)} />
                     )}
                 </h2>
-                {isExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-textSecondary" />
-                ) : (
-                    <ChevronDown className="w-5 h-5 text-textSecondary" />
-                )}
+                <ChevronDown
+                    className={clsx(
+                        'w-5 h-5 shrink-0 text-textSecondary transition-transform duration-200 ease-linear motion-reduce:transition-none',
+                        isExpanded && 'rotate-180'
+                    )}
+                    aria-hidden="true"
+                />
             </button>
 
             {isExpanded && children}
