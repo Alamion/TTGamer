@@ -8,6 +8,10 @@
 - **Earlier links are kept**: a reference saved before that points at a document of another setting still shows its title with "outside this setting", opens it, and can be removed
 - **Kinds the setting no longer has are marked**: a checked kind that the page's setting does not offer stays in the template, is marked "(unavailable)", and appears in the template's problems until you uncheck it
 
+### Fix
+
+- **Library arrows stay in place**: the expand arrow of a library row no longer jumps to the top-left corner when the row opens
+
 ## v3.14.1
 
 ### Fix

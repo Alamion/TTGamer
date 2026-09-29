@@ -3,6 +3,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import clsx from 'clsx';
 import {
+    ChevronDown,
     ChevronRight,
     Dices,
     FileText,
@@ -156,14 +157,17 @@ export const TreeRow = memo(function TreeRow({
                     onToggle(node.key);
                 }}
                 className={clsx(
-                    'rounded p-0.5 text-textSecondary hover:text-textPrimary',
+                    'flex h-5 w-5 shrink-0 items-center justify-center rounded text-textSecondary hover:text-textPrimary',
                     !expandable && 'invisible'
                 )}
             >
-                <ChevronRight
-                    className={clsx('h-3.5 w-3.5 transition-transform', expanded && 'rotate-90')}
-                    aria-hidden="true"
-                />
+                {/* Two icons instead of a rotated one: the pair stays on one centre in every
+                    browser (a rotated inline SVG drifted off it when expanded). */}
+                {expanded ? (
+                    <ChevronDown className="block h-3.5 w-3.5" aria-hidden="true" />
+                ) : (
+                    <ChevronRight className="block h-3.5 w-3.5" aria-hidden="true" />
+                )}
             </button>
             {checkbox}
             <Icon className="h-4 w-4 shrink-0 text-textSecondary" aria-hidden="true" />
