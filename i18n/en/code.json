@@ -3512,8 +3512,17 @@
     "ttgamer.ui.sheet.templates.editor.redo": {
         "message": "Redo"
     },
+    "ttgamer.ui.sheet.templates.editor.referenceKindOwn": {
+        "message": "{type} (yours)"
+    },
     "ttgamer.ui.sheet.templates.editor.referenceKinds": {
         "message": "Allowed document kinds"
+    },
+    "ttgamer.ui.sheet.templates.editor.referenceKindUnavailable": {
+        "message": "{type} (unavailable)"
+    },
+    "ttgamer.ui.sheet.templates.editor.referenceTargetUnavailable": {
+        "message": "Reference \"{field}\" can point to {type}, which this setting does not have."
     },
     "ttgamer.ui.sheet.templates.editor.remove": {
         "message": "Remove"
@@ -4024,6 +4033,9 @@
     },
     "ttgamer.ui.sheet.templates.reference.open": {
         "message": "Open {title}"
+    },
+    "ttgamer.ui.sheet.templates.reference.outOfScope": {
+        "message": "outside this setting"
     },
     "ttgamer.ui.sheet.templates.reference.remove": {
         "message": "Remove {title}"

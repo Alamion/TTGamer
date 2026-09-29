@@ -1,7 +1,11 @@
 // @vitest-environment jsdom
 
 import { tailwindColors } from '@site/src/shared/components/Palette';
-import { ElementStorybook, LibraryStorybook } from '@site/src/sheet_manager/docsEmbeds';
+import {
+    ElementStorybook,
+    LibraryStorybook,
+    ReferenceEntryVariants,
+} from '@site/src/sheet_manager/docsEmbeds';
 import { validateTemplateReferences } from '@site/src/sheet_manager/features/sheet/data/templateReferences';
 import {
     bindingSignature,
@@ -253,6 +257,19 @@ describe('element storybook (constitution VI, T-069)', () => {
         // The deliberate formula errors report; nothing else may.
         const unexpected = takeSheetIssues().filter(({ code }) => code !== 'formula-error');
         expect(unexpected).toEqual([]);
+    });
+});
+
+describe('reference entry states (spec 017)', () => {
+    afterEach(cleanup);
+
+    it('shows an in-scope, an out-of-scope, and a deleted entry without reports', () => {
+        render(createElement(ReferenceEntryVariants));
+        expect(screen.getByText('Mara Quill (this setting)')).toBeTruthy();
+        expect(screen.getByText('Kira Dune (another setting)')).toBeTruthy();
+        expect(screen.getByText('outside this setting')).toBeTruthy();
+        expect(screen.getByRole('alert').textContent).toBe('Linked document no longer exists');
+        expect(takeSheetIssues()).toEqual([]);
     });
 });
 

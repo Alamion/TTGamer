@@ -457,8 +457,10 @@ export function parseLibraryFile(text: string): ParsedLibraryFile {
     }
 
     const degraded: string[] = [];
+    // The file's own types and settings are not installed yet, so reference targets are checked
+    // by the editor once they are (spec 017, R5).
     const resolve = (template: CustomTemplate) => {
-        const result = resolveImportedTemplate(template);
+        const result = resolveImportedTemplate(template, { referenceScope: false });
         degraded.push(...result.degradedFields);
         return result.template;
     };

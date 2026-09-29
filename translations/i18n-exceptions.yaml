@@ -27,6 +27,11 @@
   reason: dev-only library row and tick states on a draft docs page (storybook, constitution VI),
       never built for production readers
 - rule: interface
+  file: src/sheet_manager/features/docs/ElementStorybook.tsx
+  match: /.*/
+  reason: dev-only sample documents and variant labels on a draft docs page (storybook,
+      constitution VI), never built for production readers
+- rule: interface
   file: src/shared/components/Palette.tsx
   match: /.*/
   reason: dev-only palette on a draft docs page (storybook, constitution VI), never built for

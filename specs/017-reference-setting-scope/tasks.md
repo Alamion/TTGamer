@@ -24,8 +24,8 @@ issue pipeline.
 
 ## Phase 1: Setup
 
-- [ ] T001 Mark T-075 as in progress (`[ ] 🟡`) in `TODO.md`, then run `yarn validate:backlog`.
-- [ ] T002 [P] Add the contract "Strings" to `translations/source/{en,ru}/ui/sheet/templates.yaml`:
+- [x] T001 Mark T-075 as in progress (`[ ] 🟡`) in `TODO.md`, then run `yarn validate:backlog`.
+- [x] T002 [P] Add the contract "Strings" to `translations/source/{en,ru}/ui/sheet/templates.yaml`:
     - `reference.outOfScope`, next to the existing `reference.*` keys;
     - the editor's "{type} (unavailable)" label, next to `editor.referenceKinds`;
     - the issue text "“{field}” can point to {type}, which this setting does not have", in the group
@@ -37,7 +37,7 @@ issue pipeline.
 
 ## Phase 2: Foundational (blocks all stories)
 
-- [ ] T003 Create `src/sheet_manager/features/sheet/data/referenceScope.ts` (R1–R3, data-model), a
+- [x] T003 Create `src/sheet_manager/features/sheet/data/referenceScope.ts` (R1–R3, data-model), a
       pure module over `SystemRegistry` with no `systems/<system>/` imports:
     - `referenceTargetsOf(registry, template: {systemId, documentKind, settingId?})`, which
       returns `ReferenceTarget[]` (`{kind, label}`):
@@ -56,7 +56,7 @@ issue pipeline.
     - `referenceKindName(registry, kind)`: the best known name of a stale kind, taken from the
       first definition of that kind in any system (`targetLabel`), or else the raw id.
 
-- [ ] T004 [P] Write pure tests in `tests/sheet_manager/reference-scope.test.ts`, using the
+- [x] T004 [P] Write pure tests in `tests/sheet_manager/reference-scope.test.ts`, using the
       real registry and the user types snapshot set through
       `systemRegistry.setUserDocumentTypes`:
     - **Targets per setting:**
@@ -85,7 +85,7 @@ issue pipeline.
 **Independent Test**: open the editor on Hunter, Star Wars, and user-setting pages, add a
 reference, and compare the offered types with R2.
 
-- [ ] T005 [US1] Rewrite `ReferenceKindsControl` in
+- [x] T005 [US1] Rewrite `ReferenceKindsControl` in
       `src/sheet_manager/components/dialogs/template-editor/FieldEditor.tsx`:
     - read `systemId`, `documentKind`, and `settingId` from `useEditorModel()`;
     - list `referenceTargetsOf(systemRegistry, …)` (memoized on those three values) instead of
@@ -93,7 +93,7 @@ reference, and compare the offered types with R2.
     - keep the rule that the last checked target cannot be unchecked;
     - make sure custom list items (spec 016, `itemOfList`) and table cells render the same
       control.
-- [ ] T006 [P] [US1] Add editor tests in `tests/sheet_manager/template-editor.test.tsx`
+- [x] T006 [P] [US1] Add editor tests in `tests/sheet_manager/template-editor.test.tsx`
       ("reference targets (T-075)"):
     - a Hunter draft offers Character, Mortal, the Hunter user type, and a V5-level user type,
       and does not offer Star Wars Creature or another setting's user type;
@@ -101,7 +101,7 @@ reference, and compare the offered types with R2.
     - a list item of type reference offers the same types as a page field;
     - a new reference field, and a field retyped to reference, target the draft's own kind
       (FR-005; `draft.ts` already does this, so this only guards it).
-- [ ] T007 [US1] Pre-check existing tests whose reference targets fall outside their template's
+- [x] T007 [US1] Pre-check existing tests whose reference targets fall outside their template's
       setting, and fix their fixtures to in-scope kinds unless the test is about that:
     - `tests/sheet_manager/document-system.test.ts:67` (`organization`);
     - `tests/sheet_manager/list-items.test.tsx:29` (`mortal`).
@@ -119,11 +119,11 @@ reference, and compare the offered types with R2.
 **Independent Test**: with Star Wars, Hunter, and user-setting characters stored, search a Hunter
 sheet's character reference and see only Hunter characters.
 
-- [ ] T008 [US2] Add optional `inScope?: boolean` to `DocumentOption` in
+- [x] T008 [US2] Add optional `inScope?: boolean` to `DocumentOption` in
       `src/sheet_manager/features/sheet/declarative/fieldControls.tsx`. When it is absent it
       means in scope (story and preview data). In `ReferenceFieldControlRender`, `docs` must keep
       only options that are in scope and have a target kind.
-- [ ] T009 [US2] Compute `inScope` in `documentOptions` in
+- [x] T009 [US2] Compute `inScope` in `documentOptions` in
       `src/sheet_manager/features/sheet/declarative/hooks.ts`:
     - memoize the scope from the current `template`: `referenceScopeSystemId`, the template's
       user setting (`catalogScopeOf(...).setting.settingId`), and the kinds of
@@ -131,7 +131,7 @@ sheet's character reference and see only Hunter characters.
     - mark each option with `isDocumentInReferenceScope`;
     - keep excluding the current document;
     - keep the list memoized on `documents` and the scope.
-- [ ] T010 [P] [US2] Add sheet tests in `tests/sheet_manager/reference-scope.test.tsx`, mounting
+- [x] T010 [P] [US2] Add sheet tests in `tests/sheet_manager/reference-scope.test.tsx`, mounting
       `DeclarativeSheetView` with stores set as in `derived-values.test.tsx`:
     - a Hunter template with a character reference, over a Star Wars character, a Hunter
       character, and a user-setting character: the search offers only the Hunter one;
@@ -151,7 +151,7 @@ sheet's character reference and see only Hunter characters.
 **Independent Test**: store a Star Wars character's id in a Hunter reference, open the sheet,
 see the title with "outside this setting", open it, and remove it.
 
-- [ ] T011 [US3] Update the selected entries in `ReferenceFieldControlRender` in
+- [x] T011 [US3] Update the selected entries in `ReferenceFieldControlRender` in
       `src/sheet_manager/features/sheet/declarative/fieldControls.tsx` (contract "Sheet"):
     - **out of scope**: the option exists and is not in scope, or its kind is not a target.
       Render the title, a `text-textSecondary` note `reference.outOfScope`, the open button,
@@ -163,7 +163,7 @@ see the title with "outside this setting", open it, and remove it.
     - **missing**: keep it exactly as today.
     - **after removal**: the document is not offered again, because the search already filters
       it (T008).
-- [ ] T012 [P] [US3] Add tests to `tests/sheet_manager/reference-scope.test.tsx`:
+- [x] T012 [P] [US3] Add tests to `tests/sheet_manager/reference-scope.test.tsx`:
     - an out-of-scope entry shows its title and the note, is not an alert, and reports
       `reference-target-out-of-scope` once (`takeSheetIssues`);
     - it opens through `onOpenDocument` (store `currentDocumentId` changes);
@@ -182,7 +182,7 @@ issues.
 **Independent Test**: load a Hunter template that targets another setting's user type, then see
 "(unavailable)" and the issue; uncheck it and see the issue clear.
 
-- [ ] T013 [US4] Add the issue code `reference-target-unavailable` to `TemplateReferenceIssue` in
+- [x] T013 [US4] Add the issue code `reference-target-unavailable` to `TemplateReferenceIssue` in
       `src/sheet_manager/features/sheet/data/templateReferences.ts`. Emit it in
       `validateTemplateReferences` for every `targetKinds` entry of a reference field that is
       not in `referenceTargetsOf(systemRegistry, template)`. This covers page and group fields,
@@ -192,19 +192,19 @@ issues.
       pass the option through. In `src/sheet_manager/features/sheet/shell/libraryFile.ts`, pass
       `referenceScope: false`, because the file's own types and settings are not installed yet
       (R5).
-- [ ] T014 [US4] Map the new issue in `referenceIssueMessage` in
+- [x] T014 [US4] Map the new issue in `referenceIssueMessage` in
       `src/sheet_manager/components/dialogs/template-editor/draft.ts`. Use the field's label
       and `referenceKindName`, and focus the field node as other reference issues do.
-- [ ] T015 [US4] Extend `ReferenceKindsControl` in `FieldEditor.tsx`: list the stored targets
+- [x] T015 [US4] Extend `ReferenceKindsControl` in `FieldEditor.tsx`: list the stored targets
       that are not in scope after the scope's types. Each one is checked, labelled with the
       "(unavailable)" string over `referenceKindName`, and uncheckable, except when it is the
       last checked target.
-- [ ] T016 [P] [US4] Add editor tests in `tests/sheet_manager/template-editor.test.tsx`:
+- [x] T016 [P] [US4] Add editor tests in `tests/sheet_manager/template-editor.test.tsx`:
     - a stale target is listed as unavailable and checked, and the issue names the field;
     - unchecking it clears the issue;
     - the template otherwise saves unchanged, with targets kept until unchecked;
     - an orphaned template lists every stored target as unavailable.
-- [ ] T017 [P] [US4] Add pure tests in `tests/sheet_manager/reference-scope.test.ts`:
+- [x] T017 [P] [US4] Add pure tests in `tests/sheet_manager/reference-scope.test.ts`:
     - `validateTemplateReferences` reports stale targets in a page field, a table cell, and a
       list item, and reports none for shipped templates of every system (`defaultTemplates`);
     - `CustomTemplateSchema` still parses a template with a stale target;
@@ -219,7 +219,7 @@ issues.
 
 ## Phase 7: Polish & Cross-Cutting
 
-- [ ] T018 [P] Update the reference stories in `src/sheet_manager/storybook/stories.ts`
+- [x] T018 [P] Update the reference stories in `src/sheet_manager/storybook/stories.ts`
       (FR-015):
     - story document options include an out-of-scope option (`inScope: false`) and a missing
       id, so the "Several references" story shows in-scope, out-of-scope, and missing entries;
@@ -227,19 +227,19 @@ issues.
 
     Check `tests/sheet_manager/storybook.test.tsx` and extend it if it lists element variants.
 
-- [ ] T019 [P] Document in `docs/template-editor/elements.mdx` (Document reference) and in its
+- [x] T019 [P] Document in `docs/template-editor/elements.mdx` (Document reference) and in its
       ru mirror under `i18n/ru/docusaurus-plugin-content-docs-template-editor/…` (find it with
       `yarn validate:i18n`):
     - which types a reference offers (its setting's types, the ruleset's shared types, and the
       setting's own types);
     - out-of-scope entries;
     - unavailable targets.
-- [ ] T020 [P] Update the reference section of `.agents/skills/sheet-templates/SKILL.md` with the
+- [x] T020 [P] Update the reference section of `.agents/skills/sheet-templates/SKILL.md` with the
       scope rules, the `inScope` option, the stale target issue, and the test files. Update
       `src/sheet_manager/AGENTS.md` only if it describes reference targets.
-- [ ] T021 Update `CHANGELOG.md` (v3.15.0 entry), `package.json` (3.15.0), and `TODO.md` (T-075
+- [x] T021 Update `CHANGELOG.md` (v3.15.0 entry), `package.json` (3.15.0), and `TODO.md` (T-075
       ✅ with a dated note), then run `yarn check:version` and `yarn validate:backlog`.
-- [ ] T022 Run `yarn verify:full` and fix everything it reports. Walk through
+- [x] T022 Run `yarn verify:full` and fix everything it reports. Walk through
       [quickstart.md](./quickstart.md) against the dev server if it is running at
       localhost:3000; do not start or kill it.
 

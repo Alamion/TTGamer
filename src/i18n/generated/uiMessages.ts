@@ -4071,6 +4071,14 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.referenceKinds',
                     message: 'Allowed document kinds',
                 },
+                referenceKindUnavailable: {
+                    id: 'ttgamer.ui.sheet.templates.editor.referenceKindUnavailable',
+                    message: '{type} (unavailable)',
+                },
+                referenceKindOwn: {
+                    id: 'ttgamer.ui.sheet.templates.editor.referenceKindOwn',
+                    message: '{type} (yours)',
+                },
                 multiple: {
                     id: 'ttgamer.ui.sheet.templates.editor.multiple',
                     message: 'Allow multiple values',
@@ -4498,6 +4506,11 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.invalidDocsLink',
                     message:
                         'Documentation link "{id}" is not a site docs path (/docs/…) or an https:// address.',
+                },
+                referenceTargetUnavailable: {
+                    id: 'ttgamer.ui.sheet.templates.editor.referenceTargetUnavailable',
+                    message:
+                        'Reference "{field}" can point to {type}, which this setting does not have.',
                 },
                 depthMessage: {
                     id: 'ttgamer.ui.sheet.templates.editor.depthMessage',
@@ -5185,6 +5198,10 @@ export const uiMessages = {
                 missing: {
                     id: 'ttgamer.ui.sheet.templates.reference.missing',
                     message: 'Linked document no longer exists',
+                },
+                outOfScope: {
+                    id: 'ttgamer.ui.sheet.templates.reference.outOfScope',
+                    message: 'outside this setting',
                 },
             },
             entities: {

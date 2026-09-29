@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { parseDocsLink } from '@site/src/shared/utils/docsLink';
 
+import { systemRegistry } from '../../../systems';
 import {
     listDocumentBindings,
     listNumericCoordinates,
@@ -19,6 +20,7 @@ import {
 import { parseFormula } from '../declarative/formula';
 import { isKnownLabelMessage } from '../declarative/localizeTemplate';
 import { catalogKindFitsListItem, getCatalogBinding, isCatalogInScope } from './catalogBindings';
+import { referenceTargetsOf } from './referenceScope';
 
 /**
  * Reference integrity for templates: every string key a template persists (binding keys,
@@ -36,7 +38,16 @@ export type TemplateReferenceIssue =
     | { code: 'list-catalog-unnamed'; nodeId: string; key: string }
     | { code: 'unknown-coordinate'; nodeId: string; key: string }
     | { code: 'unknown-label-message'; nodeId: string; key: string }
-    | { code: 'invalid-docs-link'; nodeId: string; key: string };
+    | { code: 'invalid-docs-link'; nodeId: string; key: string }
+    | { code: 'reference-target-unavailable'; nodeId: string; key: string; label: string };
+
+export interface TemplateReferenceOptions {
+    /**
+     * Check reference targets against the template's setting (spec 017). Library files turn it
+     * off while parsing: their own types and settings are not installed yet (R5).
+     */
+    referenceScope?: boolean;
+}
 
 export interface NumericCoordinateOption {
     coordinate: string;
@@ -84,8 +95,14 @@ export function listTemplateNumericCoordinates(
     });
 }
 
-export function validateTemplateReferences(template: CustomTemplate): TemplateReferenceIssue[] {
+export function validateTemplateReferences(
+    template: CustomTemplate,
+    { referenceScope = true }: TemplateReferenceOptions = {}
+): TemplateReferenceIssue[] {
     const issues: TemplateReferenceIssue[] = [];
+    const offeredKinds = referenceScope
+        ? new Set(referenceTargetsOf(systemRegistry, template).map(({ kind }) => kind))
+        : undefined;
     const bindings = new Map(
         listDocumentBindings(template.systemId, template.documentKind).map((binding) => [
             binding.key,
@@ -141,6 +158,17 @@ export function validateTemplateReferences(template: CustomTemplate): TemplateRe
         siblingColumns?: ReadonlySet<string> | 'list-entry'
     ) => {
         if (!isTemplateField(field)) return;
+        if (field.type === 'reference' && offeredKinds) {
+            for (const kind of field.targetKinds) {
+                if (offeredKinds.has(kind)) continue;
+                issues.push({
+                    code: 'reference-target-unavailable',
+                    nodeId: field.id,
+                    key: kind,
+                    label: field.label,
+                });
+            }
+        }
         if (field.type === 'formula') checkCoordinates(field.id, field.formula);
         if ((field.type === 'number' || field.type === 'rating') && field.maxFrom) {
             checkCoordinates(field.id, field.maxFrom);

@@ -60,6 +60,8 @@ export interface DocumentOption {
     label: string;
     /** Document kind, used to offer only the reference's target kinds. */
     kind?: string;
+    /** In the template's setting (spec 017); absent reads as in scope (preview and story data). */
+    inScope?: boolean;
 }
 
 export interface TemplateFieldControlProps {
@@ -613,15 +615,23 @@ function ReferenceFieldControlRender({
     previewSource,
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'reference'> }) {
-    const docs = (documentOptions ?? []).filter(
-        (doc) => doc.kind === undefined || field.targetKinds.includes(doc.kind as never)
-    );
+    const offered = (doc: DocumentOption) =>
+        doc.inScope !== false &&
+        (doc.kind === undefined || field.targetKinds.includes(doc.kind as never));
+    const docs = (documentOptions ?? []).filter(offered);
     const selectedIds = (
         Array.isArray(value) ? value : typeof value === 'string' ? [value] : []
     ).filter((id): id is string => typeof id === 'string' && id.length > 0);
-    const titles = new Map((documentOptions ?? []).map((doc) => [doc.value, doc.label]));
-    const missing = selectedIds.filter((id) => !titles.has(id));
+    const options = new Map((documentOptions ?? []).map((doc) => [doc.value, doc]));
+    const missing = selectedIds.filter((id) => !options.has(id));
     const missingKey = missing.join('|');
+    // An existing document outside the setting stays linked and openable (spec 017, R4).
+    const outOfScopeKey = selectedIds
+        .filter((id) => {
+            const option = options.get(id);
+            return option !== undefined && !offered(option);
+        })
+        .join('|');
 
     useEffect(() => {
         if (previewSource || missingKey === '') return;
@@ -631,6 +641,16 @@ function ReferenceFieldControlRender({
             details: { fieldId: field.id, documentIds: missingKey.split('|') },
         });
     }, [field.id, missingKey, previewSource]);
+
+    useEffect(() => {
+        if (previewSource || outOfScopeKey === '') return;
+        reportSheetIssue({
+            code: 'reference-target-out-of-scope',
+            message: "Reference points to a document outside the template's setting",
+            details: { fieldId: field.id, documentIds: outOfScopeKey.split('|') },
+        });
+    }, [field.id, outOfScopeKey, previewSource]);
+    const outOfScope = new Set(outOfScopeKey === '' ? [] : outOfScopeKey.split('|'));
 
     const write = (ids: string[]) =>
         onChange(field.multiple ? ids : ids.length > 0 ? ids[ids.length - 1] : undefined);
@@ -642,7 +662,7 @@ function ReferenceFieldControlRender({
             {selectedIds.length > 0 && (
                 <ul className="flex flex-wrap gap-1" aria-label={field.label}>
                     {selectedIds.map((id) => {
-                        const title = titles.get(id);
+                        const title = options.get(id)?.label;
                         return (
                             <li
                                 key={id}
@@ -654,6 +674,11 @@ function ReferenceFieldControlRender({
                                 )}
                             >
                                 <span>{title ?? translate(referenceMessages.missing)}</span>
+                                {outOfScope.has(id) && (
+                                    <span className="text-xs text-textSecondary">
+                                        {translate(referenceMessages.outOfScope)}
+                                    </span>
+                                )}
                                 {title && onOpenDocument && (
                                     <button
                                         type="button"

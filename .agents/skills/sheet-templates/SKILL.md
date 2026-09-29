@@ -258,7 +258,10 @@ item array through the same molecules (V5 `weapons`, `inventory`).
   (`features/sheet/data/templateReferences.ts`) wherever templates enter the system: editor
   draft issues, file import (reports `template-reference-invalid`), and a test over every
   shipped default. It checks binding keys and list binding kinds, catalog ids, fill details and
-  fill targets, and formula/`maxFrom` coordinates against `listTemplateNumericCoordinates`.
+  fill targets, formula/`maxFrom` coordinates against `listTemplateNumericCoordinates`, and
+  reference targets against the template's setting (`reference-target-unavailable`, with the
+  field label). `{ referenceScope: false }` skips only that last check: library file parsing
+  passes it because the file's own types and settings are not installed yet.
 - An unknown key, wrong kind, missing character, or missing body handlers renders the labeled
   `DegradedBinding` notice and reports `binding-unresolved` with a `reason`.
 - Catalogs are declared by plugins (`SystemPlugin.catalogs`, built with `defineCatalog` from
@@ -301,9 +304,26 @@ item array through the same molecules (V5 `weapons`, `inventory`).
   `systems/star-wars-wod/catalogAdapters.ts`: dice → dots with `catalog-detail-out-of-range`
   clamping, scale name → enum, armor label split, arc names). Detail kinds: `text`, `number`,
   `boolean`, `rows`.
-- Reference fields offer only `targetKinds`, show an "open" button (switches the workspace's
-  current document; no-op in previews), and render a "missing document" placeholder for a
-  stale id (value kept, `reference-target-missing` reported once; not reported in previews).
+- Reference fields belong to the template's setting (spec 017,
+  `features/sheet/data/referenceScope.ts`). The setting is `catalogScopeOf`'s (user setting,
+  shipped line = system + module, or system). `referenceTargetsOf` lists its kinds once each:
+    - user setting: the ruleset's `coreDefinitions` kinds + user types owned by the setting;
+    - shipped line: the module's kinds + `coreDefinitions` kinds + user types owned by the module
+      or by the system without a module;
+    - system without a module: its module-less kinds + user types owned by the system without a
+      module; an unregistered system: none.
+
+    Equal labels gain the setting (`targetLabel`); the user's own type of the same name in the same
+    setting gets "(yours)". The editor's kind picker lists these, then stored targets outside them
+    as "(unavailable)" (`referenceKindName`), kept until unchecked. On the sheet, `useTemplatePage`
+    flags each `DocumentOption.inScope` (`isDocumentInReferenceScope`: same system — the user
+    setting's ruleset for a user setting —, same `metadata.settingId` or none, a scope kind); the
+    search offers in-scope options of the target kinds. A selected id whose document exists but is
+    out of scope or not a target kind shows its title, an "outside this setting" note, open and
+    remove, and reports `reference-target-out-of-scope` once; a stale id shows the "missing
+    document" placeholder and reports `reference-target-missing` once (value kept). Neither is
+    reported in previews; an absent `inScope` (story/preview options) reads as in scope. Reference
+    list entries (spec 016) render the same control.
 
 ## Document source
 
@@ -576,7 +596,8 @@ array (ignored on import). Filenames: `ttgamer_template_<id>.json`.
 - `reportSheetIssue({ code, message, details })` — codes: `template-value-write-rejected`,
   `template-value-write-skipped`, `template-quarantined`, `document-recovered`,
   `binding-unresolved`, `catalog-unavailable`, `formula-error`, `template-reference-invalid`,
-  `template-fallback`, `reference-target-missing`, `catalog-detail-out-of-range`,
+  `template-fallback`, `reference-target-missing`, `reference-target-out-of-scope`,
+  `catalog-detail-out-of-range`,
   `template-incompatible`.
 - In development each distinct issue is logged once as `[sheet_manager] <code>: …` in the
   browser console. **A silently ignored edit, an empty section, or a "degraded" card → check
@@ -595,7 +616,9 @@ catalog choice, collections, on sandbox documents); built-in parts are generated
 `bindingSignature` (a new binding shape needs a case there when it renders differently). A new
 option or presentation also gets a tag in `REQUIRED_VARIANTS` of
 `tests/sheet_manager/storybook.test.tsx`. A new docs widget gets an example on
-`docs/dev/storybook/docs-widgets.mdx`; colors come from `tailwind.config.cjs` automatically. A
+`docs/dev/storybook/docs-widgets.mdx`; colors come from `tailwind.config.cjs` automatically.
+States that depend on the reader's own documents get a fixed-sample widget next to the stories
+(`ReferenceEntryVariants` in `features/docs/ElementStorybook.tsx`, on `template-elements.mdx`). A
 setting's missing element is added as an editor-configurable template element, preferably as an
 option on an existing field or primitive rather than a similar new one.
 
@@ -693,7 +716,7 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 | Library tree, moves, files, UI    | `library-{tree,moves,file,import}.test.ts`, `library-dialog.test.tsx`, `document-store-relocate.test.ts`, `systems/registry-rulesets.test.ts` |
 | User catalogs                     | `user-catalogs.test.ts`, `catalog-edit.test.ts`, `catalog-use-sites.test.tsx`                                                                 |
 | WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                         |
-| References                        | `template-references.test.ts`                                                                                                                 |
+| References                        | `template-references.test.ts`, `reference-scope.test.{ts,tsx}` (setting scope, stale targets, imports)                                        |
 | File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                           |
 
 ## History (read for rationale only)

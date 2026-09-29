@@ -444,6 +444,7 @@ export function TemplateEditorDialog({
                 listCatalogUnnamed: t(editor.listCatalogNeedsNames),
                 unknownLabelMessage: t(editor.unknownLabelMessage),
                 invalidDocsLink: t(editor.invalidDocsLink),
+                referenceTargetUnavailable: t(editor.referenceTargetUnavailable),
             }),
         [draft, t]
     );

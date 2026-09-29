@@ -6,6 +6,7 @@ import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import { useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
+import { systemRegistry } from '../../../systems';
 import type { DocumentBindingDescriptor } from '../../../systems/templateBindings';
 import type { SystemListShape } from '../../../systems/templateBindings';
 import {
@@ -35,6 +36,7 @@ import {
     getCatalogBinding,
     readDetailValue,
 } from '../data/catalogBindings';
+import { isDocumentInReferenceScope, referenceScopeOf } from '../data/referenceScope';
 import { useBoundDocument } from './boundDocument';
 import type { CatalogOption, DocumentOption } from './fieldControls';
 import { evaluateFormula, type Expr, type FormulaEvaluationError, parseFormula } from './formula';
@@ -275,6 +277,14 @@ export function useTemplatePage(
         [currentDocumentId, template, readOnly, updateTemplateValues]
     );
 
+    const userTypes = useDocumentTypeStore((state) => state.types);
+    const userSettings = useDocumentTypeStore((state) => state.settings);
+    const referenceScope = useMemo(
+        () => (template ? referenceScopeOf(systemRegistry, template) : undefined),
+        // userTypes, userSettings: the scope reads the registry overlay, which follows the store.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [template, userTypes, userSettings]
+    );
     const documentOptions = useMemo<DocumentOption[]>(
         () =>
             documents
@@ -283,8 +293,10 @@ export function useTemplatePage(
                     value: candidate.id,
                     label: candidate.metadata.title || candidate.definitionId,
                     kind: candidate.kind,
+                    inScope:
+                        !referenceScope || isDocumentInReferenceScope(referenceScope, candidate),
                 })),
-        [documents, document?.id]
+        [documents, document?.id, referenceScope]
     );
 
     const applyWrites = useCallback(

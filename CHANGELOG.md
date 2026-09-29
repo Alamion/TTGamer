@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.15.0
+
+### Minor feat
+
+- **Document references stay in their setting (spec 017, T-075)**: a document reference offers the kinds of its page's own setting — the setting's kinds, the ruleset's shared kinds such as the V5 mortal, and the kinds you made there or for the whole ruleset — each once under its own name; the sheet's search offers only documents of that setting, so a Hunter sheet no longer lists Star Wars characters
+- **Earlier links are kept**: a reference saved before that points at a document of another setting still shows its title with "outside this setting", opens it, and can be removed
+- **Kinds the setting no longer has are marked**: a checked kind that the page's setting does not offer stays in the template, is marked "(unavailable)", and appears in the template's problems until you uncheck it
+
 ## v3.14.1
 
 ### Fix

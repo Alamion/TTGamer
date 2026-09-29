@@ -6,10 +6,19 @@ description: Containers, fields, choices, derived values, tables, and lists in e
 ---
 
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
-import { ElementStorybook } from '@site/src/sheet_manager/docsEmbeds';
+import { ElementStorybook, ReferenceEntryVariants } from '@site/src/sheet_manager/docsEmbeds';
 
 # Template elements
 
 <TWWrapper>
     <ElementStorybook filter="handwritten" />
+</TWWrapper>
+
+## Document reference entries
+
+A reference in the template's setting, one outside it (kept, openable, noted), and one whose
+document was deleted. The stories above list your own documents, so these three use fixed samples.
+
+<TWWrapper>
+    <ReferenceEntryVariants />
 </TWWrapper>

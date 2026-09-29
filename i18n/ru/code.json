@@ -3512,8 +3512,17 @@
     "ttgamer.ui.sheet.templates.editor.redo": {
         "message": "Повторить"
     },
+    "ttgamer.ui.sheet.templates.editor.referenceKindOwn": {
+        "message": "{type} (ваш)"
+    },
     "ttgamer.ui.sheet.templates.editor.referenceKinds": {
         "message": "Разрешённые типы документов"
+    },
+    "ttgamer.ui.sheet.templates.editor.referenceKindUnavailable": {
+        "message": "{type} (недоступен)"
+    },
+    "ttgamer.ui.sheet.templates.editor.referenceTargetUnavailable": {
+        "message": "Ссылка «{field}» может указывать на тип «{type}», которого нет в этом сеттинге."
     },
     "ttgamer.ui.sheet.templates.editor.remove": {
         "message": "Удалить"
@@ -4024,6 +4033,9 @@
     },
     "ttgamer.ui.sheet.templates.reference.open": {
         "message": "Открыть «{title}»"
+    },
+    "ttgamer.ui.sheet.templates.reference.outOfScope": {
+        "message": "вне этого сеттинга"
     },
     "ttgamer.ui.sheet.templates.reference.remove": {
         "message": "Убрать «{title}»"

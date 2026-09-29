@@ -4,7 +4,10 @@ import { isUserCatalogId } from '../../../systems/userCatalogs';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
 import { CustomTemplateSchema, isTemplateField, walkTemplateNodes } from '../../../types/template';
 import { getCatalogBinding } from '../data/catalogBindings';
-import { validateTemplateReferences } from '../data/templateReferences';
+import {
+    type TemplateReferenceOptions,
+    validateTemplateReferences,
+} from '../data/templateReferences';
 
 /**
  * Template file transfer boundary: a self-describing JSON wrapper around the declarative
@@ -134,12 +137,15 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
  * templates referencing unavailable catalogs still import with those fields degraded to manual
  * choice (FR-21, 003); remaining broken references are reported and degrade at render.
  */
-export function resolveImportedTemplate(template: CustomTemplate): {
+export function resolveImportedTemplate(
+    template: CustomTemplate,
+    options?: TemplateReferenceOptions
+): {
     template: CustomTemplate;
     degradedFields: readonly string[];
 } {
     const stripped = stripUnavailableBindings(template);
-    for (const issue of validateTemplateReferences(stripped.template)) {
+    for (const issue of validateTemplateReferences(stripped.template, options)) {
         reportSheetIssue({
             code: 'template-reference-invalid',
             message: 'Imported template references something this build does not provide',

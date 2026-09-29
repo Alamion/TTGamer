@@ -72,6 +72,8 @@ editor:
     ratingFlags: 'Flags:'
     ratingFlagsHint: S, P, and E change the roll only where the system's dice rule uses them (Star Wars does, V5 does not).
     referenceKinds: Allowed document kinds
+    referenceKindUnavailable: '{type} (unavailable)'
+    referenceKindOwn: '{type} (yours)'
     multiple: Allow multiple values
     hideUnselected: Hide unselected options
     moveUp: Move up
@@ -184,6 +186,7 @@ editor:
     unknownFillTarget: 'Auto-fill targets a field that does not exist: "{id}".'
     unknownLabelMessage: Unknown translation reference "{id}".
     invalidDocsLink: 'Documentation link "{id}" is not a site docs path (/docs/…) or an https:// address.'
+    referenceTargetUnavailable: 'Reference "{field}" can point to {type}, which this setting does not have.'
     depthMessage: Nesting limit reached — {limit} levels maximum.
     countMessage: Element limit reached — {limit} elements maximum.
     newSection: New section
@@ -358,6 +361,7 @@ reference:
     remove: Remove {title}
     open: Open {title}
     missing: Linked document no longer exists
+    outOfScope: outside this setting
 entities:
     identification: Identification
     details: Details

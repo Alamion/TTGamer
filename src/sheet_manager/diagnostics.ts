@@ -20,6 +20,8 @@ export type SheetIssueCode =
     | 'template-fallback'
     /** A reference value names a document that no longer exists. */
     | 'reference-target-missing'
+    /** A reference value names a document outside the template's setting (spec 017). */
+    | 'reference-target-out-of-scope'
     /** A catalog value was clamped or dropped while filling a sheet. */
     | 'catalog-detail-out-of-range'
     /** A template was applied to a document of another system or kind; its default page rendered. */

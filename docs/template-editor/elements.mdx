@@ -45,7 +45,7 @@ A field holds one value. Its **Field label** is shown next to it (**Show label**
 | **Resource**           | A current value and a maximum, such as a pool of points.                                                                                                                                                 |
 | **Derived value**      | A number computed by a [formula](./values.mdx#formulas); readers cannot type into it.                                                                                                                    |
 | **Image**              | A picture from the device or an `https://` address.                                                                                                                                                      |
-| **Document reference** | Links to other documents of the allowed types; readers open them from the field.                                                                                                                         |
+| **Document reference** | Links to other documents of the allowed types; readers open them from the field; see [Document references](#references).                                                                                 |
 
 ## Ratings \{#rating}
 
@@ -59,6 +59,16 @@ A rating reads like an attribute row on the shipped sheets: the label on the lef
 - **Flags** (dots only): **S** (specialization), **P** (practiced), and **E** (experienced) add the same switches as a trait row. They change the roll only where the game's dice rule uses them: the Star Wars sheet does, V5 does not.
 
 Formulas and display conditions read the rating's number; its text and flags do not change it. Ratings with the same [shared value key](./values.mdx#shared-value-key) share the number, the text, and the flags.
+
+## Document references \{#references}
+
+**Allowed document kinds** lists the kinds of the page's own setting, each once: the setting's own kinds (a Hunter page offers the hunter), the ruleset's shared kinds (the V5 mortal), and the kinds you created in that setting or for the whole ruleset. Kinds of other games and of your other settings are not offered, even when they have the same name. When two offered kinds would read the same, the setting is added to the name; your own kind of the same name in the same setting is marked "(yours)". A new reference points at the page's own kind.
+
+On the sheet, the search offers the reader's documents of those kinds from the same setting, never the document itself.
+
+- A reference saved earlier may point at a document of another setting. It stays: the entry shows the document's title, notes "outside this setting", opens it, and can be removed. Once removed, that document is not offered again.
+- A document that was deleted shows "Linked document no longer exists" until the reader removes it.
+- A kind the setting no longer has (a deleted type, or one from another setting) stays checked and is marked "(unavailable)", and the template's problems list names it. Uncheck it to drop it; the last kind cannot be unchecked.
 
 ## Tables \{#tables}
 

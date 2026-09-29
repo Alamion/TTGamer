@@ -201,3 +201,27 @@ export function seedLibrary(): void {
         recoveryEntries: [],
     });
 }
+
+export const HUNT_ID = 'user-hunt0001';
+export const SHARED_ID = 'user-vfive001';
+
+/** Spec 017: the example library plus a Hunter-owned type and a V5-level type. */
+export function seedReferenceTypes(): void {
+    seedLibrary();
+    const { types } = useDocumentTypeStore.getState();
+    useDocumentTypeStore.setState({
+        types: {
+            ...types,
+            [HUNT_ID]: userType({
+                id: HUNT_ID,
+                name: 'Cell',
+                owner: { systemId: 'wod-v5', moduleId: 'hunter' } as UserDocumentType['owner'],
+            }),
+            [SHARED_ID]: userType({
+                id: SHARED_ID,
+                name: 'Haven',
+                owner: { systemId: 'wod-v5' } as UserDocumentType['owner'],
+            }),
+        },
+    });
+}

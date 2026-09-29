@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import { generateId } from '../../../../shared/utils/random';
+import { referenceKindName } from '../../../features/sheet/data/referenceScope';
 import {
     type TemplateReferenceIssue,
     validateTemplateReferences,
@@ -11,6 +12,7 @@ import {
     type FormulaDependencyEntry,
     parseFormula,
 } from '../../../features/sheet/declarative/formula';
+import { systemRegistry } from '../../../systems';
 import { resolveDataBindingByCoordinate } from '../../../systems/templateBindings';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import type {
@@ -629,6 +631,7 @@ export interface DraftIssueMessages {
     listCatalogUnnamed: string;
     unknownLabelMessage: string;
     invalidDocsLink: string;
+    referenceTargetUnavailable: string;
 }
 
 function referenceIssueMessage(
@@ -652,6 +655,11 @@ function referenceIssueMessage(
             return interpolate(messages.unknownLabelMessage, { id: issue.key });
         case 'invalid-docs-link':
             return interpolate(messages.invalidDocsLink, { id: issue.key });
+        case 'reference-target-unavailable':
+            return interpolate(messages.referenceTargetUnavailable, {
+                field: issue.label,
+                type: referenceKindName(systemRegistry, issue.key),
+            });
     }
 }
 

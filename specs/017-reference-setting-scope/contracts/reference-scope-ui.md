@@ -38,16 +38,7 @@
 
 ## Storybook
 
-The storybook shows sheet elements, not editor panels. The reference stories show the three entry
-states (in scope, out of scope, missing) through story document options. The editor's stale
-target state is covered by editor tests.
-
-## Strings (translations/source/{en,ru}/ui/sheet/templates.yaml)
-
-| Key                                        | en                                                              | ru                                                                |
-| ------------------------------------------ | --------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `reference.outOfScope`                     | outside this setting                                            | вне этого сеттинга                                                |
-| `editor.referenceKindUnavailable`          | {type} (unavailable)                                            | {type} (недоступен)                                               |
-| `editor.issues.referenceTargetUnavailable` | “{field}” can point to {type}, which this setting does not have | «{field}» ссылается на тип «{type}», которого нет в этом сеттинге |
-
-The final key names follow the existing groups in the YAML file.
+The storybook's template stories list the reader's own documents, so they cannot show fixed entry
+states. A `ReferenceEntryVariants` widget on the template elements page renders the reference
+control on fixed sample documents: in scope, out of scope, and deleted, in preview mode (no
+reports). The editor's stale-target state is covered by editor tests.

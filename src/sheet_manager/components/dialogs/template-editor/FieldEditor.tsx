@@ -3,8 +3,10 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 import { Plus, Trash2 } from 'lucide-react';
+import { useMemo } from 'react';
 
-import { kindLabel, listTemplateTargets } from '../../../features/sheet/data/documentLabels';
+import { referenceKindName, referenceTargetsOf } from '../../../features/sheet/data/referenceScope';
+import { systemRegistry } from '../../../systems';
 import type {
     FieldLabelPosition,
     RatingFlag,
@@ -493,7 +495,10 @@ export function FieldEditor({
     );
 }
 
-/** The document kinds a reference may point to: shipped kinds and user types (at least one). */
+/**
+ * The document kinds a reference may point to (spec 017): the types of the draft's setting, then
+ * stored targets the setting does not offer, kept and marked unavailable (at least one checked).
+ */
 function ReferenceKindsControl({
     onChange,
     value,
@@ -501,17 +506,23 @@ function ReferenceKindsControl({
     onChange: (kinds: string[]) => void;
     value: readonly string[];
 }) {
-    // Kinds are shared across systems (a reference lists documents of any system).
-    const seen = new Set<string>();
-    const kinds: Array<{ kind: string; label: string }> = [];
-    for (const { kind, systemId } of listTemplateTargets()) {
-        if (seen.has(kind)) continue;
-        seen.add(kind);
-        kinds.push({ kind, label: kindLabel(systemId, kind) });
-    }
-    for (const kind of value) {
-        if (!seen.has(kind)) kinds.push({ kind, label: kind });
-    }
+    const { systemId, documentKind, settingId } = useEditorModel();
+    const targets = useMemo(
+        () => referenceTargetsOf(systemRegistry, { systemId, documentKind, settingId }),
+        [systemId, documentKind, settingId]
+    );
+    const offered = new Set(targets.map(({ kind }) => kind));
+    const kinds = [
+        ...targets,
+        ...value
+            .filter((kind) => !offered.has(kind))
+            .map((kind) => ({
+                kind,
+                label: translate(editor.referenceKindUnavailable, {
+                    type: referenceKindName(systemRegistry, kind),
+                }),
+            })),
+    ];
     return (
         <fieldset className="grid gap-1">
             <legend className="text-xs text-textSecondary">
