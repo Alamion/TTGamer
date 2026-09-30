@@ -12,12 +12,6 @@ primitives:
     labelOverride: Своё название
     labelOverridePlaceholder: Как у привязки
     compact: Компактно (формат brief)
-    trackLevels: Уровни
-    trackLevelName: 'Название уровня {index}'
-    trackLayout: Вид трека
-    trackLayoutDefault: По умолчанию
-    trackLayoutTable: Таблица уровней
-    trackLayoutStrip: Строка клеток
     presets: Предустановленные записи
     presetLabel: Название записи
     presetValue: Значение по умолчанию
@@ -438,15 +432,11 @@ cohort:
     removeMember: Удалить участника {label}
     memberLabel: Метка участника
     defeated: Выведен из боя
-    penalty: Штраф
-    level: Уровень
     maxMembersReached: В группе может быть не больше {count} участников.
     removeTitle: Удалить раненого участника?
     removeDescription: У участника {label} отмечены повреждения. Удаление сотрёт их.
     shortenTitle: Сократить шкалу здоровья?
     shortenDescription: У некоторых участников есть отметки на скрываемых уровнях. Они перейдут на последний оставшийся уровень.
-    confirm: Подтвердить
-    cancel: Отмена
 reference:
     search: Введите имя для поиска
     noMatches: Подходящих документов нет

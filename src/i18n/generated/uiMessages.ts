@@ -2040,10 +2040,6 @@ export const uiMessages = {
                 },
             },
             fields: {
-                conditionLevel: {
-                    id: 'ttgamer.ui.sheet.documents.fields.conditionLevel',
-                    message: 'Level',
-                },
                 conditionPenalty: {
                     id: 'ttgamer.ui.sheet.documents.fields.conditionPenalty',
                     message: 'Penalty',
@@ -3846,30 +3842,6 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.primitives.compact',
                     message: 'Compact (brief format)',
                 },
-                trackLevels: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLevels',
-                    message: 'Levels',
-                },
-                trackLevelName: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLevelName',
-                    message: 'Level {index} name',
-                },
-                trackLayout: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayout',
-                    message: 'Track layout',
-                },
-                trackLayoutDefault: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayoutDefault',
-                    message: 'Default',
-                },
-                trackLayoutTable: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayoutTable',
-                    message: 'Table of levels',
-                },
-                trackLayoutStrip: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayoutStrip',
-                    message: 'Line of boxes',
-                },
                 presets: {
                     id: 'ttgamer.ui.sheet.templates.primitives.presets',
                     message: 'Preset entries',
@@ -5504,14 +5476,6 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.cohort.defeated',
                     message: 'Out of the fight',
                 },
-                penalty: {
-                    id: 'ttgamer.ui.sheet.templates.cohort.penalty',
-                    message: 'Penalty',
-                },
-                level: {
-                    id: 'ttgamer.ui.sheet.templates.cohort.level',
-                    message: 'Level',
-                },
                 maxMembersReached: {
                     id: 'ttgamer.ui.sheet.templates.cohort.maxMembersReached',
                     message: 'A group can have at most {count} members.',
@@ -5532,14 +5496,6 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.cohort.shortenDescription',
                     message:
                         'Some members have damage on levels that will be hidden. Their marks move to the last remaining level.',
-                },
-                confirm: {
-                    id: 'ttgamer.ui.sheet.templates.cohort.confirm',
-                    message: 'Confirm',
-                },
-                cancel: {
-                    id: 'ttgamer.ui.sheet.templates.cohort.cancel',
-                    message: 'Cancel',
                 },
             },
             reference: {

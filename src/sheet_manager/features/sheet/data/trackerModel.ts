@@ -1,4 +1,7 @@
+import type { TrackMarkId } from '../../../systems/templateBindings';
+import type { ConditionMark } from '../../../types/character';
 import type {
+    PrimitiveNode,
     TrackerColumn,
     TrackerDisplay,
     TrackerField,
@@ -206,7 +209,8 @@ function withCopy(
     const column = field.columns.find(({ id }) => id === columnId);
     if (!column) return base;
     const stored = base.columns[columnId] ?? [];
-    const copies = stored.length > 0 ? stored : [{ id: copyId }];
+    // The first copy, or a member's copy of a built-in extra column, is stored on first write.
+    const copies = stored.some(({ id }) => id === copyId) ? stored : [...stored, { id: copyId }];
     return {
         ...base,
         columns: {
@@ -358,4 +362,215 @@ export function stepTrackerLength(
 
 function emptyToUndefined(record: Record<string, string>) {
     return Object.keys(record).length > 0 ? record : undefined;
+}
+
+// ---------------------------------------------------------------------------
+// Built-in trackers (spec 018, R4–R7): the game's levels, marks, and members, with the page's
+// overrides and extra columns.
+// ---------------------------------------------------------------------------
+
+/** The column that holds the game's own marks (stored in the document's data). */
+export const GAME_COLUMN_ID = 'game';
+
+const GAME_MARK_LOOK: Record<TrackMarkId, Pick<TrackerMarkKind, 'symbol' | 'fill'>> = {
+    slash: { symbol: '╱', fill: 'secondary' },
+    cross: { symbol: '×', fill: 'error' },
+};
+
+/**
+ * Display of a track primitive: its own setting, else the legacy `compact` (one line) or
+ * `trackLayout`, else a table for named levels and a strip for a computed length (FR-013).
+ */
+export function trackerDisplayOf(
+    node: Pick<PrimitiveNode, 'tracker' | 'compact' | 'trackLayout'>,
+    computed: boolean
+): TrackerDisplay {
+    if (node.tracker?.display) return node.tracker.display;
+    if (node.compact) return 'line';
+    return node.trackLayout ?? (computed ? 'strip' : 'table');
+}
+
+/** A game penalty as level text: none and zero read as no value, as the tables always showed. */
+export function penaltyText(penalty: number | null | undefined): string {
+    return penalty ? String(penalty) : '';
+}
+
+/**
+ * Levels of a built-in track with the page's text: a page override replaces only the name or
+ * value it sets (FR-021). A legacy `track` override with another count still sets the levels.
+ */
+export function builtInLevels(
+    game: readonly { id: string; name: string; penalty: number | null }[],
+    node: Pick<PrimitiveNode, 'track' | 'tracker'>
+): TrackerModelLevel[] {
+    const legacy = node.track;
+    const base =
+        legacy && legacy.names.length !== game.length
+            ? legacy.names.map((name, index) => ({ id: `level-${index}`, name, value: '' }))
+            : game.map((level, index) => ({
+                  id: level.id,
+                  name: legacy?.names[index] ?? level.name,
+                  value: penaltyText(level.penalty),
+              }));
+    const overrides = node.tracker?.levels ?? [];
+    return base.map((level, index) => {
+        const override = overrides[index];
+        return {
+            id: level.id,
+            name: override?.name || level.name,
+            value: override?.value ?? level.value,
+        };
+    });
+}
+
+/** The two built-in marks with the game's names and the page's look. */
+export function builtInMarks(
+    game: readonly { id: TrackMarkId; name: string }[],
+    node: Pick<PrimitiveNode, 'tracker'>
+): TrackerModel['marks'] {
+    return game.map(({ id, name }) => {
+        const override = node.tracker?.marks?.[id];
+        return {
+            id,
+            name: override?.name || name,
+            symbol: override?.symbol ?? GAME_MARK_LOOK[id].symbol,
+            fill: override?.fill ?? GAME_MARK_LOOK[id].fill,
+        };
+    });
+}
+
+export interface BuiltInCopy {
+    id: string;
+    /** A member's letter; absent on a plain track. */
+    label?: string;
+    /** Marks by shown position (`ConditionMark`). */
+    marks: readonly ConditionMark[];
+}
+
+export interface BuiltInTrackerInput {
+    label: string;
+    hideLabel: boolean;
+    display: TrackerDisplay;
+    levels: readonly TrackerModelLevel[];
+    marks: TrackerModel['marks'];
+    valueColumn: { title: string; show: boolean };
+    total: boolean;
+    gameColumnTitle: string;
+    copies: readonly BuiltInCopy[];
+    members?: { canAdd: boolean };
+    extraColumns: readonly TrackerColumn[];
+    pageValue: TrackerValue | undefined;
+    length?: TrackerModel['length'];
+    readOnly: boolean;
+}
+
+/** The drawn model of a built-in tracker (members are copies of the game's column). */
+export function builtInTrackerModel(input: BuiltInTrackerInput): TrackerModel {
+    const visible = input.levels.map(({ id }) => id);
+    const byId = new Map(input.levels.map((level) => [level.id, level]));
+    const lettered = input.members !== undefined && input.copies.length > 1;
+    const totalOf = (marks: Readonly<Record<string, string>>) => {
+        const deepest = deepestMarked(input.marks, visible, marks);
+        return deepest === undefined ? undefined : byId.get(deepest)?.value || undefined;
+    };
+    const game: TrackerModelColumn = {
+        id: GAME_COLUMN_ID,
+        kind: 'marks',
+        title: input.gameColumnTitle,
+        covered: visible,
+        repeatable: input.members !== undefined,
+        canAdd: !input.readOnly && (input.members?.canAdd ?? false),
+        canRemove: !input.readOnly && input.members !== undefined && input.copies.length > 1,
+        copies: input.copies.map((copy) => {
+            const marks: Record<string, string> = {};
+            visible.forEach((levelId, index) => {
+                const mark = copy.marks[index];
+                if (mark && mark !== 'empty') marks[levelId] = mark;
+            });
+            return {
+                id: copy.id,
+                label: lettered ? (copy.label ?? '') : input.gameColumnTitle,
+                ...(lettered && copy.label ? { letter: copy.label } : {}),
+                marks,
+                texts: {},
+                out: input.members !== undefined && isCopyOut(input.marks, visible, marks),
+                total: totalOf(marks),
+                hasValues: Object.keys(marks).length > 0,
+            };
+        }),
+    };
+    const extras = input.extraColumns.map((column): TrackerModelColumn => {
+        const covered = coveredLevelIds(column, visible);
+        // Repeated extra columns on member tracks have one copy per member.
+        const byMember = input.members !== undefined && column.copies !== undefined;
+        const stored = input.pageValue?.columns[column.id] ?? [];
+        const copies: TrackerCopyValue[] = byMember
+            ? input.copies.map(
+                  (member) => stored.find(({ id }) => id === member.id) ?? { id: member.id }
+              )
+            : [stored[0] ?? { id: FIRST_COPY_ID }];
+        return {
+            id: column.id,
+            kind: column.kind,
+            title: column.title,
+            covered,
+            repeatable: false,
+            canAdd: false,
+            canRemove: false,
+            copies: copies.map((copy, index) => {
+                const marks = copy.marks ?? {};
+                const member = byMember ? input.copies[index] : undefined;
+                return {
+                    id: copy.id,
+                    label:
+                        member && lettered
+                            ? `${column.title} ${member.label ?? ''}`.trim()
+                            : column.title,
+                    ...(member && lettered && member.label ? { letter: member.label } : {}),
+                    marks,
+                    texts: copy.texts ?? {},
+                    out: false,
+                    total:
+                        column.kind === 'marks'
+                            ? (() => {
+                                  const deepest = deepestMarked(input.marks, covered, marks);
+                                  return deepest === undefined
+                                      ? undefined
+                                      : byId.get(deepest)?.value || undefined;
+                              })()
+                            : undefined,
+                    hasValues: Object.keys(marks).length + Object.keys(copy.texts ?? {}).length > 0,
+                };
+            }),
+        };
+    });
+    return {
+        label: input.label,
+        hideLabel: input.hideLabel,
+        display: input.display,
+        marks: input.marks,
+        levels: input.levels,
+        valueColumn: input.valueColumn,
+        columns: [game, ...extras],
+        total: input.total,
+        ...(input.length ? { length: input.length } : {}),
+        hidden: 0,
+    };
+}
+
+/** Stored extra-column values a built-in tracker no longer shows (removed columns). */
+export function countHiddenExtraValues(
+    columns: readonly TrackerColumn[],
+    value: TrackerValue | undefined
+): number {
+    if (!value) return 0;
+    const known = new Set(columns.map(({ id }) => id));
+    let hidden = 0;
+    for (const [columnId, copies] of Object.entries(value.columns)) {
+        if (known.has(columnId)) continue;
+        for (const copy of copies) {
+            hidden += Math.max(1, countEntries(copy.marks) + countEntries(copy.texts));
+        }
+    }
+    return hidden;
 }

@@ -12,12 +12,6 @@ primitives:
     labelOverride: Label override
     labelOverridePlaceholder: Same as binding label
     compact: Compact (brief format)
-    trackLevels: Levels
-    trackLevelName: 'Level {index} name'
-    trackLayout: Track layout
-    trackLayoutDefault: Default
-    trackLayoutTable: Table of levels
-    trackLayoutStrip: Line of boxes
     presets: Preset entries
     presetLabel: Entry label
     presetValue: Default value
@@ -438,15 +432,11 @@ cohort:
     removeMember: Remove member {label}
     memberLabel: Member label
     defeated: Out of the fight
-    penalty: Penalty
-    level: Level
     maxMembersReached: A group can have at most {count} members.
     removeTitle: Remove damaged member?
     removeDescription: Member {label} has recorded damage. Removing it deletes that damage.
     shortenTitle: Shorten the health track?
     shortenDescription: Some members have damage on levels that will be hidden. Their marks move to the last remaining level.
-    confirm: Confirm
-    cancel: Cancel
 reference:
     search: Type a name to search
     noMatches: No matching documents

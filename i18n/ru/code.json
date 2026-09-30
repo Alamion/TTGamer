@@ -1628,9 +1628,6 @@
     "ttgamer.ui.sheet.documents.fields.concept": {
         "message": "Концепция"
     },
-    "ttgamer.ui.sheet.documents.fields.conditionLevel": {
-        "message": "Уровень"
-    },
     "ttgamer.ui.sheet.documents.fields.conditionPenalty": {
         "message": "Штраф"
     },
@@ -2930,17 +2927,8 @@
     "ttgamer.ui.sheet.templates.cohort.addMember": {
         "message": "Добавить участника"
     },
-    "ttgamer.ui.sheet.templates.cohort.cancel": {
-        "message": "Отмена"
-    },
-    "ttgamer.ui.sheet.templates.cohort.confirm": {
-        "message": "Подтвердить"
-    },
     "ttgamer.ui.sheet.templates.cohort.defeated": {
         "message": "Выведен из боя"
-    },
-    "ttgamer.ui.sheet.templates.cohort.level": {
-        "message": "Уровень"
     },
     "ttgamer.ui.sheet.templates.cohort.maxMembersReached": {
         "message": "В группе может быть не больше {count} участников."
@@ -2953,9 +2941,6 @@
     },
     "ttgamer.ui.sheet.templates.cohort.members": {
         "message": "Участники"
-    },
-    "ttgamer.ui.sheet.templates.cohort.penalty": {
-        "message": "Штраф"
     },
     "ttgamer.ui.sheet.templates.cohort.removeDescription": {
         "message": "У участника {label} отмечены повреждения. Удаление сотрёт их."
@@ -4015,24 +4000,6 @@
     },
     "ttgamer.ui.sheet.templates.primitives.removePreset": {
         "message": "Удалить пресет"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLayout": {
-        "message": "Вид трека"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLayoutDefault": {
-        "message": "По умолчанию"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLayoutStrip": {
-        "message": "Строка клеток"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLayoutTable": {
-        "message": "Таблица уровней"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLevelName": {
-        "message": "Название уровня {index}"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLevels": {
-        "message": "Уровни"
     },
     "ttgamer.ui.sheet.templates.reference.missing": {
         "message": "Связанный документ больше не существует"

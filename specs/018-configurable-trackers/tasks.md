@@ -261,7 +261,7 @@ The existing track tests must stay green, changed only where the markup changes.
 - [x] T025 [US3] Add the Display segmented control (`aria-pressed`) to `TrackerSettings.tsx`. For
       an own field it writes `display`. Wire all three displays in `Tracker.tsx`:
     - One line: small boxes, the label inline, no length control, no legend.
-- [ ] T026 [US3] Extend `tests/sheet_manager/tracker-schema.test.ts`, or add a pure block to
+- [x] T026 [US3] Extend `tests/sheet_manager/tracker-schema.test.ts`, or add a pure block to
       `tracker-rules.test.ts`, covering `trackerDisplayOf` for:
     - `compact` → line;
     - `trackLayout` table and strip;
@@ -355,7 +355,7 @@ Wars character health shows its total row.
 
 **Independent test**: quickstart scenarios 8–9.
 
-- [ ] T038 [US6] Complete `builtInTrackerModel` in `trackerModel.ts` (R4, R5, R7) for:
+- [x] T038 [US6] Complete `builtInTrackerModel` in `trackerModel.ts` (R4, R5, R7) for:
     - plain tracks: marks from `bound.data[dataKey].levels`, mapped to the ids `slash` and
       `cross`;
     - computed-length tracks (V5): `resolveComputedTrackLength`, `trackBoxes`, and the value
@@ -368,13 +368,13 @@ Wars character health shows its total row.
     read the page `TrackerValue` under `tracker.valueKey ?? node.id`; member-keyed copies apply to
     member tracks.
 
-- [ ] T039 [US6] Rewrite `PrimitiveTrackBody` in
+- [x] T039 [US6] Rewrite `PrimitiveTrackBody` in
       `src/sheet_manager/features/sheet/declarative/primitives.tsx` to render `Tracker` from
       `builtInTrackerModel`:
     - Marks are written through `bound.update` as today.
     - Extra column values are written through the page value.
     - Keep `DegradedBinding` and the formula-error behavior.
-- [ ] T040 [US6] Rework `src/sheet_manager/features/sheet/declarative/CohortTrack.tsx` onto the
+- [x] T040 [US6] Rework `src/sheet_manager/features/sheet/declarative/CohortTrack.tsx` onto the
       model and `Tracker`. It keeps:
     - the member cap, letters, and add and remove with confirmation;
     - the variant length with the shorten confirmation and `shortenMarks`;
@@ -383,7 +383,7 @@ Wars character health shows its total row.
     Display now follows `trackerDisplayOf`. Reimplement `cohort.ts` on the `tracker.ts` rules and
     keep its exported API.
 
-- [ ] T041 [US6] Make `PrimitiveConfig.tsx` delegate track bindings to `TrackerSettings.tsx`, with
+- [x] T041 [US6] Make `PrimitiveConfig.tsx` delegate track bindings to `TrackerSettings.tsx`, with
       the game-fixed parts disabled and notes (contract "Built-in trackers" items):
     - marks: rename, symbol, and recolor only;
     - levels: name and value overrides, with the game text as the placeholder, plus the legacy
@@ -395,17 +395,17 @@ Wars character health shows its total row.
     Remove the old compact, trackLayout, and track-override UI for tracks. The editor writes
     `tracker.display` and clears `compact` and `trackLayout`.
 
-- [ ] T042 [US6] Add the Source select to `TrackerSettings.tsx`, with conversion helpers in
+- [x] T042 [US6] Add the Source select to `TrackerSettings.tsx`, with conversion helpers in
       `draft.ts`:
     - own ↔ primitive bound to a chosen track binding;
     - keep the id, label, display, value column, extra columns, and total.
 
     Extend `trackerChangeReport` to built-in extra columns (removed columns and copies).
 
-- [ ] T043 [US6] Set `tracker: { total: true }` on the full health primitive in
+- [x] T043 [US6] Set `tracker: { total: true }` on the full health primitive in
       `src/sheet_manager/systems/star-wars-wod/templates/character.ts` (FR-023). The brief page
       stays as it is.
-- [ ] T044 [US6] Write component tests in `tests/sheet_manager/tracker-builtin.test.tsx`:
+- [x] T044 [US6] Write component tests in `tests/sheet_manager/tracker-builtin.test.tsx`:
     - Renaming "Hurt" keeps the other penalties.
     - An extra text column "Source" stores in page values, and the marks stay in `health.levels`,
       shared with the brief page.
@@ -422,7 +422,7 @@ Wars character health shows its total row.
         - a legacy count override.
     - Member tracks: 24 members, one update per mark.
     - Read-only.
-- [ ] T045 [US6] Update the existing track tests where the markup changed, keeping their
+- [x] T045 [US6] Update the existing track tests where the markup changed, keeping their
       behavioral assertions:
     - `cohort-track.test.tsx`;
     - `template-layout.test.tsx`;
@@ -431,10 +431,10 @@ Wars character health shows its total row.
     - `entity-templates.test.tsx`;
     - `tests/sheet_manager/systems/v5/brief-template.test.tsx`, `sheet-coverage.test.tsx`, and
       `reskin.test.tsx`.
-- [ ] T046 [US6] Extend the storybook's bound-part stories in `stories.ts` with a built-in tracker
+- [x] T046 [US6] Extend the storybook's bound-part stories in `stories.ts` with a built-in tracker
       that has an extra text column and the total row. Add the `primitive:tracker:columns` tag and
       update the `trackLayout:*` tags to `tracker:display:*` on primitives.
-- [ ] T047 [US6] Extend `template-editor.test.tsx`:
+- [x] T047 [US6] Extend `template-editor.test.tsx`:
     - The Source switch in both directions keeps the shared settings.
     - Built-in marks can be renamed but not added.
     - Removing an extra column with stored values asks first.

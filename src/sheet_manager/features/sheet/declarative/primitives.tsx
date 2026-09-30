@@ -11,10 +11,6 @@ import {
     CompactResource,
     CompactTextField,
 } from '../../../components/stat-fields/CompactSheetFields';
-import {
-    ConditionTrackStrip,
-    ConditionTrackTable,
-} from '../../../components/stat-fields/ConditionTrack';
 import { MeritFlawList } from '../../../components/stat-fields/MeritFlawRow';
 import {
     CustomTraitList,
@@ -31,14 +27,11 @@ import type {
 } from '../../../systems/templateBindings';
 import {
     fieldBindingUpdate,
-    readBoundNumber,
     readDataPath,
     resolveDocumentBinding,
-    trackBoxes,
 } from '../../../systems/templateBindings';
 import type {
     ArmorItem,
-    ConditionMark,
     CustomSkill,
     ImplantItem,
     Item,
@@ -71,14 +64,12 @@ import {
 } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
-import { CohortTrack } from './CohortTrack';
+import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
 import { traitRowKind } from './rowKind';
 import { EnumField, RowsBody } from './RowsBody';
-import { mergeVisibleMarks, resolveComputedTrackLength, visibleMarks } from './trackLength';
 
 const page = uiMessages.sheet.templates.page;
 const fields = uiMessages.sheet.documents.fields;
-const tracks = uiMessages.sheet.tracks;
 
 const inputClasses =
     'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
@@ -795,26 +786,17 @@ function PrimitiveTrackBody({
     descriptor,
     systemId,
     documentKind,
+    page,
 }: {
     node: PrimitiveNode;
     descriptor: Extract<DocumentBindingDescriptor, { kind: 'track' }>;
     systemId: string;
     documentKind: string;
+    page?: TrackerPageAccess;
 }) {
     const bound = useBoundDocument();
-    if (bound && descriptor.members) {
-        return (
-            <CohortTrack
-                node={node}
-                descriptor={descriptor as Parameters<typeof CohortTrack>[0]['descriptor']}
-                bound={bound}
-            />
-        );
-    }
-    const track = bound?.data[descriptor.dataKey] as
-        | ({ levels?: ConditionMark[] } & Record<string, unknown>)
-        | undefined;
-    if (!bound || !track) {
+    const record = bound?.data[descriptor.dataKey];
+    if (!bound || (!descriptor.members && !record)) {
         return (
             <DegradedBinding
                 bindingKey={node.bindingKey}
@@ -822,105 +804,15 @@ function PrimitiveTrackBody({
             />
         );
     }
-    const { readOnly } = bound;
-    const label = node.label ?? descriptor.label;
-    const computed = descriptor.length
-        ? resolveComputedTrackLength(descriptor.length, track, (path) => {
-              const read = readBoundNumber(systemId, documentKind, bound.data, path);
-              return read.bound ? read.value : undefined;
-          })
-        : undefined;
-    if (computed?.failed) {
-        reportSheetIssue({
-            code: 'formula-error',
-            message: 'Track length formula could not be evaluated',
-            details: { bindingKey: descriptor.key, formula: descriptor.length?.from },
-        });
-    }
-    const levels = computed
-        ? trackBoxes(computed.length).map((level) => ({
-              ...level,
-              label: `${label} ${level.label}`,
-          }))
-        : node.track
-          ? node.track.names.map((name, index) => ({
-                id: `level-${index}`,
-                label: name,
-                penalty: null,
-            }))
-          : (track.levels ?? []).map((_, index) => {
-                const level = descriptor.levels[Math.min(index, descriptor.levels.length - 1)];
-                return {
-                    id: level?.id ?? `level-${index}`,
-                    label: level?.translation
-                        ? translate(level.translation)
-                        : (level?.label ?? String(index)),
-                    penalty: level?.penalty ?? null,
-                };
-            });
-    const marks = computed ? visibleMarks(track.levels, computed.length) : (track.levels ?? []);
-    const writeTrack = (updates: Record<string, unknown>) =>
-        bound.update({ [descriptor.dataKey]: { ...track, ...updates } });
-    const writeMarks = (next: ConditionMark[]) =>
-        writeTrack({ levels: computed ? mergeVisibleMarks(track.levels, next) : next });
-    const adjustmentKey = descriptor.length?.adjustmentKey;
-    const lengthControl =
-        computed && adjustmentKey
-            ? {
-                  onDecrease:
-                      computed.shorter === undefined
-                          ? undefined
-                          : () => writeTrack({ [adjustmentKey]: computed.shorter }),
-                  onIncrease:
-                      computed.longer === undefined
-                          ? undefined
-                          : () => writeTrack({ [adjustmentKey]: computed.longer }),
-                  decreaseLabel: translate(tracks.length.decrease, { track: label }),
-                  increaseLabel: translate(tracks.length.increase, { track: label }),
-              }
-            : undefined;
-    const layout = node.trackLayout ?? (node.compact || computed ? 'strip' : 'table');
-    if (layout === 'strip') {
-        return (
-            <div className="grid gap-1">
-                {!node.compact && !node.hideLabel && (
-                    <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
-                        {label}
-                    </span>
-                )}
-                <ConditionTrackStrip
-                    disabled={readOnly}
-                    label={label}
-                    hideLabel={!node.compact || node.hideLabel}
-                    size={node.compact ? 'sm' : 'md'}
-                    levels={levels}
-                    marks={marks}
-                    onChange={writeMarks}
-                    {...(node.compact ? {} : { lengthControl })}
-                />
-            </div>
-        );
-    }
     return (
-        <div className="grid gap-1">
-            {!node.hideLabel && (
-                <span className="text-xs font-semibold uppercase tracking-wider text-textSecondary">
-                    {label}
-                </span>
-            )}
-            <ConditionTrackTable
-                disabled={readOnly}
-                levels={levels}
-                marks={marks}
-                onChange={writeMarks}
-                lengthControl={lengthControl}
-                columnLabels={{
-                    level: translate(fields.conditionLevel),
-                    penalty: translate(fields.conditionPenalty),
-                    mark: translate(fields.damage),
-                }}
-            />
-        </div>
+        <BuiltInTracker
+            node={node}
+            descriptor={descriptor}
+            bound={bound}
+            systemId={systemId}
+            documentKind={documentKind}
+            {...(page ? { page } : {})}
+        />
     );
 }
 
@@ -998,11 +890,14 @@ export function PrimitiveNodeView({
     systemId,
     documentKind,
     maxState,
+    page,
 }: {
     node: PrimitiveNode;
     systemId: string;
     documentKind: string;
     maxState?: PrimitiveMaxState;
+    /** Built-in trackers: where extra columns keep their values (spec 018). */
+    page?: TrackerPageAccess;
 }) {
     const readOnly = useBoundDocument()?.readOnly ?? true;
     const descriptor = resolveDocumentBinding(systemId, documentKind, node.bindingKey);
@@ -1023,6 +918,7 @@ export function PrimitiveNodeView({
                     descriptor={descriptor}
                     systemId={systemId}
                     documentKind={documentKind}
+                    {...(page ? { page } : {})}
                 />
             );
         case 'field':

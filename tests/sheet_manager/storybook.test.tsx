@@ -138,7 +138,10 @@ function variantsOf(node: TemplateNode): string[] {
         case 'primitive':
             flag('compact');
             flag('part');
-            flag('trackLayout', `trackLayout:${String(record.trackLayout)}`);
+            if (node.tracker?.display) tags.push(`primitive:tracker:${node.tracker.display}`);
+            if (node.tracker?.columns?.length) tags.push('primitive:tracker:columns');
+            if (node.tracker?.total) tags.push('primitive:tracker:total');
+            if (node.tracker?.marks) tags.push('primitive:tracker:marks');
             break;
     }
     return tags;
@@ -227,8 +230,12 @@ const REQUIRED_VARIANTS = [
     'tracker:value-hidden',
     'primitive:compact',
     'primitive:part',
-    'primitive:trackLayout:table',
-    'primitive:trackLayout:strip',
+    'primitive:tracker:table',
+    'primitive:tracker:strip',
+    'primitive:tracker:line',
+    'primitive:tracker:columns',
+    'primitive:tracker:total',
+    'primitive:tracker:marks',
 ];
 
 describe('element storybook (constitution VI, T-069)', () => {

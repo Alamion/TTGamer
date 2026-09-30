@@ -718,9 +718,19 @@ function boundNodes(binding: DocumentBindingDescriptor, index: number): NodeInpu
                 : [primitive('full'), primitive('compact', { compact: true })];
         case 'track':
             return [
-                primitive('table', { trackLayout: 'table' }),
-                primitive('strip', { trackLayout: 'strip' }),
-                primitive('compact', { compact: true }),
+                primitive('table', { tracker: { display: 'table' } }),
+                primitive('strip', { tracker: { display: 'strip' } }),
+                primitive('line', { tracker: { display: 'line' } }),
+                // The page's own settings on a built-in tracker (spec 018).
+                primitive('page-settings', {
+                    tracker: {
+                        display: 'table',
+                        marks: { cross: { name: 'Wound', fill: 'tertiary' } },
+                        valueColumn: { title: 'Penalty', show: true },
+                        columns: [{ id: 'source', kind: 'text', title: 'Source' }],
+                        total: true,
+                    },
+                }),
             ];
         case 'equipment':
         case 'rows':

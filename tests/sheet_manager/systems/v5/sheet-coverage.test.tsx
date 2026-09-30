@@ -142,7 +142,7 @@ describe('hunter full sheet (SC-002)', () => {
 
             // Clicking a box cycles empty → Superficial (slash) → Aggravated (cross).
             fireEvent.click(screen.getByRole('button', { name: 'Health 1: empty' }));
-            fireEvent.click(screen.getByRole('button', { name: 'Health 1: slash' }));
+            fireEvent.click(screen.getByRole('button', { name: 'Health 1: Superficial' }));
             fireEvent.click(screen.getByRole('button', { name: 'Health 2: empty' }));
             expect(currentHunter().health.levels).toEqual([
                 'cross',

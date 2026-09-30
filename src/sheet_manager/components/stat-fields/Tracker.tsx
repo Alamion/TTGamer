@@ -132,6 +132,8 @@ export interface TrackerWording {
     shortenDescription: string;
     /** Accessible level name of a box in a repeated column: "Hurt (A)". */
     boxLabel: (level: string, column: TrackerModelColumn, copy: TrackerModelCopy) => string;
+    /** Said when a repeated column is full; built-in member tracks name their cap. */
+    capReached?: (column: TrackerModelColumn) => string;
 }
 
 function defaultWording(): TrackerWording {
@@ -289,7 +291,10 @@ export function Tracker({
                                 role="columnheader"
                                 className="flex items-center justify-center gap-0.5 text-center"
                             >
-                                <span className={clsx(copy.out && 'text-error line-through')}>
+                                <span
+                                    className={clsx(copy.out && 'text-error line-through')}
+                                    title={copy.out ? wording.out : undefined}
+                                >
                                     {copy.label}
                                 </span>
                                 {removeButton(column, copy)}
@@ -429,6 +434,7 @@ export function Tracker({
                                     copy.out ? 'text-error line-through' : 'text-textSecondary',
                                     ownName && model.hideLabel && 'sr-only'
                                 )}
+                                title={copy.out ? wording.out : undefined}
                             >
                                 {ownName ? model.label : name}
                             </span>
@@ -487,8 +493,17 @@ export function Tracker({
             </ul>
         ) : null;
 
+    const capNotes = disabled
+        ? []
+        : model.columns
+              .filter((column) => column.repeatable && !column.canAdd && wording.capReached)
+              .map((column) => (
+                  <span key={column.id} role="alert" className="text-xs text-textSecondary">
+                      {wording.capReached!(column)}
+                  </span>
+              ));
     const showHeaderLabel = model.display === 'table' && !model.hideLabel;
-    const toolbar = [lengthControl, ...addButtons].filter(Boolean);
+    const toolbar = [lengthControl, ...addButtons, ...capNotes].filter(Boolean);
 
     return (
         <div className="grid gap-2">

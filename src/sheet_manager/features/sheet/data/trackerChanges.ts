@@ -47,11 +47,12 @@ function trackerShapes(template: CustomTemplate): Map<string, TrackerShape> {
                 levelIds: new Set(node.levels.map(({ id }) => id)),
                 markIds: new Set(node.marks.map(({ id }) => id)),
             });
-        } else if (node.type === 'primitive' && node.tracker?.columns) {
+        } else if (node.type === 'primitive' && node.bindingKey.startsWith('track:')) {
+            // Every built-in tracker counts: removing its last extra column hides values too.
             shapes.set(node.id, {
-                key: node.tracker.valueKey ?? node.id,
+                key: node.tracker?.valueKey ?? node.id,
                 title: node.label ?? node.id,
-                columns: node.tracker.columns,
+                columns: node.tracker?.columns ?? [],
                 membersCopies: node.bindingKey.startsWith('track:members-'),
             });
         }

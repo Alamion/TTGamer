@@ -775,7 +775,8 @@ describe('add-element menu and element sources', () => {
         // Every added element passes the draft checks: saving succeeds.
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
         expect(useTemplateStore.getState().templates).toHaveLength(1);
-    });
+        // Six elements, each rendered with its full settings panel and live page.
+    }, 15_000);
 
     it('switches a field between custom, trait, resource, and detail sources', () => {
         openEmpty();
@@ -1622,6 +1623,86 @@ describe('tracker settings (spec 018)', () => {
         fireEvent.click(within(dialog).getAllByRole('button', { name: 'Cancel' })[0]!);
         expect(useTemplateStore.getState().templates).toHaveLength(0);
         expect(within(settings('wounds')).getAllByLabelText(/^Mark \d+ name$/)).toHaveLength(1);
+        useDocumentStore.setState({ documents: [] });
+    });
+
+    function openBuiltIn(tracker: Record<string, unknown> = {}) {
+        const template = CustomTemplateSchema.parse({
+            id: 'builtin-kit',
+            name: 'Built-in Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'wounds',
+                    type: 'primitive',
+                    bindingKey: 'track:health',
+                    label: 'Wounds',
+                    tracker,
+                },
+            ],
+        });
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+        selectInOutline('wounds');
+        return settings('wounds');
+    }
+
+    it('lets a built-in tracker rename its marks but not add or reorder them', () => {
+        const panel = openBuiltIn();
+        expect(within(panel).queryByRole('button', { name: 'Add mark' })).toBeNull();
+        expect(
+            (within(panel).getByRole('button', { name: 'Move mark 1 down' }) as HTMLButtonElement)
+                .disabled
+        ).toBe(true);
+        const name = within(panel).getByLabelText('Mark 1 name') as HTMLInputElement;
+        expect(name.placeholder).toBe('Bashing');
+        fireEvent.change(name, { target: { value: 'Graze' } });
+        fireEvent.change(within(settings('wounds')).getByLabelText('Level 2 value'), {
+            target: { value: '-4' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore.getState().templates[0]!.children[0] as TemplateNode & {
+            tracker?: unknown;
+        };
+        expect(saved.tracker).toEqual({
+            marks: { slash: { name: 'Graze' } },
+            levels: [null, { value: '-4' }],
+        });
+    });
+
+    it('asks before a save hides values of a built-in tracker extra column', () => {
+        useTemplateStore.setState({ templates: [], quarantine: [] });
+        useDocumentStore.setState({
+            documents: [
+                {
+                    id: 'doc-source',
+                    kind: 'character',
+                    systemId: 'star-wars-wod',
+                    definitionId: 'character',
+                    schemaVersion: 1,
+                    metadata: { title: 'Kira', tags: [] },
+                    templateValues: {
+                        wounds: {
+                            tracker: 1,
+                            columns: { source: [{ id: 'a', texts: { hurt: 'Blaster' } }] },
+                        },
+                    },
+                    data: {},
+                } as never,
+            ],
+        });
+        const panel = openBuiltIn({
+            columns: [{ id: 'source', kind: 'text', title: 'Source' }],
+        });
+        fireEvent.click(within(panel).getByRole('button', { name: 'Remove column 1' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const dialog = screen.getByRole('dialog', { name: 'Hide stored tracker values?' });
+        expect(dialog.textContent).toContain('1 stored note in 1 sheet');
         useDocumentStore.setState({ documents: [] });
     });
 

@@ -10,6 +10,7 @@ import {
     type TableNode,
     tableValueKey,
     type TemplateField,
+    type TrackerColumn,
     walkTemplateNodes,
 } from '../../../types/template';
 import {
@@ -25,6 +26,7 @@ import {
     type TemplateTableRows,
     TemplateTableRowSchema,
     validateTemplateValue,
+    validateTrackerValue,
 } from '../../../types/templateValues';
 
 export type TemplateValueWriteResult =
@@ -129,6 +131,13 @@ function validateTemplatePageValues(
     for (const list of collectListNodes(template)) {
         if (list.bindingKey === undefined) customLists.set(listValueKey(list), list);
     }
+    // Built-in trackers keep their extra columns' values in the page (spec 018, R4).
+    const trackerExtras = new Map<string, readonly TrackerColumn[]>();
+    walkTemplateNodes(template.children, (node) => {
+        if (node.type === 'primitive' && node.tracker?.columns) {
+            trackerExtras.set(node.tracker.valueKey ?? node.id, node.tracker.columns);
+        }
+    });
     const validated: TemplatePageValues = {};
 
     for (const [key, value] of Object.entries(page)) {
@@ -142,6 +151,20 @@ function validateTemplatePageValues(
         const field = fieldDefs.get(key);
         if (field) {
             const result = validateTemplateValue(field, value);
+            if (!result.ok) return { ok: false, key, reason: result.reason };
+            validated[key] = result.value;
+            continue;
+        }
+
+        const extras = trackerExtras.get(key);
+        if (extras) {
+            // Member tracks key their repeated columns by member, so copies are not capped here.
+            const result = validateTrackerValue(
+                extras.map((column) =>
+                    column.copies ? { ...column, copies: { max: 24 } } : column
+                ),
+                value
+            );
             if (!result.ok) return { ok: false, key, reason: result.reason };
             validated[key] = result.value;
             continue;

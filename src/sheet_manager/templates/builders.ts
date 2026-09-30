@@ -7,6 +7,7 @@ import type {
     TableNode,
     TemplateField,
     TemplateNode,
+    TrackerOverride,
     VisibleWhen,
 } from '../types/template';
 
@@ -165,6 +166,8 @@ export function primitive(
         minFrom?: string;
         part?: 'current' | 'max';
         maxMembers?: number;
+        /** Track bindings: the page's tracker settings (spec 018). */
+        tracker?: TrackerOverride;
     } = {}
 ): PrimitiveNode {
     return {
@@ -179,6 +182,7 @@ export function primitive(
         ...(options.minFrom ? { minFrom: options.minFrom } : {}),
         ...(options.part ? { part: options.part } : {}),
         ...(options.maxMembers ? { cohort: { maxMembers: options.maxMembers } } : {}),
+        ...(options.tracker ? { tracker: options.tracker } : {}),
     };
 }
 

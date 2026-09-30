@@ -26,6 +26,7 @@ import type {
     TableNode,
     TemplateField,
     TemplateNode,
+    TrackerOverride,
     VisibleWhen,
 } from '../../../types/template';
 import {
@@ -70,6 +71,7 @@ export type NodeUpdates = {
     multiline?: boolean;
     track?: PrimitiveTrackOverride;
     trackLayout?: 'table' | 'strip';
+    tracker?: TrackerOverride;
     presets?: PrimitivePreset[];
 };
 

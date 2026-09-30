@@ -1628,9 +1628,6 @@
     "ttgamer.ui.sheet.documents.fields.concept": {
         "message": "Concept"
     },
-    "ttgamer.ui.sheet.documents.fields.conditionLevel": {
-        "message": "Level"
-    },
     "ttgamer.ui.sheet.documents.fields.conditionPenalty": {
         "message": "Penalty"
     },
@@ -2930,17 +2927,8 @@
     "ttgamer.ui.sheet.templates.cohort.addMember": {
         "message": "Add member"
     },
-    "ttgamer.ui.sheet.templates.cohort.cancel": {
-        "message": "Cancel"
-    },
-    "ttgamer.ui.sheet.templates.cohort.confirm": {
-        "message": "Confirm"
-    },
     "ttgamer.ui.sheet.templates.cohort.defeated": {
         "message": "Out of the fight"
-    },
-    "ttgamer.ui.sheet.templates.cohort.level": {
-        "message": "Level"
     },
     "ttgamer.ui.sheet.templates.cohort.maxMembersReached": {
         "message": "A group can have at most {count} members."
@@ -2953,9 +2941,6 @@
     },
     "ttgamer.ui.sheet.templates.cohort.members": {
         "message": "Members"
-    },
-    "ttgamer.ui.sheet.templates.cohort.penalty": {
-        "message": "Penalty"
     },
     "ttgamer.ui.sheet.templates.cohort.removeDescription": {
         "message": "Member {label} has recorded damage. Removing it deletes that damage."
@@ -4015,24 +4000,6 @@
     },
     "ttgamer.ui.sheet.templates.primitives.removePreset": {
         "message": "Remove preset"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLayout": {
-        "message": "Track layout"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLayoutDefault": {
-        "message": "Default"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLayoutStrip": {
-        "message": "Line of boxes"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLayoutTable": {
-        "message": "Table of levels"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLevelName": {
-        "message": "Level {index} name"
-    },
-    "ttgamer.ui.sheet.templates.primitives.trackLevels": {
-        "message": "Levels"
     },
     "ttgamer.ui.sheet.templates.reference.missing": {
         "message": "Linked document no longer exists"

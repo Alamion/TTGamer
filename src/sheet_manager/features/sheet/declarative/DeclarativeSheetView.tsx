@@ -565,6 +565,11 @@ const NodeView = memo(function NodeView({
                 systemId={template.systemId}
                 documentKind={template.documentKind}
                 maxState={maxState}
+                page={{
+                    values: pageApi.values,
+                    setValue: pageApi.setValue,
+                    previewSource: pageApi.previewSource ?? false,
+                }}
             />
         );
     }

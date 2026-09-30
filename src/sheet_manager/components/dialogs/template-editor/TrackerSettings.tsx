@@ -342,12 +342,14 @@ export function TrackerSettings({
             </Group>
 
             <Group title={t(text.levels)} hint={locked ? t(text.levelsBuiltIn) : undefined}>
-                <span className="text-[11px] text-textSecondary">
-                    {t(text.levelCount, {
-                        count: value.levels.length,
-                        max: TEMPLATE_LIMITS.trackerLevelsMax,
-                    })}
-                </span>
+                {!locked && (
+                    <span className="text-[11px] text-textSecondary">
+                        {t(text.levelCount, {
+                            count: value.levels.length,
+                            max: TEMPLATE_LIMITS.trackerLevelsMax,
+                        })}
+                    </span>
+                )}
                 {game?.legacyLevels && (
                     <p className="m-0 flex flex-wrap items-center gap-2 text-[11px] text-textSecondary">
                         {t(text.levelsLegacy)}

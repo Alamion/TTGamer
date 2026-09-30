@@ -1138,6 +1138,9 @@
                                 "compact": false,
                                 "hideLabel": true,
                                 "label": "Health",
+                                "tracker": {
+                                    "total": true
+                                },
                                 "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
                             }
                         ],
@@ -2323,6 +2326,9 @@
                                 "compact": false,
                                 "hideLabel": true,
                                 "label": "Damage",
+                                "tracker": {
+                                    "total": true
+                                },
                                 "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
                             }
                         ],

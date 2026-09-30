@@ -209,6 +209,8 @@ function bodySection(variant: SheetVariant): SectionNode {
                     primitive('track-health', isDroid ? 'track:droid-damage' : 'track:health', {
                         hideLabel: true,
                         label: isDroid ? 'Damage' : 'Health',
+                        // The penalty of the deepest marked level, under the table (spec 018).
+                        tracker: { total: true },
                     }),
                 ],
                 { column: 2, docsPath: DOCS.health }
