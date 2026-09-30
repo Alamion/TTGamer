@@ -471,7 +471,7 @@ Wars character health shows its total row.
 
 ## Phase 10: Polish & cross-cutting
 
-- [ ] T051 [P] Document the Tracker in `docs/template-editor/elements.mdx` and its ru mirror under
+- [x] T051 [P] Document the Tracker in `docs/template-editor/elements.mdx` and its ru mirror under
       `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/`:
     - the settings groups;
     - marks and ready sets;
@@ -483,17 +483,17 @@ Wars character health shows its total row.
     Replace the old compact and view text. Update the `EDITOR_GUIDE` anchors if the headings
     change (`tests/docs/template-editor-guide.test.ts`).
 
-- [ ] T052 [P] Update `.agents/skills/sheet-templates/SKILL.md`:
+- [x] T052 [P] Update `.agents/skills/sheet-templates/SKILL.md`:
     - the tracker section: model, storage, overrides, display mapping;
     - the "New field type" checklist, where needed.
 
     Update `src/sheet_manager/AGENTS.md` where it describes tracks.
 
-- [ ] T053 [P] Add a minor-version entry to `CHANGELOG.md` and bump `package.json` to match, then
+- [x] T053 [P] Add a minor-version entry to `CHANGELOG.md` and bump `package.json` to match, then
       run `yarn check:version`.
-- [ ] T054 Mark T-078 as done (✅) in `TODO.md`, with a note linking spec 018, then run
+- [x] T054 Mark T-078 as done (✅) in `TODO.md`, with a note linking spec 018, then run
       `yarn validate:backlog`.
-- [ ] T055 Run `yarn validate:i18n` and `yarn verify:full`. Fix everything they report, including
+- [x] T055 Run `yarn validate:i18n` and `yarn verify:full`. Fix everything they report, including
       knip: the old `ConditionTrackTable`/`ConditionTrackStrip` exports may become unused; remove
       them rather than add ignores. `CompactConditionTrack` stays out of scope unless knip flags it.
 - [ ] T056 Walk through the manual scenarios in `specs/018-configurable-trackers/quickstart.md` on

@@ -46,6 +46,7 @@ A field holds one value. Its **Field label** is shown next to it (**Show label**
 | **Derived value**      | A number computed by a [formula](./values.mdx#formulas); readers cannot type into it.                                                                                                                    |
 | **Image**              | A picture from the device or an `https://` address.                                                                                                                                                      |
 | **Document reference** | Links to other documents of the allowed types; readers open them from the field; see [Document references](#references).                                                                                 |
+| **Tracker**            | Boxes the reader marks by level, for health, stress, or any other burden; see [Trackers](#trackers).                                                                                                     |
 
 ## Ratings \{#rating}
 
@@ -88,7 +89,25 @@ Changing the entry type or turning names off can hide values readers already sto
 
 ## Trackers \{#trackers}
 
-A tracker shows the game's health or damage levels with their penalties, as a table of levels or a line of boxes.
+A tracker is a set of levels (such as Bruised … Incapacitated) with boxes the reader marks. A click moves a box to the next mark, and from the last mark back to empty. A new tracker starts as a seven-level health track with its penalties and two marks.
+
+- **Source**: **Own values** keeps the marks with the page. A game's built-in track (health, damage, willpower, members) keeps them in the document itself, so every page of that document shows the same marks; see [Built-in trackers](#built-in-trackers).
+- **Display**: **Table** (a row per level), **Strip** (a row of boxes per column), or **One line** (small boxes with the label inline, for brief pages; no length buttons and no legend).
+- **Marks**: up to five. Each has a name, a symbol of one or two characters, and a fill: amber, red, violet, green, or ink follow the light and dark themes, or pick your own color. **Start from…** offers one mark, two (bashing ╱, lethal ×), or three as in WoD 20th (adding aggravated ✱ in violet). The order is the click order, and a later mark counts as heavier. With two or more marks a legend under the tracker names them.
+- **Levels**: up to twenty, each with a name and a short value, such as a penalty "-1", a bonus "+2", or a word. The value column has its own title and can be hidden. Move levels and marks with the up and down arrows: stored marks stay on their level and kind.
+- **Columns**: **Marks** (boxes) or **Text** (a short note per level, such as "Source"). A column covers all levels or the first few shown. With **Readers add copies (A, B, C…)** the reader adds copies of the column, up to the number you set, like the members of a fodder group; removing a copy that holds marks asks first. A strip shows marks columns only.
+- **Readers switch the length**: list the lengths and tick the levels each shows, like a fodder group's 3, 5, and 7. When the reader shortens the tracker over marked levels, it asks first; then each mark keeps its place in the shown order and the marks past the new end fold into its last level, the heaviest one winning.
+- **Reading the marks**: the **Total row** shows, for each marks copy, the value of the deepest marked level, under a thicker divider. **Mark a copy as out** strikes a copy through once its last shown level is marked.
+
+Removing levels, marks, columns, or copies can hide marks and notes readers already stored. **Save** then says how many each tracker would stop showing and asks first. The values stay stored, but a removed part added again is a new part, so they do not show again.
+
+A tracker cannot be a table column or a list entry: its copies already repeat it.
+
+### Built-in trackers \{#built-in-trackers}
+
+A game's own track takes the same settings: the display, the names and values of its levels (a level you leave empty keeps the game's name and penalty), the names, symbols, and fills of its marks, extra columns, and the total row. The game keeps the number and order of levels, a length computed from traits (V5 health and willpower), the number of marks, and the members of a group; lengths and "out" follow the game's rules. Columns you add keep their values with the page, next to the document's own marks.
+
+Pages saved before this setting existed keep their look: **Compact** reads as **One line**, and a stored track view keeps its display.
 
 ## Built-in page parts \{#built-in-parts}
 

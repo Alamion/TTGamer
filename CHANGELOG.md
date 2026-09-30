@@ -1,5 +1,16 @@
 # Changelog
 
+## v3.16.0
+
+### Minor feat
+
+- **Build your own trackers (spec 018, T-078)**: a new Tracker field works on any page, including your own document types: levels with names and values (penalties, bonuses, or words), boxes the reader marks with a click, a total row with the value of the deepest marked level, and one display setting — table, strip, or one small line — that replaces "Compact" and the track view
+- **Choose the marks**: up to five marks, each with a name, a one- or two-character symbol, and a fill from the app's colors (following the light and dark themes) or your own color; start from one mark, two (bashing ╱, lethal ×), or three as in WoD 20th with aggravated ✱ in violet; a legend names them on the sheet
+- **Columns and copies**: add marks or text columns that cover all levels or the first few, and let readers add copies A, B, C… up to a maximum, like the members of a fodder group; readers can also switch between lengths you define, with marks folded into the new last level when a tracker gets shorter
+- **Built-in trackers take the same settings**: game trackers (health, damage, V5 health and willpower, member tracks) take the display, level names and values, mark names and colors, extra columns stored with the page, and the total row; the game keeps its levels, marks, lengths, and members, and names its marks (bashing and lethal, superficial and aggravated)
+- **Star Wars health shows its penalty**: the Star Wars character and droid pages show the total penalty row under the health and damage table
+- **Changing a tracker asks first**: saving a tracker without some of its levels, marks, columns, or copies says how many stored marks, notes, and copies it would stop showing
+
 ## v3.15.0
 
 ### Minor feat

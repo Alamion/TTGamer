@@ -37,7 +37,7 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
 - Containers: `section` (CollapsibleBlock, no background, `docsPath`, `columns` 1–4) and `group`
   (SectionCard surface, opt-in `collapsible`). Accents alternate by sibling parity, never stored.
 - Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `formula`, `select`,
-  `rating`, `resource`, `reference`.
+  `rating`, `resource`, `reference`, `tracker` (see "Trackers" below).
     - Controls: `toggle` is the round `Checkbox` dot; multiple `select` is a row of pressable words
       (thin primary border when chosen) in option order (`hideUnselected` shows only chosen ones until the reader expands it);
       `rating` is a trait row (`components/stat-fields/RatingRow`, the same atoms as `TraitRow`):
@@ -73,6 +73,44 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   `listEntryShape` (row: end of row; block: `LabeledField` trailing). Saving a template whose
   list item or naming changed runs `listItemChangeReport` (compatible documents' stored
   entries) and asks first; stored values are never rewritten by the change.
+- Trackers (spec 018): one configuration drawn by one molecule for own and built-in trackers. - **Own tracker** (`tracker` field): `display` (`table` | `strip` | `line`), `marks` (1–5
+  kinds: id, name, 1–2 code-point symbol, `fill` = palette key `secondary|error|tertiary|
+success|text` or `#rrggbb`; order = click order and weight), `levels` (1–20: id, name,
+  short text `value`), `valueColumn` (title, show), `columns` (1–6, `marks` | `text`,
+  `covers` first N shown levels, `copies: { max 1–24 }`, at least one marks column), `total`,
+  `lengths` (0–6 lists of level ids), `out`. Not a list item type, rejected as a table column.
+  Value (`TrackerValueSchema`, `templateValues[valueKey]`): `{ tracker: 1, length?, columns:
+{ [columnId]: [{ id, marks?: { levelId: markId }, texts?: { levelId: text } }] } }`; ids
+  keep marks on their level and kind when either moves, copy letters come from position, a
+  missing column list reads as one copy `a`. The write path checks the shape and copy caps
+  only (unknown ids pass, so hidden values survive the next write). - **Built-in tracker** (`primitive` on a `track` binding): optional `tracker` override
+  (`display`, `marks[slash|cross]` name/symbol/fill, `levels[]` per index name/value or
+  `null`, `valueColumn`, extra `columns`, `total`, `valueKey` for the extras). The game keeps
+  level count/order, a computed length (V5), the two marks (`TrackBinding.marks` names them:
+  WoD health bashing/lethal, V5 superficial/aggravated, else generic Slash/Cross), and
+  members; marks stay in `document.data`, extra columns store a `TrackerValue` under
+  `tracker.valueKey ?? node.id` (validated at the write path; member tracks key repeated
+  extra copies by member id). A level override keeps the game's other values; a legacy
+  `track { levels, names }` with another count still sets the levels (editor offers "Use
+  the game's levels"). Display without `tracker.display` (`trackerDisplayOf`): `compact` →
+  `line`, else `trackLayout`, else `table` for named levels / `strip` for a computed length;
+  the editor writes `tracker.display` and clears both. Total defaults: on for member tracks
+  with 2+ members, off otherwise; the shipped Star Wars character/droid page sets it on. - Rules (`features/sheet/data/tracker.ts`): cycle empty → kinds… → empty; total = value of
+  the deepest marked shown level; out = last shown level marked; switching the length keeps
+  each mark's shown position and folds the tail into the new last level (heaviest wins), the
+  same as `cohort.ts` `shortenMarks` for stored fodder members (proven by
+  `tracker-parity.test.tsx`). - Rendering: `trackerModel.ts` (`ownTrackerModel`, `builtInTrackerModel`) → molecule
+  `components/stat-fields/Tracker.tsx` (grid table with ARIA roles, strips, one line,
+  legend with 2+ kinds, copy add/remove with confirm, length −/+ with a danger confirm).
+  Own values: `declarative/TrackerFieldControl.tsx`; built-in: `declarative/BuiltInTracker.tsx`
+  (replaces `CohortTrack`; page values reach it through `PrimitiveNodeView`'s `page`). - Editor: `TrackerSettings.tsx` serves both (game-fixed parts disabled, game text as
+  placeholders; `builtInTrackerSettings.ts` maps the panel onto the override); the Source
+  select (`TrackerSourceSelect`, `trackerFromSource`) switches own ↔ built-in keeping id,
+  label, display, value column, extra columns, total. Draft issues: a length with no known
+  level, covers ≥ level count, an extras key colliding with a value key. Saving runs
+  `trackerChangeReport` (marks, notes, copies a change stops showing) with the list report. - Diagnostics: `template-value-unreadable` (value of another shape, reads empty) and
+  `template-value-hidden` (count of stored values under removed parts), both skipped in the
+  editor preview.
 - Any node may carry `visibleWhen: { coordinate, equals, not? }`: rendered only while the value
   at the coordinate (bag value or bound document data) equals `equals` (`not` inverts). Never
   affects storage; the editor always shows the node (condition control on every panel). An
@@ -118,7 +156,7 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
     - Primitives: `hideLabel`; pool resources `part: 'max'` edits the maximum (current is capped
       to it); `minFrom` (formula) locks dots below a dynamic minimum and clamps writes to it;
       member tracks take `cohort: { maxMembers }`.
-      Tracks render as a Level / Penalty / Damage table, or a one-line strip when `compact`. Compact pools render `current / max` boxes, compact ratings number boxes.
+      Tracks render through the tracker (see "Trackers"). Compact pools render `current / max` boxes, compact ratings number boxes.
 - Labels: every labelled node may carry `labelMessage` — a UI message id (`ttgamer.ui.…`) or a
   catalog entry (`catalog:<catalogId>/<entryId>`, e.g. attribute names). `DeclarativeSheetView`
   renders `localizeTemplate(template, locale)` (`features/sheet/declarative/localizeTemplate.ts`);
@@ -597,7 +635,8 @@ array (ignored on import). Filenames: `ttgamer_template_<id>.json`.
   `template-value-write-skipped`, `template-quarantined`, `document-recovered`,
   `binding-unresolved`, `catalog-unavailable`, `formula-error`, `template-reference-invalid`,
   `template-fallback`, `reference-target-missing`, `reference-target-out-of-scope`,
-  `catalog-detail-out-of-range`,
+  `catalog-detail-out-of-range`, `list-entry-unreadable`, `template-value-unreadable`,
+  `template-value-hidden`,
   `template-incompatible`.
 - In development each distinct issue is logged once as `[sheet_manager] <code>: …` in the
   browser console. **A silently ignored edit, an empty section, or a "degraded" card → check
@@ -648,7 +687,7 @@ per-layer YAML (`ui/sheet/<system>.yaml`, `ui/sheet/<system><Line>.yaml`,
 changes are needed for data addressing.
 
 **Terminology**: _full_ and _brief_ are views (shipped templates); _compact_ is a primitive
-display mode used inside brief views.
+display mode used inside brief views (for trackers it reads as the `line` display).
 
 **New catalog**: `defineCatalog` in the owning system's `catalogs.ts`, listed on
 `SystemPlugin.catalogs` (closed fillable-detail set, optional system-owned `resolveDetails`);
@@ -716,6 +755,7 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 | Library tree, moves, files, UI    | `library-{tree,moves,file,import}.test.ts`, `library-dialog.test.tsx`, `document-store-relocate.test.ts`, `systems/registry-rulesets.test.ts` |
 | User catalogs                     | `user-catalogs.test.ts`, `catalog-edit.test.ts`, `catalog-use-sites.test.tsx`                                                                 |
 | WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                         |
+| Trackers                          | `tracker-{schema,rules,changes}.test.ts`, `tracker-{field,builtin,parity}.test.tsx`, `cohort-track.test.tsx`                                  |
 | References                        | `template-references.test.ts`, `reference-scope.test.{ts,tsx}` (setting scope, stale targets, imports)                                        |
 | File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                           |
 

@@ -141,9 +141,7 @@ or whose change drops nothing, adds no entry.
 - **Add copy**: appends `{ id }`. It is disabled at `max`.
 - **Remove copy**: removes the entry. It asks first when the copy holds marks or texts; the same
   rule protects cohort members today. The last copy cannot be removed.
-- **Change length**: longer writes `length`. Shorter first checks whether any copy has marks on the
-  levels being hidden. If so, it confirms, then folds those marks into the new last visible level
-  (the heaviest wins) and writes `length`, all in one write.
+- **Change length**: longer or shorter writes `length`; marks keep their shown position (the n-th shown box stays the n-th), and a shorter length first checks whether marks sit past the new end. If so, it confirms, then folds them into the new last visible level (the heaviest wins), all in one write (implementation notes in research.md).
 - **Editor save that drops values**: a confirmation lists `TrackerChange` entries. It saves on
   confirm and cancels otherwise. Stored values are never rewritten.
 

@@ -383,3 +383,24 @@ These are follow-ups, recorded in the spec:
 
 There is no document data migration and no change to the shipped fodder group (FR-025). The orphan
 `CompactConditionTrack` is left for a cleanup task, so this change stays focused.
+
+## Implementation notes (2026-10-01)
+
+Where the built code differs from the decisions above:
+
+- **Switching the length is positional (R7).** The shipped fodder group stores marks by shown
+  position, so its damage keeps its place in the shown order when the length changes. For true
+  parity, an own tracker does the same: on a length switch, the n-th shown box keeps its mark and
+  the tail folds into the new last level (`remapMarks`). Marks stay stored by level id otherwise.
+- **The write path checks shape and copy caps only (R3, R11).** Rejecting unknown level, kind,
+  or column ids would block every later write once the author removed a part; they pass, stay
+  hidden, and are counted by `template-value-hidden` instead.
+- **`cohort.ts` stays positional.** Built-in member marks are `ConditionMark[]` by slot, so its
+  rules keep that shape; `tracker-rules.test.ts` pins them against the id rules and
+  `tracker-parity.test.tsx` proves the two trackers match end to end.
+- **Files.** The own-value control is `declarative/TrackerFieldControl.tsx`; built-in trackers
+  render through `declarative/BuiltInTracker.tsx`, which replaces `CohortTrack.tsx`; the editor
+  adapter for built-in overrides is `template-editor/builtInTrackerSettings.ts`; config factories
+  are `data/trackerDefaults.ts`. The old `ConditionTrackTable`/`ConditionTrackStrip` are removed.
+- **Member tracks keep their wording** (Add member, Remove member A, Out of the fight, the member
+  cap alert) through the tracker's wording overrides.
