@@ -1,0 +1,2020 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <title>T-078 Tracker Prototype</title>
+        <style>
+            /* Layout: editor settings panel (left) beside the live sheet (right); stacks on phones. v2 */
+            :root {
+                --bg-base: rgb(245 245 249);
+                --bg-surface: rgb(249 249 255);
+                --text: rgb(15 23 42);
+                --muted: rgb(71 85 105);
+                --primary: rgb(220 38 38);
+                --on-primary: #fff;
+                --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(249 249 255) 90%);
+                --secondary: rgb(202 138 4);
+                --secondary-soft: color-mix(in srgb, rgb(202 138 4), rgb(249 249 255) 85%);
+                --tertiary: rgb(79 70 229);
+                --error: rgb(185 28 28);
+                --success: rgb(21 128 61);
+                --border: rgb(226 232 240);
+                --border-strong: rgb(206 212 220);
+                --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+                --mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+                color-scheme: light;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme='light']) {
+                    --bg-base: rgb(15 23 42);
+                    --bg-surface: rgb(30 41 59);
+                    --text: rgb(248 250 252);
+                    --muted: rgb(148 163 184);
+                    --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 70%);
+                    --secondary-soft: color-mix(in srgb, rgb(202 138 4), rgb(30 41 59) 70%);
+                    --tertiary: rgb(129 140 248);
+                    --border: rgb(51 65 85);
+                    --border-strong: rgb(71 85 105);
+                    color-scheme: dark;
+                }
+            }
+            :root[data-theme='dark'] {
+                --bg-base: rgb(15 23 42);
+                --bg-surface: rgb(30 41 59);
+                --text: rgb(248 250 252);
+                --muted: rgb(148 163 184);
+                --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 70%);
+                --secondary-soft: color-mix(in srgb, rgb(202 138 4), rgb(30 41 59) 70%);
+                --tertiary: rgb(129 140 248);
+                --border: rgb(51 65 85);
+                --border-strong: rgb(71 85 105);
+                color-scheme: dark;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+            }
+            body {
+                background: var(--bg-base);
+                color: var(--text);
+                font: 14px/1.5 var(--font);
+                padding-inline: 16px;
+                padding-block: 16px 40px;
+            }
+            .wrap {
+                max-width: 1240px;
+                margin: 0 auto;
+                display: grid;
+                gap: 16px;
+            }
+            h1 {
+                font-size: 20px;
+                margin: 0;
+                text-wrap: balance;
+            }
+            h2 {
+                font-size: 13px;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            p {
+                margin: 0;
+            }
+            .lead {
+                color: var(--muted);
+                max-width: 72ch;
+            }
+            .bar {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .tabs {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .tab,
+            .seg button,
+            .btn {
+                font: inherit;
+                border: 1px solid var(--border-strong);
+                background: var(--bg-surface);
+                color: var(--text);
+                border-radius: 6px;
+                padding: 5px 10px;
+                cursor: pointer;
+            }
+            .tab[aria-pressed='true'],
+            .seg button[aria-pressed='true'] {
+                background: var(--primary);
+                border-color: var(--primary);
+                color: var(--on-primary);
+            }
+            .btn:hover,
+            .tab:hover {
+                border-color: var(--primary);
+            }
+            .btn.small {
+                padding: 2px 8px;
+                font-size: 12px;
+            }
+            .btn.icon {
+                padding: 2px 7px;
+                line-height: 1.2;
+            }
+            .btn:disabled {
+                opacity: 0.45;
+                cursor: default;
+            }
+            button:focus-visible,
+            input:focus-visible,
+            select:focus-visible {
+                outline: 2px solid var(--primary);
+                outline-offset: 1px;
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+                gap: 16px;
+                align-items: start;
+            }
+            @media (max-width: 880px) {
+                .grid {
+                    grid-template-columns: minmax(0, 1fr);
+                }
+            }
+            .panel {
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 14px;
+                display: grid;
+                gap: 14px;
+                min-width: 0;
+            }
+            .group {
+                display: grid;
+                gap: 8px;
+                border-top: 1px solid var(--border);
+                padding-top: 12px;
+            }
+            .group:first-of-type {
+                border-top: 0;
+                padding-top: 0;
+            }
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                align-items: center;
+            }
+            label.check {
+                display: inline-flex;
+                gap: 6px;
+                align-items: center;
+                font-size: 13px;
+            }
+            .hint {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            input[type='text'],
+            input[type='number'],
+            select {
+                font: inherit;
+                font-size: 13px;
+                color: var(--text);
+                background: var(--bg-base);
+                border: 1px solid var(--border-strong);
+                border-radius: 5px;
+                padding: 4px 6px;
+                min-width: 0;
+            }
+            input[type='number'] {
+                width: 64px;
+            }
+            input[type='color'] {
+                width: 30px;
+                height: 26px;
+                padding: 0 2px;
+                border: 1px solid var(--border-strong);
+                border-radius: 5px;
+                background: var(--bg-base);
+            }
+            .grow {
+                flex: 1 1 8rem;
+            }
+            .seg {
+                display: inline-flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .levels {
+                display: grid;
+                gap: 4px;
+            }
+            .level {
+                display: grid;
+                grid-template-columns: 22px minmax(0, 1fr) 70px auto;
+                gap: 6px;
+                align-items: center;
+            }
+            .level .n {
+                font-family: var(--mono);
+                color: var(--muted);
+                font-size: 12px;
+                text-align: right;
+            }
+            .kind {
+                display: grid;
+                grid-template-columns: 32px minmax(0, 1fr) 44px auto auto;
+                gap: 6px;
+                align-items: center;
+            }
+            .kind .sym {
+                text-align: center;
+                font-family: var(--mono);
+                font-weight: 700;
+            }
+            .swatches {
+                display: inline-flex;
+                gap: 3px;
+                align-items: center;
+            }
+            .swatch {
+                width: 20px;
+                height: 20px;
+                border-radius: 4px;
+                border: 2px solid transparent;
+                cursor: pointer;
+                padding: 0;
+            }
+            .swatch[aria-pressed='true'] {
+                border-color: var(--text);
+            }
+            .card {
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 10px;
+                display: grid;
+                gap: 8px;
+                background: var(--bg-base);
+            }
+            .card-head {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .matrix {
+                overflow-x: auto;
+            }
+            .matrix table {
+                border-collapse: collapse;
+                font-size: 12px;
+            }
+            .matrix th,
+            .matrix td {
+                border: 1px solid var(--border);
+                padding: 3px 6px;
+                text-align: center;
+            }
+            .matrix th:first-child,
+            .matrix td:first-child {
+                text-align: left;
+            }
+            .locked {
+                font-size: 12px;
+                color: var(--muted);
+                border: 1px dashed var(--border-strong);
+                border-radius: 6px;
+                padding: 8px;
+            }
+            .tag {
+                background: var(--secondary-soft);
+                border-radius: 4px;
+                padding: 0 4px;
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.03em;
+                text-transform: uppercase;
+                color: var(--text);
+            }
+            .sheet {
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 16px;
+                display: grid;
+                gap: 12px;
+                min-width: 0;
+            }
+            .section-title {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 600;
+                font-size: 16px;
+            }
+            .section-title::before {
+                content: '';
+                width: 4px;
+                height: 20px;
+                border-radius: 2px;
+                background: var(--primary);
+            }
+            .field-label {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .scroll {
+                overflow-x: auto;
+            }
+            table.track {
+                border-collapse: collapse;
+                width: 100%;
+                font-size: 13px;
+            }
+            table.track th {
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--muted);
+                font-weight: 600;
+                padding: 4px 6px;
+                text-align: center;
+                white-space: nowrap;
+            }
+            table.track th:first-child,
+            table.track td:first-child {
+                text-align: left;
+            }
+            table.track td {
+                border-top: 1px solid var(--border);
+                padding: 5px 6px;
+                text-align: center;
+            }
+            table.track td.val {
+                font-family: var(--mono);
+                color: var(--muted);
+                font-variant-numeric: tabular-nums;
+            }
+            table.track tr.sum td {
+                border-top: 2px solid var(--border);
+                font-weight: 700;
+                font-family: var(--mono);
+                font-variant-numeric: tabular-nums;
+            }
+            table.track tr.sum td:first-child {
+                font-family: var(--font);
+                font-weight: 600;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            td.off {
+                color: var(--border-strong);
+            }
+            /* Mark boxes as in ConditionTrack today: solid fill, white symbol, mono bold, 2px border. */
+            .mark {
+                width: 32px;
+                height: 32px;
+                border: 2px solid var(--border);
+                border-radius: 4px;
+                background: var(--bg-base);
+                color: #fff;
+                font: 700 14px/1 var(--mono);
+                cursor: pointer;
+                display: inline-grid;
+                place-items: center;
+                padding: 0;
+            }
+            .mark:hover {
+                border-color: var(--primary);
+            }
+            .mark.filled {
+                border-color: var(--fill);
+                background: var(--fill);
+                color: var(--ink);
+            }
+            .mark.small {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+            .cell-text {
+                width: 100%;
+                min-width: 6rem;
+            }
+            .copy-head {
+                display: inline-flex;
+                gap: 4px;
+                align-items: center;
+                justify-content: center;
+            }
+            .defeated {
+                text-decoration: line-through;
+                color: var(--primary);
+            }
+            .badge {
+                font-size: 11px;
+                border-radius: 999px;
+                padding: 0 6px;
+                background: var(--primary);
+                color: var(--on-primary);
+                font-family: var(--font);
+            }
+            .strips {
+                display: grid;
+                gap: 6px;
+            }
+            .strip {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 4px 10px;
+            }
+            .strip .who {
+                min-width: 5rem;
+                font-weight: 600;
+                font-size: 13px;
+            }
+            .strip .boxes {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 3px;
+            }
+            .strip .sumv {
+                font-size: 12px;
+                font-family: var(--mono);
+                font-weight: 700;
+            }
+            .compact {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 4px 10px;
+                font-size: 12px;
+            }
+            .length {
+                display: inline-flex;
+                gap: 4px;
+                align-items: center;
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .legend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px 12px;
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .legend > span {
+                display: inline-flex;
+                gap: 4px;
+                align-items: center;
+            }
+            .notes {
+                display: grid;
+                gap: 10px;
+                font-size: 13px;
+            }
+            .notes li {
+                margin-block: 2px;
+            }
+            .notes ul {
+                margin: 0;
+                padding-left: 18px;
+            }
+            .q {
+                border-left: 3px solid var(--secondary);
+                padding-left: 10px;
+            }
+            .foot {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            @media (prefers-reduced-motion: no-preference) {
+                .mark {
+                    transition:
+                        background-color 0.12s,
+                        border-color 0.12s;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <header class="bar">
+                <div>
+                    <h1>Configurable tracker — prototype v2 (T-078)</h1>
+                    <p class="lead">
+                        Left: the field's settings in the template editor. Right: the field on a
+                        sheet. Everything is live; a click on a box moves it to the next mark, then
+                        back to empty. Pick a starting point:
+                    </p>
+                </div>
+                <div class="tabs" role="group" aria-label="Examples" id="presets"></div>
+            </header>
+            <div class="grid">
+                <section class="panel" aria-labelledby="editor-h" id="editor"></section>
+                <div style="display: grid; gap: 16px; min-width: 0">
+                    <section class="sheet" aria-labelledby="sheet-h">
+                        <h2 id="sheet-h">On the sheet</h2>
+                        <div class="section-title" id="section-title">Condition</div>
+                        <div id="sheet"></div>
+                    </section>
+                    <section class="panel notes" aria-labelledby="notes-h">
+                        <h2 id="notes-h">Decisions and follow-ups</h2>
+                        <div id="notes"></div>
+                    </section>
+                </div>
+            </div>
+            <p class="foot">
+                Prototype only: no data is kept. Sample names and numbers come from the WoD health
+                track, WoD 20th damage types, and the Star Wars fodder group.
+            </p>
+        </div>
+        <script>
+            const HEALTH = [
+                ['Bruised', '0'],
+                ['Hurt', '-1'],
+                ['Injured', '-1'],
+                ['Wounded', '-2'],
+                ['Mauled', '-2'],
+                ['Crippled', '-5'],
+                ['Incapacitated', ''],
+            ];
+            const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWX';
+            /* Palette colors an author picks from; "custom" keeps its own color in both themes. */
+            const COLORS = {
+                secondary: { label: 'Amber', css: 'var(--secondary)' },
+                error: { label: 'Red', css: 'var(--error)' },
+                tertiary: { label: 'Violet', css: 'var(--tertiary)' },
+                success: { label: 'Green', css: 'var(--success)' },
+                text: { label: 'Ink', css: 'var(--text)' },
+            };
+            const MARK_SETS = {
+                one: {
+                    label: 'One mark',
+                    kinds: () => [{ name: 'Marked', symbol: '×', color: 'error' }],
+                },
+                two: {
+                    label: 'Two marks (╱ ×)',
+                    kinds: () => [
+                        { name: 'Bashing', symbol: '╱', color: 'secondary' },
+                        { name: 'Lethal', symbol: '×', color: 'error' },
+                    ],
+                },
+                three: {
+                    label: 'Three marks, WoD 20th (╱ × ✱)',
+                    kinds: () => [
+                        { name: 'Bashing', symbol: '╱', color: 'secondary' },
+                        { name: 'Lethal', symbol: '×', color: 'error' },
+                        { name: 'Aggravated', symbol: '✱', color: 'tertiary' },
+                    ],
+                },
+            };
+            let uid = 0;
+            const id = () => `c${++uid}`;
+            const withIds = (kinds) => kinds.map((k) => ({ id: id(), ink: '', ...k }));
+
+            const PRESETS = {
+                health: {
+                    title: 'Health (own tracker)',
+                    make: () => ({
+                        kind: 'own',
+                        label: 'Health',
+                        showLabel: true,
+                        display: 'table',
+                        levels: HEALTH.map(([name, value]) => ({ name, value })),
+                        valueCol: { title: 'Penalty', show: true },
+                        marks: withIds(MARK_SETS.two.kinds()),
+                        columns: [
+                            {
+                                id: id(),
+                                kind: 'marks',
+                                title: 'Damage',
+                                levels: 0,
+                                copies: false,
+                                max: 12,
+                            },
+                        ],
+                        lengths: { enabled: false, options: [] },
+                        summary: true,
+                        defeated: false,
+                    }),
+                    sample: (c) => {
+                        c[0].marks[0] = 1;
+                        c[0].marks[1] = 0;
+                    },
+                },
+                v20: {
+                    title: 'WoD 20th health (aggravated)',
+                    make: () => ({
+                        kind: 'own',
+                        label: 'Health',
+                        showLabel: true,
+                        display: 'table',
+                        levels: HEALTH.map(([name, value]) => ({ name, value })),
+                        valueCol: { title: 'Penalty', show: true },
+                        marks: withIds(MARK_SETS.three.kinds()),
+                        columns: [
+                            {
+                                id: id(),
+                                kind: 'marks',
+                                title: 'Damage',
+                                levels: 0,
+                                copies: false,
+                                max: 12,
+                            },
+                        ],
+                        lengths: { enabled: false, options: [] },
+                        summary: true,
+                        defeated: false,
+                    }),
+                    sample: (c) => {
+                        c[0].marks[0] = 2;
+                        c[0].marks[1] = 1;
+                        c[0].marks[2] = 0;
+                    },
+                },
+                fodder: {
+                    title: 'Fodder group (parity)',
+                    make: () => ({
+                        kind: 'own',
+                        label: 'Members',
+                        showLabel: false,
+                        display: 'table',
+                        levels: HEALTH.map(([name, value]) => ({ name, value })),
+                        valueCol: { title: 'Penalty', show: true },
+                        marks: withIds(MARK_SETS.two.kinds()),
+                        columns: [
+                            {
+                                id: id(),
+                                kind: 'marks',
+                                title: 'Health',
+                                levels: 0,
+                                copies: true,
+                                max: 12,
+                            },
+                        ],
+                        lengths: {
+                            enabled: true,
+                            options: [
+                                { include: [1, 2, 6] },
+                                { include: [0, 1, 2, 3, 6] },
+                                { include: [0, 1, 2, 3, 4, 5, 6] },
+                            ],
+                        },
+                        summary: true,
+                        defeated: true,
+                        sheetCopies: 3,
+                    }),
+                    sample: (c) => {
+                        c[0].marks[1] = 1;
+                        c[0].marks[2] = 0;
+                        c[1].marks[1] = 1;
+                        c[1].marks[2] = 1;
+                        c[1].marks[6] = 1;
+                    },
+                },
+                stress: {
+                    title: 'Stress with bonuses (custom)',
+                    make: () => ({
+                        kind: 'own',
+                        label: 'Stress',
+                        showLabel: true,
+                        display: 'table',
+                        levels: [
+                            { name: 'Calm', value: '' },
+                            { name: 'Tense', value: '+1' },
+                            { name: 'Shaken', value: '+2' },
+                            { name: 'Frantic', value: '+3' },
+                            { name: 'Broken', value: '' },
+                        ],
+                        valueCol: { title: 'Bonus', show: true },
+                        marks: withIds([
+                            { name: 'Strained', symbol: '●', color: 'custom', custom: '#0e7490' },
+                        ]),
+                        columns: [
+                            {
+                                id: id(),
+                                kind: 'marks',
+                                title: 'Stress',
+                                levels: 0,
+                                copies: false,
+                                max: 12,
+                            },
+                            {
+                                id: id(),
+                                kind: 'text',
+                                title: 'Trigger',
+                                levels: 3,
+                                copies: false,
+                                max: 12,
+                            },
+                        ],
+                        lengths: { enabled: false, options: [] },
+                        summary: true,
+                        defeated: false,
+                    }),
+                    sample: (c, all, s) => {
+                        c[0].marks[1] = 0;
+                        all[s.columns[1].id][0].texts[1] = 'Crowds';
+                    },
+                },
+                bound: {
+                    title: 'Star Wars health (built-in)',
+                    make: () => ({
+                        kind: 'bound',
+                        label: 'Health',
+                        showLabel: true,
+                        display: 'table',
+                        levels: HEALTH.map(([name, value]) => ({ name, value })),
+                        valueCol: { title: 'Penalty', show: true },
+                        marks: withIds(MARK_SETS.two.kinds()),
+                        columns: [
+                            {
+                                id: id(),
+                                kind: 'marks',
+                                title: 'Damage',
+                                levels: 0,
+                                copies: false,
+                                max: 12,
+                                system: true,
+                            },
+                            {
+                                id: id(),
+                                kind: 'text',
+                                title: 'Source',
+                                levels: 0,
+                                copies: false,
+                                max: 12,
+                            },
+                        ],
+                        lengths: { enabled: false, options: [] },
+                        summary: true,
+                        defeated: false,
+                    }),
+                    sample: (c, all, s) => {
+                        c[0].marks[0] = 1;
+                        c[0].marks[1] = 1;
+                        c[0].marks[2] = 0;
+                        all[s.columns[1].id][0].texts[1] = 'Blaster';
+                    },
+                },
+            };
+
+            let current = 'v20';
+            let s = PRESETS[current].make();
+            let sheet = freshSheet(s, true);
+
+            function freshSheet(state, withSample) {
+                const copies = {};
+                for (const column of state.columns) {
+                    const count = column.copies ? (state.sheetCopies ?? 1) : 1;
+                    copies[column.id] = Array.from({ length: count }, (_, i) => ({
+                        label: LETTERS[i],
+                        marks: [],
+                        texts: [],
+                    }));
+                }
+                if (withSample) PRESETS[current].sample(copies[state.columns[0].id], copies, state);
+                return { copies, length: 0 };
+            }
+
+            const el = (tag, attrs = {}, ...children) => {
+                const node = document.createElement(tag);
+                for (const [key, value] of Object.entries(attrs)) {
+                    if (value === undefined || value === false || value === null) continue;
+                    if (key.startsWith('on')) node.addEventListener(key.slice(2), value);
+                    else if (key === 'text') node.textContent = value;
+                    else if (key === 'style' && typeof value === 'object') {
+                        for (const [prop, v] of Object.entries(value))
+                            node.style.setProperty(prop, v);
+                    } else node.setAttribute(key, value === true ? '' : value);
+                }
+                for (const child of children.flat()) if (child != null) node.append(child);
+                return node;
+            };
+
+            const fillOf = (kind) =>
+                kind.color === 'custom' ? kind.custom : COLORS[kind.color].css;
+
+            function visibleLevels() {
+                if (!s.lengths.enabled || s.lengths.options.length === 0)
+                    return s.levels.map((_, i) => i);
+                const option =
+                    s.lengths.options[Math.min(sheet.length, s.lengths.options.length - 1)];
+                return option.include.filter((i) => i < s.levels.length).sort((a, b) => a - b);
+            }
+
+            /* ---------- Editor ---------- */
+            function renderEditor() {
+                const root = document.getElementById('editor');
+                root.replaceChildren();
+                const bound = s.kind === 'bound';
+                root.append(
+                    el('h2', {
+                        id: 'editor-h',
+                        text: bound
+                            ? 'Tracker settings — built-in part'
+                            : 'Tracker settings — own values',
+                    })
+                );
+
+                root.append(
+                    el(
+                        'div',
+                        { class: 'group' },
+                        el(
+                            'div',
+                            { class: 'row' },
+                            el('input', {
+                                type: 'text',
+                                class: 'grow',
+                                value: s.label,
+                                'aria-label': 'Field label',
+                                oninput: (e) => {
+                                    s.label = e.target.value;
+                                    renderSheet();
+                                },
+                            }),
+                            el(
+                                'label',
+                                { class: 'check' },
+                                el('input', {
+                                    type: 'checkbox',
+                                    checked: s.showLabel,
+                                    onchange: (e) => {
+                                        s.showLabel = e.target.checked;
+                                        renderSheet();
+                                    },
+                                }),
+                                'Show label'
+                            )
+                        ),
+                        bound
+                            ? el('p', {
+                                  class: 'locked',
+                                  text: 'Tracker source: Health (Star Wars character). Its marks stay in the character’s own health data; everything else below is the page’s own setting, the same as for an own tracker.',
+                              })
+                            : null
+                    )
+                );
+
+                const seg = el('div', { class: 'seg', role: 'group', 'aria-label': 'Display' });
+                for (const [value, label] of [
+                    ['table', 'Table'],
+                    ['strip', 'Strip'],
+                    ['compact', 'One line'],
+                ]) {
+                    seg.append(
+                        el(
+                            'button',
+                            {
+                                type: 'button',
+                                'aria-pressed': String(s.display === value),
+                                onclick: () => {
+                                    s.display = value;
+                                    renderEditor();
+                                    renderSheet();
+                                },
+                            },
+                            label
+                        )
+                    );
+                }
+                root.append(
+                    el(
+                        'div',
+                        { class: 'group' },
+                        el(
+                            'div',
+                            { class: 'row' },
+                            el('strong', { text: 'Display' }),
+                            el('span', { class: 'tag', text: 'merged' })
+                        ),
+                        seg,
+                        el('p', {
+                            class: 'hint',
+                            text: 'One setting replaces "Compact" and "Tracker view". One line is the small strip for brief pages: label inline, no length buttons.',
+                        })
+                    )
+                );
+
+                renderMarkSettings(root, bound);
+
+                const levels = el('div', { class: 'levels' });
+                s.levels.forEach((level, i) => {
+                    levels.append(
+                        el(
+                            'div',
+                            { class: 'level' },
+                            el('span', { class: 'n', text: String(i + 1) }),
+                            el('input', {
+                                type: 'text',
+                                value: level.name,
+                                'aria-label': `Level ${i + 1} name`,
+                                oninput: (e) => {
+                                    level.name = e.target.value;
+                                    renderSheet();
+                                },
+                            }),
+                            el('input', {
+                                type: 'text',
+                                value: level.value,
+                                placeholder: '—',
+                                'aria-label': `Level ${i + 1} ${s.valueCol.title || 'value'}`,
+                                disabled: !s.valueCol.show,
+                                oninput: (e) => {
+                                    level.value = e.target.value;
+                                    renderSheet();
+                                },
+                            }),
+                            el(
+                                'span',
+                                { class: 'row', style: 'gap:2px' },
+                                el(
+                                    'button',
+                                    {
+                                        type: 'button',
+                                        class: 'btn icon small',
+                                        'aria-label': `Move level ${i + 1} up`,
+                                        disabled: i === 0 || bound,
+                                        onclick: () => {
+                                            move(s.levels, i, -1);
+                                            renderAll();
+                                        },
+                                    },
+                                    '↑'
+                                ),
+                                el(
+                                    'button',
+                                    {
+                                        type: 'button',
+                                        class: 'btn icon small',
+                                        'aria-label': `Move level ${i + 1} down`,
+                                        disabled: i === s.levels.length - 1 || bound,
+                                        onclick: () => {
+                                            move(s.levels, i, 1);
+                                            renderAll();
+                                        },
+                                    },
+                                    '↓'
+                                ),
+                                el(
+                                    'button',
+                                    {
+                                        type: 'button',
+                                        class: 'btn icon small',
+                                        'aria-label': `Remove level ${i + 1}`,
+                                        disabled: s.levels.length === 1 || bound,
+                                        onclick: () => {
+                                            s.levels.splice(i, 1);
+                                            renderAll();
+                                        },
+                                    },
+                                    '×'
+                                )
+                            )
+                        )
+                    );
+                });
+                root.append(
+                    el(
+                        'div',
+                        { class: 'group' },
+                        el(
+                            'div',
+                            { class: 'row' },
+                            el('strong', { text: 'Levels' }),
+                            el('span', { class: 'hint', text: `${s.levels.length} of 20` })
+                        ),
+                        el(
+                            'div',
+                            { class: 'row' },
+                            el('span', { class: 'hint', text: 'Value column title' }),
+                            el('input', {
+                                type: 'text',
+                                class: 'grow',
+                                value: s.valueCol.title,
+                                placeholder: 'Penalty',
+                                'aria-label': 'Value column title',
+                                oninput: (e) => {
+                                    s.valueCol.title = e.target.value;
+                                    renderSheet();
+                                },
+                            }),
+                            el(
+                                'label',
+                                { class: 'check' },
+                                el('input', {
+                                    type: 'checkbox',
+                                    checked: s.valueCol.show,
+                                    onchange: (e) => {
+                                        s.valueCol.show = e.target.checked;
+                                        renderAll();
+                                    },
+                                }),
+                                'Show'
+                            )
+                        ),
+                        levels,
+                        bound
+                            ? el('p', {
+                                  class: 'hint',
+                                  text: 'Built-in levels can be renamed and given other values; their number and order follow the game (a level count override is kept as today).',
+                              })
+                            : el(
+                                  'button',
+                                  {
+                                      type: 'button',
+                                      class: 'btn small',
+                                      disabled: s.levels.length >= 20,
+                                      onclick: () => {
+                                          s.levels.push({
+                                              name: `Level ${s.levels.length + 1}`,
+                                              value: '',
+                                          });
+                                          renderAll();
+                                      },
+                                  },
+                                  '+ Add level'
+                              )
+                    )
+                );
+
+                const columns = el('div', { class: 'levels' });
+                s.columns.forEach((column, index) => {
+                    const kindSelect = el(
+                        'select',
+                        {
+                            'aria-label': 'Column kind',
+                            disabled: column.system,
+                            onchange: (e) => {
+                                column.kind = e.target.value;
+                                renderAll();
+                            },
+                        },
+                        el(
+                            'option',
+                            { value: 'marks', selected: column.kind === 'marks' },
+                            'Marks'
+                        ),
+                        el('option', { value: 'text', selected: column.kind === 'text' }, 'Text')
+                    );
+                    const levelSelect = el(
+                        'select',
+                        {
+                            'aria-label': 'Levels this column covers',
+                            onchange: (e) => {
+                                column.levels = Number(e.target.value);
+                                renderSheet();
+                            },
+                        },
+                        el('option', { value: '0', selected: column.levels === 0 }, 'All levels'),
+                        ...s.levels
+                            .slice(0, -1)
+                            .map((_, i) =>
+                                el(
+                                    'option',
+                                    { value: String(i + 1), selected: column.levels === i + 1 },
+                                    `First ${i + 1}`
+                                )
+                            )
+                    );
+                    const marksColumns = s.columns.filter((c) => c.kind === 'marks').length;
+                    columns.append(
+                        el(
+                            'div',
+                            { class: 'card' },
+                            el(
+                                'div',
+                                { class: 'card-head' },
+                                el('strong', {
+                                    text: column.system
+                                        ? 'Marks — the character’s health'
+                                        : `Column ${index + 1}`,
+                                }),
+                                column.system
+                                    ? null
+                                    : el(
+                                          'button',
+                                          {
+                                              type: 'button',
+                                              class: 'btn icon small',
+                                              'aria-label': `Remove column ${index + 1}`,
+                                              disabled:
+                                                  column.kind === 'marks' && marksColumns === 1,
+                                              onclick: () => {
+                                                  s.columns.splice(index, 1);
+                                                  sheet = freshSheet(s);
+                                                  renderAll();
+                                              },
+                                          },
+                                          '×'
+                                      )
+                            ),
+                            el(
+                                'div',
+                                { class: 'row' },
+                                kindSelect,
+                                el('input', {
+                                    type: 'text',
+                                    class: 'grow',
+                                    value: column.title,
+                                    placeholder: column.kind === 'marks' ? 'Damage' : 'Notes',
+                                    'aria-label': 'Column title',
+                                    oninput: (e) => {
+                                        column.title = e.target.value;
+                                        renderSheet();
+                                    },
+                                })
+                            ),
+                            column.system
+                                ? null
+                                : el(
+                                      'div',
+                                      { class: 'row' },
+                                      el('span', { class: 'hint', text: 'Covers' }),
+                                      levelSelect
+                                  ),
+                            column.system
+                                ? null
+                                : el(
+                                      'div',
+                                      { class: 'row' },
+                                      el(
+                                          'label',
+                                          { class: 'check' },
+                                          el('input', {
+                                              type: 'checkbox',
+                                              checked: column.copies,
+                                              onchange: (e) => {
+                                                  column.copies = e.target.checked;
+                                                  sheet = freshSheet(s);
+                                                  renderAll();
+                                              },
+                                          }),
+                                          'Readers add copies (A, B, C…)'
+                                      ),
+                                      column.copies
+                                          ? el(
+                                                'span',
+                                                { class: 'row', style: 'gap:4px' },
+                                                el('span', { class: 'hint', text: 'up to' }),
+                                                el('input', {
+                                                    type: 'number',
+                                                    min: '1',
+                                                    max: '24',
+                                                    value: String(column.max),
+                                                    'aria-label': 'Most copies',
+                                                    oninput: (e) => {
+                                                        column.max = Math.max(
+                                                            1,
+                                                            Math.min(
+                                                                24,
+                                                                Number(e.target.value) || 1
+                                                            )
+                                                        );
+                                                        renderSheet();
+                                                    },
+                                                })
+                                            )
+                                          : null
+                                  )
+                        )
+                    );
+                });
+                root.append(
+                    el(
+                        'div',
+                        { class: 'group' },
+                        el(
+                            'div',
+                            { class: 'row' },
+                            el('strong', { text: 'Columns' }),
+                            el('span', { class: 'tag', text: 'new' })
+                        ),
+                        bound
+                            ? el('p', {
+                                  class: 'hint',
+                                  text: 'Columns you add to a built-in tracker keep their values on the page, next to the character’s own marks.',
+                              })
+                            : null,
+                        columns,
+                        el(
+                            'div',
+                            { class: 'row' },
+                            el(
+                                'button',
+                                {
+                                    type: 'button',
+                                    class: 'btn small',
+                                    onclick: () => {
+                                        s.columns.push({
+                                            id: id(),
+                                            kind: 'marks',
+                                            title: 'Marks',
+                                            levels: 0,
+                                            copies: false,
+                                            max: 12,
+                                        });
+                                        sheet = freshSheet(s);
+                                        renderAll();
+                                    },
+                                },
+                                '+ Marks column'
+                            ),
+                            el(
+                                'button',
+                                {
+                                    type: 'button',
+                                    class: 'btn small',
+                                    onclick: () => {
+                                        s.columns.push({
+                                            id: id(),
+                                            kind: 'text',
+                                            title: 'Notes',
+                                            levels: 0,
+                                            copies: false,
+                                            max: 12,
+                                        });
+                                        sheet = freshSheet(s);
+                                        renderAll();
+                                    },
+                                },
+                                '+ Text column'
+                            )
+                        )
+                    )
+                );
+
+                if (!bound) {
+                    const lengthGroup = el(
+                        'div',
+                        { class: 'group' },
+                        el(
+                            'label',
+                            { class: 'check' },
+                            el('input', {
+                                type: 'checkbox',
+                                checked: s.lengths.enabled,
+                                onchange: (e) => {
+                                    s.lengths.enabled = e.target.checked;
+                                    if (s.lengths.enabled && s.lengths.options.length === 0)
+                                        s.lengths.options = [
+                                            { include: s.levels.map((_, i) => i) },
+                                        ];
+                                    sheet.length = 0;
+                                    renderAll();
+                                },
+                            }),
+                            el('strong', { text: 'Readers switch the length' })
+                        ),
+                        el('p', {
+                            class: 'hint',
+                            text: 'Like the fodder group’s 3 / 5 / 7: each length lists the levels it shows. Shortening folds hidden marks into the new last level (the heaviest mark wins) after asking.',
+                        })
+                    );
+                    if (s.lengths.enabled) {
+                        const table = el(
+                            'table',
+                            {},
+                            el(
+                                'thead',
+                                {},
+                                el(
+                                    'tr',
+                                    {},
+                                    el('th', { text: 'Level' }),
+                                    ...s.lengths.options.map((o, oi) =>
+                                        el(
+                                            'th',
+                                            {},
+                                            `Length ${oi + 1}`,
+                                            el(
+                                                'button',
+                                                {
+                                                    type: 'button',
+                                                    class: 'btn icon small',
+                                                    style: 'margin-left:4px',
+                                                    'aria-label': `Remove length ${oi + 1}`,
+                                                    disabled: s.lengths.options.length === 1,
+                                                    onclick: () => {
+                                                        s.lengths.options.splice(oi, 1);
+                                                        sheet.length = 0;
+                                                        renderAll();
+                                                    },
+                                                },
+                                                '×'
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            el(
+                                'tbody',
+                                {},
+                                ...s.levels.map((level, li) =>
+                                    el(
+                                        'tr',
+                                        {},
+                                        el('td', { text: level.name }),
+                                        ...s.lengths.options.map((o, oi) =>
+                                            el(
+                                                'td',
+                                                {},
+                                                el('input', {
+                                                    type: 'checkbox',
+                                                    'aria-label': `${level.name} in length ${oi + 1}`,
+                                                    checked: o.include.includes(li),
+                                                    onchange: (e) => {
+                                                        o.include = e.target.checked
+                                                            ? [...o.include, li]
+                                                            : o.include.filter((x) => x !== li);
+                                                        renderAll();
+                                                    },
+                                                })
+                                            )
+                                        )
+                                    )
+                                ),
+                                el(
+                                    'tr',
+                                    {},
+                                    el('td', { text: 'Shows' }),
+                                    ...s.lengths.options.map((o) =>
+                                        el('td', { text: String(o.include.length) })
+                                    )
+                                )
+                            )
+                        );
+                        lengthGroup.append(
+                            el('div', { class: 'matrix' }, table),
+                            el(
+                                'button',
+                                {
+                                    type: 'button',
+                                    class: 'btn small',
+                                    disabled: s.lengths.options.length >= 6,
+                                    onclick: () => {
+                                        s.lengths.options.push({
+                                            include: s.levels.map((_, i) => i),
+                                        });
+                                        renderAll();
+                                    },
+                                },
+                                '+ Length'
+                            )
+                        );
+                    }
+                    root.append(lengthGroup);
+                }
+
+                root.append(
+                    el(
+                        'div',
+                        { class: 'group' },
+                        el('strong', { text: 'Reading the marks' }),
+                        el(
+                            'label',
+                            { class: 'check' },
+                            el('input', {
+                                type: 'checkbox',
+                                checked: s.summary,
+                                onchange: (e) => {
+                                    s.summary = e.target.checked;
+                                    renderSheet();
+                                },
+                            }),
+                            `Total row: the ${s.valueCol.title || 'value'} of the deepest marked level`
+                        ),
+                        bound
+                            ? null
+                            : el(
+                                  'label',
+                                  { class: 'check' },
+                                  el('input', {
+                                      type: 'checkbox',
+                                      checked: s.defeated,
+                                      onchange: (e) => {
+                                          s.defeated = e.target.checked;
+                                          renderSheet();
+                                      },
+                                  }),
+                                  'Mark a copy as out when its last level is marked'
+                              )
+                    )
+                );
+            }
+
+            function renderMarkSettings(root, bound) {
+                const list = el('div', { class: 'levels' });
+                s.marks.forEach((kind, i) => {
+                    const swatches = el(
+                        'span',
+                        { class: 'swatches', role: 'group', 'aria-label': `${kind.name} color` },
+                        ...Object.entries(COLORS).map(([key, color]) =>
+                            el('button', {
+                                type: 'button',
+                                class: 'swatch',
+                                title: color.label,
+                                'aria-label': color.label,
+                                'aria-pressed': String(kind.color === key),
+                                style: { background: color.css },
+                                onclick: () => {
+                                    kind.color = key;
+                                    renderAll();
+                                },
+                            })
+                        ),
+                        el('input', {
+                            type: 'color',
+                            value: kind.custom ?? '#0e7490',
+                            title: 'Own color',
+                            'aria-label': `${kind.name}: own color`,
+                            oninput: (e) => {
+                                kind.color = 'custom';
+                                kind.custom = e.target.value;
+                                renderSheet();
+                                renderMarkPreview();
+                            },
+                        })
+                    );
+                    list.append(
+                        el(
+                            'div',
+                            { class: 'kind' },
+                            el('span', { 'data-preview': kind.id }),
+                            el('input', {
+                                type: 'text',
+                                value: kind.name,
+                                'aria-label': `Mark ${i + 1} name`,
+                                oninput: (e) => {
+                                    kind.name = e.target.value;
+                                    renderSheet();
+                                },
+                            }),
+                            el('input', {
+                                type: 'text',
+                                class: 'sym',
+                                value: kind.symbol,
+                                maxlength: '2',
+                                'aria-label': `Mark ${i + 1} symbol`,
+                                oninput: (e) => {
+                                    kind.symbol = e.target.value;
+                                    renderSheet();
+                                    renderMarkPreview();
+                                },
+                            }),
+                            swatches,
+                            el(
+                                'span',
+                                { class: 'row', style: 'gap:2px' },
+                                el(
+                                    'button',
+                                    {
+                                        type: 'button',
+                                        class: 'btn icon small',
+                                        'aria-label': `Move mark ${i + 1} up`,
+                                        disabled: i === 0 || bound,
+                                        onclick: () => {
+                                            move(s.marks, i, -1);
+                                            renderAll();
+                                        },
+                                    },
+                                    '↑'
+                                ),
+                                el(
+                                    'button',
+                                    {
+                                        type: 'button',
+                                        class: 'btn icon small',
+                                        'aria-label': `Move mark ${i + 1} down`,
+                                        disabled: i === s.marks.length - 1 || bound,
+                                        onclick: () => {
+                                            move(s.marks, i, 1);
+                                            renderAll();
+                                        },
+                                    },
+                                    '↓'
+                                ),
+                                el(
+                                    'button',
+                                    {
+                                        type: 'button',
+                                        class: 'btn icon small',
+                                        'aria-label': `Remove mark ${i + 1}`,
+                                        disabled: s.marks.length === 1 || bound,
+                                        onclick: () => {
+                                            s.marks.splice(i, 1);
+                                            sheet = freshSheet(s);
+                                            renderAll();
+                                        },
+                                    },
+                                    '×'
+                                )
+                            )
+                        )
+                    );
+                });
+                const preset = el(
+                    'select',
+                    {
+                        'aria-label': 'Start from',
+                        disabled: bound,
+                        onchange: (e) => {
+                            if (!e.target.value) return;
+                            s.marks = withIds(MARK_SETS[e.target.value].kinds());
+                            sheet = freshSheet(s);
+                            renderAll();
+                        },
+                    },
+                    el('option', { value: '' }, 'Start from…'),
+                    ...Object.entries(MARK_SETS).map(([key, set]) =>
+                        el('option', { value: key }, set.label)
+                    )
+                );
+                root.append(
+                    el(
+                        'div',
+                        { class: 'group' },
+                        el(
+                            'div',
+                            { class: 'row' },
+                            el('strong', { text: 'Marks' }),
+                            el('span', { class: 'tag', text: 'new' }),
+                            preset
+                        ),
+                        el('p', {
+                            class: 'hint',
+                            text: 'A click moves a box to the next mark in this order, then back to empty; a later mark counts as heavier. Name, symbol (1–2 characters), and a fill from the app’s colors or your own.',
+                        }),
+                        list,
+                        bound
+                            ? el('p', {
+                                  class: 'hint',
+                                  text: 'The game keeps two marks here; you can rename and recolor them.',
+                              })
+                            : el(
+                                  'button',
+                                  {
+                                      type: 'button',
+                                      class: 'btn small',
+                                      disabled: s.marks.length >= 5,
+                                      onclick: () => {
+                                          s.marks.push({
+                                              id: id(),
+                                              name: `Mark ${s.marks.length + 1}`,
+                                              symbol: '•',
+                                              color: 'text',
+                                              ink: '',
+                                          });
+                                          renderAll();
+                                      },
+                                  },
+                                  '+ Add mark'
+                              )
+                    )
+                );
+                renderMarkPreview();
+            }
+
+            function renderMarkPreview() {
+                for (const kind of s.marks) {
+                    const slot = document.querySelector(`[data-preview="${kind.id}"]`);
+                    if (!slot) continue;
+                    slot.replaceChildren(
+                        el(
+                            'span',
+                            {
+                                class: 'mark small filled',
+                                style: { '--fill': fillOf(kind), '--ink': '#fff' },
+                                'aria-hidden': 'true',
+                            },
+                            kind.symbol
+                        )
+                    );
+                }
+            }
+
+            function move(list, index, delta) {
+                const target = index + delta;
+                if (target < 0 || target >= list.length) return;
+                [list[index], list[target]] = [list[target], list[index]];
+            }
+
+            /* ---------- Sheet ---------- */
+            function markButton(copy, levelIndex, small, title) {
+                const value = copy.marks[levelIndex];
+                const kind = value === undefined ? undefined : s.marks[value];
+                const next =
+                    value === undefined ? 0 : value + 1 < s.marks.length ? value + 1 : undefined;
+                return el(
+                    'button',
+                    {
+                        type: 'button',
+                        class: `mark${small ? ' small' : ''}${kind ? ' filled' : ''}`,
+                        title,
+                        style: kind ? { '--fill': fillOf(kind), '--ink': '#fff' } : undefined,
+                        'aria-label': `${title}: ${kind ? kind.name : 'empty'}`,
+                        onclick: () => {
+                            if (next === undefined) delete copy.marks[levelIndex];
+                            else copy.marks[levelIndex] = next;
+                            renderSheet();
+                        },
+                    },
+                    kind ? kind.symbol : ''
+                );
+            }
+
+            function deepest(copy, visible) {
+                let found;
+                for (const i of visible) if (copy.marks[i] !== undefined) found = i;
+                return found;
+            }
+            function isOut(copy, visible) {
+                const last = visible[visible.length - 1];
+                return s.defeated && last !== undefined && copy.marks[last] !== undefined;
+            }
+            function summaryOf(copy, visible) {
+                const d = deepest(copy, visible);
+                const value = d === undefined ? '' : s.levels[d].value;
+                return value === '' ? '—' : value;
+            }
+            const covers = (column, position) => column.levels === 0 || position < column.levels;
+
+            function lengthControl() {
+                if (!s.lengths.enabled || s.lengths.options.length < 2 || s.display === 'compact')
+                    return null;
+                return el(
+                    'span',
+                    { class: 'length' },
+                    'Length',
+                    el(
+                        'button',
+                        {
+                            type: 'button',
+                            class: 'btn icon small',
+                            'aria-label': 'Shorter',
+                            disabled: sheet.length === 0,
+                            onclick: () => {
+                                sheet.length -= 1;
+                                renderSheet();
+                            },
+                        },
+                        '−'
+                    ),
+                    el('strong', { text: String(visibleLevels().length) }),
+                    el(
+                        'button',
+                        {
+                            type: 'button',
+                            class: 'btn icon small',
+                            'aria-label': 'Longer',
+                            disabled: sheet.length >= s.lengths.options.length - 1,
+                            onclick: () => {
+                                sheet.length += 1;
+                                renderSheet();
+                            },
+                        },
+                        '+'
+                    )
+                );
+            }
+
+            function copiesControl(column) {
+                if (!column.copies) return null;
+                const list = sheet.copies[column.id];
+                return el(
+                    'button',
+                    {
+                        type: 'button',
+                        class: 'btn small',
+                        disabled: list.length >= column.max,
+                        onclick: () => {
+                            list.push({ label: LETTERS[list.length], marks: [], texts: [] });
+                            renderSheet();
+                        },
+                    },
+                    `+ ${column.title || 'copy'}`
+                );
+            }
+
+            function legend() {
+                if (s.marks.length < 2) return null;
+                return el(
+                    'div',
+                    { class: 'legend' },
+                    ...s.marks.map((kind) =>
+                        el(
+                            'span',
+                            {},
+                            el(
+                                'span',
+                                {
+                                    class: 'mark small filled',
+                                    style: { '--fill': fillOf(kind), '--ink': '#fff' },
+                                    'aria-hidden': 'true',
+                                },
+                                kind.symbol
+                            ),
+                            kind.name
+                        )
+                    )
+                );
+            }
+
+            function renderTable(visible) {
+                const head = [el('th', { text: 'Level' })];
+                if (s.valueCol.show) head.push(el('th', { text: s.valueCol.title || 'Value' }));
+                for (const column of s.columns) {
+                    const list = sheet.copies[column.id];
+                    list.forEach((copy, ci) => {
+                        const out = column.kind === 'marks' && isOut(copy, visible);
+                        head.push(
+                            el(
+                                'th',
+                                {},
+                                column.copies
+                                    ? el(
+                                          'span',
+                                          { class: 'copy-head' },
+                                          el('span', {
+                                              class: out ? 'defeated' : undefined,
+                                              text: `${column.title} ${copy.label}`,
+                                          }),
+                                          el(
+                                              'button',
+                                              {
+                                                  type: 'button',
+                                                  class: 'btn icon small',
+                                                  'aria-label': `Remove ${column.title} ${copy.label}`,
+                                                  disabled: list.length === 1,
+                                                  onclick: () => {
+                                                      list.splice(ci, 1);
+                                                      list.forEach((c, i) => {
+                                                          c.label = LETTERS[i];
+                                                      });
+                                                      renderSheet();
+                                                  },
+                                              },
+                                              '×'
+                                          )
+                                      )
+                                    : column.title
+                            )
+                        );
+                    });
+                }
+                const rows = visible.map((li, position) => {
+                    const level = s.levels[li];
+                    const cells = [el('td', { text: level.name })];
+                    if (s.valueCol.show)
+                        cells.push(
+                            el('td', { class: 'val', text: level.value === '' ? '—' : level.value })
+                        );
+                    for (const column of s.columns) {
+                        for (const copy of sheet.copies[column.id]) {
+                            if (!covers(column, position)) {
+                                cells.push(el('td', { class: 'off', text: '·' }));
+                                continue;
+                            }
+                            cells.push(
+                                el(
+                                    'td',
+                                    {},
+                                    column.kind === 'marks'
+                                        ? markButton(
+                                              copy,
+                                              li,
+                                              false,
+                                              `${level.name}${column.copies ? ` (${copy.label})` : ''}`
+                                          )
+                                        : el('input', {
+                                              type: 'text',
+                                              class: 'cell-text',
+                                              value: copy.texts[li] ?? '',
+                                              'aria-label': `${column.title} at ${level.name}`,
+                                              oninput: (e) => {
+                                                  copy.texts[li] = e.target.value;
+                                              },
+                                          })
+                                )
+                            );
+                        }
+                    }
+                    return el('tr', {}, ...cells);
+                });
+                if (s.summary) {
+                    const cells = [el('td', { text: s.valueCol.title || 'Value' })];
+                    if (s.valueCol.show) cells.push(el('td', {}));
+                    for (const column of s.columns) {
+                        for (const copy of sheet.copies[column.id]) {
+                            if (column.kind !== 'marks') {
+                                cells.push(el('td', {}));
+                                continue;
+                            }
+                            cells.push(
+                                el(
+                                    'td',
+                                    {},
+                                    isOut(copy, visible)
+                                        ? el('span', { class: 'badge', text: 'out' })
+                                        : summaryOf(copy, visible)
+                                )
+                            );
+                        }
+                    }
+                    rows.push(el('tr', { class: 'sum' }, ...cells));
+                }
+                return el(
+                    'div',
+                    { class: 'scroll' },
+                    el(
+                        'table',
+                        { class: 'track' },
+                        el('thead', {}, el('tr', {}, ...head)),
+                        el('tbody', {}, ...rows)
+                    )
+                );
+            }
+
+            function renderStrips(visible, small) {
+                const lines = [];
+                for (const column of s.columns) {
+                    if (column.kind !== 'marks') continue;
+                    for (const copy of sheet.copies[column.id]) {
+                        const who = column.copies ? `${column.title} ${copy.label}` : column.title;
+                        const out = isOut(copy, visible);
+                        const boxes = visible
+                            .filter((_, p) => covers(column, p))
+                            .map((li) =>
+                                markButton(
+                                    copy,
+                                    li,
+                                    small,
+                                    `${s.levels[li].name}${s.valueCol.show && s.levels[li].value ? ` (${s.levels[li].value})` : ''}`
+                                )
+                            );
+                        lines.push(
+                            el(
+                                'div',
+                                { class: small ? 'compact' : 'strip' },
+                                el('span', { class: `who${out ? ' defeated' : ''}`, text: who }),
+                                el('span', { class: 'boxes' }, ...boxes),
+                                s.summary
+                                    ? el(
+                                          'span',
+                                          { class: 'sumv' },
+                                          out
+                                              ? el('span', { class: 'badge', text: 'out' })
+                                              : `${s.valueCol.title || 'Value'} ${summaryOf(copy, visible)}`
+                                      )
+                                    : null
+                            )
+                        );
+                    }
+                }
+                const textColumns = s.columns.filter((c) => c.kind === 'text');
+                if (textColumns.length > 0 && !small) {
+                    lines.push(
+                        el('p', {
+                            class: 'hint',
+                            text: `Text columns (${textColumns.map((c) => c.title).join(', ')}) show only in the table.`,
+                        })
+                    );
+                }
+                return el('div', { class: 'strips' }, ...lines);
+            }
+
+            function renderSheet() {
+                const root = document.getElementById('sheet');
+                const visible = visibleLevels();
+                root.replaceChildren();
+                root.append(
+                    el(
+                        'div',
+                        { class: 'row', style: 'justify-content:space-between' },
+                        s.showLabel && s.display !== 'compact'
+                            ? el('span', { class: 'field-label', text: s.label })
+                            : el('span'),
+                        el(
+                            'span',
+                            { class: 'row' },
+                            lengthControl(),
+                            ...s.columns.map(copiesControl)
+                        )
+                    )
+                );
+                if (s.display === 'table') root.append(renderTable(visible));
+                else if (s.display === 'strip') root.append(renderStrips(visible, false));
+                else
+                    root.append(
+                        el(
+                            'div',
+                            { class: 'row' },
+                            s.showLabel
+                                ? el('span', { class: 'field-label', text: s.label })
+                                : null,
+                            renderStrips(visible, true)
+                        )
+                    );
+                if (s.display !== 'compact') {
+                    const l = legend();
+                    if (l) root.append(l);
+                }
+            }
+
+            /* ---------- Notes ---------- */
+            function renderNotes() {
+                document.getElementById('notes').replaceChildren(
+                    el(
+                        'ul',
+                        {},
+                        el('li', {
+                            text: 'A new field type "Tracker" with its own values; built-in trackers (health, damage, members) get exactly the same settings: display, marks, level names and values, the value column, extra columns, and the total row. Built-ins keep their marks in the document’s data; extra columns keep theirs on the page.',
+                        }),
+                        el('li', {
+                            text: 'Marks: the author picks one or more (up to 5): a name, a 1–2 character symbol, and a fill from the app’s colors (theme-aware) or an own color. A click steps through them in order; later marks are heavier (used when a shorter length folds marks).',
+                        }),
+                        el('li', {
+                            text: 'Levels: 1–20, each with a name and an optional value (a penalty, a bonus, any short text). The value column has its own title and can be hidden. The total row shows the value of the deepest marked level, under a thicker divider in the table’s border color.',
+                        }),
+                        el('li', {
+                            text: 'Columns: marks or text, each with a title and the levels it covers. A column can be repeated by the reader: A, B, C… up to a set number (fodder members).',
+                        }),
+                        el('li', {
+                            text: 'Lengths: the author lists the lengths readers switch between and the levels each shows (fodder 3 / 5 / 7).',
+                        })
+                    ),
+                    el(
+                        'div',
+                        { class: 'q' },
+                        el('strong', { text: 'Decided, not built now (follow-up tasks)' }),
+                        el(
+                            'ul',
+                            {},
+                            el('li', {
+                                text: 'Formulas reading a tracker (for example the total value, to subtract from a dice pool): the stored shape keeps this possible; a later task adds it.',
+                            }),
+                            el('li', {
+                                text: 'Tracker is not a list entry type or a table column: copies already repeat it.',
+                            }),
+                            el('li', {
+                                text: 'The toggle field gets a second look: a square box like a tracker mark, next to today’s round dot.',
+                            })
+                        )
+                    )
+                );
+            }
+
+            function renderPresets() {
+                document.getElementById('presets').replaceChildren(
+                    ...Object.entries(PRESETS).map(([key, preset]) =>
+                        el(
+                            'button',
+                            {
+                                type: 'button',
+                                class: 'tab',
+                                'aria-pressed': String(key === current),
+                                onclick: () => {
+                                    current = key;
+                                    s = preset.make();
+                                    sheet = freshSheet(s, true);
+                                    renderPresets();
+                                    renderAll();
+                                },
+                            },
+                            preset.title
+                        )
+                    )
+                );
+            }
+
+            function renderAll() {
+                document.getElementById('section-title').textContent =
+                    s.kind === 'bound' ? 'Health (Star Wars character)' : s.label || 'Tracker';
+                renderEditor();
+                renderSheet();
+                renderNotes();
+            }
+
+            renderPresets();
+            renderAll();
+        </script>
+    </body>
+</html>
