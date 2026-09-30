@@ -4,3 +4,20 @@ length:
 rows:
     moveUp: Move row {index} up
     moveDown: Move row {index} down
+tracker:
+    level: Level
+    value: Value
+    out: out
+    add: 'Add {title}'
+    removeCopy: 'Remove {name}'
+    box: '{level}: {mark}'
+    empty: empty
+    textOnlyInTable: 'Text columns ({titles}) show only in the table.'
+    slash: Slash
+    cross: Cross
+    removeCopyTitle: Remove this copy?
+    removeCopyDescription: '{name} has recorded marks or notes. Removing it deletes them.'
+    shortenTitle: Shorten the tracker?
+    shortenDescription: Some copies have marks on levels that will be hidden. Their marks move to the last remaining level.
+    confirm: Confirm
+    cancel: Cancel

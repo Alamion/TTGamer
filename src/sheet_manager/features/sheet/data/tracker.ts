@@ -1,0 +1,133 @@
+import type { TrackerColumn, TrackerLength, TrackerMarkKind } from '../../../types/template';
+
+/**
+ * Pure tracker rules (spec 018, R7), shared by own trackers and built-in ones. Marks are stored
+ * by level id (`levelId → markId`); a mark's weight is its kind's position, lighter first.
+ */
+
+export type TrackerMarks = Readonly<Record<string, string>>;
+
+/** Next mark of a box: empty → first kind → … → last kind → empty (`undefined`). */
+export function nextMarkId(
+    kinds: readonly Pick<TrackerMarkKind, 'id'>[],
+    current: string | undefined
+): string | undefined {
+    if (current === undefined) return kinds[0]?.id;
+    const index = kinds.findIndex(({ id }) => id === current);
+    // A mark of a removed kind starts the cycle over.
+    if (index < 0) return kinds[0]?.id;
+    return kinds[index + 1]?.id;
+}
+
+/** Heavier marks sort later; unknown kinds weigh nothing. */
+export function markWeight(kinds: readonly Pick<TrackerMarkKind, 'id'>[], id: string): number {
+    return kinds.findIndex((kind) => kind.id === id);
+}
+
+/** Only marks of kinds the tracker has count; others stay stored and hidden. */
+function knownMark(
+    kinds: readonly Pick<TrackerMarkKind, 'id'>[],
+    marks: TrackerMarks,
+    levelId: string
+): string | undefined {
+    const mark = marks[levelId];
+    return mark !== undefined && markWeight(kinds, mark) >= 0 ? mark : undefined;
+}
+
+/**
+ * Level ids shown at a length, in level order. Without lengths every level shows; an index out of
+ * range uses the first length (new trackers start short, like fodder groups).
+ */
+export function visibleLevelIds(
+    levelIds: readonly string[],
+    lengths: readonly TrackerLength[],
+    lengthIndex: number | undefined
+): string[] {
+    if (lengths.length === 0) return [...levelIds];
+    const length = lengths[lengthIndex ?? 0] ?? lengths[0]!;
+    const shown = new Set(length.levels);
+    return levelIds.filter((id) => shown.has(id));
+}
+
+/** Levels a column has cells on: the first `covers` shown levels, or all of them. */
+export function coveredLevelIds(
+    column: Pick<TrackerColumn, 'covers'>,
+    visible: readonly string[]
+): string[] {
+    return column.covers === undefined ? [...visible] : visible.slice(0, column.covers);
+}
+
+/** The deepest shown level holding a known mark, or `undefined`. */
+export function deepestMarked(
+    kinds: readonly Pick<TrackerMarkKind, 'id'>[],
+    visible: readonly string[],
+    marks: TrackerMarks
+): string | undefined {
+    for (let index = visible.length - 1; index >= 0; index -= 1) {
+        const levelId = visible[index]!;
+        if (knownMark(kinds, marks, levelId) !== undefined) return levelId;
+    }
+    return undefined;
+}
+
+/** A copy is out once its last shown level is marked. */
+export function isCopyOut(
+    kinds: readonly Pick<TrackerMarkKind, 'id'>[],
+    visible: readonly string[],
+    marks: TrackerMarks
+): boolean {
+    const last = visible[visible.length - 1];
+    return last !== undefined && knownMark(kinds, marks, last) !== undefined;
+}
+
+/**
+ * Marks after switching from one shown length to another. Marks keep their position in the shown
+ * order, as a fodder group's damage does: the n-th shown box stays the n-th. Marks past the new
+ * end fold into its last level (the heaviest wins). Only marks of the levels shown before move;
+ * marks of hidden or removed levels are dropped, as the switch rewrites the copy's marks.
+ */
+export function remapMarks(
+    kinds: readonly Pick<TrackerMarkKind, 'id'>[],
+    before: readonly string[],
+    after: readonly string[],
+    marks: TrackerMarks
+): Record<string, string> {
+    const sequence = before.map((levelId) => knownMark(kinds, marks, levelId));
+    const next: Record<string, string> = {};
+    if (after.length === 0) return next;
+    after.forEach((levelId, index) => {
+        const mark =
+            index < after.length - 1 ? sequence[index] : heaviest(kinds, sequence.slice(index));
+        if (mark !== undefined) next[levelId] = mark;
+    });
+    return next;
+}
+
+function heaviest(
+    kinds: readonly Pick<TrackerMarkKind, 'id'>[],
+    marks: readonly (string | undefined)[]
+): string | undefined {
+    let found: string | undefined;
+    for (const mark of marks) {
+        if (mark === undefined) continue;
+        if (found === undefined || markWeight(kinds, mark) > markWeight(kinds, found)) found = mark;
+    }
+    return found;
+}
+
+/** True when switching from `before` to the shorter `after` would fold or drop a mark. */
+export function lengthChangeHidesMarks(
+    kinds: readonly Pick<TrackerMarkKind, 'id'>[],
+    before: readonly string[],
+    after: readonly string[],
+    marks: TrackerMarks
+): boolean {
+    return before
+        .slice(after.length)
+        .some((levelId) => knownMark(kinds, marks, levelId) !== undefined);
+}
+
+/** Copy label by position: A, B, C… (copies never exceed the 24-letter cap). */
+export function copyLabel(index: number): string {
+    return String.fromCharCode(65 + (index % 26));
+}

@@ -15,6 +15,7 @@ import {
     buildWodTraitBindings,
     toCoordinate,
 } from '../wod-like/templateBindings';
+import { WOD2E_HEALTH_MARKS } from '../wod2e/ruleset/bindings';
 import { starWarsWodProfile } from './profile';
 import { CombatScaleSchema } from './schema';
 
@@ -205,6 +206,7 @@ const baseTracks = buildWodTrackBindings(starWarsWodProfile, {
         dataKey: 'members',
         documentKinds: new Set(['creature', 'group']),
         levelTranslations: fields.healthLevels,
+        marks: WOD2E_HEALTH_MARKS,
     },
     'vehicle-damage': {
         dataKey: 'members',

@@ -1670,6 +1670,12 @@
     "ttgamer.ui.sheet.documents.fields.damageLevels.wrecked": {
         "message": "Уничтожен"
     },
+    "ttgamer.ui.sheet.documents.fields.damageMarks.bashing": {
+        "message": "Дробящий"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageMarks.lethal": {
+        "message": "Летальный"
+    },
     "ttgamer.ui.sheet.documents.fields.darkSideResistance": {
         "message": "Сопротивление Тёмной стороне"
     },
@@ -3459,7 +3465,7 @@
         "message": "Трекер"
     },
     "ttgamer.ui.sheet.templates.editor.paletteTrackerHint": {
-        "message": "Уровни здоровья или повреждений со штрафами"
+        "message": "Клетки с отметками по уровням: здоровье, стресс или любая другая ноша"
     },
     "ttgamer.ui.sheet.templates.editor.partCurrent": {
         "message": "Текущее значение"
@@ -3857,6 +3863,9 @@
     "ttgamer.ui.sheet.templates.fieldTypes.toggle": {
         "message": "Переключатель"
     },
+    "ttgamer.ui.sheet.templates.fieldTypes.tracker": {
+        "message": "Трекер"
+    },
     "ttgamer.ui.sheet.templates.library.noDescription": {
         "message": "Без описания"
     },
@@ -4043,6 +4052,258 @@
     "ttgamer.ui.sheet.templates.reference.search": {
         "message": "Введите имя для поиска"
     },
+    "ttgamer.ui.sheet.templates.tracker.addLength": {
+        "message": "Длина"
+    },
+    "ttgamer.ui.sheet.templates.tracker.addLevel": {
+        "message": "Добавить уровень"
+    },
+    "ttgamer.ui.sheet.templates.tracker.addMark": {
+        "message": "Добавить отметку"
+    },
+    "ttgamer.ui.sheet.templates.tracker.addMarksColumn": {
+        "message": "Столбец отметок"
+    },
+    "ttgamer.ui.sheet.templates.tracker.addTextColumn": {
+        "message": "Текстовый столбец"
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeCopies": {
+        "message": "{title}: {count} копия в {documents} больше не будет показана.|{title}: {count} копии в {documents} больше не будут показаны.|{title}: {count} копий в {documents} больше не будут показаны."
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeMarks": {
+        "message": "{title}: {count} сохранённая отметка в {documents} больше не будет показана.|{title}: {count} сохранённые отметки в {documents} больше не будут показаны.|{title}: {count} сохранённых отметок в {documents} больше не будут показаны."
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeNote": {
+        "message": "Значения останутся сохранёнными, но удалённые уровни, отметки и столбцы при повторном добавлении получат новые идентификаторы, поэтому эти значения больше не появятся."
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeTexts": {
+        "message": "{title}: {count} сохранённая заметка в {documents} больше не будет показана.|{title}: {count} сохранённые заметки в {documents} больше не будут показаны.|{title}: {count} сохранённых заметок в {documents} больше не будут показаны."
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeTitle": {
+        "message": "Скрыть сохранённые значения трекера?"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorError": {
+        "message": "Красный"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorSecondary": {
+        "message": "Янтарный"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorSuccess": {
+        "message": "Зелёный"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorTertiary": {
+        "message": "Фиолетовый"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorText": {
+        "message": "Чернила"
+    },
+    "ttgamer.ui.sheet.templates.tracker.column": {
+        "message": "Столбец {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnBuiltIn": {
+        "message": "Отметки — из документа"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnKind": {
+        "message": "Вид столбца"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnMarks": {
+        "message": "Отметки"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columns": {
+        "message": "Столбцы"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnsBuiltInHint": {
+        "message": "Столбцы, добавленные к встроенному трекеру, хранят значения на странице."
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnText": {
+        "message": "Текст"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnTitle": {
+        "message": "Заголовок столбца"
+    },
+    "ttgamer.ui.sheet.templates.tracker.copies": {
+        "message": "Читатели добавляют копии (A, B, C…)"
+    },
+    "ttgamer.ui.sheet.templates.tracker.copiesMax": {
+        "message": "до"
+    },
+    "ttgamer.ui.sheet.templates.tracker.copiesMaxLabel": {
+        "message": "Наибольшее число копий"
+    },
+    "ttgamer.ui.sheet.templates.tracker.covers": {
+        "message": "Охватывает"
+    },
+    "ttgamer.ui.sheet.templates.tracker.coversAll": {
+        "message": "Все уровни"
+    },
+    "ttgamer.ui.sheet.templates.tracker.coversFirst": {
+        "message": "Первые {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.defaultLabel": {
+        "message": "Здоровье"
+    },
+    "ttgamer.ui.sheet.templates.tracker.defaultMarksTitle": {
+        "message": "Урон"
+    },
+    "ttgamer.ui.sheet.templates.tracker.defaultTextTitle": {
+        "message": "Заметки"
+    },
+    "ttgamer.ui.sheet.templates.tracker.defaultValueTitle": {
+        "message": "Штраф"
+    },
+    "ttgamer.ui.sheet.templates.tracker.display": {
+        "message": "Вид"
+    },
+    "ttgamer.ui.sheet.templates.tracker.displayHint": {
+        "message": "Одна строка — маленькая полоса для кратких страниц: подпись в строке, без кнопок длины."
+    },
+    "ttgamer.ui.sheet.templates.tracker.displayLine": {
+        "message": "Одна строка"
+    },
+    "ttgamer.ui.sheet.templates.tracker.displayStrip": {
+        "message": "Полоса"
+    },
+    "ttgamer.ui.sheet.templates.tracker.displayTable": {
+        "message": "Таблица"
+    },
+    "ttgamer.ui.sheet.templates.tracker.issueCovers": {
+        "message": "Трекер «{id}»: столбец охватывает все уровни или больше; выберите «Все уровни»."
+    },
+    "ttgamer.ui.sheet.templates.tracker.issueLengthEmpty": {
+        "message": "Трекер «{id}»: длина {n} не показывает ни одного уровня."
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengthColumn": {
+        "message": "Длина {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengthLevel": {
+        "message": "{level} в длине {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengths": {
+        "message": "Читатели меняют длину"
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengthsHint": {
+        "message": "Каждая длина перечисляет уровни, которые показывает. При укорочении скрытые отметки после вопроса сворачиваются в новый последний уровень (побеждает самая тяжёлая)."
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengthShows": {
+        "message": "Показывает"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelCount": {
+        "message": "{count} из {max}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelName": {
+        "message": "Название уровня {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levels": {
+        "message": "Уровни"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelsBuiltIn": {
+        "message": "Число и порядок уровней задаёт игра; пустые названия и значения берутся из игры."
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelsLegacy": {
+        "message": "Задано старой страницей"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelsUseGame": {
+        "message": "Вернуть уровни игры"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelValue": {
+        "message": "Значение уровня {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markAggravated": {
+        "message": "Аггравированный"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markBashing": {
+        "message": "Дробящий"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markColors": {
+        "message": "Цвет: {name}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markLethal": {
+        "message": "Летальный"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markMarked": {
+        "message": "Отмечено"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markName": {
+        "message": "Название отметки {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markOwnColor": {
+        "message": "{name}: свой цвет"
+    },
+    "ttgamer.ui.sheet.templates.tracker.marks": {
+        "message": "Отметки"
+    },
+    "ttgamer.ui.sheet.templates.tracker.marksBuiltIn": {
+        "message": "Число отметок задаёт игра; их можно переименовать и перекрасить."
+    },
+    "ttgamer.ui.sheet.templates.tracker.marksHint": {
+        "message": "Щелчок переводит клетку к следующей отметке в этом порядке, затем снова к пустой; более поздняя отметка считается тяжелее."
+    },
+    "ttgamer.ui.sheet.templates.tracker.markSymbol": {
+        "message": "Символ отметки {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.moveLevelDown": {
+        "message": "Переместить уровень {n} ниже"
+    },
+    "ttgamer.ui.sheet.templates.tracker.moveLevelUp": {
+        "message": "Переместить уровень {n} выше"
+    },
+    "ttgamer.ui.sheet.templates.tracker.moveMarkDown": {
+        "message": "Переместить отметку {n} ниже"
+    },
+    "ttgamer.ui.sheet.templates.tracker.moveMarkUp": {
+        "message": "Переместить отметку {n} выше"
+    },
+    "ttgamer.ui.sheet.templates.tracker.newLevel": {
+        "message": "Уровень {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.newMark": {
+        "message": "Отметка {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.out": {
+        "message": "Отмечать копию выбывшей, когда отмечен её последний уровень"
+    },
+    "ttgamer.ui.sheet.templates.tracker.reading": {
+        "message": "Чтение отметок"
+    },
+    "ttgamer.ui.sheet.templates.tracker.removeColumn": {
+        "message": "Удалить столбец {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.removeLength": {
+        "message": "Удалить длину {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.removeLevel": {
+        "message": "Удалить уровень {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.removeMark": {
+        "message": "Удалить отметку {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.setOne": {
+        "message": "Одна отметка"
+    },
+    "ttgamer.ui.sheet.templates.tracker.setThree": {
+        "message": "Три отметки, WoD 20th (╱ × ✱)"
+    },
+    "ttgamer.ui.sheet.templates.tracker.setTwo": {
+        "message": "Две отметки (╱ ×)"
+    },
+    "ttgamer.ui.sheet.templates.tracker.source": {
+        "message": "Источник"
+    },
+    "ttgamer.ui.sheet.templates.tracker.sourceOwn": {
+        "message": "Свои значения"
+    },
+    "ttgamer.ui.sheet.templates.tracker.startFrom": {
+        "message": "Начать с…"
+    },
+    "ttgamer.ui.sheet.templates.tracker.total": {
+        "message": "Итоговая строка: {value} самого глубокого отмеченного уровня"
+    },
+    "ttgamer.ui.sheet.templates.tracker.valueShow": {
+        "message": "Показывать"
+    },
+    "ttgamer.ui.sheet.templates.tracker.valueTitle": {
+        "message": "Заголовок столбца значений"
+    },
     "ttgamer.ui.sheet.templates.transfer.conflictPrompt": {
         "message": "Заменить, импортировать копию с новым ID или отменить."
     },
@@ -4114,6 +4375,54 @@
     },
     "ttgamer.ui.sheet.tracks.rows.moveUp": {
         "message": "Переместить строку {index} выше"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.add": {
+        "message": "Добавить: {title}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.box": {
+        "message": "{level}: {mark}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.cancel": {
+        "message": "Отмена"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.confirm": {
+        "message": "Подтвердить"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.cross": {
+        "message": "Крест"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.empty": {
+        "message": "пусто"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.level": {
+        "message": "Уровень"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.out": {
+        "message": "выбыл"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.removeCopy": {
+        "message": "Удалить {name}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.removeCopyDescription": {
+        "message": "В «{name}» есть отметки или заметки. Удаление сотрёт их."
+    },
+    "ttgamer.ui.sheet.tracks.tracker.removeCopyTitle": {
+        "message": "Удалить копию?"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.shortenDescription": {
+        "message": "У некоторых копий есть отметки на уровнях, которые будут скрыты. Эти отметки перейдут на последний оставшийся уровень."
+    },
+    "ttgamer.ui.sheet.tracks.tracker.shortenTitle": {
+        "message": "Укоротить трекер?"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.slash": {
+        "message": "Косая черта"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.textOnlyInTable": {
+        "message": "Текстовые столбцы ({titles}) показываются только в таблице."
+    },
+    "ttgamer.ui.sheet.tracks.tracker.value": {
+        "message": "Значение"
     },
     "ttgamer.ui.sheet.v5.attributes.charisma": {
         "message": "Обаяние"
@@ -4360,6 +4669,12 @@
     },
     "ttgamer.ui.sheet.v5.system": {
         "message": "Мир Тьмы, 5-я редакция"
+    },
+    "ttgamer.ui.sheet.v5.trackMarks.aggravated": {
+        "message": "Тяжёлый"
+    },
+    "ttgamer.ui.sheet.v5.trackMarks.superficial": {
+        "message": "Поверхностный"
     },
     "ttgamer.ui.sheet.v5Hunter.advantageGroups.allies": {
         "message": "Союзники"

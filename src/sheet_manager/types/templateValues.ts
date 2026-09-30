@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { ListItemField, TemplateField } from './template';
+import type { ListItemField, TemplateField, TrackerColumn } from './template';
 import { TEMPLATE_LIMITS } from './templateLimits';
 
 /**
@@ -126,6 +126,73 @@ export const TemplateListValueSchema = z
 
 export type TemplateListValue = z.infer<typeof TemplateListValueSchema>;
 
+const trackerIdSchema = z.string().min(1).max(64);
+
+/**
+ * One copy of a tracker column (spec 018): marks by level id → mark kind id, notes by level id.
+ * Ids of levels, kinds, or columns the tracker no longer has stay stored and are not shown; the
+ * record bounds leave room for them without letting the value grow without end.
+ */
+export const TrackerCopyValueSchema = z
+    .object({
+        id: trackerIdSchema,
+        marks: z
+            .record(trackerIdSchema, trackerIdSchema)
+            .refine((marks) => Object.keys(marks).length <= TEMPLATE_LIMITS.trackerLevelsMax * 2)
+            .optional(),
+        texts: z
+            .record(trackerIdSchema, z.string().max(TEMPLATE_LIMITS.trackerTextMax))
+            .refine((texts) => Object.keys(texts).length <= TEMPLATE_LIMITS.trackerLevelsMax * 2)
+            .optional(),
+    })
+    .strict();
+
+export type TrackerCopyValue = z.infer<typeof TrackerCopyValueSchema>;
+
+/** An own tracker's value, or a built-in tracker's extra columns (spec 018, R3). */
+export const TrackerValueSchema = z
+    .object({
+        /** Shape tag and version: tells the value apart from every other page value. */
+        tracker: z.literal(1),
+        /** Index into the tracker's lengths. */
+        length: z
+            .number()
+            .int()
+            .min(0)
+            .max(TEMPLATE_LIMITS.trackerLengthsMax - 1)
+            .optional(),
+        columns: z
+            .record(
+                trackerIdSchema,
+                z.array(TrackerCopyValueSchema).max(TEMPLATE_LIMITS.trackerCopiesMax)
+            )
+            .refine(
+                (columns) => Object.keys(columns).length <= TEMPLATE_LIMITS.trackerColumnsMax * 4
+            ),
+    })
+    .strict();
+
+export type TrackerValue = z.infer<typeof TrackerValueSchema>;
+
+/**
+ * Write-path validation of a tracker value against its columns: the shape, and no more copies
+ * than a column allows. Unknown ids pass, so hidden values survive the next write.
+ */
+export function validateTrackerValue(
+    columns: readonly TrackerColumn[],
+    value: unknown
+): ValidateValueResult {
+    const parsed = TrackerValueSchema.safeParse(value);
+    if (!parsed.success) return { ok: false, reason: 'type' };
+    for (const column of columns) {
+        const copies = parsed.data.columns[column.id];
+        if (copies && copies.length > (column.copies?.max ?? 1)) {
+            return { ok: false, reason: 'bounds' };
+        }
+    }
+    return { ok: true, value: parsed.data };
+}
+
 /** Stored detail, or empty text with all flags off when missing or malformed. */
 export function readRatingDetail(value: unknown): RatingDetail {
     const parsed = RatingDetailSchema.safeParse(value);
@@ -140,6 +207,7 @@ export const TemplatePageValuesSchema = z
         z.union([
             PrimitiveValueSchema,
             TemplateResourceValueSchema,
+            TrackerValueSchema,
             TemplateTableRowsSchema,
             RatingDetailSchema,
             TemplateListValueSchema,
@@ -160,7 +228,8 @@ export type TemplateFieldValue =
     | TemplateResourceValue
     | TemplateTableRows
     | TemplateListValue
-    | TemplateImageValue;
+    | TemplateImageValue
+    | TrackerValue;
 
 export type ValidateValueResult =
     | { ok: true; value: TemplateFieldValue }
@@ -304,6 +373,8 @@ export function validateTemplateValue(field: TemplateField, value: unknown): Val
         case 'formula':
             // Formula results are computed, never stored (spec A4).
             return { ok: false, reason: 'type' };
+        case 'tracker':
+            return validateTrackerValue(field.columns, value);
     }
 }
 
@@ -347,6 +418,11 @@ export function coerceStoredValue(
         case 'image':
         case 'formula':
             return undefined;
+        case 'tracker': {
+            // Copies beyond a lowered maximum stay stored and are hidden, not a broken value.
+            const parsed = TrackerValueSchema.safeParse(value);
+            return parsed.success ? parsed.data : undefined;
+        }
         case 'select':
             if (field.multiple && typeof value === 'string') return [value];
             if (!field.multiple && Array.isArray(value) && typeof value[0] === 'string') {

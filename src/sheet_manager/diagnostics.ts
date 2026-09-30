@@ -14,6 +14,10 @@ export type SheetIssueCode =
     | 'binding-unresolved'
     | 'catalog-unavailable'
     | 'list-entry-unreadable'
+    /** A stored tracker value does not have the tracker value shape; it reads as empty. */
+    | 'template-value-unreadable'
+    /** Stored tracker marks or notes under levels, kinds, columns, or copies the page lost. */
+    | 'template-value-hidden'
     | 'formula-error'
     | 'template-reference-invalid'
     /** A document rendered a page other than the one it asked for (stale id, kind mismatch). */

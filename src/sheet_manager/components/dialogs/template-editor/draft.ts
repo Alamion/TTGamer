@@ -7,6 +7,7 @@ import {
     type TemplateReferenceIssue,
     validateTemplateReferences,
 } from '../../../features/sheet/data/templateReferences';
+import { defaultTrackerSettings } from '../../../features/sheet/data/trackerDefaults';
 import {
     detectDependencyCycles,
     type FormulaDependencyEntry,
@@ -549,6 +550,8 @@ function baseField(type: TemplateField['type'], label: string): TemplateField {
                 targetKinds: [DocumentKindSchema.parse('character')],
                 multiple: false,
             };
+        case 'tracker':
+            return { ...base, type: 'tracker', ...defaultTrackerSettings() };
     }
 }
 
@@ -632,6 +635,8 @@ export interface DraftIssueMessages {
     unknownLabelMessage: string;
     invalidDocsLink: string;
     referenceTargetUnavailable: string;
+    trackerLengthEmpty: string;
+    trackerCovers: string;
 }
 
 function referenceIssueMessage(
@@ -772,6 +777,34 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
         if (node.type === 'list' && node.valueKey !== undefined) {
             checkEffectiveKey(node.valueKey, node.id);
         }
+        if (node.type === 'tracker') {
+            const levelIds = new Set(node.levels.map(({ id }) => id));
+            node.lengths.forEach((length, index) => {
+                if (!length.levels.some((id) => levelIds.has(id))) {
+                    issue(
+                        interpolate(messages.trackerLengthEmpty, { id: node.label, n: index + 1 })
+                    );
+                }
+            });
+        }
+        const trackerColumns =
+            node.type === 'tracker'
+                ? node.columns
+                : node.type === 'primitive'
+                  ? (node.tracker?.columns ?? [])
+                  : [];
+        if (
+            node.type === 'tracker' &&
+            trackerColumns.some(
+                ({ covers }) => covers !== undefined && covers >= node.levels.length
+            )
+        ) {
+            issue(interpolate(messages.trackerCovers, { id: node.label }));
+        }
+        // A built-in tracker's extra columns keep their values under their own key.
+        if (node.type === 'primitive' && trackerColumns.length > 0) {
+            checkEffectiveKey(node.tracker?.valueKey ?? node.id, node.id);
+        }
     });
 
     // Cycle detection across formula writers (FR-14; defense in depth at render separately).
@@ -851,7 +884,9 @@ function mapFieldItems(
                 const item = listItemField(node);
                 if (item.id !== fieldId) return node;
                 const next = map(item);
-                return next.type === 'formula' ? node : { ...node, item: next };
+                return next.type === 'formula' || next.type === 'tracker'
+                    ? node
+                    : { ...node, item: next };
             }
             return isTemplateField(node) && node.id === fieldId ? map(node) : node;
         })

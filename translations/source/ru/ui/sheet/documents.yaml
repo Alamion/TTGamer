@@ -152,6 +152,9 @@ fields:
     range: Дальность
     arc: Сектор обстрела
     none: Пока пусто
+    damageMarks:
+        bashing: Дробящий
+        lethal: Летальный
     healthLevels:
         bruised: Ушибы
         hurt: Лёгкие ранения

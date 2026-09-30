@@ -13,6 +13,7 @@ import {
     TextFieldControl,
     ToggleFieldControl,
 } from '../declarative/fieldControls';
+import { TrackerFieldControl } from '../declarative/TrackerFieldControl';
 
 type FieldControl = ComponentType<TemplateFieldControlProps>;
 
@@ -30,6 +31,7 @@ const registry: { [K in TemplateField['type']]: FieldControl } = {
     reference: ReferenceFieldControl,
     image: ImageFieldControl,
     formula: FormulaFieldControl,
+    tracker: TrackerFieldControl,
 };
 
 export function templateFieldControl(type: TemplateField['type']): FieldControl {

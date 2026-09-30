@@ -78,6 +78,18 @@ export function buildV5CoreBindings(
         documentKinds,
         trackId: id,
         dataKey: id,
+        marks: [
+            {
+                id: 'slash',
+                label: v5.trackMarks.superficial.message,
+                translation: v5.trackMarks.superficial,
+            },
+            {
+                id: 'cross',
+                label: v5.trackMarks.aggravated.message,
+                translation: v5.trackMarks.aggravated,
+            },
+        ],
         levels: [],
         length: {
             from,

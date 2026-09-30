@@ -768,6 +768,94 @@ export function boundPartStories(): ElementStory[] {
     return stories;
 }
 
+/** Seven health levels with WoD penalties, ids fixed so stories stay stable. */
+const HEALTH_LEVELS: NodeInput[] = [
+    ['bruised', 'Bruised', '0'],
+    ['hurt', 'Hurt', '-1'],
+    ['injured', 'Injured', '-1'],
+    ['wounded', 'Wounded', '-2'],
+    ['mauled', 'Mauled', '-2'],
+    ['crippled', 'Crippled', '-5'],
+    ['incapacitated', 'Incapacitated', ''],
+].map(([id, name, value]) => ({ id, name, value }));
+
+const BASHING = { id: 'bashing', name: 'Bashing', symbol: '╱', fill: 'secondary' };
+const LETHAL = { id: 'lethal', name: 'Lethal', symbol: '×', fill: 'error' };
+const AGGRAVATED = { id: 'aggravated', name: 'Aggravated', symbol: '✱', fill: 'tertiary' };
+
+const tracker = (id: string, label: string, extra: NodeInput = {}): NodeInput => ({
+    id,
+    type: 'tracker',
+    label,
+    marks: [BASHING, LETHAL],
+    levels: HEALTH_LEVELS,
+    valueColumn: { title: 'Penalty', show: true },
+    columns: [{ id: 'damage', kind: 'marks', title: 'Damage' }],
+    ...extra,
+});
+
+const trackers = story(
+    'trackers',
+    'Trackers',
+    'Own trackers (spec 018): a click moves a box to the next mark, then back to empty. Each display, one to three and own marks, text and repeated columns, lengths, and out.',
+    ENGINE,
+    [
+        {
+            id: 'section-tracker-displays',
+            type: 'section',
+            title: 'Displays and marks',
+            columns: 2,
+            children: [
+                tracker('tracker-table', 'Health (table, two marks)'),
+                tracker('tracker-wod20', 'Health (WoD 20th, three marks)', {
+                    marks: [BASHING, LETHAL, AGGRAVATED],
+                }),
+                tracker('tracker-strip', 'Health (strip)', { display: 'strip' }),
+                tracker('tracker-line', 'Health (one line)', { display: 'line', total: false }),
+                tracker('tracker-stress', 'Stress (one own mark, bonuses)', {
+                    marks: [{ id: 'strained', name: 'Strained', symbol: '●', fill: '#0e7490' }],
+                    levels: [
+                        { id: 'calm', name: 'Calm', value: '' },
+                        { id: 'tense', name: 'Tense', value: '+1' },
+                        { id: 'shaken', name: 'Shaken', value: '+2' },
+                        { id: 'frantic', name: 'Frantic', value: '+3' },
+                        { id: 'broken', name: 'Broken', value: '' },
+                    ],
+                    valueColumn: { title: 'Bonus', show: true },
+                    columns: [
+                        { id: 'stress', kind: 'marks', title: 'Stress' },
+                        { id: 'trigger', kind: 'text', title: 'Trigger', covers: 3 },
+                    ],
+                }),
+                tracker('tracker-plain', 'Burden (one mark, no values)', {
+                    marks: [{ id: 'marked', name: 'Marked', symbol: '×', fill: 'text' }],
+                    valueColumn: { show: false },
+                    total: false,
+                    hideLabel: true,
+                }),
+            ],
+        },
+        {
+            id: 'section-tracker-copies',
+            type: 'section',
+            title: 'Copies and lengths',
+            children: [
+                tracker('tracker-members', 'Members (copies A, B, C…, lengths 3 / 5 / 7, out)', {
+                    columns: [
+                        { id: 'health', kind: 'marks', title: 'Health', copies: { max: 12 } },
+                    ],
+                    lengths: [
+                        { levels: ['hurt', 'injured', 'incapacitated'] },
+                        { levels: ['bruised', 'hurt', 'injured', 'wounded', 'incapacitated'] },
+                        { levels: HEALTH_LEVELS.map(({ id }) => id as string) },
+                    ],
+                    out: true,
+                }),
+            ],
+        },
+    ]
+);
+
 export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     containers,
     fields,
@@ -775,6 +863,7 @@ export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     userCatalogFields,
     collections,
     listEntries,
+    trackers,
 ];
 
 let allStories: readonly ElementStory[] | undefined;

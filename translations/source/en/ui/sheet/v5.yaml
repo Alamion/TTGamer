@@ -40,6 +40,9 @@ skills:
     politics: Politics
     science: Science
     technology: Technology
+trackMarks:
+    superficial: Superficial
+    aggravated: Aggravated
 sections:
     attributes: Attributes
     skills: Skills

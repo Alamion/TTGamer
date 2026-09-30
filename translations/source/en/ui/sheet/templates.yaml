@@ -111,7 +111,7 @@ editor:
     paletteList: List
     paletteListHint: 'Entries added one by one: custom, skills, merits, equipment…'
     paletteTracker: Tracker
-    paletteTrackerHint: Health or damage levels with penalties
+    paletteTrackerHint: 'Boxes to mark by level: health, stress, or any other burden'
     valueSource: Stores value in
     sourceCustom: Custom value (this template)
     sourceTraits: Traits
@@ -229,7 +229,99 @@ editor:
     shortcutsHint: 'Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo'
     coordinateCurrent: '{label} (current)'
     coordinateMax: '{label} (max)'
+tracker:
+    source: Source
+    sourceOwn: Own values
+    display: Display
+    displayTable: Table
+    displayStrip: Strip
+    displayLine: One line
+    displayHint: One line is the small strip for brief pages, with the label inline and no length buttons.
+    marks: Marks
+    marksHint: A click moves a box to the next mark in this order, then back to empty; a later mark counts as heavier.
+    marksBuiltIn: The game sets the number of marks; you can rename and recolor them.
+    startFrom: Start from…
+    setOne: One mark
+    setTwo: Two marks (╱ ×)
+    setThree: Three marks, WoD 20th (╱ × ✱)
+    markMarked: Marked
+    markBashing: Bashing
+    markLethal: Lethal
+    markAggravated: Aggravated
+    newMark: 'Mark {n}'
+    markName: 'Mark {n} name'
+    markSymbol: 'Mark {n} symbol'
+    markColors: '{name} color'
+    markOwnColor: '{name}: own color'
+    colorSecondary: Amber
+    colorError: Red
+    colorTertiary: Violet
+    colorSuccess: Green
+    colorText: Ink
+    addMark: Add mark
+    moveMarkUp: 'Move mark {n} up'
+    moveMarkDown: 'Move mark {n} down'
+    removeMark: 'Remove mark {n}'
+    levels: Levels
+    levelCount: '{count} of {max}'
+    valueTitle: Value column title
+    valueShow: Show
+    defaultValueTitle: Penalty
+    levelName: 'Level {n} name'
+    levelValue: 'Level {n} value'
+    newLevel: 'Level {n}'
+    addLevel: Add level
+    moveLevelUp: 'Move level {n} up'
+    moveLevelDown: 'Move level {n} down'
+    removeLevel: 'Remove level {n}'
+    levelsBuiltIn: The game sets the number and order of levels; names and values you leave empty follow the game.
+    levelsLegacy: Set by an older page
+    levelsUseGame: Use the game's levels
+    columns: Columns
+    column: 'Column {n}'
+    columnBuiltIn: Marks — from the document
+    columnsBuiltInHint: Columns you add to a built-in tracker keep their values on the page.
+    columnKind: Column kind
+    columnMarks: Marks
+    columnText: Text
+    columnTitle: Column title
+    covers: Covers
+    coversAll: All levels
+    coversFirst: 'First {n}'
+    copies: Readers add copies (A, B, C…)
+    copiesMax: up to
+    copiesMaxLabel: Most copies
+    addMarksColumn: Marks column
+    addTextColumn: Text column
+    removeColumn: 'Remove column {n}'
+    defaultMarksTitle: Damage
+    defaultTextTitle: Notes
+    lengths: Readers switch the length
+    lengthsHint: Each length lists the levels it shows. Shortening folds hidden marks into the new last level (the heaviest mark wins) after asking.
+    lengthColumn: 'Length {n}'
+    lengthLevel: '{level} in length {n}'
+    lengthShows: Shows
+    addLength: Length
+    removeLength: 'Remove length {n}'
+    reading: Reading the marks
+    total: 'Total row: the {value} of the deepest marked level'
+    out: Mark a copy as out when its last level is marked
+    defaultLabel: Health
+    issueLengthEmpty: 'Tracker "{id}": length {n} shows no level.'
+    issueCovers: 'Tracker "{id}": a column covers all its levels or more; choose "All levels".'
+    changeTitle: Hide stored tracker values?
+    changeNote: The values stay stored, but levels, marks, and columns you removed get new ids if added again, so these values will not show again.
+    changeMarks:
+        message: '{title}: {count} stored mark in {documents} will no longer be shown.|{title}: {count} stored marks in {documents} will no longer be shown.'
+        plural: true
+    changeTexts:
+        message: '{title}: {count} stored note in {documents} will no longer be shown.|{title}: {count} stored notes in {documents} will no longer be shown.'
+        plural: true
+    changeCopies:
+        message: '{title}: {count} copy in {documents} will no longer be shown.|{title}: {count} copies in {documents} will no longer be shown.'
+        plural: true
 fieldTypes:
+    tracker: Tracker
     builtIn: Built-in page part
     text: Text
     number: Number

@@ -99,6 +99,8 @@ export interface TemplateFieldControlProps {
     rollLabel?: string;
     /** List entries: the remove control, placed by row-shaped controls at the end of the row. */
     removeSlot?: ReactNode;
+    /** Tracker only: the stored value before coercion, so an unreadable one is reported. */
+    rawValue?: unknown;
 }
 
 /**

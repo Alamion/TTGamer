@@ -16,4 +16,14 @@ export const TEMPLATE_LIMITS = {
     catalogEntriesMax: 1_000,
     catalogColumnsMax: 20,
     catalogsPerOwner: 50,
+    /** Trackers (spec 018); copies match the member cap of built-in member tracks. */
+    trackerLevelsMax: 20,
+    trackerMarksMax: 5,
+    trackerColumnsMax: 6,
+    trackerCopiesMax: 24,
+    trackerLengthsMax: 6,
+    trackerTextMax: 200,
+    trackerLevelValueMax: 12,
+    trackerSymbolMax: 2,
+    trackerNameMax: 40,
 } as const;

@@ -1670,6 +1670,12 @@
     "ttgamer.ui.sheet.documents.fields.damageLevels.wrecked": {
         "message": "Wrecked"
     },
+    "ttgamer.ui.sheet.documents.fields.damageMarks.bashing": {
+        "message": "Bashing"
+    },
+    "ttgamer.ui.sheet.documents.fields.damageMarks.lethal": {
+        "message": "Lethal"
+    },
     "ttgamer.ui.sheet.documents.fields.darkSideResistance": {
         "message": "Dark Side resistance"
     },
@@ -3459,7 +3465,7 @@
         "message": "Tracker"
     },
     "ttgamer.ui.sheet.templates.editor.paletteTrackerHint": {
-        "message": "Health or damage levels with penalties"
+        "message": "Boxes to mark by level: health, stress, or any other burden"
     },
     "ttgamer.ui.sheet.templates.editor.partCurrent": {
         "message": "Current value"
@@ -3857,6 +3863,9 @@
     "ttgamer.ui.sheet.templates.fieldTypes.toggle": {
         "message": "Toggle"
     },
+    "ttgamer.ui.sheet.templates.fieldTypes.tracker": {
+        "message": "Tracker"
+    },
     "ttgamer.ui.sheet.templates.library.noDescription": {
         "message": "No description"
     },
@@ -4043,6 +4052,258 @@
     "ttgamer.ui.sheet.templates.reference.search": {
         "message": "Type a name to search"
     },
+    "ttgamer.ui.sheet.templates.tracker.addLength": {
+        "message": "Length"
+    },
+    "ttgamer.ui.sheet.templates.tracker.addLevel": {
+        "message": "Add level"
+    },
+    "ttgamer.ui.sheet.templates.tracker.addMark": {
+        "message": "Add mark"
+    },
+    "ttgamer.ui.sheet.templates.tracker.addMarksColumn": {
+        "message": "Marks column"
+    },
+    "ttgamer.ui.sheet.templates.tracker.addTextColumn": {
+        "message": "Text column"
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeCopies": {
+        "message": "{title}: {count} copy in {documents} will no longer be shown.|{title}: {count} copies in {documents} will no longer be shown."
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeMarks": {
+        "message": "{title}: {count} stored mark in {documents} will no longer be shown.|{title}: {count} stored marks in {documents} will no longer be shown."
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeNote": {
+        "message": "The values stay stored, but levels, marks, and columns you removed get new ids if added again, so these values will not show again."
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeTexts": {
+        "message": "{title}: {count} stored note in {documents} will no longer be shown.|{title}: {count} stored notes in {documents} will no longer be shown."
+    },
+    "ttgamer.ui.sheet.templates.tracker.changeTitle": {
+        "message": "Hide stored tracker values?"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorError": {
+        "message": "Red"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorSecondary": {
+        "message": "Amber"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorSuccess": {
+        "message": "Green"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorTertiary": {
+        "message": "Violet"
+    },
+    "ttgamer.ui.sheet.templates.tracker.colorText": {
+        "message": "Ink"
+    },
+    "ttgamer.ui.sheet.templates.tracker.column": {
+        "message": "Column {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnBuiltIn": {
+        "message": "Marks — from the document"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnKind": {
+        "message": "Column kind"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnMarks": {
+        "message": "Marks"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columns": {
+        "message": "Columns"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnsBuiltInHint": {
+        "message": "Columns you add to a built-in tracker keep their values on the page."
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnText": {
+        "message": "Text"
+    },
+    "ttgamer.ui.sheet.templates.tracker.columnTitle": {
+        "message": "Column title"
+    },
+    "ttgamer.ui.sheet.templates.tracker.copies": {
+        "message": "Readers add copies (A, B, C…)"
+    },
+    "ttgamer.ui.sheet.templates.tracker.copiesMax": {
+        "message": "up to"
+    },
+    "ttgamer.ui.sheet.templates.tracker.copiesMaxLabel": {
+        "message": "Most copies"
+    },
+    "ttgamer.ui.sheet.templates.tracker.covers": {
+        "message": "Covers"
+    },
+    "ttgamer.ui.sheet.templates.tracker.coversAll": {
+        "message": "All levels"
+    },
+    "ttgamer.ui.sheet.templates.tracker.coversFirst": {
+        "message": "First {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.defaultLabel": {
+        "message": "Health"
+    },
+    "ttgamer.ui.sheet.templates.tracker.defaultMarksTitle": {
+        "message": "Damage"
+    },
+    "ttgamer.ui.sheet.templates.tracker.defaultTextTitle": {
+        "message": "Notes"
+    },
+    "ttgamer.ui.sheet.templates.tracker.defaultValueTitle": {
+        "message": "Penalty"
+    },
+    "ttgamer.ui.sheet.templates.tracker.display": {
+        "message": "Display"
+    },
+    "ttgamer.ui.sheet.templates.tracker.displayHint": {
+        "message": "One line is the small strip for brief pages, with the label inline and no length buttons."
+    },
+    "ttgamer.ui.sheet.templates.tracker.displayLine": {
+        "message": "One line"
+    },
+    "ttgamer.ui.sheet.templates.tracker.displayStrip": {
+        "message": "Strip"
+    },
+    "ttgamer.ui.sheet.templates.tracker.displayTable": {
+        "message": "Table"
+    },
+    "ttgamer.ui.sheet.templates.tracker.issueCovers": {
+        "message": "Tracker \"{id}\": a column covers all its levels or more; choose \"All levels\"."
+    },
+    "ttgamer.ui.sheet.templates.tracker.issueLengthEmpty": {
+        "message": "Tracker \"{id}\": length {n} shows no level."
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengthColumn": {
+        "message": "Length {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengthLevel": {
+        "message": "{level} in length {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengths": {
+        "message": "Readers switch the length"
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengthsHint": {
+        "message": "Each length lists the levels it shows. Shortening folds hidden marks into the new last level (the heaviest mark wins) after asking."
+    },
+    "ttgamer.ui.sheet.templates.tracker.lengthShows": {
+        "message": "Shows"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelCount": {
+        "message": "{count} of {max}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelName": {
+        "message": "Level {n} name"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levels": {
+        "message": "Levels"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelsBuiltIn": {
+        "message": "The game sets the number and order of levels; names and values you leave empty follow the game."
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelsLegacy": {
+        "message": "Set by an older page"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelsUseGame": {
+        "message": "Use the game's levels"
+    },
+    "ttgamer.ui.sheet.templates.tracker.levelValue": {
+        "message": "Level {n} value"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markAggravated": {
+        "message": "Aggravated"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markBashing": {
+        "message": "Bashing"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markColors": {
+        "message": "{name} color"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markLethal": {
+        "message": "Lethal"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markMarked": {
+        "message": "Marked"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markName": {
+        "message": "Mark {n} name"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markOwnColor": {
+        "message": "{name}: own color"
+    },
+    "ttgamer.ui.sheet.templates.tracker.marks": {
+        "message": "Marks"
+    },
+    "ttgamer.ui.sheet.templates.tracker.marksBuiltIn": {
+        "message": "The game sets the number of marks; you can rename and recolor them."
+    },
+    "ttgamer.ui.sheet.templates.tracker.marksHint": {
+        "message": "A click moves a box to the next mark in this order, then back to empty; a later mark counts as heavier."
+    },
+    "ttgamer.ui.sheet.templates.tracker.markSymbol": {
+        "message": "Mark {n} symbol"
+    },
+    "ttgamer.ui.sheet.templates.tracker.moveLevelDown": {
+        "message": "Move level {n} down"
+    },
+    "ttgamer.ui.sheet.templates.tracker.moveLevelUp": {
+        "message": "Move level {n} up"
+    },
+    "ttgamer.ui.sheet.templates.tracker.moveMarkDown": {
+        "message": "Move mark {n} down"
+    },
+    "ttgamer.ui.sheet.templates.tracker.moveMarkUp": {
+        "message": "Move mark {n} up"
+    },
+    "ttgamer.ui.sheet.templates.tracker.newLevel": {
+        "message": "Level {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.newMark": {
+        "message": "Mark {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.out": {
+        "message": "Mark a copy as out when its last level is marked"
+    },
+    "ttgamer.ui.sheet.templates.tracker.reading": {
+        "message": "Reading the marks"
+    },
+    "ttgamer.ui.sheet.templates.tracker.removeColumn": {
+        "message": "Remove column {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.removeLength": {
+        "message": "Remove length {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.removeLevel": {
+        "message": "Remove level {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.removeMark": {
+        "message": "Remove mark {n}"
+    },
+    "ttgamer.ui.sheet.templates.tracker.setOne": {
+        "message": "One mark"
+    },
+    "ttgamer.ui.sheet.templates.tracker.setThree": {
+        "message": "Three marks, WoD 20th (╱ × ✱)"
+    },
+    "ttgamer.ui.sheet.templates.tracker.setTwo": {
+        "message": "Two marks (╱ ×)"
+    },
+    "ttgamer.ui.sheet.templates.tracker.source": {
+        "message": "Source"
+    },
+    "ttgamer.ui.sheet.templates.tracker.sourceOwn": {
+        "message": "Own values"
+    },
+    "ttgamer.ui.sheet.templates.tracker.startFrom": {
+        "message": "Start from…"
+    },
+    "ttgamer.ui.sheet.templates.tracker.total": {
+        "message": "Total row: the {value} of the deepest marked level"
+    },
+    "ttgamer.ui.sheet.templates.tracker.valueShow": {
+        "message": "Show"
+    },
+    "ttgamer.ui.sheet.templates.tracker.valueTitle": {
+        "message": "Value column title"
+    },
     "ttgamer.ui.sheet.templates.transfer.conflictPrompt": {
         "message": "Replace it, import a duplicate with a new ID, or cancel this file."
     },
@@ -4114,6 +4375,54 @@
     },
     "ttgamer.ui.sheet.tracks.rows.moveUp": {
         "message": "Move row {index} up"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.add": {
+        "message": "Add {title}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.box": {
+        "message": "{level}: {mark}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.cancel": {
+        "message": "Cancel"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.confirm": {
+        "message": "Confirm"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.cross": {
+        "message": "Cross"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.empty": {
+        "message": "empty"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.level": {
+        "message": "Level"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.out": {
+        "message": "out"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.removeCopy": {
+        "message": "Remove {name}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.removeCopyDescription": {
+        "message": "{name} has recorded marks or notes. Removing it deletes them."
+    },
+    "ttgamer.ui.sheet.tracks.tracker.removeCopyTitle": {
+        "message": "Remove this copy?"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.shortenDescription": {
+        "message": "Some copies have marks on levels that will be hidden. Their marks move to the last remaining level."
+    },
+    "ttgamer.ui.sheet.tracks.tracker.shortenTitle": {
+        "message": "Shorten the tracker?"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.slash": {
+        "message": "Slash"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.textOnlyInTable": {
+        "message": "Text columns ({titles}) show only in the table."
+    },
+    "ttgamer.ui.sheet.tracks.tracker.value": {
+        "message": "Value"
     },
     "ttgamer.ui.sheet.v5.attributes.charisma": {
         "message": "Charisma"
@@ -4360,6 +4669,12 @@
     },
     "ttgamer.ui.sheet.v5.system": {
         "message": "World of Darkness 5th Edition"
+    },
+    "ttgamer.ui.sheet.v5.trackMarks.aggravated": {
+        "message": "Aggravated"
+    },
+    "ttgamer.ui.sheet.v5.trackMarks.superficial": {
+        "message": "Superficial"
     },
     "ttgamer.ui.sheet.v5Hunter.advantageGroups.allies": {
         "message": "Allies"

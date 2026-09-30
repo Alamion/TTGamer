@@ -1,15 +1,23 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
+import { defaultTrackerSettings } from '../../../features/sheet/data/trackerDefaults';
 import type {
     DocumentBindingDescriptor,
     EquipmentBinding,
     FieldBinding,
     ListBinding,
     ResourceBinding,
+    TrackBinding,
     TraitBinding,
 } from '../../../systems/templateBindings';
-import type { ListNode, PrimitiveNode, TemplateField, TemplateNode } from '../../../types/template';
+import type {
+    ListNode,
+    PrimitiveNode,
+    TemplateField,
+    TemplateNode,
+    TrackerField,
+} from '../../../types/template';
 import { fieldValueKey } from '../../../types/template';
 
 /**
@@ -156,4 +164,59 @@ export function listFromSource(
               ...(node.type === 'list' && node.item ? { item: node.item } : {}),
               ...(node.type === 'list' && node.named === false ? { named: false } : {}),
           };
+}
+
+type TrackerLike = TrackerField | PrimitiveNode;
+
+/** The track binding a tracker reads from, or `custom` for its own values. */
+export function currentTrackerSource(node: TrackerLike): string {
+    return node.type === 'primitive' ? node.bindingKey : CUSTOM_SOURCE;
+}
+
+/**
+ * Switches a tracker between its own values and a game's built-in track (spec 018, R8): the
+ * display, value column, extra columns, and total carry over; levels and marks become the
+ * game's, or start from the default health track.
+ */
+export function trackerFromSource(
+    node: TrackerLike,
+    source: TrackBinding | undefined
+): TemplateNode {
+    const base = carried(node);
+    if (source) {
+        const own = node.type === 'tracker' ? node : undefined;
+        const kept = node.type === 'primitive' ? node.tracker : undefined;
+        // An own tracker's first marks column becomes the game's; the others stay as extras.
+        const firstMarks = own?.columns.findIndex(({ kind }) => kind === 'marks') ?? -1;
+        const extras = own ? own.columns.filter((_, index) => index !== firstMarks) : kept?.columns;
+        return {
+            ...base,
+            type: 'primitive',
+            bindingKey: source.key,
+            label: node.label ?? source.label,
+            compact: false,
+            tracker: {
+                display: own?.display ?? kept?.display ?? 'table',
+                ...(own ? { valueColumn: own.valueColumn, total: own.total } : {}),
+                ...(kept?.valueColumn ? { valueColumn: kept.valueColumn } : {}),
+                ...(kept?.total !== undefined ? { total: kept.total } : {}),
+                ...(extras && extras.length > 0 ? { columns: extras } : {}),
+            },
+        };
+    }
+    if (node.type === 'tracker') return node;
+    const defaults = defaultTrackerSettings();
+    const settings = node.tracker;
+    return {
+        ...base,
+        type: 'tracker',
+        label: node.label ?? translate(uiMessages.sheet.templates.tracker.defaultLabel),
+        required: false,
+        compact: false,
+        ...defaults,
+        ...(settings?.display ? { display: settings.display } : {}),
+        ...(settings?.valueColumn ? { valueColumn: settings.valueColumn } : {}),
+        ...(settings?.total !== undefined ? { total: settings.total } : {}),
+        columns: [...defaults.columns, ...(settings?.columns ?? [])],
+    };
 }

@@ -7,7 +7,7 @@ import type { NodeUpdates } from './draft';
 import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
-import { ListSourceSelect, ValueSourceSelect } from './SourceControls';
+import { ListSourceSelect, TrackerSourceSelect, ValueSourceSelect } from './SourceControls';
 import { TermHintControl } from './TermHintControl';
 
 const primitives = uiMessages.sheet.templates.primitives;
@@ -49,7 +49,9 @@ export function PrimitiveConfig({
 
             {descriptor?.kind === 'equipment' ? (
                 <ListSourceSelect node={node} onReplace={onReplace} />
-            ) : descriptor?.kind === 'track' || descriptor?.kind === 'rows' || !descriptor ? (
+            ) : descriptor?.kind === 'track' ? (
+                <TrackerSourceSelect node={node} onReplace={onReplace} />
+            ) : descriptor?.kind === 'rows' || !descriptor ? (
                 <label className="grid gap-1 text-xs text-textSecondary">
                     {t(descriptor ? editor.trackerSource : primitives.binding)}
                     <select

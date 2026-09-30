@@ -220,11 +220,12 @@ function FieldCell({
         documentOptions: pageApi.documentOptions,
         onOpenDocument: pageApi.openDocument,
         previewSource: pageApi.previewSource,
+        ...(field.type === 'tracker' ? { rawValue: pageApi.values[fieldValueKey(field)] } : {}),
     });
     // Computed values read as "label … value" rows; the control renders both.
     if (field.type === 'formula') return controlElement;
-    // Ratings are trait rows: the label sits beside the dots (spec 014).
-    if (field.type === 'rating') {
+    // Ratings are trait rows (spec 014); trackers draw their own label beside their controls.
+    if (field.type === 'rating' || field.type === 'tracker') {
         return (
             <div className="grid grid-cols-1 gap-1">
                 {controlElement}

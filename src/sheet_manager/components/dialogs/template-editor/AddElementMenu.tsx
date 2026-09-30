@@ -6,7 +6,6 @@ import { type ReactNode, useState } from 'react';
 
 import { legacyListItem, type TemplateNode } from '../../../types/template';
 import { generateDraftId, newField } from './draft';
-import { useEditorModel } from './EditorModel';
 
 const editor = uiMessages.sheet.templates.editor;
 
@@ -24,8 +23,6 @@ interface ElementOption {
  */
 function useElementOptions(): readonly ElementOption[] {
     const t = (descriptor: { message: string }) => translate(descriptor);
-    const { bindings } = useEditorModel();
-    const firstTrack = bindings.find((binding) => binding.kind === 'track');
     return [
         {
             key: 'section',
@@ -91,15 +88,9 @@ function useElementOptions(): readonly ElementOption[] {
             key: 'tracker',
             label: t(editor.paletteTracker),
             hint: t(editor.paletteTrackerHint),
-            build: firstTrack
-                ? () => ({
-                      id: generateDraftId('blk'),
-                      type: 'primitive',
-                      bindingKey: firstTrack.key,
-                      label: firstTrack.label,
-                      compact: false,
-                  })
-                : undefined,
+            // An own tracker; its Source setting switches it to a game's built-in track.
+            build: () =>
+                newField('tracker', translate(uiMessages.sheet.templates.tracker.defaultLabel)),
         },
     ];
 }

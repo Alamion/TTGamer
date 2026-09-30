@@ -25,9 +25,10 @@ import { CatalogBindingEditor } from './CatalogBindingEditor';
 import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
-import { ValueSourceSelect } from './SourceControls';
+import { TrackerSourceSelect, ValueSourceSelect } from './SourceControls';
 import { currentValueSource, CUSTOM_SOURCE } from './sourceNodes';
 import { TermHintControl } from './TermHintControl';
+import { TrackerSettings } from './TrackerSettings';
 
 const editor = uiMessages.sheet.templates.editor;
 const fieldTypes = uiMessages.sheet.templates.fieldTypes;
@@ -61,9 +62,12 @@ export function FieldEditor({
     callbacks,
     field,
     itemOfList = false,
+    inTable = false,
 }: {
     callbacks: FieldEditorCallbacks;
     field: TemplateField;
+    /** A table column: a tracker cannot be one (spec 018). */
+    inTable?: boolean;
     /**
      * A custom list's entry template (spec 016): settings that cannot apply to repeated copies
      * (storage, required) are hidden, and a formula is not offered.
@@ -74,7 +78,11 @@ export function FieldEditor({
     const { bindings, coordinateListId: coordinateDatalist } = useEditorModel();
     const sourceKey = currentValueSource(field, bindings);
     const isCustom = itemOfList || sourceKey === CUSTOM_SOURCE;
-    const types = itemOfList ? LIST_ITEM_TYPES : TEMPLATE_FIELD_TYPES;
+    const types = itemOfList
+        ? LIST_ITEM_TYPES
+        : inTable
+          ? TEMPLATE_FIELD_TYPES.filter((type) => type !== 'tracker')
+          : TEMPLATE_FIELD_TYPES;
     // Trait values render with the sheet's own trait row: rating bounds and maxFrom do not apply.
     const isTraitSource = bindings.some(
         (binding) => binding.key === sourceKey && binding.kind === 'trait'
@@ -125,7 +133,13 @@ export function FieldEditor({
                 className={`${inputClasses} w-full`}
             />
 
-            {!itemOfList && (
+            {!itemOfList && field.type === 'tracker' && (
+                <TrackerSourceSelect
+                    node={field}
+                    onReplace={(_, next) => callbacks.onReplace(next)}
+                />
+            )}
+            {!itemOfList && field.type !== 'tracker' && (
                 <ValueSourceSelect
                     node={field}
                     onReplace={(_, next) => callbacks.onReplace(next)}
@@ -198,6 +212,13 @@ export function FieldEditor({
                 node={field}
                 onChange={(termHint) => callbacks.onUpdate({ termHint })}
             />
+
+            {field.type === 'tracker' && (
+                <TrackerSettings
+                    value={field}
+                    onChange={(updates) => callbacks.onUpdate(updates as Partial<TemplateField>)}
+                />
+            )}
 
             {field.type === 'text' && (
                 <input

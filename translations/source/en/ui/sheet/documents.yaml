@@ -152,6 +152,9 @@ fields:
     range: Range
     arc: Arc
     none: None yet
+    damageMarks:
+        bashing: Bashing
+        lethal: Lethal
     healthLevels:
         bruised: Bruised
         hurt: Hurt

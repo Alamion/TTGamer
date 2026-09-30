@@ -29,14 +29,14 @@ The existing track tests must stay green, changed only where the markup changes.
 
 ## Phase 1: Setup
 
-- [ ] T001 Mark T-078 as in progress (`[ ] 🟡`) in `TODO.md`. Add two follow-up entries in the
+- [x] T001 Mark T-078 as in progress (`[ ] 🟡`) in `TODO.md`. Add two follow-up entries in the
       same roadmap path:
     - "Formulas read a tracker": the total value of a copy, per spec 018 FR-030;
     - "Square toggle look": a toggle drawn like a tracker mark box.
 
     Run `yarn validate:backlog`.
 
-- [ ] T002 [P] Add the tracker strings to `translations/source/{en,ru}/ui/sheet/templates.yaml`
+- [x] T002 [P] Add the tracker strings to `translations/source/{en,ru}/ui/sheet/templates.yaml`
       (key group `tracker.*`, next to `primitives.*`), then run `yarn build:translations`. The
       strings, from the contract:
     - `fieldTypes.tracker`;
@@ -51,7 +51,7 @@ The existing track tests must stay green, changed only where the markup changes.
     - the built-in notes;
     - the problems-panel messages;
     - the pending-save lines for trackers (plurals, as `editor.listChange*`).
-- [ ] T003 [P] Add the sheet strings to `translations/source/{en,ru}/ui/sheet/tracks.yaml`, then run
+- [x] T003 [P] Add the sheet strings to `translations/source/{en,ru}/ui/sheet/tracks.yaml`, then run
       `yarn build:translations`:
     - "Level" and "Value";
     - "out";
@@ -60,14 +60,14 @@ The existing track tests must stay green, changed only where the markup changes.
     - "Text columns show in the table";
     - the generic mark names "Slash" and "Cross";
     - the generalized shorten confirmation, with "copies" instead of "members".
-- [ ] T004 [P] Add the tracker limits of R10 to
+- [x] T004 [P] Add the tracker limits of R10 to
       `src/sheet_manager/types/templateLimits.ts`.
 
 ---
 
 ## Phase 2: Foundational (blocks all stories)
 
-- [ ] T005 Add the tracker schemas to `src/sheet_manager/types/template.ts`, following
+- [x] T005 Add the tracker schemas to `src/sheet_manager/types/template.ts`, following
       data-model.md:
     - `TrackerFillSchema`: palette keys, or `#rrggbb`.
     - `TrackerMarkKindSchema`, `TrackerLevelSchema`, `TrackerColumnSchema`, and
@@ -93,13 +93,13 @@ The existing track tests must stay green, changed only where the markup changes.
     `baseField` in `draft.ts` and the field control registry. A temporary stub is fine; the real
     cases come in US1.
 
-- [ ] T006 [P] Add `TrackerValueSchema` to `src/sheet_manager/types/templateValues.ts`
+- [x] T006 [P] Add `TrackerValueSchema` to `src/sheet_manager/types/templateValues.ts`
       (data-model "TrackerValue"): the `tracker: 1` tag, `length`, and
       `columns: {[id]: {id, marks?, texts?}[]}`. Add it to `TemplatePageValuesSchema`, placed so
       that no other union member swallows it.
-- [ ] T007 [P] Add `template-value-unreadable` and `template-value-hidden` to the `SheetIssueCode`
+- [x] T007 [P] Add `template-value-unreadable` and `template-value-hidden` to the `SheetIssueCode`
       union in `src/sheet_manager/diagnostics.ts` (R11, FR-026a).
-- [ ] T008 [P] Add the optional `marks` (`{id: 'slash' | 'cross', label, translation?}[]`) to
+- [x] T008 [P] Add the optional `marks` (`{id: 'slash' | 'cross', label, translation?}[]`) to
       `TrackBinding` in `src/sheet_manager/systems/templateBindings.ts` (R5).
     - Give the WoD-like `health` condition track the names Bashing and Lethal. The vehicle-damage
       track (vehicle members, droid damage) declares none and uses the generic Slash and Cross:
@@ -109,7 +109,7 @@ The existing track tests must stay green, changed only where the markup changes.
     - Give the V5 `track()` in `systems/v5/ruleset/bindings.ts` the names Superficial and
       Aggravated.
     - No generic code may import a system folder.
-- [ ] T009 Create `src/sheet_manager/features/sheet/data/tracker.ts`: pure rules over ids (R7).
+- [x] T009 Create `src/sheet_manager/features/sheet/data/tracker.ts`: pure rules over ids (R7).
     - `DEFAULT_TRACKER_CONFIG(messages)` and `MARK_SETS`: one, two, and three marks.
     - `nextMarkId(kinds, current)`: the cycle, ending in empty.
     - `markWeight(kinds, id)`.
@@ -122,7 +122,7 @@ The existing track tests must stay green, changed only where the markup changes.
     - `foldMarks(kinds, visibleAfter, marks)`: the heaviest mark wins on the new last level, and
       hidden marks are cleared.
     - `copyLabel(index)`: A…X.
-- [ ] T010 [P] Write exhaustive tests in `tests/sheet_manager/tracker-rules.test.ts`:
+- [x] T010 [P] Write exhaustive tests in `tests/sheet_manager/tracker-rules.test.ts`:
     - the cycle with 1, 2, 3, and 5 kinds;
     - totals, including hidden levels, no marks, and empty values;
     - out;
@@ -135,7 +135,7 @@ The existing track tests must stay green, changed only where the markup changes.
     This block pins today's behavior before T040 rebuilds `cohort.ts` on these rules; after that,
     the end-to-end proof of parity is T050.
 
-- [ ] T011 [P] Write schema tests in `tests/sheet_manager/tracker-schema.test.ts`:
+- [x] T011 [P] Write schema tests in `tests/sheet_manager/tracker-schema.test.ts`:
     - the config limits: 20 levels, 5 marks, 6 columns, 24 copies, 6 lengths, a 2-code-point
       symbol;
     - fills;
@@ -144,14 +144,14 @@ The existing track tests must stay green, changed only where the markup changes.
     - the `TrackerValue` limits and tag;
     - every shipped template still parses (`systemRegistry` default templates);
     - a legacy primitive with `compact`, `trackLayout`, or `track` still parses unchanged.
-- [ ] T012 Create `src/sheet_manager/features/sheet/data/trackerModel.ts` (R1, R6):
+- [x] T012 Create `src/sheet_manager/features/sheet/data/trackerModel.ts` (R1, R6):
     - `TrackerModel` types.
     - `trackerDisplayOf(node, binding)`: the legacy mapping, FR-013.
     - `ownTrackerModel(field, value)`: resolves copies, where a missing list reads as one empty
       copy, then visible levels, totals, out, and the legend.
     - `builtInTrackerModel(node, binding, data, pageValue)`: stubbed for plain tracks for now;
       completed in US6.
-- [ ] T013 Create the molecule `src/sheet_manager/components/stat-fields/Tracker.tsx`, following
+- [x] T013 Create the molecule `src/sheet_manager/components/stat-fields/Tracker.tsx`, following
       the contract "Sheet: rendering". It takes a `TrackerModel` and callbacks (`onMark`,
       `onText`, `onAddCopy`, `onRemoveCopy`, `onLength`) and renders:
     - `MarkBox`: fills through Tailwind palette classes or an inline own color; the symbol is
@@ -175,11 +175,11 @@ The existing track tests must stay green, changed only where the markup changes.
 
 **Independent test**: quickstart scenario 1.
 
-- [ ] T014 [US1] Complete the `tracker` cases in `src/sheet_manager/types/templateValues.ts`:
+- [x] T014 [US1] Complete the `tracker` cases in `src/sheet_manager/types/templateValues.ts`:
     - `validateTemplateValue`: shape, limits, known column ids, known mark kind ids, copy count
       within `max`, and text length. Rejections use reason `type` or `bounds`.
     - `coerceStoredValue`: returns `undefined` for an invalid value.
-- [ ] T015 [US1] Add `TrackerFieldControl` to
+- [x] T015 [US1] Add `TrackerFieldControl` to
       `src/sheet_manager/features/sheet/declarative/fieldControls.tsx`, and register it in
       `features/sheet/registry/declarativeFieldRegistry.ts`. It:
     - builds `ownTrackerModel`;
@@ -189,12 +189,12 @@ The existing track tests must stay green, changed only where the markup changes.
       longer has (removed levels, kinds, columns, or copies beyond `max`), but neither in the
       editor preview (`pageApi.previewSource`, as `listEntries.tsx` does);
     - respects `disabled` (read-only).
-- [ ] T016 [US1] In `src/sheet_manager/components/dialogs/template-editor/draft.ts`, make
+- [x] T016 [US1] In `src/sheet_manager/components/dialogs/template-editor/draft.ts`, make
       `baseField('tracker')` return `DEFAULT_TRACKER_CONFIG` with fresh ids.
-- [ ] T017 [US1] In `src/sheet_manager/components/dialogs/template-editor/AddElementMenu.tsx`, make
+- [x] T017 [US1] In `src/sheet_manager/components/dialogs/template-editor/AddElementMenu.tsx`, make
       the "Tracker" palette item build an own `tracker` field, with a label from the translations.
       It is available on every page, including pages without track bindings.
-- [ ] T018 [US1] Create
+- [x] T018 [US1] Create
       `src/sheet_manager/components/dialogs/template-editor/TrackerSettings.tsx` with the Label and
       Levels groups from the contract:
     - the value column title and Show;
@@ -204,13 +204,13 @@ The existing track tests must stay green, changed only where the markup changes.
     Delegate to it from `FieldEditor.tsx` for `tracker` fields, and exclude `tracker` from the
     table column type picker.
 
-- [ ] T019 [US1] Add a minimal `trackers` story to `src/sheet_manager/storybook/stories.ts`: one
+- [x] T019 [US1] Add a minimal `trackers` story to `src/sheet_manager/storybook/stories.ts`: one
       default own tracker. Register it in `HANDWRITTEN_STORIES`. In
       `tests/sheet_manager/storybook.test.tsx`, add:
     - a `tracker` case in `variantsOf`;
     - the tag in `REQUIRED_VARIANTS`;
     - the story id in the exact story list.
-- [ ] T020 [US1] Write component tests in `tests/sheet_manager/tracker-field.test.tsx`:
+- [x] T020 [US1] Write component tests in `tests/sheet_manager/tracker-field.test.tsx`:
     - a user type page renders the default tracker;
     - two clicks give ╱ then ×, and a reload keeps them;
     - the total reads −1;
@@ -219,7 +219,7 @@ The existing track tests must stay green, changed only where the markup changes.
     - a value with marks on a level the template no longer has renders without them and reports
       `template-value-hidden` once, with the count; the editor preview reports nothing;
     - an over-limit write is rejected with `template-value-write-rejected`.
-- [ ] T021 [US1] Extend `tests/sheet_manager/template-editor.test.tsx`:
+- [x] T021 [US1] Extend `tests/sheet_manager/template-editor.test.tsx`:
     - The palette "Tracker" adds an own tracker field. This replaces the old "defaults to
       `track:health`" expectation.
     - Levels move up and down, add, and remove.
@@ -235,19 +235,19 @@ The existing track tests must stay green, changed only where the markup changes.
 
 **Independent test**: quickstart scenarios 2–3.
 
-- [ ] T022 [US2] Add the Marks group to `TrackerSettings.tsx`:
+- [x] T022 [US2] Add the Marks group to `TrackerSettings.tsx`:
     - the "Start from…" select with `MARK_SETS`, which replaces the kinds with fresh ids;
     - one row per kind: preview box (the `MarkBox`), name, symbol (max 2), five swatches with
       `aria-pressed`, an own color input, move up, move down, and remove;
     - add, disabled at 5, and remove, disabled at 1.
-- [ ] T023 [US2] Extend `tracker-field.test.tsx`:
+- [x] T023 [US2] Extend `tracker-field.test.tsx`:
     - the three-mark cycle ends in empty;
     - an own color renders an inline fill;
     - reordering kinds changes the click order and keeps the stored marks;
     - the legend lists each kind with its symbol inside a centered box. Check the classes
       `grid place-items-center` (or the equivalent) on the legend's boxes, as a guard against the
       prototype's legend bug.
-- [ ] T024 [US2] Extend the `trackers` story with one, two, three (WoD 20th), and own-color marks.
+- [x] T024 [US2] Extend the `trackers` story with one, two, three (WoD 20th), and own-color marks.
       Add the `tracker:marks:<1|2|3|own>` tags to `variantsOf` and `REQUIRED_VARIANTS`.
 
 ---
@@ -258,7 +258,7 @@ The existing track tests must stay green, changed only where the markup changes.
 
 **Independent test**: quickstart scenario 5.
 
-- [ ] T025 [US3] Add the Display segmented control (`aria-pressed`) to `TrackerSettings.tsx`. For
+- [x] T025 [US3] Add the Display segmented control (`aria-pressed`) to `TrackerSettings.tsx`. For
       an own field it writes `display`. Wire all three displays in `Tracker.tsx`:
     - One line: small boxes, the label inline, no length control, no legend.
 - [ ] T026 [US3] Extend `tests/sheet_manager/tracker-schema.test.ts`, or add a pure block to
@@ -267,7 +267,7 @@ The existing track tests must stay green, changed only where the markup changes.
     - `trackLayout` table and strip;
     - neither (named levels → table, computed → strip);
     - an explicit `tracker.display` wins.
-- [ ] T027 [US3] Extend the `trackers` story with each display. Add the `tracker:display:<d>` tags.
+- [x] T027 [US3] Extend the `trackers` story with each display. Add the `tracker:display:<d>` tags.
 
 ---
 
@@ -277,18 +277,18 @@ The existing track tests must stay green, changed only where the markup changes.
 
 **Independent test**: quickstart scenario 6.
 
-- [ ] T028 [US4] Add the Columns group to `TrackerSettings.tsx`:
+- [x] T028 [US4] Add the Columns group to `TrackerSettings.tsx`:
     - cards with kind, title, covers, "Readers add copies" with "up to" 1–24, and remove, which is
       disabled for the last marks column;
     - "+ Marks column" and "+ Text column", disabled at 6.
-- [ ] T029 [US4] Complete the copies in `ownTrackerModel` and `Tracker.tsx`:
+- [x] T029 [US4] Complete the copies in `ownTrackerModel` and `Tracker.tsx`:
     - add copies up to `max`;
     - remove a copy: confirm when it holds values; the last copy stays;
     - relabel by position;
     - text inputs, or plain text when read-only;
     - uncovered cells;
     - the strip note about text columns.
-- [ ] T030 [US4] Create `src/sheet_manager/features/sheet/data/trackerChanges.ts` with
+- [x] T030 [US4] Create `src/sheet_manager/features/sheet/data/trackerChanges.ts` with
       `trackerChangeReport(before, after, documents)` (R8, FR-026). For own trackers it counts:
     - marks on removed levels;
     - marks of removed kinds;
@@ -300,17 +300,17 @@ The existing track tests must stay green, changed only where the markup changes.
     into `TemplateEditorDialog.tsx` `handleSave` and `pendingSaveDescription`, next to the list
     and retarget reports.
 
-- [ ] T031 [P] [US4] Write pure tests for `trackerChangeReport` in
+- [x] T031 [P] [US4] Write pure tests for `trackerChangeReport` in
       `tests/sheet_manager/tracker-changes.test.ts`:
     - reordering reports nothing;
     - each removal kind is counted;
     - several documents.
-- [ ] T032 [US4] Extend the tests:
+- [x] T032 [US4] Extend the tests:
     - `tracker-field.test.tsx`: add copies up to D, remove B and relabel, the add button disabled
       at `max`, text entry, uncovered cells.
     - `template-editor.test.tsx`: removing a used mark kind asks with counts, and cancel keeps the
       draft.
-- [ ] T033 [US4] Extend the `trackers` story with a text column covering 3 levels and a repeatable
+- [x] T033 [US4] Extend the `trackers` story with a text column covering 3 levels and a repeatable
       column. Add the `tracker:column:text` and `tracker:copies` tags.
 
 ---
@@ -321,7 +321,7 @@ The existing track tests must stay green, changed only where the markup changes.
 
 **Independent test**: quickstart scenario 7.
 
-- [ ] T034 [US5] Add the Lengths group (own trackers only) and the Reading the marks group (Total
+- [x] T034 [US5] Add the Lengths group (own trackers only) and the Reading the marks group (Total
       row; out, own only) to `TrackerSettings.tsx`. The Lengths group has:
     - the checkbox;
     - the levels × lengths matrix, with the "Shows N" row;
@@ -334,16 +334,16 @@ The existing track tests must stay green, changed only where the markup changes.
     - a built-in tracker's extra-columns key colliding with another value key (the check added
       in T005).
 
-- [ ] T035 [US5] Wire lengths in `ownTrackerModel` and `TrackerFieldControl`. Shortening that hides
+- [x] T035 [US5] Wire lengths in `ownTrackerModel` and `TrackerFieldControl`. Shortening that hides
       marks confirms first, then writes the folded marks and `length` in one write. Also wire the
       total per copy and out (struck-through name, total "out").
-- [ ] T036 [US5] Extend `tracker-field.test.tsx`:
+- [x] T036 [US5] Extend `tracker-field.test.tsx`:
     - lengths 3/5/7 show the right levels;
     - shortening with hidden marks confirms, then folds the heaviest;
     - cancel changes nothing;
     - out strikes through and reads "out";
     - the total row has no background class.
-- [ ] T037 [US5] Extend the `trackers` story with lengths and out. Add the `tracker:lengths`,
+- [x] T037 [US5] Extend the `trackers` story with lengths and out. Add the `tracker:lengths`,
       `tracker:out`, and `tracker:total` tags.
 
 ---

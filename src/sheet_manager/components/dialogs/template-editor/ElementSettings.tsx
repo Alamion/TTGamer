@@ -418,6 +418,7 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
                                 <FieldEditor
                                     callbacks={fieldCallbacks(callbacks, column.id)}
                                     field={column}
+                                    inTable
                                 />
                             </EditorFillTargetsContext.Provider>
                         </details>

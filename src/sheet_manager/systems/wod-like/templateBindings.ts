@@ -1,4 +1,4 @@
-import type { ResourceBinding, TrackBinding, TraitBinding } from '../templateBindings';
+import type { ResourceBinding, TrackBinding, TrackMark, TraitBinding } from '../templateBindings';
 import type { WodSheetProfile, WodTraitGroup } from './profile';
 
 /** Kebab coordinate form of a profile key ('Self Control' → 'self-control'). */
@@ -84,6 +84,8 @@ export function buildWodTrackBindings(
                 documentKinds: ReadonlySet<string>;
                 /** Level id → translation descriptor. */
                 levelTranslations?: Readonly<Record<string, { id: string; message: string }>>;
+                /** Game names of the marks (for example bashing and lethal damage). */
+                marks?: readonly TrackMark[];
             }
         >
     >
@@ -99,6 +101,7 @@ export function buildWodTrackBindings(
                 documentKinds: target.documentKinds,
                 trackId: track.id,
                 dataKey: target.dataKey,
+                ...(target.marks ? { marks: target.marks } : {}),
                 levels: track.levels.map(({ id, label, penalty }) => {
                     const translation = target.levelTranslations?.[id];
                     return translation

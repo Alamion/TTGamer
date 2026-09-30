@@ -40,6 +40,9 @@ skills:
     politics: Политика
     science: Наука
     technology: Технологии
+trackMarks:
+    superficial: Поверхностный
+    aggravated: Тяжёлый
 sections:
     attributes: Атрибуты
     skills: Навыки

@@ -101,6 +101,24 @@ function variantsOf(node: TemplateNode): string[] {
         case 'reference':
             flag('multiple');
             break;
+        case 'tracker': {
+            tags.push(`tracker:display:${node.display}`);
+            tags.push(
+                node.marks.some(({ fill }) => fill.startsWith('#'))
+                    ? 'tracker:marks:own'
+                    : `tracker:marks:${node.marks.length}`
+            );
+            if (node.columns.some(({ kind }) => kind === 'text')) tags.push('tracker:column:text');
+            if (node.columns.some(({ covers }) => covers !== undefined))
+                tags.push('tracker:covers');
+            if (node.columns.some(({ copies }) => copies)) tags.push('tracker:copies');
+            if (node.lengths.length > 1) tags.push('tracker:lengths');
+            flag('out');
+            flag('total');
+            flag('hideLabel');
+            if (!node.valueColumn.show) tags.push('tracker:value-hidden');
+            break;
+        }
         case 'list':
             tags.push(`list:${node.bindingKey ? 'bound' : 'custom'}`);
             flag('showTitle');
@@ -192,6 +210,21 @@ const REQUIRED_VARIANTS = [
     'list:columns',
     ...LIST_ITEM_TYPES.map((type) => `list:item:${type}`),
     'list:unnamed',
+    'tracker:display:table',
+    'tracker:display:strip',
+    'tracker:display:line',
+    'tracker:marks:1',
+    'tracker:marks:2',
+    'tracker:marks:3',
+    'tracker:marks:own',
+    'tracker:column:text',
+    'tracker:covers',
+    'tracker:copies',
+    'tracker:lengths',
+    'tracker:out',
+    'tracker:total',
+    'tracker:hideLabel',
+    'tracker:value-hidden',
     'primitive:compact',
     'primitive:part',
     'primitive:trackLayout:table',
@@ -246,6 +279,7 @@ describe('element storybook (constitution VI, T-069)', () => {
             'user-catalog',
             'collections',
             'list-entries',
+            'trackers',
         ]);
     });
 

@@ -111,7 +111,7 @@ editor:
     paletteList: Список
     paletteListHint: 'Записи добавляются по одной: свои, навыки, достоинства, снаряжение…'
     paletteTracker: Трекер
-    paletteTrackerHint: Уровни здоровья или повреждений со штрафами
+    paletteTrackerHint: 'Клетки с отметками по уровням: здоровье, стресс или любая другая ноша'
     valueSource: Где хранится значение
     sourceCustom: Своё значение (в шаблоне)
     sourceTraits: Характеристики
@@ -229,7 +229,99 @@ editor:
     shortcutsHint: 'Клавиши: Alt+↑/↓ — переместить · Alt+←/→ — из группы или в группу · Alt+Shift+←/→ — колонка · Ctrl+D — дублировать · Delete — удалить · Ctrl+Z — отменить · Ctrl+Shift+Z — повторить'
     coordinateCurrent: '{label} (текущее)'
     coordinateMax: '{label} (максимум)'
+tracker:
+    source: Источник
+    sourceOwn: Свои значения
+    display: Вид
+    displayTable: Таблица
+    displayStrip: Полоса
+    displayLine: Одна строка
+    displayHint: 'Одна строка — маленькая полоса для кратких страниц: подпись в строке, без кнопок длины.'
+    marks: Отметки
+    marksHint: Щелчок переводит клетку к следующей отметке в этом порядке, затем снова к пустой; более поздняя отметка считается тяжелее.
+    marksBuiltIn: Число отметок задаёт игра; их можно переименовать и перекрасить.
+    startFrom: Начать с…
+    setOne: Одна отметка
+    setTwo: Две отметки (╱ ×)
+    setThree: Три отметки, WoD 20th (╱ × ✱)
+    markMarked: Отмечено
+    markBashing: Дробящий
+    markLethal: Летальный
+    markAggravated: Аггравированный
+    newMark: 'Отметка {n}'
+    markName: 'Название отметки {n}'
+    markSymbol: 'Символ отметки {n}'
+    markColors: 'Цвет: {name}'
+    markOwnColor: '{name}: свой цвет'
+    colorSecondary: Янтарный
+    colorError: Красный
+    colorTertiary: Фиолетовый
+    colorSuccess: Зелёный
+    colorText: Чернила
+    addMark: Добавить отметку
+    moveMarkUp: 'Переместить отметку {n} выше'
+    moveMarkDown: 'Переместить отметку {n} ниже'
+    removeMark: 'Удалить отметку {n}'
+    levels: Уровни
+    levelCount: '{count} из {max}'
+    valueTitle: Заголовок столбца значений
+    valueShow: Показывать
+    defaultValueTitle: Штраф
+    levelName: 'Название уровня {n}'
+    levelValue: 'Значение уровня {n}'
+    newLevel: 'Уровень {n}'
+    addLevel: Добавить уровень
+    moveLevelUp: 'Переместить уровень {n} выше'
+    moveLevelDown: 'Переместить уровень {n} ниже'
+    removeLevel: 'Удалить уровень {n}'
+    levelsBuiltIn: Число и порядок уровней задаёт игра; пустые названия и значения берутся из игры.
+    levelsLegacy: Задано старой страницей
+    levelsUseGame: Вернуть уровни игры
+    columns: Столбцы
+    column: 'Столбец {n}'
+    columnBuiltIn: Отметки — из документа
+    columnsBuiltInHint: Столбцы, добавленные к встроенному трекеру, хранят значения на странице.
+    columnKind: Вид столбца
+    columnMarks: Отметки
+    columnText: Текст
+    columnTitle: Заголовок столбца
+    covers: Охватывает
+    coversAll: Все уровни
+    coversFirst: 'Первые {n}'
+    copies: Читатели добавляют копии (A, B, C…)
+    copiesMax: до
+    copiesMaxLabel: Наибольшее число копий
+    addMarksColumn: Столбец отметок
+    addTextColumn: Текстовый столбец
+    removeColumn: 'Удалить столбец {n}'
+    defaultMarksTitle: Урон
+    defaultTextTitle: Заметки
+    lengths: Читатели меняют длину
+    lengthsHint: Каждая длина перечисляет уровни, которые показывает. При укорочении скрытые отметки после вопроса сворачиваются в новый последний уровень (побеждает самая тяжёлая).
+    lengthColumn: 'Длина {n}'
+    lengthLevel: '{level} в длине {n}'
+    lengthShows: Показывает
+    addLength: Длина
+    removeLength: 'Удалить длину {n}'
+    reading: Чтение отметок
+    total: 'Итоговая строка: {value} самого глубокого отмеченного уровня'
+    out: Отмечать копию выбывшей, когда отмечен её последний уровень
+    defaultLabel: Здоровье
+    issueLengthEmpty: 'Трекер «{id}»: длина {n} не показывает ни одного уровня.'
+    issueCovers: 'Трекер «{id}»: столбец охватывает все уровни или больше; выберите «Все уровни».'
+    changeTitle: Скрыть сохранённые значения трекера?
+    changeNote: Значения останутся сохранёнными, но удалённые уровни, отметки и столбцы при повторном добавлении получат новые идентификаторы, поэтому эти значения больше не появятся.
+    changeMarks:
+        message: '{title}: {count} сохранённая отметка в {documents} больше не будет показана.|{title}: {count} сохранённые отметки в {documents} больше не будут показаны.|{title}: {count} сохранённых отметок в {documents} больше не будут показаны.'
+        plural: true
+    changeTexts:
+        message: '{title}: {count} сохранённая заметка в {documents} больше не будет показана.|{title}: {count} сохранённые заметки в {documents} больше не будут показаны.|{title}: {count} сохранённых заметок в {documents} больше не будут показаны.'
+        plural: true
+    changeCopies:
+        message: '{title}: {count} копия в {documents} больше не будет показана.|{title}: {count} копии в {documents} больше не будут показаны.|{title}: {count} копий в {documents} больше не будут показаны.'
+        plural: true
 fieldTypes:
+    tracker: Трекер
     builtIn: Встроенная часть страницы
     text: Текст
     number: Число
