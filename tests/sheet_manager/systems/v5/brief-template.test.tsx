@@ -93,7 +93,7 @@ describe('hunter brief view', () => {
             render(createElement(DeclarativeSheetView, { template: template('v5-hunter-sheet') }));
             expect(
                 within(screen.getByRole('group', { name: 'Willpower' })).getByRole('button', {
-                    name: 'Willpower 1: slash',
+                    name: 'Willpower 1: Superficial',
                 })
             ).toBeTruthy();
         },

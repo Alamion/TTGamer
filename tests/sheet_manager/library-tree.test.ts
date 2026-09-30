@@ -1,6 +1,7 @@
 import { newDocumentPage } from '@site/src/sheet_manager/features/sheet/data/libraryPages';
 import {
     buildLibraryTree,
+    containerKeys,
     countDocuments,
     filterTree,
     findNode,
@@ -8,6 +9,7 @@ import {
     type LibraryInput,
     type PageNode,
     type RulesetNode,
+    type SettingNode,
     type TypeNode,
 } from '@site/src/sheet_manager/features/sheet/data/libraryTree';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
@@ -23,21 +25,25 @@ import {
     ASHEN_MORTAL_PAGE_ID,
     CULT_ID,
     CULT_PAGE_ID,
+    FIREARMS_ID,
     libraryPage,
     ORG_ID,
+    RELICS_ID,
     resetLibraryStores,
     seedLibrary,
+    userCatalog,
     userSetting,
     userType,
 } from './helpers/library';
 
 function input(overrides: Partial<LibraryInput> = {}): LibraryInput {
-    const { types, settings, defaultPages } = useDocumentTypeStore.getState();
+    const { types, settings, defaultPages, catalogs } = useDocumentTypeStore.getState();
     const { templates, defaultOverrides } = useTemplateStore.getState();
     return {
         registry: systemRegistry,
         types,
         settings,
+        catalogs,
         templates,
         defaultOverrides,
         defaultPages,
@@ -157,13 +163,19 @@ describe('library tree (spec 013)', () => {
     it('flattens only expanded branches', () => {
         const tree = buildLibraryTree(input());
         const rows = flattenVisible(tree, new Set(['r:wod-v5']));
-        expect(rows.map(({ node: row }) => row.key)).toEqual([
+        // The ruleset's catalogs come first (spec 015), then its settings.
+        const keys = rows.map(({ node: row }) => row.key);
+        expect(keys.filter((key) => !key.startsWith('c:'))).toEqual([
             'r:wod-2e',
             'r:wod-v5',
             's:rules:wod-v5',
             's:module:wod-v5:hunter',
             `s:user:${ASHEN_ID}`,
         ]);
+        expect(keys[2]).toBe(`c:user:${FIREARMS_ID}`);
+        expect(keys.indexOf('s:rules:wod-v5')).toBeGreaterThan(
+            keys.lastIndexOf(`c:wod-v5:v5-hunter-weapons`)
+        );
         expect(rows[2]).toMatchObject({ depth: 2, parentKey: 'r:wod-v5' });
     });
 
@@ -242,5 +254,60 @@ describe('library tree (spec 013)', () => {
             })
         ).toEqual({});
         expect(takeSheetIssues().map(({ code }) => code)).toEqual(['template-fallback']);
+    });
+});
+
+describe('catalogs in the library tree (spec 015)', () => {
+    beforeEach(seedLibrary);
+    afterEach(resetLibraryStores);
+
+    it('lists user catalogs under their owner and shipped ones read-only by plugin', () => {
+        const tree = buildLibraryTree(input());
+        const v5 = tree.find(({ key }) => key === 'r:wod-v5')!;
+        expect(v5.catalogs[0]).toMatchObject({
+            key: `c:user:${FIREARMS_ID}`,
+            name: 'Common firearms',
+            ownership: 'user',
+            entryCount: 1,
+        });
+        expect(v5.catalogs.some(({ key }) => key === 'c:wod-v5:v5-hunter-weapons')).toBe(true);
+        const ashen = node(tree, `s:user:${ASHEN_ID}`) as SettingNode;
+        expect(names(ashen.catalogs)).toEqual(['Relics']);
+        const starWars = node(tree, 's:system:star-wars-wod') as SettingNode;
+        expect(
+            starWars.catalogs.find(({ key }) => key === 'c:star-wars-wod:melee-weapons')
+        ).toMatchObject({ name: 'Melee weapons', ownership: 'shipped' });
+        expect(tree.find(({ key }) => key === 'r:wod-2e')!.catalogs).toEqual([]);
+    });
+
+    it('keeps user catalogs with the "Only yours" filter and finds them by name', () => {
+        const tree = buildLibraryTree(input());
+        const yours = filterTree(tree, { query: '', filter: 'yours' });
+        const keys = flattenVisible(yours, new Set(containerKeys(yours))).map(
+            ({ node: row }) => row.key
+        );
+        expect(keys).toContain(`c:user:${RELICS_ID}`);
+        expect(keys).toContain(`c:user:${FIREARMS_ID}`);
+        expect(keys).not.toContain('c:star-wars-wod:melee-weapons');
+        const found = filterTree(tree, { query: 'relics', filter: 'all' });
+        expect(findNode(found, `c:user:${RELICS_ID}`)).toBeDefined();
+    });
+
+    it('lists catalogs of an unknown owner as unavailable', () => {
+        useDocumentTypeStore.setState({
+            catalogs: {
+                ...useDocumentTypeStore.getState().catalogs,
+                'user-catalog-lost0001': userCatalog({
+                    id: 'user-catalog-lost0001',
+                    name: 'Lost',
+                    owner: { rulesetId: 'wod-9e' as never },
+                }),
+            },
+        });
+        const tree = buildLibraryTree(input());
+        const lost = findNode(tree, 'c:user:user-catalog-lost0001');
+        expect(lost?.node).toMatchObject({ unavailable: true });
+        expect(lost?.ancestors[0]?.key).toBe('r:unavailable');
+        takeSheetIssues();
     });
 });

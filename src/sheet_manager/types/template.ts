@@ -2,21 +2,9 @@ import { z } from 'zod';
 
 import type { DocumentKind, SystemId } from './document';
 import { DocumentKindSchema, SystemIdSchema } from './document';
+import { TEMPLATE_LIMITS } from './templateLimits';
 
-export const TEMPLATE_LIMITS = {
-    /** Nesting guardrail (spec A2): root children are depth 1. */
-    maxDepth: 10,
-    /** Total nodes across the whole tree (spec FR-3 authoring-time rejection). */
-    nodesPerTemplate: 200,
-    optionsPerField: 100,
-    fillMappingsPerField: 100,
-    presetsPerList: 30,
-    columnsMax: 4,
-    tableColumnsMax: 60,
-    listEntriesMax: 1_000,
-    ratingMax: 100,
-    resourceMax: 1_000_000,
-} as const;
+export { TEMPLATE_LIMITS };
 
 /** Template file/schema generation authored by this build (contracts/template-node-model.md). */
 export const TEMPLATE_SCHEMA_VERSION = 3;
@@ -89,6 +77,8 @@ const fieldBaseShape = {
     ...placementShape,
     /** Keep the label for accessibility and the editor, but do not show it on the page. */
     hideLabel: z.boolean().optional(),
+    /** Label above the value or beside it; unset uses the type's default (`fieldLabelPosition`). */
+    labelPosition: z.enum(['top', 'left']).optional(),
     description: z.string().max(500).optional(),
     required: z.boolean().default(false),
     /**
@@ -169,6 +159,10 @@ function hasUniqueIds(values: readonly { id: string }[]) {
     return new Set(values.map(({ id }) => id)).size === values.length;
 }
 
+function hasUniqueValues(values: readonly string[]) {
+    return new Set(values).size === values.length;
+}
+
 export const CatalogFillRuleSchema = z.object({
     targetFieldId: templateIdentifierSchema,
     disabled: z.boolean().optional(),
@@ -205,12 +199,28 @@ const SelectFieldSchema = z.object({
     binding: CatalogBindingSchema.optional(),
 });
 
+/** Trait-row flags a rating may show, in display order (S, P, E). */
+export const RATING_FLAGS = ['specialization', 'practiced', 'experienced'] as const;
+
+export type RatingFlag = (typeof RATING_FLAGS)[number];
+
 const RatingFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('rating'),
     min: z.number().int().min(0).default(0),
     max: z.number().int().min(1).max(TEMPLATE_LIMITS.ratingMax),
-    presentation: z.enum(['dots', 'boxes', 'number']).default('dots'),
+    // The retired "boxes" style was paler dots; stored templates keep working as dots.
+    presentation: z
+        .preprocess((value) => (value === 'boxes' ? 'dots' : value), z.enum(['dots', 'number']))
+        .default('dots'),
+    /** Free text between the label and the value (for example a specialization). */
+    textInput: z.boolean().optional(),
+    /** "current / maximum" after the value. */
+    showNumbers: z.boolean().optional(),
+    /** Die symbol rolling the value through the document system's trait pool. */
+    dice: z.boolean().optional(),
+    /** Trait-row flags shown on the dot style. */
+    flags: z.array(z.enum(RATING_FLAGS)).max(RATING_FLAGS.length).optional(),
     ...maxFromShape,
 });
 
@@ -228,6 +238,93 @@ const ReferenceFieldSchema = z.object({
     multiple: z.boolean().default(false),
 });
 
+/** Palette fills a tracker mark may take; they follow the theme. Any other fill is `#rrggbb`. */
+export const TRACKER_PALETTE_FILLS = ['secondary', 'error', 'tertiary', 'success', 'text'] as const;
+
+export type TrackerPaletteFill = (typeof TRACKER_PALETTE_FILLS)[number];
+
+const TrackerFillSchema = z.union([
+    z.enum(TRACKER_PALETTE_FILLS),
+    z.string().regex(/^#[0-9a-f]{6}$/i, 'Expected a #rrggbb color'),
+]);
+
+const trackerNameSchema = z.string().min(1).max(TEMPLATE_LIMITS.trackerNameMax);
+
+/** Symbols count in code points so ✱ or ╱ is one character. */
+const trackerSymbolSchema = z
+    .string()
+    .refine((symbol) => Array.from(symbol).length <= TEMPLATE_LIMITS.trackerSymbolMax, {
+        message: `At most ${TEMPLATE_LIMITS.trackerSymbolMax} characters`,
+    });
+
+export const TrackerMarkKindSchema = z.object({
+    id: templateIdentifierSchema,
+    name: trackerNameSchema,
+    symbol: trackerSymbolSchema,
+    fill: TrackerFillSchema,
+});
+
+export const TrackerLevelSchema = z.object({
+    id: templateIdentifierSchema,
+    name: trackerNameSchema,
+    value: z.string().max(TEMPLATE_LIMITS.trackerLevelValueMax).default(''),
+});
+
+export const TrackerColumnSchema = z.object({
+    id: templateIdentifierSchema,
+    kind: z.enum(['marks', 'text']),
+    title: z.string().max(TEMPLATE_LIMITS.trackerNameMax).default(''),
+    /** The first N levels shown at the current length; unset covers every level. */
+    covers: z
+        .number()
+        .int()
+        .min(1)
+        .max(TEMPLATE_LIMITS.trackerLevelsMax - 1)
+        .optional(),
+    /** Readers add copies A, B, C… up to `max`. */
+    copies: z
+        .object({ max: z.number().int().min(1).max(TEMPLATE_LIMITS.trackerCopiesMax) })
+        .optional(),
+});
+
+export const TrackerLengthSchema = z.object({
+    levels: z.array(templateIdentifierSchema).min(1).max(TEMPLATE_LIMITS.trackerLevelsMax),
+});
+
+export const TRACKER_DISPLAYS = ['table', 'strip', 'line'] as const;
+
+export type TrackerDisplay = (typeof TRACKER_DISPLAYS)[number];
+
+const TrackerValueColumnSchema = z.object({
+    title: z.string().max(TEMPLATE_LIMITS.trackerNameMax).optional(),
+    show: z.boolean().default(true),
+});
+
+const trackerColumnsSchema = (min: number) =>
+    z.array(TrackerColumnSchema).min(min).max(TEMPLATE_LIMITS.trackerColumnsMax);
+
+/** Own-value tracker (spec 018): everything the author sets; marks live in `templateValues`. */
+const TrackerFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('tracker'),
+    display: z.enum(TRACKER_DISPLAYS).default('table'),
+    marks: z.array(TrackerMarkKindSchema).min(1).max(TEMPLATE_LIMITS.trackerMarksMax),
+    levels: z.array(TrackerLevelSchema).min(1).max(TEMPLATE_LIMITS.trackerLevelsMax),
+    valueColumn: TrackerValueColumnSchema.default({ show: true }),
+    columns: trackerColumnsSchema(1),
+    total: z.boolean().default(true),
+    lengths: z.array(TrackerLengthSchema).max(TEMPLATE_LIMITS.trackerLengthsMax).default([]),
+    out: z.boolean().default(false),
+    /** The row naming each mark kind under the tracker. */
+    legend: z.boolean().default(false),
+});
+
+export type TrackerMarkKind = z.infer<typeof TrackerMarkKindSchema>;
+export type TrackerLevel = z.infer<typeof TrackerLevelSchema>;
+export type TrackerColumn = z.infer<typeof TrackerColumnSchema>;
+export type TrackerLength = z.infer<typeof TrackerLengthSchema>;
+export type TrackerValueColumn = z.infer<typeof TrackerValueColumnSchema>;
+
 /**
  * Field members stay plain objects so they can form a discriminated union (clear per-type
  * parse errors); cross-property rules live in `refineField`.
@@ -242,6 +339,7 @@ const fieldObjectSchemas = [
     RatingFieldSchema,
     ResourceFieldSchema,
     ReferenceFieldSchema,
+    TrackerFieldSchema,
 ] as const;
 
 type TemplateFieldObject = z.infer<(typeof fieldObjectSchemas)[number]>;
@@ -254,6 +352,9 @@ function refineField(field: TemplateFieldObject, context: z.RefinementCtx): void
         case 'rating':
         case 'resource':
             if (!hasValidBounds(field)) issue('Minimum cannot exceed maximum', ['min']);
+            if (field.type === 'rating' && field.flags && !hasUniqueValues(field.flags)) {
+                issue('Rating flags must be unique', ['flags']);
+            }
             return;
         case 'select':
             if (!hasUniqueIds(field.options)) {
@@ -268,6 +369,9 @@ function refineField(field: TemplateFieldObject, context: z.RefinementCtx): void
                 issue('Reference target kinds must be unique', ['targetKinds']);
             }
             return;
+        case 'tracker':
+            refineTracker(field, issue);
+            return;
         case 'text':
         case 'toggle':
         case 'image':
@@ -276,11 +380,66 @@ function refineField(field: TemplateFieldObject, context: z.RefinementCtx): void
     }
 }
 
+function refineTracker(
+    tracker: Pick<
+        Extract<TemplateFieldObject, { type: 'tracker' }>,
+        'marks' | 'levels' | 'columns'
+    >,
+    issue: (message: string, path: string[]) => void
+): void {
+    if (!hasUniqueIds(tracker.marks)) issue('Mark ids must be unique', ['marks']);
+    if (!hasUniqueIds(tracker.levels)) issue('Level ids must be unique', ['levels']);
+    if (!hasUniqueIds(tracker.columns)) issue('Column ids must be unique', ['columns']);
+    if (!tracker.columns.some(({ kind }) => kind === 'marks')) {
+        issue('A tracker needs a marks column', ['columns']);
+    }
+}
+
 export const TemplateFieldSchema = z
     .discriminatedUnion('type', fieldObjectSchemas)
     .superRefine(refineField);
 
 export type TemplateField = z.infer<typeof TemplateFieldSchema>;
+
+export type TrackerField = Extract<TemplateField, { type: 'tracker' }>;
+
+/**
+ * The entry template of a custom list (spec 016): any field type except a formula, which has
+ * nothing of its own to compute from inside an entry.
+ */
+export const ListItemFieldSchema = z
+    .discriminatedUnion('type', [
+        TextFieldSchema,
+        NumberFieldSchema,
+        ToggleFieldSchema,
+        ImageFieldSchema,
+        SelectFieldSchema,
+        RatingFieldSchema,
+        ResourceFieldSchema,
+        ReferenceFieldSchema,
+    ])
+    .superRefine(refineField);
+
+export type ListItemField = Exclude<TemplateField, { type: 'formula' | 'tracker' }>;
+
+export type FieldLabelPosition = 'top' | 'left';
+
+/** Whether the editor offers "label beside the value" for this field type (not for images). */
+export function hasLabelPositionChoice(type: TemplateField['type']): boolean {
+    return type !== 'image' && type !== 'tracker';
+}
+
+/** Ratings and derived values read as rows (label beside the value); other fields stack. */
+export function fieldLabelPosition(
+    field: Pick<TemplateField, 'type' | 'labelPosition'>
+): FieldLabelPosition {
+    // A picture with its upload and address controls needs the full width of its column.
+    if (!hasLabelPositionChoice(field.type)) return 'top';
+    return (
+        field.labelPosition ??
+        (field.type === 'rating' || field.type === 'formula' ? 'left' : 'top')
+    );
+}
 
 /** Every leaf field type — the single list editors, pickers, and predicates derive from. */
 export const TEMPLATE_FIELD_TYPES = [
@@ -293,6 +452,7 @@ export const TEMPLATE_FIELD_TYPES = [
     'reference',
     'image',
     'formula',
+    'tracker',
 ] as const satisfies readonly TemplateField['type'][];
 
 export type TemplateFieldType = (typeof TEMPLATE_FIELD_TYPES)[number];
@@ -329,6 +489,44 @@ export const PrimitiveTrackOverrideSchema = z
 
 export type PrimitiveTrackOverride = z.infer<typeof PrimitiveTrackOverrideSchema>;
 
+/** A built-in mark's page look: the game keeps its id and meaning. */
+const TrackerMarkOverrideSchema = z.object({
+    name: trackerNameSchema.optional(),
+    symbol: trackerSymbolSchema.optional(),
+    fill: TrackerFillSchema.optional(),
+});
+
+/**
+ * Built-in tracker settings on a track primitive (spec 018): the page's look, level text, and
+ * extra columns. The game keeps the level count and order, a computed length, the mark kinds,
+ * and the members; the marks stay in the document's own data.
+ */
+export const TrackerOverrideSchema = z.object({
+    display: z.enum(TRACKER_DISPLAYS).optional(),
+    marks: z.record(templateIdentifierSchema, TrackerMarkOverrideSchema).optional(),
+    /** By level index; `null` keeps the game's level. */
+    levels: z
+        .array(
+            z
+                .object({
+                    name: trackerNameSchema.optional(),
+                    value: z.string().max(TEMPLATE_LIMITS.trackerLevelValueMax).optional(),
+                })
+                .nullable()
+        )
+        .max(TEMPLATE_LIMITS.trackerLevelsMax)
+        .optional(),
+    valueColumn: TrackerValueColumnSchema.optional(),
+    /** Extra columns after the game's marks column; their values live in `templateValues`. */
+    columns: trackerColumnsSchema(0).optional(),
+    total: z.boolean().optional(),
+    legend: z.boolean().optional(),
+    /** Storage coordinate of the extra columns' values; unset uses the node id. */
+    valueKey: templateIdentifierSchema.optional(),
+});
+
+export type TrackerOverride = z.infer<typeof TrackerOverrideSchema>;
+
 /**
  * Document-bound primitive (feature 005): references one binding key of the owning system's
  * registry. Resolution is a runtime registry query — unavailable bindings degrade at render.
@@ -354,6 +552,8 @@ const PrimitiveNodeSchema = z.object({
      * boxes, no level names). Default: `strip` for compact nodes and unlabeled tracks.
      */
     trackLayout: z.enum(['table', 'strip']).optional(),
+    /** Track bindings (spec 018): the page's tracker settings; replaces compact/trackLayout. */
+    tracker: TrackerOverrideSchema.optional(),
     /** Member tracks (bindings with members): member cap; ignored by other bindings. */
     cohort: z.object({ maxMembers: z.number().int().min(1).max(24) }).optional(),
     ...maxFromShape,
@@ -374,6 +574,20 @@ const ListNodeSchema = z.object({
     showTitle: z.boolean().optional(),
     /** Draw the list's own bordered card (off: entries sit directly in the parent). */
     framed: z.boolean().optional(),
+    /**
+     * Own-value lists only (spec 015): entry names suggest this catalog's entries; a pick sets the
+     * name and, with `valueFrom` (a number column or detail), the entry's value.
+     */
+    catalog: z
+        .object({
+            catalogId: templateIdentifierSchema,
+            valueFrom: z.string().min(1).max(64).optional(),
+        })
+        .optional(),
+    /** Own-value lists only (spec 016): what one entry is; unset reads as `legacyListItem`. */
+    item: ListItemFieldSchema.optional(),
+    /** Own-value lists only: `false` when entries have no typed name (unset = named). */
+    named: z.boolean().optional(),
 });
 
 const TableNodeSchema = z.object({
@@ -474,10 +688,19 @@ function refineNode(node: TemplateNode, context: z.RefinementCtx): void {
             if (!hasUniqueIds(node.columns)) {
                 issue('Column IDs must be unique within a table', ['columns']);
             }
+            if (node.columns.some(({ type }) => type === 'tracker')) {
+                issue('A tracker cannot be a table column', ['columns']);
+            }
             return;
         case 'list':
             if ((node.valueKey === undefined) === (node.bindingKey === undefined)) {
                 issue('A list must use exactly one storage mode: valueKey or bindingKey');
+            }
+            if (node.catalog && node.valueKey === undefined) {
+                issue('Only a list with its own values can suggest catalog entries', ['catalog']);
+            }
+            if (node.bindingKey !== undefined && (node.item || node.named !== undefined)) {
+                issue('Only a list with its own values has an entry template', ['item']);
             }
             return;
         case 'section':
@@ -534,6 +757,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
             RatingFieldSchema,
             ResourceFieldSchema,
             ReferenceFieldSchema,
+            TrackerFieldSchema,
         ])
         .superRefine((node, context) => refineNode(node as TemplateNode, context))
 ) as unknown as z.ZodType<TemplateNode>;
@@ -601,10 +825,11 @@ export function collectTreeIssues(template: CustomTemplate): TemplateTreeIssue[]
                 limit: TEMPLATE_LIMITS.maxDepth,
             });
         }
-        if (seenIds.has(node.id)) {
-            issues.push({ code: 'duplicate-id', nodeId: node.id });
+        const ids = node.type === 'list' && node.item ? [node.id, node.item.id] : [node.id];
+        for (const id of ids) {
+            if (seenIds.has(id)) issues.push({ code: 'duplicate-id', nodeId: id });
+            seenIds.add(id);
         }
-        seenIds.add(node.id);
     });
     if (count > TEMPLATE_LIMITS.nodesPerTemplate) {
         issues.push({ code: 'count', actual: count, limit: TEMPLATE_LIMITS.nodesPerTemplate });
@@ -640,6 +865,44 @@ export function collectTemplateFields(template: CustomTemplate): Map<string, Tem
     return fields;
 }
 
+/**
+ * Entry types a custom list offers: every field type except a formula and a tracker (a tracker
+ * repeats itself through copies, spec 018).
+ */
+export const LIST_ITEM_TYPES = TEMPLATE_FIELD_TYPES.filter(
+    (type): type is ListItemField['type'] => type !== 'formula' && type !== 'tracker'
+);
+
+/**
+ * The entry of a list saved before spec 016: a named trait row (dots 0–5, S/P/E, die), as the
+ * old custom list drew it.
+ */
+export function legacyListItem(list: Pick<ListNode, 'id' | 'title'>): ListItemField {
+    return {
+        id: `${list.id}-item`,
+        type: 'rating',
+        label: list.title ?? list.id,
+        labelPosition: 'left',
+        required: false,
+        compact: false,
+        min: 0,
+        max: 5,
+        presentation: 'dots',
+        dice: true,
+        flags: [...RATING_FLAGS],
+    };
+}
+
+/** What one entry of a custom list is: its own item, or the legacy trait row. */
+export function listItemField(list: ListNode): ListItemField {
+    return list.item ?? legacyListItem(list);
+}
+
+/** Whether entries carry a name typed by the sheet user (the default). */
+export function listIsNamed(list: Pick<ListNode, 'named'>): boolean {
+    return list.named !== false;
+}
+
 export function collectListNodes(template: CustomTemplate): ListNode[] {
     const lists: ListNode[] = [];
     walkTemplateNodes(template.children, (node) => {
@@ -673,6 +936,10 @@ export function collectFormulaDependencies(template: CustomTemplate): FormulaDep
         ) {
             const parsed = parseFormulaSafe(node.maxFrom);
             if (parsed) sources.push({ id: node.id, reads: parsed });
+        }
+        if (node.type === 'list' && node.item && 'maxFrom' in node.item && node.item.maxFrom) {
+            const parsed = parseFormulaSafe(node.item.maxFrom);
+            if (parsed) sources.push({ id: node.item.id, reads: parsed });
         }
         if (node.type === 'primitive' && node.minFrom) {
             const parsed = parseFormulaSafe(node.minFrom);

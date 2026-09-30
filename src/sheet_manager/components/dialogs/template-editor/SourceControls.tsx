@@ -1,17 +1,26 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import type { ListNode, PrimitiveNode, TemplateField, TemplateNode } from '../../../types/template';
+import type { TrackBinding } from '../../../systems/templateBindings';
+import type {
+    ListNode,
+    PrimitiveNode,
+    TemplateField,
+    TemplateNode,
+    TrackerField,
+} from '../../../types/template';
 import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import {
     currentListSource,
+    currentTrackerSource,
     currentValueSource,
     CUSTOM_SOURCE,
     fieldFromSource,
     isListSource,
     isValueSource,
     listFromSource,
+    trackerFromSource,
 } from './sourceNodes';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -114,6 +123,42 @@ export function ListSourceSelect({
                         </optgroup>
                     ) : null;
                 })}
+            </select>
+        </label>
+    );
+}
+
+/** A tracker's Source (spec 018): its own values, or one of the page's built-in tracks. */
+export function TrackerSourceSelect({
+    node,
+    onReplace,
+}: {
+    node: TrackerField | PrimitiveNode;
+    onReplace: (nodeId: string, next: TemplateNode) => void;
+}) {
+    const { bindings } = useEditorModel();
+    const tracks = bindings.filter((binding): binding is TrackBinding => binding.kind === 'track');
+    const label = t(uiMessages.sheet.templates.tracker.source);
+    return (
+        <label className="grid gap-1 text-xs text-textSecondary">
+            {label}
+            <select
+                value={currentTrackerSource(node)}
+                onChange={(event) => {
+                    const source = tracks.find(({ key }) => key === event.target.value);
+                    onReplace(node.id, trackerFromSource(node, source));
+                }}
+                aria-label={label}
+                className={inputClasses}
+            >
+                <option value={CUSTOM_SOURCE}>
+                    {t(uiMessages.sheet.templates.tracker.sourceOwn)}
+                </option>
+                {tracks.map((track) => (
+                    <option key={track.key} value={track.key}>
+                        {track.label}
+                    </option>
+                ))}
             </select>
         </label>
     );

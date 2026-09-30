@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 import { useLocalStorageState } from '../../hooks';
 import { DocsHelpLink, documentationFor } from '../controls/DocsHelpLink';
@@ -45,11 +45,13 @@ export function SectionCard({
                 {title}
                 {renderDocsIcon()}
             </h3>
-            {isExpanded ? (
-                <ChevronUp className="w-5 h-5 text-textSecondary" aria-hidden="true" />
-            ) : (
-                <ChevronDown className="w-5 h-5 text-textSecondary" aria-hidden="true" />
-            )}
+            <ChevronDown
+                className={clsx(
+                    'w-5 h-5 shrink-0 text-textSecondary transition-transform duration-200 ease-linear motion-reduce:transition-none',
+                    isExpanded && 'rotate-180'
+                )}
+                aria-hidden="true"
+            />
         </button>
     );
 

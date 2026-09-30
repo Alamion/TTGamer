@@ -1,5 +1,6 @@
 import {
     applyLibraryWrites,
+    deletePlan,
     readLibraryState,
 } from '@site/src/sheet_manager/features/sheet/data/libraryActions';
 import {
@@ -10,6 +11,7 @@ import {
 import {
     buildLibraryTree,
     countDocuments,
+    findNode,
 } from '@site/src/sheet_manager/features/sheet/data/libraryTree';
 import { planTemplateRetarget } from '@site/src/sheet_manager/features/sheet/data/templateRetarget';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
@@ -17,6 +19,7 @@ import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentType
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import type { UserDocumentType, UserSetting } from '@site/src/sheet_manager/systems/userTypes';
+import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -24,8 +27,10 @@ import {
     ASHEN_MORTAL_PAGE_ID,
     CULT_ID,
     CULT_PAGE_ID,
+    FIREARMS_ID,
     ORG_ID,
     ORG_PAGE_ID,
+    RELICS_ID,
     resetLibraryStores,
     seedLibrary,
     userSetting,
@@ -35,12 +40,13 @@ import {
 const MIST_ID = 'user-setting-mist0001';
 
 function tree() {
-    const { types, settings, defaultPages } = useDocumentTypeStore.getState();
+    const { types, settings, defaultPages, catalogs } = useDocumentTypeStore.getState();
     const { templates, defaultOverrides } = useTemplateStore.getState();
     return buildLibraryTree({
         registry: systemRegistry,
         types,
         settings,
+        catalogs,
         templates,
         defaultOverrides,
         defaultPages,
@@ -190,5 +196,99 @@ describe('library moves (spec 013)', () => {
         expect(types['user-ship0001']?.defaultTemplateId).toBe(ORG_PAGE_ID);
         expect(types[ORG_ID]?.defaultTemplateId).toBeUndefined();
         expect(template(ORG_PAGE_ID)?.systemId).toBe('wod-2e');
+    });
+});
+
+describe('catalog moves and deletes (spec 015, US4)', () => {
+    const bound = (id: string, target: object, catalogId: string, fieldId = 'pick') =>
+        CustomTemplateSchema.parse({
+            id,
+            name: `Page ${id}`,
+            schemaVersion: 3,
+            ...target,
+            children: [
+                {
+                    id: fieldId,
+                    type: 'select',
+                    label: 'Pick',
+                    options: [{ id: 'none', label: 'None' }],
+                    binding: { catalogId, fills: {} },
+                },
+            ],
+        });
+    const ashenTarget = { systemId: 'wod-v5', documentKind: 'mortal', settingId: ASHEN_ID };
+    const hunterTarget = { systemId: 'wod-v5', documentKind: 'character' };
+
+    beforeEach(() => {
+        seedLibrary();
+        useTemplateStore.setState((state) => ({
+            templates: [
+                ...state.templates,
+                bound('tpl-ashrelc1', ashenTarget, RELICS_ID),
+                bound('tpl-ashguns1', ashenTarget, FIREARMS_ID),
+                bound('tpl-huntgun1', hunterTarget, FIREARMS_ID),
+            ],
+        }));
+        useDocumentTypeStore.setState((state) => ({
+            settings: {
+                ...state.settings,
+                [MIST_ID]: userSetting({
+                    id: MIST_ID,
+                    name: 'Misty Archipelago',
+                    systemId: 'wod-2e' as UserSetting['systemId'],
+                    pages: {},
+                }),
+            },
+        }));
+    });
+    afterEach(resetLibraryStores);
+
+    const names = (list: readonly { name: string }[]) => list.map(({ name }) => name);
+    const catalog = (id: string) => useDocumentTypeStore.getState().catalogs[id]!;
+
+    it('lists rulesets and settings, Rules only included, as catalog destinations', () => {
+        const keys = moveTargets(`c:user:${RELICS_ID}`, tree()).map(({ node }) => node.key);
+        expect(keys).toContain('r:wod-v5');
+        expect(keys).toContain('s:rules:wod-2e');
+        expect(keys).toContain(`s:user:${MIST_ID}`);
+        expect(keys).not.toContain(`s:user:${ASHEN_ID}`);
+    });
+
+    it('names the templates that lose a catalog moved out of their reach', () => {
+        const away = plan(`c:user:${RELICS_ID}`, 's:system:star-wars-wod')!;
+        expect(away.crossesSystem).toBe(true);
+        expect(names(away.lostBy)).toEqual(['Page tpl-ashrelc1']);
+        applyLibraryWrites(away.writes);
+        expect(catalog(RELICS_ID).owner).toEqual({ systemId: 'star-wars-wod' });
+    });
+
+    it('names the other settings’ templates when a ruleset catalog moves down', () => {
+        const down = plan(`c:user:${FIREARMS_ID}`, `s:user:${ASHEN_ID}`)!;
+        expect(names(down.lostBy)).toEqual(['Page tpl-huntgun1']);
+        const up = plan(`c:user:${RELICS_ID}`, 'r:wod-v5')!;
+        expect(up.lostBy).toEqual([]);
+        expect(up.crossesSystem).toBe(false);
+    });
+
+    it('carries a setting’s catalogs and names what its pages lose on other rules', () => {
+        const moved = plan(`s:user:${ASHEN_ID}`, 'r:wod-2e')!;
+        expect(moved.catalogsMoving).toBe(1);
+        expect(names(moved.lostBy)).toEqual(['Page tpl-ashguns1']);
+        applyLibraryWrites(moved.writes);
+        expect(catalog(RELICS_ID).owner).toEqual({ settingId: ASHEN_ID });
+    });
+
+    it('deletes a setting with its catalogs and names templates bound to a deleted catalog', () => {
+        const state = readLibraryState();
+        const setting = findNode(tree(), `s:user:${ASHEN_ID}`)!.node;
+        const settingDelete = deletePlan(setting, state)!;
+        expect(names(settingDelete.catalogs)).toEqual(['Relics']);
+        expect(settingDelete.writes.removeCatalogs).toEqual([RELICS_ID]);
+
+        const relics = findNode(tree(), `c:user:${RELICS_ID}`)!.node;
+        const catalogDelete = deletePlan(relics, state)!;
+        expect(names(catalogDelete.boundTemplates)).toEqual(['Page tpl-ashrelc1']);
+        applyLibraryWrites(catalogDelete.writes);
+        expect(useDocumentTypeStore.getState().catalogs[RELICS_ID]).toBeUndefined();
     });
 });

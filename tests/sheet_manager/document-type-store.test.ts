@@ -6,7 +6,8 @@ import {
 import { UserDocumentTypeSchema } from '@site/src/sheet_manager/systems/userTypes';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { NOW, userSetting, userType } from './helpers/library';
+import { takeSheetIssues } from '../setup/sheetIssues';
+import { NOW, RELICS_ID, userCatalog, userSetting, userType } from './helpers/library';
 
 describe('documentTypeStore v2 (spec 013)', () => {
     beforeEach(() => {
@@ -63,5 +64,38 @@ describe('documentTypeStore v2 (spec 013)', () => {
         setDefaultPage(key, 'brief');
         setDefaultPage(key, null);
         expect(useDocumentTypeStore.getState().defaultPages).toEqual({});
+    });
+});
+
+describe('documentTypeStore v3 (spec 015)', () => {
+    beforeEach(() => {
+        useDocumentTypeStore.setState({
+            types: {},
+            settings: {},
+            defaultPages: {},
+            catalogs: {},
+            quarantine: [],
+        });
+    });
+
+    it('migrates a v2 state with no catalogs and quarantines a broken one', () => {
+        expect(migrateDocumentTypeStoreState({ types: {}, settings: {} }).catalogs).toEqual({});
+        const catalog = userCatalog();
+        const migrated = migrateDocumentTypeStoreState({
+            catalogs: { [catalog.id]: catalog, broken: { id: 'user-catalog-broken01' } },
+        });
+        expect(migrated.catalogs).toEqual({ [catalog.id]: catalog });
+        expect(migrated.quarantine).toEqual([{ id: 'user-catalog-broken01' }]);
+        expect(takeSheetIssues().map(({ code }) => code)).toContain('template-quarantined');
+    });
+
+    it('saves, replaces, and removes catalogs', () => {
+        const { saveCatalog, removeCatalog, replaceCatalogs } = useDocumentTypeStore.getState();
+        saveCatalog(userCatalog());
+        expect(Object.keys(useDocumentTypeStore.getState().catalogs)).toEqual([RELICS_ID]);
+        replaceCatalogs({ [RELICS_ID]: userCatalog({ name: 'Relics II' }) });
+        expect(useDocumentTypeStore.getState().catalogs[RELICS_ID]!.name).toBe('Relics II');
+        removeCatalog(RELICS_ID);
+        expect(useDocumentTypeStore.getState().catalogs).toEqual({});
     });
 });

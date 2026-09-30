@@ -37,14 +37,80 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
 - Containers: `section` (CollapsibleBlock, no background, `docsPath`, `columns` 1–4) and `group`
   (SectionCard surface, opt-in `collapsible`). Accents alternate by sibling parity, never stored.
 - Leaf fields (`TemplateField`): `text`, `number`, `toggle`, `image`, `formula`, `select`,
-  `rating`, `resource`, `reference`.
+  `rating`, `resource`, `reference`, `tracker` (see "Trackers" below).
     - Controls: `toggle` is the round `Checkbox` dot; multiple `select` is a row of pressable words
       (thin primary border when chosen) in option order (`hideUnselected` shows only chosen ones until the reader expands it);
-      `rating` dots are 1..max with `min` as a filled floor; every numeric input (fields,
+      `rating` is a trait row (`components/stat-fields/RatingRow`, the same atoms as `TraitRow`):
+      `presentation` `dots` (1..max, `min` a filled floor) or `number` (`'boxes'` parses as dots);
+      optional `textInput`, `showNumbers`, `dice` (the system's `traitPool` through
+      `StatDiceButton`), and `flags` (S/P/E subset, dots only). Text and flags live beside the
+      number under `ratingDetailKey(valueKey)` (`<key>#detail`, `RatingDetailSchema`), so
+      formulas, conditions, and shared keys keep reading a number. Stored ratings are bounded by
+      `min` and `TEMPLATE_LIMITS.ratingMax` (100), not the static `max`: a resolved `maxFrom`
+      decides the range (`ratingEffectiveMax`). In table cells the column header names the
+      rating; a number rating with `showNumbers` frames a read-only "/ max" like a resource.
+      Every field has `labelPosition` (`top` caption or `left` trait-row label, `FieldLabel`);
+      unset uses `fieldLabelPosition` (rating and formula: left, others: top). Every numeric input (fields,
       resource, editor settings) is `shared/components/NumberInput`: numeric text only,
       bounded to min/max/step on blur or Enter, arrow keys step.
 - Other leaves: `table` (columns are fields; rows stored under `tableValueKey`), `list`
   (exactly one of `valueKey` or `bindingKey`), `primitive` (`bindingKey` into system data).
+- Custom lists (`valueKey`, spec 016): `item` is the entry template — any field except a
+  formula (`ListItemFieldSchema`, `LIST_ITEM_TYPES`) — and `named: false` drops the typed entry
+  name. Read both only through `listItemField(list)` (unset = `legacyListItem`: named dot rating
+  0–5 with S/P/E and the die, the look of every list saved before 016) and `listIsNamed`. The
+  item id shares the template's identifier namespace (`collectTreeIssues`) but is not a page
+  field (`collectTemplateFields` skips it; draft `mapFieldItems` reaches it, so the field editor
+  callbacks work by id; `FieldEditor itemOfList` hides storage, required, and formula). Entries
+  are `TemplateListEntry` `{ id, label?, value?, detail?, pickLabel? }` under `listValueKey`:
+  `value` has the item field's own shape, `detail` is a rating's text and flags, `pickLabel` a
+  user-catalog pick's name. The write path validates changed entries only (by reference) against
+  the item; `coerceListValue(item, value)` shows stored values under a changed item (numbers move
+  between number, rating, and resource current) and anything else reads empty and reports
+  `list-entry-unreadable`. Rendering: `features/sheet/declarative/listEntries.tsx`
+  (`CustomListView`, memoized `ListEntryRow`, `pageApi.updateList` for stable callbacks); every
+  control takes `nameSlot`, `rollLabel`, and `removeSlot` and places the remove button by
+  `listEntryShape` (row: end of row; block: `LabeledField` trailing). Saving a template whose
+  list item or naming changed runs `listItemChangeReport` (compatible documents' stored
+  entries) and asks first; stored values are never rewritten by the change.
+- Trackers (spec 018): one configuration drawn by one molecule for own and built-in trackers. - **Own tracker** (`tracker` field): `display` (`table` | `strip` | `line`), `marks` (1–5
+  kinds: id, name, 1–2 code-point symbol, `fill` = palette key `secondary|error|tertiary|
+success|text` or `#rrggbb`; order = click order and weight), `levels` (1–20: id, name,
+  short text `value`), `valueColumn` (title, show), `columns` (1–6, `marks` | `text`,
+  `covers` first N shown levels, `copies: { max 1–24 }`, at least one marks column), `total`,
+  `lengths` (0–6 lists of level ids), `out`. Not a list item type, rejected as a table column.
+  Value (`TrackerValueSchema`, `templateValues[valueKey]`): `{ tracker: 1, length?, columns:
+{ [columnId]: [{ id, marks?: { levelId: markId }, texts?: { levelId: text } }] } }`; ids
+  keep marks on their level and kind when either moves, copy letters come from position, a
+  missing column list reads as one copy `a`. The write path checks the shape and copy caps
+  only (unknown ids pass, so hidden values survive the next write). - **Built-in tracker** (`primitive` on a `track` binding): optional `tracker` override
+  (`display`, `marks[slash|cross]` name/symbol/fill, `levels[]` per index name/value or
+  `null`, `valueColumn`, extra `columns`, `total`, `valueKey` for the extras). The game keeps
+  level count/order, a computed length (V5), the two marks (`TrackBinding.marks` names them:
+  WoD health bashing/lethal, V5 superficial/aggravated, else generic Slash/Cross), and
+  members; marks stay in `document.data`, extra columns store a `TrackerValue` under
+  `tracker.valueKey ?? node.id` (validated at the write path; member tracks key repeated
+  extra copies by member id). A level override keeps the game's other values; a legacy
+  `track { levels, names }` with another count still sets the levels (editor offers "Use
+  the game's levels"). Display without `tracker.display` (`trackerDisplayOf`): `compact` →
+  `line`, else `trackLayout`, else `table` for named levels / `strip` for a computed length;
+  the editor writes `tracker.display` and clears both. Total defaults: on for member tracks
+  with 2+ members, off otherwise; the shipped Star Wars character/droid page sets it on. - Rules (`features/sheet/data/tracker.ts`): cycle empty → kinds… → empty; total = value of
+  the deepest marked shown level; out = last shown level marked; switching the length keeps
+  each mark's shown position and folds the tail into the new last level (heaviest wins), the
+  same as `cohort.ts` `shortenMarks` for stored fodder members (proven by
+  `tracker-parity.test.tsx`). - Rendering: `trackerModel.ts` (`ownTrackerModel`, `builtInTrackerModel`) → molecule
+  `components/stat-fields/Tracker.tsx` (grid table with ARIA roles, strips, one line,
+  legend only when `legend` is on (field or override; off by default, built-in too), copy add/remove with confirm, length −/+ with a danger confirm).
+  Own values: `declarative/TrackerFieldControl.tsx`; built-in: `declarative/BuiltInTracker.tsx`
+  (replaces `CohortTrack`; page values reach it through `PrimitiveNodeView`'s `page`). - Editor: `TrackerSettings.tsx` serves both (game-fixed parts disabled, game text as
+  placeholders; `builtInTrackerSettings.ts` maps the panel onto the override); the Source
+  select (`TrackerSourceSelect`, `trackerFromSource`) switches own ↔ built-in keeping id,
+  label, display, value column, extra columns, total. Draft issues: a length with no known
+  level, covers ≥ level count, an extras key colliding with a value key. Saving runs
+  `trackerChangeReport` (marks, notes, copies a change stops showing) with the list report. - Diagnostics: `template-value-unreadable` (value of another shape, reads empty) and
+  `template-value-hidden` (count of stored values under removed parts), both skipped in the
+  editor preview.
 - Any node may carry `visibleWhen: { coordinate, equals, not? }`: rendered only while the value
   at the coordinate (bag value or bound document data) equals `equals` (`not` inverts). Never
   affects storage; the editor always shows the node (condition control on every panel). An
@@ -90,7 +156,7 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
     - Primitives: `hideLabel`; pool resources `part: 'max'` edits the maximum (current is capped
       to it); `minFrom` (formula) locks dots below a dynamic minimum and clamps writes to it;
       member tracks take `cohort: { maxMembers }`.
-      Tracks render as a Level / Penalty / Damage table, or a one-line strip when `compact`. Compact pools render `current / max` boxes, compact ratings number boxes.
+      Tracks render through the tracker (see "Trackers"). Compact pools render `current / max` boxes, compact ratings number boxes.
 - Labels: every labelled node may carry `labelMessage` — a UI message id (`ttgamer.ui.…`) or a
   catalog entry (`catalog:<catalogId>/<entryId>`, e.g. attribute names). `DeclarativeSheetView`
   renders `localizeTemplate(template, locale)` (`features/sheet/declarative/localizeTemplate.ts`);
@@ -230,17 +296,43 @@ item array through the same molecules (V5 `weapons`, `inventory`).
   (`features/sheet/data/templateReferences.ts`) wherever templates enter the system: editor
   draft issues, file import (reports `template-reference-invalid`), and a test over every
   shipped default. It checks binding keys and list binding kinds, catalog ids, fill details and
-  fill targets, and formula/`maxFrom` coordinates against `listTemplateNumericCoordinates`.
+  fill targets, formula/`maxFrom` coordinates against `listTemplateNumericCoordinates`, and
+  reference targets against the template's setting (`reference-target-unavailable`, with the
+  field label). `{ referenceScope: false }` skips only that last check: library file parsing
+  passes it because the file's own types and settings are not installed yet.
 - An unknown key, wrong kind, missing character, or missing body handlers renders the labeled
   `DegradedBinding` notice and reports `binding-unresolved` with a `reason`.
 - Catalogs are declared by plugins (`SystemPlugin.catalogs`, built with `defineCatalog` from
   `systems/catalogs.ts`; Star Wars in `systems/star-wars-wod/catalogs.ts`, Hunter in
   `systems/v5/modules/hunter/catalogs.ts`). `features/sheet/data/catalogBindings.ts`
   (`CATALOG_BINDINGS`) only aggregates them from the registry (a duplicate id throws); entry
-  names localize from `translations/source/<locale>/data/<catalogId>.yaml`. They are the only path
-  from system data into templates: select fields persist `catalogId` + fill mappings and system
-  lists resolve `binding.catalog.catalogId` from the same registry. Unknown catalogs degrade to
-  manual choice and report `catalog-unavailable`.
+  names localize from `translations/source/<locale>/data/<catalogId>.yaml`, catalog names from
+  `ui/sheet/catalogNames.yaml` (`catalogDisplayName`). They are the only path from system data
+  into templates: select fields persist `catalogId` + fill mappings and system lists resolve
+  `binding.catalog.catalogId` from the same registry. Unknown catalogs degrade to manual choice
+  and report `catalog-unavailable`.
+- User catalogs (spec 015, `systems/userCatalogs.ts`): `user-catalog-<8>` ids, typed columns
+  (`c-<8>`: text / number / toggle) and entries (`e-<8>`, a name plus values by column id; values
+  of unknown columns or the wrong type are dropped on parse). The owner is a user setting
+  (`{ settingId }`), a shipped setting (`{ systemId, moduleId? }`: Rules only, a line, a setting
+  system), or a ruleset (`{ rulesetId }`, shared by every setting on it). They reach generic code
+  through the registry overlay (`setUserCatalogs`, synced in `systems/index.ts`; the storybook
+  adds `registerSampleCatalogs`) adapted by `userCatalogBinding` to `CatalogBindingEntry`, so
+  every consumer goes through **`getCatalogBinding(id, storeCatalogs?)`** (shipped first) — never
+  `CATALOG_BINDINGS.get` outside docs embeds. React callers pass the store's `catalogs` so edits
+  re-resolve. Scope: `catalogScopeOf(registry, template)` → the template's setting and its
+  ruleset; `listCatalogBindingsFor` groups the editor picker (setting / ruleset / shipped),
+  `isCatalogInScope` makes an out-of-scope user catalog an `unknown-catalog` reference issue.
+  Limits: `TEMPLATE_LIMITS.catalogEntriesMax` 1000, `catalogColumnsMax` 20, `catalogsPerOwner` 50. Editing is pure (`features/sheet/data/catalogEdit.ts`: columns, entries, `convertValue`,
+  `parsePastedEntries`, `catalogUsage`, `boundCatalogIds`).
+- A pick from a user catalog stores the entry id and the name in `<valueKey>#label` (in a table
+  row: `<columnId>#label`; `pickLabelKey`); the select shows the live name, or `#label` once the
+  entry or catalog is gone. Other use sites: a value-bag list's `catalog: { catalogId, valueFrom? }`
+  (named lists only: names suggest entries; `valueFrom` copies a column that fits the item type
+  — `catalogKindFitsListItem` — into the entry value; a mismatch reports `unknown-fill-detail`,
+  a catalog on an unnamed list `list-catalog-unnamed`), and a table
+  `select` column's `binding`, whose fills target sibling column ids and write only that row
+  (`pageApi.setRowValues`). Template import keeps user catalog bindings (they may arrive later).
 - Fill semantics (`readCatalogDetails` + `pageApi.applyWrites`): picking an entry **overwrites**
   every mapped target in one change — a detail the entry lacks (`undefined`) leaves its target
   untouched, `null`/`''` clears it; clearing the select writes nothing. Fill targets may be
@@ -250,9 +342,26 @@ item array through the same molecules (V5 `weapons`, `inventory`).
   `systems/star-wars-wod/catalogAdapters.ts`: dice → dots with `catalog-detail-out-of-range`
   clamping, scale name → enum, armor label split, arc names). Detail kinds: `text`, `number`,
   `boolean`, `rows`.
-- Reference fields offer only `targetKinds`, show an "open" button (switches the workspace's
-  current document; no-op in previews), and render a "missing document" placeholder for a
-  stale id (value kept, `reference-target-missing` reported once; not reported in previews).
+- Reference fields belong to the template's setting (spec 017,
+  `features/sheet/data/referenceScope.ts`). The setting is `catalogScopeOf`'s (user setting,
+  shipped line = system + module, or system). `referenceTargetsOf` lists its kinds once each:
+    - user setting: the ruleset's `coreDefinitions` kinds + user types owned by the setting;
+    - shipped line: the module's kinds + `coreDefinitions` kinds + user types owned by the module
+      or by the system without a module;
+    - system without a module: its module-less kinds + user types owned by the system without a
+      module; an unregistered system: none.
+
+    Equal labels gain the setting (`targetLabel`); the user's own type of the same name in the same
+    setting gets "(yours)". The editor's kind picker lists these, then stored targets outside them
+    as "(unavailable)" (`referenceKindName`), kept until unchecked. On the sheet, `useTemplatePage`
+    flags each `DocumentOption.inScope` (`isDocumentInReferenceScope`: same system — the user
+    setting's ruleset for a user setting —, same `metadata.settingId` or none, a scope kind); the
+    search offers in-scope options of the target kinds. A selected id whose document exists but is
+    out of scope or not a target kind shows its title, an "outside this setting" note, open and
+    remove, and reports `reference-target-out-of-scope` once; a stale id shows the "missing
+    document" placeholder and reports `reference-target-missing` once (value kept). Neither is
+    reported in previews; an absent `inScope` (story/preview options) reads as in scope. Reference
+    list entries (spec 016) render the same control.
 
 ## Document source
 
@@ -277,9 +386,14 @@ document. Wrap a subtree in `DocumentSourceContext.Provider` with:
 - One coordinate space: bag numbers plus system traits/pools (`readBoundNumber`, called from
   `resolveBase` in `hooks.ts`).
 - `formula` fields are read-only and never stored. `maxFrom` (rating/number/primitive) clamps
-  the display; stored values are clamped only when the bounded value itself is edited.
-- Errors are labeled in the UI (`unknown-coordinate` names the coordinate, `circular`,
-  `division-by-zero`, `non-numeric`). Unparseable formulas also report `formula-error`.
+  the display; stored values are clamped only when the bounded value itself is edited. For a
+  rating the resolved maximum also raises the range above the static `max`, up to 100.
+- Errors are labeled in the UI (`unknown-coordinate` names the coordinate, `circular` for a
+  real cycle or a formula reading itself, `division-by-zero`, `non-numeric` for a stored value
+  that is not a number, `parse` for a formula that does not parse, which also reports
+  `formula-error`). A missing value is final for the render pass, never a cycle. Behavior tests:
+  `template-formulas.test.ts` (grammar), `derived-values.test.tsx` (sheet), the "derived values"
+  block of `template-editor.test.tsx` (draft issues and live preview).
 - Cycles are rejected at authoring (`collectDraftIssues`); at render the evaluator in
   `useTemplatePage` re-orders by dependency with its own cycle guard.
 - `collectFormulaDependencies` in `types/template.ts` uses a regex, not the parser (import
@@ -347,10 +461,11 @@ counts as equal; `templateMatchesSetting`).
   own `systemId` on load). `setDefaultOverride(template)` keys by the template's system and id;
   `clearDefaultOverride(systemId, viewId)`. Entries failing the parse (including all pre-006
   shapes) move to quarantine and report `template-quarantined` with the Zod summary.
-- `documentTypeStore` v2 (`universal-document-type-storage`): user document types (their
+- `documentTypeStore` v3 (`universal-document-type-storage`): user document types (their
   `defaultTemplateId` is optional: a type may have no page), user settings, `defaultPages`
   (`systemId:definitionId` → the view or user template new documents of a shipped type open on;
-  `setDefaultPage`, `dropDefaultPagesFor`), and a bounded quarantine.
+  `setDefaultPage`, `dropDefaultPagesFor`), user catalogs (spec 015; `saveCatalog`,
+  `removeCatalog`, `replaceCatalogs`), and a bounded quarantine shared by all of them.
 - `documentStore` v4: flat `templateValues`; v2 nested bags are flattened on load
   (`flattenLegacyTemplateValues`). Unparseable documents go to `recoveryEntries` (max 100) and
   report `document-recovered`. `createDocument(systemId, definitionId, { settingId, templateId,
@@ -358,7 +473,7 @@ preferredViewId })`; creation flows ask `newDocumentPage` (`features/sheet/data/
   for a shipped type's chosen default. `relocateDocuments(changes)` applies the document side of a
   library move in one write (`null` clears; only user-type documents change `systemId`).
 - `metadata.seededPresets`: list presets are copied once per document × template
-  (copy-on-assign). The seeding effect in `useTemplatePage` writes bag, data, and metadata.
+  (copy-on-assign); custom lists seed only when named, through `presetListEntry(item, …)`. The seeding effect in `useTemplatePage` writes bag, data, and metadata.
 
 ## Editor (`components/dialogs/template-editor/`)
 
@@ -479,8 +594,10 @@ tree is stored.
   arrows/Home/End/type-ahead, Enter opens a page, Shift+F10 / Menu opens `ContextMenu` (a Popover
   rendered inside the dialog content so the focus trap keeps it), Delete deletes. Below `md` the
   tree and details are tabs.
-- Files (`features/sheet/shell/libraryFile.ts`, `libraryImport.ts`): `ttgamer-library` v1 —
-  flat `settings`, `types`, `templates`, `overrides` (edited shipped pages), `included`
+- Files (`features/sheet/shell/libraryFile.ts`, `libraryImport.ts`): `ttgamer-library` v2 (v1
+  still reads) — flat `settings`, `types`, `templates`, `overrides` (edited shipped pages),
+  `catalogs` (a picked page auto-adds the user catalogs it binds; Keep both rebinds the file's
+  pages to the copy; beyond the owner limit an entry is unavailable, reason `limit`), `included`
   (`picked`/`auto`), informative `addresses`, `notices`. Export: tri-state ticks
   (`tickState`/`toggleTick`), `exportClosure` adds the user parents a pick needs (tertiary in the
   tree) and turns shipped ancestors into addresses; shipped content is never serialized. Import:
@@ -489,8 +606,17 @@ tree is stored.
   keeps installed pages missing from the file), Keep both re-ids the entry and its picked
   descendants with an "(imported)" suffix; templates colliding with shipped view ids or unrelated
   templates get fresh ids. Nothing is written before `installImport`.
-- Help anchors: `EDITOR_GUIDE.library*` → `docs/template-editor/library.mdx`. Storybook: the
-  "Library" page (`features/docs/LibraryStorybook.tsx`).
+- Catalogs (spec 015) are leaves: `RulesetNode.catalogs` (the ruleset's own, then the ruleset
+  plugin's shipped catalogs) before its settings, `SettingNode.catalogs` (then a setting system's
+  shipped catalogs) before its types; key `c:user:<id>` or `c:<systemId>:<catalogId>`. Shipped
+  ones are read-only. `catalogOwnerFor(node)`, `createCatalog` (per-owner limit), rename,
+  `deletePlan` (catalogs of a deleted setting go with it; a catalog delete names its bound
+  templates), moves to any ruleset or setting (`lostBy`: templates that would no longer see it;
+  a setting moved to other rules loses the old ruleset's catalogs). The details pane edits a
+  catalog with `library/CatalogTable.tsx` (memoized rows keyed by entry id).
+- Help anchors: `EDITOR_GUIDE.library*` → `docs/template-editor/library.mdx`; user catalogs →
+  `values.mdx#your-catalogs`. Storybook: the "Library" page
+  (`features/docs/LibraryStorybook.tsx`) and the "Your own catalog" element story.
 
 ## Import / export (`features/sheet/shell/templateFile.ts`)
 
@@ -508,7 +634,9 @@ array (ignored on import). Filenames: `ttgamer_template_<id>.json`.
 - `reportSheetIssue({ code, message, details })` — codes: `template-value-write-rejected`,
   `template-value-write-skipped`, `template-quarantined`, `document-recovered`,
   `binding-unresolved`, `catalog-unavailable`, `formula-error`, `template-reference-invalid`,
-  `template-fallback`, `reference-target-missing`, `catalog-detail-out-of-range`,
+  `template-fallback`, `reference-target-missing`, `reference-target-out-of-scope`,
+  `catalog-detail-out-of-range`, `list-entry-unreadable`, `template-value-unreadable`,
+  `template-value-hidden`,
   `template-incompatible`.
 - In development each distinct issue is logged once as `[sheet_manager] <code>: …` in the
   browser console. **A silently ignored edit, an empty section, or a "degraded" card → check
@@ -527,7 +655,9 @@ catalog choice, collections, on sandbox documents); built-in parts are generated
 `bindingSignature` (a new binding shape needs a case there when it renders differently). A new
 option or presentation also gets a tag in `REQUIRED_VARIANTS` of
 `tests/sheet_manager/storybook.test.tsx`. A new docs widget gets an example on
-`docs/dev/storybook/docs-widgets.mdx`; colors come from `tailwind.config.cjs` automatically. A
+`docs/dev/storybook/docs-widgets.mdx`; colors come from `tailwind.config.cjs` automatically.
+States that depend on the reader's own documents get a fixed-sample widget next to the stories
+(`ReferenceEntryVariants` in `features/docs/ElementStorybook.tsx`, on `template-elements.mdx`). A
 setting's missing element is added as an editor-configurable template element, preferably as an
 option on an existing field or primitive rather than a similar new one.
 
@@ -557,7 +687,7 @@ per-layer YAML (`ui/sheet/<system>.yaml`, `ui/sheet/<system><Line>.yaml`,
 changes are needed for data addressing.
 
 **Terminology**: _full_ and _brief_ are views (shipped templates); _compact_ is a primitive
-display mode used inside brief views.
+display mode used inside brief views (for trackers it reads as the `line` display).
 
 **New catalog**: `defineCatalog` in the owning system's `catalogs.ts`, listed on
 `SystemPlugin.catalogs` (closed fillable-detail set, optional system-owned `resolveDetails`);
@@ -623,8 +753,10 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 | Editor                            | `template-editor.test.tsx`, `template-editor-{page,arrange,preview,history,shortcuts,move-targets}.test.*`, `template-editor.perf.test.tsx`   |
 | User types, settings, files       | `user-document-types.test.{ts,tsx}`, `user-settings.test.tsx`, `type-file.test.ts`, `document-type-store.test.ts`                             |
 | Library tree, moves, files, UI    | `library-{tree,moves,file,import}.test.ts`, `library-dialog.test.tsx`, `document-store-relocate.test.ts`, `systems/registry-rulesets.test.ts` |
+| User catalogs                     | `user-catalogs.test.ts`, `catalog-edit.test.ts`, `catalog-use-sites.test.tsx`                                                                 |
 | WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                         |
-| References                        | `template-references.test.ts`                                                                                                                 |
+| Trackers                          | `tracker-{schema,rules,changes}.test.ts`, `tracker-{field,builtin,parity}.test.tsx`, `cohort-track.test.tsx`                                  |
+| References                        | `template-references.test.ts`, `reference-scope.test.{ts,tsx}` (setting scope, stale targets, imports)                                        |
 | File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                           |
 
 ## History (read for rationale only)

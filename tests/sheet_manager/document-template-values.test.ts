@@ -1,3 +1,4 @@
+import { applyTemplateValueWrites } from '@site/src/sheet_manager/features/sheet/data/templateValueWrites';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
 import { createDefaultCharacter } from '@site/src/sheet_manager/types/character';
 import type { UnknownDocumentEnvelope } from '@site/src/sheet_manager/types/document';
@@ -9,7 +10,10 @@ import {
 } from '@site/src/sheet_manager/types/template';
 import {
     coerceStoredValue,
+    ratingDetailKey,
+    readRatingDetail,
     TEMPLATE_VALUES_LIMITS,
+    TemplatePageValuesSchema,
     validateTemplateValue,
 } from '@site/src/sheet_manager/types/templateValues';
 import { describe, expect, it } from 'vitest';
@@ -305,6 +309,67 @@ describe('v2→v3 shared value store migration', () => {
         });
         expect(migrated.documents[0]!.templateValues).toEqual({
             someField: 'kept',
+        });
+    });
+});
+
+describe('rating values (spec 014)', () => {
+    const template = buildTemplate();
+    const rating = collectTemplateFields(template).get('force-rating')!;
+
+    it('stores values above the static maximum up to the schema limit', () => {
+        expect(validateTemplateValue(rating, 25)).toEqual({ ok: true, value: 25 });
+        expect(validateTemplateValue(rating, 100)).toEqual({ ok: true, value: 100 });
+        expect(validateTemplateValue(rating, 101)).toEqual({ ok: false, reason: 'bounds' });
+        expect(validateTemplateValue(rating, -1)).toEqual({ ok: false, reason: 'bounds' });
+        expect(coerceStoredValue(rating, 25)).toBe(25);
+    });
+
+    it('keeps the floor as the lower bound', () => {
+        const floored = TemplateFieldSchema.parse({
+            id: 'a',
+            label: 'A',
+            type: 'rating',
+            min: 2,
+            max: 5,
+        });
+        expect(validateTemplateValue(floored, 1)).toEqual({ ok: false, reason: 'bounds' });
+    });
+
+    it('validates the detail entry of a rating and passes other keys through', () => {
+        const key = ratingDetailKey('force-rating');
+        const detail = { text: 'Telekinesis', specialization: true };
+        expect(applyTemplateValueWrites(template, {}, { [key]: detail })).toEqual({
+            ok: true,
+            values: { [key]: detail },
+        });
+        expect(applyTemplateValueWrites(template, {}, { [key]: { text: 3 } } as never)).toEqual({
+            ok: false,
+            key,
+            reason: 'type',
+        });
+        expect(
+            applyTemplateValueWrites(template, {}, { 'unknown#detail': { text: 'kept' } })
+        ).toMatchObject({ ok: true });
+    });
+
+    it('parses detail entries in the document bag, including 64-character keys', () => {
+        const longKey = `a${'-b'.repeat(31)}c`.slice(0, 64);
+        const bag = {
+            'force-rating': 3,
+            [ratingDetailKey('force-rating')]: { text: 'Alter', practiced: true },
+            [ratingDetailKey(longKey)]: { experienced: true },
+        };
+        expect(TemplatePageValuesSchema.parse(bag)).toEqual(bag);
+        expect(buildEnvelope(bag).templateValues).toEqual(bag);
+    });
+
+    it('reads a missing or malformed detail as empty', () => {
+        expect(readRatingDetail(undefined)).toEqual({});
+        expect(readRatingDetail({ text: 1 })).toEqual({});
+        expect(readRatingDetail({ text: 'x', experienced: true })).toEqual({
+            text: 'x',
+            experienced: true,
         });
     });
 });

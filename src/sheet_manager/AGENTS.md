@@ -29,12 +29,12 @@ src/sheet_manager/
 │   └── hooks/                # sheet-local behavior hooks
 ├── hooks/                    # useCharacter and update helpers
 ├── systems/                  # neutral contracts (registry, types, view, templateBindings,
-│   │                         # catalogs, policies, userTypes) + one folder per system plugin:
+│   │                         # catalogs, policies, userTypes, userCatalogs) + one folder per system plugin:
 │   ├── wod2e/                # classic WoD 2e ruleset (`ruleset/`) + the engine plugin `wod-2e`
 │   ├── star-wars-wod/        # Star Wars setting on the WoD 2e ruleset (identities frozen)
 │   └── v5/                   # V5 ruleset (`ruleset/`), engine character (`core/`), modules (`modules/hunter/`)
 ├── templates/                # setting-neutral template node builders
-├── store/                    # documentStore (v4) + templateStore (library, v5) + documentTypeStore (user types/settings, default pages, v2)
+├── store/                    # documentStore (v4) + templateStore (library, v5) + documentTypeStore (user types/settings, default pages, catalogs, v3)
 └── types/                    # generic contracts, template schema, templateValues bag
 ```
 
@@ -53,8 +53,8 @@ Use dependency direction, not component size, to classify sheet UI:
    keyboard navigation because its input sits outside the portalled list); `stat-fields/` renders
    one concrete stat. Extend an existing atom with an optional prop before adding a new one.
 2. **Molecules** (`components/sections`) combine atoms into one reusable interaction such
-   as a trait group, resource group, condition track (optional strip layout and −/+ length
-   regulator), or editable table. They may accept
+   as a trait group, resource group, tracker (`stat-fields/Tracker.tsx`: table, strip, or one
+   line, copies, −/+ length; own and built-in trackers share it, spec 018), or editable table. They may accept
    definition/profile data but must not select the current document.
 3. **Bound elements** (`features/sheet/declarative`, `features/sheet/body`) adapt document data
    to molecules through bindings (`useBoundDocument`, `useBodyHandlers`). They must not decide
@@ -110,7 +110,8 @@ Do not read `currentCharacter` directly inside a reusable sheet element. Direct 
   `systems/v5/ruleset/dice.ts`) adds critical pairs and reads special-dice outcomes. Each V5
   module contributes its dice line (`modules/hunter/dice.ts` Desperation,
   `modules/vampire/dice.ts` Hunger, awaiting the vampire sheet). Primitives resolve the builder
-  with `useDocumentTraitDiceRoll()`; `StatDot` sends the document as the roll source
+  with `useDocumentTraitDiceRoll()`, and so do template ratings with a die; the die is
+  `StatDiceButton` (used by `StatDot` and `RatingRow`), which sends the document as the roll source
   (`useDocumentRollSource()`), and `SheetWorkspace` publishes the shown document
   (`integrations/sheet-dice/shownDocument.ts`). Publisher badges never appear on dice surfaces.
 - Shipped view ids are unique across systems (prefix them with the system, e.g.
@@ -125,7 +126,9 @@ Do not read `currentCharacter` directly inside a reusable sheet element. Direct 
   sheet-templates skill ("Library").
 - User document types and settings (spec 012) reach generic code only through the registry
   overlay (`systems/userTypes.ts`, `SystemRegistry.setUserDocumentTypes`); `user-` documents keep
-  every value in `templateValues`. Current-state detail: the sheet-templates skill.
+  every value in `templateValues`. User catalogs (spec 015) do the same through
+  `setUserCatalogs` and are read with `getCatalogBinding`. Current-state detail: the
+  sheet-templates skill.
 
 ## Schema and Import/Export
 

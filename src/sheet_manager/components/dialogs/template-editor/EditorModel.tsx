@@ -12,6 +12,8 @@ export interface EditorModel {
     draftId: string;
     systemId: string;
     documentKind: string;
+    /** The draft's user setting, which with its ruleset scopes the user catalogs it can bind. */
+    settingId: string | undefined;
     bindings: readonly DocumentBindingDescriptor[];
     /** Id of the single shared `<datalist>` of numeric coordinates for formula inputs. */
     coordinateListId: string;

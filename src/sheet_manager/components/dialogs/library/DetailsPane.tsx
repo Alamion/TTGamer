@@ -7,6 +7,7 @@ import type { ReactNode } from 'react';
 import type { FoundNode, LibraryNode } from '../../../features/sheet/data/libraryTree';
 import { systemRegistry } from '../../../systems';
 import { ACTION_UI, type LibraryActionId } from './actions';
+import { CatalogTable } from './CatalogTable';
 
 const labels = uiMessages.sheet.library;
 
@@ -71,6 +72,20 @@ function notesFor(node: LibraryNode, plural: ReturnType<typeof usePluralMessage>
                 notes.push(translate(labels.details.rulesOnlyFallback));
             break;
         }
+        case 'catalog':
+            if (node.ref.kind === 'shipped') {
+                notes.push(translate(labels.details.shippedCatalogNote));
+            } else {
+                notes.push(
+                    translate(
+                        node.catalog && 'rulesetId' in node.catalog.owner
+                            ? labels.details.rulesetCatalogNote
+                            : labels.details.catalogNote
+                    )
+                );
+            }
+            notes.push(plural(labels.counts.entries, node.entryCount));
+            break;
         case 'page':
             if (node.ref.kind === 'shipped') notes.push(translate(labels.details.shippedPageNote));
             if (node.isDefault) notes.push(translate(labels.details.isDefault));
@@ -158,6 +173,8 @@ export function DetailsPane({ found, actions, onAction, panel }: DetailsPaneProp
             )}
 
             {panel}
+
+            {node.level === 'catalog' && <CatalogTable node={node} />}
         </section>
     );
 }

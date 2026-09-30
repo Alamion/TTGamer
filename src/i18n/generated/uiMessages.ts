@@ -1590,6 +1590,84 @@ export const uiMessages = {
                 message: 'Search the catalog...',
             },
         },
+        catalogNames: {
+            armor: {
+                id: 'ttgamer.ui.sheet.catalogNames.armor',
+                message: 'Armor',
+            },
+            backgrounds: {
+                id: 'ttgamer.ui.sheet.catalogNames.backgrounds',
+                message: 'Backgrounds',
+            },
+            creatures: {
+                id: 'ttgamer.ui.sheet.catalogNames.creatures',
+                message: 'Creatures',
+            },
+            'force-powers': {
+                id: 'ttgamer.ui.sheet.catalogNames.force-powers',
+                message: 'Force powers',
+            },
+            'force-skills': {
+                id: 'ttgamer.ui.sheet.catalogNames.force-skills',
+                message: 'Force skills',
+            },
+            'melee-weapons': {
+                id: 'ttgamer.ui.sheet.catalogNames.melee-weapons',
+                message: 'Melee weapons',
+            },
+            'merits-flaws': {
+                id: 'ttgamer.ui.sheet.catalogNames.merits-flaws',
+                message: 'Merits and flaws',
+            },
+            'ranged-weapons': {
+                id: 'ttgamer.ui.sheet.catalogNames.ranged-weapons',
+                message: 'Ranged weapons',
+            },
+            species: {
+                id: 'ttgamer.ui.sheet.catalogNames.species',
+                message: 'Species',
+            },
+            'tools-gear': {
+                id: 'ttgamer.ui.sheet.catalogNames.tools-gear',
+                message: 'Tools and gear',
+            },
+            vehicles: {
+                id: 'ttgamer.ui.sheet.catalogNames.vehicles',
+                message: 'Vehicles',
+            },
+            'v5-hunter-advantages': {
+                id: 'ttgamer.ui.sheet.catalogNames.v5-hunter-advantages',
+                message: 'Advantages',
+            },
+            'v5-hunter-armor': {
+                id: 'ttgamer.ui.sheet.catalogNames.v5-hunter-armor',
+                message: 'Armor',
+            },
+            'v5-hunter-creeds': {
+                id: 'ttgamer.ui.sheet.catalogNames.v5-hunter-creeds',
+                message: 'Creeds',
+            },
+            'v5-hunter-drives': {
+                id: 'ttgamer.ui.sheet.catalogNames.v5-hunter-drives',
+                message: 'Drives',
+            },
+            'v5-hunter-edges': {
+                id: 'ttgamer.ui.sheet.catalogNames.v5-hunter-edges',
+                message: 'Edges',
+            },
+            'v5-hunter-gear': {
+                id: 'ttgamer.ui.sheet.catalogNames.v5-hunter-gear',
+                message: 'Gear',
+            },
+            'v5-hunter-perks': {
+                id: 'ttgamer.ui.sheet.catalogNames.v5-hunter-perks',
+                message: 'Perks',
+            },
+            'v5-hunter-weapons': {
+                id: 'ttgamer.ui.sheet.catalogNames.v5-hunter-weapons',
+                message: 'Weapons',
+            },
+        },
         controls: {
             textFallbackLabel: {
                 id: 'ttgamer.ui.sheet.controls.textFallbackLabel',
@@ -1631,6 +1709,14 @@ export const uiMessages = {
                 diceTitle: {
                     id: 'ttgamer.ui.sheet.controls.statDot.diceTitle',
                     message: 'Left-click: set notation | Right-click: roll',
+                },
+                roll: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.roll',
+                    message: 'Roll dice',
+                },
+                rollStat: {
+                    id: 'ttgamer.ui.sheet.controls.statDot.rollStat',
+                    message: 'Roll {stat}',
                 },
                 specialization: {
                     id: 'ttgamer.ui.sheet.controls.statDot.specialization',
@@ -1954,10 +2040,6 @@ export const uiMessages = {
                 },
             },
             fields: {
-                conditionLevel: {
-                    id: 'ttgamer.ui.sheet.documents.fields.conditionLevel',
-                    message: 'Level',
-                },
                 conditionPenalty: {
                     id: 'ttgamer.ui.sheet.documents.fields.conditionPenalty',
                     message: 'Penalty',
@@ -2277,6 +2359,16 @@ export const uiMessages = {
                 none: {
                     id: 'ttgamer.ui.sheet.documents.fields.none',
                     message: 'None yet',
+                },
+                damageMarks: {
+                    bashing: {
+                        id: 'ttgamer.ui.sheet.documents.fields.damageMarks.bashing',
+                        message: 'Bashing',
+                    },
+                    lethal: {
+                        id: 'ttgamer.ui.sheet.documents.fields.damageMarks.lethal',
+                        message: 'Lethal',
+                    },
                 },
                 healthLevels: {
                     bruised: {
@@ -2840,6 +2932,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.library.levels.page',
                     message: 'Page',
                 },
+                catalog: {
+                    id: 'ttgamer.ui.sheet.library.levels.catalog',
+                    message: 'Catalog',
+                },
             },
             badges: {
                 yours: {
@@ -2882,6 +2978,16 @@ export const uiMessages = {
                 pages: {
                     id: 'ttgamer.ui.sheet.library.counts.pages',
                     message: '{count} page|{count} pages',
+                    plural: true,
+                },
+                entries: {
+                    id: 'ttgamer.ui.sheet.library.counts.entries',
+                    message: '{count} entry|{count} entries',
+                    plural: true,
+                },
+                catalogs: {
+                    id: 'ttgamer.ui.sheet.library.counts.catalogs',
+                    message: '{count} catalog|{count} catalogs',
                     plural: true,
                 },
             },
@@ -2993,6 +3099,25 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.library.details.noDescription',
                     message: 'No description',
                 },
+                catalogNote: {
+                    id: 'ttgamer.ui.sheet.library.details.catalogNote',
+                    message:
+                        "Your catalog — named entries with your own columns. Choice fields, lists, and table columns of this place's pages can pick from it.",
+                },
+                rulesetCatalogNote: {
+                    id: 'ttgamer.ui.sheet.library.details.rulesetCatalogNote',
+                    message: 'A catalog of the rules — every setting on these rules can use it.',
+                },
+                shippedCatalogNote: {
+                    id: 'ttgamer.ui.sheet.library.details.shippedCatalogNote',
+                    message:
+                        'A shipped catalog. It is read-only; bind it in the editor like any catalog.',
+                },
+                usedBy: {
+                    id: 'ttgamer.ui.sheet.library.details.usedBy',
+                    message: 'Used by {count} template.|Used by {count} templates.',
+                    plural: true,
+                },
             },
             actions: {
                 newSetting: {
@@ -3006,6 +3131,10 @@ export const uiMessages = {
                 newPage: {
                     id: 'ttgamer.ui.sheet.library.actions.newPage',
                     message: 'New page',
+                },
+                newCatalog: {
+                    id: 'ttgamer.ui.sheet.library.actions.newCatalog',
+                    message: 'New catalog',
                 },
                 edit: {
                     id: 'ttgamer.ui.sheet.library.actions.edit',
@@ -3060,6 +3189,10 @@ export const uiMessages = {
                 pageTitle: {
                     id: 'ttgamer.ui.sheet.library.create.pageTitle',
                     message: 'New page for {parent}',
+                },
+                catalogTitle: {
+                    id: 'ttgamer.ui.sheet.library.create.catalogTitle',
+                    message: 'New catalog in {parent}',
                 },
                 name: {
                     id: 'ttgamer.ui.sheet.library.create.name',
@@ -3154,6 +3287,22 @@ export const uiMessages = {
                     message:
                         '"{name}" will be deleted. Documents opened on it return to their default page.',
                 },
+                catalogTitle: {
+                    id: 'ttgamer.ui.sheet.library.delete.catalogTitle',
+                    message: 'Delete this catalog?',
+                },
+                catalogDescription: {
+                    id: 'ttgamer.ui.sheet.library.delete.catalogDescription',
+                    message:
+                        'Delete the catalog "{name}"? {count} template uses it; its fields fall back to manual choice, and documents keep what they picked.|Delete the catalog "{name}"? {count} templates use it; their fields fall back to manual choice, and documents keep what they picked.',
+                    plural: true,
+                },
+                settingCatalogs: {
+                    id: 'ttgamer.ui.sheet.library.delete.settingCatalogs',
+                    message:
+                        'Its {count} catalog is deleted too.|Its {count} catalogs are deleted too.',
+                    plural: true,
+                },
             },
             reset: {
                 title: {
@@ -3242,6 +3391,25 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.library.move.confirmTitle',
                     message: 'Move to other rules?',
                 },
+                toCatalog: {
+                    id: 'ttgamer.ui.sheet.library.move.toCatalog',
+                    message: 'Where to: other rules (shared by all their settings) or a setting.',
+                },
+                lostBy: {
+                    id: 'ttgamer.ui.sheet.library.move.lostBy',
+                    message:
+                        '{count} template will no longer see the catalog: {names}. Its fields fall back to manual choice.|{count} templates will no longer see the catalog: {names}. Their fields fall back to manual choice.',
+                    plural: true,
+                },
+                catalogsMoving: {
+                    id: 'ttgamer.ui.sheet.library.move.catalogsMoving',
+                    message: '{count} catalog moves with it.|{count} catalogs move with it.',
+                    plural: true,
+                },
+                catalogConfirmTitle: {
+                    id: 'ttgamer.ui.sheet.library.move.catalogConfirmTitle',
+                    message: 'Move the catalog out of reach?',
+                },
             },
             export: {
                 title: {
@@ -3267,7 +3435,7 @@ export const uiMessages = {
                 },
                 counts: {
                     id: 'ttgamer.ui.sheet.library.export.counts',
-                    message: 'In the file: {settings}, {types}, {pages}.',
+                    message: 'In the file: {settings}, {types}, {pages}, {catalogs}.',
                 },
                 addresses: {
                     id: 'ttgamer.ui.sheet.library.export.addresses',
@@ -3347,6 +3515,10 @@ export const uiMessages = {
                         id: 'ttgamer.ui.sheet.library.import.reasons.shippedPage',
                         message: 'This shipped page does not exist here.',
                     },
+                    limit: {
+                        id: 'ttgamer.ui.sheet.library.import.reasons.limit',
+                        message: 'This place already has as many catalogs as it can hold.',
+                    },
                 },
                 choiceLabel: {
                     id: 'ttgamer.ui.sheet.library.import.choiceLabel',
@@ -3378,7 +3550,7 @@ export const uiMessages = {
                 },
                 done: {
                     id: 'ttgamer.ui.sheet.library.import.done',
-                    message: 'Imported {settings}, {types}, {pages}.',
+                    message: 'Imported {settings}, {types}, {pages}, {catalogs}.',
                 },
                 errors: {
                     parse: {
@@ -3401,6 +3573,201 @@ export const uiMessages = {
                         id: 'ttgamer.ui.sheet.library.import.errors.schemaEntry',
                         message: 'Entry "{entry}" is invalid; the file was not imported.',
                     },
+                },
+            },
+            catalogTable: {
+                label: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.label',
+                    message: 'Entries of {name}',
+                },
+                readOnly: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.readOnly',
+                    message: 'Shipped catalogs cannot be changed.',
+                },
+                nameColumn: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.nameColumn',
+                    message: 'Name',
+                },
+                addEntry: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.addEntry',
+                    message: 'Add entry',
+                },
+                addColumn: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.addColumn',
+                    message: 'Add column',
+                },
+                paste: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.paste',
+                    message: 'Paste rows',
+                },
+                deleteSelected: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.deleteSelected',
+                    message: 'Delete selected',
+                },
+                newEntry: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.newEntry',
+                    message: 'New entry',
+                },
+                newColumn: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.newColumn',
+                    message: 'Column {number}',
+                },
+                empty: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.empty',
+                    message: 'No entries yet. Add one or paste rows from a spreadsheet.',
+                },
+                emptyName: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.emptyName',
+                    message: 'Enter a name.',
+                },
+                duplicate: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.duplicate',
+                    message: 'Another entry has the same name.',
+                },
+                selectEntry: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.selectEntry',
+                    message: 'Select {name}',
+                },
+                entryName: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.entryName',
+                    message: 'Name of entry {number}',
+                },
+                cell: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.cell',
+                    message: '{column} of {name}',
+                },
+                columnName: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.columnName',
+                    message: 'Column name',
+                },
+                columnType: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.columnType',
+                    message: 'Type of {column}',
+                },
+                moveColumnLeft: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.moveColumnLeft',
+                    message: 'Move {column} left',
+                },
+                moveColumnRight: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.moveColumnRight',
+                    message: 'Move {column} right',
+                },
+                deleteColumn: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.deleteColumn',
+                    message: 'Delete {column}',
+                },
+                moveEntryUp: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.moveEntryUp',
+                    message: 'Move {name} up',
+                },
+                moveEntryDown: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.moveEntryDown',
+                    message: 'Move {name} down',
+                },
+                deleteEntry: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.deleteEntry',
+                    message: 'Delete {name}',
+                },
+                types: {
+                    text: {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.types.text',
+                        message: 'Text',
+                    },
+                    number: {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.types.number',
+                        message: 'Number',
+                    },
+                    toggle: {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.types.toggle',
+                        message: 'Toggle',
+                    },
+                },
+                limits: {
+                    entries: {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.limits.entries',
+                        message: 'A catalog holds at most {limit} entries.',
+                    },
+                    columns: {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.limits.columns',
+                        message: 'A catalog holds at most {limit} columns.',
+                    },
+                    catalogs: {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.limits.catalogs',
+                        message: 'This place holds at most {limit} catalogs.',
+                    },
+                },
+                pasteTitle: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.pasteTitle',
+                    message: 'Paste rows',
+                },
+                pasteHint: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.pasteHint',
+                    message:
+                        'One entry per line: the name, then the columns in order, separated by tabs — what a spreadsheet copies.',
+                },
+                pasteLabel: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.pasteLabel',
+                    message: 'Rows to add',
+                },
+                pasteAdd: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.pasteAdd',
+                    message: 'Add {count} entry|Add {count} entries',
+                    plural: true,
+                },
+                pasteRejected: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.pasteRejected',
+                    message: '{count} line is skipped:|{count} lines are skipped:',
+                    plural: true,
+                },
+                rejectLine: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.rejectLine',
+                    message: 'Line {line}: {reason}',
+                },
+                rejectReasons: {
+                    'empty-name': {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.rejectReasons.empty-name',
+                        message: 'no name',
+                    },
+                    'extra-cells': {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.rejectReasons.extra-cells',
+                        message: 'more cells than columns',
+                    },
+                    'bad-value': {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.rejectReasons.bad-value',
+                        message: 'a value does not fit its column',
+                    },
+                    'entries-limit': {
+                        id: 'ttgamer.ui.sheet.library.catalogTable.rejectReasons.entries-limit',
+                        message: 'the catalog is full',
+                    },
+                },
+                retypeTitle: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.retypeTitle',
+                    message: 'Change the column type?',
+                },
+                retypeBody: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.retypeBody',
+                    message:
+                        '{count} value does not fit the new type and will be emptied.|{count} values do not fit the new type and will be emptied.',
+                    plural: true,
+                },
+                deleteColumnTitle: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.deleteColumnTitle',
+                    message: 'Delete this column?',
+                },
+                deleteColumnBody: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.deleteColumnBody',
+                    message:
+                        '"{column}" is mapped by {count} template: {names}. The mapping becomes an issue in the editor.|"{column}" is mapped by {count} templates: {names}. The mappings become issues in the editor.',
+                    plural: true,
+                },
+                confirm: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.confirm',
+                    message: 'Continue',
+                },
+                cancel: {
+                    id: 'ttgamer.ui.sheet.library.catalogTable.cancel',
+                    message: 'Cancel',
                 },
             },
         },
@@ -3474,30 +3841,6 @@ export const uiMessages = {
                 compact: {
                     id: 'ttgamer.ui.sheet.templates.primitives.compact',
                     message: 'Compact (brief format)',
-                },
-                trackLevels: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLevels',
-                    message: 'Levels',
-                },
-                trackLevelName: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLevelName',
-                    message: 'Level {index} name',
-                },
-                trackLayout: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayout',
-                    message: 'Track layout',
-                },
-                trackLayoutDefault: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayoutDefault',
-                    message: 'Default',
-                },
-                trackLayoutTable: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayoutTable',
-                    message: 'Table of levels',
-                },
-                trackLayoutStrip: {
-                    id: 'ttgamer.ui.sheet.templates.primitives.trackLayoutStrip',
-                    message: 'Line of boxes',
                 },
                 presets: {
                     id: 'ttgamer.ui.sheet.templates.primitives.presets',
@@ -3605,6 +3948,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.fieldLabel',
                     message: 'Field label',
                 },
+                columnSettings: {
+                    id: 'ttgamer.ui.sheet.templates.editor.columnSettings',
+                    message: 'Settings of {label}',
+                },
                 valueKeyLabel: {
                     id: 'ttgamer.ui.sheet.templates.editor.valueKeyLabel',
                     message: 'Shared value key (fields with the same key share one value)',
@@ -3677,17 +4024,42 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.ratingDots',
                     message: 'Dots',
                 },
-                ratingBoxes: {
-                    id: 'ttgamer.ui.sheet.templates.editor.ratingBoxes',
-                    message: 'Boxes',
-                },
                 ratingNumber: {
                     id: 'ttgamer.ui.sheet.templates.editor.ratingNumber',
                     message: 'Number',
                 },
+                ratingTextInput: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingTextInput',
+                    message: 'Text input (for example a specialization)',
+                },
+                ratingShowNumbers: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingShowNumbers',
+                    message: 'Show current / maximum',
+                },
+                ratingDice: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingDice',
+                    message: 'Die symbol (roll the rating)',
+                },
+                ratingFlags: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingFlags',
+                    message: 'Flags:',
+                },
+                ratingFlagsHint: {
+                    id: 'ttgamer.ui.sheet.templates.editor.ratingFlagsHint',
+                    message:
+                        "S, P, and E change the roll only where the system's dice rule uses them (Star Wars does, V5 does not).",
+                },
                 referenceKinds: {
                     id: 'ttgamer.ui.sheet.templates.editor.referenceKinds',
                     message: 'Allowed document kinds',
+                },
+                referenceKindUnavailable: {
+                    id: 'ttgamer.ui.sheet.templates.editor.referenceKindUnavailable',
+                    message: '{type} (unavailable)',
+                },
+                referenceKindOwn: {
+                    id: 'ttgamer.ui.sheet.templates.editor.referenceKindOwn',
+                    message: '{type} (yours)',
                 },
                 multiple: {
                     id: 'ttgamer.ui.sheet.templates.editor.multiple',
@@ -3834,7 +4206,7 @@ export const uiMessages = {
                 },
                 paletteTrackerHint: {
                     id: 'ttgamer.ui.sheet.templates.editor.paletteTrackerHint',
-                    message: 'Health or damage levels with penalties',
+                    message: 'Boxes to mark by level: health, stress, or any other burden',
                 },
                 valueSource: {
                     id: 'ttgamer.ui.sheet.templates.editor.valueSource',
@@ -3990,6 +4362,18 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.showLabel',
                     message: 'Show label',
                 },
+                labelPosition: {
+                    id: 'ttgamer.ui.sheet.templates.editor.labelPosition',
+                    message: 'Label position',
+                },
+                labelTop: {
+                    id: 'ttgamer.ui.sheet.templates.editor.labelTop',
+                    message: 'Above the value',
+                },
+                labelLeft: {
+                    id: 'ttgamer.ui.sheet.templates.editor.labelLeft',
+                    message: 'Beside the value',
+                },
                 placeholderText: {
                     id: 'ttgamer.ui.sheet.templates.editor.placeholderText',
                     message: 'Placeholder text (optional)',
@@ -4030,6 +4414,48 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.listFramed',
                     message: 'Draw a border around the list',
                 },
+                listNamed: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listNamed',
+                    message: 'Entries are named',
+                },
+                listEntry: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listEntry',
+                    message: 'Entry',
+                },
+                listCatalogNeedsNames: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listCatalogNeedsNames',
+                    message: 'Suggestions need entry names.',
+                },
+                listChangeTitle: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeTitle',
+                    message: 'Change list entries?',
+                },
+                listChangeValues: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeValues',
+                    message:
+                        '{title}: {count} stored value in {documents} will no longer be shown.|{title}: {count} stored values in {documents} will no longer be shown.',
+                    plural: true,
+                },
+                listChangeSheets: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeSheets',
+                    message: '{count} sheet|{count} sheets',
+                    plural: true,
+                },
+                listChangeNames: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeNames',
+                    message:
+                        '{title}: {count} entry name will no longer be shown.|{title}: {count} entry names will no longer be shown.',
+                    plural: true,
+                },
+                listChangeNote: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeNote',
+                    message:
+                        'The values stay stored; changing the entry back shows them again, except for entries edited in between.',
+                },
+                listChangeConfirm: {
+                    id: 'ttgamer.ui.sheet.templates.editor.listChangeConfirm',
+                    message: 'Save anyway',
+                },
                 invalidFormula: {
                     id: 'ttgamer.ui.sheet.templates.editor.invalidFormula',
                     message: 'Invalid formula in "{id}" — check the expression.',
@@ -4062,6 +4488,11 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.invalidDocsLink',
                     message:
                         'Documentation link "{id}" is not a site docs path (/docs/…) or an https:// address.',
+                },
+                referenceTargetUnavailable: {
+                    id: 'ttgamer.ui.sheet.templates.editor.referenceTargetUnavailable',
+                    message:
+                        'Reference "{field}" can point to {type}, which this setting does not have.',
                 },
                 depthMessage: {
                     id: 'ttgamer.ui.sheet.templates.editor.depthMessage',
@@ -4238,7 +4669,365 @@ export const uiMessages = {
                     message: '{label} (max)',
                 },
             },
+            tracker: {
+                source: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.source',
+                    message: 'Source',
+                },
+                sourceOwn: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.sourceOwn',
+                    message: 'Own values',
+                },
+                display: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.display',
+                    message: 'Display',
+                },
+                displayTable: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.displayTable',
+                    message: 'Table',
+                },
+                displayStrip: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.displayStrip',
+                    message: 'Strip',
+                },
+                displayLine: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.displayLine',
+                    message: 'One line',
+                },
+                displayHint: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.displayHint',
+                    message:
+                        'One line is the small strip for brief pages, with the label inline and no length buttons.',
+                },
+                marks: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.marks',
+                    message: 'Marks',
+                },
+                marksHint: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.marksHint',
+                    message:
+                        'A click moves a box to the next mark in this order, then back to empty; a later mark counts as heavier.',
+                },
+                marksBuiltIn: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.marksBuiltIn',
+                    message: 'The game sets the number of marks; you can rename and recolor them.',
+                },
+                startFrom: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.startFrom',
+                    message: 'Start from…',
+                },
+                setOne: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.setOne',
+                    message: 'One mark',
+                },
+                setTwo: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.setTwo',
+                    message: 'Two marks (╱ ×)',
+                },
+                setThree: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.setThree',
+                    message: 'Three marks, WoD 20th (╱ × ✱)',
+                },
+                markMarked: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markMarked',
+                    message: 'Marked',
+                },
+                markBashing: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markBashing',
+                    message: 'Bashing',
+                },
+                markLethal: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markLethal',
+                    message: 'Lethal',
+                },
+                markAggravated: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markAggravated',
+                    message: 'Aggravated',
+                },
+                newMark: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.newMark',
+                    message: 'Mark {n}',
+                },
+                markName: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markName',
+                    message: 'Mark {n} name',
+                },
+                markSymbol: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markSymbol',
+                    message: 'Mark {n} symbol',
+                },
+                markColors: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markColors',
+                    message: '{name} color',
+                },
+                markOwnColor: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markOwnColor',
+                    message: '{name}: own color',
+                },
+                colorSecondary: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.colorSecondary',
+                    message: 'Amber',
+                },
+                colorError: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.colorError',
+                    message: 'Red',
+                },
+                colorTertiary: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.colorTertiary',
+                    message: 'Violet',
+                },
+                colorSuccess: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.colorSuccess',
+                    message: 'Green',
+                },
+                colorText: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.colorText',
+                    message: 'Ink',
+                },
+                addMark: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.addMark',
+                    message: 'Add mark',
+                },
+                moveMarkUp: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.moveMarkUp',
+                    message: 'Move mark {n} up',
+                },
+                moveMarkDown: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.moveMarkDown',
+                    message: 'Move mark {n} down',
+                },
+                removeMark: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.removeMark',
+                    message: 'Remove mark {n}',
+                },
+                levels: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.levels',
+                    message: 'Levels',
+                },
+                levelCount: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.levelCount',
+                    message: '{count} of {max}',
+                },
+                valueTitle: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.valueTitle',
+                    message: 'Value column title',
+                },
+                valueShow: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.valueShow',
+                    message: 'Show',
+                },
+                defaultValueTitle: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.defaultValueTitle',
+                    message: 'Penalty',
+                },
+                levelName: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.levelName',
+                    message: 'Level {n} name',
+                },
+                levelValue: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.levelValue',
+                    message: 'Level {n} value',
+                },
+                newLevel: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.newLevel',
+                    message: 'Level {n}',
+                },
+                addLevel: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.addLevel',
+                    message: 'Add level',
+                },
+                moveLevelUp: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.moveLevelUp',
+                    message: 'Move level {n} up',
+                },
+                moveLevelDown: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.moveLevelDown',
+                    message: 'Move level {n} down',
+                },
+                removeLevel: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.removeLevel',
+                    message: 'Remove level {n}',
+                },
+                levelsBuiltIn: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.levelsBuiltIn',
+                    message:
+                        'The game sets the number and order of levels; names and values you leave empty follow the game.',
+                },
+                levelsLegacy: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.levelsLegacy',
+                    message: 'Set by an older page',
+                },
+                levelsUseGame: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.levelsUseGame',
+                    message: "Use the game's levels",
+                },
+                columns: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.columns',
+                    message: 'Columns',
+                },
+                column: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.column',
+                    message: 'Column {n}',
+                },
+                columnBuiltIn: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.columnBuiltIn',
+                    message: 'Marks — from the document',
+                },
+                columnsBuiltInHint: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.columnsBuiltInHint',
+                    message: 'Columns you add to a built-in tracker keep their values on the page.',
+                },
+                columnKind: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.columnKind',
+                    message: 'Column kind',
+                },
+                columnMarks: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.columnMarks',
+                    message: 'Marks',
+                },
+                columnText: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.columnText',
+                    message: 'Text',
+                },
+                columnTitle: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.columnTitle',
+                    message: 'Column title',
+                },
+                covers: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.covers',
+                    message: 'Covers',
+                },
+                coversAll: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.coversAll',
+                    message: 'All levels',
+                },
+                coversFirst: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.coversFirst',
+                    message: 'First {n}',
+                },
+                copies: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.copies',
+                    message: 'Readers add copies (A, B, C…)',
+                },
+                copiesMax: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.copiesMax',
+                    message: 'up to',
+                },
+                copiesMaxLabel: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.copiesMaxLabel',
+                    message: 'Most copies',
+                },
+                addMarksColumn: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.addMarksColumn',
+                    message: 'Marks column',
+                },
+                addTextColumn: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.addTextColumn',
+                    message: 'Text column',
+                },
+                removeColumn: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.removeColumn',
+                    message: 'Remove column {n}',
+                },
+                defaultMarksTitle: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.defaultMarksTitle',
+                    message: 'Damage',
+                },
+                defaultTextTitle: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.defaultTextTitle',
+                    message: 'Notes',
+                },
+                lengths: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.lengths',
+                    message: 'Readers switch the length',
+                },
+                lengthsHint: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.lengthsHint',
+                    message:
+                        'Each length lists the levels it shows. Shortening folds hidden marks into the new last level (the heaviest mark wins) after asking.',
+                },
+                lengthColumn: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.lengthColumn',
+                    message: 'Length {n}',
+                },
+                lengthLevel: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.lengthLevel',
+                    message: '{level} in length {n}',
+                },
+                lengthShows: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.lengthShows',
+                    message: 'Shows',
+                },
+                addLength: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.addLength',
+                    message: 'Length',
+                },
+                removeLength: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.removeLength',
+                    message: 'Remove length {n}',
+                },
+                reading: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.reading',
+                    message: 'Reading the marks',
+                },
+                total: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.total',
+                    message: 'Total row: the {value} of the deepest marked level',
+                },
+                out: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.out',
+                    message: 'Mark a copy as out when its last level is marked',
+                },
+                legend: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.legend',
+                    message: 'Name the marks under the tracker',
+                },
+                defaultLabel: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.defaultLabel',
+                    message: 'Health',
+                },
+                issueLengthEmpty: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.issueLengthEmpty',
+                    message: 'Tracker "{id}": length {n} shows no level.',
+                },
+                issueCovers: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.issueCovers',
+                    message:
+                        'Tracker "{id}": a column covers all its levels or more; choose "All levels".',
+                },
+                changeTitle: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.changeTitle',
+                    message: 'Hide stored tracker values?',
+                },
+                changeNote: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.changeNote',
+                    message:
+                        'The values stay stored, but levels, marks, and columns you removed get new ids if added again, so these values will not show again.',
+                },
+                changeMarks: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.changeMarks',
+                    message:
+                        '{title}: {count} stored mark in {documents} will no longer be shown.|{title}: {count} stored marks in {documents} will no longer be shown.',
+                    plural: true,
+                },
+                changeTexts: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.changeTexts',
+                    message:
+                        '{title}: {count} stored note in {documents} will no longer be shown.|{title}: {count} stored notes in {documents} will no longer be shown.',
+                    plural: true,
+                },
+                changeCopies: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.changeCopies',
+                    message:
+                        '{title}: {count} copy in {documents} will no longer be shown.|{title}: {count} copies in {documents} will no longer be shown.',
+                    plural: true,
+                },
+            },
             fieldTypes: {
+                tracker: {
+                    id: 'ttgamer.ui.sheet.templates.fieldTypes.tracker',
+                    message: 'Tracker',
+                },
                 builtIn: {
                     id: 'ttgamer.ui.sheet.templates.fieldTypes.builtIn',
                     message: 'Built-in page part',
@@ -4483,9 +5272,29 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.page.formulaReasonNonNumeric',
                     message: 'a referenced value is not a number',
                 },
+                formulaReasonInvalid: {
+                    id: 'ttgamer.ui.sheet.templates.page.formulaReasonInvalid',
+                    message: 'the formula is not valid',
+                },
                 formulaClamped: {
                     id: 'ttgamer.ui.sheet.templates.page.formulaClamped',
                     message: 'Limited by a linked value',
+                },
+                catalogEmpty: {
+                    id: 'ttgamer.ui.sheet.templates.page.catalogEmpty',
+                    message: 'No entries yet',
+                },
+                ratingText: {
+                    id: 'ttgamer.ui.sheet.templates.page.ratingText',
+                    message: '{label}: text',
+                },
+                ratingClamped: {
+                    id: 'ttgamer.ui.sheet.templates.page.ratingClamped',
+                    message: 'Stored value {value} is above the current maximum',
+                },
+                ratingMaximum: {
+                    id: 'ttgamer.ui.sheet.templates.page.ratingMaximum',
+                    message: 'Maximum {max}',
                 },
                 chooseOptions: {
                     id: 'ttgamer.ui.sheet.templates.page.chooseOptions',
@@ -4520,10 +5329,52 @@ export const uiMessages = {
                     message: 'Template image',
                 },
             },
+            listEntry: {
+                limit: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.limit',
+                    message: 'At most {max} entries',
+                },
+                remove: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.remove',
+                    message: 'Remove {name}',
+                },
+                removeNth: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.removeNth',
+                    message: 'Remove {list}, entry {n}',
+                },
+                nth: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.nth',
+                    message: '{list}, entry {n}',
+                },
+                name: {
+                    id: 'ttgamer.ui.sheet.templates.listEntry.name',
+                    message: '{list} — name',
+                },
+            },
             binding: {
                 attach: {
                     id: 'ttgamer.ui.sheet.templates.binding.attach',
                     message: 'Attach catalog',
+                },
+                groupSetting: {
+                    id: 'ttgamer.ui.sheet.templates.binding.groupSetting',
+                    message: 'This setting',
+                },
+                groupShipped: {
+                    id: 'ttgamer.ui.sheet.templates.binding.groupShipped',
+                    message: '{system} catalogs',
+                },
+                listCatalog: {
+                    id: 'ttgamer.ui.sheet.templates.binding.listCatalog',
+                    message: 'Suggest from catalog',
+                },
+                valueFrom: {
+                    id: 'ttgamer.ui.sheet.templates.binding.valueFrom',
+                    message: 'Value from',
+                },
+                none: {
+                    id: 'ttgamer.ui.sheet.templates.binding.none',
+                    message: 'None',
                 },
                 catalog: {
                     id: 'ttgamer.ui.sheet.templates.binding.catalog',
@@ -4629,14 +5480,6 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.cohort.defeated',
                     message: 'Out of the fight',
                 },
-                penalty: {
-                    id: 'ttgamer.ui.sheet.templates.cohort.penalty',
-                    message: 'Penalty',
-                },
-                level: {
-                    id: 'ttgamer.ui.sheet.templates.cohort.level',
-                    message: 'Level',
-                },
                 maxMembersReached: {
                     id: 'ttgamer.ui.sheet.templates.cohort.maxMembersReached',
                     message: 'A group can have at most {count} members.',
@@ -4657,14 +5500,6 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.cohort.shortenDescription',
                     message:
                         'Some members have damage on levels that will be hidden. Their marks move to the last remaining level.',
-                },
-                confirm: {
-                    id: 'ttgamer.ui.sheet.templates.cohort.confirm',
-                    message: 'Confirm',
-                },
-                cancel: {
-                    id: 'ttgamer.ui.sheet.templates.cohort.cancel',
-                    message: 'Cancel',
                 },
             },
             reference: {
@@ -4687,6 +5522,10 @@ export const uiMessages = {
                 missing: {
                     id: 'ttgamer.ui.sheet.templates.reference.missing',
                     message: 'Linked document no longer exists',
+                },
+                outOfScope: {
+                    id: 'ttgamer.ui.sheet.templates.reference.outOfScope',
+                    message: 'outside this setting',
                 },
             },
             entities: {
@@ -4970,6 +5809,73 @@ export const uiMessages = {
                     message: 'Move row {index} down',
                 },
             },
+            tracker: {
+                level: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.level',
+                    message: 'Level',
+                },
+                value: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.value',
+                    message: 'Value',
+                },
+                out: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.out',
+                    message: 'out',
+                },
+                add: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.add',
+                    message: 'Add {title}',
+                },
+                removeCopy: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.removeCopy',
+                    message: 'Remove {name}',
+                },
+                box: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.box',
+                    message: '{level}: {mark}',
+                },
+                empty: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.empty',
+                    message: 'empty',
+                },
+                textOnlyInTable: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.textOnlyInTable',
+                    message: 'Text columns ({titles}) show only in the table.',
+                },
+                slash: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.slash',
+                    message: 'Slash',
+                },
+                cross: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.cross',
+                    message: 'Cross',
+                },
+                removeCopyTitle: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.removeCopyTitle',
+                    message: 'Remove this copy?',
+                },
+                removeCopyDescription: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.removeCopyDescription',
+                    message: '{name} has recorded marks or notes. Removing it deletes them.',
+                },
+                shortenTitle: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.shortenTitle',
+                    message: 'Shorten the tracker?',
+                },
+                shortenDescription: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.shortenDescription',
+                    message:
+                        'Some copies have marks on levels that will be hidden. Their marks move to the last remaining level.',
+                },
+                confirm: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.confirm',
+                    message: 'Confirm',
+                },
+                cancel: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.cancel',
+                    message: 'Cancel',
+                },
+            },
         },
         v5: {
             system: {
@@ -5134,6 +6040,16 @@ export const uiMessages = {
                 technology: {
                     id: 'ttgamer.ui.sheet.v5.skills.technology',
                     message: 'Technology',
+                },
+            },
+            trackMarks: {
+                superficial: {
+                    id: 'ttgamer.ui.sheet.v5.trackMarks.superficial',
+                    message: 'Superficial',
+                },
+                aggravated: {
+                    id: 'ttgamer.ui.sheet.v5.trackMarks.aggravated',
+                    message: 'Aggravated',
                 },
             },
             sections: {

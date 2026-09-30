@@ -9,16 +9,18 @@ import {
     RotateCcw,
     SquarePen,
     Star,
+    Table2,
     Trash2,
 } from 'lucide-react';
 
-import { acceptsNewTypes } from '../../../features/sheet/data/libraryActions';
+import { acceptsNewTypes, catalogOwnerFor } from '../../../features/sheet/data/libraryActions';
 import { hasUserContent, type LibraryNode } from '../../../features/sheet/data/libraryTree';
 
 export type LibraryActionId =
     | 'newSetting'
     | 'newType'
     | 'newPage'
+    | 'newCatalog'
     | 'open'
     | 'duplicate'
     | 'makeDefault'
@@ -37,6 +39,7 @@ export const ACTION_UI: Record<
     newSetting: { label: actions.newSetting, icon: FolderPlus },
     newType: { label: actions.newType, icon: Plus },
     newPage: { label: actions.newPage, icon: Plus },
+    newCatalog: { label: actions.newCatalog, icon: Table2 },
     open: { label: actions.open, icon: SquarePen },
     duplicate: { label: actions.duplicate, icon: Copy },
     makeDefault: { label: actions.makeDefault, icon: Star },
@@ -61,9 +64,14 @@ export function availableActions(
     switch (node.level) {
         case 'ruleset':
             list.push('newSetting');
+            if (catalogOwnerFor(node)) list.push('newCatalog');
             break;
         case 'setting':
             if (acceptsNewTypes(node)) list.push('newType');
+            if (catalogOwnerFor(node)) list.push('newCatalog');
+            if (user) list.push('edit');
+            break;
+        case 'catalog':
             if (user) list.push('edit');
             break;
         case 'type':

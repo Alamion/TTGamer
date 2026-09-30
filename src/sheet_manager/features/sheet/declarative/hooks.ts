@@ -5,6 +5,8 @@ import { useCharacterContext } from '../../../context/CharacterContext';
 import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import { useDocumentStore } from '../../../store/documentStore';
+import { useDocumentTypeStore } from '../../../store/documentTypeStore';
+import { systemRegistry } from '../../../systems';
 import type { DocumentBindingDescriptor } from '../../../systems/templateBindings';
 import type { SystemListShape } from '../../../systems/templateBindings';
 import {
@@ -20,14 +22,21 @@ import {
     collectListNodes,
     collectTemplateFields,
     fieldValueKey,
+    listIsNamed,
+    listItemField,
     walkTemplateNodes,
 } from '../../../types/template';
-import type { TemplatePageValues } from '../../../types/templateValues';
 import {
-    CATALOG_BINDINGS,
+    presetListEntry,
+    type TemplateListEntry,
+    type TemplatePageValues,
+} from '../../../types/templateValues';
+import {
     type CatalogFillableDetail,
+    getCatalogBinding,
     readDetailValue,
 } from '../data/catalogBindings';
+import { isDocumentInReferenceScope, referenceScopeOf } from '../data/referenceScope';
 import { useBoundDocument } from './boundDocument';
 import type { CatalogOption, DocumentOption } from './fieldControls';
 import { evaluateFormula, type Expr, type FormulaEvaluationError, parseFormula } from './formula';
@@ -93,8 +102,21 @@ export interface UseTemplatePageResult {
     resolveCatalogField: (field: TemplateField) => CatalogFieldRuntime | undefined;
     resolveSystemList: (list: ListNode) => SystemListRuntime | undefined;
     setRowValue: (blockId: string, rowIndex: string, columnId: string, value: unknown) => void;
+    setRowValues: (
+        blockId: string,
+        rowIndex: string,
+        cells: Readonly<Record<string, unknown>>
+    ) => void;
     /** Writes by storage coordinate (valueKey); resolves template field ids internally. */
     setValue: (fieldOrKey: string, value: unknown) => void;
+    /**
+     * Rewrites a custom list's entries from their current stored state (spec 016), so entry
+     * callbacks stay stable instead of closing over one render's array.
+     */
+    updateList: (
+        listKey: string,
+        update: (entries: readonly TemplateListEntry[]) => TemplateListEntry[]
+    ) => void;
     status: TemplatePageStatus;
     template: CustomTemplate | undefined;
     values: TemplatePageValues;
@@ -183,22 +205,47 @@ export function useTemplatePage(
         [currentDocumentId, template, readOnly, updateTemplateValues, fieldCoords]
     );
 
-    const setRowValue = useCallback(
-        (blockId: string, rowIndex: string, columnId: string, value: unknown) => {
+    const updateList = useCallback(
+        (
+            listKey: string,
+            update: (entries: readonly TemplateListEntry[]) => TemplateListEntry[]
+        ) => {
+            if (!currentDocumentId || !template || readOnly) return;
+            updateTemplateValues(currentDocumentId, template, (page) => {
+                const stored = page[listKey];
+                return {
+                    ...page,
+                    [listKey]: update(Array.isArray(stored) ? (stored as TemplateListEntry[]) : []),
+                };
+            });
+        },
+        [currentDocumentId, template, readOnly, updateTemplateValues]
+    );
+
+    /** Several cells of one row in one write; `undefined` or `null` empties a cell. */
+    const setRowValues = useCallback(
+        (blockId: string, rowIndex: string, cells: Readonly<Record<string, unknown>>) => {
             if (!currentDocumentId || !template || readOnly) return;
             updateTemplateValues(currentDocumentId, template, (page) => {
                 const rows = readRows(page[blockId]);
-                const row = rows[rowIndex] ?? {};
+                const row: Record<string, unknown> = { ...(rows[rowIndex] ?? {}) };
+                for (const [columnId, value] of Object.entries(cells)) {
+                    if (value === undefined || value === null) delete row[columnId];
+                    else row[columnId] = value;
+                }
                 return {
                     ...page,
-                    [blockId]: {
-                        ...rows,
-                        [rowIndex]: { ...row, [columnId]: value as TemplatePageValues[string] },
-                    },
+                    [blockId]: { ...rows, [rowIndex]: row },
                 } as TemplatePageValues;
             });
         },
         [currentDocumentId, template, readOnly, updateTemplateValues]
+    );
+
+    const setRowValue = useCallback(
+        (blockId: string, rowIndex: string, columnId: string, value: unknown) =>
+            setRowValues(blockId, rowIndex, { [columnId]: value }),
+        [setRowValues]
     );
 
     const addRow = useCallback(
@@ -230,6 +277,14 @@ export function useTemplatePage(
         [currentDocumentId, template, readOnly, updateTemplateValues]
     );
 
+    const userTypes = useDocumentTypeStore((state) => state.types);
+    const userSettings = useDocumentTypeStore((state) => state.settings);
+    const referenceScope = useMemo(
+        () => (template ? referenceScopeOf(systemRegistry, template) : undefined),
+        // userTypes, userSettings: the scope reads the registry overlay, which follows the store.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [template, userTypes, userSettings]
+    );
     const documentOptions = useMemo<DocumentOption[]>(
         () =>
             documents
@@ -238,8 +293,10 @@ export function useTemplatePage(
                     value: candidate.id,
                     label: candidate.metadata.title || candidate.definitionId,
                     kind: candidate.kind,
+                    inScope:
+                        !referenceScope || isDocumentInReferenceScope(referenceScope, candidate),
                 })),
-        [documents, document?.id]
+        [documents, document?.id, referenceScope]
     );
 
     const applyWrites = useCallback(
@@ -347,7 +404,9 @@ export function useTemplatePage(
                     if (part === 'max') return pool.max;
                     return part === 'current' ? pool.current : pool.current;
                 }
-                return undefined;
+                // A stored value that is not a number (text, a toggle, a choice) is "not a
+                // number", not "unavailable" — the evaluator reports NaN as non-numeric.
+                return stored === undefined ? undefined : Number.NaN;
             };
 
             // System-bound coordinates (traits, pool parts) read document data.
@@ -403,6 +462,14 @@ export function useTemplatePage(
                         coordinate !== entry.coordinate
                 );
                 if (unresolved) continue;
+                if (collectDependenciesSafe(entry.expr).includes(entry.coordinate)) {
+                    // A formula reading its own result can never settle.
+                    results.set(entry.coordinate, { state: 'error', reason: 'circular' });
+                    computed.add(entry.coordinate);
+                    pending.delete(entry.coordinate);
+                    progressed = true;
+                    continue;
+                }
                 const resolution = evaluateFormula(entry.expr, (path) => {
                     if (path === entry.coordinate) return undefined; // self-reference → unknown
                     const computedEntry = formulaFields.find(
@@ -424,11 +491,11 @@ export function useTemplatePage(
                               coordinate: resolution.coordinate,
                           }
                 );
-                if (resolution.ok || resolution.error !== 'unknown-coordinate') {
-                    computed.add(entry.coordinate);
-                    pending.delete(entry.coordinate);
-                    progressed = true;
-                }
+                // Every dependency was settled first, so any result is final: a value that is
+                // missing now stays missing in this pass (it is not a cycle).
+                computed.add(entry.coordinate);
+                pending.delete(entry.coordinate);
+                progressed = true;
             }
             if (!progressed) {
                 // Remaining coordinates are circular (or reference a broken chain).
@@ -473,6 +540,15 @@ export function useTemplatePage(
                 const resolvedMax = evaluateBound(node, maxSource, 'maxFrom');
                 maxima.set(
                     node.id,
+                    resolvedMax === undefined ? { degraded: true } : { resolvedMax }
+                );
+            }
+            // A list entry's rating or number takes its range like the same field on the page.
+            const item = node.type === 'list' ? node.item : undefined;
+            if ((item?.type === 'rating' || item?.type === 'number') && item.maxFrom) {
+                const resolvedMax = evaluateBound(item, item.maxFrom, 'maxFrom');
+                maxima.set(
+                    item.id,
                     resolvedMax === undefined ? { degraded: true } : { resolvedMax }
                 );
             }
@@ -524,11 +600,14 @@ export function useTemplatePage(
         [document, documentData, template, currentDocumentId, readOnly, updateDocumentData]
     );
 
+    // User catalogs answer through the registry overlay; their edits re-resolve bound fields (R5).
+    const userCatalogs = useDocumentTypeStore((state) => state.catalogs);
+
     const resolveCatalogField = useCallback(
         (field: TemplateField): CatalogFieldRuntime | undefined => {
             if (field.type !== 'select' || !field.binding) return undefined;
             const catalogId = field.binding.catalogId;
-            const binding = CATALOG_BINDINGS.get(catalogId);
+            const binding = getCatalogBinding(catalogId, userCatalogs);
             if (!binding) {
                 // FR-21 degradation: manual fallback with static options, binding retained.
                 reportSheetIssue({
@@ -557,7 +636,7 @@ export function useTemplatePage(
                 readDetail: readDetailValue,
             };
         },
-        [locale]
+        [locale, userCatalogs]
     );
 
     // Preset seeding (feature 005, FR-19): copy-on-assign, once per document×template.
@@ -587,20 +666,18 @@ export function useTemplatePage(
                         presets: list.presets,
                     });
                 }
-            } else if (list.valueKey) {
-                // Value-coordinate lists seed into the bag as ordinary starting entries.
+            } else if (list.valueKey && listIsNamed(list)) {
+                // Value-coordinate lists seed into the bag as ordinary starting entries; presets
+                // are names, so unnamed lists have nothing to seed (spec 016, R11).
                 const stored: unknown = values[list.valueKey];
-                const entries = Array.isArray(stored)
-                    ? (stored as Array<{ id: string; label: string; value?: number }>)
-                    : [];
+                const entries = Array.isArray(stored) ? (stored as TemplateListEntry[]) : [];
                 const known = new Set(entries.map((entry) => String(entry.id ?? '')));
+                const item = listItemField(list);
                 const seeded = list.presets
                     .filter((preset) => !known.has(`preset-${template.id}-${preset.key}`))
-                    .map((preset) => ({
-                        id: `preset-${template.id}-${preset.key}`,
-                        label: preset.label,
-                        value: preset.value ?? 0,
-                    }));
+                    .map((preset) =>
+                        presetListEntry(item, preset, `preset-${template.id}-${preset.key}`)
+                    );
                 if (seeded.length > 0) {
                     updateTemplateValues(currentDocumentId, template, (page) => ({
                         ...page,
@@ -667,9 +744,11 @@ export function useTemplatePage(
             resolveCatalogField,
             resolveSystemList,
             setRowValue,
+            setRowValues,
             setValue,
             status: template ? 'ready' : 'none',
             template,
+            updateList,
             values,
         }),
         [
@@ -685,8 +764,10 @@ export function useTemplatePage(
             resolveCatalogField,
             resolveSystemList,
             setRowValue,
+            setRowValues,
             setValue,
             template,
+            updateList,
             values,
         ]
     );

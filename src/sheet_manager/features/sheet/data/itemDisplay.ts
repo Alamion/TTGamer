@@ -3,14 +3,14 @@ import { useCallback } from 'react';
 
 import { catalogEntryText, type CatalogLike } from '../../../systems/catalogs';
 import { EQUIPMENT_SOURCES, type EquipmentSourceId, parseEntryRef } from './bodyEquipmentCatalogs';
-import { CATALOG_BINDINGS } from './catalogBindings';
+import { getCatalogBinding } from './catalogBindings';
 
 function referencedEntry(entryRef: string | undefined) {
     const ref = parseEntryRef(entryRef);
     if (!ref) return undefined;
     const entries: readonly CatalogLike[] | undefined =
         EQUIPMENT_SOURCES[ref.catalogId as EquipmentSourceId] ??
-        CATALOG_BINDINGS.get(ref.catalogId)?.entries;
+        getCatalogBinding(ref.catalogId)?.entries;
     const entry = entries?.find((candidate) => candidate.id === ref.entryId);
     return entry ? { catalogId: ref.catalogId, entry } : undefined;
 }

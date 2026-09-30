@@ -1,6 +1,7 @@
 import { UnknownDocumentEnvelopeSchema } from '../types/document';
 import { isPolicyId } from './policies';
 import type { DocumentDefinition, ParsedRegisteredDocument, SystemPlugin } from './types';
+import type { UserCatalog } from './userCatalogs';
 import {
     EMPTY_USER_TYPES,
     isUserKind,
@@ -34,6 +35,9 @@ export class SystemRegistry {
     #userTypes: UserTypesSnapshot = EMPTY_USER_TYPES;
     /** User-type definitions per system, rebuilt whenever the overlay snapshot changes. */
     #userDefinitions = new Map<string, DocumentDefinition[]>();
+    #userCatalogs: Readonly<Record<string, UserCatalog>> = {};
+    /** Sample catalogs of the draft-only storybook: never stored, never in the library. */
+    #sampleCatalogs: Record<string, UserCatalog> = {};
 
     constructor(systems: readonly SystemPlugin[]) {
         // View ids key shipped templates and their overrides, so they are unique across systems.
@@ -157,6 +161,24 @@ export class SystemRegistry {
 
     getUserDocumentTypes(): UserTypesSnapshot {
         return this.#userTypes;
+    }
+
+    /** Replaces the user catalogs the registry knows (spec 015); lookups answer them by id. */
+    setUserCatalogs(catalogs: Readonly<Record<string, UserCatalog>>): void {
+        this.#userCatalogs = catalogs;
+    }
+
+    getUserCatalog(id: string): UserCatalog | undefined {
+        return this.#userCatalogs[id] ?? this.#sampleCatalogs[id];
+    }
+
+    listUserCatalogs(): readonly UserCatalog[] {
+        return [...Object.values(this.#userCatalogs), ...Object.values(this.#sampleCatalogs)];
+    }
+
+    /** Registers the storybook's sample catalogs (constitution VI); they answer like user ones. */
+    registerSampleCatalogs(catalogs: readonly UserCatalog[]): void {
+        for (const catalog of catalogs) this.#sampleCatalogs[catalog.id] = catalog;
     }
 
     /** Every registered definition with its system: shipped ones, then user types. */

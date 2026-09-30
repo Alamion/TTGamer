@@ -1,5 +1,7 @@
 # Contract: Library files
 
+> **Change record.** Partly superseded by 015: library files are version 2 and carry user catalogs (version 1 still imports). Current format: `.agents/skills/sheet-templates/SKILL.md` ("Library").
+
 This contract replaces the spec 012 type file as the library's export format; it still reads type
 files. Documents that carry their type keep the spec 012 document-file contract unchanged.
 

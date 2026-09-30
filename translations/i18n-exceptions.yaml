@@ -27,10 +27,20 @@
   reason: dev-only library row and tick states on a draft docs page (storybook, constitution VI),
       never built for production readers
 - rule: interface
+  file: src/sheet_manager/features/docs/ElementStorybook.tsx
+  match: /.*/
+  reason: dev-only sample documents and variant labels on a draft docs page (storybook,
+      constitution VI), never built for production readers
+- rule: interface
   file: src/shared/components/Palette.tsx
   match: /.*/
   reason: dev-only palette on a draft docs page (storybook, constitution VI), never built for
       production readers
+- rule: pickers
+  file: src/sheet_manager/systems/userCatalogs.ts
+  match: /.*/
+  reason: the user catalog adapter builds entries from the names the author typed; user catalogs
+      are single-language (spec 015), and pickLabel returns that same name
 - rule: identical
   match: https://example.com/portrait.webp
   reason: example URL shown as an input placeholder

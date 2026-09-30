@@ -1,18 +1,34 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
+import { clsx } from 'clsx';
 import { Plus, Trash2 } from 'lucide-react';
+import { useMemo } from 'react';
 
-import { kindLabel, listTemplateTargets } from '../../../features/sheet/data/documentLabels';
-import type { TemplateField, TemplateNode } from '../../../types/template';
-import { TEMPLATE_FIELD_TYPES, TEMPLATE_LIMITS } from '../../../types/template';
+import { referenceKindName, referenceTargetsOf } from '../../../features/sheet/data/referenceScope';
+import { systemRegistry } from '../../../systems';
+import type {
+    FieldLabelPosition,
+    RatingFlag,
+    TemplateField,
+    TemplateNode,
+} from '../../../types/template';
+import {
+    fieldLabelPosition,
+    hasLabelPositionChoice,
+    LIST_ITEM_TYPES,
+    RATING_FLAGS,
+    TEMPLATE_FIELD_TYPES,
+    TEMPLATE_LIMITS,
+} from '../../../types/template';
 import { CatalogBindingEditor } from './CatalogBindingEditor';
 import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
-import { ValueSourceSelect } from './SourceControls';
+import { TrackerSourceSelect, ValueSourceSelect } from './SourceControls';
 import { currentValueSource, CUSTOM_SOURCE } from './sourceNodes';
 import { TermHintControl } from './TermHintControl';
+import { TrackerSettings } from './TrackerSettings';
 
 const editor = uiMessages.sheet.templates.editor;
 const fieldTypes = uiMessages.sheet.templates.fieldTypes;
@@ -45,14 +61,28 @@ export interface FieldEditorCallbacks {
 export function FieldEditor({
     callbacks,
     field,
+    itemOfList = false,
+    inTable = false,
 }: {
     callbacks: FieldEditorCallbacks;
     field: TemplateField;
+    /** A table column: a tracker cannot be one (spec 018). */
+    inTable?: boolean;
+    /**
+     * A custom list's entry template (spec 016): settings that cannot apply to repeated copies
+     * (storage, required) are hidden, and a formula is not offered.
+     */
+    itemOfList?: boolean;
 }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
     const { bindings, coordinateListId: coordinateDatalist } = useEditorModel();
     const sourceKey = currentValueSource(field, bindings);
-    const isCustom = sourceKey === CUSTOM_SOURCE;
+    const isCustom = itemOfList || sourceKey === CUSTOM_SOURCE;
+    const types = itemOfList
+        ? LIST_ITEM_TYPES
+        : inTable
+          ? TEMPLATE_FIELD_TYPES.filter((type) => type !== 'tracker')
+          : TEMPLATE_FIELD_TYPES;
     // Trait values render with the sheet's own trait row: rating bounds and maxFrom do not apply.
     const isTraitSource = bindings.some(
         (binding) => binding.key === sourceKey && binding.kind === 'trait'
@@ -81,7 +111,7 @@ export function FieldEditor({
                     aria-label={t(editor.fieldType)}
                     className={`${inputClasses} min-w-0 flex-[1_1_7rem] disabled:opacity-60`}
                 >
-                    {TEMPLATE_FIELD_TYPES.map((type) => (
+                    {types.map((type) => (
                         <option key={type} value={type}>
                             {t(fieldTypes[type])}
                         </option>
@@ -103,12 +133,23 @@ export function FieldEditor({
                 className={`${inputClasses} w-full`}
             />
 
-            <ValueSourceSelect node={field} onReplace={(_, next) => callbacks.onReplace(next)} />
+            {!itemOfList && field.type === 'tracker' && (
+                <TrackerSourceSelect
+                    node={field}
+                    onReplace={(_, next) => callbacks.onReplace(next)}
+                />
+            )}
+            {!itemOfList && field.type !== 'tracker' && (
+                <ValueSourceSelect
+                    node={field}
+                    onReplace={(_, next) => callbacks.onReplace(next)}
+                />
+            )}
             {!isCustom && (
                 <p className="text-[11px] text-textSecondary">{t(editor.sourceTypeLocked)}</p>
             )}
 
-            {isCustom && (
+            {isCustom && !itemOfList && (
                 <div className="flex items-center gap-2">
                     <input
                         value={field.valueKey ?? ''}
@@ -127,15 +168,17 @@ export function FieldEditor({
                 </div>
             )}
 
-            <label className="flex items-center gap-2 text-xs text-textSecondary">
-                <input
-                    type="checkbox"
-                    checked={field.required}
-                    onChange={(event) => callbacks.onUpdate({ required: event.target.checked })}
-                    className="h-3.5 w-3.5"
-                />
-                {t(editor.fieldRequired)}
-            </label>
+            {!itemOfList && (
+                <label className="flex items-center gap-2 text-xs text-textSecondary">
+                    <input
+                        type="checkbox"
+                        checked={field.required}
+                        onChange={(event) => callbacks.onUpdate({ required: event.target.checked })}
+                        className="h-3.5 w-3.5"
+                    />
+                    {t(editor.fieldRequired)}
+                </label>
+            )}
 
             <ToggleRow
                 checked={!field.hideLabel}
@@ -144,10 +187,38 @@ export function FieldEditor({
                     callbacks.onUpdate({ hideLabel: checked ? undefined : true })
                 }
             />
+            {hasLabelPositionChoice(field.type) && (
+                <label className="flex items-center gap-2 text-xs text-textSecondary">
+                    {t(editor.labelPosition)}
+                    <select
+                        value={fieldLabelPosition(field)}
+                        disabled={field.hideLabel === true}
+                        onChange={(event) => {
+                            const position = event.target.value as FieldLabelPosition;
+                            // The type's own default is not stored, so it can change with the type.
+                            const fallback = fieldLabelPosition({ type: field.type });
+                            callbacks.onUpdate({
+                                labelPosition: position === fallback ? undefined : position,
+                            });
+                        }}
+                        className={`${inputClasses} py-1 disabled:opacity-50`}
+                    >
+                        <option value="top">{t(editor.labelTop)}</option>
+                        <option value="left">{t(editor.labelLeft)}</option>
+                    </select>
+                </label>
+            )}
             <TermHintControl
                 node={field}
                 onChange={(termHint) => callbacks.onUpdate({ termHint })}
             />
+
+            {field.type === 'tracker' && (
+                <TrackerSettings
+                    value={field}
+                    onChange={(updates) => callbacks.onUpdate(updates as Partial<TemplateField>)}
+                />
+            )}
 
             {field.type === 'text' && (
                 <input
@@ -374,17 +445,21 @@ export function FieldEditor({
                         value={field.presentation}
                         onChange={(event) =>
                             callbacks.onUpdate({
-                                presentation: event.target.value as 'dots' | 'boxes' | 'number',
+                                presentation: event.target.value as 'dots' | 'number',
                             })
                         }
                         aria-label={t(editor.presentation)}
                         className={inputClasses}
                     >
                         <option value="dots">{t(editor.ratingDots)}</option>
-                        <option value="boxes">{t(editor.ratingBoxes)}</option>
                         <option value="number">{t(editor.ratingNumber)}</option>
                     </select>
+                    <EditorHelp topic="rating" about={t(editor.presentation)} />
                 </div>
+            )}
+
+            {!isTraitSource && field.type === 'rating' && (
+                <RatingSwitches field={field} onUpdate={callbacks.onUpdate} />
             )}
 
             {field.type === 'resource' && (
@@ -441,7 +516,10 @@ export function FieldEditor({
     );
 }
 
-/** The document kinds a reference may point to: shipped kinds and user types (at least one). */
+/**
+ * The document kinds a reference may point to (spec 017): the types of the draft's setting, then
+ * stored targets the setting does not offer, kept and marked unavailable (at least one checked).
+ */
 function ReferenceKindsControl({
     onChange,
     value,
@@ -449,17 +527,23 @@ function ReferenceKindsControl({
     onChange: (kinds: string[]) => void;
     value: readonly string[];
 }) {
-    // Kinds are shared across systems (a reference lists documents of any system).
-    const seen = new Set<string>();
-    const kinds: Array<{ kind: string; label: string }> = [];
-    for (const { kind, systemId } of listTemplateTargets()) {
-        if (seen.has(kind)) continue;
-        seen.add(kind);
-        kinds.push({ kind, label: kindLabel(systemId, kind) });
-    }
-    for (const kind of value) {
-        if (!seen.has(kind)) kinds.push({ kind, label: kind });
-    }
+    const { systemId, documentKind, settingId } = useEditorModel();
+    const targets = useMemo(
+        () => referenceTargetsOf(systemRegistry, { systemId, documentKind, settingId }),
+        [systemId, documentKind, settingId]
+    );
+    const offered = new Set(targets.map(({ kind }) => kind));
+    const kinds = [
+        ...targets,
+        ...value
+            .filter((kind) => !offered.has(kind))
+            .map((kind) => ({
+                kind,
+                label: translate(editor.referenceKindUnavailable, {
+                    type: referenceKindName(systemRegistry, kind),
+                }),
+            })),
+    ];
     return (
         <fieldset className="grid gap-1">
             <legend className="text-xs text-textSecondary">
@@ -484,5 +568,75 @@ function ReferenceKindsControl({
                 </label>
             ))}
         </fieldset>
+    );
+}
+
+const flagMessages = uiMessages.sheet.controls.statDot;
+
+const RATING_FLAG_UI = {
+    specialization: { letter: 'S', title: flagMessages.specialization },
+    practiced: { letter: 'P', title: flagMessages.practiced },
+    experienced: { letter: 'E', title: flagMessages.experienced },
+} as const;
+
+/** Trait-row switches of a rating (spec 014): text, numbers, die, and S/P/E on the dot style. */
+function RatingSwitches({
+    field,
+    onUpdate,
+}: {
+    field: Extract<TemplateField, { type: 'rating' }>;
+    onUpdate: FieldEditorCallbacks['onUpdate'];
+}) {
+    const t = (descriptor: { message: string }) => translate(descriptor);
+    const switches = [
+        ['textInput', editor.ratingTextInput],
+        ['showNumbers', editor.ratingShowNumbers],
+        ['dice', editor.ratingDice],
+    ] as const;
+    const flags = field.flags ?? [];
+    const toggleFlag = (flag: RatingFlag) => {
+        const next = RATING_FLAGS.filter((candidate) =>
+            candidate === flag ? !flags.includes(flag) : flags.includes(candidate)
+        );
+        onUpdate({ flags: next.length > 0 ? next : undefined });
+    };
+    return (
+        <div className="space-y-1 text-xs text-textSecondary">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                {switches.map(([key, label]) => (
+                    <ToggleRow
+                        key={key}
+                        checked={field[key] === true}
+                        label={t(label)}
+                        onChange={(checked) => onUpdate({ [key]: checked || undefined })}
+                    />
+                ))}
+                <EditorHelp topic="rating" about={t(editor.ratingDice)} />
+            </div>
+            {field.presentation === 'dots' && (
+                <div className="flex flex-wrap items-center gap-2">
+                    <span>{t(editor.ratingFlags)}</span>
+                    {RATING_FLAGS.map((flag) => (
+                        <button
+                            key={flag}
+                            type="button"
+                            aria-pressed={flags.includes(flag)}
+                            title={t(RATING_FLAG_UI[flag].title)}
+                            aria-label={t(RATING_FLAG_UI[flag].title)}
+                            onClick={() => toggleFlag(flag)}
+                            className={clsx(
+                                'h-6 w-6 rounded border text-xs font-bold transition-colors',
+                                flags.includes(flag)
+                                    ? 'border-primary bg-primary-muted text-textPrimary'
+                                    : 'border-border text-textSecondary hover:border-primary/60'
+                            )}
+                        >
+                            {RATING_FLAG_UI[flag].letter}
+                        </button>
+                    ))}
+                    <span className="basis-full text-[11px]">{t(editor.ratingFlagsHint)}</span>
+                </div>
+            )}
+        </div>
     );
 }

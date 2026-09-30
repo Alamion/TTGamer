@@ -12,10 +12,18 @@ import type {
     TemplateField,
     TemplateNode,
 } from '../../../types/template';
-import { isContainerNode, isTemplateField, TEMPLATE_LIMITS } from '../../../types/template';
+import {
+    isContainerNode,
+    isTemplateField,
+    listIsNamed,
+    listItemField,
+    TEMPLATE_LIMITS,
+} from '../../../types/template';
+import { ListCatalogPicker } from './CatalogBindingEditor';
 import type { NodeUpdates } from './draft';
 import { EditorHelp } from './EditorHelp';
-import { FieldEditor } from './FieldEditor';
+import { EditorFillTargetsContext } from './EditorModel';
+import { FieldEditor, type FieldEditorCallbacks } from './FieldEditor';
 import {
     ColumnLayoutControl,
     ColumnPlacementControl,
@@ -86,6 +94,21 @@ export interface ElementActions {
  * The settings of one element (spec 012): the same controls the recursive panels used, shown for
  * the selected element only. `parentColumns` offers column placement inside multi-column parents.
  */
+/** The field editor's callbacks for one field id (a page field or a table column). */
+function fieldCallbacks(callbacks: ElementEditorCallbacks, fieldId: string): FieldEditorCallbacks {
+    return {
+        onUpdate: (updates) => callbacks.onFieldUpdate(fieldId, updates),
+        onChangeType: (type) => callbacks.onFieldTypeChange(fieldId, type),
+        onAddOption: () => callbacks.onAddOption(fieldId),
+        onUpdateOption: (optionId, label) => callbacks.onUpdateOption(fieldId, optionId, label),
+        onRemoveOption: (optionId) => callbacks.onRemoveOption(fieldId, optionId),
+        onAttachCatalog: (catalogId) => callbacks.onAttachCatalog(fieldId, catalogId),
+        onDetachCatalog: () => callbacks.onDetachCatalog(fieldId),
+        onUpdateFill: (detailKey, rule) => callbacks.onUpdateFill(fieldId, detailKey, rule),
+        onReplace: (next) => callbacks.onReplace(fieldId, next),
+    };
+}
+
 export const ElementSettings = memo(function ElementSettings({
     actions,
     callbacks,
@@ -176,23 +199,7 @@ export const ElementSettings = memo(function ElementSettings({
                 />
             )}
             {isTemplateField(node) && (
-                <FieldEditor
-                    callbacks={{
-                        onUpdate: (updates) => callbacks.onFieldUpdate(node.id, updates),
-                        onChangeType: (type) => callbacks.onFieldTypeChange(node.id, type),
-                        onAddOption: () => callbacks.onAddOption(node.id),
-                        onUpdateOption: (optionId, label) =>
-                            callbacks.onUpdateOption(node.id, optionId, label),
-                        onRemoveOption: (optionId) => callbacks.onRemoveOption(node.id, optionId),
-                        onAttachCatalog: (catalogId) =>
-                            callbacks.onAttachCatalog(node.id, catalogId),
-                        onDetachCatalog: () => callbacks.onDetachCatalog(node.id),
-                        onUpdateFill: (detailKey, rule) =>
-                            callbacks.onUpdateFill(node.id, detailKey, rule),
-                        onReplace: (next) => callbacks.onReplace(node.id, next),
-                    }}
-                    field={node}
-                />
+                <FieldEditor callbacks={fieldCallbacks(callbacks, node.id)} field={node} />
             )}
         </div>
     );
@@ -377,23 +384,44 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
             </div>
             <div className="space-y-1">
                 {node.columns.map((column) => (
-                    <div key={column.id} className="flex items-center gap-2">
-                        <input
-                            value={column.label}
-                            onChange={(event) =>
-                                callbacks.onFieldUpdate(column.id, { label: event.target.value })
-                            }
-                            aria-label={t(editor.fieldLabel)}
-                            className={`${inputClasses} flex-1`}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => callbacks.onRemoveTableColumn(node.id, column.id)}
-                            aria-label={t(editor.remove)}
-                            className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
-                        >
-                            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                        </button>
+                    <div key={column.id} className="space-y-1">
+                        <div className="flex items-center gap-2">
+                            <input
+                                value={column.label}
+                                onChange={(event) =>
+                                    callbacks.onFieldUpdate(column.id, {
+                                        label: event.target.value,
+                                    })
+                                }
+                                aria-label={t(editor.fieldLabel)}
+                                className={`${inputClasses} flex-1`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => callbacks.onRemoveTableColumn(node.id, column.id)}
+                                aria-label={t(editor.remove)}
+                                className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
+                            >
+                                <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                            </button>
+                        </div>
+                        <details className="pl-2">
+                            <summary className="cursor-pointer text-xs text-textSecondary">
+                                {translate(editor.columnSettings, { label: column.label })}
+                            </summary>
+                            {/* A column's catalog fills write the other columns of its row. */}
+                            <EditorFillTargetsContext.Provider
+                                value={node.columns
+                                    .filter(({ id }) => id !== column.id)
+                                    .map(({ id, type, label }) => ({ id, type, label }))}
+                            >
+                                <FieldEditor
+                                    callbacks={fieldCallbacks(callbacks, column.id)}
+                                    field={column}
+                                    inTable
+                                />
+                            </EditorFillTargetsContext.Provider>
+                        </details>
                     </div>
                 ))}
             </div>
@@ -409,10 +437,15 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
     );
 }
 
+const NO_FILL_TARGETS: readonly never[] = [];
+
 function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; node: ListNode }) {
     const t = (descriptor: { message: string }) => translate(descriptor);
     const listUpdate = (updates: Partial<ListNode>) =>
         callbacks.onUpdate(node.id, updates as NodeUpdates);
+    const custom = node.valueKey !== undefined;
+    const named = !custom || listIsNamed(node);
+    const item = listItemField(node);
     return (
         <div className="space-y-2">
             <input
@@ -423,6 +456,34 @@ function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; no
                 className={`${inputClasses} w-full`}
             />
             <ListSourceSelect node={node} onReplace={callbacks.onReplace} />
+            {custom && (
+                <>
+                    <ToggleRow
+                        checked={named}
+                        label={t(editor.listNamed)}
+                        onChange={(checked) => listUpdate({ named: checked ? undefined : false })}
+                    />
+                    <details open className="rounded border border-border">
+                        <summary className="cursor-pointer px-2 py-1 text-xs font-medium text-textSecondary">
+                            {t(editor.listEntry)}
+                        </summary>
+                        {/* An entry is one field: a choice's catalog has no sibling to fill. */}
+                        <EditorFillTargetsContext.Provider value={NO_FILL_TARGETS}>
+                            <FieldEditor
+                                callbacks={fieldCallbacks(callbacks, item.id)}
+                                field={item}
+                                itemOfList
+                            />
+                        </EditorFillTargetsContext.Provider>
+                    </details>
+                    <ListCatalogPicker
+                        catalog={node.catalog}
+                        itemType={item.type}
+                        disabledNote={named ? undefined : t(editor.listCatalogNeedsNames)}
+                        onChange={(catalog) => listUpdate({ catalog })}
+                    />
+                </>
+            )}
             <ColumnSelect
                 onChange={(columns) => listUpdate({ columns: columns ?? 1 })}
                 value={node.columns}
@@ -437,7 +498,7 @@ function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; no
                 label={t(editor.listFramed)}
                 onChange={(checked) => listUpdate({ framed: checked || undefined })}
             />
-            <ListPresetsEditor callbacks={callbacks} node={node} />
+            {named && <ListPresetsEditor callbacks={callbacks} node={node} />}
         </div>
     );
 }

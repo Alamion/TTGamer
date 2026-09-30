@@ -1,8 +1,16 @@
 import { translate } from '@docusaurus/Translate';
 
 import type { SystemRegistry } from '../../../systems/registry';
-import type { CustomTemplate } from '../../../types/template';
 import {
+    type CatalogOwnerRef,
+    catalogScopeOf,
+    isInCatalogScope,
+} from '../../../systems/userCatalogs';
+import type { CustomTemplate } from '../../../types/template';
+import { catalogUsage } from './catalogEdit';
+import {
+    catalogOwnerFor,
+    catalogsOfOwner,
     type LibraryState,
     type LibraryWrites,
     mergeWrites,
@@ -24,6 +32,9 @@ import { planTemplateRetarget } from './templateRetarget';
  */
 const PARENT_LEVEL = { page: 'type', type: 'setting', setting: 'ruleset' } as const;
 
+/** Catalogs (spec 015) go to any ruleset or setting: both can own them. */
+const CATALOG_PARENTS = new Set(['ruleset', 'setting']);
+
 export interface MoveTarget {
     node: LibraryNode;
     /** Its ancestors' names, to tell same-named places apart. */
@@ -43,6 +54,13 @@ export interface MovePlan {
     /** FR-015a: documents of the old rules character, pinned to the page they used. */
     documentsStaying: number;
     pagesStaying: number;
+    /**
+     * Templates that bind a catalog they will no longer see (spec 015): the moved catalog, or the
+     * old ruleset's catalogs for a setting moving to other rules. They fall back to manual choice.
+     */
+    lostBy: CustomTemplate[];
+    /** Catalogs that travel with a moved setting. */
+    catalogsMoving: number;
     writes: LibraryWrites;
 }
 
@@ -59,14 +77,16 @@ function subjectSystem(node: LibraryNode): string | undefined {
         case 'setting':
         case 'ruleset':
             return node.systemId;
+        case 'catalog':
+            return undefined;
     }
 }
 
 function eachNode(tree: readonly LibraryNode[], visit: (node: LibraryNode) => void) {
     for (const node of tree) {
         visit(node);
-        if (node.level === 'ruleset') eachNode(node.settings, visit);
-        if (node.level === 'setting') eachNode(node.types, visit);
+        if (node.level === 'ruleset') eachNode([...node.catalogs, ...node.settings], visit);
+        if (node.level === 'setting') eachNode([...node.catalogs, ...node.types], visit);
         if (node.level === 'type') eachNode(node.pages, visit);
     }
 }
@@ -77,16 +97,21 @@ export function moveTargets(subjectKey: string, tree: readonly RulesetNode[]): M
     if (!found || !isMovable(found.node)) return [];
     const subject = found.node;
     const parent = found.ancestors.at(-1);
-    const level = PARENT_LEVEL[subject.level];
+    const isCatalog = subject.level === 'catalog';
+    const fits = (node: LibraryNode) =>
+        isCatalog ? CATALOG_PARENTS.has(node.level) : node.level === PARENT_LEVEL[subject.level];
     const targets: MoveTarget[] = [];
     eachNode(tree, (node) => {
-        if (node.level !== level || node.key === parent?.key || node.unavailable) return;
-        if (node.level === 'setting' && node.ref.kind === 'rules') return;
+        if (!fits(node) || node.key === parent?.key || node.unavailable) return;
+        // "Rules only" takes no new types, but it may own catalogs.
+        if (!isCatalog && node.level === 'setting' && node.ref.kind === 'rules') return;
         const path = (findNode(tree, node.key)?.ancestors ?? []).map(({ name }) => name);
         targets.push({
             node,
             path: path.join(' › '),
-            crossesSystem: subjectSystem(subject) !== subjectSystem(node),
+            crossesSystem: isCatalog
+                ? subjectSystem(parent ?? node) !== subjectSystem(node)
+                : subjectSystem(subject) !== subjectSystem(node),
         });
     });
     return targets;
@@ -105,6 +130,40 @@ function withoutSetting(template: CustomTemplate): CustomTemplate {
     const { settingId: _gone, ...rest } = template;
     void _gone;
     return rest;
+}
+
+/** Templates bound to a catalog that would not see it under `owner` (spec 015, R7). */
+function templatesLosing(
+    catalogId: string,
+    owner: CatalogOwnerRef,
+    state: LibraryState,
+    registry: SystemRegistry,
+    among: readonly CustomTemplate[] = state.templates
+): CustomTemplate[] {
+    return catalogUsage(catalogId, among).templates.filter(
+        (template) => !isInCatalogScope(owner, catalogScopeOf(registry, template))
+    );
+}
+
+/** A user catalog to another ruleset or setting: only its owner changes. */
+function planCatalogMove(
+    catalog: LibraryNode,
+    target: LibraryNode,
+    state: LibraryState,
+    registry: SystemRegistry
+) {
+    if (catalog.level !== 'catalog' || catalog.ref.kind !== 'user') return undefined;
+    const existing = state.catalogs[catalog.ref.catalogId];
+    const owner = catalogOwnerFor(target);
+    if (!existing || !owner) return undefined;
+    const lostBy = templatesLosing(existing.id, owner, state, registry);
+    return {
+        crossesSystem: lostBy.length > 0,
+        lostBy,
+        writes: {
+            saveCatalogs: [{ ...existing, owner, updatedAt: new Date().toISOString() }],
+        } satisfies LibraryWrites,
+    };
 }
 
 /** A page to another type: the T-070 retarget rules for documents and setting pages. */
@@ -199,6 +258,17 @@ function planSettingMove(
             metadata.settingId === settingId && coreIds.has(definitionId)
     );
     const moving = state.documents.filter(({ definitionId }) => ownTypes.has(definitionId));
+    // The setting's own catalogs travel with it; its pages lose the old ruleset's catalogs.
+    const settingTemplates = state.templates.filter(
+        (template) => template.settingId === settingId || ownTypes.has(template.documentKind)
+    );
+    const lostBy = [
+        ...new Set(
+            catalogsOfOwner({ rulesetId: existing.systemId }, state).flatMap(
+                ({ id }) => catalogUsage(id, settingTemplates).templates
+            )
+        ),
+    ];
 
     const writes: LibraryWrites = {
         saveSettings: [
@@ -237,6 +307,8 @@ function planSettingMove(
         documentsMoving: moving.length,
         documentsStaying: staying.length,
         pagesStaying: corePages.length,
+        lostBy,
+        catalogsMoving: catalogsOfOwner({ settingId }, state).length,
     };
 }
 
@@ -261,7 +333,13 @@ export function planMove(
         documentsMoving: 0,
         documentsStaying: 0,
         pagesStaying: 0,
+        lostBy: [] as CustomTemplate[],
+        catalogsMoving: 0,
     };
+    if (subject.level === 'catalog') {
+        const plan = planCatalogMove(subject, target, state, registry);
+        return plan && { ...base, ...plan };
+    }
     if (subject.level === 'page' && target.level === 'type') {
         return { ...base, writes: planPageMove(subject, target, state) };
     }

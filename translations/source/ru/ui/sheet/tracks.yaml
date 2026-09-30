@@ -4,3 +4,20 @@ length:
 rows:
     moveUp: Переместить строку {index} выше
     moveDown: Переместить строку {index} ниже
+tracker:
+    level: Уровень
+    value: Значение
+    out: выбыл
+    add: 'Добавить: {title}'
+    removeCopy: 'Удалить {name}'
+    box: '{level}: {mark}'
+    empty: пусто
+    textOnlyInTable: 'Текстовые столбцы ({titles}) показываются только в таблице.'
+    slash: Косая черта
+    cross: Крест
+    removeCopyTitle: Удалить копию?
+    removeCopyDescription: 'В «{name}» есть отметки или заметки. Удаление сотрёт их.'
+    shortenTitle: Укоротить трекер?
+    shortenDescription: У некоторых копий есть отметки на уровнях, которые будут скрыты. Эти отметки перейдут на последний оставшийся уровень.
+    confirm: Подтвердить
+    cancel: Отмена

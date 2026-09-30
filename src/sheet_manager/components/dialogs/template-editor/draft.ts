@@ -2,26 +2,31 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import { generateId } from '../../../../shared/utils/random';
+import { referenceKindName } from '../../../features/sheet/data/referenceScope';
 import {
     type TemplateReferenceIssue,
     validateTemplateReferences,
 } from '../../../features/sheet/data/templateReferences';
+import { defaultTrackerSettings } from '../../../features/sheet/data/trackerDefaults';
 import {
     detectDependencyCycles,
     type FormulaDependencyEntry,
     parseFormula,
 } from '../../../features/sheet/declarative/formula';
+import { systemRegistry } from '../../../systems';
 import { resolveDataBindingByCoordinate } from '../../../systems/templateBindings';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import type {
     CustomTemplate,
     GroupNode,
+    ListItemField,
     PrimitivePreset,
     PrimitiveTrackOverride,
     SectionNode,
     TableNode,
     TemplateField,
     TemplateNode,
+    TrackerOverride,
     VisibleWhen,
 } from '../../../types/template';
 import {
@@ -30,6 +35,7 @@ import {
     collectTreeIssues,
     isContainerNode,
     isTemplateField,
+    listItemField,
     TEMPLATE_LIMITS,
     TEMPLATE_SCHEMA_VERSION,
     walkTemplateNodes,
@@ -65,6 +71,7 @@ export type NodeUpdates = {
     multiline?: boolean;
     track?: PrimitiveTrackOverride;
     trackLayout?: 'table' | 'strip';
+    tracker?: TrackerOverride;
     presets?: PrimitivePreset[];
 };
 
@@ -312,6 +319,20 @@ function cloneWithFreshIds(draft: EditorDraft, original: TemplateNode): Template
         if (node.type === 'select') {
             node.options = node.options.map((option) => ({ ...option, id: newId('opt') }));
         }
+        if (node.type === 'list' && node.item) {
+            node.item = {
+                ...node.item,
+                id: newId('f'),
+                ...(node.item.type === 'select'
+                    ? {
+                          options: node.item.options.map((option) => ({
+                              ...option,
+                              id: newId('opt'),
+                          })),
+                      }
+                    : {}),
+            } as ListItemField;
+        }
         if (node.type === 'table') {
             node.columns = node.columns.map((column) => {
                 const renewed = { ...column, id: newId('f') };
@@ -531,6 +552,8 @@ function baseField(type: TemplateField['type'], label: string): TemplateField {
                 targetKinds: [DocumentKindSchema.parse('character')],
                 multiple: false,
             };
+        case 'tracker':
+            return { ...base, type: 'tracker', ...defaultTrackerSettings() };
     }
 }
 
@@ -610,8 +633,12 @@ export interface DraftIssueMessages {
     unknownBinding: string;
     unknownCatalog: string;
     unknownFillTarget: string;
+    listCatalogUnnamed: string;
     unknownLabelMessage: string;
     invalidDocsLink: string;
+    referenceTargetUnavailable: string;
+    trackerLengthEmpty: string;
+    trackerCovers: string;
 }
 
 function referenceIssueMessage(
@@ -627,12 +654,19 @@ function referenceIssueMessage(
             return interpolate(messages.unknownCatalog, { id: issue.key });
         case 'unknown-fill-target':
             return interpolate(messages.unknownFillTarget, { id: issue.key });
+        case 'list-catalog-unnamed':
+            return messages.listCatalogUnnamed;
         case 'unknown-coordinate':
             return interpolate(messages.unknownCoordinate, { id: issue.key });
         case 'unknown-label-message':
             return interpolate(messages.unknownLabelMessage, { id: issue.key });
         case 'invalid-docs-link':
             return interpolate(messages.invalidDocsLink, { id: issue.key });
+        case 'reference-target-unavailable':
+            return interpolate(messages.referenceTargetUnavailable, {
+                field: issue.label,
+                type: referenceKindName(systemRegistry, issue.key),
+            });
     }
 }
 
@@ -745,6 +779,34 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
         if (node.type === 'list' && node.valueKey !== undefined) {
             checkEffectiveKey(node.valueKey, node.id);
         }
+        if (node.type === 'tracker') {
+            const levelIds = new Set(node.levels.map(({ id }) => id));
+            node.lengths.forEach((length, index) => {
+                if (!length.levels.some((id) => levelIds.has(id))) {
+                    issue(
+                        interpolate(messages.trackerLengthEmpty, { id: node.label, n: index + 1 })
+                    );
+                }
+            });
+        }
+        const trackerColumns =
+            node.type === 'tracker'
+                ? node.columns
+                : node.type === 'primitive'
+                  ? (node.tracker?.columns ?? [])
+                  : [];
+        if (
+            node.type === 'tracker' &&
+            trackerColumns.some(
+                ({ covers }) => covers !== undefined && covers >= node.levels.length
+            )
+        ) {
+            issue(interpolate(messages.trackerCovers, { id: node.label }));
+        }
+        // A built-in tracker's extra columns keep their values under their own key.
+        if (node.type === 'primitive' && trackerColumns.length > 0) {
+            checkEffectiveKey(node.tracker?.valueKey ?? node.id, node.id);
+        }
     });
 
     // Cycle detection across formula writers (FR-14; defense in depth at render separately).
@@ -818,6 +880,15 @@ function mapFieldItems(
                         column.id === fieldId ? map(column) : column
                     ),
                 };
+            }
+            // A custom list's entry template (spec 016); a legacy list gets its item on first edit.
+            if (node.type === 'list' && node.valueKey !== undefined) {
+                const item = listItemField(node);
+                if (item.id !== fieldId) return node;
+                const next = map(item);
+                return next.type === 'formula' || next.type === 'tracker'
+                    ? node
+                    : { ...node, item: next };
             }
             return isTemplateField(node) && node.id === fieldId ? map(node) : node;
         })

@@ -13,12 +13,19 @@ export type SheetIssueCode =
     | 'document-recovered'
     | 'binding-unresolved'
     | 'catalog-unavailable'
+    | 'list-entry-unreadable'
+    /** A stored tracker value does not have the tracker value shape; it reads as empty. */
+    | 'template-value-unreadable'
+    /** Stored tracker marks or notes under levels, kinds, columns, or copies the page lost. */
+    | 'template-value-hidden'
     | 'formula-error'
     | 'template-reference-invalid'
     /** A document rendered a page other than the one it asked for (stale id, kind mismatch). */
     | 'template-fallback'
     /** A reference value names a document that no longer exists. */
     | 'reference-target-missing'
+    /** A reference value names a document outside the template's setting (spec 017). */
+    | 'reference-target-out-of-scope'
     /** A catalog value was clamped or dropped while filling a sheet. */
     | 'catalog-detail-out-of-range'
     /** A template was applied to a document of another system or kind; its default page rendered. */

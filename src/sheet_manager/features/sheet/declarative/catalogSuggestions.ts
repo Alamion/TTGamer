@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react';
 
 import type { CatalogEntry } from '../../../components';
 import { reportSheetIssue } from '../../../diagnostics';
-import { CATALOG_BINDINGS } from '../data/catalogBindings';
+import { getCatalogBinding } from '../data/catalogBindings';
 
 /**
  * Localized suggestion entries of a catalog for free-text inputs (names only; picking one just
@@ -11,7 +11,7 @@ import { CATALOG_BINDINGS } from '../data/catalogBindings';
  */
 export function useCatalogSuggestions(catalogId: string | undefined): CatalogEntry[] {
     const locale = useDocusaurusContext().i18n.currentLocale;
-    const catalog = catalogId ? CATALOG_BINDINGS.get(catalogId) : undefined;
+    const catalog = catalogId ? getCatalogBinding(catalogId) : undefined;
     const missing = Boolean(catalogId) && !catalog;
 
     useEffect(() => {

@@ -2,7 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import clsx from 'clsx';
-import { FileText, Globe2, LayoutTemplate, Upload } from 'lucide-react';
+import { FileText, Globe2, LayoutTemplate, Table2, Upload } from 'lucide-react';
 import type { ChangeEvent, ReactNode } from 'react';
 import { useId, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -37,6 +37,7 @@ const LEVEL_ICON: Record<LibraryLevel, typeof Globe2> = {
     setting: Globe2,
     type: LayoutTemplate,
     page: FileText,
+    catalog: Table2,
 };
 
 const STATE_CLASS = {
@@ -47,9 +48,9 @@ const STATE_CLASS = {
 } as const;
 
 function installed() {
-    const { types, settings } = useDocumentTypeStore.getState();
+    const { types, settings, catalogs } = useDocumentTypeStore.getState();
     const { templates, defaultOverrides } = useTemplateStore.getState();
-    return { types, settings, templates, defaultOverrides };
+    return { types, settings, templates, defaultOverrides, catalogs };
 }
 
 interface Loaded {
@@ -103,6 +104,7 @@ export function useImportMode(onDone: () => void): { tree: ReactNode; details: R
                 settings: plural(labels.counts.settings, summary.settings),
                 types: plural(labels.counts.types, summary.types),
                 pages: plural(labels.counts.pages, summary.pages),
+                catalogs: plural(labels.counts.catalogs, summary.catalogs),
             })
         );
         setLoaded(undefined);

@@ -5,7 +5,12 @@ import { useMemo } from 'react';
 
 import { reportSheetIssue } from './diagnostics';
 import { CatalogBrowser } from './features/docs/CatalogBrowser';
-import { DocsLinkVariants, ElementStorybook } from './features/docs/ElementStorybook';
+import {
+    DocsLinkVariants,
+    ElementStorybook,
+    ReferenceEntryVariants,
+    TrackerParity,
+} from './features/docs/ElementStorybook';
 import { LibraryStorybook } from './features/docs/LibraryStorybook';
 import { CATALOG_BINDINGS } from './features/sheet/data/catalogBindings';
 import { DeclarativeSheetView } from './features/sheet/declarative/DeclarativeSheetView';
@@ -138,6 +143,8 @@ export {
     ElementStorybook,
     LibraryStorybook,
     PolicyStatement,
+    ReferenceEntryVariants,
+    TrackerParity,
 };
 
 /** Read-only example hunter (Lena Varga) used across the Hunter documentation. */

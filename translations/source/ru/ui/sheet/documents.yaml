@@ -71,7 +71,6 @@ views:
     vehicleSheet: Лист транспорта
     fodderSheet: Группа статистов
 fields:
-    conditionLevel: Уровень
     conditionPenalty: Штраф
     identity: Основные сведения
     name: Имя
@@ -152,6 +151,9 @@ fields:
     range: Дальность
     arc: Сектор обстрела
     none: Пока пусто
+    damageMarks:
+        bashing: Дробящий
+        lethal: Летальный
     healthLevels:
         bruised: Ушибы
         hurt: Лёгкие ранения

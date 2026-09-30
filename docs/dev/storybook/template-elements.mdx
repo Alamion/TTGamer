@@ -6,10 +6,33 @@ description: Containers, fields, choices, derived values, tables, and lists in e
 ---
 
 import { TWWrapper } from '@site/src/shared/components/TWWrapper';
-import { ElementStorybook } from '@site/src/sheet_manager/docsEmbeds';
+import {
+    ElementStorybook,
+    ReferenceEntryVariants,
+    TrackerParity,
+} from '@site/src/sheet_manager/docsEmbeds';
 
 # Template elements
 
 <TWWrapper>
     <ElementStorybook filter="handwritten" />
+</TWWrapper>
+
+## Document reference entries
+
+A reference in the template's setting, one outside it (kept, openable, noted), and one whose
+document was deleted. The stories above list your own documents, so these three use fixed samples.
+
+<TWWrapper>
+    <ReferenceEntryVariants />
+</TWWrapper>
+
+## Fodder-group parity
+
+The shipped fodder group's health tracker (left) and the same tracker built from the Tracker
+field alone (right), on one sample group with the same marks. Switch the lengths, mark boxes, and
+shorten over marks on both: levels, totals, folded marks, and "out" match (spec 018, US7).
+
+<TWWrapper>
+    <TrackerParity />
 </TWWrapper>

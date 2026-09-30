@@ -17,6 +17,7 @@ import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
+import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -128,10 +129,36 @@ describe('library export (spec 013, US4)', () => {
         expect(buildLibraryFilename(undefined)).toBe('ttgamer_library_selection.json');
     });
 
+    it('carries custom list entry templates and old lists unchanged (spec 016)', () => {
+        const { payload } = exportKeys([`s:user:${ASHEN_ID}`, `t:user:${ORG_ID}`]);
+        const lists = CustomTemplateSchema.parse({
+            id: 'tpl-listskit',
+            name: 'Lists',
+            systemId: 'wod-v5',
+            documentKind: 'mortal',
+            settingId: ASHEN_ID,
+            schemaVersion: 3,
+            children: [
+                { id: 'old-list', type: 'list', valueKey: 'old-list' },
+                {
+                    id: 'bond-list',
+                    type: 'list',
+                    valueKey: 'bond-list',
+                    item: { id: 'bond', type: 'resource', label: 'Bond', max: 10 },
+                },
+            ],
+        });
+        const parsed = parseLibraryFile(serializeLibraryFile({ ...payload, templates: [lists] }));
+        expect(parsed.ok).toBe(true);
+        if (!parsed.ok) return;
+        expect(parsed.payload.templates).toEqual([lists]);
+        expect(parsed.payload.templates[0]!.children[0]).not.toHaveProperty('item');
+    });
+
     it('rejects broken files with the reason and the entry', () => {
         expect(parseLibraryFile('{')).toEqual({ ok: false, error: 'parse' });
         expect(parseLibraryFile('{"format":"x"}')).toEqual({ ok: false, error: 'format' });
-        expect(parseLibraryFile('{"format":"ttgamer-library","version":2}')).toEqual({
+        expect(parseLibraryFile('{"format":"ttgamer-library","version":3}')).toEqual({
             ok: false,
             error: 'version',
         });

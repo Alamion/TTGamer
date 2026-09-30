@@ -12,12 +12,6 @@ primitives:
     labelOverride: Label override
     labelOverridePlaceholder: Same as binding label
     compact: Compact (brief format)
-    trackLevels: Levels
-    trackLevelName: 'Level {index} name'
-    trackLayout: Track layout
-    trackLayoutDefault: Default
-    trackLayoutTable: Table of levels
-    trackLayoutStrip: Line of boxes
     presets: Preset entries
     presetLabel: Entry label
     presetValue: Default value
@@ -45,6 +39,7 @@ editor:
     sectionTitle: Section title
     blockTitle: Block title (optional)
     fieldLabel: Field label
+    columnSettings: 'Settings of {label}'
     valueKeyLabel: Shared value key (fields with the same key share one value)
 
     fieldDescription: Help text (optional)
@@ -64,9 +59,15 @@ editor:
     accentPrimary: Primary accent
     accentSecondary: Secondary accent
     ratingDots: Dots
-    ratingBoxes: Boxes
     ratingNumber: Number
+    ratingTextInput: Text input (for example a specialization)
+    ratingShowNumbers: Show current / maximum
+    ratingDice: Die symbol (roll the rating)
+    ratingFlags: 'Flags:'
+    ratingFlagsHint: S, P, and E change the roll only where the system's dice rule uses them (Star Wars does, V5 does not).
     referenceKinds: Allowed document kinds
+    referenceKindUnavailable: '{type} (unavailable)'
+    referenceKindOwn: '{type} (yours)'
     multiple: Allow multiple values
     hideUnselected: Hide unselected options
     moveUp: Move up
@@ -104,7 +105,7 @@ editor:
     paletteList: List
     paletteListHint: 'Entries added one by one: custom, skills, merits, equipment…'
     paletteTracker: Tracker
-    paletteTrackerHint: Health or damage levels with penalties
+    paletteTrackerHint: 'Boxes to mark by level: health, stress, or any other burden'
     valueSource: Stores value in
     sourceCustom: Custom value (this template)
     sourceTraits: Traits
@@ -143,6 +144,9 @@ editor:
     showTitle: Show title
     hiddenTitleHint: A group without a visible title cannot be collapsed.
     showLabel: Show label
+    labelPosition: Label position
+    labelTop: Above the value
+    labelLeft: Beside the value
     placeholderText: Placeholder text (optional)
     formulaPrefix: Before value (e.g. ×)
     formulaSuffix: After value (e.g. m)
@@ -153,6 +157,21 @@ editor:
     minFromPlaceholder: e.g. self-control
     listShowTitle: Show list title
     listFramed: Draw a border around the list
+    listNamed: Entries are named
+    listEntry: Entry
+    listCatalogNeedsNames: Suggestions need entry names.
+    listChangeTitle: Change list entries?
+    listChangeValues:
+        message: '{title}: {count} stored value in {documents} will no longer be shown.|{title}: {count} stored values in {documents} will no longer be shown.'
+        plural: true
+    listChangeSheets:
+        message: '{count} sheet|{count} sheets'
+        plural: true
+    listChangeNames:
+        message: '{title}: {count} entry name will no longer be shown.|{title}: {count} entry names will no longer be shown.'
+        plural: true
+    listChangeNote: The values stay stored; changing the entry back shows them again, except for entries edited in between.
+    listChangeConfirm: Save anyway
     invalidFormula: Invalid formula in "{id}" — check the expression.
     unknownCoordinate: Unknown value "{id}" referenced by a formula.
     circularDependency: 'Circular dependency detected: {id}'
@@ -161,6 +180,7 @@ editor:
     unknownFillTarget: 'Auto-fill targets a field that does not exist: "{id}".'
     unknownLabelMessage: Unknown translation reference "{id}".
     invalidDocsLink: 'Documentation link "{id}" is not a site docs path (/docs/…) or an https:// address.'
+    referenceTargetUnavailable: 'Reference "{field}" can point to {type}, which this setting does not have.'
     depthMessage: Nesting limit reached — {limit} levels maximum.
     countMessage: Element limit reached — {limit} elements maximum.
     newSection: New section
@@ -203,7 +223,100 @@ editor:
     shortcutsHint: 'Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo'
     coordinateCurrent: '{label} (current)'
     coordinateMax: '{label} (max)'
+tracker:
+    source: Source
+    sourceOwn: Own values
+    display: Display
+    displayTable: Table
+    displayStrip: Strip
+    displayLine: One line
+    displayHint: One line is the small strip for brief pages, with the label inline and no length buttons.
+    marks: Marks
+    marksHint: A click moves a box to the next mark in this order, then back to empty; a later mark counts as heavier.
+    marksBuiltIn: The game sets the number of marks; you can rename and recolor them.
+    startFrom: Start from…
+    setOne: One mark
+    setTwo: Two marks (╱ ×)
+    setThree: Three marks, WoD 20th (╱ × ✱)
+    markMarked: Marked
+    markBashing: Bashing
+    markLethal: Lethal
+    markAggravated: Aggravated
+    newMark: 'Mark {n}'
+    markName: 'Mark {n} name'
+    markSymbol: 'Mark {n} symbol'
+    markColors: '{name} color'
+    markOwnColor: '{name}: own color'
+    colorSecondary: Amber
+    colorError: Red
+    colorTertiary: Violet
+    colorSuccess: Green
+    colorText: Ink
+    addMark: Add mark
+    moveMarkUp: 'Move mark {n} up'
+    moveMarkDown: 'Move mark {n} down'
+    removeMark: 'Remove mark {n}'
+    levels: Levels
+    levelCount: '{count} of {max}'
+    valueTitle: Value column title
+    valueShow: Show
+    defaultValueTitle: Penalty
+    levelName: 'Level {n} name'
+    levelValue: 'Level {n} value'
+    newLevel: 'Level {n}'
+    addLevel: Add level
+    moveLevelUp: 'Move level {n} up'
+    moveLevelDown: 'Move level {n} down'
+    removeLevel: 'Remove level {n}'
+    levelsBuiltIn: The game sets the number and order of levels; names and values you leave empty follow the game.
+    levelsLegacy: Set by an older page
+    levelsUseGame: Use the game's levels
+    columns: Columns
+    column: 'Column {n}'
+    columnBuiltIn: Marks — from the document
+    columnsBuiltInHint: Columns you add to a built-in tracker keep their values on the page.
+    columnKind: Column kind
+    columnMarks: Marks
+    columnText: Text
+    columnTitle: Column title
+    covers: Covers
+    coversAll: All levels
+    coversFirst: 'First {n}'
+    copies: Readers add copies (A, B, C…)
+    copiesMax: up to
+    copiesMaxLabel: Most copies
+    addMarksColumn: Marks column
+    addTextColumn: Text column
+    removeColumn: 'Remove column {n}'
+    defaultMarksTitle: Damage
+    defaultTextTitle: Notes
+    lengths: Readers switch the length
+    lengthsHint: Each length lists the levels it shows. Shortening folds hidden marks into the new last level (the heaviest mark wins) after asking.
+    lengthColumn: 'Length {n}'
+    lengthLevel: '{level} in length {n}'
+    lengthShows: Shows
+    addLength: Length
+    removeLength: 'Remove length {n}'
+    reading: Reading the marks
+    total: 'Total row: the {value} of the deepest marked level'
+    out: Mark a copy as out when its last level is marked
+    legend: Name the marks under the tracker
+    defaultLabel: Health
+    issueLengthEmpty: 'Tracker "{id}": length {n} shows no level.'
+    issueCovers: 'Tracker "{id}": a column covers all its levels or more; choose "All levels".'
+    changeTitle: Hide stored tracker values?
+    changeNote: The values stay stored, but levels, marks, and columns you removed get new ids if added again, so these values will not show again.
+    changeMarks:
+        message: '{title}: {count} stored mark in {documents} will no longer be shown.|{title}: {count} stored marks in {documents} will no longer be shown.'
+        plural: true
+    changeTexts:
+        message: '{title}: {count} stored note in {documents} will no longer be shown.|{title}: {count} stored notes in {documents} will no longer be shown.'
+        plural: true
+    changeCopies:
+        message: '{title}: {count} copy in {documents} will no longer be shown.|{title}: {count} copies in {documents} will no longer be shown.'
+        plural: true
 fieldTypes:
+    tracker: Tracker
     builtIn: Built-in page part
     text: Text
     number: Number
@@ -267,7 +380,12 @@ page:
     formulaReasonCircular: circular dependency
     formulaReasonDivision: division by zero
     formulaReasonNonNumeric: a referenced value is not a number
+    formulaReasonInvalid: the formula is not valid
     formulaClamped: Limited by a linked value
+    catalogEmpty: No entries yet
+    ratingText: '{label}: text'
+    ratingClamped: 'Stored value {value} is above the current maximum'
+    ratingMaximum: 'Maximum {max}'
     chooseOptions: Choose options
     chooseOptionsDone: Done
     noneSelected: Nothing selected
@@ -276,8 +394,19 @@ page:
     imageUrl: Image URL
     imageRemove: Remove image
     imageAlt: Template image
+listEntry:
+    limit: At most {max} entries
+    remove: Remove {name}
+    removeNth: Remove {list}, entry {n}
+    nth: '{list}, entry {n}'
+    name: '{list} — name'
 binding:
     attach: Attach catalog
+    groupSetting: This setting
+    groupShipped: '{system} catalogs'
+    listCatalog: Suggest from catalog
+    valueFrom: Value from
+    none: None
     catalog: Catalog
     fills: Auto-fill mapping
     fillTarget: Fill into
@@ -304,21 +433,18 @@ cohort:
     removeMember: Remove member {label}
     memberLabel: Member label
     defeated: Out of the fight
-    penalty: Penalty
-    level: Level
     maxMembersReached: A group can have at most {count} members.
     removeTitle: Remove damaged member?
     removeDescription: Member {label} has recorded damage. Removing it deletes that damage.
     shortenTitle: Shorten the health track?
     shortenDescription: Some members have damage on levels that will be hidden. Their marks move to the last remaining level.
-    confirm: Confirm
-    cancel: Cancel
 reference:
     search: Type a name to search
     noMatches: No matching documents
     remove: Remove {title}
     open: Open {title}
     missing: Linked document no longer exists
+    outOfScope: outside this setting
 entities:
     identification: Identification
     details: Details

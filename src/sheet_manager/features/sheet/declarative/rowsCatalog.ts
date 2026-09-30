@@ -6,7 +6,7 @@ import type { RowsBinding, RowsCatalogParent } from '../../../systems/templateBi
 import { readDetailValue } from '../data/catalogBindings';
 
 type RowsCatalog = NonNullable<RowsBinding['catalog']>;
-type Catalogs = ReadonlyMap<string, CatalogBindingEntry>;
+type Catalogs = Pick<ReadonlyMap<string, CatalogBindingEntry>, 'get'>;
 
 /** A name-column suggestion; `parentId` is set when the catalog declares a parent. */
 export interface RowSuggestion extends CatalogEntry {

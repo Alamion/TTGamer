@@ -1,5 +1,7 @@
 # Feature Specification: Library tree for rules, settings, types, and pages
 
+> **Change record.** Partly superseded by 015 (the library also lists catalogs on rulesets and settings; library files are version 2). Current behavior: `.agents/skills/sheet-templates/SKILL.md` ("Library").
+
 **Feature Branch**: `testing`
 
 **Created**: 2026-09-26

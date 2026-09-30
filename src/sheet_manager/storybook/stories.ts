@@ -1,5 +1,13 @@
+import { penaltyText } from '../features/sheet/data/trackerModel';
 import { systemRegistry } from '../systems';
-import { type DocumentBindingDescriptor, listDocumentBindings } from '../systems/templateBindings';
+import {
+    type DocumentBindingDescriptor,
+    listDocumentBindings,
+    type TrackBinding,
+    trackLevelsFor,
+    trackVariantLengths,
+} from '../systems/templateBindings';
+import { type UserCatalog, UserCatalogSchema } from '../systems/userCatalogs';
 import { type CustomTemplate, CustomTemplateSchema, type TemplateNode } from '../types/template';
 
 /**
@@ -187,6 +195,7 @@ const fields = story(
                     description: 'Help text shows on hover.',
                 }),
                 text('text-hidden-label', 'Hidden label', { hideLabel: true }),
+                text('text-label-left', 'Label beside', { labelPosition: 'left' }),
                 text('text-multiline', 'Multiline', { multiline: true, column: 1 }),
             ],
         },
@@ -214,11 +223,70 @@ const fields = story(
                 { id: 'toggle', type: 'toggle', label: 'Toggle' },
                 { id: 'rating-dots', type: 'rating', label: 'Rating: dots', max: 5 },
                 {
-                    id: 'rating-boxes',
+                    id: 'rating-hidden-label',
                     type: 'rating',
-                    label: 'Rating: boxes',
+                    label: 'Rating with hidden label',
+                    hideLabel: true,
+                    max: 5,
+                },
+                {
+                    id: 'rating-text',
+                    type: 'rating',
+                    label: 'Rating with text',
+                    max: 5,
+                    textInput: true,
+                },
+                {
+                    id: 'rating-numbers',
+                    type: 'rating',
+                    label: 'Rating with numbers',
+                    max: 5,
+                    showNumbers: true,
+                },
+                {
+                    id: 'rating-dice',
+                    type: 'rating',
+                    label: 'Rating with a die',
+                    max: 5,
+                    dice: true,
+                },
+                {
+                    id: 'rating-flags',
+                    type: 'rating',
+                    label: 'Rating with S, P, E',
+                    max: 5,
+                    dice: true,
+                    textInput: true,
+                    flags: ['specialization', 'practiced', 'experienced'],
+                },
+                {
+                    id: 'rating-dice-number',
+                    type: 'rating',
+                    label: 'Rating: number with a die',
                     max: 10,
-                    presentation: 'boxes',
+                    presentation: 'number',
+                    dice: true,
+                },
+                {
+                    id: 'rating-number-framed',
+                    type: 'rating',
+                    label: 'Rating: number with maximum',
+                    max: 10,
+                    presentation: 'number',
+                    showNumbers: true,
+                },
+                {
+                    id: 'rating-label-top',
+                    type: 'rating',
+                    label: 'Rating, label above',
+                    max: 5,
+                    labelPosition: 'top',
+                },
+                {
+                    id: 'rating-many',
+                    type: 'rating',
+                    label: 'Rating with 30 dots',
+                    max: 30,
                 },
                 {
                     id: 'rating-number',
@@ -356,6 +424,94 @@ const catalogFields = story(
     ]
 );
 
+/** A user catalog for the stories below (spec 015): registered on the registry, never stored. */
+export const SAMPLE_CATALOG_ID = 'user-catalog-storybk1';
+const SAMPLE_POWER = 'c-power001';
+const SAMPLE_CURSED = 'c-cursed01';
+
+export const SAMPLE_CATALOG: UserCatalog = UserCatalogSchema.parse({
+    id: SAMPLE_CATALOG_ID,
+    name: 'Sample relics',
+    owner: { rulesetId: ENGINE.systemId },
+    columns: [
+        { id: SAMPLE_POWER, name: 'Power', type: 'number' },
+        { id: SAMPLE_CURSED, name: 'Cursed', type: 'toggle' },
+    ],
+    entries: [
+        {
+            id: 'e-bonefl01',
+            name: 'Bone Flute',
+            values: { [SAMPLE_POWER]: 2, [SAMPLE_CURSED]: false },
+        },
+        {
+            id: 'e-mirror01',
+            name: 'Black Mirror',
+            values: { [SAMPLE_POWER]: 4, [SAMPLE_CURSED]: true },
+        },
+        { id: 'e-candle01', name: 'Grave Candle', values: { [SAMPLE_POWER]: 1 } },
+    ],
+    createdAt: '2026-09-27T00:00:00.000Z',
+    updatedAt: '2026-09-27T00:00:00.000Z',
+});
+
+const userCatalogFields = story(
+    'user-catalog',
+    'Your own catalog',
+    'A choice field, a list, and a table column bound to a user catalog: picking fills the mapped fields, the list value, or the same row.',
+    ENGINE,
+    [
+        group('user-catalog-field', 'Choice field', [
+            {
+                id: 'relic-pick',
+                type: 'select',
+                label: 'Relic',
+                options: [{ id: 'placeholder', label: 'Placeholder' }],
+                binding: {
+                    catalogId: SAMPLE_CATALOG_ID,
+                    fills: {
+                        [SAMPLE_POWER]: { targetFieldId: 'relic-power' },
+                        [SAMPLE_CURSED]: { targetFieldId: 'relic-cursed' },
+                    },
+                },
+            },
+            { id: 'relic-power', type: 'number', label: 'Power' },
+            { id: 'relic-cursed', type: 'toggle', label: 'Cursed' },
+        ]),
+        {
+            id: 'relic-list',
+            type: 'list',
+            title: 'Relics carried',
+            showTitle: true,
+            valueKey: 'relic-list',
+            catalog: { catalogId: SAMPLE_CATALOG_ID, valueFrom: SAMPLE_POWER },
+        },
+        {
+            id: 'relic-table',
+            type: 'table',
+            title: 'Relic table',
+            minRows: 2,
+            maxRows: 5,
+            columns: [
+                {
+                    id: 'relic-item',
+                    type: 'select',
+                    label: 'Relic',
+                    options: [{ id: 'placeholder', label: 'Placeholder' }],
+                    binding: {
+                        catalogId: SAMPLE_CATALOG_ID,
+                        fills: {
+                            [SAMPLE_POWER]: { targetFieldId: 'relic-item-power' },
+                            [SAMPLE_CURSED]: { targetFieldId: 'relic-item-cursed' },
+                        },
+                    },
+                },
+                { id: 'relic-item-power', type: 'number', label: 'Power' },
+                { id: 'relic-item-cursed', type: 'toggle', label: 'Cursed' },
+            ],
+        },
+    ]
+);
+
 const collections = story(
     'collections',
     'Tables and custom lists',
@@ -412,6 +568,114 @@ const collections = story(
     ]
 );
 
+const listEntries = story(
+    'list-entries',
+    'Custom list entries',
+    'One list per entry type: each entry is a copy of one field. Notes and pictures have no typed name.',
+    ENGINE,
+    [
+        {
+            id: 'section-entries',
+            type: 'section',
+            title: 'Entry types',
+            columns: 2,
+            children: [
+                {
+                    id: 'entries-text',
+                    type: 'list',
+                    title: 'Contacts (text)',
+                    showTitle: true,
+                    valueKey: 'entries-text',
+                    item: text('entries-text-item', 'Note'),
+                },
+                {
+                    id: 'entries-notes',
+                    type: 'list',
+                    title: 'Notes (multi-line, unnamed)',
+                    showTitle: true,
+                    valueKey: 'entries-notes',
+                    named: false,
+                    item: text('entries-notes-item', 'Note', { multiline: true, hideLabel: true }),
+                },
+                {
+                    id: 'entries-number',
+                    type: 'list',
+                    title: 'Debts (number)',
+                    showTitle: true,
+                    valueKey: 'entries-number',
+                    item: { id: 'entries-number-item', type: 'number', label: 'Amount', min: 0 },
+                },
+                {
+                    id: 'entries-toggle',
+                    type: 'list',
+                    title: 'Oaths kept (toggle)',
+                    showTitle: true,
+                    valueKey: 'entries-toggle',
+                    item: { id: 'entries-toggle-item', type: 'toggle', label: 'Kept' },
+                },
+                {
+                    id: 'entries-select',
+                    type: 'list',
+                    title: 'Rituals (choice)',
+                    showTitle: true,
+                    valueKey: 'entries-select',
+                    item: {
+                        id: 'entries-select-item',
+                        type: 'select',
+                        label: 'Level',
+                        options: options(3),
+                    },
+                },
+                {
+                    id: 'entries-rating',
+                    type: 'list',
+                    title: 'Backgrounds (rating, number style)',
+                    showTitle: true,
+                    valueKey: 'entries-rating',
+                    item: {
+                        id: 'entries-rating-item',
+                        type: 'rating',
+                        label: 'Dots',
+                        presentation: 'number',
+                        max: 10,
+                        showNumbers: true,
+                    },
+                },
+                {
+                    id: 'entries-resource',
+                    type: 'list',
+                    title: 'Bonds (resource)',
+                    showTitle: true,
+                    valueKey: 'entries-resource',
+                    item: { id: 'entries-resource-item', type: 'resource', label: 'Bond', max: 10 },
+                },
+                {
+                    id: 'entries-reference',
+                    type: 'list',
+                    title: 'Allies (document reference)',
+                    showTitle: true,
+                    valueKey: 'entries-reference',
+                    item: {
+                        id: 'entries-reference-item',
+                        type: 'reference',
+                        label: 'Ally',
+                        targetKinds: ['character'],
+                    },
+                },
+                {
+                    id: 'entries-image',
+                    type: 'list',
+                    title: 'Mementos (image, unnamed)',
+                    showTitle: true,
+                    valueKey: 'entries-image',
+                    named: false,
+                    item: { id: 'entries-image-item', type: 'image', label: 'Memento' },
+                },
+            ],
+        },
+    ]
+);
+
 /**
  * One variant per binding shape: the kind plus what changes its rendering (pool or rating
  * resource, member or computed-length track, field value type, equipment section).
@@ -461,9 +725,20 @@ function boundNodes(binding: DocumentBindingDescriptor, index: number): NodeInpu
                 : [primitive('full'), primitive('compact', { compact: true })];
         case 'track':
             return [
-                primitive('table', { trackLayout: 'table' }),
-                primitive('strip', { trackLayout: 'strip' }),
-                primitive('compact', { compact: true }),
+                primitive('table', { tracker: { display: 'table' } }),
+                primitive('strip', { tracker: { display: 'strip' } }),
+                primitive('line', { tracker: { display: 'line' } }),
+                // The page's own settings on a built-in tracker (spec 018).
+                primitive('page-settings', {
+                    tracker: {
+                        display: 'table',
+                        marks: { cross: { name: 'Wound', fill: 'tertiary' } },
+                        valueColumn: { title: 'Penalty', show: true },
+                        columns: [{ id: 'source', kind: 'text', title: 'Source' }],
+                        total: true,
+                        legend: true,
+                    },
+                }),
             ];
         case 'equipment':
         case 'rows':
@@ -511,17 +786,229 @@ export function boundPartStories(): ElementStory[] {
     return stories;
 }
 
+/** Seven health levels with WoD penalties, ids fixed so stories stay stable. */
+const HEALTH_LEVELS: NodeInput[] = [
+    ['bruised', 'Bruised', '0'],
+    ['hurt', 'Hurt', '-1'],
+    ['injured', 'Injured', '-1'],
+    ['wounded', 'Wounded', '-2'],
+    ['mauled', 'Mauled', '-2'],
+    ['crippled', 'Crippled', '-5'],
+    ['incapacitated', 'Incapacitated', ''],
+].map(([id, name, value]) => ({ id, name, value }));
+
+const BASHING = { id: 'bashing', name: 'Bashing', symbol: '╱', fill: 'secondary' };
+const LETHAL = { id: 'lethal', name: 'Lethal', symbol: '×', fill: 'error' };
+const AGGRAVATED = { id: 'aggravated', name: 'Aggravated', symbol: '✱', fill: 'tertiary' };
+
+const tracker = (id: string, label: string, extra: NodeInput = {}): NodeInput => ({
+    id,
+    type: 'tracker',
+    label,
+    marks: [BASHING, LETHAL],
+    levels: HEALTH_LEVELS,
+    valueColumn: { title: 'Penalty', show: true },
+    columns: [{ id: 'damage', kind: 'marks', title: 'Damage' }],
+    ...extra,
+});
+
+const trackers = story(
+    'trackers',
+    'Trackers',
+    'Own trackers (spec 018): a click moves a box to the next mark, then back to empty. Each display, one to three and own marks, text and repeated columns, lengths, and out.',
+    ENGINE,
+    [
+        {
+            id: 'section-tracker-displays',
+            type: 'section',
+            title: 'Displays and marks',
+            columns: 2,
+            children: [
+                tracker('tracker-table', 'Health (table, two marks)'),
+                tracker('tracker-wod20', 'Health (WoD 20th, three marks, legend)', {
+                    marks: [BASHING, LETHAL, AGGRAVATED],
+                    legend: true,
+                }),
+                tracker('tracker-strip', 'Health (strip)', { display: 'strip' }),
+                tracker('tracker-line', 'Health (one line)', { display: 'line', total: false }),
+                tracker('tracker-stress', 'Stress (one own mark, bonuses)', {
+                    marks: [{ id: 'strained', name: 'Strained', symbol: '●', fill: '#0e7490' }],
+                    levels: [
+                        { id: 'calm', name: 'Calm', value: '' },
+                        { id: 'tense', name: 'Tense', value: '+1' },
+                        { id: 'shaken', name: 'Shaken', value: '+2' },
+                        { id: 'frantic', name: 'Frantic', value: '+3' },
+                        { id: 'broken', name: 'Broken', value: '' },
+                    ],
+                    valueColumn: { title: 'Bonus', show: true },
+                    columns: [
+                        { id: 'stress', kind: 'marks', title: 'Stress' },
+                        { id: 'trigger', kind: 'text', title: 'Trigger', covers: 3 },
+                    ],
+                }),
+                tracker('tracker-plain', 'Burden (one mark, no values)', {
+                    marks: [{ id: 'marked', name: 'Marked', symbol: '×', fill: 'text' }],
+                    valueColumn: { show: false },
+                    total: false,
+                    hideLabel: true,
+                }),
+            ],
+        },
+        {
+            id: 'section-tracker-copies',
+            type: 'section',
+            title: 'Copies and lengths',
+            children: [
+                tracker('tracker-members', 'Members (copies A, B, C…, lengths 3 / 5 / 7, out)', {
+                    columns: [
+                        { id: 'health', kind: 'marks', title: 'Health', copies: { max: 12 } },
+                    ],
+                    lengths: [
+                        { levels: ['hurt', 'injured', 'incapacitated'] },
+                        { levels: ['bruised', 'hurt', 'injured', 'wounded', 'incapacitated'] },
+                        { levels: HEALTH_LEVELS.map(({ id }) => id as string) },
+                    ],
+                    out: true,
+                }),
+            ],
+        },
+    ]
+);
+
 export const HANDWRITTEN_STORIES: readonly ElementStory[] = [
     containers,
     fields,
     catalogFields,
+    userCatalogFields,
     collections,
+    listEntries,
+    trackers,
 ];
 
 let allStories: readonly ElementStory[] | undefined;
 
 /** Every story, handwritten first; bound parts are built on first use (the registry is ready). */
 export function listElementStories(): readonly ElementStory[] {
+    systemRegistry.registerSampleCatalogs([SAMPLE_CATALOG]);
     allStories ??= [...HANDWRITTEN_STORIES, ...boundPartStories()];
     return allStories;
+}
+
+/** Where the fodder-group parity example lives: a Star Wars fodder group page. */
+export const PARITY_TARGET = { systemId: 'star-wars-wod', documentKind: 'group' } as const;
+export const PARITY_BUILT_IN_ID = 'parity-built-in';
+export const PARITY_OWN_ID = 'parity-own';
+
+/**
+ * The fodder group's health tracker rebuilt as an own tracker (spec 018, US7): the same levels,
+ * penalties, marks, member cap, lengths, total, and out, read from the registered binding rather
+ * than a system folder. Shown beside the shipped member track on one page.
+ */
+export function fodderParityTemplate(): CustomTemplate | undefined {
+    const binding = listDocumentBindings(PARITY_TARGET.systemId, PARITY_TARGET.documentKind).find(
+        (candidate): candidate is TrackBinding =>
+            candidate.kind === 'track' && candidate.members !== undefined
+    );
+    if (!binding?.members || !binding.variants) return undefined;
+    const levels = binding.levels.map((level) => ({
+        id: level.id,
+        name: level.translation?.message ?? level.label,
+        value: penaltyText(level.penalty),
+    }));
+    const marks = (binding.marks ?? []).map((mark, index) => ({
+        id: mark.id,
+        name: mark.translation?.message ?? mark.label,
+        symbol: index === 0 ? '╱' : '×',
+        fill: index === 0 ? 'secondary' : 'error',
+    }));
+    const lengths = trackVariantLengths(binding).map((length) => ({
+        levels: trackLevelsFor(binding, length).map(({ id }) => id),
+    }));
+    return CustomTemplateSchema.parse({
+        id: 'storybook-tracker-parity',
+        name: 'Storybook: fodder-group parity',
+        schemaVersion: 3,
+        ...PARITY_TARGET,
+        children: [
+            {
+                id: 'parity',
+                type: 'section',
+                title: 'Fodder group health: built-in and own tracker',
+                columns: 2,
+                children: [
+                    {
+                        id: PARITY_BUILT_IN_ID,
+                        type: 'primitive',
+                        bindingKey: binding.key,
+                        label: 'Members (built-in)',
+                    },
+                    {
+                        id: PARITY_OWN_ID,
+                        type: 'tracker',
+                        label: 'Members (own tracker)',
+                        marks,
+                        levels,
+                        valueColumn: { title: 'Penalty', show: true },
+                        columns: [
+                            {
+                                id: 'health',
+                                kind: 'marks',
+                                title: 'Health',
+                                copies: { max: binding.members.maxMembers },
+                            },
+                        ],
+                        lengths,
+                        total: true,
+                        out: true,
+                    },
+                ],
+            },
+        ],
+    });
+}
+
+const PARITY_MARKS = [
+    ['slash', 'slash', 'cross', 'empty', 'empty', 'empty', 'empty'],
+    ['cross', 'cross', 'cross', 'cross', 'slash', 'slash', 'slash'],
+] as const;
+
+/**
+ * The same marks on both parity trackers, at the full length: the members' damage in the
+ * document's data, and the own tracker's copies in the page value (by the full length's levels).
+ */
+export function paritySample(template: CustomTemplate): {
+    data: Record<string, unknown>;
+    values: Record<string, unknown>;
+} {
+    const own = template.children
+        .flatMap((node) => (node.type === 'section' ? node.children : [node]))
+        .find((node) => node.id === PARITY_OWN_ID);
+    const full = own?.type === 'tracker' ? own.lengths[own.lengths.length - 1]?.levels : undefined;
+    const levelIds = full ?? [];
+    return {
+        data: {
+            trackLength: levelIds.length,
+            members: PARITY_MARKS.map((marks, index) => ({
+                id: `member-${index + 1}`,
+                label: String.fromCharCode(65 + index),
+                health: { levels: [...marks] },
+            })),
+        },
+        values: {
+            [PARITY_OWN_ID]: {
+                tracker: 1,
+                length: own?.type === 'tracker' ? own.lengths.length - 1 : 0,
+                columns: {
+                    health: PARITY_MARKS.map((marks, index) => ({
+                        id: `member-${index + 1}`,
+                        marks: Object.fromEntries(
+                            levelIds.flatMap((levelId, slot) =>
+                                marks[slot] === 'empty' ? [] : [[levelId, marks[slot]]]
+                            )
+                        ),
+                    })),
+                },
+            },
+        },
+    };
 }

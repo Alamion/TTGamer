@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 
 import { DocsHelpLink } from '../../components/controls/DocsHelpLink';
 import {
@@ -13,8 +13,16 @@ import {
     DocumentSourceContext,
     type ScratchDocumentSource,
 } from '../../hooks/useDocumentSource';
-import { type ElementStory, listElementStories } from '../../storybook/stories';
+import {
+    type ElementStory,
+    fodderParityTemplate,
+    listElementStories,
+    PARITY_TARGET,
+    paritySample,
+} from '../../storybook/stories';
+import type { TemplateField } from '../../types/template';
 import { DeclarativeSheetView } from '../sheet/declarative/DeclarativeSheetView';
+import { ReferenceFieldControl } from '../sheet/declarative/fieldControls';
 
 /** A story's sandbox: the definition's first example (else a blank document), never stored. */
 function useStorySource(systemId: string, documentKind: string) {
@@ -105,5 +113,78 @@ export function DocsLinkVariants() {
                 </li>
             ))}
         </ul>
+    );
+}
+
+const REFERENCE_VARIANT_FIELD = {
+    id: 'reference-variants',
+    type: 'reference',
+    label: 'Allies',
+    targetKinds: ['character'],
+    multiple: true,
+    required: false,
+    compact: false,
+} as TemplateField;
+
+/**
+ * A reference's entry states (spec 017) on fixed sample documents, since the storybook pages
+ * list the reader's own documents: in the setting, outside it, and deleted.
+ */
+export function ReferenceEntryVariants() {
+    const [value, setValue] = useState<unknown>(['in-scope', 'out-of-scope', 'deleted']);
+    return (
+        <ReferenceFieldControl
+            field={REFERENCE_VARIANT_FIELD}
+            value={value}
+            onChange={setValue}
+            disabled={false}
+            previewSource
+            documentOptions={[
+                { value: 'in-scope', label: 'Mara Quill (this setting)', kind: 'character' },
+                { value: 'spare', label: 'Theo Vance (this setting)', kind: 'character' },
+                {
+                    value: 'out-of-scope',
+                    label: 'Kira Dune (another setting)',
+                    kind: 'character',
+                    inScope: false,
+                },
+            ]}
+        />
+    );
+}
+
+/**
+ * The fodder group's built-in health tracker beside its own-tracker rebuild (spec 018, US7), on
+ * one sample group with the same marks: switch lengths, mark, and shorten on both to compare.
+ */
+export function TrackerParity() {
+    const scratch = useMemo(() => {
+        const template = fodderParityTemplate();
+        const definition = findTemplateDefinition(
+            PARITY_TARGET.systemId,
+            PARITY_TARGET.documentKind
+        );
+        if (!template || !definition) return undefined;
+        const blank = blankDocument(PARITY_TARGET.systemId, definition);
+        const sample = paritySample(template);
+        const initial = {
+            ...blank,
+            data: { ...(blank.data as object), ...sample.data },
+            templateValues: sample.values as typeof blank.templateValues,
+        };
+        return { template, source: createScratchDocumentSource(initial, definition) };
+    }, []);
+    if (!scratch) {
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'The fodder-group parity example has no member track to compare',
+            details: { target: PARITY_TARGET },
+        });
+        return null;
+    }
+    return (
+        <ScratchProvider scratch={scratch.source}>
+            <DeclarativeSheetView template={scratch.template} embedded />
+        </ScratchProvider>
     );
 }

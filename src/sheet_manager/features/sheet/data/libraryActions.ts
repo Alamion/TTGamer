@@ -3,6 +3,14 @@ import { defaultPageKey, useDocumentTypeStore } from '../../../store/documentTyp
 import { useTemplateStore } from '../../../store/templateStore';
 import type { SystemRegistry } from '../../../systems/registry';
 import {
+    catalogOwnerKey,
+    type CatalogOwnerRef,
+    newUserCatalogId,
+    type UserCatalog,
+    type UserCatalogOwner,
+    UserCatalogSchema,
+} from '../../../systems/userCatalogs';
+import {
     newUserSettingId,
     newUserTypeId,
     type UserDocumentType,
@@ -13,6 +21,8 @@ import {
 } from '../../../systems/userTypes';
 import { SystemIdSchema } from '../../../types/document';
 import { type CustomTemplate, CustomTemplateSchema } from '../../../types/template';
+import { TEMPLATE_LIMITS } from '../../../types/templateLimits';
+import { catalogUsage } from './catalogEdit';
 import type { SettingRef } from './libraryPages';
 import type { LibraryNode, PageNode, SettingNode, TypeNode } from './libraryTree';
 
@@ -30,6 +40,8 @@ export interface LibraryWrites {
     documents?: DocumentRelocation[];
     /** `null` clears the choice. */
     defaultPages?: Record<string, string | null>;
+    saveCatalogs?: UserCatalog[];
+    removeCatalogs?: string[];
 }
 
 export interface LibraryState {
@@ -37,6 +49,7 @@ export interface LibraryState {
     settings: Readonly<Record<string, UserSetting>>;
     templates: readonly CustomTemplate[];
     defaultPages: Readonly<Record<string, string>>;
+    catalogs: Readonly<Record<string, UserCatalog>>;
     documents: ReadonlyArray<{
         id: string;
         systemId: string;
@@ -47,11 +60,12 @@ export interface LibraryState {
 }
 
 export function readLibraryState(): LibraryState {
-    const { types, settings, defaultPages } = useDocumentTypeStore.getState();
+    const { types, settings, defaultPages, catalogs } = useDocumentTypeStore.getState();
     return {
         types,
         settings,
         defaultPages,
+        catalogs,
         templates: useTemplateStore.getState().templates,
         documents: useDocumentStore.getState().documents,
     };
@@ -77,6 +91,8 @@ export function mergeWrites(...all: LibraryWrites[]): LibraryWrites {
     }
     merged.documents = [...documents.values()];
     merged.defaultPages = Object.assign({}, ...all.map((w) => w.defaultPages ?? {}));
+    merged.saveCatalogs = byId(all.map((w) => w.saveCatalogs));
+    merged.removeCatalogs = ids(all.map((w) => w.removeCatalogs));
     return merged;
 }
 
@@ -86,12 +102,15 @@ export function applyLibraryWrites(writes: LibraryWrites): void {
     const saveTypes = (writes.saveTypes ?? []).map((t) => UserDocumentTypeSchema.parse(t));
     const saveTemplates = (writes.saveTemplates ?? []).map((t) => CustomTemplateSchema.parse(t));
     const pageChoices = Object.entries(writes.defaultPages ?? {});
+    const saveCatalogs = (writes.saveCatalogs ?? []).map((c) => UserCatalogSchema.parse(c));
     if (
         saveSettings.length ||
         saveTypes.length ||
         writes.removeSettings?.length ||
         writes.removeTypes?.length ||
-        pageChoices.length
+        pageChoices.length ||
+        saveCatalogs.length ||
+        writes.removeCatalogs?.length
     ) {
         useDocumentTypeStore.setState((state) => {
             const settings = { ...state.settings };
@@ -105,7 +124,10 @@ export function applyLibraryWrites(writes: LibraryWrites): void {
                 if (value) defaultPages[key] = value;
                 else delete defaultPages[key];
             }
-            return { settings, types, defaultPages };
+            const catalogs = { ...state.catalogs };
+            for (const id of writes.removeCatalogs ?? []) delete catalogs[id];
+            for (const catalog of saveCatalogs) catalogs[catalog.id] = catalog;
+            return { settings, types, defaultPages, catalogs };
         });
     }
     if (saveTemplates.length || writes.removeTemplates?.length) {
@@ -162,6 +184,49 @@ export function ownerForSetting(ref: SettingRef): UserTypeOwner | undefined {
     }
 }
 
+/**
+ * The owner a catalog gets on a library node (spec 015, R2): a ruleset owns catalogs its settings
+ * share; a setting owns its own. Unavailable places own nothing new.
+ */
+export function catalogOwnerFor(node: LibraryNode): UserCatalogOwner | undefined {
+    if (node.unavailable) return undefined;
+    if (node.level === 'ruleset') return { rulesetId: SystemIdSchema.parse(node.systemId) };
+    if (node.level !== 'setting') return undefined;
+    if (node.ref.kind === 'rules') return { systemId: SystemIdSchema.parse(node.ref.systemId) };
+    return ownerForSetting(node.ref);
+}
+
+/** How many catalogs one owner already has. */
+export function catalogsOfOwner(owner: CatalogOwnerRef, state: Pick<LibraryState, 'catalogs'>) {
+    const key = catalogOwnerKey(owner);
+    return Object.values(state.catalogs).filter(
+        (catalog) => catalogOwnerKey(catalog.owner) === key
+    );
+}
+
+/** A new, empty catalog; `undefined` when the owner is at its limit (FR-009). */
+export function createCatalog(
+    owner: UserCatalogOwner,
+    name: string,
+    state: Pick<LibraryState, 'catalogs'>,
+    description = ''
+): UserCatalog | undefined {
+    if (catalogsOfOwner(owner, state).length >= TEMPLATE_LIMITS.catalogsPerOwner) return undefined;
+    const stamp = now();
+    return withDescription<UserCatalog>(
+        {
+            id: newUserCatalogId(),
+            name: name.trim(),
+            owner,
+            columns: [],
+            entries: [],
+            createdAt: stamp,
+            updatedAt: stamp,
+        },
+        description
+    );
+}
+
 /** A new document type: never a page (FR-006); its documents show stored values until one. */
 export function createType(
     setting: SettingRef,
@@ -208,6 +273,15 @@ export function renameItem(
         const template = state.templates.find(({ id }) => id === templateId);
         if (!template) return {};
         return { saveTemplates: [withDescription({ ...template, name: trimmed }, description)] };
+    }
+    if (node.level === 'catalog' && node.ref.kind === 'user') {
+        const catalog = state.catalogs[node.ref.catalogId];
+        if (!catalog) return {};
+        return {
+            saveCatalogs: [
+                withDescription({ ...catalog, name: trimmed, updatedAt: stamp }, description),
+            ],
+        };
     }
     return {};
 }
@@ -259,6 +333,10 @@ export function pageDepartureWrites(
 export interface DeletePlan {
     documentCount: number;
     writes: LibraryWrites;
+    /** Catalogs that go with a deleted setting (FR-004). */
+    catalogs: UserCatalog[];
+    /** Templates bound to a deleted catalog: they fall back to manual choice (FR-003). */
+    boundTemplates: CustomTemplate[];
 }
 
 /** Deleting keeps every document (FR-010); what it removes depends on the level. */
@@ -279,10 +357,14 @@ export function deletePlan(node: LibraryNode, state: LibraryState): DeletePlan |
             ({ definitionId, metadata }) =>
                 metadata.settingId === settingId || ownTypes.includes(definitionId)
         );
+        const catalogs = catalogsOfOwner({ settingId }, state);
         return {
             documentCount: affected.length,
+            catalogs,
+            boundTemplates: [],
             writes: {
                 removeSettings: [settingId],
+                removeCatalogs: catalogs.map(({ id }) => id),
                 removeTypes: ownTypes,
                 removeTemplates: removedTemplates,
                 // Nothing may point at the deleted setting (edge case U1).
@@ -308,6 +390,8 @@ export function deletePlan(node: LibraryNode, state: LibraryState): DeletePlan |
         return {
             documentCount: state.documents.filter(({ definitionId }) => definitionId === typeId)
                 .length,
+            catalogs: [],
+            boundTemplates: [],
             writes: {
                 removeTypes: [typeId],
                 removeTemplates: state.templates
@@ -321,7 +405,19 @@ export function deletePlan(node: LibraryNode, state: LibraryState): DeletePlan |
         const follow = pageDepartureWrites(templateId, state);
         return {
             documentCount: follow.documents?.length ?? 0,
+            catalogs: [],
+            boundTemplates: [],
             writes: { ...follow, removeTemplates: [templateId] },
+        };
+    }
+    if (node.level === 'catalog' && node.ref.kind === 'user') {
+        const catalogId = node.ref.catalogId;
+        return {
+            // Templates keep their binding and degrade to manual choice; documents keep values.
+            documentCount: 0,
+            catalogs: [],
+            boundTemplates: catalogUsage(catalogId, state.templates).templates,
+            writes: { removeCatalogs: [catalogId] },
         };
     }
     return undefined;

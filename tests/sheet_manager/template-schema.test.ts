@@ -364,3 +364,40 @@ describe('feature 007 schema additions', () => {
         ).toBe(true);
     });
 });
+
+describe('rating settings (spec 014)', () => {
+    const rating = (extra: Record<string, unknown>) =>
+        CustomTemplateSchema.safeParse({
+            id: 'ratings',
+            name: 'Ratings',
+            documentKind: 'character',
+            schemaVersion: TEMPLATE_SCHEMA_VERSION,
+            children: [{ id: 'renown', type: 'rating', label: 'Renown', max: 5, ...extra }],
+        });
+
+    it('reads the retired boxes style as dots', () => {
+        const parsed = rating({ presentation: 'boxes' });
+        expect(parsed.success && parsed.data.children[0]).toMatchObject({ presentation: 'dots' });
+        expect(rating({ presentation: 'stars' }).success).toBe(false);
+    });
+
+    it('round-trips the trait-row switches and rejects duplicate flags', () => {
+        const parsed = rating({
+            textInput: true,
+            showNumbers: true,
+            dice: true,
+            flags: ['specialization', 'experienced'],
+        });
+        expect(parsed.success && parsed.data.children[0]).toMatchObject({
+            textInput: true,
+            showNumbers: true,
+            dice: true,
+            flags: ['specialization', 'experienced'],
+        });
+        const duplicate = rating({ flags: ['practiced', 'practiced'] });
+        expect(duplicate.success).toBe(false);
+        expect(
+            duplicate.success ? [] : duplicate.error.issues.map(({ message }) => message)
+        ).toContain('Rating flags must be unique');
+    });
+});

@@ -3,6 +3,7 @@ import { type ReactNode, useMemo } from 'react';
 import { TickBox, type TickValue } from '../../components/dialogs/library/TickBox';
 import { TreeRow, type TreeRowProps } from '../../components/dialogs/library/TreeRow';
 import { systemRegistry } from '../../systems';
+import { type UserCatalog, UserCatalogSchema } from '../../systems/userCatalogs';
 import type { UserDocumentType, UserSetting } from '../../systems/userTypes';
 import { CustomTemplateSchema } from '../../types/template';
 import {
@@ -39,6 +40,16 @@ const PAGE = CustomTemplateSchema.parse({
     children: [{ id: 'motto', type: 'text', label: 'Motto' }],
 });
 
+const CATALOG: UserCatalog = UserCatalogSchema.parse({
+    id: 'user-catalog-story001',
+    name: 'Relics',
+    owner: { settingId: SETTING.id },
+    columns: [{ id: 'c-power001', name: 'Power', type: 'number' }],
+    entries: [{ id: 'e-bonefl01', name: 'Bone Flute', values: { 'c-power001': 2 } }],
+    createdAt: STAMP,
+    updatedAt: STAMP,
+});
+
 /** A sample library built like the real one, never read from or written to the stores. */
 function useSampleTree() {
     return useMemo(() => {
@@ -63,6 +74,7 @@ function useSampleTree() {
                 : {},
             defaultPages: {},
             counts: countDocuments([]),
+            catalogs: { [CATALOG.id]: CATALOG },
         });
     }, []);
 }
@@ -129,6 +141,10 @@ export function LibraryStorybook() {
                 <Row node={node(`s:user:${SETTING.id}`)} depth={2} expanded />
                 <Row node={node(`t:user:${TYPE.id}`)} depth={3} expanded />
                 <Row node={node(`p:user:${PAGE.id}`)} depth={4} />
+            </Story>
+            <Story title="catalogs">
+                <Row node={node(`c:user:${CATALOG.id}`)} depth={3} />
+                <Row node={node('c:star-wars-wod:melee-weapons')} depth={3} />
             </Story>
             <Story title="states">
                 <Row node={node(`s:user:${SETTING.id}`)} depth={2} selected tabbable />

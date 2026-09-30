@@ -12,12 +12,6 @@ primitives:
     labelOverride: Своё название
     labelOverridePlaceholder: Как у привязки
     compact: Компактно (формат brief)
-    trackLevels: Уровни
-    trackLevelName: 'Название уровня {index}'
-    trackLayout: Вид трека
-    trackLayoutDefault: По умолчанию
-    trackLayoutTable: Таблица уровней
-    trackLayoutStrip: Строка клеток
     presets: Предустановленные записи
     presetLabel: Название записи
     presetValue: Значение по умолчанию
@@ -45,6 +39,7 @@ editor:
     sectionTitle: Заголовок секции
     blockTitle: Заголовок блока (необязательно)
     fieldLabel: Название поля
+    columnSettings: 'Настройки «{label}»'
     valueKeyLabel: Общий ключ значения (одинаковый ключ = одно значение между шаблонами)
 
     fieldDescription: Подсказка (необязательно)
@@ -64,9 +59,15 @@ editor:
     accentPrimary: Основной акцент
     accentSecondary: Дополнительный акцент
     ratingDots: Точки
-    ratingBoxes: Клетки
     ratingNumber: Число
+    ratingTextInput: Текстовое поле (например, специализация)
+    ratingShowNumbers: Показывать текущее / максимум
+    ratingDice: Значок кубика (бросок рейтинга)
+    ratingFlags: 'Флаги:'
+    ratingFlagsHint: S, P и E меняют бросок только там, где их учитывает правило бросков системы (Star Wars — да, V5 — нет).
     referenceKinds: Разрешённые типы документов
+    referenceKindUnavailable: '{type} (недоступен)'
+    referenceKindOwn: '{type} (ваш)'
     multiple: Несколько значений
     hideUnselected: Скрывать невыбранные варианты
     moveUp: Переместить выше
@@ -104,7 +105,7 @@ editor:
     paletteList: Список
     paletteListHint: 'Записи добавляются по одной: свои, навыки, достоинства, снаряжение…'
     paletteTracker: Трекер
-    paletteTrackerHint: Уровни здоровья или повреждений со штрафами
+    paletteTrackerHint: 'Клетки с отметками по уровням: здоровье, стресс или любая другая ноша'
     valueSource: Где хранится значение
     sourceCustom: Своё значение (в шаблоне)
     sourceTraits: Характеристики
@@ -143,6 +144,9 @@ editor:
     showTitle: Показывать заголовок
     hiddenTitleHint: Группу без видимого заголовка нельзя свернуть.
     showLabel: Показывать подпись
+    labelPosition: Положение подписи
+    labelTop: Над значением
+    labelLeft: Слева от значения
     placeholderText: Текст-подсказка (необязательно)
     formulaPrefix: Перед значением (например, ×)
     formulaSuffix: После значения (например, м)
@@ -153,6 +157,21 @@ editor:
     minFromPlaceholder: например, self-control
     listShowTitle: Показывать заголовок списка
     listFramed: Рамка вокруг списка
+    listNamed: У записей есть имена
+    listEntry: Запись
+    listCatalogNeedsNames: Подсказкам нужны имена записей.
+    listChangeTitle: Изменить записи списка?
+    listChangeValues:
+        message: '{title}: {count} сохранённое значение в {documents} больше не будет показано.|{title}: {count} сохранённых значения в {documents} больше не будут показаны.|{title}: {count} сохранённых значений в {documents} больше не будут показаны.'
+        plural: true
+    listChangeSheets:
+        message: '{count} листе|{count} листах|{count} листах'
+        plural: true
+    listChangeNames:
+        message: '{title}: {count} имя записи больше не будет показано.|{title}: {count} имени записей больше не будут показаны.|{title}: {count} имён записей больше не будут показаны.'
+        plural: true
+    listChangeNote: Значения остаются сохранёнными; если вернуть прежний тип записи, они снова появятся — кроме записей, изменённых за это время.
+    listChangeConfirm: Всё равно сохранить
     invalidFormula: Неверная формула в «{id}» — проверьте выражение.
     unknownCoordinate: Неизвестное значение «{id}» в формуле.
     circularDependency: 'Обнаружена циклическая зависимость: {id}'
@@ -161,6 +180,7 @@ editor:
     unknownFillTarget: Автозаполнение ссылается на несуществующее поле «{id}».
     unknownLabelMessage: Неизвестная ссылка на перевод «{id}».
     invalidDocsLink: 'Ссылка на документацию «{id}» — не путь в документации сайта (/docs/…) и не адрес https://.'
+    referenceTargetUnavailable: 'Ссылка «{field}» может указывать на тип «{type}», которого нет в этом сеттинге.'
     depthMessage: Достигнут предел вложенности — максимум {limit} уровней.
     countMessage: Достигнут предел элементов — максимум {limit}.
     newSection: Новая секция
@@ -203,7 +223,100 @@ editor:
     shortcutsHint: 'Клавиши: Alt+↑/↓ — переместить · Alt+←/→ — из группы или в группу · Alt+Shift+←/→ — колонка · Ctrl+D — дублировать · Delete — удалить · Ctrl+Z — отменить · Ctrl+Shift+Z — повторить'
     coordinateCurrent: '{label} (текущее)'
     coordinateMax: '{label} (максимум)'
+tracker:
+    source: Источник
+    sourceOwn: Свои значения
+    display: Вид
+    displayTable: Таблица
+    displayStrip: Полоса
+    displayLine: Одна строка
+    displayHint: 'Одна строка — маленькая полоса для кратких страниц: подпись в строке, без кнопок длины.'
+    marks: Отметки
+    marksHint: Щелчок переводит клетку к следующей отметке в этом порядке, затем снова к пустой; более поздняя отметка считается тяжелее.
+    marksBuiltIn: Число отметок задаёт игра; их можно переименовать и перекрасить.
+    startFrom: Начать с…
+    setOne: Одна отметка
+    setTwo: Две отметки (╱ ×)
+    setThree: Три отметки, WoD 20th (╱ × ✱)
+    markMarked: Отмечено
+    markBashing: Дробящий
+    markLethal: Летальный
+    markAggravated: Аггравированный
+    newMark: 'Отметка {n}'
+    markName: 'Название отметки {n}'
+    markSymbol: 'Символ отметки {n}'
+    markColors: 'Цвет: {name}'
+    markOwnColor: '{name}: свой цвет'
+    colorSecondary: Янтарный
+    colorError: Красный
+    colorTertiary: Фиолетовый
+    colorSuccess: Зелёный
+    colorText: Чернила
+    addMark: Добавить отметку
+    moveMarkUp: 'Переместить отметку {n} выше'
+    moveMarkDown: 'Переместить отметку {n} ниже'
+    removeMark: 'Удалить отметку {n}'
+    levels: Уровни
+    levelCount: '{count} из {max}'
+    valueTitle: Заголовок столбца значений
+    valueShow: Показывать
+    defaultValueTitle: Штраф
+    levelName: 'Название уровня {n}'
+    levelValue: 'Значение уровня {n}'
+    newLevel: 'Уровень {n}'
+    addLevel: Добавить уровень
+    moveLevelUp: 'Переместить уровень {n} выше'
+    moveLevelDown: 'Переместить уровень {n} ниже'
+    removeLevel: 'Удалить уровень {n}'
+    levelsBuiltIn: Число и порядок уровней задаёт игра; пустые названия и значения берутся из игры.
+    levelsLegacy: Задано старой страницей
+    levelsUseGame: Вернуть уровни игры
+    columns: Столбцы
+    column: 'Столбец {n}'
+    columnBuiltIn: Отметки — из документа
+    columnsBuiltInHint: Столбцы, добавленные к встроенному трекеру, хранят значения на странице.
+    columnKind: Вид столбца
+    columnMarks: Отметки
+    columnText: Текст
+    columnTitle: Заголовок столбца
+    covers: Охватывает
+    coversAll: Все уровни
+    coversFirst: 'Первые {n}'
+    copies: Читатели добавляют копии (A, B, C…)
+    copiesMax: до
+    copiesMaxLabel: Наибольшее число копий
+    addMarksColumn: Столбец отметок
+    addTextColumn: Текстовый столбец
+    removeColumn: 'Удалить столбец {n}'
+    defaultMarksTitle: Урон
+    defaultTextTitle: Заметки
+    lengths: Читатели меняют длину
+    lengthsHint: Каждая длина перечисляет уровни, которые показывает. При укорочении скрытые отметки после вопроса сворачиваются в новый последний уровень (побеждает самая тяжёлая).
+    lengthColumn: 'Длина {n}'
+    lengthLevel: '{level} в длине {n}'
+    lengthShows: Показывает
+    addLength: Длина
+    removeLength: 'Удалить длину {n}'
+    reading: Чтение отметок
+    total: 'Итоговая строка: {value} самого глубокого отмеченного уровня'
+    out: Отмечать копию выбывшей, когда отмечен её последний уровень
+    legend: Подписывать отметки под трекером
+    defaultLabel: Здоровье
+    issueLengthEmpty: 'Трекер «{id}»: длина {n} не показывает ни одного уровня.'
+    issueCovers: 'Трекер «{id}»: столбец охватывает все уровни или больше; выберите «Все уровни».'
+    changeTitle: Скрыть сохранённые значения трекера?
+    changeNote: Значения останутся сохранёнными, но удалённые уровни, отметки и столбцы при повторном добавлении получат новые идентификаторы, поэтому эти значения больше не появятся.
+    changeMarks:
+        message: '{title}: {count} сохранённая отметка в {documents} больше не будет показана.|{title}: {count} сохранённые отметки в {documents} больше не будут показаны.|{title}: {count} сохранённых отметок в {documents} больше не будут показаны.'
+        plural: true
+    changeTexts:
+        message: '{title}: {count} сохранённая заметка в {documents} больше не будет показана.|{title}: {count} сохранённые заметки в {documents} больше не будут показаны.|{title}: {count} сохранённых заметок в {documents} больше не будут показаны.'
+        plural: true
+    changeCopies:
+        message: '{title}: {count} копия в {documents} больше не будет показана.|{title}: {count} копии в {documents} больше не будут показаны.|{title}: {count} копий в {documents} больше не будут показаны.'
+        plural: true
 fieldTypes:
+    tracker: Трекер
     builtIn: Встроенная часть страницы
     text: Текст
     number: Число
@@ -267,7 +380,12 @@ page:
     formulaReasonCircular: циклическая зависимость
     formulaReasonDivision: деление на ноль
     formulaReasonNonNumeric: одно из значений — не число
+    formulaReasonInvalid: формула записана с ошибкой
     formulaClamped: Ограничено связанным значением
+    catalogEmpty: Записей пока нет
+    ratingText: '{label}: текст'
+    ratingClamped: 'Сохранённое значение {value} выше текущего максимума'
+    ratingMaximum: 'Максимум {max}'
     chooseOptions: Выбрать варианты
     chooseOptionsDone: Готово
     noneSelected: Ничего не выбрано
@@ -276,8 +394,19 @@ page:
     imageUrl: URL изображения
     imageRemove: Удалить изображение
     imageAlt: Изображение шаблона
+listEntry:
+    limit: Не больше {max} записей
+    remove: Удалить «{name}»
+    removeNth: Удалить запись {n} списка «{list}»
+    nth: '{list}, запись {n}'
+    name: '{list} — имя'
 binding:
     attach: Привязать каталог
+    groupSetting: Этот сеттинг
+    groupShipped: 'Каталоги: {system}'
+    listCatalog: Подсказки из каталога
+    valueFrom: Значение из
+    none: Нет
     catalog: Каталог
     fills: Автозаполнение
     fillTarget: Записывать в
@@ -304,21 +433,18 @@ cohort:
     removeMember: Удалить участника {label}
     memberLabel: Метка участника
     defeated: Выведен из боя
-    penalty: Штраф
-    level: Уровень
     maxMembersReached: В группе может быть не больше {count} участников.
     removeTitle: Удалить раненого участника?
     removeDescription: У участника {label} отмечены повреждения. Удаление сотрёт их.
     shortenTitle: Сократить шкалу здоровья?
     shortenDescription: У некоторых участников есть отметки на скрываемых уровнях. Они перейдут на последний оставшийся уровень.
-    confirm: Подтвердить
-    cancel: Отмена
 reference:
     search: Введите имя для поиска
     noMatches: Подходящих документов нет
     remove: Убрать «{title}»
     open: Открыть «{title}»
     missing: Связанный документ больше не существует
+    outOfScope: вне этого сеттинга
 entities:
     identification: Идентификация
     details: Подробности

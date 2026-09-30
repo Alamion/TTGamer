@@ -7,13 +7,20 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    --tw-translate-x: 0;
-    --tw-translate-y: 0;
-    --tw-rotate: 0;
-    --tw-skew-x: 0;
-    --tw-skew-y: 0;
-    --tw-scale-x: 1;
-    --tw-scale-y: 1;
+    // Tailwind's preflight resets the transform variables on every element. Set only on the
+    // root, they inherit: a dialog centred with -translate-1/2 shifted a rotated icon inside it.
+    &,
+    *,
+    ::before,
+    ::after {
+        --tw-translate-x: 0;
+        --tw-translate-y: 0;
+        --tw-rotate: 0;
+        --tw-skew-x: 0;
+        --tw-skew-y: 0;
+        --tw-scale-x: 1;
+        --tw-scale-y: 1;
+    }
 
     input[type='text'],
     input[type='email'],

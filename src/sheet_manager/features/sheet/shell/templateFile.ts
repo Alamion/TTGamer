@@ -1,9 +1,13 @@
 import { reportSheetIssue } from '../../../diagnostics';
 import { exportNotices, resolveSystemPolicies, systemRegistry } from '../../../systems';
+import { isUserCatalogId } from '../../../systems/userCatalogs';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
 import { CustomTemplateSchema, isTemplateField, walkTemplateNodes } from '../../../types/template';
-import { CATALOG_BINDINGS } from '../data/catalogBindings';
-import { validateTemplateReferences } from '../data/templateReferences';
+import { getCatalogBinding } from '../data/catalogBindings';
+import {
+    type TemplateReferenceOptions,
+    validateTemplateReferences,
+} from '../data/templateReferences';
 
 /**
  * Template file transfer boundary: a self-describing JSON wrapper around the declarative
@@ -70,7 +74,10 @@ function stripUnavailableBindings(template: CustomTemplate): {
             if (
                 field.type !== 'select' ||
                 !field.binding ||
-                CATALOG_BINDINGS.has(field.binding.catalogId)
+                getCatalogBinding(field.binding.catalogId) !== undefined ||
+                // A user catalog may arrive with the same library file, or later (spec 015): the
+                // binding stays and degrades to manual choice until it does.
+                isUserCatalogId(field.binding.catalogId)
             ) {
                 return field;
             }
@@ -130,12 +137,15 @@ export function parseTemplateFile(input: string): ParsedTemplateFile {
  * templates referencing unavailable catalogs still import with those fields degraded to manual
  * choice (FR-21, 003); remaining broken references are reported and degrade at render.
  */
-export function resolveImportedTemplate(template: CustomTemplate): {
+export function resolveImportedTemplate(
+    template: CustomTemplate,
+    options?: TemplateReferenceOptions
+): {
     template: CustomTemplate;
     degradedFields: readonly string[];
 } {
     const stripped = stripUnavailableBindings(template);
-    for (const issue of validateTemplateReferences(stripped.template)) {
+    for (const issue of validateTemplateReferences(stripped.template, options)) {
         reportSheetIssue({
             code: 'template-reference-invalid',
             message: 'Imported template references something this build does not provide',

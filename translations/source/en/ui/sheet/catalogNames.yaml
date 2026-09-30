@@ -1,0 +1,20 @@
+# Display names of shipped catalogs, keyed by catalog id (library tree, editor catalog picker).
+armor: Armor
+backgrounds: Backgrounds
+creatures: Creatures
+force-powers: Force powers
+force-skills: Force skills
+melee-weapons: Melee weapons
+merits-flaws: Merits and flaws
+ranged-weapons: Ranged weapons
+species: Species
+tools-gear: Tools and gear
+vehicles: Vehicles
+v5-hunter-advantages: Advantages
+v5-hunter-armor: Armor
+v5-hunter-creeds: Creeds
+v5-hunter-drives: Drives
+v5-hunter-edges: Edges
+v5-hunter-gear: Gear
+v5-hunter-perks: Perks
+v5-hunter-weapons: Weapons

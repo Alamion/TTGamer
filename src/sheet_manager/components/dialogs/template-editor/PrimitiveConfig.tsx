@@ -1,14 +1,15 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { NumberInput } from '@site/src/shared/components/NumberInput';
 
 import type { PrimitiveNode, TemplateNode } from '../../../types/template';
+import { builtInSettings, builtInSettingsUpdate } from './builtInTrackerSettings';
 import type { NodeUpdates } from './draft';
 import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
-import { ListSourceSelect, ValueSourceSelect } from './SourceControls';
+import { ListSourceSelect, TrackerSourceSelect, ValueSourceSelect } from './SourceControls';
 import { TermHintControl } from './TermHintControl';
+import { TrackerSettings } from './TrackerSettings';
 
 const primitives = uiMessages.sheet.templates.primitives;
 const editor = uiMessages.sheet.templates.editor;
@@ -49,7 +50,9 @@ export function PrimitiveConfig({
 
             {descriptor?.kind === 'equipment' ? (
                 <ListSourceSelect node={node} onReplace={onReplace} />
-            ) : descriptor?.kind === 'track' || descriptor?.kind === 'rows' || !descriptor ? (
+            ) : descriptor?.kind === 'track' ? (
+                <TrackerSourceSelect node={node} onReplace={onReplace} />
+            ) : descriptor?.kind === 'rows' || !descriptor ? (
                 <label className="grid gap-1 text-xs text-textSecondary">
                     {t(descriptor ? editor.trackerSource : primitives.binding)}
                     <select
@@ -84,14 +87,16 @@ export function PrimitiveConfig({
                 />
             </label>
 
-            <label className="flex items-center gap-2 text-xs text-textSecondary">
-                <input
-                    type="checkbox"
-                    checked={node.compact}
-                    onChange={(event) => update({ compact: event.target.checked })}
-                />
-                {t(primitives.compact)}
-            </label>
+            {descriptor?.kind !== 'track' && (
+                <label className="flex items-center gap-2 text-xs text-textSecondary">
+                    <input
+                        type="checkbox"
+                        checked={node.compact}
+                        onChange={(event) => update({ compact: event.target.checked })}
+                    />
+                    {t(primitives.compact)}
+                </label>
+            )}
 
             <ToggleRow
                 checked={!node.hideLabel}
@@ -162,72 +167,10 @@ export function PrimitiveConfig({
             )}
 
             {descriptor?.kind === 'track' && (
-                <label className="grid gap-1 text-xs text-textSecondary">
-                    {t(primitives.trackLayout)}
-                    <select
-                        value={node.trackLayout ?? ''}
-                        onChange={(event) =>
-                            update({
-                                trackLayout:
-                                    event.target.value === 'table' || event.target.value === 'strip'
-                                        ? event.target.value
-                                        : undefined,
-                            })
-                        }
-                        aria-label={t(primitives.trackLayout)}
-                        className={inputClasses}
-                    >
-                        <option value="">{t(primitives.trackLayoutDefault)}</option>
-                        <option value="table">{t(primitives.trackLayoutTable)}</option>
-                        <option value="strip">{t(primitives.trackLayoutStrip)}</option>
-                    </select>
-                </label>
-            )}
-
-            {descriptor?.kind === 'track' && !descriptor.length && (
-                <div className="grid gap-2">
-                    <label className="grid gap-1 text-xs text-textSecondary">
-                        {t(primitives.trackLevels)}
-                        <NumberInput
-                            min={0}
-                            max={20}
-                            step={1}
-                            value={node.track?.levels ?? 0}
-                            label={t(primitives.trackLevels)}
-                            onChange={(value) => {
-                                const count = value ?? 0;
-                                if (count === 0) {
-                                    update({ track: undefined });
-                                    return;
-                                }
-                                const names = node.track?.names ?? [];
-                                const nextNames = Array.from(
-                                    { length: count },
-                                    (_, index) => names[index] ?? `Level ${index + 1}`
-                                );
-                                update({ track: { levels: count, names: nextNames } });
-                            }}
-                            className={`${inputClasses} w-20`}
-                        />
-                    </label>
-                    {node.track?.names.map((name, index) => (
-                        <label
-                            key={`${node.id}-track-${index}`}
-                            className="grid gap-1 text-xs text-textSecondary"
-                        >
-                            {t(primitives.trackLevelName, { index: index + 1 })}
-                            <input
-                                value={name}
-                                onChange={(event) => {
-                                    const names = [...node.track!.names];
-                                    names[index] = event.target.value;
-                                    update({ track: { levels: node.track!.levels, names } });
-                                }}
-                                className={inputClasses}
-                            />
-                        </label>
-                    ))}
-                </div>
+                <TrackerSettings
+                    {...builtInSettings(node, descriptor, () => update({ track: undefined }))}
+                    onChange={(change) => update(builtInSettingsUpdate(node, descriptor, change))}
+                />
             )}
         </div>
     );

@@ -39,7 +39,7 @@ export function ConfirmDialog({
                             <Dialog.Title className="text-lg font-semibold text-textPrimary">
                                 {title}
                             </Dialog.Title>
-                            <Dialog.Description className="mt-2 text-sm text-textSecondary">
+                            <Dialog.Description className="mt-2 whitespace-pre-line text-sm text-textSecondary">
                                 {description}
                             </Dialog.Description>
                         </div>

@@ -1,5 +1,79 @@
 # Changelog
 
+## v3.16.0
+
+### Minor feat
+
+- **Build your own trackers (spec 018, T-078)**: a new Tracker field works on any page, including your own document types: levels with names and values (penalties, bonuses, or words), boxes the reader marks with a click, a total row with the value of the deepest marked level, and one display setting — table, strip, or one small line — that replaces "Compact" and the track view
+- **Choose the marks**: up to five marks, each with a name, a one- or two-character symbol, and a fill from the app's colors (following the light and dark themes) or your own color; start from one mark, two (bashing ╱, lethal ×), or three as in WoD 20th with aggravated ✱ in violet; a legend under the tracker can name them (off by default, on built-in trackers too)
+- **Columns and copies**: add marks or text columns that cover all levels or the first few, and let readers add copies A, B, C… up to a maximum, like the members of a fodder group; readers can also switch between lengths you define, with marks folded into the new last level when a tracker gets shorter
+- **Built-in trackers take the same settings**: game trackers (health, damage, V5 health and willpower, member tracks) take the display, level names and values, mark names and colors, extra columns stored with the page, and the total row; the game keeps its levels, marks, lengths, and members, and names its marks (bashing and lethal, superficial and aggravated)
+- **Star Wars health shows its penalty**: the Star Wars character and droid pages show the total penalty row under the health and damage table
+- **Changing a tracker asks first**: saving a tracker without some of its levels, marks, columns, or copies says how many stored marks, notes, and copies it would stop showing
+
+## v3.15.0
+
+### Minor feat
+
+- **Document references stay in their setting (spec 017, T-075)**: a document reference offers the kinds of its page's own setting — the setting's kinds, the ruleset's shared kinds such as the V5 mortal, and the kinds you made there or for the whole ruleset — each once under its own name; the sheet's search offers only documents of that setting, so a Hunter sheet no longer lists Star Wars characters
+- **Earlier links are kept**: a reference saved before that points at a document of another setting still shows its title with "outside this setting", opens it, and can be removed
+- **Kinds the setting no longer has are marked**: a checked kind that the page's setting does not offer stays in the template, is marked "(unavailable)", and appears in the template's problems until you uncheck it
+
+### Fix
+
+- **Expand arrows turn in place**: the arrow of a library row no longer jumps to the top-left corner when the row opens; library rows, sheet sections, field groups, and item cards now turn their arrow smoothly like the documentation sidebar (no animation when the system asks for reduced motion)
+
+## v3.14.1
+
+### Fix
+
+- **Derived values name the right problem (T-076)**: a formula that reads a missing value says which value is unavailable instead of "circular dependency"; a formula that reads text or a toggle says a value is not a number; a formula that reads itself is a circular dependency; a formula that does not parse says so instead of naming an empty value
+
+## v3.14.0
+
+### Minor feat
+
+- **Choose what a list entry is (spec 016, T-077)**: a custom list in a template sets up one entry — text, number, toggle, choice, rating, resource, document reference, or image — with the same settings as a field of that type, and every entry the reader adds is a copy of it: contacts with a note, bonds with a current and maximum value, rituals with a level, mementos as pictures
+- **Named or unnamed entries**: a list can ask for a name per entry (like "Firearms ●●●") or show just the field, for lists of notes or pictures; presets keep their names and numbers on named lists
+- **Every entry type can be removed**: each entry has its own remove button at the end of its row, or above a picture or a multi-line note, reachable from the keyboard and never covering the field
+- **Catalogs fill any entry type**: a list's catalog copies a number column into a number, a rating, or a resource's current value, a text column into a text, and a toggle column into a toggle
+- **Changing a list's entries asks first**: saving a new entry type, or turning names off, says how many stored values or names each list would stop showing; the values stay stored and come back when the entry is changed back
+
+### Fix
+
+- **S, P, and E on custom list entries are kept**: the flags toggled on a custom list's entries are stored instead of dropped on the next read
+- **Custom lists can be framed**: the "Draw a border around the list" setting now applies to lists with their own entries too
+- **Images keep their label above**: an image field or list entry no longer offers the label beside the value, which pushed its upload controls out of a narrow column
+
+## v3.13.0
+
+### Minor feat
+
+- **Your own catalogs (spec 015, T-074)**: make a catalog in the library — on one of your settings, on a shipped setting such as Star Wars, or on a ruleset so every setting on those rules shares it — and fill it like a small spreadsheet: your own text, number, and toggle columns, entries added one by one or pasted from a spreadsheet, columns renamed, reordered, or retyped with a warning before values are lost
+- **Use your catalogs in templates**: a choice field picks from them and fills the fields you map its columns to; a list with its own values suggests entries while you type a name and can copy a number column into the value; a choice column in a table fills the other columns of its own row. The picker groups this setting's catalogs, its rules' catalogs, and the game's own
+- **Catalogs in the library**: they sit beside document types (and on rulesets, beside settings), move, delete, export, and import like your types; a move or delete names the templates that would lose the catalog; exporting a page takes the catalogs it uses along; the game's own catalogs are listed read-only with their entries
+- **Documents keep what they picked**: renaming an entry renames it on every sheet, and deleting an entry or a catalog keeps the picked name visible
+
+### Fix
+
+- **Catalog names in the editor**: the catalog picker shows catalog names instead of their internal ids
+- **Table columns have settings**: each column of a template table opens the usual field settings (type, options, catalog)
+
+## v3.12.0
+
+### Minor feat
+
+- **Template ratings are trait rows (spec 014, T-073)**: a rating shows its label beside the dots like the sheet's attributes and skills, with optional extras chosen in the editor — a text line for a specialization, "current / maximum" numbers (off by default; a number rating shows its maximum inside the box, like a resource), a die that rolls it the way the game rolls an attribute of the same value, and the S, P, and E switches on dots; the roll names the rating
+- **Choose where a field's label goes**: every template field can show its label above the value (small caption) or beside it (like an attribute row); ratings and derived values start beside, other fields above
+- **Dots are easier to hit**: every dot of a rating or trait row answers a click anywhere in its slot, gaps included; long rows still narrow into a compact line instead of wrapping
+
+### Fix
+
+- **A computed maximum decides a rating's range**: a maximum from a value or formula above the rating's own maximum makes every shown dot selectable (up to 100); when it drops below the stored value, the value is kept and shown in parentheses
+- **The "boxes" rating style is gone**: it looked like paler dots; templates that used it open as dots with their values
+- **No console warning in the template editor**: the insert slot at the end of a container had no React key
+- **Dice buttons have names**: screen readers announce "Roll <stat>" instead of the click hint
+
 ## v3.11.0
 
 ### Minor feat

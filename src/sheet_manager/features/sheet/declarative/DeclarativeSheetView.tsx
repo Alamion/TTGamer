@@ -7,6 +7,7 @@ import { Plus, X } from 'lucide-react';
 import {
     createElement,
     type CSSProperties,
+    Fragment,
     memo,
     type ReactNode,
     useContext,
@@ -18,7 +19,6 @@ import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
 import { TermHintProvider } from '../../../components/terms/TermHintProvider';
-import { TermLabel } from '../../../components/terms/TermLabel';
 import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
 import type { FieldBinding } from '../../../systems/templateBindings';
@@ -28,10 +28,16 @@ import {
     readDataPath,
     resolveDataBindingByCoordinate,
 } from '../../../systems/templateBindings';
+import { isUserCatalogId } from '../../../systems/userCatalogs';
 import type { CustomTemplate, TemplateField, TemplateNode } from '../../../types/template';
 import { fieldValueKey, isTemplateField, tableValueKey } from '../../../types/template';
-import { listValueKey } from '../../../types/template';
-import { coerceStoredValue } from '../../../types/templateValues';
+import {
+    coerceStoredValue,
+    pickLabelKey,
+    type RatingDetail,
+    ratingDetailKey,
+    readRatingDetail,
+} from '../../../types/templateValues';
 import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import { useBoundDocument } from './boundDocument';
@@ -42,9 +48,11 @@ import {
     useTemplateEditorOverlay,
 } from './editorOverlay';
 import type { FormulaEvaluationError } from './formula';
-import { useTemplatePage, type UseTemplatePageResult } from './hooks';
+import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
+import { LabeledField } from './LabeledField';
+import { CustomListView } from './listEntries';
 import { localizeTemplate } from './localizeTemplate';
-import { CustomListView, PrimitiveNodeView, SystemListView } from './primitives';
+import { PrimitiveNodeView, SystemListView } from './primitives';
 
 const editor = uiMessages.sheet.templates.editor;
 const page = uiMessages.sheet.templates.page;
@@ -80,8 +88,9 @@ function formulaErrorMessage(reason: FormulaEvaluationError | 'parse', coordinat
             return translate(page.formulaReasonDivision);
         case 'non-numeric':
             return translate(page.formulaReasonNonNumeric);
-        case 'unknown-coordinate':
         case 'parse':
+            return translate(page.formulaReasonInvalid);
+        case 'unknown-coordinate':
         default:
             return translate(page.formulaReasonUnknown).replace('{coordinate}', coordinate);
     }
@@ -173,15 +182,35 @@ function FieldCell({
                           value: details[detailKey],
                       }))
                 : [];
-            pageApi.applyWrites([{ target: fieldValueKey(field), value: next }, ...fills]);
+            // A user catalog pick also keeps the entry's name, shown if the entry is later deleted.
+            const picked = isUserCatalogId(runtime.catalogId)
+                ? runtime.options.find((option) => option.value === next)?.label
+                : undefined;
+            pageApi.applyWrites([
+                { target: fieldValueKey(field), value: next },
+                ...(picked ? [{ target: pickLabelKey(fieldValueKey(field)), value: picked }] : []),
+                ...fills,
+            ]);
             return;
         }
         pageApi.setValue(fieldValueKey(field), next);
     };
 
+    const detailKey = field.type === 'rating' ? ratingDetailKey(fieldValueKey(field)) : undefined;
+    const pickedLabel = runtime ? pageApi.values[pickLabelKey(fieldValueKey(field))] : undefined;
     const controlElement = createElement(control, {
         field,
         value,
+        ...(typeof pickedLabel === 'string' ? { pickedLabel } : {}),
+        ...(runtime && !runtime.degraded && runtime.options.length === 0
+            ? { catalogEmpty: true }
+            : {}),
+        ...(detailKey
+            ? {
+                  ratingDetail: readRatingDetail(pageApi.values[detailKey]),
+                  onDetailChange: (next: RatingDetail) => pageApi.setValue(detailKey, next),
+              }
+            : {}),
         onChange: handleChange,
         disabled: pageApi.disabled,
         resolvedMax: maxState?.resolvedMax,
@@ -191,38 +220,31 @@ function FieldCell({
         documentOptions: pageApi.documentOptions,
         onOpenDocument: pageApi.openDocument,
         previewSource: pageApi.previewSource,
+        ...(field.type === 'tracker' ? { rawValue: pageApi.values[fieldValueKey(field)] } : {}),
     });
     // Computed values read as "label … value" rows; the control renders both.
     if (field.type === 'formula') return controlElement;
+    // Ratings are trait rows (spec 014); trackers draw their own label beside their controls.
+    if (field.type === 'rating' || field.type === 'tracker') {
+        return (
+            <div className="grid grid-cols-1 gap-1">
+                {controlElement}
+                {field.description && (
+                    <span className="text-xs text-textSecondary">{field.description}</span>
+                )}
+            </div>
+        );
+    }
 
     return (
-        <div className="grid grid-cols-1 gap-1">
-            <span
-                className={clsx(
-                    'text-xs font-medium text-textSecondary',
-                    field.hideLabel && 'sr-only'
-                )}
-            >
-                <TermLabel text={field.label} {...termLinkOf(field)} />
-                {field.required && (
-                    <span
-                        aria-label={translate(editor.fieldRequired)}
-                        className="ml-0.5 text-error"
-                    >
-                        *
-                    </span>
-                )}
-            </span>
+        <LabeledField field={field} term={termLinkOf(field)}>
             {controlElement}
             {runtime?.degraded && (
                 <p role="alert" className="text-xs text-error">
                     {translate(binding.degraded, { catalog: runtime.catalogId })}
                 </p>
             )}
-            {field.description && (
-                <span className="text-xs text-textSecondary">{field.description}</span>
-            )}
-        </div>
+        </LabeledField>
     );
 }
 
@@ -259,15 +281,7 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
         if (binding.syncsTitle && typeof typed === 'string') bound.setTitle(typed);
     };
     return (
-        <div className="grid grid-cols-1 gap-1">
-            <span
-                className={clsx(
-                    'text-xs font-medium text-textSecondary',
-                    field.hideLabel && 'sr-only'
-                )}
-            >
-                {field.label}
-            </span>
+        <LabeledField field={field}>
             {binding.suggestions && field.type === 'text' ? (
                 <CatalogSuggest
                     catalog={suggestions}
@@ -288,10 +302,7 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
                     disabled: readOnly,
                 })
             )}
-            {field.description && (
-                <span className="text-xs text-textSecondary">{field.description}</span>
-            )}
-        </div>
+        </LabeledField>
     );
 }
 
@@ -311,6 +322,50 @@ function TableBlock({
             ? (stored as Record<string, Record<string, unknown>>)
             : {};
     const rowEntries = Object.entries(rows).sort(([left], [right]) => Number(left) - Number(right));
+    const blockKey = tableValueKey(node);
+    const catalogs = new Map(
+        node.columns.flatMap((column) => {
+            const runtime = pageApi.resolveCatalogField(column);
+            return runtime ? [[column.id, runtime] as const] : [];
+        })
+    );
+    /**
+     * A catalog pick in a choice column fills that row's mapped sibling columns in one write
+     * (spec 015, R10); other rows never change.
+     */
+    const writeCell = (
+        column: TemplateField,
+        catalog: CatalogFieldRuntime | undefined,
+        rowIndex: string,
+        next: unknown
+    ) => {
+        if (
+            !catalog ||
+            catalog.degraded ||
+            column.type !== 'select' ||
+            !column.binding ||
+            typeof next !== 'string' ||
+            next === ''
+        ) {
+            pageApi.setRowValue(blockKey, rowIndex, column.id, next);
+            return;
+        }
+        const details = readCatalogDetails(catalog.catalogId, next) ?? {};
+        const siblings = new Set(node.columns.map(({ id }) => id));
+        const cells: Record<string, unknown> = { [column.id]: next };
+        if (isUserCatalogId(catalog.catalogId)) {
+            cells[pickLabelKey(column.id)] = catalog.options.find(
+                (option) => option.value === next
+            )?.label;
+        }
+        for (const [detailKey, rule] of Object.entries(column.binding.fills)) {
+            if (rule.disabled || !siblings.has(rule.targetFieldId)) continue;
+            const value = details[detailKey];
+            if (value === undefined || Array.isArray(value)) continue;
+            cells[rule.targetFieldId] = value === '' ? null : value;
+        }
+        pageApi.setRowValues(blockKey, rowIndex, cells);
+    };
 
     return (
         <div className="overflow-x-auto">
@@ -341,20 +396,34 @@ function TableBlock({
                         <tr key={rowIndex} data-row={rowIndex}>
                             {node.columns.map((column) => {
                                 const Control = templateFieldControl(column.type);
+                                const catalog = catalogs.get(column.id);
+                                const picked = row[pickLabelKey(column.id)];
                                 return (
                                     <td key={column.id} className="px-2 py-1.5 align-top">
                                         <Control
-                                            field={column}
+                                            // The column header already names a rating cell.
+                                            field={
+                                                column.type === 'rating'
+                                                    ? { ...column, hideLabel: true }
+                                                    : column
+                                            }
                                             value={coerceStoredValue(column, row[column.id])}
                                             onChange={(next) =>
-                                                pageApi.setRowValue(
-                                                    tableValueKey(node),
-                                                    rowIndex,
-                                                    column.id,
-                                                    next
-                                                )
+                                                writeCell(column, catalog, rowIndex, next)
                                             }
                                             disabled={pageApi.disabled}
+                                            {...(catalog
+                                                ? {
+                                                      catalogOptions: catalog.options,
+                                                      ...(typeof picked === 'string'
+                                                          ? { pickedLabel: picked }
+                                                          : {}),
+                                                      ...(!catalog.degraded &&
+                                                      catalog.options.length === 0
+                                                          ? { catalogEmpty: true }
+                                                          : {}),
+                                                  }
+                                                : {})}
                                             documentOptions={pageApi.documentOptions}
                                             onOpenDocument={pageApi.openDocument}
                                             previewSource={pageApi.previewSource}
@@ -407,27 +476,7 @@ function ListView({
             />
         );
     }
-    const stored: unknown = pageApi.values[listValueKey(node)];
-    const entries = Array.isArray(stored)
-        ? (stored as Array<{ id: string; label: string; value?: number }>).map((entry) => ({
-              id: entry.id,
-              label: entry.label,
-              value: typeof entry.value === 'number' ? entry.value : 0,
-          }))
-        : [];
-    return (
-        <div className="grid grid-cols-1 gap-1" data-list-columns={node.columns}>
-            {node.showTitle && node.title && (
-                <h3 className="text-sm font-semibold text-textPrimary">{node.title}</h3>
-            )}
-            <CustomListView
-                list={node}
-                entries={entries}
-                disabled={pageApi.disabled}
-                onChange={(next) => pageApi.setValue(listValueKey(node), next)}
-            />
-        </div>
-    );
+    return <CustomListView list={node} pageApi={pageApi} />;
 }
 
 const NodeView = memo(function NodeView({
@@ -516,6 +565,11 @@ const NodeView = memo(function NodeView({
                 systemId={template.systemId}
                 documentKind={template.documentKind}
                 maxState={maxState}
+                page={{
+                    values: pageApi.values,
+                    setValue: pageApi.setValue,
+                    previewSource: pageApi.previewSource ?? false,
+                }}
             />
         );
     }
@@ -605,7 +659,7 @@ function ChildrenGrid({
                 rendered
             );
         }),
-        endSlot,
+        endSlot && <Fragment key="end-slot">{endSlot}</Fragment>,
     ];
     // Proportional widths (e.g. 2:1) apply from the md breakpoint; narrow screens stack.
     const proportional =

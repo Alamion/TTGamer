@@ -1,7 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 
 import { documentSettingLabel, systemRegistry } from '../../../systems';
-import { isUserKind } from '../../../systems/userTypes';
 
 function definitionsOfKind(systemId: string, kind: string) {
     return systemRegistry
@@ -30,33 +29,6 @@ export function kindSettingLabel(systemId: string, kind: string): string {
 /** "Setting · Kind", e.g. "Hunter: the Reckoning 5e · Character". */
 export function targetLabel(systemId: string, kind: string): string {
     return `${kindSettingLabel(systemId, kind)} · ${kindLabel(systemId, kind)}`;
-}
-
-export interface TemplateTarget {
-    value: string;
-    systemId: string;
-    kind: string;
-    label: string;
-    userType: boolean;
-}
-
-/** Every system + kind a template can be written for, shipped kinds first, then user types. */
-export function listTemplateTargets(): TemplateTarget[] {
-    const seen = new Set<string>();
-    return systemRegistry.listDefinitions().flatMap(({ system, definition }) => {
-        const value = `${system.id}/${definition.kind}`;
-        if (seen.has(value)) return [];
-        seen.add(value);
-        return [
-            {
-                value,
-                systemId: system.id,
-                kind: definition.kind,
-                label: targetLabel(system.id, definition.kind),
-                userType: isUserKind(definition.kind),
-            },
-        ];
-    });
 }
 
 /** Where a template belongs: a system's document kind, in a user setting for core definitions. */

@@ -150,3 +150,34 @@ describe('template files across systems (feature 008)', () => {
         expect(parseTemplateFile(JSON.stringify(foreign))).toEqual({ ok: false, error: 'system' });
     });
 });
+
+describe('custom lists in template files (spec 016)', () => {
+    const withLists = () =>
+        CustomTemplateSchema.parse({
+            id: 'list-kit',
+            name: 'List Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                { id: 'skills', type: 'list', valueKey: 'skills', title: 'Skills' },
+                {
+                    id: 'mementos',
+                    type: 'list',
+                    valueKey: 'mementos',
+                    named: false,
+                    item: { id: 'memento', type: 'image', label: 'Memento' },
+                },
+            ],
+        });
+
+    it('imports an old list as legacy and round-trips an entry template', () => {
+        const template = withLists();
+        const parsed = parseTemplateFile(serializeTemplateFile(template));
+        expect(parsed.ok).toBe(true);
+        if (!parsed.ok) return;
+        expect(parsed.template).toEqual(template);
+        const [skills, mementos] = parsed.template.children;
+        expect(skills).not.toHaveProperty('item');
+        expect(mementos).toMatchObject({ named: false, item: { type: 'image' } });
+    });
+});

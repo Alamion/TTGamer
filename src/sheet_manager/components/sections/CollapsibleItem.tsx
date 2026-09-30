@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface CollapsibleItemProps {
@@ -45,14 +45,13 @@ export function CollapsibleItem({
                         {badge}
                     </span>
                 )}
-                {isExpanded ? (
-                    <ChevronUp className="w-4 h-4 text-textSecondary shrink-0" aria-hidden="true" />
-                ) : (
-                    <ChevronDown
-                        className="w-4 h-4 text-textSecondary shrink-0"
-                        aria-hidden="true"
-                    />
-                )}
+                <ChevronDown
+                    className={clsx(
+                        'w-4 h-4 shrink-0 text-textSecondary transition-transform duration-200 ease-linear motion-reduce:transition-none',
+                        isExpanded && 'rotate-180'
+                    )}
+                    aria-hidden="true"
+                />
             </button>
             {isExpanded && (
                 <div className="px-3 pb-3 space-y-2 border-t border-border pt-2 bg-bgBase">

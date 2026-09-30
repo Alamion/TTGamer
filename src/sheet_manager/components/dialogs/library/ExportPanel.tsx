@@ -86,6 +86,7 @@ export function ExportPanel({
                     {translate(labels.export.counts, {
                         settings: plural(labels.counts.settings, payload.settings.length),
                         types: plural(labels.counts.types, payload.types.length),
+                        catalogs: plural(labels.counts.catalogs, payload.catalogs.length),
                         pages: plural(
                             labels.counts.pages,
                             payload.templates.length + payload.overrides.length

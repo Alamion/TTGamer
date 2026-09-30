@@ -11,11 +11,16 @@ import {
     parseTemplateTargetValue,
     templateTargetValue,
 } from '../../features/sheet/data/documentLabels';
+import {
+    type ListItemChange,
+    listItemChangeReport,
+} from '../../features/sheet/data/listItemChanges';
 import { listTemplateNumericCoordinates } from '../../features/sheet/data/templateReferences';
 import {
     planTemplateRetarget,
     type RetargetPlan,
 } from '../../features/sheet/data/templateRetarget';
+import { type TrackerChange, trackerChangeReport } from '../../features/sheet/data/trackerChanges';
 import type { OverlayPlacement } from '../../features/sheet/declarative/editorOverlay';
 import { useDocumentStore } from '../../store/documentStore';
 import { useDocumentTypeStore } from '../../store/documentTypeStore';
@@ -188,9 +193,12 @@ export function TemplateEditorDialog({
     const [mode, setMode] = useState<EditorMode>('edit');
     const [area, setArea] = useState<EditorArea>('page');
     const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false);
-    const [pendingRetarget, setPendingRetarget] = useState<{
+    /** A save waiting for confirmation: a retarget (T-070) and/or list entry changes (spec 016). */
+    const [pendingSave, setPendingSave] = useState<{
         template: CustomTemplate;
-        plan: RetargetPlan;
+        plan?: RetargetPlan;
+        lists: readonly ListItemChange[];
+        trackers: readonly TrackerChange[];
     } | null>(null);
     const plural = usePluralMessage();
     const [saveIssues, setSaveIssues] = useState<readonly string[]>([]);
@@ -435,8 +443,12 @@ export function TemplateEditorDialog({
                 unknownBinding: t(editor.unknownBinding),
                 unknownCatalog: t(editor.unknownCatalog),
                 unknownFillTarget: t(editor.unknownFillTarget),
+                listCatalogUnnamed: t(editor.listCatalogNeedsNames),
                 unknownLabelMessage: t(editor.unknownLabelMessage),
                 invalidDocsLink: t(editor.invalidDocsLink),
+                referenceTargetUnavailable: t(editor.referenceTargetUnavailable),
+                trackerLengthEmpty: t(uiMessages.sheet.templates.tracker.issueLengthEmpty),
+                trackerCovers: t(uiMessages.sheet.templates.tracker.issueCovers),
             }),
         [draft, t]
     );
@@ -463,14 +475,32 @@ export function TemplateEditorDialog({
         onClose();
     };
 
+    const saveDefault = (template: CustomTemplate) => {
+        // Draft-until-save (FR-9): the override lands only on explicit save; assigned
+        // documents then render the saved version (live propagation, clarification Q2).
+        setDefaultOverride(template);
+        onClose();
+    };
+
     const handleSave = () => {
         try {
             const parsed = CustomTemplateSchema.parse(draft);
+            // Entries a changed list stops showing are confirmed first; nothing is deleted.
+            const lists = listItemChangeReport(
+                base.kind === 'edit' ? base.template : undefined,
+                parsed,
+                useDocumentStore.getState().documents
+            );
+            // Tracker marks, notes, and copies a save stops showing (spec 018, FR-026).
+            const trackers = trackerChangeReport(
+                base.kind === 'edit' ? base.template : undefined,
+                parsed,
+                useDocumentStore.getState().documents
+            );
+            const asks = lists.length > 0 || trackers.length > 0;
             if (editingDefault) {
-                // Draft-until-save (FR-9): the override lands only on explicit save; assigned
-                // documents then render the saved version (live propagation, clarification Q2).
-                setDefaultOverride(parsed);
-                onClose();
+                if (asks) setPendingSave({ template: parsed, lists, trackers });
+                else saveDefault(parsed);
                 return;
             }
             // A page moved to another type or setting (T-070) takes its assignments along.
@@ -481,14 +511,56 @@ export function TemplateEditorDialog({
                 types,
                 templates: useTemplateStore.getState().templates,
             });
-            if (plan.documentIds.length > 0) setPendingRetarget({ template: parsed, plan });
-            else saveUserTemplate(parsed, plan);
+            if (plan.documentIds.length > 0 || asks) {
+                setPendingSave({ template: parsed, plan, lists, trackers });
+            } else saveUserTemplate(parsed, plan);
         } catch (error) {
             const fallback =
                 error instanceof Error && error.message.length > 0 ? [error.message] : [];
             setSaveIssues(fallback);
         }
     };
+
+    const trackerText = uiMessages.sheet.templates.tracker;
+    const pendingSaveDescription = ({
+        plan,
+        lists,
+        trackers,
+    }: {
+        plan?: RetargetPlan;
+        lists: readonly ListItemChange[];
+        trackers: readonly TrackerChange[];
+    }): string =>
+        [
+            ...lists.flatMap(({ title, documents, lostValues, hiddenNames }) => [
+                ...(lostValues > 0
+                    ? [
+                          plural(editor.listChangeValues, lostValues, {
+                              title,
+                              documents: plural(editor.listChangeSheets, documents),
+                          }),
+                      ]
+                    : []),
+                ...(hiddenNames > 0
+                    ? [plural(editor.listChangeNames, hiddenNames, { title })]
+                    : []),
+            ]),
+            ...(lists.length > 0 ? [t(editor.listChangeNote)] : []),
+            ...trackers.flatMap(({ title, documents, lostMarks, lostTexts, lostCopies }) => {
+                const where = { title, documents: plural(editor.listChangeSheets, documents) };
+                return [
+                    ...(lostMarks > 0 ? [plural(trackerText.changeMarks, lostMarks, where)] : []),
+                    ...(lostTexts > 0 ? [plural(trackerText.changeTexts, lostTexts, where)] : []),
+                    ...(lostCopies > 0
+                        ? [plural(trackerText.changeCopies, lostCopies, where)]
+                        : []),
+                ];
+            }),
+            ...(trackers.length > 0 ? [t(trackerText.changeNote)] : []),
+            ...(plan && plan.documentIds.length > 0
+                ? [plural(editor.retargetDescription, plan.documentIds.length)]
+                : []),
+        ].join('\n');
 
     const requestClose = () => {
         if (isDirty) setDiscardConfirmOpen(true);
@@ -501,11 +573,12 @@ export function TemplateEditorDialog({
             draftId: draft.id,
             systemId: draft.systemId,
             documentKind: draft.documentKind,
+            settingId: draft.settingId,
             bindings: listDocumentBindings(draft.systemId, draft.documentKind),
             coordinateListId: `template-coordinates-${draft.id}`,
             atNodeLimit,
         }),
-        [draft.id, draft.systemId, draft.documentKind, atNodeLimit]
+        [draft.id, draft.systemId, draft.documentKind, draft.settingId, atNodeLimit]
     );
 
     // Keyed by content so the context value changes only when a fill target actually changes.
@@ -849,26 +922,28 @@ export function TemplateEditorDialog({
             </Dialog.Portal>
 
             <ConfirmDialog
-                open={pendingRetarget !== null}
+                open={pendingSave !== null}
                 onOpenChange={(open) => {
-                    if (!open) setPendingRetarget(null);
+                    if (!open) setPendingSave(null);
                 }}
                 onConfirm={() => {
-                    if (pendingRetarget) {
-                        saveUserTemplate(pendingRetarget.template, pendingRetarget.plan);
-                    }
-                    setPendingRetarget(null);
+                    if (pendingSave?.plan) saveUserTemplate(pendingSave.template, pendingSave.plan);
+                    else if (pendingSave) saveDefault(pendingSave.template);
+                    setPendingSave(null);
                 }}
-                title={t(editor.retargetTitle)}
-                description={
-                    pendingRetarget
-                        ? plural(
-                              editor.retargetDescription,
-                              pendingRetarget.plan.documentIds.length
-                          )
-                        : ''
-                }
-                confirmLabel={t(editor.retargetConfirm)}
+                title={t(
+                    pendingSave?.lists.length
+                        ? editor.listChangeTitle
+                        : pendingSave?.trackers.length
+                          ? trackerText.changeTitle
+                          : editor.retargetTitle
+                )}
+                description={pendingSave ? pendingSaveDescription(pendingSave) : ''}
+                confirmLabel={t(
+                    pendingSave?.lists.length || pendingSave?.trackers.length
+                        ? editor.listChangeConfirm
+                        : editor.retargetConfirm
+                )}
                 cancelLabel={t(editor.cancel)}
             />
             <ConfirmDialog

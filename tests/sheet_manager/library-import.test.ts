@@ -3,6 +3,7 @@ import {
     buildLibraryTree,
     countDocuments,
 } from '@site/src/sheet_manager/features/sheet/data/libraryTree';
+import { validateTemplateReferences } from '@site/src/sheet_manager/features/sheet/data/templateReferences';
 import {
     buildLibraryPayload,
     exportClosure,
@@ -25,6 +26,8 @@ import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentType
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import type { UserSetting } from '@site/src/sheet_manager/systems/userTypes';
+import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
+import { TEMPLATE_LIMITS } from '@site/src/sheet_manager/types/templateLimits';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
@@ -32,17 +35,20 @@ import {
     ASHEN_MORTAL_PAGE_ID,
     CULT_ID,
     CULT_PAGE_ID,
+    FIREARMS_ID,
     libraryPage,
+    RELICS_ID,
     resetLibraryStores,
     seedLibrary,
+    userCatalog,
     userSetting,
     userType,
 } from './helpers/library';
 
 function installed() {
-    const { types, settings } = useDocumentTypeStore.getState();
+    const { types, settings, catalogs } = useDocumentTypeStore.getState();
     const { templates, defaultOverrides } = useTemplateStore.getState();
-    return { types, settings, templates, defaultOverrides };
+    return { types, settings, templates, defaultOverrides, catalogs };
 }
 
 function exportAshen(): LibraryPayload {
@@ -138,7 +144,7 @@ describe('library import (spec 013, US5)', () => {
         const choices = initialChoices(entries);
         expect(JSON.stringify(installed())).toBe(before);
         const summary = installImport(payload, entries, choices, installed(), systemRegistry);
-        expect(summary).toEqual({ settings: 0, types: 0, pages: 1 });
+        expect(summary).toEqual({ settings: 0, types: 0, pages: 1, catalogs: 0 });
         const pages = useTemplateStore
             .getState()
             .templates.filter(({ documentKind }) => documentKind === CULT_ID);
@@ -191,7 +197,7 @@ describe('library import (spec 013, US5)', () => {
             installed(),
             systemRegistry
         );
-        expect(summary).toEqual({ settings: 1, types: 1, pages: 2 });
+        expect(summary).toEqual({ settings: 1, types: 1, pages: 2, catalogs: 0 });
         const { settings, types } = useDocumentTypeStore.getState();
         expect(settings[ASHEN_ID]?.pages).toEqual({ 'v5-character': ASHEN_MORTAL_PAGE_ID });
         expect(types[CULT_ID]?.defaultTemplateId).toBe(CULT_PAGE_ID);
@@ -212,6 +218,7 @@ describe('library import (spec 013, US5)', () => {
                 libraryPage(CULT_PAGE_ID, { systemId: 'star-wars-wod', documentKind: 'creature' }),
             ],
             overrides: [],
+            catalogs: [],
             included: {},
             addresses: [],
         };
@@ -221,5 +228,191 @@ describe('library import (spec 013, US5)', () => {
         expect(templates.filter(({ id }) => id === 'brief')).toEqual([]);
         expect(templates.filter(({ id }) => id === CULT_PAGE_ID)).toHaveLength(1);
         expect(templates.filter(({ documentKind }) => documentKind === 'creature')).toHaveLength(1);
+    });
+});
+
+describe('catalogs in library files (spec 015, US4)', () => {
+    const boundPage = (id: string) =>
+        CustomTemplateSchema.parse({
+            id,
+            name: `Relic page ${id}`,
+            systemId: 'wod-v5',
+            documentKind: 'mortal',
+            settingId: ASHEN_ID,
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'relic',
+                    type: 'select',
+                    label: 'Relic',
+                    options: [{ id: 'none', label: 'None' }],
+                    binding: { catalogId: RELICS_ID, fills: {} },
+                },
+                {
+                    id: 'guns',
+                    type: 'list',
+                    valueKey: 'guns',
+                    catalog: { catalogId: FIREARMS_ID },
+                },
+            ],
+        });
+
+    function libraryTree() {
+        const { types, settings, defaultPages, catalogs } = useDocumentTypeStore.getState();
+        const { templates, defaultOverrides } = useTemplateStore.getState();
+        return buildLibraryTree({
+            registry: systemRegistry,
+            types,
+            settings,
+            catalogs,
+            templates,
+            defaultOverrides,
+            defaultPages,
+            counts: countDocuments(useDocumentStore.getState().documents),
+        });
+    }
+
+    function exportPicked(keys: string[]) {
+        const tree = libraryTree();
+        const closure = exportClosure(tree, new Set(keys));
+        return { closure, payload: buildLibraryPayload(tree, closure, readLibraryState()) };
+    }
+
+    beforeEach(() => {
+        seedLibrary();
+        useTemplateStore.setState((state) => ({
+            templates: [...state.templates, boundPage('tpl-relicpg1')],
+        }));
+    });
+    afterEach(resetLibraryStores);
+
+    it('adds the catalogs a picked page binds, with their parents and addresses', () => {
+        const { closure, payload } = exportPicked(['p:user:tpl-relicpg1']);
+        expect([...closure.auto.keys()].sort()).toEqual(
+            [`c:user:${FIREARMS_ID}`, `c:user:${RELICS_ID}`, `s:user:${ASHEN_ID}`].sort()
+        );
+        expect(closure.addresses).toContainEqual({ systemId: 'wod-v5' });
+        expect(payload.catalogs.map(({ id }) => id).sort()).toEqual(
+            [FIREARMS_ID, RELICS_ID].sort()
+        );
+        expect(payload.included[RELICS_ID]).toBe('auto');
+    });
+
+    it('round-trips version 2 and recreates catalogs exactly in an empty profile (SC-003)', () => {
+        const { payload } = exportPicked([`c:user:${RELICS_ID}`, 'p:user:tpl-relicpg1']);
+        const text = serializeLibraryFile(payload);
+        expect(JSON.parse(text).version).toBe(2);
+        const parsed = parseLibraryFile(text);
+        if (!parsed.ok) throw new Error('did not parse');
+        expect(parsed.payload.catalogs).toEqual(payload.catalogs);
+        // The page keeps its user catalog bindings even before the catalogs are installed.
+        expect(parsed.payload.templates[0]!.children[0]).toMatchObject({
+            binding: { catalogId: RELICS_ID },
+        });
+
+        const catalogsBefore = useDocumentTypeStore.getState().catalogs;
+        resetLibraryStores();
+        const entries = preview(parsed.payload);
+        expect(find(entries, `c:user:${RELICS_ID}`)?.record?.state).toBe('new');
+        expect(find(entries, `c:user:${FIREARMS_ID}`)?.record?.state).toBe('new');
+        expect(find(entries, 'r:wod-v5')?.children[0]?.key).toBe(`c:user:${FIREARMS_ID}`);
+        const summary = installImport(
+            parsed.payload,
+            entries,
+            initialChoices(entries),
+            installed(),
+            systemRegistry
+        );
+        expect(summary.catalogs).toBe(2);
+        expect(useDocumentTypeStore.getState().catalogs).toEqual({
+            [RELICS_ID]: catalogsBefore[RELICS_ID],
+            [FIREARMS_ID]: catalogsBefore[FIREARMS_ID],
+        });
+    });
+
+    it('keeps both copies and rebinds the file pages to the copy', () => {
+        const { payload } = exportPicked([`c:user:${RELICS_ID}`]);
+        const incoming: LibraryPayload = {
+            ...payload,
+            catalogs: payload.catalogs.map((catalog) => ({ ...catalog, name: 'Relics (edited)' })),
+            templates: [boundPage('tpl-relicpg2')],
+            included: { ...payload.included, 'tpl-relicpg2': 'picked' },
+        };
+        const entries = preview(incoming);
+        const key = recordKey('catalog', RELICS_ID);
+        expect(find(entries, `c:user:${RELICS_ID}`)?.record?.state).toBe('conflict');
+        installImport(
+            incoming,
+            entries,
+            setChoice(initialChoices(entries), key, 'keep-both'),
+            installed(),
+            systemRegistry
+        );
+        const catalogs = Object.values(useDocumentTypeStore.getState().catalogs);
+        const copy = catalogs.find(({ name }) => name.startsWith('Relics (edited)'))!;
+        expect(copy.id).not.toBe(RELICS_ID);
+        expect(useDocumentTypeStore.getState().catalogs[RELICS_ID]!.name).toBe('Relics');
+        const page = useTemplateStore.getState().templates.find(({ id }) => id === 'tpl-relicpg2')!;
+        expect(page.children[0]).toMatchObject({ binding: { catalogId: copy.id } });
+    });
+
+    it('marks catalogs beyond the owner limit unavailable', () => {
+        const many = Object.fromEntries(
+            Array.from({ length: TEMPLATE_LIMITS.catalogsPerOwner }, (_, i) => {
+                const id = `user-catalog-${String(i).padStart(8, '0')}`;
+                return [id, userCatalog({ id, name: `Catalog ${i}` })];
+            })
+        );
+        const { payload } = exportPicked([`c:user:${RELICS_ID}`]);
+        useDocumentTypeStore.setState({ catalogs: many });
+        const entries = preview(payload);
+        expect(find(entries, `c:user:${RELICS_ID}`)?.record).toMatchObject({
+            state: 'unavailable',
+            reason: 'limit',
+        });
+    });
+
+    it('still imports version 1 files and older template files with table catalog columns', () => {
+        const v1 = parseLibraryFile(
+            JSON.stringify({
+                format: 'ttgamer-library',
+                version: 1,
+                settings: [userSetting()],
+            })
+        );
+        expect(v1.ok && v1.payload.catalogs).toEqual([]);
+
+        const table = CustomTemplateSchema.parse({
+            id: 'tpl-armory01',
+            name: 'Armory',
+            systemId: 'star-wars-wod',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'armory',
+                    type: 'table',
+                    columns: [
+                        {
+                            id: 'weapon',
+                            type: 'select',
+                            label: 'Weapon',
+                            options: [{ id: 'none', label: 'None' }],
+                            binding: {
+                                catalogId: 'melee-weapons',
+                                fills: { damage: { targetFieldId: 'damage' } },
+                            },
+                        },
+                        { id: 'damage', type: 'text', label: 'Damage' },
+                    ],
+                },
+                { id: 'notes', type: 'text', label: 'Notes' },
+            ],
+        });
+        const file = parseLibraryFile(
+            JSON.stringify({ format: 'ttgamer-template', formatVersion: 3, template: table })
+        );
+        expect(file.ok && file.degradedCatalogFields).toEqual([]);
+        expect(file.ok && validateTemplateReferences(file.payload.templates[0]!)).toEqual([]);
     });
 });

@@ -33,7 +33,7 @@ Pages, sections, and groups lay out their elements in 1 to 4 **Columns**. With *
 
 ## Fields \{#fields}
 
-A field holds one value. Its **Field label** is shown next to it (**Show label** hides it), **Help text** explains it on hover, and **Required** marks it for the reader without blocking anything.
+A field holds one value. Its **Field label** is shown next to it (**Show label** hides it), **Help text** explains it on hover, and **Required** marks it for the reader without blocking anything. **Label position** puts the label **Above the value** in small grey type, or **Beside the value** in the larger type of the sheet's attribute rows; ratings and derived values start beside, other fields above. An image always keeps its label above: the picture and its upload controls need the whole width.
 
 | Type                   | What the reader gets                                                                                                                                                                                     |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -41,11 +41,35 @@ A field holds one value. Its **Field label** is shown next to it (**Show label**
 | **Number**             | A number kept within **Min**, **Max**, and **Step**; arrow keys step it.                                                                                                                                 |
 | **Toggle**             | A dot: transparent when off, filled when on.                                                                                                                                                             |
 | **Choice**             | One option from a list, or several with **Allow multiple values**; **Hide unselected options** shows only the chosen ones until the reader opens the list. A choice can take its options from a catalog. |
-| **Rating**             | Dots, boxes, or a number from **Min** to **Max**; the dots up to the minimum stay filled.                                                                                                                |
+| **Rating**             | A row like the sheet's attributes: dots or a number from **Min** to **Max**; see [Ratings](#rating).                                                                                                     |
 | **Resource**           | A current value and a maximum, such as a pool of points.                                                                                                                                                 |
 | **Derived value**      | A number computed by a [formula](./values.mdx#formulas); readers cannot type into it.                                                                                                                    |
 | **Image**              | A picture from the device or an `https://` address.                                                                                                                                                      |
-| **Document reference** | Links to other documents of the allowed types; readers open them from the field.                                                                                                                         |
+| **Document reference** | Links to other documents of the allowed types; readers open them from the field; see [Document references](#references).                                                                                 |
+| **Tracker**            | Boxes the reader marks by level, for health, stress, or any other burden; see [Trackers](#trackers).                                                                                                     |
+
+## Ratings \{#rating}
+
+A rating reads like an attribute row on the shipped sheets: the label on the left, the dots on the right. **Presentation** chooses **Dots** (one dot per point) or **Number** (a number box). Templates saved with the older "boxes" presentation open as dots and keep their values.
+
+- **Min** is a floor, not a dot: the dots up to it stay filled in a darker shade, and the reader cannot go below it.
+- **Max** sets the number of dots. A [maximum from a value or formula](./values.mdx#limits-from-values) replaces it while it can be computed, up to 100 dots; when it drops below the stored value, the value is kept and shown in parentheses until the maximum rises again.
+- **Text input (for example a specialization)** adds a line between the label and the dots; on narrow screens it moves under the label.
+- **Show current / maximum** writes "3 / 5" after the dots; with **Number** it adds "/ 5" inside the number box, like a resource whose maximum cannot be edited.
+- **Die symbol (roll the rating)** rolls the value the way the document's game rolls an attribute of the same value; the roll names the rating.
+- **Flags** (dots only): **S** (specialization), **P** (practiced), and **E** (experienced) add the same switches as a trait row. They change the roll only where the game's dice rule uses them: the Star Wars sheet does, V5 does not.
+
+Formulas and display conditions read the rating's number; its text and flags do not change it. Ratings with the same [shared value key](./values.mdx#shared-value-key) share the number, the text, and the flags.
+
+## Document references \{#references}
+
+**Allowed document kinds** lists the kinds of the page's own setting, each once: the setting's own kinds (a Hunter page offers the hunter), the ruleset's shared kinds (the V5 mortal), and the kinds you created in that setting or for the whole ruleset. Kinds of other games and of your other settings are not offered, even when they have the same name. When two offered kinds would read the same, the setting is added to the name; your own kind of the same name in the same setting is marked "(yours)". A new reference points at the page's own kind.
+
+On the sheet, the search offers the reader's documents of those kinds from the same setting, never the document itself.
+
+- A reference saved earlier may point at a document of another setting. It stays: the entry shows the document's title, notes "outside this setting", opens it, and can be removed. Once removed, that document is not offered again.
+- A document that was deleted shows "Linked document no longer exists" until the reader removes it.
+- A kind the setting no longer has (a deleted type, or one from another setting) stays checked and is marked "(unavailable)", and the template's problems list names it. Uncheck it to drop it; the last kind cannot be unchecked.
 
 ## Tables \{#tables}
 
@@ -53,11 +77,37 @@ A table holds rows of values with the same columns; every column is a field. **M
 
 ## Lists \{#lists}
 
-A list holds entries added one by one: your own entries, or a list the game already keeps for the document (skills, merits and flaws, equipment). **Preset entries** start a new document with ready rows.
+A list holds entries added one by one: your own entries, or a list the game already keeps for the document (skills, merits and flaws, equipment).
+
+A list with its own entries sets up one **Entry**: pick its type — text, number, toggle, choice, rating, resource, document reference, or image — and its settings, as for a field of that type. Every entry the reader adds is a copy of it. A new list starts with the classic trait row: a rating with dots, the S/P/E flags, and a die.
+
+- **Entries are named**: each entry gets a name the reader types, such as "Firearms" next to its dots. Turn it off for lists of notes or pictures: then each entry shows the entry's label, or nothing when **Show label** is off.
+- **Preset entries** start a new document with ready rows: their names, and their numbers where the entry holds one. Presets need named entries.
+- Each entry has its own remove button: at the end of the row, or above a block such as a picture or several lines of text.
+
+Changing the entry type or turning names off can hide values readers already stored. **Save** then lists how many values or names each list would stop showing and asks first. The values stay stored: changing the entry back shows them again, except for entries edited in between.
 
 ## Trackers \{#trackers}
 
-A tracker shows the game's health or damage levels with their penalties, as a table of levels or a line of boxes.
+A tracker is a set of levels (such as Bruised … Incapacitated) with boxes the reader marks. A click moves a box to the next mark, and from the last mark back to empty. A new tracker starts as a seven-level health track with its penalties and two marks.
+
+- **Source**: **Own values** keeps the marks with the page. A game's built-in track (health, damage, willpower, members) keeps them in the document itself, so every page of that document shows the same marks; see [Built-in trackers](#built-in-trackers).
+- **Display**: **Table** (a row per level), **Strip** (a row of boxes per column), or **One line** (small boxes with the label inline, for brief pages; no length buttons and no legend).
+- **Marks**: up to five. Each has a name, a symbol of one or two characters, and a fill: amber, red, violet, green, or ink follow the light and dark themes, or pick your own color. **Start from…** offers one mark, two (bashing ╱, lethal ×), or three as in WoD 20th (adding aggravated ✱ in violet). The order is the click order, and a later mark counts as heavier.
+- **Levels**: up to twenty, each with a name and a short value, such as a penalty "-1", a bonus "+2", or a word. The value column has its own title and can be hidden. Move levels and marks with the up and down arrows: stored marks stay on their level and kind.
+- **Columns**: **Marks** (boxes) or **Text** (a short note per level, such as "Source"). A column covers all levels or the first few shown. With **Readers add copies (A, B, C…)** the reader adds copies of the column, up to the number you set, like the members of a fodder group; removing a copy that holds marks asks first. A strip shows marks columns only.
+- **Readers switch the length**: list the lengths and tick the levels each shows, like a fodder group's 3, 5, and 7. When the reader shortens the tracker over marked levels, it asks first; then each mark keeps its place in the shown order and the marks past the new end fold into its last level, the heaviest one winning.
+- **Reading the marks**: the **Total row** shows, for each marks copy, the value of the deepest marked level, under a thicker divider. **Mark a copy as out** strikes a copy through once its last shown level is marked. **Name the marks under the tracker** adds a legend of the marks' symbols and names; it is off by default, built-in trackers included.
+
+Removing levels, marks, columns, or copies can hide marks and notes readers already stored. **Save** then says how many each tracker would stop showing and asks first. The values stay stored, but a removed part added again is a new part, so they do not show again.
+
+A tracker cannot be a table column or a list entry: its copies already repeat it.
+
+### Built-in trackers \{#built-in-trackers}
+
+A game's own track takes the same settings: the display, the names and values of its levels (a level you leave empty keeps the game's name and penalty), the names, symbols, and fills of its marks, extra columns, and the total row. The game keeps the number and order of levels, a length computed from traits (V5 health and willpower), the number of marks, and the members of a group; lengths and "out" follow the game's rules. Columns you add keep their values with the page, next to the document's own marks.
+
+Pages saved before this setting existed keep their look: **Compact** reads as **One line**, and a stored track view keeps its display.
 
 ## Built-in page parts \{#built-in-parts}
 

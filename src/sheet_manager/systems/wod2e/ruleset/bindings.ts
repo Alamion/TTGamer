@@ -6,6 +6,7 @@ import type {
     EquipmentSectionId,
     ListCatalogSupport,
     SystemListShape,
+    TrackMark,
 } from '../../templateBindings';
 import type { WodSheetProfile } from '../../wod-like';
 import {
@@ -14,6 +15,14 @@ import {
     buildWodTraitBindings,
     toCoordinate,
 } from '../../wod-like/templateBindings';
+
+const damageMarks = uiMessages.sheet.documents.fields.damageMarks;
+
+/** Health marks of the WoD 2e engine: a slash is bashing damage, a cross lethal (spec 018). */
+export const WOD2E_HEALTH_MARKS: readonly TrackMark[] = [
+    { id: 'slash', label: damageMarks.bashing.message, translation: damageMarks.bashing },
+    { id: 'cross', label: damageMarks.lethal.message, translation: damageMarks.lethal },
+];
 
 /**
  * WoD 2e character bindings (spec 012): the data addresses every WoD 2e character has — traits,
@@ -222,6 +231,7 @@ export function buildWod2eCoreBindings(
                 dataKey: 'health',
                 documentKinds,
                 levelTranslations: uiMessages.sheet.documents.fields.healthLevels,
+                marks: WOD2E_HEALTH_MARKS,
             },
         }),
         ...wod2eListBindings(documentKinds),

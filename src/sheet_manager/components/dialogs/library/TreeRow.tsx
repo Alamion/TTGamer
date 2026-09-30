@@ -10,6 +10,7 @@ import {
     LayoutTemplate,
     MoreHorizontal,
     Star,
+    Table2,
 } from 'lucide-react';
 import type { DragEvent, KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { memo } from 'react';
@@ -23,6 +24,7 @@ const LEVEL_ICON: Record<LibraryLevel, typeof Dices> = {
     setting: Globe2,
     type: LayoutTemplate,
     page: FileText,
+    catalog: Table2,
 };
 
 const badge = 'shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide';
@@ -61,12 +63,13 @@ export interface TreeRowProps {
 function hasChildren(node: LibraryNode): boolean {
     switch (node.level) {
         case 'ruleset':
-            return node.settings.length > 0;
+            return node.catalogs.length + node.settings.length > 0;
         case 'setting':
-            return node.types.length > 0;
+            return node.catalogs.length + node.types.length > 0;
         case 'type':
             return node.pages.length > 0;
         case 'page':
+        case 'catalog':
             return false;
     }
 }
@@ -99,7 +102,9 @@ export const TreeRow = memo(function TreeRow({
               ? plural(labels.counts.types, node.types.length)
               : node.level === 'type'
                 ? plural(labels.counts.documents, node.documentCount)
-                : undefined;
+                : node.level === 'catalog'
+                  ? plural(labels.counts.entries, node.entryCount)
+                  : undefined;
     const edited = node.level === 'page' && node.ref.kind === 'shipped' && node.ref.edited;
     const openMenu = (event: MouseEvent<HTMLElement>) => {
         event.preventDefault();
@@ -151,12 +156,15 @@ export const TreeRow = memo(function TreeRow({
                     onToggle(node.key);
                 }}
                 className={clsx(
-                    'rounded p-0.5 text-textSecondary hover:text-textPrimary',
+                    'flex h-5 w-5 shrink-0 items-center justify-center rounded text-textSecondary hover:text-textPrimary',
                     !expandable && 'invisible'
                 )}
             >
                 <ChevronRight
-                    className={clsx('h-3.5 w-3.5 transition-transform', expanded && 'rotate-90')}
+                    className={clsx(
+                        'h-3.5 w-3.5 transition-transform duration-200 ease-linear motion-reduce:transition-none',
+                        expanded && 'rotate-90'
+                    )}
                     aria-hidden="true"
                 />
             </button>

@@ -3,19 +3,24 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 import { ExternalLink, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { Checkbox } from '../../../components/controls/Checkbox';
 import { DocumentSearch } from '../../../components/controls/DocumentSearch';
+import { RatingRow } from '../../../components/stat-fields/RatingRow';
+import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
+import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import {
     getSafePortraitUrl,
     loadPortrait,
     savePortrait,
 } from '../../../persistence/portraitStorage';
 import type { TemplateField } from '../../../types/template';
-import type { TemplateImageValue } from '../../../types/templateValues';
+import { fieldLabelPosition, TEMPLATE_LIMITS } from '../../../types/template';
+import type { RatingDetail, TemplateImageValue } from '../../../types/templateValues';
+import { useDocumentTraitDiceRoll } from './boundDocument';
 
 const page = uiMessages.sheet.templates.page;
 const referenceMessages = uiMessages.sheet.templates.reference;
@@ -55,6 +60,8 @@ export interface DocumentOption {
     label: string;
     /** Document kind, used to offer only the reference's target kinds. */
     kind?: string;
+    /** In the template's setting (spec 017); absent reads as in scope (preview and story data). */
+    inScope?: boolean;
 }
 
 export interface TemplateFieldControlProps {
@@ -75,10 +82,54 @@ export interface TemplateFieldControlProps {
     catalogOptions?: ReadonlyArray<CatalogOption>;
     /** Documents available for a reference control (provided by the hook layer). */
     documentOptions?: ReadonlyArray<DocumentOption>;
+    /** Catalog choice only (spec 015): the name kept at pick time, shown once the entry is gone. */
+    pickedLabel?: string;
+    /** Catalog choice only: the bound catalog exists but has no entries yet. */
+    catalogEmpty?: boolean;
+    /** Rating only: the stored text and flags (spec 014) and their writer. */
+    ratingDetail?: RatingDetail;
+    onDetailChange?: (next: RatingDetail) => void;
     /** Opens a referenced document in the workspace. */
     onOpenDocument?: (documentId: string) => void;
     /** Fixed preview rendering: missing reference targets are expected, not reported. */
     previewSource?: boolean;
+    /** List entries (spec 016): the typed name, shown in the label's place by a rating. */
+    nameSlot?: ReactNode;
+    /** Rating only: the name the die and the dots announce (the entry's name). */
+    rollLabel?: string;
+    /** List entries: the remove control, placed by row-shaped controls at the end of the row. */
+    removeSlot?: ReactNode;
+    /** Tracker only: the stored value before coercion, so an unreadable one is reported. */
+    rawValue?: unknown;
+}
+
+/**
+ * How a control sits in a list entry (spec 016, R9): a row ends with the remove control; a
+ * block (several lines, a picture, a set of choices) leaves it to the entry's label row.
+ */
+export function listEntryShape(field: TemplateField): 'row' | 'block' {
+    switch (field.type) {
+        case 'text':
+            return field.multiline ? 'block' : 'row';
+        case 'select':
+        case 'reference':
+            return field.multiple ? 'block' : 'row';
+        case 'image':
+            return 'block';
+        default:
+            return 'row';
+    }
+}
+
+/** A row-shaped control followed by its list entry's remove control. */
+function EndsWithRemove({ removeSlot, children }: { removeSlot?: ReactNode; children: ReactNode }) {
+    if (!removeSlot) return children;
+    return (
+        <div className="flex min-w-0 items-center gap-2">
+            <div className="min-w-0 flex-1">{children}</div>
+            {removeSlot}
+        </div>
+    );
 }
 
 function toDisplay(value: unknown): string {
@@ -86,8 +137,13 @@ function toDisplay(value: unknown): string {
 }
 
 export function TextFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return TextFieldControlRender({ field: field as FieldType<'text'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = TextFieldControlRender({ field: field as FieldType<'text'>, ...rest });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function TextFieldControlRender({
@@ -122,8 +178,13 @@ function TextFieldControlRender({
 }
 
 export function NumberFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return NumberFieldControlRender({ field: field as FieldType<'number'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = NumberFieldControlRender({ field: field as FieldType<'number'>, ...rest });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function NumberFieldControlRender({
@@ -166,35 +227,56 @@ export function ToggleFieldControl({
     disabled,
     field,
     onChange,
+    removeSlot,
     value,
 }: TemplateFieldControlProps) {
     return (
-        <Checkbox
-            checked={value === true}
-            onChange={onChange}
-            disabled={disabled}
-            label={field.label}
-            hideLabel
-        />
+        <EndsWithRemove removeSlot={removeSlot}>
+            <Checkbox
+                checked={value === true}
+                onChange={onChange}
+                disabled={disabled}
+                label={field.label}
+                hideLabel
+            />
+        </EndsWithRemove>
     );
 }
 
 export function SelectFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return SelectFieldControlRender({ field: field as FieldType<'select'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = SelectFieldControlRender({ field: field as FieldType<'select'>, ...rest });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function SelectFieldControlRender({
+    catalogEmpty,
     catalogOptions,
     disabled,
     field,
     onChange,
+    pickedLabel,
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'select'> }) {
-    const options =
+    if (catalogEmpty) {
+        return <p className="text-xs text-textSecondary">{translate(page.catalogEmpty)}</p>;
+    }
+    const offered =
         field.binding && catalogOptions && catalogOptions.length > 0
             ? catalogOptions
             : field.options.map((option) => ({ value: option.id, label: option.label }));
+    // A picked entry that is gone (deleted, or its catalog is) keeps showing its last name.
+    const options =
+        typeof value === 'string' &&
+        value !== '' &&
+        pickedLabel &&
+        !offered.some((option) => option.value === value)
+            ? [{ value, label: pickedLabel }, ...offered]
+            : offered;
 
     if (usesSearchableSelect(field, options)) {
         return (
@@ -370,87 +452,58 @@ function RatingFieldControlRender({
     disabled,
     field,
     maxDegraded,
+    nameSlot,
     onChange,
+    onDetailChange,
+    ratingDetail = {},
+    removeSlot,
     resolvedMax,
+    rollLabel,
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'rating'> }) {
-    const effectiveMax = resolvedMax ?? field.max;
+    const traitDiceRoll = useDocumentTraitDiceRoll();
+    const characterName = useDocumentSource().document?.metadata.title || undefined;
+    const effectiveMax = ratingEffectiveMax(field, resolvedMax);
     const stored = typeof value === 'number' ? value : undefined;
     // Display clamp (A4): a lowered computed maximum hides the excess without rewriting
     // the stored value; raising the maximum re-exposes the full range.
     const current = stored === undefined ? undefined : Math.min(stored, effectiveMax);
-
-    if (field.presentation === 'number') {
-        return (
-            <div>
-                <NumberInput
-                    value={current}
-                    min={field.min}
-                    max={effectiveMax}
-                    step={1}
-                    onChange={onChange}
-                    disabled={disabled}
-                    label={field.label}
-                    className={`${inputClasses} w-20`}
-                />
-                {maxDegraded && (
-                    <p role="alert" className="text-xs text-error">
-                        {translate(page.formulaDegraded, {
-                            field: field.label,
-                            reason: translate(page.formulaReasonUnknown).replace(
-                                '{coordinate}',
-                                ''
-                            ),
-                        })}
-                    </p>
-                )}
-            </div>
-        );
-    }
-
-    // One dot per point, like trait rows: dots 1..max; the minimum is a floor, not a dot.
-    const levels = Array.from({ length: Math.max(0, effectiveMax) }, (_, index) => index + 1);
+    const flags = field.presentation === 'dots' ? (field.flags ?? []) : [];
 
     return (
-        <div>
-            <div className="flex items-center gap-1" role="group" aria-label={field.label}>
-                {levels.map((level) => {
-                    const active = current !== undefined && level <= current;
-                    const shape =
-                        field.presentation === 'dots'
-                            ? active
-                                ? 'bg-primary border-primary'
-                                : 'bg-bgSurface border-border'
-                            : active
-                              ? 'bg-primary/30 border-primary'
-                              : 'bg-bgSurface border-border';
-                    return (
-                        <button
-                            key={level}
-                            type="button"
-                            disabled={disabled}
-                            aria-label={`${field.label}: ${level}`}
-                            aria-pressed={active}
-                            onClick={() =>
-                                onChange(Math.max(field.min, current === level ? level - 1 : level))
-                            }
-                            className={clsx(
-                                'h-4 w-4 rounded-full border transition-colors',
-                                shape,
-                                'hover:border-primary'
-                            )}
-                        />
-                    );
-                })}
-                <span className="ml-2 text-xs text-textSecondary">
-                    {current ?? '—'}/{effectiveMax}
-                    {stored !== undefined && stored > current! && (
-                        <span className="ml-1 text-error" title={translate(page.formulaClamped)}>
-                            ({stored})
-                        </span>
-                    )}
-                </span>
-            </div>
+        <RatingRow
+            label={field.label}
+            term={termLinkOf(field)}
+            hideLabel={field.hideLabel}
+            labelPosition={fieldLabelPosition(field)}
+            required={field.required}
+            presentation={field.presentation}
+            value={current}
+            clampedFrom={stored !== undefined && stored > effectiveMax ? stored : undefined}
+            min={field.min}
+            max={effectiveMax}
+            disabled={disabled}
+            onChange={(next) =>
+                onChange(
+                    next === undefined
+                        ? undefined
+                        : Math.min(effectiveMax, Math.max(field.min, next))
+                )
+            }
+            text={ratingDetail.text}
+            onTextChange={
+                field.textInput ? (text) => onDetailChange?.({ ...ratingDetail, text }) : undefined
+            }
+            showNumbers={field.showNumbers}
+            onDiceRoll={field.dice ? traitDiceRoll : undefined}
+            flags={flags}
+            flagValues={ratingDetail}
+            onFlagsChange={(next) => onDetailChange?.({ ...ratingDetail, ...next })}
+            characterName={characterName}
+            labelSlot={nameSlot}
+            rollLabel={rollLabel}
+            removeSlot={removeSlot}
+        >
             {maxDegraded && (
                 <p role="alert" className="text-xs text-error">
                     {translate(page.formulaDegraded, {
@@ -459,13 +512,33 @@ function RatingFieldControlRender({
                     })}
                 </p>
             )}
-        </div>
+        </RatingRow>
+    );
+}
+
+/**
+ * The rating's range (spec 014, R3): a resolved computed maximum decides, up to the schema
+ * limit; the static maximum applies without one or when its source is unavailable.
+ */
+export function ratingEffectiveMax(
+    field: Pick<FieldType<'rating'>, 'min' | 'max'>,
+    resolvedMax: number | undefined
+): number {
+    if (resolvedMax === undefined || !Number.isFinite(resolvedMax)) return field.max;
+    return Math.min(
+        TEMPLATE_LIMITS.ratingMax,
+        Math.max(Math.max(1, field.min), Math.floor(resolvedMax))
     );
 }
 
 export function ResourceFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return ResourceFieldControlRender({ field: field as FieldType<'resource'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = ResourceFieldControlRender({ field: field as FieldType<'resource'>, ...rest });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function ResourceFieldControlRender({
@@ -523,8 +596,16 @@ function ResourceFieldControlRender({
 }
 
 export function ReferenceFieldControl(props: TemplateFieldControlProps) {
-    const { field, ...rest } = props;
-    return ReferenceFieldControlRender({ field: field as FieldType<'reference'>, ...rest });
+    const { field, removeSlot, ...rest } = props;
+    const control = ReferenceFieldControlRender({
+        field: field as FieldType<'reference'>,
+        ...rest,
+    });
+    return listEntryShape(field) === 'row' ? (
+        <EndsWithRemove removeSlot={removeSlot}>{control}</EndsWithRemove>
+    ) : (
+        control
+    );
 }
 
 function ReferenceFieldControlRender({
@@ -536,15 +617,23 @@ function ReferenceFieldControlRender({
     previewSource,
     value,
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'reference'> }) {
-    const docs = (documentOptions ?? []).filter(
-        (doc) => doc.kind === undefined || field.targetKinds.includes(doc.kind as never)
-    );
+    const offered = (doc: DocumentOption) =>
+        doc.inScope !== false &&
+        (doc.kind === undefined || field.targetKinds.includes(doc.kind as never));
+    const docs = (documentOptions ?? []).filter(offered);
     const selectedIds = (
         Array.isArray(value) ? value : typeof value === 'string' ? [value] : []
     ).filter((id): id is string => typeof id === 'string' && id.length > 0);
-    const titles = new Map((documentOptions ?? []).map((doc) => [doc.value, doc.label]));
-    const missing = selectedIds.filter((id) => !titles.has(id));
+    const options = new Map((documentOptions ?? []).map((doc) => [doc.value, doc]));
+    const missing = selectedIds.filter((id) => !options.has(id));
     const missingKey = missing.join('|');
+    // An existing document outside the setting stays linked and openable (spec 017, R4).
+    const outOfScopeKey = selectedIds
+        .filter((id) => {
+            const option = options.get(id);
+            return option !== undefined && !offered(option);
+        })
+        .join('|');
 
     useEffect(() => {
         if (previewSource || missingKey === '') return;
@@ -554,6 +643,16 @@ function ReferenceFieldControlRender({
             details: { fieldId: field.id, documentIds: missingKey.split('|') },
         });
     }, [field.id, missingKey, previewSource]);
+
+    useEffect(() => {
+        if (previewSource || outOfScopeKey === '') return;
+        reportSheetIssue({
+            code: 'reference-target-out-of-scope',
+            message: "Reference points to a document outside the template's setting",
+            details: { fieldId: field.id, documentIds: outOfScopeKey.split('|') },
+        });
+    }, [field.id, outOfScopeKey, previewSource]);
+    const outOfScope = new Set(outOfScopeKey === '' ? [] : outOfScopeKey.split('|'));
 
     const write = (ids: string[]) =>
         onChange(field.multiple ? ids : ids.length > 0 ? ids[ids.length - 1] : undefined);
@@ -565,7 +664,7 @@ function ReferenceFieldControlRender({
             {selectedIds.length > 0 && (
                 <ul className="flex flex-wrap gap-1" aria-label={field.label}>
                     {selectedIds.map((id) => {
-                        const title = titles.get(id);
+                        const title = options.get(id)?.label;
                         return (
                             <li
                                 key={id}
@@ -577,6 +676,11 @@ function ReferenceFieldControlRender({
                                 )}
                             >
                                 <span>{title ?? translate(referenceMessages.missing)}</span>
+                                {outOfScope.has(id) && (
+                                    <span className="text-xs text-textSecondary">
+                                        {translate(referenceMessages.outOfScope)}
+                                    </span>
+                                )}
                                 {title && onOpenDocument && (
                                     <button
                                         type="button"
@@ -691,13 +795,13 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
     };
 
     return (
-        <div className="grid gap-2">
+        <div className="grid min-w-0 gap-2">
             {src && (
                 <img
                     src={src}
                     alt={t(page.imageAlt)}
                     referrerPolicy="no-referrer"
-                    className="max-h-64 w-auto rounded border border-border"
+                    className="max-h-64 w-auto max-w-full rounded border border-border"
                 />
             )}
             {image && !src && (
@@ -736,7 +840,7 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
                         placeholder={t(uiMessages.sheet.base.portrait.urlPlaceholder)}
                         aria-label={t(page.imageUrl)}
                         disabled={disabled}
-                        className={`${inputClasses} w-64`}
+                        className={`${inputClasses} w-64 min-w-0 max-w-full`}
                     />
                     {image && (
                         <button
@@ -760,14 +864,20 @@ function FormulaFieldControlRender({
 }: Omit<TemplateFieldControlProps, 'field'> & { field: FieldType<'formula'> }) {
     // Read-only computed value (FR-13): never stored, always recomputed by the hook layer;
     // failures surface as explicit labeled error states, never a silently wrong number.
+    const top = fieldLabelPosition(field) === 'top';
     return (
         <div
             className={clsx(
-                'flex items-baseline justify-between gap-3',
+                top ? 'grid gap-1' : 'flex items-baseline justify-between gap-3',
                 field.compact ? 'text-xs' : 'text-sm'
             )}
         >
-            <span className={clsx('text-textSecondary', field.hideLabel && 'sr-only')}>
+            <span
+                className={clsx(
+                    top ? 'text-xs font-medium text-textSecondary' : 'text-textSecondary',
+                    field.hideLabel && 'sr-only'
+                )}
+            >
                 {field.label}
             </span>
             {formulaResult?.state === 'ok' ? (

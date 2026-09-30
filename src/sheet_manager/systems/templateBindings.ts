@@ -118,9 +118,23 @@ export interface TrackLevel {
     translation?: { id: string; message: string };
 }
 
+/** The two marks a built-in track stores (`ConditionMark`), lighter first. */
+export const TRACK_MARK_IDS = ['slash', 'cross'] as const;
+
+export type TrackMarkId = (typeof TRACK_MARK_IDS)[number];
+
+/** A game's name for a built-in mark (spec 018); unnamed tracks use the generic names. */
+export interface TrackMark {
+    id: TrackMarkId;
+    label: string;
+    translation?: { id: string; message: string };
+}
+
 export interface TrackBinding extends BindingBase {
     kind: 'track';
     trackId: string;
+    /** Game names of the marks, lighter first; absent means the generic Slash and Cross. */
+    marks?: readonly TrackMark[];
     /**
      * Record in document data holding `{ levels: ConditionMark[] }`; with `members`, the array
      * of members, each holding the track under `members.trackKey`.
