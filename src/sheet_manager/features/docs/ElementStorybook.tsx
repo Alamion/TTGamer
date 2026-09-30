@@ -13,7 +13,13 @@ import {
     DocumentSourceContext,
     type ScratchDocumentSource,
 } from '../../hooks/useDocumentSource';
-import { type ElementStory, listElementStories } from '../../storybook/stories';
+import {
+    type ElementStory,
+    fodderParityTemplate,
+    listElementStories,
+    PARITY_TARGET,
+    paritySample,
+} from '../../storybook/stories';
 import type { TemplateField } from '../../types/template';
 import { DeclarativeSheetView } from '../sheet/declarative/DeclarativeSheetView';
 import { ReferenceFieldControl } from '../sheet/declarative/fieldControls';
@@ -144,5 +150,41 @@ export function ReferenceEntryVariants() {
                 },
             ]}
         />
+    );
+}
+
+/**
+ * The fodder group's built-in health tracker beside its own-tracker rebuild (spec 018, US7), on
+ * one sample group with the same marks: switch lengths, mark, and shorten on both to compare.
+ */
+export function TrackerParity() {
+    const scratch = useMemo(() => {
+        const template = fodderParityTemplate();
+        const definition = findTemplateDefinition(
+            PARITY_TARGET.systemId,
+            PARITY_TARGET.documentKind
+        );
+        if (!template || !definition) return undefined;
+        const blank = blankDocument(PARITY_TARGET.systemId, definition);
+        const sample = paritySample(template);
+        const initial = {
+            ...blank,
+            data: { ...(blank.data as object), ...sample.data },
+            templateValues: sample.values as typeof blank.templateValues,
+        };
+        return { template, source: createScratchDocumentSource(initial, definition) };
+    }, []);
+    if (!scratch) {
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'The fodder-group parity example has no member track to compare',
+            details: { target: PARITY_TARGET },
+        });
+        return null;
+    }
+    return (
+        <ScratchProvider scratch={scratch.source}>
+            <DeclarativeSheetView template={scratch.template} embedded />
+        </ScratchProvider>
     );
 }

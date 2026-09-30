@@ -447,7 +447,7 @@ Wars character health shows its total row.
 
 **Independent test**: quickstart scenario 10.
 
-- [ ] T048 [US7] Add `FODDER_PARITY_CONFIG`, the own-tracker rebuild, to the storybook, beside the
+- [x] T048 [US7] Add `FODDER_PARITY_CONFIG`, the own-tracker rebuild, to the storybook, beside the
       stories in `src/sheet_manager/storybook/stories.ts`:
     - seven health levels with penalties;
     - two marks;
@@ -457,11 +457,11 @@ Wars character health shows its total row.
 
     The config reads the shipped levels through the registry, not a system import.
 
-- [ ] T049 [US7] Add the `TrackerParity` widget to the element storybook component
+- [x] T049 [US7] Add the `TrackerParity` widget to the element storybook component
       (`ElementStorybook.tsx`, beside `ReferenceEntryVariants`). It renders the shipped fodder
       group tracker and the rebuild side by side on the same sample marks, with a length switch.
       Place it on the storybook's template-elements page.
-- [ ] T050 [US7] Write `tests/sheet_manager/tracker-parity.test.tsx`. For the same marks at each
+- [x] T050 [US7] Write `tests/sheet_manager/tracker-parity.test.tsx`. For the same marks at each
       length (3/5/7), both trackers show:
     - the same visible level names;
     - the same totals and out states;
