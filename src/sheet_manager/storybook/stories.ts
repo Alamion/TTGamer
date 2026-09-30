@@ -736,6 +736,7 @@ function boundNodes(binding: DocumentBindingDescriptor, index: number): NodeInpu
                         valueColumn: { title: 'Penalty', show: true },
                         columns: [{ id: 'source', kind: 'text', title: 'Source' }],
                         total: true,
+                        legend: true,
                     },
                 }),
             ];
@@ -824,8 +825,9 @@ const trackers = story(
             columns: 2,
             children: [
                 tracker('tracker-table', 'Health (table, two marks)'),
-                tracker('tracker-wod20', 'Health (WoD 20th, three marks)', {
+                tracker('tracker-wod20', 'Health (WoD 20th, three marks, legend)', {
                     marks: [BASHING, LETHAL, AGGRAVATED],
+                    legend: true,
                 }),
                 tracker('tracker-strip', 'Health (strip)', { display: 'strip' }),
                 tracker('tracker-line', 'Health (one line)', { display: 'line', total: false }),

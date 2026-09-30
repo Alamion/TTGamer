@@ -197,9 +197,12 @@ export function trackerFromSource(
             compact: false,
             tracker: {
                 display: own?.display ?? kept?.display ?? 'table',
-                ...(own ? { valueColumn: own.valueColumn, total: own.total } : {}),
+                ...(own
+                    ? { valueColumn: own.valueColumn, total: own.total, legend: own.legend }
+                    : {}),
                 ...(kept?.valueColumn ? { valueColumn: kept.valueColumn } : {}),
                 ...(kept?.total !== undefined ? { total: kept.total } : {}),
+                ...(kept?.legend !== undefined ? { legend: kept.legend } : {}),
                 ...(extras && extras.length > 0 ? { columns: extras } : {}),
             },
         };
@@ -217,6 +220,7 @@ export function trackerFromSource(
         ...(settings?.display ? { display: settings.display } : {}),
         ...(settings?.valueColumn ? { valueColumn: settings.valueColumn } : {}),
         ...(settings?.total !== undefined ? { total: settings.total } : {}),
+        ...(settings?.legend !== undefined ? { legend: settings.legend } : {}),
         columns: [...defaults.columns, ...(settings?.columns ?? [])],
     };
 }

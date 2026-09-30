@@ -83,6 +83,8 @@ function mount(template: ReturnType<typeof page>, { readOnly = false } = {}) {
     );
 }
 
+/** A built-in tracker that names its marks under it (off by default). */
+const named = { tracker: { legend: true } };
 const stored = () => useDocumentStore.getState().documents[0]!;
 const totalRow = () => document.querySelector('[data-tracker-total]') as HTMLElement | null;
 const legend = () =>
@@ -155,7 +157,7 @@ describe('page settings of a built-in tracker', () => {
         mount(
             page(SW_CHARACTER, [
                 track('track:health', {
-                    tracker: { marks: { cross: { name: 'Wound', fill: '#aa0000' } } },
+                    tracker: { legend: true, marks: { cross: { name: 'Wound', fill: '#aa0000' } } },
                 }),
             ])
         );
@@ -199,26 +201,29 @@ describe('shipped pages and game marks', () => {
         expect(totalRow()!.className).not.toMatch(/\bbg-/);
     });
 
-    it('names bashing and lethal on WoD 2e health, with no total row by default', () => {
+    it('names bashing and lethal on WoD 2e health, with no total row or legend by default', () => {
         seed(WOD2E);
         mount(page(WOD2E, [track('track:health')]));
-        expect(legend()).toEqual(['╱Bashing', '×Lethal']);
         expect(totalRow()).toBeNull();
+        expect(screen.queryByRole('list')).toBeNull();
+        cleanup();
+        mount(page(WOD2E, [track('track:health', named)]));
+        expect(legend()).toEqual(['╱Bashing', '×Lethal']);
     });
 
     it('uses the generic names on droid and vehicle damage', () => {
         seed(SW_DROID);
-        mount(page(SW_DROID, [track('track:droid-damage')]));
+        mount(page(SW_DROID, [track('track:droid-damage', named)]));
         expect(legend()).toEqual(['╱Slash', '×Cross']);
         cleanup();
         seed(SW_VEHICLE);
-        mount(page(SW_VEHICLE, [track('track:members-damage')]));
+        mount(page(SW_VEHICLE, [track('track:members-damage', named)]));
         expect(legend()).toEqual(['╱Slash', '×Cross']);
     });
 
     it('names superficial and aggravated on V5 tracks and keeps the length switch', () => {
         seed(HUNTER);
-        mount(page(HUNTER, [track('track:health', { label: 'Health' })]));
+        mount(page(HUNTER, [track('track:health', { ...named, label: 'Health' })]));
         expect(legend()).toEqual(['╱Superficial', '×Aggravated']);
         const before = screen.getAllByRole('button', { name: /^Health \d+:/ }).length;
         fireEvent.click(screen.getByRole('button', { name: 'Extend Health' }));

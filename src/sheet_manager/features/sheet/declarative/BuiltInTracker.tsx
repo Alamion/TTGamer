@@ -211,6 +211,7 @@ export function BuiltInTracker({
             show: settings?.valueColumn?.show ?? hasPenalties,
         },
         total: settings?.total ?? (members !== undefined && rawMembers.length > 1),
+        legend: settings?.legend ?? false,
         gameColumnTitle: translate(members?.trackKey === 'health' ? fields.health : fields.damage),
         copies,
         ...(members ? { members: { canAdd: rawMembers.length < maxMembers } } : {}),

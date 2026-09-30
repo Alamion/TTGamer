@@ -42,6 +42,7 @@ export interface TrackerSettingsValue {
     total: boolean;
     lengths: TrackerLength[];
     out: boolean;
+    legend: boolean;
 }
 
 /** A built-in tracker: the game fixes counts and order; its own text shows as placeholders. */
@@ -78,7 +79,7 @@ function move<T>(list: readonly T[], index: number, step: -1 | 1): T[] {
 
 function Group({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
     return (
-        <fieldset className="grid gap-2 border-0 border-t border-border p-0 pt-3">
+        <fieldset className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-2 border-0 border-t border-border p-0 pt-3">
             <legend className="text-xs font-semibold text-textPrimary">{title}</legend>
             {hint && <p className="m-0 text-[11px] text-textSecondary">{hint}</p>}
             {children}
@@ -191,7 +192,7 @@ export function TrackerSettings({
     const valueTitle = value.valueColumn.title || t(text.defaultValueTitle);
 
     return (
-        <div className="grid gap-3" data-tracker-settings="">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3" data-tracker-settings="">
             <Group title={t(text.display)} hint={t(text.displayHint)}>
                 <div role="group" aria-label={t(text.display)} className="flex flex-wrap gap-1">
                     {TRACKER_DISPLAYS.map((display) => (
@@ -222,7 +223,7 @@ export function TrackerSettings({
                             const set = event.target.value as MarkSetId | '';
                             if (set) onChange({ marks: markSet(set) });
                         }}
-                        className={`${inputClasses} justify-self-start`}
+                        className={`${inputClasses} max-w-full justify-self-start`}
                     >
                         <option value="">{t(text.startFrom)}</option>
                         <option value="one">{t(text.setOne)}</option>
@@ -376,7 +377,7 @@ export function TrackerSettings({
                                 },
                             })
                         }
-                        className={`${inputClasses} min-w-0 flex-1`}
+                        className={`${inputClasses} min-w-0 flex-[1_1_8rem]`}
                     />
                     <ToggleRow
                         checked={value.valueColumn.show}
@@ -391,7 +392,7 @@ export function TrackerSettings({
                     const placeholder = game?.levels[index];
                     return (
                         <div key={level.id} className="flex items-center gap-1.5">
-                            <span className="w-5 text-right font-mono text-xs text-textSecondary">
+                            <span className="w-4 shrink-0 text-right font-mono text-xs text-textSecondary">
                                 {n}
                             </span>
                             <input
@@ -409,7 +410,7 @@ export function TrackerSettings({
                                 disabled={!value.valueColumn.show}
                                 aria-label={t(text.levelValue, { n })}
                                 onChange={(event) => setLevel(index, { value: event.target.value })}
-                                className={`${inputClasses} w-16 font-mono`}
+                                className={`${inputClasses} w-14 shrink-0 font-mono`}
                             />
                             <RowButtons
                                 index={index}
@@ -469,7 +470,7 @@ export function TrackerSettings({
                     return (
                         <div
                             key={column.id}
-                            className="grid gap-1.5 rounded border border-border bg-bgBase p-2"
+                            className="grid min-w-0 gap-1.5 rounded border border-border bg-bgBase p-2"
                         >
                             <div className="flex flex-wrap items-center gap-1.5">
                                 <strong className="text-xs text-textPrimary">
@@ -496,7 +497,7 @@ export function TrackerSettings({
                                     onChange={(event) =>
                                         setColumn(index, { title: event.target.value })
                                     }
-                                    className={`${inputClasses} min-w-0 flex-1`}
+                                    className={`${inputClasses} min-w-0 flex-[1_1_7rem]`}
                                 />
                                 <button
                                     type="button"
@@ -513,7 +514,7 @@ export function TrackerSettings({
                                     <X className="h-3 w-3" aria-hidden="true" />
                                 </button>
                             </div>
-                            <label className="flex items-center gap-2 text-xs text-textSecondary">
+                            <label className="flex flex-wrap items-center gap-2 text-xs text-textSecondary">
                                 {t(text.covers)}
                                 <select
                                     value={column.covers ?? 0}
@@ -528,7 +529,7 @@ export function TrackerSettings({
                                             ),
                                         });
                                     }}
-                                    className={inputClasses}
+                                    className={`${inputClasses} min-w-0 max-w-full`}
                                 >
                                     <option value={0}>{t(text.coversAll)}</option>
                                     {value.levels.slice(0, -1).map((_, i) => (
@@ -603,6 +604,11 @@ export function TrackerSettings({
                         onChange={(out) => onChange({ out })}
                     />
                 )}
+                <ToggleRow
+                    checked={value.legend}
+                    label={t(text.legend)}
+                    onChange={(legend) => onChange({ legend })}
+                />
             </Group>
         </div>
     );

@@ -115,6 +115,7 @@ function variantsOf(node: TemplateNode): string[] {
             if (node.lengths.length > 1) tags.push('tracker:lengths');
             flag('out');
             flag('total');
+            flag('legend');
             flag('hideLabel');
             if (!node.valueColumn.show) tags.push('tracker:value-hidden');
             break;
@@ -142,6 +143,7 @@ function variantsOf(node: TemplateNode): string[] {
             if (node.tracker?.columns?.length) tags.push('primitive:tracker:columns');
             if (node.tracker?.total) tags.push('primitive:tracker:total');
             if (node.tracker?.marks) tags.push('primitive:tracker:marks');
+            if (node.tracker?.legend) tags.push('primitive:tracker:legend');
             break;
     }
     return tags;
@@ -226,6 +228,7 @@ const REQUIRED_VARIANTS = [
     'tracker:lengths',
     'tracker:out',
     'tracker:total',
+    'tracker:legend',
     'tracker:hideLabel',
     'tracker:value-hidden',
     'primitive:compact',
@@ -236,6 +239,7 @@ const REQUIRED_VARIANTS = [
     'primitive:tracker:columns',
     'primitive:tracker:total',
     'primitive:tracker:marks',
+    'primitive:tracker:legend',
 ];
 
 describe('element storybook (constitution VI, T-069)', () => {

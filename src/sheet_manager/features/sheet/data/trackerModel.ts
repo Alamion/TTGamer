@@ -64,6 +64,7 @@ export interface TrackerModel {
     valueColumn: { title: string; show: boolean };
     columns: readonly TrackerModelColumn[];
     total: boolean;
+    legend: boolean;
     /** Present when the reader can switch lengths. */
     length?: { shown: number; canShorten: boolean; canLengthen: boolean };
     /** Stored marks, notes, and copies the tracker no longer shows (spec FR-026a). */
@@ -177,6 +178,7 @@ export function ownTrackerModel(
         valueColumn: { title: field.valueColumn.title ?? '', show: field.valueColumn.show },
         columns,
         total: field.total,
+        legend: field.legend,
         ...(field.lengths.length > 1
             ? {
                   length: {
@@ -455,6 +457,7 @@ export interface BuiltInTrackerInput {
     marks: TrackerModel['marks'];
     valueColumn: { title: string; show: boolean };
     total: boolean;
+    legend: boolean;
     gameColumnTitle: string;
     copies: readonly BuiltInCopy[];
     members?: { canAdd: boolean };
@@ -553,6 +556,7 @@ export function builtInTrackerModel(input: BuiltInTrackerInput): TrackerModel {
         valueColumn: input.valueColumn,
         columns: [game, ...extras],
         total: input.total,
+        legend: input.legend,
         ...(input.length ? { length: input.length } : {}),
         hidden: 0,
     };

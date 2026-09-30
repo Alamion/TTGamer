@@ -4139,6 +4139,9 @@
     "ttgamer.ui.sheet.templates.tracker.issueLengthEmpty": {
         "message": "Трекер «{id}»: длина {n} не показывает ни одного уровня."
     },
+    "ttgamer.ui.sheet.templates.tracker.legend": {
+        "message": "Подписывать отметки под трекером"
+    },
     "ttgamer.ui.sheet.templates.tracker.lengthColumn": {
         "message": "Длина {n}"
     },

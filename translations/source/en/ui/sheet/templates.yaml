@@ -300,6 +300,7 @@ tracker:
     reading: Reading the marks
     total: 'Total row: the {value} of the deepest marked level'
     out: Mark a copy as out when its last level is marked
+    legend: Name the marks under the tracker
     defaultLabel: Health
     issueLengthEmpty: 'Tracker "{id}": length {n} shows no level.'
     issueCovers: 'Tracker "{id}": a column covers all its levels or more; choose "All levels".'

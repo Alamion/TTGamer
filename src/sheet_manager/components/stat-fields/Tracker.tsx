@@ -482,7 +482,7 @@ export function Tracker({
     }
 
     const legend =
-        model.marks.length > 1 && model.display !== 'line' ? (
+        model.legend && model.display !== 'line' ? (
             <ul className="m-0 flex list-none flex-wrap gap-x-3 gap-y-1 p-0 text-xs text-textSecondary">
                 {model.marks.map((mark) => (
                     <li key={mark.id} className="inline-flex items-center gap-1">

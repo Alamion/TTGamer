@@ -1652,6 +1652,29 @@ describe('tracker settings (spec 018)', () => {
         return settings('wounds');
     }
 
+    it('names the marks under the tracker only when the author turns it on', () => {
+        const panel = openTracker();
+        const legend = () =>
+            screen.queryAllByRole('listitem').find((item) => item.textContent === '×Lethal') ??
+            null;
+        const toggle = within(panel).getByLabelText(
+            'Name the marks under the tracker'
+        ) as HTMLInputElement;
+        expect(toggle.checked).toBe(false);
+        expect(legend()).toBeNull();
+        fireEvent.click(toggle);
+        expect(legend()).not.toBeNull();
+        cleanup();
+
+        const builtIn = openBuiltIn();
+        fireEvent.click(within(builtIn).getByLabelText('Name the marks under the tracker'));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore.getState().templates[0]!.children[0] as TemplateNode & {
+            tracker?: unknown;
+        };
+        expect(saved.tracker).toEqual({ legend: true });
+    });
+
     it('lets a built-in tracker rename its marks but not add or reorder them', () => {
         const panel = openBuiltIn();
         expect(within(panel).queryByRole('button', { name: 'Add mark' })).toBeNull();

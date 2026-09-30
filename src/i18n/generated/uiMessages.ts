@@ -4978,6 +4978,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.tracker.out',
                     message: 'Mark a copy as out when its last level is marked',
                 },
+                legend: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.legend',
+                    message: 'Name the marks under the tracker',
+                },
                 defaultLabel: {
                     id: 'ttgamer.ui.sheet.templates.tracker.defaultLabel',
                     message: 'Health',

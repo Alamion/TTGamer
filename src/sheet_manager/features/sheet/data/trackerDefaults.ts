@@ -69,7 +69,15 @@ export function newTrackerColumn(kind: TrackerColumn['kind']): TrackerColumn {
 /** Everything a new own tracker starts with (contract "Editor: palette and source"). */
 export function defaultTrackerSettings(): Pick<
     TrackerField,
-    'display' | 'marks' | 'levels' | 'valueColumn' | 'columns' | 'total' | 'lengths' | 'out'
+    | 'display'
+    | 'marks'
+    | 'levels'
+    | 'valueColumn'
+    | 'columns'
+    | 'total'
+    | 'lengths'
+    | 'out'
+    | 'legend'
 > {
     return {
         display: 'table',
@@ -80,5 +88,6 @@ export function defaultTrackerSettings(): Pick<
         total: true,
         lengths: [],
         out: false,
+        legend: false,
     };
 }

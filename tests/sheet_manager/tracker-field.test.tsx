@@ -218,7 +218,7 @@ describe('kinds of marks (US2)', () => {
     });
 
     it('lists each mark in a legend, its symbol centred in the box', () => {
-        mount(trackerPage({ marks: [BASHING, LETHAL, AGGRAVATED] }));
+        mount(trackerPage({ marks: [BASHING, LETHAL, AGGRAVATED], legend: true }));
         const legend = screen.getByRole('list');
         const items = within(legend).getAllByRole('listitem');
         expect(items.map((item) => item.textContent)).toEqual([
@@ -231,11 +231,11 @@ describe('kinds of marks (US2)', () => {
         expect(swatch.className).toContain('bg-tertiary');
     });
 
-    it('has no legend with a single mark or on one line', () => {
-        mount(trackerPage({ marks: [BASHING] }));
+    it('has no legend unless turned on, and none on one line', () => {
+        mount(trackerPage({ marks: [BASHING, LETHAL] }));
         expect(screen.queryByRole('list')).toBeNull();
         cleanup();
-        mount(trackerPage({ display: 'line' }));
+        mount(trackerPage({ display: 'line', legend: true }));
         expect(screen.queryByRole('list')).toBeNull();
     });
 });

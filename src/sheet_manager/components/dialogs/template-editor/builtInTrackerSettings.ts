@@ -81,6 +81,7 @@ export function builtInSettings(
             total: settings?.total ?? binding.members !== undefined,
             lengths: [],
             out: false,
+            legend: settings?.legend ?? false,
         },
         game: {
             levels: legacy ? baseLevels : game,
@@ -146,6 +147,7 @@ export function builtInSettingsUpdate(
         else delete next.columns;
     }
     if (change.total !== undefined) next.total = change.total;
+    if (change.legend !== undefined) next.legend = change.legend;
     updates.tracker = next;
     return updates;
 }

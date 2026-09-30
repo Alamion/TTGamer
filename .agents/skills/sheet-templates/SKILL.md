@@ -101,7 +101,7 @@ success|text` or `#rrggbb`; order = click order and weight), `levels` (1–20: i
   same as `cohort.ts` `shortenMarks` for stored fodder members (proven by
   `tracker-parity.test.tsx`). - Rendering: `trackerModel.ts` (`ownTrackerModel`, `builtInTrackerModel`) → molecule
   `components/stat-fields/Tracker.tsx` (grid table with ARIA roles, strips, one line,
-  legend with 2+ kinds, copy add/remove with confirm, length −/+ with a danger confirm).
+  legend only when `legend` is on (field or override; off by default, built-in too), copy add/remove with confirm, length −/+ with a danger confirm).
   Own values: `declarative/TrackerFieldControl.tsx`; built-in: `declarative/BuiltInTracker.tsx`
   (replaces `CohortTrack`; page values reach it through `PrimitiveNodeView`'s `page`). - Editor: `TrackerSettings.tsx` serves both (game-fixed parts disabled, game text as
   placeholders; `builtInTrackerSettings.ts` maps the panel onto the override); the Source

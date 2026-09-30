@@ -404,3 +404,9 @@ Where the built code differs from the decisions above:
   are `data/trackerDefaults.ts`. The old `ConditionTrackTable`/`ConditionTrackStrip` are removed.
 - **Member tracks keep their wording** (Add member, Remove member A, Out of the fight, the member
   cap alert) through the tracker's wording overrides.
+- **Legend is opt-in** (maintainer review): the mark legend no longer appears automatically with
+  two or more marks. A `legend` flag on the field and on the built-in override turns it on
+  ("Name the marks under the tracker"); it is off by default everywhere, built-in trackers too.
+- **Settings fit the 20rem panel**: the settings groups are `fieldset`s, whose browser default
+  `min-inline-size: min-content` let wide rows push the panel into horizontal scroll; the groups
+  and the panel root now use `min-w-0` with a `minmax(0,1fr)` column, and rows wrap.

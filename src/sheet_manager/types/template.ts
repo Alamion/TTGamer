@@ -315,6 +315,8 @@ const TrackerFieldSchema = z.object({
     total: z.boolean().default(true),
     lengths: z.array(TrackerLengthSchema).max(TEMPLATE_LIMITS.trackerLengthsMax).default([]),
     out: z.boolean().default(false),
+    /** The row naming each mark kind under the tracker. */
+    legend: z.boolean().default(false),
 });
 
 export type TrackerMarkKind = z.infer<typeof TrackerMarkKindSchema>;
@@ -518,6 +520,7 @@ export const TrackerOverrideSchema = z.object({
     /** Extra columns after the game's marks column; their values live in `templateValues`. */
     columns: trackerColumnsSchema(0).optional(),
     total: z.boolean().optional(),
+    legend: z.boolean().optional(),
     /** Storage coordinate of the extra columns' values; unset uses the node id. */
     valueKey: templateIdentifierSchema.optional(),
 });
