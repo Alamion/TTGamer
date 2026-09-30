@@ -496,7 +496,7 @@ Wars character health shows its total row.
 - [x] T055 Run `yarn validate:i18n` and `yarn verify:full`. Fix everything they report, including
       knip: the old `ConditionTrackTable`/`ConditionTrackStrip` exports may become unused; remove
       them rather than add ignores. `CompactConditionTrack` stays out of scope unless knip flags it.
-- [ ] T056 Walk through the manual scenarios in `specs/018-configurable-trackers/quickstart.md` on
+- [x] T056 Walk through the manual scenarios in `specs/018-configurable-trackers/quickstart.md` on
       the dev server, together with the maintainer. Scenario 1 also checks SC-001 (a working
       tracker in under 3 minutes, without the guide).
 
