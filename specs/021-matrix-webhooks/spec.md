@@ -199,8 +199,10 @@ reader's language.
 - **FR-006**: Matrix delivery MUST reuse the existing queue: the combining moment, request
   spacing, length bounds, and per-address grouping apply to both services.
 - **FR-007**: A Matrix post MUST carry the roll as formatted text the room renders (bold, quote,
-  code block), with the same content and anonymizing rules as Discord, and MUST NOT trigger room
-  or user notifications.
+  code block), with the same content and anonymizing rules as Discord. The app MUST neutralize
+  `@room` and MUST NOT create mentions; a highlight a member's Matrix client adds because the
+  text contains their display name cannot be prevented by the app and is documented in the
+  guide.
 - **FR-008**: A Matrix post MUST be sent in a way a browser can send to another site without a
   permission check first (no preflight); the homeserver side only needs to allow reading the
   answer.
@@ -253,5 +255,6 @@ reader's language.
   the answers of posts to the webhook path.
 - Hookshot renders the post's text as Markdown and accepts a form-encoded body.
 - The roll text is the one built for Discord today; Markdown is shared by both services.
-- The Matrix logo is used to name the service, as the Discord logo is today; the maintainer may
-  supply the SVG.
+- The Matrix logo is used to name the service, as the Discord logo is today; the maintainer
+  supplied both SVGs. Matrix's brand mark is black, so its "service color" is the theme's text
+  color (readable on light and dark themes).

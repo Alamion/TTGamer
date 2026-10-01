@@ -46,7 +46,9 @@ module and keep their meaning (SC-003).
       `addressKey`, `contentLimit`, `isValidAddress`, `prepare`, `request`, `guideAnchor`),
       `SHARING_SERVICES` with the Discord entry (pattern, `#5865F2`, `discord_webhook_url`,
       2 000, identity `prepare`, JSON request with `allowed_mentions: { parse: [] }` and
-      `content`, anchor `discord`), and `sharingServiceOf(id: unknown)` (unknown → first entry).
+      `content`, anchor `discord`, placeholder `https://discord.com/api/webhooks/...`, no
+      `networkHint`), and `sharingServiceOf(id: unknown)` (unknown → first entry, reported with `warn` from
+      `src/shared/utils/logging.ts`; constitution III).
 - [ ] T003 Create `src/integrations/roll-sharing/message.ts` from `webhook.ts`:
       `buildRollShareMessage` (was `buildDiscordHistoryMessage`), `RollShareReadingLines` (was
       `DiscordReadingLines`), and the `truncate`/escape helpers; the 2 000 limit comes from a
@@ -92,7 +94,8 @@ a form body whose `text` carries both rolls.
       character name becomes `@​room` in the Matrix body but stays as-is for Discord (R4);
       200 → ok, 404 → rejected with status, 429 with `retry-after: 2` → rate-limited 2 000 ms,
       thrown `TypeError` → network; a Discord and a Matrix message queued together → two
-      requests to their own addresses (R8); the console error carries no address or text.
+      requests to their own addresses (R8); the console error carries no address or text; `sharingServiceOf('teams')` returns
+      Discord and reports a warning (constitution III).
 
 ### Implementation
 
@@ -100,28 +103,28 @@ a form body whose `text` carries both rolls.
       (`id: 'matrix'`, `name: 'Matrix'`, `color: 'currentColor'`, `addressKey:
 'matrix_webhook_url'`, limit 2 000, `isValidAddress`: parseable `https:` URL that fails the
       Discord rule, `prepare`: replace `@room` with `@​room`, `request`: `{ method: 'POST',
-body: new URLSearchParams({ text: content }) }`, anchor `matrix`); widen
+body: new URLSearchParams({ text: content }) }`, anchor `matrix`, placeholder
+      `https://matrix.example.org/webhook/...`, `networkHint: 'site-permission'`); widen
       `SharingServiceId`.
-- [ ] T010 [US1] Make `src/dice_roller/components/RollSharingSubscription.tsx` read the
-      active target: `sharingServiceOf(settings.sharingService)`, its address from
-      `useSessionStorageState(service.addressKey, '')`, send only when
-      `enableDiscordWebhook` and the address is valid; resubscribe when the service changes.
-      (Depends on T012 for the setting.)
-- [ ] T011 [US1] Notices name the service: move
-      `translations/source/{en,ru}/ui/integrations/discord.yaml` →
-      `translations/source/{en,ru}/ui/integrations/sharing.yaml` with `{service}` in
-      `rateLimited`, `rateLimitedRetry`, `network`, `rejected`, plus `matrixNetwork` ("{service}
-      room could not be reached. The homeserver may not allow this site yet.") and
-      `setupGuide` ("Setup guide"); run `yarn build:translations`; in
-      `RollSharingSubscription.tsx` pass `service.name`, and for Matrix `network` render the
-      text with a link to the guide's `#site-permission` anchor (R11; `useBaseUrl`-safe path,
-      plain `<a>`).
-- [ ] T012 [US1] Add `sharingService: 'discord' as SharingServiceId` to `DEFAULT_SETTINGS`
+- [ ] T010 [US1] Add `sharingService: 'discord' as SharingServiceId` to `DEFAULT_SETTINGS`
       and `{ type: 'choice', name: 'Roll sharing service' }` to the setting config in
       `src/dice_roller/utils/constants.ts`; add the field to `DiceRollerSettings` in
       `src/dice_roller/store/diceRollerStore.ts` (no version bump; `mergeStoredSettings`
       fills it). Extend `tests/dice_roller/utils/constants.test.ts` (key list, default
       `'discord'`).
+- [ ] T011 [US1] Make `src/dice_roller/components/RollSharingSubscription.tsx` read the
+      active target: `sharingServiceOf(settings.sharingService)`, its address from
+      `useSessionStorageState(service.addressKey, '')`, send only when
+      `enableDiscordWebhook` and the address is valid; resubscribe when the service changes.
+- [ ] T012 [US1] Notices name the service: move
+      `translations/source/{en,ru}/ui/integrations/discord.yaml` →
+      `translations/source/{en,ru}/ui/integrations/sharing.yaml` with `{service}` in
+      `rateLimited`, `rateLimitedRetry`, `network`, `rejected`, plus `matrixNetwork` ("{service}
+      room could not be reached. The homeserver may not allow this site yet.") and
+      `setupGuide` ("Setup guide"); run `yarn build:translations`; in
+      `RollSharingSubscription.tsx` pass `service.name`, and when `service.networkHint` is set a
+      `network` failure renders the hint text with a link to the guide's `#site-permission` anchor (R11; `useBaseUrl`-safe path,
+      plain `<a>`).
 - [ ] T013 [US1] Extend `tests/dice_roller/components/roll-sharing-subscription.test.tsx`:
       Matrix chosen with a valid `matrix_webhook_url` → `queueRollShare` gets `service:
 'matrix'`; Matrix `network` failure → toast content contains the guide link; Discord
@@ -141,10 +144,8 @@ empty, Matrix wording), enter one, switch back ten times → both addresses inta
 - [ ] T014 [US2] Strings in `translations/source/{en,ru}/ui/dice/sharing.yaml`:
       `enableDiscordWebhook` → "Share rolls" (key kept), `service` "Service", `webhookUrl`
       "{service} webhook URL", `webhookValid` "Valid {service} webhook", `webhookInvalid`
-      "Invalid {service} webhook URL", `matrixInvalidHint` ("Needs an https:// address from your
-      homeserver admin"), `setupGuide` "How to set up sharing"; placeholders stay literals in a
-      per-service map in code (`https://discord.com/api/webhooks/...`,
-      `https://matrix.example.org/webhook/...`) with an exception reason in
+      "Invalid {service} webhook URL", `setupGuide` "How to set up sharing"; placeholders come from the
+      registry (`service.placeholder`), with an exception reason in
       `translations/i18n-exceptions.yaml` if the verifier flags them. Run
       `yarn build:translations`.
 - [ ] T015 [US2] In `src/dice_roller/components/DiceRollerSettingsModal.tsx`: a labelled
@@ -152,7 +153,7 @@ empty, Matrix wording), enter one, switch back ten times → both addresses inta
       `SecretField` bound to `useSessionStorageState(service.addressKey, '')` with the service's
       label, placeholder, and validity hint, and a link "How to set up sharing" to
       `/docs/roll-sharing#<guideAnchor>` (base URL applied).
-- [ ] T016 [US2] Create `tests/dice_roller/components/roll-sharing-settings.test.tsx` (jsdom):
+- [ ] T016 [US2] Create `tests/dice_roller/components/roll-sharing-ui.test.tsx` (jsdom):
       Discord default with an existing `discord_webhook_url` shown (US2-6); switch to Matrix →
       empty field, Matrix label; Discord address refused under Matrix; addresses survive ten
       switches (SC-004); the guide link targets the chosen service's anchor.
@@ -178,7 +179,7 @@ active })` returning the `<path>` for Discord (from `static/img/discord-icon.svg
       the service viewBox and `ServiceLogo`; `aria-label` and `title` from
       `uiMessages.dice.sharing.toggleTitle` with `{service}` (rename `discordToggleTitle` in
       `sharing.yaml` en/ru; run `yarn build:translations`).
-- [ ] T019 [US3] Add button tests to `tests/dice_roller/components/roll-sharing-settings.test.tsx`:
+- [ ] T019 [US3] Add button tests to `tests/dice_roller/components/roll-sharing-ui.test.tsx`:
       hidden without a valid address; Matrix label and logo with a Matrix address; left click
       toggles `enableDiscordWebhook`, right click toggles anonymize, for Matrix.
 
@@ -229,15 +230,16 @@ Discord, Matrix (service registry)`), `src/dice_roller/AGENTS.md` (Discord → r
 - [ ] T028 Local UI check per quickstart §2 with `playwright-cli` against
       `http://localhost:3000` (reuse the running dev server).
 - [ ] T029 Live hookshot check per quickstart §3 with the admin's address; record date,
-      homeserver, and per-step result in `quickstart.md`. Only then mark T-087 done in
+      homeserver, per-step result, and the time from opening the settings to the first roll in
+      the room (SC-001) in `quickstart.md`. Only then mark T-087 done in
       `TODO.md` and merge into `testing` (FR-014).
 
 ---
 
 ## Dependencies & execution order
 
-- Phase 1 → Phase 2 → US1. T010 needs T012 (setting); do T012 first within US1.
-- US2 needs US1's setting and registry (T009, T012). US3 needs T009 and T012. US4 is
+- Phase 1 → Phase 2 → US1. T011 (subscription) needs T010 (setting).
+- US2 needs US1's setting and registry (T009, T010). US3 needs T009 and T010. US4 is
   independent of code and can run any time after Phase 2.
 - Polish after all stories; T029 needs the admin's instance and blocks the merge only.
 

@@ -9,7 +9,7 @@ type SharingServiceId = 'discord' | 'matrix';
 interface SharingService { /* see data-model.md */ }
 
 const SHARING_SERVICES: readonly SharingService[];        // select order, Discord first
-function sharingServiceOf(id: unknown): SharingService;  // unknown → Discord
+function sharingServiceOf(id: unknown): SharingService;  // unknown → Discord + warn
 
 type RollShareResult = /* data-model.md */;
 interface RollShareReadingLines { verdict?; specialDice?; outcomes? } // was DiscordReadingLines

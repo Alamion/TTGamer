@@ -7,7 +7,7 @@
 ```bash
 yarn vitest run tests/integrations/roll-sharing.test.ts \
   tests/dice_roller/components/roll-sharing-subscription.test.tsx \
-  tests/dice_roller/components/roll-sharing-settings.test.tsx \
+  tests/dice_roller/components/roll-sharing-ui.test.tsx \
   tests/dice_roller/utils/constants.test.ts
 yarn verify:full
 ```
@@ -48,4 +48,5 @@ the webhook path, `waitForComplete` recommended.
 8. Use a wrong webhook id → "rejected" notice naming Matrix.
 9. Switch to Discord with a valid address, roll → only Discord receives it.
 
-Record the result (date, homeserver, outcome per step) in this file before merging.
+Time the first share from opening the dice settings (SC-001: under one minute). Record the
+result (date, homeserver, outcome per step, SC-001 time) in this file before merging.

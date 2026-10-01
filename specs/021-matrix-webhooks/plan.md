@@ -96,7 +96,7 @@ scripts/docs-source.ts                                        # DOCUMENT_ROOTS +
 
 tests/integrations/roll-sharing.test.ts                       # was discord-webhook.test.ts
 tests/dice_roller/components/roll-sharing-subscription.test.tsx
-tests/dice_roller/components/roll-sharing-settings.test.tsx   # select, addresses, button
+tests/dice_roller/components/roll-sharing-ui.test.tsx   # select, addresses, button
 tests/dice_roller/utils/constants.test.ts
 
 static/img/discord-icon.svg, static/img/matrix-icon.svg       # maintainer's sources (commit)

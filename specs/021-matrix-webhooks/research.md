@@ -84,7 +84,9 @@
 - **Decision**:
     - Chosen service: new persisted dice setting `sharingService: 'discord' | 'matrix'`,
       default `'discord'`. `mergeStoredSettings` fills it for stored settings that lack it; an
-      unknown stored id falls back to Discord when read (`sharingServiceOf`).
+      unknown stored id falls back to Discord when read (`sharingServiceOf`), and the fallback
+      reports through `warn` from `shared/utils/logging` (constitution III: no silent
+      fallback).
     - On/off: the existing `enableDiscordWebhook` key stays (no migration); its label becomes
       neutral ("Share rolls").
     - Addresses: one session-storage key per service. Discord keeps `discord_webhook_url`, so
@@ -110,6 +112,9 @@
   themes — and "off" is dimmed like Discord.
 - **Rationale**: the site has no SVG-as-component imports and Vitest has no SVG loader; an
   `<img>` cannot change color.
+- **Placement**: `ServiceLogo` lives in the integration, not the dice roller, because a logo
+  belongs to the service entry like its name and color; adding a service then touches one
+  module.
 - **Housekeeping**: the maintainer's working tree replaces `discord-icon-svgrepo-com.svg` with
   `discord-icon.svg` and removes the unused `logo_old.svg`; those changes are committed with
   this feature (nothing references either removed file).

@@ -15,6 +15,8 @@
 | `prepare`        | `(text: string) => string`                   | Service escaping (Matrix: break `@room`, R4)                            |
 | `request`        | `(content: string) => RequestInit`           | Discord: JSON + `allowed_mentions`; Matrix: form `text` (R1)            |
 | `guideAnchor`    | string                                       | `discord` / `matrix` on the roll-sharing guide                          |
+| `placeholder`    | string                                       | Address field placeholder (not translated; a URL shape)                 |
+| `networkHint`    | `'site-permission'` (optional)               | Network failures add the site-permission hint and guide link (Matrix)   |
 
 Order of the list is the order of the settings select; the first entry (Discord) is the
 default.
@@ -37,7 +39,8 @@ Validation rules:
 Derived: **active share target** = `{ service, address }` when `enableDiscordWebhook`, the
 service's address is non-empty and valid; otherwise none.
 
-Reading the stored id: `sharingServiceOf(id)` returns the matching entry or Discord.
+Reading the stored id: `sharingServiceOf(id)` returns the matching entry, or Discord with a
+`warn` report for an unknown id (constitution III).
 
 ## PendingShare (queue item, in memory)
 
