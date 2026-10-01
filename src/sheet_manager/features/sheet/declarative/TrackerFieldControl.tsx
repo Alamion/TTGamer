@@ -7,12 +7,11 @@ import type { TrackerField } from '../../../types/template';
 import type { TrackerValue } from '../../../types/templateValues';
 import {
     addTrackerCopy,
+    markTracker,
     ownTrackerModel,
-    paintTrackerMark,
     removeTrackerCopy,
     setTrackerText,
     stepTrackerLength,
-    toggleTrackerMark,
     trackerLengthHidesMarks,
 } from '../data/trackerModel';
 import type { TemplateFieldControlProps } from './fieldControls';
@@ -64,12 +63,8 @@ export function TrackerFieldControl({
         <Tracker
             model={model}
             disabled={disabled}
-            onMark={(columnId, copyId, levelId, brush) =>
-                onChange(
-                    brush
-                        ? paintTrackerMark(tracker, stored, columnId, copyId, levelId, brush)
-                        : toggleTrackerMark(tracker, stored, columnId, copyId, levelId)
-                )
+            onMark={(columnId, copyId, levelId, click) =>
+                onChange(markTracker(tracker, stored, columnId, copyId, levelId, click))
             }
             onText={(columnId, copyId, levelId, text) =>
                 onChange(setTrackerText(tracker, stored, columnId, copyId, levelId, text))

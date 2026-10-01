@@ -81,6 +81,9 @@ export function defaultTrackerSettings(): Pick<
     | 'valueColumn'
     | 'columns'
     | 'total'
+    | 'totalReads'
+    | 'fromStart'
+    | 'fillInside'
     | 'lengths'
     | 'out'
     | 'legend'
@@ -92,6 +95,9 @@ export function defaultTrackerSettings(): Pick<
         valueColumn: { title: translate(text.defaultValueTitle), show: true },
         columns: [newTrackerColumn('marks')],
         total: true,
+        totalReads: 'deepest',
+        fromStart: false,
+        fillInside: false,
         lengths: [],
         out: false,
         legend: false,

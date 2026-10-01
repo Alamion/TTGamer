@@ -73,12 +73,13 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   `listEntryShape` (row: end of row; block: `LabeledField` trailing). Saving a template whose
   list item or naming changed runs `listItemChangeReport` (compatible documents' stored
   entries) and asks first; stored values are never rewritten by the change.
-- Trackers (specs 018, 019): one configuration drawn by one molecule for own and built-in trackers. - **Own tracker** (`tracker` field): `display` (`table` | `strip` | `line`), `marks` (1–5
+- Trackers (specs 018–020): one configuration drawn by one molecule for own and built-in trackers. - **Own tracker** (`tracker` field): `display` (`table` | `strip` | `line`), `marks` (1–5
   kinds: id, name, 1–2 code-point symbol, `fill` = palette key `secondary|error|tertiary|
-success|text` or `#rrggbb`, `layer` = `fill` (default) | `outline`; order = click order and
+success|text|primary` (accent) or `#rrggbb`, `layer` = `fill` (default) | `outline`; order = click order and
   weight within a layer; the 5-mark cap counts both layers), `levels` (1–20: id, name,
   short text `value`), `valueColumn` (title, show), `columns` (1–6, `marks` | `text`,
   `covers` first N shown levels, `copies: { max 1–24 }`, at least one marks column), `total`,
+  `totalReads` (`deepest` default | `count`), `fromStart` and `fillInside` (spec 020, off),
   `lengths` (0–6 lists of level ids), `out`. Not a list item type, rejected as a table column.
   Value (`TrackerValueSchema`, `templateValues[valueKey]`): `{ tracker: 1, length?, columns:
 { [columnId]: [{ id, marks?: { levelId: markId }, outlines?: { levelId: markId }, texts?:
@@ -102,7 +103,12 @@ success|text` or `#rrggbb`, `layer` = `fill` (default) | `outline`; order = clic
   the editor writes `tracker.display` and clears both. Total defaults: on for member tracks
   with 2+ members, off otherwise; the shipped Star Wars character/droid page sets it on. - Rules (`features/sheet/data/tracker.ts`): the reading layer is `fill`, or `outline` when the
   tracker has no fill kinds (`readingLayer`); a click cycles its kinds empty → kinds… → empty and
-  keeps the other layer; total = value of the deepest shown level marked on the reading layer;
+  keeps the other layer; with `fromStart`, a press runs that layer like rating dots (boxes 1…N
+  get the mark, the rest of the layer clears, pressing the last box of a run of that mark
+  shortens it; `fillInside` caps a fill run at the last framed box; `trackerModel.ts`
+  `markTracker`/`runTrackerMark`); total = value of the deepest shown level marked on the reading layer,
+  or with `totalReads: 'count'` the filled covered boxes and, when the tracker has outline kinds
+  and frames any box, "filled / framed" (`countText`);
   out = last shown level marked there; switching the length keeps each mark's shown position
   and folds the tail into the new last level (heaviest wins), each layer on its own, the
   same as `cohort.ts` `shortenMarks` for stored fodder members (proven by
@@ -113,9 +119,13 @@ success|text` or `#rrggbb`, `layer` = `fill` (default) | `outline`; order = clic
   color (see-through gap), its symbol shows only without a fill. Brush (spec 019): on an
   editable sheet with the legend shown (not one line), legend items are `aria-pressed`
   buttons; the molecule keeps one `{ id, layer }` brush (reset when the mark goes or changes
-  layer), passes it as `onMark(…, brush)`; own trackers write `paintTrackerMark` (set or clear
-  that layer), built-in game columns `cohort.ts` `paintMark`; Escape inside the tracker ends
-  it; a `role="status"` line says what it marks. Built-in marks are always fills.
+  layer); Escape inside the tracker ends it; a `role="status"` line says what it marks.
+  Clicks reach bound elements as `onMark(…, click: TrackerClick)` = `{ brush }` or `{ layer }`:
+  a left click sends the brush or the reading layer; the outline action (right click,
+  Shift+Enter/Shift+Space, a 500 ms touch long press that swallows its click) sends
+  `{ layer: 'outline' }` only when `model.hasOutlines` and enabled, else the browser keeps the
+  event. Own trackers write through `markTracker`; built-in game columns `cohort.ts`
+  `paintMark`/`toggleMark`. Built-in marks are always fills (`hasOutlines: false`).
   Own values: `declarative/TrackerFieldControl.tsx`; built-in: `declarative/BuiltInTracker.tsx`
   (replaces `CohortTrack`; page values reach it through `PrimitiveNodeView`'s `page`). - Editor: `TrackerSettings.tsx` serves both (game-fixed parts disabled, game text as
   placeholders; `builtInTrackerSettings.ts` maps the panel onto the override); the Source
@@ -170,6 +180,20 @@ success|text` or `#rrggbb`, `layer` = `fill` (default) | `outline`; order = clic
     - Primitives: `hideLabel`; pool resources `part: 'max'` edits the maximum (current is capped
       to it); `minFrom` (formula) locks dots below a dynamic minimum and clamps writes to it;
       member tracks take `cohort: { maxMembers }`.
+    - Pool trackers (spec 020): a pool `resource` primitive with `poolTracker` (`display`
+      `row` default | `strip` | `line`, `marks.current/max` look overrides, `legend`, `total`)
+      draws one tracker (`declarative/PoolTracker.tsx`, rules in `data/poolTracker.ts`:
+      `poolTrackerModel`, `markPool`): fills = current, outlines = maximum, boxes up to the
+      binding maximum or `maxFrom`; `minFrom` then bounds the current value and `maxMinFrom`
+      the maximum (resolved into `formulaState.maxMinima`); locked boxes (`copy.locked`) draw
+      in a darker mix of their mark's color; `currentRaisesMax` raises the maximum from a fill.
+      `part` and `compact` are ignored with it. An own `resource` field takes the same
+      `poolTracker` (max ≤ `trackerLevelsMax`, schema refine; `fieldControls.tsx`): `min` holds
+      both values, the page label stays outside (`hideLabel`). The `row` display (label left, 16px boxes,
+      count) exists only in pool models. The editor's Display choice moves `minFrom` of a
+      `part: 'max'` node to `maxMinFrom` and back. The shipped Star Wars full sheet draws
+      Force Points this way; edited copies of a shipped page (`defaultOverrides`) keep their
+      own nodes.
       Tracks render through the tracker (see "Trackers"). Compact pools render `current / max` boxes, compact ratings number boxes.
 - Labels: every labelled node may carry `labelMessage` — a UI message id (`ttgamer.ui.…`) or a
   catalog entry (`catalog:<catalogId>/<entryId>`, e.g. attribute names). `DeclarativeSheetView`
@@ -750,28 +774,28 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 
 ## Tests map (`tests/sheet_manager/`)
 
-| Concern                           | File                                                                                                                                          |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Schema, tree guardrails           | `template-schema.test.ts`                                                                                                                     |
-| Value write path, validation      | `template-value-writes.test.ts`, `document-template-values.test.ts`                                                                           |
-| Renderer, bridging, catalogs      | `declarative-sheet.test.tsx`, `shared-values.test.tsx`                                                                                        |
-| Primitives, default renders       | `primitives.test.ts`, `primitive-parity.test.tsx`, `primitive-seeding.test.ts`                                                                |
-| Entity bindings, catalog adapters | `entity-bindings.test.ts`                                                                                                                     |
-| Entity pages, fills, neutrality   | `entity-templates.test.tsx`, `cohort-track.test.tsx`, `reference-controls.test.tsx`                                                           |
-| Documentation embeds, examples    | `docs-embeds.test.tsx`                                                                                                                        |
-| Bindings, document source         | `document-bindings.test.ts`, `document-source.test.ts`                                                                                        |
-| Lists, images                     | `template-lists-images.test.ts`                                                                                                               |
-| Formulas                          | `template-formulas.test.ts`                                                                                                                   |
-| Defaults, overrides, resolution   | `default-templates.test.ts`, `built-in-templates.test.ts` (views = templates), `view-resolution.test.ts`                                      |
-| Stores, quarantine                | `template-store.test.ts`, `template-store-migration.test.ts`                                                                                  |
-| Editor                            | `template-editor.test.tsx`, `template-editor-{page,arrange,preview,history,shortcuts,move-targets}.test.*`, `template-editor.perf.test.tsx`   |
-| User types, settings, files       | `user-document-types.test.{ts,tsx}`, `user-settings.test.tsx`, `type-file.test.ts`, `document-type-store.test.ts`                             |
-| Library tree, moves, files, UI    | `library-{tree,moves,file,import}.test.ts`, `library-dialog.test.tsx`, `document-store-relocate.test.ts`, `systems/registry-rulesets.test.ts` |
-| User catalogs                     | `user-catalogs.test.ts`, `catalog-edit.test.ts`, `catalog-use-sites.test.tsx`                                                                 |
-| WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                         |
-| Trackers                          | `tracker-{schema,rules,changes}.test.ts`, `tracker-{field,builtin,parity}.test.tsx`, `cohort-track.test.tsx`                                  |
-| References                        | `template-references.test.ts`, `reference-scope.test.{ts,tsx}` (setting scope, stale targets, imports)                                        |
-| File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                           |
+| Concern                           | File                                                                                                                                                     |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Schema, tree guardrails           | `template-schema.test.ts`                                                                                                                                |
+| Value write path, validation      | `template-value-writes.test.ts`, `document-template-values.test.ts`                                                                                      |
+| Renderer, bridging, catalogs      | `declarative-sheet.test.tsx`, `shared-values.test.tsx`                                                                                                   |
+| Primitives, default renders       | `primitives.test.ts`, `primitive-parity.test.tsx`, `primitive-seeding.test.ts`                                                                           |
+| Entity bindings, catalog adapters | `entity-bindings.test.ts`                                                                                                                                |
+| Entity pages, fills, neutrality   | `entity-templates.test.tsx`, `cohort-track.test.tsx`, `reference-controls.test.tsx`                                                                      |
+| Documentation embeds, examples    | `docs-embeds.test.tsx`                                                                                                                                   |
+| Bindings, document source         | `document-bindings.test.ts`, `document-source.test.ts`                                                                                                   |
+| Lists, images                     | `template-lists-images.test.ts`                                                                                                                          |
+| Formulas                          | `template-formulas.test.ts`                                                                                                                              |
+| Defaults, overrides, resolution   | `default-templates.test.ts`, `built-in-templates.test.ts` (views = templates), `view-resolution.test.ts`                                                 |
+| Stores, quarantine                | `template-store.test.ts`, `template-store-migration.test.ts`                                                                                             |
+| Editor                            | `template-editor.test.tsx`, `template-editor-{page,arrange,preview,history,shortcuts,move-targets}.test.*`, `template-editor.perf.test.tsx`              |
+| User types, settings, files       | `user-document-types.test.{ts,tsx}`, `user-settings.test.tsx`, `type-file.test.ts`, `document-type-store.test.ts`                                        |
+| Library tree, moves, files, UI    | `library-{tree,moves,file,import}.test.ts`, `library-dialog.test.tsx`, `document-store-relocate.test.ts`, `systems/registry-rulesets.test.ts`            |
+| User catalogs                     | `user-catalogs.test.ts`, `catalog-edit.test.ts`, `catalog-use-sites.test.tsx`                                                                            |
+| WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                                    |
+| Trackers                          | `tracker-{schema,rules,changes}.test.ts`, `tracker-{field,builtin,parity,brush,from-start}.test.tsx`, `pool-tracker.test.ts(x)`, `cohort-track.test.tsx` |
+| References                        | `template-references.test.ts`, `reference-scope.test.{ts,tsx}` (setting scope, stale targets, imports)                                                   |
+| File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                                      |
 
 ## History (read for rationale only)
 

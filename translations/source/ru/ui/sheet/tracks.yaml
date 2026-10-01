@@ -13,6 +13,10 @@ tracker:
     box: '{level}: {mark}'
     empty: пусто
     boxBoth: '{level}: {fill}, {outline}'
+    boxLocked: '{level}: {mark}, закреплено'
+    lockedTitle: '{level} — нельзя опустить ниже {n}'
+    poolPoint: Очко
+    poolMaximum: Максимум
     brushOn: 'Отмечать клетки: {mark}'
     brushOff: 'Перестать отмечать: {mark}'
     brushStatus: 'Отмечаем «{mark}»: щелчок ставит отметку на клетку или снимает её. Щёлкните ещё раз или нажмите Escape, чтобы закончить.'

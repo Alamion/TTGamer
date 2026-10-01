@@ -67,6 +67,8 @@ export interface FormulaState {
     maxima: ReadonlyMap<string, { resolvedMax?: number; degraded?: boolean }>;
     /** Per-primitive computed minima for `minFrom` (absent when unset or unresolvable). */
     minima: ReadonlyMap<string, number>;
+    /** Per-primitive computed minima of a pool's maximum, `maxMinFrom` (spec 020). */
+    maxMinima: ReadonlyMap<string, number>;
 }
 
 export interface SystemListRuntime {
@@ -392,7 +394,8 @@ export function useTemplatePage(
         >();
         const maxima = new Map<string, { resolvedMax?: number; degraded?: boolean }>();
         const minima = new Map<string, number>();
-        if (!template) return { results, maxima, minima };
+        const maxMinima = new Map<string, number>();
+        if (!template) return { results, maxima, minima, maxMinima };
 
         // Base numeric resolver: bag values + system-bound coordinates (undifferentiated).
         const resolveBase = (path: string): number | undefined => {
@@ -511,7 +514,7 @@ export function useTemplatePage(
         const evaluateBound = (
             node: { id: string },
             source: string,
-            kind: 'maxFrom' | 'minFrom'
+            kind: 'maxFrom' | 'minFrom' | 'maxMinFrom'
         ): number | undefined => {
             const parsed = parsedFormula(source);
             if (!parsed.ok) {
@@ -556,9 +559,13 @@ export function useTemplatePage(
                 const resolvedMin = evaluateBound(node, node.minFrom, 'minFrom');
                 if (resolvedMin !== undefined) minima.set(node.id, resolvedMin);
             }
+            if (node.type === 'primitive' && node.maxMinFrom) {
+                const resolved = evaluateBound(node, node.maxMinFrom, 'maxMinFrom');
+                if (resolved !== undefined) maxMinima.set(node.id, resolved);
+            }
         });
 
-        return { results, maxima, minima };
+        return { results, maxima, minima, maxMinima };
     }, [template, values, documentData]);
 
     const resolveSystemList = useCallback(

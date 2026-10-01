@@ -48,9 +48,11 @@ export interface TrackerModelCopy {
     outlines: Readonly<Record<string, string>>;
     texts: Readonly<Record<string, string>>;
     out: boolean;
-    /** Value of the deepest marked covered level; `undefined` when none. */
+    /** The total row's text: the deepest level's value or a count; `undefined` when none. */
     total: string | undefined;
     hasValues: boolean;
+    /** Pools (spec 020): boxes below these counts are held by a minimum on that layer. */
+    locked?: { fill: number; outline: number };
 }
 
 export interface TrackerModelColumn {
@@ -68,7 +70,8 @@ export interface TrackerModelColumn {
 export interface TrackerModel {
     label: string;
     hideLabel: boolean;
-    display: TrackerDisplay;
+    /** `row` is a pool drawn like a rating row (spec 020). */
+    display: TrackerDisplay | 'row';
     marks: readonly Pick<TrackerMarkKind, 'id' | 'name' | 'symbol' | 'fill' | 'layer'>[];
     levels: readonly TrackerModelLevel[];
     valueColumn: { title: string; show: boolean };
@@ -77,6 +80,8 @@ export interface TrackerModel {
     legend: boolean;
     /** The layer the click cycle, the total, the marked level, and "out" read (spec 019 R5). */
     readingLayer: TrackerLayer;
+    /** The outline action (right click, Shift+Enter, long press) works only when true. */
+    hasOutlines: boolean;
     /** Present when the reader can switch lengths. */
     length?: { shown: number; canShorten: boolean; canLengthen: boolean };
     /** Stored marks, notes, and copies the tracker no longer shows (spec FR-026a). */
@@ -124,12 +129,30 @@ export function countHiddenTrackerValues(
     return hidden;
 }
 
-function shownLevels(field: TrackerField, value: TrackerValue | undefined): string[] {
+function shownLevels(
+    field: Pick<TrackerField, 'levels' | 'lengths'>,
+    value: TrackerValue | undefined
+): string[] {
     return visibleLevelIds(
         field.levels.map(({ id }) => id),
         field.lengths,
         value?.length
     );
+}
+
+/**
+ * A count total (spec 020 R4): filled boxes, and framed boxes when the tracker has outline marks
+ * and frames any box ("2 / 5"); never "2 / 0".
+ */
+export function countText(
+    covered: readonly string[],
+    fills: Readonly<Record<string, string>>,
+    outlines: Readonly<Record<string, string>>,
+    hasOutlines: boolean
+): string {
+    const filled = covered.filter((id) => fills[id] !== undefined).length;
+    const framed = covered.filter((id) => outlines[id] !== undefined).length;
+    return hasOutlines && framed > 0 ? `${filled} / ${framed}` : String(filled);
 }
 
 /** The drawn model of an own tracker; `label` is the field's shown (translated) label. */
@@ -143,6 +166,7 @@ export function ownTrackerModel(
     const byId = new Map(field.levels.map((level) => [level.id, level]));
     const reading = readingLayer(field.marks);
     const readingKinds = kindsOfLayer(field.marks, reading);
+    const hasOutlines = kindsOfLayer(field.marks, 'outline').length > 0;
     const columns = field.columns.map((column): TrackerModelColumn => {
         const covered = coveredLevelIds(column, visible);
         const copies = copiesOf(column, value);
@@ -175,7 +199,13 @@ export function ownTrackerModel(
                         field.out &&
                         isCopyOut(readingKinds, covered, read),
                     total:
-                        deepest === undefined ? undefined : byId.get(deepest)?.value || undefined,
+                        column.kind !== 'marks'
+                            ? undefined
+                            : field.totalReads === 'count'
+                              ? countText(covered, marks, outlines, hasOutlines)
+                              : deepest === undefined
+                                ? undefined
+                                : byId.get(deepest)?.value || undefined,
                     hasValues:
                         countEntries(copy.marks) +
                             countEntries(copy.outlines) +
@@ -200,6 +230,7 @@ export function ownTrackerModel(
         total: field.total,
         legend: field.legend,
         readingLayer: reading,
+        hasOutlines,
         ...(field.lengths.length > 1
             ? {
                   length: {
@@ -260,18 +291,21 @@ function setOptional<K extends 'marks' | 'outlines' | 'texts'>(
     return next;
 }
 
+/** A box press (spec 020): the legend brush's mark, or a layer's own rule. */
+export type TrackerClick = { brush: string } | { layer: TrackerLayer };
+
 /**
- * A box click: the next mark of the reading layer's cycle, or empty after the last; the other
- * layer stays (spec 019 FR-012).
+ * A box click: the next mark of the layer's cycle (the reading layer by default), or empty after
+ * the last; the other layer stays (spec 019 FR-012).
  */
 export function toggleTrackerMark(
     field: Pick<TrackerField, 'columns' | 'marks'>,
     value: TrackerValue | undefined,
     columnId: string,
     copyId: string,
-    levelId: string
+    levelId: string,
+    layer: TrackerLayer = readingLayer(field.marks)
 ): TrackerValue {
-    const layer = readingLayer(field.marks);
     const kinds = kindsOfLayer(field.marks, layer);
     return withCopy(field, value, columnId, copyId, (copy) => {
         const source = layerSource(field.marks, copy, layer, levelId);
@@ -331,6 +365,81 @@ export function paintTrackerMark(
             kind.layer,
             levelId,
             shown === markId ? undefined : markId
+        );
+    });
+}
+
+type RunField = Pick<
+    TrackerField,
+    'columns' | 'marks' | 'levels' | 'lengths' | 'fromStart' | 'fillInside'
+>;
+
+/**
+ * An own tracker's box press (spec 020). With "marks fill from the start" a layer press runs that
+ * layer's first mark and a brush runs its own mark; otherwise the press cycles or paints one box.
+ */
+export function markTracker(
+    field: RunField,
+    value: TrackerValue | undefined,
+    columnId: string,
+    copyId: string,
+    levelId: string,
+    click: TrackerClick
+): TrackerValue {
+    if (!field.fromStart) {
+        return 'brush' in click
+            ? paintTrackerMark(field, value, columnId, copyId, levelId, click.brush)
+            : toggleTrackerMark(field, value, columnId, copyId, levelId, click.layer);
+    }
+    const markId = 'brush' in click ? click.brush : kindsOfLayer(field.marks, click.layer)[0]?.id;
+    return markId === undefined
+        ? (value ?? emptyValue())
+        : runTrackerMark(field, value, columnId, copyId, levelId, markId);
+}
+
+function lastShown(order: readonly string[], shown: Readonly<Record<string, string>>): number {
+    for (let index = order.length - 1; index >= 0; index -= 1) {
+        if (shown[order[index]!] !== undefined) return index;
+    }
+    return -1;
+}
+
+/**
+ * Marks boxes 1…N of the mark's layer in shown order and clears that layer after N, as a rating's
+ * dots do: pressing the last box of a run of this mark shortens it by one. The other layer and
+ * levels outside the shown length keep what they hold.
+ */
+function runTrackerMark(
+    field: RunField,
+    value: TrackerValue | undefined,
+    columnId: string,
+    copyId: string,
+    levelId: string,
+    markId: string
+): TrackerValue {
+    const kind = field.marks.find(({ id }) => id === markId);
+    const column = field.columns.find(({ id }) => id === columnId);
+    if (!kind || !column) return value ?? emptyValue();
+    const order = coveredLevelIds(column, shownLevels(field, value));
+    const index = order.indexOf(levelId);
+    if (index < 0) return value ?? emptyValue();
+    return withCopy(field, value, columnId, copyId, (copy) => {
+        const shown = layerMarks(field.marks, copy, kind.layer);
+        let last =
+            index === lastShown(order, shown) && shown[levelId] === markId ? index - 1 : index;
+        if (field.fillInside && kind.layer === 'fill') {
+            last = Math.min(last, lastShown(order, layerMarks(field.marks, copy, 'outline')));
+        }
+        return order.reduce(
+            (next, id, position) =>
+                writeLayer(
+                    field.marks,
+                    next,
+                    kind.layer,
+                    id,
+                    position <= last ? markId : undefined
+                ),
+            copy
         );
     });
 }
@@ -657,6 +766,7 @@ export function builtInTrackerModel(input: BuiltInTrackerInput): TrackerModel {
         total: input.total,
         legend: input.legend,
         readingLayer: 'fill',
+        hasOutlines: false,
         ...(input.length ? { length: input.length } : {}),
         hidden: 0,
     };

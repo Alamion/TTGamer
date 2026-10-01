@@ -155,6 +155,19 @@ editor:
     partMax: Maximum
     minFrom: Minimum from value or formula (optional)
     minFromPlaceholder: e.g. self-control
+    primitiveDisplay: Display
+    displayDots: Dots
+    displayTracker: Tracker
+    displayNumbers: Numbers
+    poolTrackerLimit: 'A tracker draws up to {max} boxes: lower the maximum to use it.'
+    poolLook: Look
+    poolRow: Row (like a rating)
+    poolCurrentMark: Current
+    poolMaxMark: Maximum
+    poolLayerFixed: Current points fill the boxes; the maximum frames them.
+    poolCount: Show the count
+    minFromCurrent: Current at least, from value or formula (optional)
+    maxMinFrom: Maximum at least, from value or formula (optional)
     listShowTitle: Show list title
     listFramed: Draw a border around the list
     listNamed: Entries are named
@@ -259,6 +272,7 @@ tracker:
     colorTertiary: Violet
     colorSuccess: Green
     colorText: Ink
+    colorPrimary: Accent
     addMark: Add mark
     moveMarkUp: 'Move mark {n} up'
     moveMarkDown: 'Move mark {n} down'
@@ -309,6 +323,15 @@ tracker:
     out: Mark a copy as out when its last level is marked
     legend: Name the marks under the tracker
     legendHint: Readers can pick a mark in the legend and put it on boxes directly.
+    fromStart: Marks fill from the start
+    fromStartHint: "Marking a box marks every box before it, like a rating's dots."
+    fillInside: Fills stay inside the outline
+    fillInsideHint: A fill never goes past the last framed box.
+    totalRow: Show the total row
+    totalReads: The total reads
+    totalDeepest: Deepest level
+    totalCount: Count
+    totalCountHint: How many boxes are filled, and how many are framed.
     defaultLabel: Health
     issueLengthEmpty: 'Tracker "{id}": length {n} shows no level.'
     issueCovers: 'Tracker "{id}": a column covers all its levels or more; choose "All levels".'

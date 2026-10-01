@@ -12,7 +12,8 @@ export interface TemplatePageOption {
 }
 
 export interface ViewModeSelectProps {
-    definition: DocumentDefinition;
+    /** The built-in views the reader can pick (see `selectableViews`). */
+    views: DocumentDefinition['views'];
     /** Value is either a built-in view id or `tpl:<templateId>`. */
     value: string;
     onChangeTemplate: (templateId: string | undefined) => void;
@@ -29,20 +30,33 @@ export function templateSelectValue(
     return templateId ? `${TEMPLATE_PREFIX}${templateId}` : viewId;
 }
 
+/**
+ * The built-in views a document can switch to. A user setting that assigns its own page to the
+ * document's type replaces them: picking one would only fall back to the setting's page.
+ */
+export function selectableViews(
+    definition: DocumentDefinition,
+    document: { definitionId: string; metadata: { settingId?: string } },
+    settings: Readonly<Record<string, { pages: Readonly<Record<string, string>> } | undefined>>
+): DocumentDefinition['views'] {
+    const settingId = document.metadata.settingId;
+    const settingPage = settingId ? settings[settingId]?.pages[document.definitionId] : undefined;
+    return settingPage ? [] : definition.views;
+}
+
 export function ViewModeSelect({
-    definition,
+    views,
     onChangeTemplate,
     onChangeView,
     templateOptions,
     value,
 }: ViewModeSelectProps) {
-    const hasChoices = definition.views.length > 1 || templateOptions.length > 0;
-    if (!hasChoices) return null;
-
     // FR-13: exactly one entry per page — view ids are default templates; skip custom-template
     // options whose id collides with a registered view id (they resolve through the same page).
-    const viewIds = new Set<string>(definition.views.map(({ id }) => id));
+    const viewIds = new Set<string>(views.map(({ id }) => id));
     const extraTemplates = templateOptions.filter((option) => !viewIds.has(option.id));
+    // One page leaves nothing to switch to.
+    if (views.length + extraTemplates.length < 2) return null;
 
     return (
         <label className="flex items-center gap-2 text-sm text-textSecondary">
@@ -60,7 +74,7 @@ export function ViewModeSelect({
                 }}
                 className="rounded border border-border bg-bgSurface px-2 py-1.5 text-textPrimary"
             >
-                {definition.views.map((candidate) => (
+                {views.map((candidate) => (
                     <option key={candidate.id} value={candidate.id}>
                         {translate(candidate.label)}
                     </option>

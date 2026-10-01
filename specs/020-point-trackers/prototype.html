@@ -1,0 +1,1593 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <title>Point Trackers</title>
+        <style>
+            /* Colors follow src/css/custom.css; the tracker look follows stat-fields/Tracker.tsx (spec 018 as built). */
+            :root {
+                --bg-base: rgb(245 245 249);
+                --bg-surface: rgb(249 249 255);
+                --text: rgb(15 23 42);
+                --muted: rgb(71 85 105);
+                --primary: rgb(220 38 38);
+                --on-primary: #fff;
+                --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(249 249 255) 92%);
+                --secondary: rgb(202 138 4);
+                --tertiary: rgb(79 70 229);
+                --error: rgb(185 28 28);
+                --warning: rgb(245 158 11);
+                --success: rgb(21 128 61);
+                --border: rgb(226 232 240);
+                --border-strong: rgb(206 212 220);
+                --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+                --mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+                color-scheme: light;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme='light']) {
+                    --bg-base: rgb(15 23 42);
+                    --bg-surface: rgb(30 41 59);
+                    --text: rgb(248 250 252);
+                    --muted: rgb(148 163 184);
+                    --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 70%);
+                    --tertiary: rgb(129 140 248);
+                    --border: rgb(51 65 85);
+                    --border-strong: rgb(71 85 105);
+                    color-scheme: dark;
+                }
+            }
+            :root[data-theme='dark'] {
+                --bg-base: rgb(15 23 42);
+                --bg-surface: rgb(30 41 59);
+                --text: rgb(248 250 252);
+                --muted: rgb(148 163 184);
+                --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 70%);
+                --tertiary: rgb(129 140 248);
+                --border: rgb(51 65 85);
+                --border-strong: rgb(71 85 105);
+                color-scheme: dark;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg-base);
+                color: var(--text);
+                font: 14px/1.5 var(--font);
+                padding-inline: 16px;
+                padding-block: 16px 40px;
+            }
+            .wrap {
+                max-width: 1240px;
+                margin: 0 auto;
+                display: grid;
+                gap: 16px;
+            }
+            h1 {
+                font-size: 20px;
+                margin: 0;
+                text-wrap: balance;
+            }
+            h2 {
+                font-size: 12px;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            p {
+                margin: 0;
+            }
+            .lead {
+                color: var(--muted);
+                max-width: 75ch;
+            }
+            .tabs,
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                align-items: center;
+            }
+            .tab,
+            .seg button,
+            .btn {
+                font: inherit;
+                font-size: 12px;
+                border: 1px solid var(--border-strong);
+                background: var(--bg-surface);
+                color: var(--text);
+                border-radius: 4px;
+                padding: 3px 10px;
+                cursor: pointer;
+            }
+            .tab[aria-pressed='true'],
+            .seg button[aria-pressed='true'] {
+                border-color: var(--primary);
+                background: var(--primary-soft);
+            }
+            .btn:disabled,
+            .seg button:disabled {
+                opacity: 0.4;
+                cursor: default;
+            }
+            .seg {
+                display: inline-flex;
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+            button:focus-visible,
+            input:focus-visible,
+            select:focus-visible {
+                outline: 2px solid var(--primary);
+                outline-offset: 1px;
+            }
+            input[type='text'],
+            select {
+                font: inherit;
+                font-size: 13px;
+                border: 1px solid var(--border);
+                background: var(--bg-surface);
+                color: var(--text);
+                border-radius: 4px;
+                padding: 3px 7px;
+                min-width: 0;
+            }
+            .grid {
+                display: grid;
+                gap: 16px;
+                grid-template-columns: minmax(0, 1fr);
+            }
+            @media (min-width: 900px) {
+                .grid {
+                    grid-template-columns: 20rem minmax(0, 1fr);
+                }
+            }
+            .panel,
+            .sheet {
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 12px;
+                display: grid;
+                gap: 12px;
+                align-content: start;
+                min-width: 0;
+            }
+            fieldset {
+                min-width: 0;
+                margin: 0;
+                border: 0;
+                border-top: 1px solid var(--border);
+                padding: 12px 0 0;
+                display: grid;
+                gap: 8px;
+            }
+            legend {
+                font-size: 12px;
+                font-weight: 600;
+                padding: 0;
+            }
+            .hint {
+                font-size: 11px;
+                color: var(--muted);
+            }
+            .new {
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--tertiary);
+                margin-left: 4px;
+            }
+            .check {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .mark-row {
+                display: grid;
+                gap: 6px;
+                padding: 8px;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                background: var(--bg-base);
+            }
+            .mark-row .row > input[type='text'].name {
+                flex: 1 1 7rem;
+            }
+            .mark-row .row > input[type='text'].symbol {
+                width: 2.75rem;
+                text-align: center;
+                font-family: var(--mono);
+                font-weight: 700;
+            }
+            .dot {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 2px solid transparent;
+                padding: 2px;
+                background: none;
+                cursor: pointer;
+            }
+            .dot span {
+                display: block;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+            }
+            .dot[aria-pressed='true'] {
+                border-color: var(--text);
+            }
+
+            /* ---------- Tracker (as built, plus layers) ---------- */
+            .tracker {
+                display: grid;
+                gap: 8px;
+            }
+            .tracker-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            .ttable {
+                display: grid;
+                font-size: 14px;
+            }
+            .trow {
+                display: grid;
+                align-items: center;
+                gap: 8px;
+                padding-block: 6px;
+                border-top: 1px solid color-mix(in srgb, var(--border), transparent 40%);
+            }
+            .trow.head {
+                border-top: 0;
+                padding-top: 0;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            .trow.total {
+                border-top: 2px solid var(--border);
+                font-family: var(--mono);
+                font-weight: 700;
+            }
+            .trow.total > :first-child {
+                font-family: var(--font);
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            .center {
+                text-align: center;
+                display: flex;
+                justify-content: center;
+            }
+            .val {
+                font-family: var(--mono);
+                color: var(--muted);
+                text-align: center;
+            }
+            .marked {
+                color: var(--error);
+            }
+            .box {
+                display: grid;
+                place-items: center;
+                flex-shrink: 0;
+                border-radius: 4px;
+                border: 2px solid var(--border);
+                background: var(--bg-base);
+                font-family: var(--mono);
+                font-weight: 700;
+                line-height: 1;
+                padding: 0;
+                cursor: pointer;
+                color: #fff;
+                transition:
+                    background-color 0.12s,
+                    box-shadow 0.12s;
+            }
+            .box.md {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            .box.sm {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+            .box.xs {
+                width: 14px;
+                height: 14px;
+                border-width: 1px;
+                font-size: 9px;
+            }
+            .box:disabled {
+                cursor: default;
+                opacity: 0.7;
+            }
+            .box:not(:disabled):hover {
+                border-color: var(--primary);
+            }
+            /* Look A: a thinner ring outside smaller boxes, with more room between boxes. */
+            .look-ring .box.md {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            .look-ring .box.sm {
+                width: 20px;
+                height: 20px;
+                font-size: 11px;
+            }
+            .look-ring .box.has-outline {
+                box-shadow:
+                    0 0 0 1.5px var(--bg-surface),
+                    0 0 0 4px var(--ol);
+            }
+            .look-ring .box.sm.has-outline {
+                box-shadow:
+                    0 0 0 1px var(--bg-surface),
+                    0 0 0 3px var(--ol);
+            }
+            .look-ring .box.xs.has-outline {
+                box-shadow:
+                    0 0 0 1px var(--bg-surface),
+                    0 0 0 2.5px var(--ol);
+            }
+            /* Look C: the border thickens both ways, inward and outward from the box edge, with no gap. */
+            .look-both .box.has-outline {
+                border-width: 3px;
+                border-color: var(--ol) !important;
+                box-shadow: 0 0 0 2px var(--ol);
+            }
+            .look-both .box.sm.has-outline {
+                border-width: 2.5px;
+                box-shadow: 0 0 0 1.5px var(--ol);
+            }
+            .look-both .box.xs.has-outline {
+                border-width: 1.5px;
+                box-shadow: 0 0 0 1px var(--ol);
+            }
+            /* Look B: the outline replaces the box border with a thick one. */
+            .look-border .box.has-outline {
+                border-width: 4px;
+                border-color: var(--ol) !important;
+            }
+            .look-border .box.sm.has-outline {
+                border-width: 3px;
+            }
+            .look-border .box.xs.has-outline {
+                border-width: 2px;
+            }
+            .box .ol-symbol {
+                color: var(--ol);
+            }
+            .strip {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px 12px;
+                align-items: center;
+                font-size: 12px;
+            }
+            .strip .name {
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            .strip .boxes {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .look-ring .strip .boxes {
+                gap: 12px;
+            }
+            .look-both .strip .boxes {
+                gap: 9px;
+            }
+            .look-ring .ttable .trow,
+            .look-both .ttable .trow {
+                padding-block: 8px;
+            }
+            /* Room between an outlined legend swatch and the brush's yellow frame. */
+            .look-ring .tlegend button,
+            .look-both .tlegend button,
+            .look-ring .tlegend span.item,
+            .look-both .tlegend span.item {
+                padding: 6px 9px 6px 7px;
+            }
+            .out-badge {
+                border-radius: 4px;
+                background: color-mix(in srgb, var(--error), transparent 85%);
+                color: var(--error);
+                font: 600 10px var(--font);
+                text-transform: uppercase;
+                padding: 1px 6px;
+            }
+            .struck {
+                color: var(--error);
+                text-decoration: line-through;
+            }
+            .copy-x {
+                border: 0;
+                background: none;
+                color: var(--muted);
+                cursor: pointer;
+                padding: 0 2px;
+                font-size: 12px;
+            }
+            .add {
+                border: 0;
+                background: none;
+                color: var(--primary);
+                font: inherit;
+                font-size: 12px;
+                cursor: pointer;
+                padding: 2px 6px;
+                border-radius: 4px;
+            }
+            .tlegend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px 6px;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .tlegend button,
+            .tlegend span.item {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font: inherit;
+                color: inherit;
+                background: none;
+                border: 1px solid transparent;
+                border-radius: 6px;
+                padding: 3px 7px 3px 3px;
+            }
+            .tlegend button {
+                cursor: pointer;
+                border-color: var(--border);
+            }
+            .tlegend button:hover:not(:disabled) {
+                border-color: var(--border-strong);
+                color: var(--text);
+            }
+            /* The active brush: a yellow (warning) outline around the legend item. */
+            .tlegend button[aria-pressed='true'] {
+                border-color: var(--warning);
+                box-shadow: 0 0 0 1px var(--warning);
+                color: var(--text);
+            }
+            .tlegend button:disabled {
+                cursor: default;
+                opacity: 0.6;
+            }
+            .tlegend .box {
+                cursor: inherit;
+            }
+            .layer-tag {
+                font-size: 10px;
+                color: var(--muted);
+                opacity: 0.8;
+            }
+            .brush-note {
+                font-size: 11px;
+                color: var(--muted);
+            }
+            .notes ul {
+                margin: 0;
+                padding-left: 18px;
+                display: grid;
+                gap: 6px;
+            }
+            .notes li {
+                max-width: 80ch;
+            }
+            .notes strong {
+                color: var(--text);
+            }
+            .sheet-tools {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                align-items: center;
+                padding-bottom: 8px;
+                border-bottom: 1px dashed var(--border);
+            }
+            .overflow {
+                overflow-x: auto;
+            }
+        </style>
+        <style>
+            /* A pool drawn like a rating row: label left, dot-sized boxes right. */
+            .pool-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                font-size: 13px;
+            }
+            .pool-row .boxes {
+                display: flex;
+                gap: 7px;
+                align-items: center;
+            }
+            .look-ring .box.dot {
+                width: 16px;
+                height: 16px;
+                border-radius: 3px;
+                font-size: 9px;
+            }
+            .look-ring .box.dot.has-outline {
+                outline: 2px solid var(--ol);
+                outline-offset: 1px;
+                box-shadow: none;
+            }
+            .pool-row .count {
+                font-size: 11px;
+                min-width: 3.2em;
+                text-align: right;
+            }
+            .count {
+                font-family: var(--mono);
+                font-weight: 700;
+                color: var(--muted);
+                font-size: 13px;
+            }
+            .context-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                font-size: 13px;
+            }
+            .dots {
+                display: flex;
+                gap: 4px;
+            }
+            .dots button {
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                border: 2px solid var(--border-strong);
+                background: transparent;
+                padding: 0;
+                cursor: pointer;
+            }
+            .dots button.on {
+                background: var(--primary);
+                border-color: var(--primary);
+            }
+            .dots button.min {
+                background: color-mix(in srgb, var(--primary), black 35%);
+                border-color: color-mix(in srgb, var(--primary), black 35%);
+            }
+            .page-card {
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 10px 12px;
+                display: grid;
+                gap: 8px;
+                background: var(--bg-base);
+            }
+            .page-card h3 {
+                margin: 0;
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            .stepper {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <header class="grid" style="grid-template-columns: minmax(0, 1fr); gap: 8px">
+                <h1>Point trackers and Force Points — prototype (spec 020)</h1>
+                <p class="lead">
+                    Left: the settings in the template editor. Right: the sheet. New here:
+                    <em>Marks fill from the start</em> (marking box N marks every box before it,
+                    like a rating's dots), a <em>Count</em> total ("2 / 5"), and a game's pool
+                    (current and maximum) drawn as a tracker — the Star Wars Force Points on the
+                    full sheet.
+                </p>
+                <div class="tabs" role="group" aria-label="Examples" id="presets"></div>
+            </header>
+            <div class="grid">
+                <section class="panel" aria-labelledby="editor-h">
+                    <h2 id="editor-h">Settings</h2>
+                    <div id="editor" style="display: grid; gap: 12px"></div>
+                </section>
+                <div style="display: grid; gap: 16px; min-width: 0">
+                    <section class="sheet" aria-labelledby="sheet-h">
+                        <h2 id="sheet-h">On the sheet</h2>
+                        <div class="sheet-tools">
+                            <label class="check"
+                                ><input type="checkbox" id="readonly" /> Read-only sheet</label
+                            >
+                            <span class="check" id="sc-tool"></span>
+                        </div>
+                        <div id="sheet" class="look-ring"></div>
+                    </section>
+                    <section class="panel notes" aria-labelledby="notes-h">
+                        <h2 id="notes-h">Decisions in this prototype</h2>
+                        <ul>
+                            <li>
+                                <strong>Fill from the start.</strong> Marking box N on a layer marks
+                                boxes 1…N and clears the rest of that layer; clicking the last
+                                marked box takes off just that one. Each layer runs on its own;
+                                copies too.
+                            </li>
+                            <li>
+                                <strong>Left click</strong> puts the first fill mark,
+                                <strong>right click</strong> the first outline mark, by the same
+                                rules (a run from the start, or the cycle on trackers without it;
+                                this also applies to every tracker). Other marks come from the
+                                legend brush.
+                            </li>
+                            <li>
+                                <strong>Fills stay inside the outline</strong> (own trackers that
+                                fill from the start, off by default): a fill run stops at the last
+                                framed box.
+                            </li>
+                            <li>
+                                <strong>Minimum on current.</strong> Star Wars Willpower cannot go
+                                below Passion + Self-Control: those filled boxes are darker and
+                                stay; current Willpower may raise its maximum, as the dot row does
+                                today.
+                            </li>
+                            <li>
+                                <strong>Count</strong> reads filled boxes, and "filled / framed"
+                                once any box is framed. <em>Deepest level</em> stays the default.
+                            </li>
+                            <li>
+                                <strong>Built-in pool.</strong> A pool resource gets a third look,
+                                <em>Tracker</em>, next to dots and numbers: boxes up to the game's
+                                limit (10), the maximum framed, the current points filled. Current
+                                never passes the maximum; framed boxes under the maximum's minimum
+                                (Self-Control) are darker and stay.
+                            </li>
+                            <li>
+                                <strong>Same data.</strong> The values stay the character's own: the
+                                dots page below the tracker shows them, and changes on either side
+                                show on the other.
+                            </li>
+                            <li>
+                                <strong>Shipped pages.</strong> The Star Wars full sheet replaces
+                                "Max Force Points" + "Force Points" with this one tracker; the brief
+                                sheet keeps its numbers.
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+            <p class="hint">
+                Prototype only: nothing is kept. Columns, copies, lengths, and the Source switch
+                work as built in specs 018–019.
+            </p>
+        </div>
+        <script>
+            const COLORS = {
+                primary: { label: 'Accent (like rating dots)', css: 'var(--primary)' },
+                secondary: { label: 'Amber', css: 'var(--secondary)' },
+                error: { label: 'Red', css: 'var(--error)' },
+                tertiary: { label: 'Violet', css: 'var(--tertiary)' },
+                success: { label: 'Green', css: 'var(--success)' },
+                text: { label: 'Ink', css: 'var(--text)' },
+            };
+            const HEALTH = [
+                ['Bruised', '0'],
+                ['Hurt', '-1'],
+                ['Injured', '-1'],
+                ['Wounded', '-2'],
+                ['Mauled', '-2'],
+                ['Crippled', '-5'],
+                ['Incapacitated', ''],
+            ];
+            let uid = 0;
+            const nid = (p) => `${p}${++uid}`;
+            const mark = (name, symbol, fill, layer = 'fill') => ({
+                id: nid('mk'),
+                name,
+                symbol,
+                fill,
+                layer,
+            });
+            const numbered = (n) =>
+                Array.from({ length: n }, (_, i) => ({
+                    id: `n${i + 1}`,
+                    name: String(i + 1),
+                    value: '',
+                }));
+
+            const PRESETS = {
+                points: {
+                    title: 'Points (own tracker)',
+                    make: () => ({
+                        label: 'Fate Points',
+                        display: 'strip',
+                        fromStart: true,
+                        fillInside: false,
+                        totalMode: 'count',
+                        total: true,
+                        legend: true,
+                        marks: [
+                            mark('Point', '●', 'secondary'),
+                            mark('Maximum', '', 'secondary', 'outline'),
+                        ],
+                        levels: numbered(10),
+                        showValue: false,
+                        valueTitle: '',
+                    }),
+                    sample: (t, c) => {
+                        setRun(t, c, 'outline', t.marks[1].id, 4);
+                        setRun(t, c, 'fill', t.marks[0].id, 1);
+                    },
+                },
+                wounds: {
+                    title: 'Health (each box on its own)',
+                    make: () => ({
+                        label: 'Health',
+                        display: 'table',
+                        fromStart: false,
+                        totalMode: 'deepest',
+                        total: true,
+                        legend: true,
+                        marks: [mark('Bashing', '╱', 'secondary'), mark('Lethal', '×', 'error')],
+                        levels: HEALTH.map(([name, value]) => ({ id: nid('lv'), name, value })),
+                        showValue: true,
+                        valueTitle: 'Penalty',
+                    }),
+                    sample: (t, c) => {
+                        c.fill[t.levels[0].id] = t.marks[1].id;
+                        c.fill[t.levels[1].id] = t.marks[0].id;
+                    },
+                },
+                force: {
+                    title: 'Star Wars Force Points (built-in)',
+                    make: () => ({
+                        label: 'Force Points',
+                        display: 'row',
+                        fromStart: true,
+                        totalMode: 'count',
+                        total: true,
+                        legend: false,
+                        marks: [
+                            mark('Force Point', '', 'primary'),
+                            mark('Maximum', '', 'primary', 'outline'),
+                        ],
+                        levels: numbered(10),
+                        showValue: false,
+                        valueTitle: '',
+                        pool: {
+                            name: 'Force Points',
+                            current: 2,
+                            max: 3,
+                            minMax: 'selfControl',
+                            look: 'tracker',
+                            context: 'force',
+                        },
+                    }),
+                    sample: () => {},
+                },
+                swWillpower: {
+                    title: 'Star Wars Willpower (minimum on current)',
+                    make: () => ({
+                        label: 'Willpower',
+                        display: 'row',
+                        fromStart: true,
+                        totalMode: 'count',
+                        total: true,
+                        legend: false,
+                        marks: [
+                            mark('Willpower point', '', 'primary'),
+                            mark('Maximum', '', 'primary', 'outline'),
+                        ],
+                        levels: numbered(10),
+                        showValue: false,
+                        valueTitle: '',
+                        pool: {
+                            name: 'Willpower',
+                            current: 5,
+                            max: 6,
+                            minCurrent: 'passionSelfControl',
+                            raisesMax: true,
+                            look: 'tracker',
+                            context: 'swWill',
+                        },
+                    }),
+                    sample: () => {},
+                },
+                layered: {
+                    title: 'Two fills, two outlines, from the start',
+                    make: () => ({
+                        label: 'Wounds',
+                        display: 'strip',
+                        fromStart: true,
+                        totalMode: 'count',
+                        total: true,
+                        legend: true,
+                        fillInside: false,
+                        marks: [
+                            mark('Bashing', '╱', 'secondary'),
+                            mark('Lethal', '×', 'error'),
+                            mark('Bleeding', '!', 'error', 'outline'),
+                            mark('Treated', '+', 'success', 'outline'),
+                        ],
+                        levels: numbered(10),
+                        showValue: false,
+                        valueTitle: '',
+                    }),
+                    sample: (t, c) => {
+                        setRun(t, c, 'fill', t.marks[0].id, 2);
+                        setRun(t, c, 'outline', t.marks[2].id, 4);
+                    },
+                },
+                willpower: {
+                    title: 'WoD 2e Willpower (built-in)',
+                    make: () => ({
+                        label: 'Willpower',
+                        display: 'row',
+                        fromStart: true,
+                        totalMode: 'count',
+                        total: true,
+                        legend: false,
+                        marks: [
+                            mark('Willpower point', '', 'primary'),
+                            mark('Rating', '', 'primary', 'outline'),
+                        ],
+                        levels: numbered(10),
+                        showValue: false,
+                        valueTitle: '',
+                        pool: {
+                            name: 'Willpower',
+                            current: 4,
+                            max: 6,
+                            look: 'tracker',
+                            context: 'wod',
+                        },
+                    }),
+                    sample: () => {},
+                },
+            };
+
+            let current = 'force';
+            let t, copy, brush;
+            let selfControl = 2;
+            let passion = 2;
+
+            function load(key) {
+                current = key;
+                t = PRESETS[key].make();
+                copy = { fill: {}, outline: {} };
+                PRESETS[key].sample(t, copy);
+                brush = undefined;
+                renderAll();
+            }
+
+            const el = (tag, attrs = {}, ...children) => {
+                const node = document.createElement(tag);
+                for (const [key, value] of Object.entries(attrs)) {
+                    if (value === undefined || value === false || value === null) continue;
+                    if (key.startsWith('on')) node.addEventListener(key.slice(2), value);
+                    else if (key === 'text') node.textContent = value;
+                    else if (key === 'style' && typeof value === 'object')
+                        for (const [p, v] of Object.entries(value)) node.style.setProperty(p, v);
+                    else node.setAttribute(key, value === true ? '' : value);
+                }
+                for (const child of children.flat(Infinity)) if (child != null) node.append(child);
+                return node;
+            };
+            const colorOf = (m) => (m.fill.startsWith('#') ? m.fill : COLORS[m.fill].css);
+            const byId = (id) => t.marks.find((m) => m.id === id);
+            const ofLayer = (layer) => t.marks.filter((m) => m.layer === layer);
+            const readingLayer = () => (ofLayer('fill').length ? 'fill' : 'outline');
+            const readOnly = () => document.getElementById('readonly').checked;
+
+            /* ---------- Pool data (built-in): the character's own numbers ---------- */
+            const minMax = () => (t.pool?.minMax === 'selfControl' ? selfControl : 0);
+            const minCurrent = () =>
+                t.pool?.minCurrent === 'passionSelfControl'
+                    ? Math.min(passion + selfControl, 10)
+                    : 0;
+            function poolToCopy() {
+                if (!t.pool) return;
+                copy = { fill: {}, outline: {} };
+                t.levels.forEach((l, i) => {
+                    if (i < t.pool.max) copy.outline[l.id] = t.marks[1].id;
+                    if (i < t.pool.current) copy.fill[l.id] = t.marks[0].id;
+                });
+            }
+            function setPool(current, max) {
+                current = Math.max(minCurrent(), Math.min(10, current));
+                // Star Wars Willpower: current points may raise the maximum, as the dot row does today.
+                if (t.pool.raisesMax) max = Math.max(max, current);
+                max = Math.max(minMax(), Math.min(10, max));
+                t.pool.max = max;
+                t.pool.current = Math.min(current, max);
+                poolToCopy();
+            }
+
+            /* ---------- Rules ---------- */
+            function runEnd(layerRecord, markId) {
+                let end = -1;
+                t.levels.forEach((l, i) => {
+                    if (layerRecord[l.id]) end = i;
+                });
+                return end;
+            }
+            function setRun(t0, c, layer, markId, end) {
+                t0.levels.forEach((l, i) => {
+                    if (i <= end) c[layer][l.id] = markId;
+                    else delete c[layer][l.id];
+                });
+            }
+            function click(levelIndex, button = 'left') {
+                const level = t.levels[levelIndex];
+                // Left: the brush, else the first fill. Right: always the first outline (spec 020).
+                const m =
+                    button === 'right'
+                        ? ofLayer('outline')[0]
+                        : brush
+                          ? byId(brush)
+                          : ofLayer(readingLayer())[0];
+                if (!m) return;
+                const layer = m.layer;
+                if (t.fromStart) {
+                    const end = runEnd(copy[layer]);
+                    let next =
+                        levelIndex === end && copy[layer][level.id] === m.id
+                            ? levelIndex - 1
+                            : levelIndex;
+                    // Option: a fill run never passes the framed boxes.
+                    if (!t.pool && t.fillInside && layer === 'fill')
+                        next = Math.min(next, runEnd(copy.outline));
+                    if (t.pool) {
+                        if (layer === 'outline') setPool(t.pool.current, next + 1);
+                        else setPool(next + 1, t.pool.max);
+                    } else setRun(t, copy, layer, m.id, next);
+                } else if (brush) {
+                    if (copy[layer][level.id] === m.id) delete copy[layer][level.id];
+                    else copy[layer][level.id] = m.id;
+                } else {
+                    const cycle = ofLayer(layer);
+                    const at = cycle.findIndex((k) => k.id === copy[layer][level.id]);
+                    if (at === cycle.length - 1) delete copy[layer][level.id];
+                    else copy[layer][level.id] = cycle[at + 1].id;
+                }
+                renderSheet();
+            }
+            const count = (layer) => t.levels.filter((l) => byId(copy[layer][l.id])).length;
+            function totalText() {
+                if (t.totalMode === 'count') {
+                    const filled = count(readingLayer());
+                    const framed = readingLayer() === 'fill' ? count('outline') : 0;
+                    return framed > 0 ? `${filled} / ${framed}` : String(filled);
+                }
+                let deepest = -1;
+                t.levels.forEach((l, i) => {
+                    if (byId(copy[readingLayer()][l.id])) deepest = i;
+                });
+                return deepest >= 0 ? t.levels[deepest].value || '—' : '—';
+            }
+
+            /* ---------- Sheet ---------- */
+            const darker = (m) => `color-mix(in srgb, ${colorOf(m)}, black 35%)`;
+            function boxEl(level, index, size) {
+                const f = byId(copy.fill[level.id]);
+                const o = byId(copy.outline[level.id]);
+                const lockedOutline = t.pool && o && index < minMax();
+                const lockedFill = t.pool && f && index < minCurrent();
+                const locked = lockedOutline || lockedFill;
+                const parts = [f?.name, o?.name].filter(Boolean);
+                const b = el(
+                    'button',
+                    {
+                        type: 'button',
+                        class: `box ${size}${o ? ' has-outline' : ''}${locked ? ' locked' : ''}`,
+                        disabled: readOnly(),
+                        title: lockedFill
+                            ? `${level.name} — Willpower cannot go below ${minCurrent()} (Passion + Self-Control)`
+                            : lockedOutline
+                              ? `${level.name} — the maximum cannot go below ${minMax()} (Self-Control)`
+                              : level.name,
+                        'aria-label': `${level.name}: ${parts.length ? parts.join(', ') : 'empty'}`,
+                        onclick: () => click(index),
+                        oncontextmenu: (e) => {
+                            if (!ofLayer('outline').length || readOnly()) return;
+                            e.preventDefault();
+                            click(index, 'right');
+                        },
+                    },
+                    f ? f.symbol : o ? el('span', { class: 'ol-symbol', text: o.symbol }) : ''
+                );
+                if (f) {
+                    const c = lockedFill ? darker(f) : colorOf(f);
+                    b.style.background = c;
+                    b.style.borderColor = c;
+                    if (f.fill === 'text') b.style.color = 'var(--bg-base)';
+                }
+                if (o) b.style.setProperty('--ol', lockedOutline ? darker(o) : colorOf(o));
+                return b;
+            }
+            function swatch(m) {
+                const b = el('span', {
+                    class: `box sm${m.layer === 'outline' ? ' has-outline' : ''}`,
+                    'aria-hidden': 'true',
+                });
+                if (m.layer === 'fill') {
+                    b.style.background = colorOf(m);
+                    b.style.borderColor = colorOf(m);
+                    b.textContent = m.symbol;
+                } else {
+                    b.style.setProperty('--ol', colorOf(m));
+                    b.append(el('span', { class: 'ol-symbol', text: m.symbol }));
+                }
+                return b;
+            }
+            function legendEl() {
+                if (!t.legend || t.display === 'line') return null;
+                const list = el('ul', { class: 'tlegend' });
+                for (const m of t.marks) {
+                    const content = [swatch(m), m.name];
+                    list.append(
+                        el(
+                            'li',
+                            {},
+                            readOnly()
+                                ? el('span', { class: 'item' }, content)
+                                : el(
+                                      'button',
+                                      {
+                                          type: 'button',
+                                          'aria-pressed': String(brush === m.id),
+                                          onclick: () => {
+                                              brush = brush === m.id ? undefined : m.id;
+                                              renderSheet();
+                                          },
+                                      },
+                                      content
+                                  )
+                        )
+                    );
+                }
+                return el(
+                    'div',
+                    { style: 'display:grid;gap:4px' },
+                    list,
+                    readOnly()
+                        ? null
+                        : el('p', {
+                              class: 'brush-note',
+                              role: 'status',
+                              text: brush
+                                  ? `Marking with ${byId(brush).name}${t.fromStart ? ' from the start' : ''}. Click it again or press Escape to stop.`
+                                  : '',
+                          })
+                );
+            }
+            function trackerEl() {
+                const size = t.display === 'line' ? 'sm' : 'md';
+                let body;
+                if (t.display === 'table') {
+                    const tpl = [
+                        'minmax(6rem,1fr)',
+                        ...(t.showValue ? ['4.5rem'] : []),
+                        'minmax(3.5rem,auto)',
+                    ].join(' ');
+                    const row = (cls, ...cells) =>
+                        el(
+                            'div',
+                            { class: `trow ${cls}`, style: { 'grid-template-columns': tpl } },
+                            cells
+                        );
+                    body = el(
+                        'div',
+                        { class: 'ttable' },
+                        row(
+                            'head',
+                            el('span', { text: 'Level' }),
+                            t.showValue
+                                ? el('span', { class: 'center', text: t.valueTitle || 'Value' })
+                                : null,
+                            el('span', { class: 'center', text: 'Marks' })
+                        ),
+                        t.levels.map((l, i) =>
+                            row(
+                                '',
+                                el('span', {
+                                    style: 'font-weight:500',
+                                    class: byId(copy[readingLayer()][l.id]) ? 'marked' : '',
+                                    text: l.name,
+                                }),
+                                t.showValue
+                                    ? el('span', { class: 'val', text: l.value || '—' })
+                                    : null,
+                                el('span', { class: 'center' }, boxEl(l, i, size))
+                            )
+                        ),
+                        t.total
+                            ? row(
+                                  'total',
+                                  el('span', {
+                                      text:
+                                          t.totalMode === 'count'
+                                              ? 'Count'
+                                              : t.valueTitle || 'Value',
+                                  }),
+                                  t.showValue ? el('span') : null,
+                                  el('span', { class: 'center', text: totalText() })
+                              )
+                            : null
+                    );
+                } else if (t.display === 'row') {
+                    body = el(
+                        'div',
+                        { class: 'pool-row' },
+                        el('span', { text: t.label }),
+                        el(
+                            'span',
+                            { style: 'display:flex;align-items:center;gap:8px' },
+                            el(
+                                'span',
+                                { class: 'boxes' },
+                                t.levels.map((l, i) => boxEl(l, i, 'sm dot'))
+                            ),
+                            t.total ? el('span', { class: 'count', text: totalText() }) : null
+                        )
+                    );
+                } else {
+                    body = el(
+                        'div',
+                        { class: 'strip' },
+                        el('span', { class: 'name', text: t.label }),
+                        el(
+                            'span',
+                            { class: 'boxes' },
+                            t.levels.map((l, i) => boxEl(l, i, size))
+                        ),
+                        t.total ? el('span', { class: 'count', text: totalText() }) : null
+                    );
+                }
+                if (t.display === 'row') return el('div', { class: 'tracker' }, body, legendEl());
+                return el(
+                    'div',
+                    { class: 'tracker' },
+                    t.display === 'table'
+                        ? el('div', { class: 'tracker-head' }, el('span', { text: t.label }))
+                        : null,
+                    body,
+                    legendEl()
+                );
+            }
+            function dotsRow(label, value, minimal, onPick) {
+                return el(
+                    'div',
+                    { class: 'context-row' },
+                    el('span', { text: label }),
+                    el(
+                        'span',
+                        { class: 'dots' },
+                        Array.from({ length: 10 }, (_, i) =>
+                            el('button', {
+                                type: 'button',
+                                class: i < value ? (i < minimal ? 'min' : 'on') : '',
+                                'aria-label': `${label} ${i + 1}`,
+                                disabled: readOnly(),
+                                onclick: () => onPick(i + 1 === value ? i : i + 1),
+                            })
+                        )
+                    )
+                );
+            }
+            function renderSheet() {
+                const root = document.getElementById('sheet');
+                root.replaceChildren();
+                if (t.pool) poolToCopy();
+                if (t.pool?.context === 'force') {
+                    root.append(
+                        el(
+                            'div',
+                            { class: 'page-card' },
+                            el('h3', { text: 'Full sheet · Force · Resources' }),
+                            dotsRow('Willpower', 5, 0, () => {}),
+                            t.pool.look === 'tracker'
+                                ? trackerEl()
+                                : [
+                                      dotsRow('Max Force Points', t.pool.max, minMax(), (v) => {
+                                          setPool(t.pool.current, v);
+                                          renderSheet();
+                                      }),
+                                      dotsRow('Force Points', t.pool.current, 0, (v) => {
+                                          setPool(v, t.pool.max);
+                                          renderSheet();
+                                      }),
+                                  ],
+                            dotsRow('Dark Side Resistance', 5, 0, () => {})
+                        )
+                    );
+                    root.append(
+                        el(
+                            'div',
+                            { class: 'page-card', style: 'margin-top:12px' },
+                            el('h3', {
+                                text: 'Another page of the same character (dots, unchanged)',
+                            }),
+                            dotsRow('Max Force Points', t.pool.max, minMax(), (v) => {
+                                setPool(t.pool.current, v);
+                                renderSheet();
+                            }),
+                            dotsRow('Force Points', t.pool.current, 0, (v) => {
+                                setPool(v, t.pool.max);
+                                renderSheet();
+                            })
+                        )
+                    );
+                } else if (t.pool?.context === 'swWill') {
+                    root.append(
+                        el(
+                            'div',
+                            { class: 'page-card' },
+                            el('h3', { text: 'Full sheet · Force · Resources' }),
+                            t.pool.look === 'tracker'
+                                ? trackerEl()
+                                : dotsRow('Willpower', t.pool.current, minCurrent(), (v) => {
+                                      setPool(v, t.pool.max);
+                                      renderSheet();
+                                  }),
+                            dotsRow('Max Force Points', 3, selfControl, () => {}),
+                            dotsRow('Force Points', 2, 0, () => {})
+                        )
+                    );
+                    root.append(
+                        el(
+                            'div',
+                            { class: 'page-card', style: 'margin-top:12px' },
+                            el('h3', {
+                                text: 'Another page of the same character (dots, unchanged)',
+                            }),
+                            dotsRow('Willpower', t.pool.current, minCurrent(), (v) => {
+                                setPool(v, t.pool.max);
+                                renderSheet();
+                            })
+                        )
+                    );
+                } else if (t.pool) {
+                    root.append(
+                        el(
+                            'div',
+                            { class: 'page-card' },
+                            el('h3', { text: 'WoD 2e character' }),
+                            t.pool.look === 'tracker'
+                                ? trackerEl()
+                                : dotsRow('Willpower', t.pool.max, 0, (v) => {
+                                      setPool(t.pool.current, v);
+                                      renderSheet();
+                                  })
+                        )
+                    );
+                } else root.append(trackerEl());
+                const tool = document.getElementById('sc-tool');
+                const stepper = (label, get, set) => [
+                    label + ' ',
+                    el(
+                        'span',
+                        { class: 'stepper' },
+                        el(
+                            'button',
+                            {
+                                type: 'button',
+                                class: 'btn',
+                                onclick: () => {
+                                    set(Math.max(0, get() - 1));
+                                    setPool(t.pool.current, t.pool.max);
+                                    renderSheet();
+                                },
+                            },
+                            '−'
+                        ),
+                        el('strong', { text: String(get()) }),
+                        el(
+                            'button',
+                            {
+                                type: 'button',
+                                class: 'btn',
+                                onclick: () => {
+                                    set(Math.min(5, get() + 1));
+                                    setPool(t.pool.current, t.pool.max);
+                                    renderSheet();
+                                },
+                            },
+                            '+'
+                        )
+                    ),
+                    ' ',
+                ];
+                tool.replaceChildren(
+                    ...[
+                        ...(t.pool?.minMax || t.pool?.minCurrent
+                            ? stepper(
+                                  'Self-Control',
+                                  () => selfControl,
+                                  (v) => (selfControl = v)
+                              )
+                            : []),
+                        ...(t.pool?.minCurrent
+                            ? stepper(
+                                  'Passion',
+                                  () => passion,
+                                  (v) => (passion = v)
+                              )
+                            : []),
+                    ]
+                );
+            }
+
+            /* ---------- Editor ---------- */
+            const group = (title, hint, ...children) =>
+                el(
+                    'fieldset',
+                    {},
+                    el('legend', {}, title),
+                    hint ? el('p', { class: 'hint', text: hint }) : null,
+                    children
+                );
+            const seg = (label, options, value, onPick, disabled) =>
+                el(
+                    'span',
+                    { class: 'seg', role: 'group', 'aria-label': label },
+                    options.map(([v, text]) =>
+                        el(
+                            'button',
+                            {
+                                type: 'button',
+                                'aria-pressed': String(value === v),
+                                disabled,
+                                onclick: () => onPick(v),
+                            },
+                            text
+                        )
+                    )
+                );
+            const toggle = (label, key, tag) =>
+                el(
+                    'label',
+                    { class: 'check' },
+                    el('input', {
+                        type: 'checkbox',
+                        checked: t[key],
+                        onchange: (e) => {
+                            t[key] = e.target.checked;
+                            if (key === 'legend' && !t.legend) brush = undefined;
+                            renderAll();
+                        },
+                    }),
+                    label,
+                    tag ? el('span', { class: 'new', text: tag }) : null
+                );
+            function renderEditor() {
+                const root = document.getElementById('editor');
+                root.replaceChildren();
+                if (t.pool) {
+                    root.append(
+                        group(
+                            `${t.pool.name} (built-in pool)`,
+                            'A resource the game keeps as current and maximum.',
+                            el(
+                                'div',
+                                { class: 'row' },
+                                el(
+                                    'span',
+                                    { class: 'hint' },
+                                    'Show as',
+                                    el('span', { class: 'new', text: 'tracker is new' })
+                                )
+                            ),
+                            seg(
+                                'Show as',
+                                [
+                                    ['dots', 'Dots'],
+                                    ['numbers', 'Numbers'],
+                                    ['tracker', 'Tracker'],
+                                ],
+                                t.pool.look,
+                                (v) => {
+                                    t.pool.look = v === 'numbers' ? 'dots' : v;
+                                    brush = undefined;
+                                    renderAll();
+                                }
+                            )
+                        )
+                    );
+                    if (t.pool.look !== 'tracker') return;
+                }
+                root.append(
+                    group(
+                        'Display',
+                        null,
+                        seg(
+                            'Display',
+                            t.pool
+                                ? [
+                                      ['row', 'Row (like a rating)'],
+                                      ['strip', 'Strip'],
+                                      ['line', 'One line'],
+                                  ]
+                                : [
+                                      ['table', 'Table'],
+                                      ['strip', 'Strip'],
+                                      ['line', 'One line'],
+                                  ],
+                            t.display,
+                            (v) => {
+                                t.display = v;
+                                renderAll();
+                            }
+                        )
+                    )
+                );
+                root.append(
+                    group(
+                        'Marks',
+                        t.pool
+                            ? 'The fill is the current points, the outline the maximum; names, symbols, and colors are yours.'
+                            : null,
+                        t.marks.map((m, i) =>
+                            el(
+                                'div',
+                                { class: 'mark-row' },
+                                el(
+                                    'div',
+                                    { class: 'row' },
+                                    swatch(m),
+                                    el('input', {
+                                        type: 'text',
+                                        class: 'name',
+                                        value: m.name,
+                                        'aria-label': `Mark ${i + 1} name`,
+                                        oninput: (e) => {
+                                            m.name = e.target.value;
+                                            renderSheet();
+                                        },
+                                    }),
+                                    seg(
+                                        `Mark ${i + 1} layer`,
+                                        [
+                                            ['fill', 'Fill'],
+                                            ['outline', 'Outline'],
+                                        ],
+                                        m.layer,
+                                        (v) => {
+                                            m.layer = v;
+                                            renderAll();
+                                        },
+                                        !!t.pool
+                                    )
+                                ),
+                                el(
+                                    'div',
+                                    { class: 'row' },
+                                    Object.entries(COLORS).map(([key, c]) =>
+                                        el(
+                                            'button',
+                                            {
+                                                type: 'button',
+                                                class: 'dot',
+                                                'aria-pressed': String(m.fill === key),
+                                                'aria-label': c.label,
+                                                onclick: () => {
+                                                    m.fill = key;
+                                                    renderAll();
+                                                },
+                                            },
+                                            el('span', { style: { background: c.css } })
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                );
+                root.append(
+                    group(
+                        'Reading the marks',
+                        null,
+                        t.pool
+                            ? null
+                            : toggle(
+                                  'Marks fill from the start (like a rating’s dots)',
+                                  'fromStart',
+                                  'new'
+                              ),
+                        !t.pool && t.fromStart
+                            ? toggle('Fills stay inside the outline', 'fillInside', 'new')
+                            : null,
+                        el(
+                            'div',
+                            { class: 'row' },
+                            el(
+                                'span',
+                                { class: 'hint' },
+                                'Total',
+                                t.pool ? null : el('span', { class: 'new', text: 'new' })
+                            ),
+                            seg(
+                                'Total',
+                                [
+                                    ['deepest', 'Deepest level'],
+                                    ['count', 'Count'],
+                                ],
+                                t.totalMode,
+                                (v) => {
+                                    t.totalMode = v;
+                                    renderAll();
+                                },
+                                !!t.pool
+                            )
+                        ),
+                        toggle(t.totalMode === 'count' ? 'Show the count' : 'Total row', 'total'),
+                        toggle('Name the marks under the tracker', 'legend')
+                    )
+                );
+            }
+
+            function renderAll() {
+                document.getElementById('presets').replaceChildren(
+                    ...Object.entries(PRESETS).map(([key, p]) =>
+                        el(
+                            'button',
+                            {
+                                type: 'button',
+                                class: 'tab',
+                                'aria-pressed': String(key === current),
+                                onclick: () => load(key),
+                            },
+                            p.title
+                        )
+                    )
+                );
+                renderEditor();
+                renderSheet();
+            }
+            document.getElementById('readonly').addEventListener('change', () => {
+                brush = undefined;
+                renderSheet();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && brush) {
+                    brush = undefined;
+                    renderSheet();
+                }
+            });
+            load('force');
+        </script>
+    </body>
+</html>

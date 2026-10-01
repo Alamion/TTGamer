@@ -14,6 +14,7 @@ import {
     visibleLevelIds,
 } from '@site/src/sheet_manager/features/sheet/data/tracker';
 import {
+    markTracker,
     ownTrackerModel,
     paintTrackerMark,
     stepTrackerLength,
@@ -380,5 +381,202 @@ describe('reading and folding two layers (spec 019, US3)', () => {
         expect(model.readingLayer).toBe('outline');
         expect(model.columns[0]!.copies[0]!.total).toBe('-3');
         expect(model.columns[0]!.copies[0]!.out).toBe(true);
+    });
+});
+
+describe('marks that fill from the start (spec 020, R3)', () => {
+    const POINT = { id: 'point', name: 'Point', symbol: '', fill: 'secondary' };
+    const SPENT = { id: 'spent', name: 'Spent', symbol: '×', fill: 'error' };
+    const MAX = { id: 'max', name: 'Max', symbol: '', fill: 'secondary', layer: 'outline' };
+    const BLEED = { id: 'bleed', name: 'Bleed', symbol: '!', fill: 'error', layer: 'outline' };
+    const IDS = Array.from({ length: 10 }, (_, index) => `l${index + 1}`);
+    const field = (extra: Record<string, unknown> = {}) =>
+        TemplateFieldSchema.parse({
+            id: 'points',
+            type: 'tracker',
+            label: 'Points',
+            marks: [POINT, SPENT, MAX, BLEED],
+            levels: IDS.map((id) => ({ id, name: id, value: '' })),
+            columns: [{ id: 'c', kind: 'marks', title: '', copies: { max: 3 } }],
+            fromStart: true,
+            ...extra,
+        }) as TrackerField;
+    const copy = (marks?: Record<string, string>, outlines?: Record<string, string>) =>
+        ({
+            tracker: 1,
+            columns: {
+                c: [{ id: 'a', ...(marks ? { marks } : {}), ...(outlines ? { outlines } : {}) }],
+            },
+        }) as TrackerValue;
+    const run = (count: number, mark = 'point', from = 0) =>
+        Object.fromEntries(IDS.slice(from, count).map((id) => [id, mark]));
+    const fills = (value: TrackerValue, copyId = 'a') =>
+        value.columns.c!.find(({ id }) => id === copyId)?.marks ?? {};
+    const frames = (value: TrackerValue) => value.columns.c![0]!.outlines ?? {};
+    const press = (
+        f: TrackerField,
+        value: TrackerValue | undefined,
+        level: string,
+        click: Parameters<typeof markTracker>[5] = { layer: 'fill' },
+        copyId = 'a'
+    ) => markTracker(f, value, 'c', copyId, level, click);
+
+    it('marks every box up to the pressed one, then shortens like a rating', () => {
+        const f = field();
+        let v = press(f, undefined, 'l4');
+        expect(fills(v)).toEqual(run(4));
+        v = press(f, v, 'l2');
+        expect(fills(v)).toEqual(run(2));
+        v = press(f, v, 'l2');
+        expect(fills(v)).toEqual(run(1));
+        v = press(f, v, 'l1');
+        expect(fills(v)).toEqual({});
+    });
+
+    it('takes seven points in one press (SC-001)', () => {
+        expect(Object.keys(fills(press(field(), undefined, 'l7')))).toHaveLength(7);
+    });
+
+    it('runs each layer on its own', () => {
+        const f = field();
+        let v = press(f, undefined, 'l5', { layer: 'outline' });
+        expect(frames(v)).toEqual(run(5, 'max'));
+        v = press(f, v, 'l2');
+        expect(fills(v)).toEqual(run(2));
+        expect(frames(v)).toEqual(run(5, 'max'));
+        v = press(f, v, 'l3', { layer: 'outline' });
+        expect(frames(v)).toEqual(run(3, 'max'));
+        expect(fills(v)).toEqual(run(2));
+    });
+
+    it('repaints the run with a brush mark of the same layer', () => {
+        const f = field();
+        const v = press(f, copy(run(5)), 'l2', { brush: 'spent' });
+        expect(fills(v)).toEqual(run(2, 'spent'));
+        expect(frames(press(f, v, 'l3', { brush: 'bleed' }))).toEqual(run(3, 'bleed'));
+    });
+
+    it('presses the last box of a run of another mark as a new run, not a shortening', () => {
+        const v = press(field(), copy(run(3, 'spent')), 'l3');
+        expect(fills(v)).toEqual(run(3));
+    });
+
+    it('keeps fills inside the outline when asked, on fills only', () => {
+        const inside = field({ fillInside: true });
+        const framed = copy(undefined, run(5, 'max'));
+        expect(fills(press(inside, framed, 'l8'))).toEqual(run(5));
+        expect(fills(press(inside, framed, 'l3'))).toEqual(run(3));
+        expect(frames(press(inside, framed, 'l8', { layer: 'outline' }))).toEqual(run(8, 'max'));
+        expect(fills(press(field(), framed, 'l8'))).toEqual(run(8));
+        // Without "fill from the start" the option has no effect.
+        const single = field({ fromStart: false, fillInside: true });
+        expect(fills(press(single, framed, 'l8'))).toEqual({ l8: 'point' });
+    });
+
+    it('closes stored gaps up to the pressed box', () => {
+        const v = press(field(), copy({ l1: 'point', l3: 'point', l6: 'point' }), 'l4');
+        expect(fills(v)).toEqual(run(4));
+    });
+
+    it('runs each copy on its own (FR-006)', () => {
+        const f = field();
+        let v = press(f, undefined, 'l4');
+        v = press(f, v, 'l2', { layer: 'fill' }, 'b');
+        expect(fills(v, 'a')).toEqual(run(4));
+        expect(fills(v, 'b')).toEqual(run(2));
+    });
+
+    it('runs over the shown length only and keeps hidden levels as stored', () => {
+        const short = field({
+            lengths: [{ levels: IDS.slice(0, 5) }, { levels: IDS }],
+        });
+        const v = press(short, copy({ l9: 'point' }), 'l3');
+        expect(fills(v)).toEqual({ ...run(3), l9: 'point' });
+    });
+
+    it('keeps a run whole when the tracker is shortened', () => {
+        const lengths = field({ lengths: [{ levels: IDS.slice(0, 5) }, { levels: IDS }] });
+        const long = { ...copy(run(8)), length: 1 } as TrackerValue;
+        const shorter = stepTrackerLength(lengths, long, -1)!;
+        expect(fills(shorter)).toEqual(run(5));
+    });
+
+    it('keeps spec 019 behavior without the setting', () => {
+        const single = field({ fromStart: false });
+        expect(fills(press(single, undefined, 'l4'))).toEqual({ l4: 'point' });
+        expect(fills(press(single, copy({ l4: 'point' }), 'l4'))).toEqual({ l4: 'spent' });
+        expect(frames(press(single, undefined, 'l4', { layer: 'outline' }))).toEqual({
+            l4: 'max',
+        });
+        expect(
+            frames(press(single, copy(undefined, { l4: 'max' }), 'l4', { layer: 'outline' }))
+        ).toEqual({ l4: 'bleed' });
+        expect(fills(press(single, undefined, 'l2', { brush: 'spent' }))).toEqual({ l2: 'spent' });
+    });
+});
+
+describe('the count total (spec 020, R4)', () => {
+    const FILL = { id: 'p', name: 'Point', symbol: '', fill: 'secondary' };
+    const FRAME = { id: 'm', name: 'Max', symbol: '', fill: 'secondary', layer: 'outline' };
+    const field = (marks: object[], extra: Record<string, unknown> = {}) =>
+        TemplateFieldSchema.parse({
+            id: 'pool',
+            type: 'tracker',
+            label: 'Pool',
+            marks,
+            levels: LEVELS.map((id) => ({ id, name: id, value: id === 'down' ? 'X' : '-1' })),
+            columns: [
+                { id: 'c', kind: 'marks', title: '', covers: 5, copies: { max: 2 } },
+                { id: 'n', kind: 'text', title: 'Notes' },
+            ],
+            totalReads: 'count',
+            ...extra,
+        }) as TrackerField;
+    const totals = (f: TrackerField, copies: object[]) =>
+        ownTrackerModel(
+            f,
+            { tracker: 1, columns: { c: copies } } as TrackerValue,
+            'Pool',
+            false
+        ).columns[0]!.copies.map(({ total }) => total);
+
+    it('reads "filled / framed" and stays a plain count without frames', () => {
+        const both = field([FILL, FRAME]);
+        const copy = {
+            id: 'a',
+            marks: { bruised: 'p', hurt: 'p' },
+            outlines: { bruised: 'm', hurt: 'm', injured: 'm', wounded: 'm', mauled: 'm' },
+        };
+        expect(totals(both, [copy])).toEqual(['2 / 5']);
+        expect(totals(both, [{ id: 'a', marks: { bruised: 'p', hurt: 'p' } }])).toEqual(['2']);
+        expect(totals(field([FILL]), [{ id: 'a', marks: { bruised: 'p', hurt: 'p' } }])).toEqual([
+            '2',
+        ]);
+        expect(totals(both, [{ id: 'a' }])).toEqual(['0']);
+    });
+
+    it('counts covered boxes per copy and leaves text columns without a total', () => {
+        const f = field([FILL, FRAME]);
+        const model = ownTrackerModel(
+            f,
+            {
+                tracker: 1,
+                columns: {
+                    c: [
+                        { id: 'a', marks: { bruised: 'p', crippled: 'p' } },
+                        { id: 'b', marks: { bruised: 'p', hurt: 'p', injured: 'p' } },
+                    ],
+                },
+            } as TrackerValue,
+            'Pool',
+            false
+        );
+        expect(model.columns[0]!.copies.map(({ total }) => total)).toEqual(['1', '3']);
+        expect(model.columns[1]!.copies[0]!.total).toBeUndefined();
+    });
+
+    it('keeps the deepest-level total by default', () => {
+        const f = field([FILL], { totalReads: 'deepest' });
+        expect(totals(f, [{ id: 'a', marks: { bruised: 'p', hurt: 'p' } }])).toEqual(['-1']);
     });
 });

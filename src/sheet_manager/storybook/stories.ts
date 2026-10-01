@@ -310,6 +310,15 @@ const fields = story(
                     maxFrom: 'number-plain',
                 },
                 { id: 'resource', type: 'resource', label: 'Resource', max: 10 },
+                {
+                    id: 'resource-tracker',
+                    type: 'resource',
+                    label: 'Resource as a tracker (minimum 1)',
+                    labelPosition: 'left',
+                    min: 1,
+                    max: 8,
+                    poolTracker: { display: 'row' },
+                },
             ],
         },
         {
@@ -721,6 +730,14 @@ function boundNodes(binding: DocumentBindingDescriptor, index: number): NodeInpu
                       primitive('current'),
                       primitive('max', { part: 'max' }),
                       primitive('compact', { compact: true }),
+                      // Spec 020: the pool as one tracker, next to the dot rows above.
+                      primitive('tracker', { poolTracker: { display: 'row' } }),
+                      primitive('tracker-locked', {
+                          poolTracker: { display: 'strip', legend: true },
+                          minFrom: '1',
+                          maxMinFrom: '2',
+                      }),
+                      primitive('tracker-line', { poolTracker: { display: 'line' } }),
                   ]
                 : [primitive('full'), primitive('compact', { compact: true })];
         case 'track':
@@ -846,7 +863,7 @@ const trackers = story(
                         { id: 'trigger', kind: 'text', title: 'Trigger', covers: 3 },
                     ],
                 }),
-                tracker('tracker-points', 'Force Points (fill + outline, legend brush)', {
+                tracker('tracker-points', 'Force Points (fill from the start, count, legend)', {
                     marks: [
                         { id: 'point', name: 'Point', symbol: '●', fill: 'secondary' },
                         {
@@ -864,7 +881,9 @@ const trackers = story(
                     })),
                     valueColumn: { show: false },
                     display: 'strip',
-                    total: false,
+                    total: true,
+                    totalReads: 'count',
+                    fromStart: true,
                     legend: true,
                 }),
                 tracker('tracker-conditions', 'Wounds and conditions (two outlines)', {
@@ -886,6 +905,24 @@ const trackers = story(
                             layer: 'outline',
                         },
                     ],
+                    legend: true,
+                }),
+                tracker('tracker-runs', 'Wounds from the start, fills inside the outline', {
+                    marks: [
+                        BASHING,
+                        LETHAL,
+                        {
+                            id: 'bleeding',
+                            name: 'Bleeding',
+                            symbol: '!',
+                            fill: 'error',
+                            layer: 'outline',
+                        },
+                    ],
+                    display: 'strip',
+                    fromStart: true,
+                    fillInside: true,
+                    totalReads: 'count',
                     legend: true,
                 }),
                 tracker('tracker-plain', 'Burden (one mark, no values)', {

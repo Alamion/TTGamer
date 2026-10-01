@@ -2,6 +2,7 @@ import type {
     CatalogBinding,
     GroupNode,
     ListNode,
+    PoolTrackerOverride,
     PrimitiveNode,
     SectionNode,
     TableNode,
@@ -165,6 +166,9 @@ export function primitive(
         maxFrom?: string;
         minFrom?: string;
         part?: 'current' | 'max';
+        /** Pool resources drawn as a tracker (spec 020), with the maximum's minimum. */
+        poolTracker?: PoolTrackerOverride;
+        maxMinFrom?: string;
         maxMembers?: number;
         /** Track bindings: the page's tracker settings (spec 018). */
         tracker?: TrackerOverride;
@@ -181,6 +185,8 @@ export function primitive(
         ...(options.maxFrom ? { maxFrom: options.maxFrom } : {}),
         ...(options.minFrom ? { minFrom: options.minFrom } : {}),
         ...(options.part ? { part: options.part } : {}),
+        ...(options.poolTracker ? { poolTracker: options.poolTracker } : {}),
+        ...(options.maxMinFrom ? { maxMinFrom: options.maxMinFrom } : {}),
         ...(options.maxMembers ? { cohort: { maxMembers: options.maxMembers } } : {}),
         ...(options.tracker ? { tracker: options.tracker } : {}),
     };

@@ -50,7 +50,12 @@ function resourcesSection(): TemplateNode {
             group(
                 'resources-willpower',
                 'Willpower',
-                [resource('resource-willpower', 'resource:willpower', 'Willpower')],
+                [
+                    // One tracker: the rating framed, the current points filled (spec 020).
+                    resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                        poolTracker: { display: 'row', legend: false, total: true },
+                    }),
+                ],
                 { column: 2 }
             ),
         ],

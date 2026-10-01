@@ -9,6 +9,7 @@ import {
 } from '../../../templates/builders';
 import type {
     GroupNode,
+    PoolTrackerOverride,
     PrimitiveNode,
     SectionNode,
     TemplateField,
@@ -46,6 +47,8 @@ export function resource(
         minFrom?: string;
         compact?: boolean;
         part?: 'current' | 'max';
+        poolTracker?: PoolTrackerOverride;
+        maxMinFrom?: string;
     } = {}
 ): PrimitiveNode {
     return primitive(id, bindingKey, { label, ...options });

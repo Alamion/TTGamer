@@ -94,6 +94,9 @@ function variantsOf(node: TemplateNode): string[] {
             if (node.min > 0) tags.push('rating:min');
             if (node.max >= 30) tags.push('rating:many');
             break;
+        case 'resource':
+            if (node.poolTracker) tags.push('resource:tracker');
+            break;
         case 'formula':
             flag('prefix');
             flag('suffix');
@@ -120,6 +123,9 @@ function variantsOf(node: TemplateNode): string[] {
             if (!node.valueColumn.show) tags.push('tracker:value-hidden');
             if (node.marks.some(({ layer }) => layer === 'outline'))
                 tags.push('tracker:layer:outline');
+            if (node.fromStart) tags.push('tracker:from-start');
+            if (node.fillInside) tags.push('tracker:fill-inside');
+            if (node.totalReads === 'count') tags.push('tracker:count');
             break;
         }
         case 'list':
@@ -146,6 +152,11 @@ function variantsOf(node: TemplateNode): string[] {
             if (node.tracker?.total) tags.push('primitive:tracker:total');
             if (node.tracker?.marks) tags.push('primitive:tracker:marks');
             if (node.tracker?.legend) tags.push('primitive:tracker:legend');
+            if (node.poolTracker) {
+                tags.push('primitive:resource:tracker');
+                tags.push(`primitive:resource:tracker:${node.poolTracker.display}`);
+            }
+            if (node.maxMinFrom) tags.push('primitive:resource:maxMinFrom');
             break;
     }
     return tags;
@@ -232,6 +243,9 @@ const REQUIRED_VARIANTS = [
     'tracker:total',
     'tracker:legend',
     'tracker:layer:outline',
+    'tracker:from-start',
+    'tracker:fill-inside',
+    'tracker:count',
     'tracker:hideLabel',
     'tracker:value-hidden',
     'primitive:compact',
@@ -243,6 +257,12 @@ const REQUIRED_VARIANTS = [
     'primitive:tracker:total',
     'primitive:tracker:marks',
     'primitive:tracker:legend',
+    'primitive:resource:tracker',
+    'resource:tracker',
+    'primitive:resource:tracker:row',
+    'primitive:resource:tracker:strip',
+    'primitive:resource:tracker:line',
+    'primitive:resource:maxMinFrom',
 ];
 
 describe('element storybook (constitution VI, T-069)', () => {

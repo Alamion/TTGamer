@@ -17,6 +17,7 @@ import type {
     TrackerLength,
     TrackerLevel,
     TrackerMarkKind,
+    TrackerTotalReads,
     TrackerValueColumn,
 } from '../../../types/template';
 import {
@@ -24,6 +25,7 @@ import {
     TRACKER_DISPLAYS,
     TRACKER_LAYERS,
     TRACKER_PALETTE_FILLS,
+    TRACKER_TOTAL_READS,
 } from '../../../types/template';
 import { MarkSwatch } from '../../stat-fields/Tracker';
 import { ToggleRow } from './LayoutControls';
@@ -48,6 +50,10 @@ export interface TrackerSettingsValue {
     lengths: TrackerLength[];
     out: boolean;
     legend: boolean;
+    /** Own trackers only (spec 020). */
+    fromStart?: boolean;
+    fillInside?: boolean;
+    totalReads?: TrackerTotalReads;
 }
 
 /** A built-in tracker: the game fixes counts and order; its own text shows as placeholders. */
@@ -72,7 +78,56 @@ const COLOR_LABEL = {
     tertiary: text.colorTertiary,
     success: text.colorSuccess,
     text: text.colorText,
+    primary: text.colorPrimary,
 } as const;
+
+/** A mark's color: the palette (theme colors) or an own color. */
+export function MarkColorPicker({
+    fill,
+    name,
+    onChange,
+}: {
+    fill: string;
+    name: string;
+    onChange: (fill: string) => void;
+}) {
+    return (
+        <span
+            role="group"
+            aria-label={t(text.markColors, { name })}
+            className="flex items-center gap-2.5 px-1"
+        >
+            {TRACKER_PALETTE_FILLS.map((palette) => (
+                <button
+                    key={palette}
+                    type="button"
+                    aria-pressed={fill === palette}
+                    aria-label={t(COLOR_LABEL[palette])}
+                    title={t(COLOR_LABEL[palette])}
+                    onClick={() => onChange(palette)}
+                    className={clsx(
+                        // The picked color gets a bright frame with a gap, as the brush does.
+                        'grid h-3.5 w-3.5 place-items-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                        fill === palette && 'outline outline-2 outline-offset-2 outline-textPrimary'
+                    )}
+                >
+                    <MarkSwatch mark={{ fill: palette, symbol: '' }} size="xs" />
+                </button>
+            ))}
+            <input
+                type="color"
+                value={fill.startsWith('#') ? fill : '#0e7490'}
+                aria-label={t(text.markOwnColor, { name })}
+                title={t(text.markOwnColor, { name })}
+                onChange={(event) => onChange(event.target.value.toLowerCase())}
+                className={clsx(
+                    'h-6 w-7 cursor-pointer rounded border border-border bg-transparent p-0',
+                    fill.startsWith('#') && 'outline outline-2 outline-offset-2 outline-textPrimary'
+                )}
+            />
+        </span>
+    );
+}
 
 function move<T>(list: readonly T[], index: number, step: -1 | 1): T[] {
     const next = [...list];
@@ -226,7 +281,13 @@ export function TrackerSettings({
                         aria-label={t(text.startFrom)}
                         onChange={(event) => {
                             const set = event.target.value as MarkSetId | '';
-                            if (set) onChange({ marks: markSet(set) });
+                            if (!set) return;
+                            // Points read as a pool: runs from the start, counted.
+                            onChange(
+                                set === 'points'
+                                    ? { marks: markSet(set), fromStart: true, totalReads: 'count' }
+                                    : { marks: markSet(set) }
+                            );
                         }}
                         className={`${inputClasses} max-w-full justify-self-start`}
                     >
@@ -272,45 +333,11 @@ export function TrackerSettings({
                                 }
                                 className={`${inputClasses} w-11 text-center font-mono font-bold`}
                             />
-                            <span
-                                role="group"
-                                aria-label={t(text.markColors, { name })}
-                                className="flex items-center gap-1"
-                            >
-                                {TRACKER_PALETTE_FILLS.map((fill) => (
-                                    <button
-                                        key={fill}
-                                        type="button"
-                                        aria-pressed={mark.fill === fill}
-                                        aria-label={t(COLOR_LABEL[fill])}
-                                        title={t(COLOR_LABEL[fill])}
-                                        onClick={() => setMark(index, { fill })}
-                                        className={clsx(
-                                            'h-5 w-5 rounded-full border-2',
-                                            mark.fill === fill
-                                                ? 'border-textPrimary'
-                                                : 'border-transparent'
-                                        )}
-                                    >
-                                        <MarkSwatch mark={{ fill, symbol: '' }} size="xs" />
-                                    </button>
-                                ))}
-                                <input
-                                    type="color"
-                                    value={mark.fill.startsWith('#') ? mark.fill : '#0e7490'}
-                                    aria-label={t(text.markOwnColor, { name })}
-                                    title={t(text.markOwnColor, { name })}
-                                    onChange={(event) =>
-                                        setMark(index, { fill: event.target.value.toLowerCase() })
-                                    }
-                                    className={clsx(
-                                        'h-6 w-7 cursor-pointer rounded border bg-transparent p-0',
-                                        mark.fill.startsWith('#')
-                                            ? 'border-textPrimary'
-                                            : 'border-border'
-                                    )}
-                                />
-                            </span>
+                            <MarkColorPicker
+                                fill={mark.fill}
+                                name={name}
+                                onChange={(fill) => setMark(index, { fill })}
+                            />
                             <span
                                 role="group"
                                 aria-label={t(text.markLayer, { n })}
@@ -625,11 +652,61 @@ export function TrackerSettings({
             {!locked && <LengthSettings value={value} onChange={onChange} />}
 
             <Group title={t(text.reading)}>
+                {!locked && (
+                    <ToggleRow
+                        checked={value.fromStart ?? false}
+                        hint={t(text.fromStartHint)}
+                        label={t(text.fromStart)}
+                        onChange={(fromStart) => onChange({ fromStart })}
+                    />
+                )}
+                {!locked && value.fromStart && (
+                    <ToggleRow
+                        checked={value.fillInside ?? false}
+                        hint={t(text.fillInsideHint)}
+                        label={t(text.fillInside)}
+                        onChange={(fillInside) => onChange({ fillInside })}
+                    />
+                )}
                 <ToggleRow
                     checked={value.total}
-                    label={t(text.total, { value: valueTitle })}
+                    label={locked ? t(text.total, { value: valueTitle }) : t(text.totalRow)}
                     onChange={(total) => onChange({ total })}
                 />
+                {!locked && value.total && (
+                    <div className="grid gap-1 pl-5">
+                        <div
+                            role="group"
+                            aria-label={t(text.totalReads)}
+                            className="flex flex-wrap items-center gap-1 text-xs text-textSecondary"
+                        >
+                            <span>{t(text.totalReads)}</span>
+                            {TRACKER_TOTAL_READS.map((reads) => (
+                                <button
+                                    key={reads}
+                                    type="button"
+                                    aria-pressed={(value.totalReads ?? 'deepest') === reads}
+                                    onClick={() => onChange({ totalReads: reads })}
+                                    className={clsx(
+                                        'rounded border px-2 py-0.5 text-xs transition-colors',
+                                        (value.totalReads ?? 'deepest') === reads
+                                            ? 'border-primary bg-primary-muted text-textPrimary'
+                                            : 'border-border text-textSecondary hover:border-primary/60'
+                                    )}
+                                >
+                                    {reads === 'count'
+                                        ? t(text.totalCount)
+                                        : `${t(text.totalDeepest)} (${valueTitle})`}
+                                </button>
+                            ))}
+                        </div>
+                        {value.totalReads === 'count' && (
+                            <p className="text-[11px] text-textSecondary">
+                                {t(text.totalCountHint)}
+                            </p>
+                        )}
+                    </div>
+                )}
                 {!locked && (
                     <ToggleRow
                         checked={value.out}

@@ -248,3 +248,86 @@ describe('mark layers and the outline slot (spec 019)', () => {
         expect(TemplatePageValuesSchema.safeParse({ stress: huge }).success).toBe(false);
     });
 });
+
+describe('point trackers and pool trackers (spec 020)', () => {
+    const parseNode = (node: unknown) =>
+        CustomTemplateSchema.parse({
+            id: 'tpl-points',
+            name: 'Points',
+            systemId: 'wod-2e',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [node],
+        }).children[0];
+
+    it('reads trackers saved before spec 020 as box-by-box with the deepest-level total', () => {
+        expect(TemplateFieldSchema.parse(tracker())).toMatchObject({
+            fromStart: false,
+            fillInside: false,
+            totalReads: 'deepest',
+        });
+        expect(
+            TemplateFieldSchema.parse(
+                tracker({ fromStart: true, fillInside: true, totalReads: 'count' })
+            )
+        ).toMatchObject({ fromStart: true, fillInside: true, totalReads: 'count' });
+        expect(parses(tracker({ totalReads: 'sum' }))).toBe(false);
+    });
+
+    it('takes the accent color as a palette fill', () => {
+        expect(parses(tracker({ marks: [mark('m1', 'primary')] }))).toBe(true);
+    });
+
+    const pool = (extra: Record<string, unknown>) => ({
+        id: 'force-points',
+        type: 'primitive',
+        bindingKey: 'resource:force-points',
+        ...extra,
+    });
+
+    it('fills the pool tracker defaults and keeps older primitives unchanged', () => {
+        expect(parseNode(pool({ poolTracker: {}, maxMinFrom: 'self-control' }))).toMatchObject({
+            poolTracker: { display: 'row', legend: false, total: true },
+            maxMinFrom: 'self-control',
+        });
+        const older = parseNode(pool({ part: 'max', minFrom: 'self-control' }));
+        expect(older).not.toHaveProperty('poolTracker');
+        expect(older).not.toHaveProperty('maxMinFrom');
+    });
+
+    it('bounds the pool look and the maximum formula', () => {
+        expect(
+            nodeParses(
+                pool({
+                    poolTracker: {
+                        display: 'strip',
+                        marks: {
+                            current: { name: 'Point', fill: 'primary' },
+                            max: { symbol: '○' },
+                        },
+                    },
+                })
+            )
+        ).toBe(true);
+        expect(nodeParses(pool({ poolTracker: { display: 'table' } }))).toBe(false);
+        expect(nodeParses(pool({ maxMinFrom: '' }))).toBe(false);
+        expect(nodeParses(pool({ maxMinFrom: 'x'.repeat(501) }))).toBe(false);
+    });
+
+    it('takes the tracker look on a resource field of at most 20 boxes', () => {
+        const resource = (extra: Record<string, unknown>) => ({
+            id: 'luck',
+            type: 'resource',
+            label: 'Luck',
+            max: 10,
+            ...extra,
+        });
+        expect(TemplateFieldSchema.parse(resource({ poolTracker: {} }))).toMatchObject({
+            poolTracker: { display: 'row', legend: false, total: true },
+        });
+        expect(TemplateFieldSchema.parse(resource({}))).not.toHaveProperty('poolTracker');
+        expect(nodeParses(resource({ max: 20, poolTracker: {} }))).toBe(true);
+        expect(nodeParses(resource({ max: 21, poolTracker: {} }))).toBe(false);
+        expect(nodeParses(resource({ max: 50 }))).toBe(true);
+    });
+});

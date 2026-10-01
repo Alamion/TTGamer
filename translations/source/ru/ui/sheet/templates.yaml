@@ -155,6 +155,19 @@ editor:
     partMax: Максимум
     minFrom: Минимум из значения или формулы (необязательно)
     minFromPlaceholder: например, self-control
+    primitiveDisplay: Вид
+    displayDots: Точки
+    displayTracker: Трекер
+    displayNumbers: Числа
+    poolTrackerLimit: 'Трекер рисует не больше {max} клеток: уменьшите максимум, чтобы его выбрать.'
+    poolLook: Оформление
+    poolRow: Строка (как рейтинг)
+    poolCurrentMark: Текущее
+    poolMaxMark: Максимум
+    poolLayerFixed: Текущие очки заливают клетки, максимум их обводит.
+    poolCount: Показывать счёт
+    minFromCurrent: Текущее не меньше, из значения или формулы (необязательно)
+    maxMinFrom: Максимум не меньше, из значения или формулы (необязательно)
     listShowTitle: Показывать заголовок списка
     listFramed: Рамка вокруг списка
     listNamed: У записей есть имена
@@ -259,6 +272,7 @@ tracker:
     colorTertiary: Фиолетовый
     colorSuccess: Зелёный
     colorText: Чернила
+    colorPrimary: Акцент
     addMark: Добавить отметку
     moveMarkUp: 'Переместить отметку {n} выше'
     moveMarkDown: 'Переместить отметку {n} ниже'
@@ -309,6 +323,15 @@ tracker:
     out: Отмечать копию выбывшей, когда отмечен её последний уровень
     legend: Подписывать отметки под трекером
     legendHint: Читатели смогут выбрать отметку в легенде и ставить её на клетки сразу.
+    fromStart: Отметки заполняются с начала
+    fromStartHint: Отметка на клетке ставится и на все клетки перед ней, как точки рейтинга.
+    fillInside: Заливка не выходит за обводку
+    fillInsideHint: Заливка не идёт дальше последней обведённой клетки.
+    totalRow: Показывать строку итога
+    totalReads: Итог показывает
+    totalDeepest: Самый глубокий уровень
+    totalCount: Количество
+    totalCountHint: Сколько клеток залито и сколько обведено.
     defaultLabel: Здоровье
     issueLengthEmpty: 'Трекер «{id}»: длина {n} не показывает ни одного уровня.'
     issueCovers: 'Трекер «{id}»: столбец охватывает все уровни или больше; выберите «Все уровни».'

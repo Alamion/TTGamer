@@ -609,6 +609,72 @@ describe('editor layout and presentation controls', () => {
         expect(find('max-fp')).toMatchObject({ part: 'max', minFrom: 'self-control' });
         expect(find('powers')).toMatchObject({ showTitle: true, framed: true });
     });
+
+    it('draws a pool as a tracker and keeps a maximum minimum on the maximum (spec 020)', () => {
+        openEditor();
+        fireEvent.change(within(panel('max-fp')).getByLabelText('Edits'), {
+            target: { value: 'max' },
+        });
+        fireEvent.change(
+            within(panel('max-fp')).getByLabelText('Minimum from value or formula (optional)'),
+            { target: { value: 'self-control' } }
+        );
+        const display = () => within(settings('max-fp')).getByRole('group', { name: 'Display' });
+        fireEvent.click(within(display()).getByRole('button', { name: 'Tracker' }));
+        const pane = settings('max-fp');
+        expect(within(pane).queryByLabelText('Edits')).toBeNull();
+        expect(within(pane).queryByLabelText(/Compact/)).toBeNull();
+        expect((within(pane).getByLabelText(/^Maximum at least/) as HTMLInputElement).value).toBe(
+            'self-control'
+        );
+        expect((within(pane).getByLabelText(/^Current at least/) as HTMLInputElement).value).toBe(
+            ''
+        );
+        const look = within(pane).getByRole('group', { name: 'Look' });
+        fireEvent.click(within(look).getByRole('button', { name: 'Strip' }));
+        fireEvent.change(within(pane).getByLabelText('Current: Mark 1 name'), {
+            target: { value: 'Force' },
+        });
+        let find = saved();
+        expect(find('max-fp')).toMatchObject({
+            poolTracker: { display: 'strip', marks: { current: { name: 'Force' } } },
+            maxMinFrom: 'self-control',
+        });
+        expect(find('max-fp')?.part).toBeUndefined();
+        expect(find('max-fp')?.minFrom).toBeUndefined();
+
+        fireEvent.click(within(display()).getByRole('button', { name: 'Dots' }));
+        find = saved();
+        expect(find('max-fp')).toMatchObject({ part: 'max', minFrom: 'self-control' });
+        expect(find('max-fp')?.poolTracker).toBeUndefined();
+        expect(find('max-fp')?.maxMinFrom).toBeUndefined();
+    });
+
+    it('offers the tracker display only on pool resources', () => {
+        render(
+            createElement(TemplateEditorDialog, {
+                base: {
+                    kind: 'edit',
+                    template: CustomTemplateSchema.parse({
+                        id: 'rating-kit',
+                        name: 'Rating Kit',
+                        documentKind: 'character',
+                        schemaVersion: 3,
+                        children: [
+                            {
+                                id: 'dark',
+                                type: 'primitive',
+                                bindingKey: 'resource:dark-side-resistance',
+                                label: 'Dark Side',
+                            },
+                        ],
+                    }),
+                },
+                onClose: () => {},
+            })
+        );
+        expect(within(panel('dark')).queryByRole('group', { name: 'Display' })).toBeNull();
+    });
 });
 
 describe('editor drag and drop, outline, and rendering health', () => {
@@ -1284,6 +1350,21 @@ describe('derived values in the editor (T-076)', () => {
         ).toContainEqual({ message: 'Invalid formula in "Luck".', nodeId: 'luck' });
     });
 
+    it("lists a pool tracker's maximum formula that does not parse (spec 020)", () => {
+        expect(
+            issuesOf([
+                {
+                    id: 'force',
+                    type: 'primitive',
+                    bindingKey: 'resource:force-points',
+                    label: 'Force',
+                    poolTracker: {},
+                    maxMinFrom: 'self-control +',
+                },
+            ])
+        ).toContainEqual({ message: 'Invalid formula in "Force".', nodeId: 'force' });
+    });
+
     it('lists a value the formula reads that the page does not have', () => {
         expect(
             issuesOf([{ id: 'total', type: 'formula', label: 'Total', formula: 'missing + 1' }])
@@ -1704,6 +1785,90 @@ describe('tracker settings (spec 018)', () => {
         expect(
             within(layer(2)).getByRole('button', { name: 'Outline' }).getAttribute('aria-pressed')
         ).toBe('true');
+    });
+
+    it('reads marks from the start and counts them (spec 020)', () => {
+        const panel = openTracker();
+        const fromStart = () =>
+            within(settings('wounds')).getByLabelText(
+                'Marks fill from the start'
+            ) as HTMLInputElement;
+        const inside = () =>
+            within(settings('wounds')).queryByLabelText('Fills stay inside the outline');
+        const reads = () =>
+            within(settings('wounds')).getByRole('group', { name: 'The total reads' });
+        expect(fromStart().checked).toBe(false);
+        expect(inside()).toBeNull();
+        expect(
+            within(reads())
+                .getByRole('button', { name: /Deepest level/ })
+                .getAttribute('aria-pressed')
+        ).toBe('true');
+        fireEvent.click(fromStart());
+        fireEvent.click(inside()!);
+        fireEvent.click(within(reads()).getByRole('button', { name: 'Count' }));
+        expect(within(panel).getByText(/how many are framed/)).toBeTruthy();
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore.getState().templates.find(({ id }) => id === 'tracker-kit')!
+            .children[0] as TemplateNode & Record<string, unknown>;
+        expect(saved).toMatchObject({ fromStart: true, fillInside: true, totalReads: 'count' });
+        cleanup();
+
+        openTracker();
+        fireEvent.change(within(settings('wounds')).getByLabelText('Start from…'), {
+            target: { value: 'points' },
+        });
+        expect(fromStart().checked).toBe(true);
+        expect(
+            within(reads()).getByRole('button', { name: 'Count' }).getAttribute('aria-pressed')
+        ).toBe('true');
+    });
+
+    it('draws a resource field as a tracker of at most twenty boxes (spec 020)', () => {
+        const open = (max: number) => {
+            render(
+                createElement(TemplateEditorDialog, {
+                    base: {
+                        kind: 'edit',
+                        template: CustomTemplateSchema.parse({
+                            id: 'resource-kit',
+                            name: 'Resource Kit',
+                            documentKind: 'character',
+                            schemaVersion: 3,
+                            children: [{ id: 'luck', type: 'resource', label: 'Luck', max }],
+                        }),
+                    },
+                    onClose: () => {},
+                })
+            );
+            selectInOutline('luck');
+            return within(settings('luck')).getByRole('group', { name: 'Display' });
+        };
+        let display = open(30);
+        const tracker = within(display).getByRole('button', { name: 'Tracker' });
+        expect((tracker as HTMLButtonElement).disabled).toBe(true);
+        expect(within(settings('luck')).getByText(/up to 20 boxes/)).toBeTruthy();
+        cleanup();
+
+        display = open(8);
+        expect(
+            within(display).getByRole('button', { name: 'Numbers' }).getAttribute('aria-pressed')
+        ).toBe('true');
+        fireEvent.click(within(display).getByRole('button', { name: 'Tracker' }));
+        const look = within(settings('luck')).getByRole('group', { name: 'Look' });
+        fireEvent.click(within(look).getByRole('button', { name: 'One line' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore.getState().templates.find(({ id }) => id === 'resource-kit')!
+            .children[0] as TemplateNode & Record<string, unknown>;
+        expect(saved).toMatchObject({
+            poolTracker: { display: 'line', legend: false, total: true },
+        });
+    });
+
+    it('offers no point-reading settings on built-in trackers', () => {
+        const panel = openBuiltIn();
+        expect(within(panel).queryByLabelText('Marks fill from the start')).toBeNull();
+        expect(within(panel).queryByRole('group', { name: 'The total reads' })).toBeNull();
     });
 
     it('keeps the layer of built-in marks locked to fill', () => {

@@ -20,6 +20,7 @@ import type {
     CustomTemplate,
     GroupNode,
     ListItemField,
+    PoolTrackerOverride,
     PrimitivePreset,
     PrimitiveTrackOverride,
     SectionNode,
@@ -56,6 +57,9 @@ export type NodeUpdates = {
     termHint?: false;
     part?: 'current' | 'max';
     minFrom?: string;
+    /** Pool resources drawn as a tracker (spec 020). */
+    poolTracker?: PoolTrackerOverride;
+    maxMinFrom?: string;
     showTitle?: boolean;
     framed?: boolean;
     collapsible?: boolean;
@@ -484,6 +488,7 @@ export function updateNode(draft: EditorDraft, nodeId: string, updates: NodeUpda
             'label',
             'maxFrom',
             'minFrom',
+            'maxMinFrom',
         ] as const) {
             if (key in updates && (merged as Record<string, unknown>)[key] === '') {
                 delete (merged as Record<string, unknown>)[key];
@@ -765,8 +770,12 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
                 issue(messages.invalidBounds);
             }
         }
-        if (node.type === 'primitive' && node.minFrom && !parseFormula(node.minFrom).ok) {
-            issue(interpolate(messages.invalidFormula, { id: node.label ?? node.id }));
+        if (node.type === 'primitive') {
+            for (const source of [node.minFrom, node.maxMinFrom]) {
+                if (source && !parseFormula(source).ok) {
+                    issue(interpolate(messages.invalidFormula, { id: node.label ?? node.id }));
+                }
+            }
         }
         if (
             (node.type === 'rating' || node.type === 'number' || node.type === 'primitive') &&

@@ -27,6 +27,7 @@ import {
     paintTrackerMark,
     setTrackerText,
     toggleTrackerMark,
+    type TrackerClick,
     trackerDisplayOf,
 } from '../data/trackerModel';
 import type { BoundDocument } from './boundDocument';
@@ -239,7 +240,9 @@ export function BuiltInTracker({
     >;
     const writeExtras = (next: TrackerValue) => page?.setValue(extrasKey, next);
 
-    const onMark = (columnId: string, copyId: string, levelId: string, brush?: string) => {
+    const onMark = (columnId: string, copyId: string, levelId: string, click: TrackerClick) => {
+        // Built-in marks are fills only, so a layer press is the plain cycle.
+        const brush = 'brush' in click ? click.brush : undefined;
         if (columnId !== GAME_COLUMN_ID) {
             if (page)
                 writeExtras(

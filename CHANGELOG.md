@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.18.0
+
+### Minor feat
+
+- **Trackers that fill from the start (spec 020, T-085)**: with "Marks fill from the start" a click on box 4 marks boxes 1–4, like a rating's dots, and a click on the last marked box takes just that one off; fills and outlines run on their own, and "Fills stay inside the outline" stops the fill at the last framed box
+- **Count the boxes**: a tracker's total row can show a count instead of the deepest level — the filled boxes, and the framed ones after a slash ("2 / 5")
+- **Outlines with a right click**: on every tracker with outline marks, a right click, Shift+Enter or Shift+Space on a box, or a long press on a phone puts the first outline mark, by the same rules as a click puts the first fill
+- **Pools as one tracker**: a pool resource (Force Points, Willpower) can be drawn as one row of boxes — the maximum framed, the current points filled, the count after them — in a row that sits with the rating dots; minimums from formulas lock their boxes in a darker shade, and the values stay the document's own
+- **Star Wars Force Points in one row**: the full Star Wars character sheet shows Force Points as one tracker instead of the "Max Force Points" and "Force Points" rows; the brief sheet keeps its numbers
+- **WoD 2e Willpower in one row**: the full WoD 2e character sheet shows Willpower as one tracker too; the brief sheet keeps its numbers
+- **Your own resources as trackers**: a Resource field of up to 20 boxes can be drawn the same way, its minimum holding both values
+- **Accent color for marks**: tracker marks can take the rating dots' color
+
+### Fix
+
+- **View mode lists only real pages**: a character of your own setting with its own page no longer offers the engine's Full sheet and Brief, which it could not switch to
+
 ## v3.17.0
 
 ### Minor feat

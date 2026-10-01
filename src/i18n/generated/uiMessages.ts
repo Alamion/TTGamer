@@ -4406,6 +4406,58 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.minFromPlaceholder',
                     message: 'e.g. self-control',
                 },
+                primitiveDisplay: {
+                    id: 'ttgamer.ui.sheet.templates.editor.primitiveDisplay',
+                    message: 'Display',
+                },
+                displayDots: {
+                    id: 'ttgamer.ui.sheet.templates.editor.displayDots',
+                    message: 'Dots',
+                },
+                displayTracker: {
+                    id: 'ttgamer.ui.sheet.templates.editor.displayTracker',
+                    message: 'Tracker',
+                },
+                displayNumbers: {
+                    id: 'ttgamer.ui.sheet.templates.editor.displayNumbers',
+                    message: 'Numbers',
+                },
+                poolTrackerLimit: {
+                    id: 'ttgamer.ui.sheet.templates.editor.poolTrackerLimit',
+                    message: 'A tracker draws up to {max} boxes: lower the maximum to use it.',
+                },
+                poolLook: {
+                    id: 'ttgamer.ui.sheet.templates.editor.poolLook',
+                    message: 'Look',
+                },
+                poolRow: {
+                    id: 'ttgamer.ui.sheet.templates.editor.poolRow',
+                    message: 'Row (like a rating)',
+                },
+                poolCurrentMark: {
+                    id: 'ttgamer.ui.sheet.templates.editor.poolCurrentMark',
+                    message: 'Current',
+                },
+                poolMaxMark: {
+                    id: 'ttgamer.ui.sheet.templates.editor.poolMaxMark',
+                    message: 'Maximum',
+                },
+                poolLayerFixed: {
+                    id: 'ttgamer.ui.sheet.templates.editor.poolLayerFixed',
+                    message: 'Current points fill the boxes; the maximum frames them.',
+                },
+                poolCount: {
+                    id: 'ttgamer.ui.sheet.templates.editor.poolCount',
+                    message: 'Show the count',
+                },
+                minFromCurrent: {
+                    id: 'ttgamer.ui.sheet.templates.editor.minFromCurrent',
+                    message: 'Current at least, from value or formula (optional)',
+                },
+                maxMinFrom: {
+                    id: 'ttgamer.ui.sheet.templates.editor.maxMinFrom',
+                    message: 'Maximum at least, from value or formula (optional)',
+                },
                 listShowTitle: {
                     id: 'ttgamer.ui.sheet.templates.editor.listShowTitle',
                     message: 'Show list title',
@@ -4812,6 +4864,10 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.tracker.colorText',
                     message: 'Ink',
                 },
+                colorPrimary: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.colorPrimary',
+                    message: 'Accent',
+                },
                 addMark: {
                     id: 'ttgamer.ui.sheet.templates.tracker.addMark',
                     message: 'Add mark',
@@ -5013,6 +5069,42 @@ export const uiMessages = {
                 legendHint: {
                     id: 'ttgamer.ui.sheet.templates.tracker.legendHint',
                     message: 'Readers can pick a mark in the legend and put it on boxes directly.',
+                },
+                fromStart: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.fromStart',
+                    message: 'Marks fill from the start',
+                },
+                fromStartHint: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.fromStartHint',
+                    message: "Marking a box marks every box before it, like a rating's dots.",
+                },
+                fillInside: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.fillInside',
+                    message: 'Fills stay inside the outline',
+                },
+                fillInsideHint: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.fillInsideHint',
+                    message: 'A fill never goes past the last framed box.',
+                },
+                totalRow: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.totalRow',
+                    message: 'Show the total row',
+                },
+                totalReads: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.totalReads',
+                    message: 'The total reads',
+                },
+                totalDeepest: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.totalDeepest',
+                    message: 'Deepest level',
+                },
+                totalCount: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.totalCount',
+                    message: 'Count',
+                },
+                totalCountHint: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.totalCountHint',
+                    message: 'How many boxes are filled, and how many are framed.',
                 },
                 defaultLabel: {
                     id: 'ttgamer.ui.sheet.templates.tracker.defaultLabel',
@@ -5873,6 +5965,22 @@ export const uiMessages = {
                 boxBoth: {
                     id: 'ttgamer.ui.sheet.tracks.tracker.boxBoth',
                     message: '{level}: {fill}, {outline}',
+                },
+                boxLocked: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.boxLocked',
+                    message: '{level}: {mark}, locked',
+                },
+                lockedTitle: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.lockedTitle',
+                    message: '{level} — cannot go below {n}',
+                },
+                poolPoint: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.poolPoint',
+                    message: 'Point',
+                },
+                poolMaximum: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.poolMaximum',
+                    message: 'Maximum',
                 },
                 brushOn: {
                     id: 'ttgamer.ui.sheet.tracks.tracker.brushOn',

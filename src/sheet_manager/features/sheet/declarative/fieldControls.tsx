@@ -21,6 +21,7 @@ import type { TemplateField } from '../../../types/template';
 import { fieldLabelPosition, TEMPLATE_LIMITS } from '../../../types/template';
 import type { RatingDetail, TemplateImageValue } from '../../../types/templateValues';
 import { useDocumentTraitDiceRoll } from './boundDocument';
+import { PoolTracker } from './PoolTracker';
 
 const page = uiMessages.sheet.templates.page;
 const referenceMessages = uiMessages.sheet.templates.reference;
@@ -551,6 +552,26 @@ function ResourceFieldControlRender({
         typeof value === 'object' && value !== null && 'current' in value && 'max' in value
             ? (value as { current: number; max: number })
             : { current: field.min, max: field.max };
+
+    if (field.poolTracker && field.max <= TEMPLATE_LIMITS.trackerLevelsMax) {
+        // Spec 020: one row of boxes; the field's own label stays where the page puts it.
+        return (
+            <PoolTracker
+                label={field.label}
+                hideLabel
+                pair={resource}
+                rules={{
+                    limit: field.max,
+                    minCurrent: field.min,
+                    minMax: field.min,
+                    raisesMax: false,
+                }}
+                override={field.poolTracker}
+                disabled={disabled}
+                onChange={onChange}
+            />
+        );
+    }
 
     // One framed "current / max" unit: both numbers and the slash share a size and baseline.
     const numberClasses =

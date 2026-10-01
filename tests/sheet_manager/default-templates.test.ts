@@ -158,8 +158,9 @@ describe('explicit default templates (feature 006, R9)', () => {
                 key
             ).toBe(true);
         }
-        // Max Force Points edits the pool maximum.
-        expect(JSON.stringify(full)).toContain('"part":"max"');
+        // Force Points: one tracker edits the pool and its maximum (spec 020).
+        expect(JSON.stringify(full)).toContain('"maxMinFrom":"self-control"');
+        expect(JSON.stringify(full)).not.toContain('"part":"max"');
     });
 
     it('brief is groups only, in compact presentation', () => {

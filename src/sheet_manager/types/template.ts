@@ -224,13 +224,6 @@ const RatingFieldSchema = z.object({
     ...maxFromShape,
 });
 
-const ResourceFieldSchema = z.object({
-    ...fieldBaseShape,
-    type: z.literal('resource'),
-    min: z.number().int().min(0).default(0),
-    max: z.number().int().min(1).max(TEMPLATE_LIMITS.resourceMax),
-});
-
 const ReferenceFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('reference'),
@@ -239,7 +232,14 @@ const ReferenceFieldSchema = z.object({
 });
 
 /** Palette fills a tracker mark may take; they follow the theme. Any other fill is `#rrggbb`. */
-export const TRACKER_PALETTE_FILLS = ['secondary', 'error', 'tertiary', 'success', 'text'] as const;
+export const TRACKER_PALETTE_FILLS = [
+    'secondary',
+    'error',
+    'tertiary',
+    'success',
+    'text',
+    'primary',
+] as const;
 
 export type TrackerPaletteFill = (typeof TRACKER_PALETTE_FILLS)[number];
 
@@ -258,6 +258,44 @@ const trackerSymbolSchema = z
     });
 
 /** A fill colors the box behind its symbol; an outline frames it. A box holds one of each. */
+/** A built-in mark's page look: the game keeps its id and meaning. */
+const TrackerMarkOverrideSchema = z.object({
+    name: trackerNameSchema.optional(),
+    symbol: trackerSymbolSchema.optional(),
+    fill: TrackerFillSchema.optional(),
+});
+
+export const POOL_TRACKER_DISPLAYS = ['row', 'strip', 'line'] as const;
+
+export type PoolTrackerDisplay = (typeof POOL_TRACKER_DISPLAYS)[number];
+
+/**
+ * A pool resource drawn as a tracker (spec 020): the current value fills boxes, the maximum
+ * frames them. Only the look is stored; the values stay in the document's pool.
+ */
+export const PoolTrackerOverrideSchema = z.object({
+    display: z.enum(POOL_TRACKER_DISPLAYS).default('row'),
+    marks: z
+        .object({
+            current: TrackerMarkOverrideSchema.optional(),
+            max: TrackerMarkOverrideSchema.optional(),
+        })
+        .optional(),
+    legend: z.boolean().default(false),
+    total: z.boolean().default(true),
+});
+
+export type PoolTrackerOverride = z.infer<typeof PoolTrackerOverrideSchema>;
+
+const ResourceFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('resource'),
+    min: z.number().int().min(0).default(0),
+    max: z.number().int().min(1).max(TEMPLATE_LIMITS.resourceMax),
+    /** Spec 020: drawn as one tracker (up to `trackerLevelsMax` boxes) instead of two numbers. */
+    poolTracker: PoolTrackerOverrideSchema.optional(),
+});
+
 export const TRACKER_LAYERS = ['fill', 'outline'] as const;
 
 export type TrackerLayer = (typeof TRACKER_LAYERS)[number];
@@ -302,6 +340,11 @@ export const TRACKER_DISPLAYS = ['table', 'strip', 'line'] as const;
 
 export type TrackerDisplay = (typeof TRACKER_DISPLAYS)[number];
 
+/** What the total row reads (spec 020): the deepest marked level's value, or a box count. */
+export const TRACKER_TOTAL_READS = ['deepest', 'count'] as const;
+
+export type TrackerTotalReads = (typeof TRACKER_TOTAL_READS)[number];
+
 const TrackerValueColumnSchema = z.object({
     title: z.string().max(TEMPLATE_LIMITS.trackerNameMax).optional(),
     show: z.boolean().default(true),
@@ -320,6 +363,11 @@ const TrackerFieldSchema = z.object({
     valueColumn: TrackerValueColumnSchema.default({ show: true }),
     columns: trackerColumnsSchema(1),
     total: z.boolean().default(true),
+    totalReads: z.enum(TRACKER_TOTAL_READS).default('deepest'),
+    /** Spec 020: marking a box marks every box before it on that layer, like a rating's dots. */
+    fromStart: z.boolean().default(false),
+    /** Spec 020, with `fromStart`: a fill run never passes the last framed box. */
+    fillInside: z.boolean().default(false),
     lengths: z.array(TrackerLengthSchema).max(TEMPLATE_LIMITS.trackerLengthsMax).default([]),
     out: z.boolean().default(false),
     /** The row naming each mark kind under the tracker. */
@@ -359,6 +407,13 @@ function refineField(field: TemplateFieldObject, context: z.RefinementCtx): void
         case 'rating':
         case 'resource':
             if (!hasValidBounds(field)) issue('Minimum cannot exceed maximum', ['min']);
+            if (
+                field.type === 'resource' &&
+                field.poolTracker &&
+                field.max > TEMPLATE_LIMITS.trackerLevelsMax
+            ) {
+                issue(`A tracker draws at most ${TEMPLATE_LIMITS.trackerLevelsMax} boxes`, ['max']);
+            }
             if (field.type === 'rating' && field.flags && !hasUniqueValues(field.flags)) {
                 issue('Rating flags must be unique', ['flags']);
             }
@@ -496,13 +551,6 @@ export const PrimitiveTrackOverrideSchema = z
 
 export type PrimitiveTrackOverride = z.infer<typeof PrimitiveTrackOverrideSchema>;
 
-/** A built-in mark's page look: the game keeps its id and meaning. */
-const TrackerMarkOverrideSchema = z.object({
-    name: trackerNameSchema.optional(),
-    symbol: trackerSymbolSchema.optional(),
-    fill: TrackerFillSchema.optional(),
-});
-
 /**
  * Built-in tracker settings on a track primitive (spec 018): the page's look, level text, and
  * extra columns. The game keeps the level count and order, a computed length, the mark kinds,
@@ -552,6 +600,10 @@ const PrimitiveNodeSchema = z.object({
     part: z.enum(['current', 'max']).optional(),
     /** Dynamic minimum (formula): lower dots are locked and writes never go below it. */
     minFrom: z.string().min(1).max(500).optional(),
+    /** Pool resources drawn as a tracker (spec 020); `minFrom` then bounds the current value. */
+    poolTracker: PoolTrackerOverrideSchema.optional(),
+    /** With `poolTracker`: the maximum's minimum (formula). */
+    maxMinFrom: z.string().min(1).max(500).optional(),
     compact: z.boolean().default(false),
     track: PrimitiveTrackOverrideSchema.optional(),
     /**
@@ -948,9 +1000,11 @@ export function collectFormulaDependencies(template: CustomTemplate): FormulaDep
             const parsed = parseFormulaSafe(node.item.maxFrom);
             if (parsed) sources.push({ id: node.item.id, reads: parsed });
         }
-        if (node.type === 'primitive' && node.minFrom) {
-            const parsed = parseFormulaSafe(node.minFrom);
-            if (parsed) sources.push({ id: node.id, reads: parsed });
+        if (node.type === 'primitive') {
+            for (const source of [node.minFrom, node.maxMinFrom]) {
+                const parsed = source ? parseFormulaSafe(source) : undefined;
+                if (parsed) sources.push({ id: node.id, reads: parsed });
+            }
         }
     });
     return sources;

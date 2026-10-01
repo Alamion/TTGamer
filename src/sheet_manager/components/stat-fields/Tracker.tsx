@@ -2,9 +2,19 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
-import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+import {
+    type CSSProperties,
+    type KeyboardEvent as ReactKeyboardEvent,
+    type MouseEvent as ReactMouseEvent,
+    type PointerEvent as ReactPointerEvent,
+    type ReactNode,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
 import type {
+    TrackerClick,
     TrackerModel,
     TrackerModelColumn,
     TrackerModelCopy,
@@ -12,6 +22,7 @@ import type {
 import { TRACKER_PALETTE_FILLS, type TrackerPaletteFill } from '../../types/template';
 import { ConfirmDialog } from '../dialogs/ConfirmDialog';
 import { ConditionTrackLengthButtons } from './ConditionTrack';
+import { StatLabel } from './StatLabel';
 
 const messages = uiMessages.sheet.tracks;
 
@@ -24,10 +35,25 @@ const PALETTE_CLASSES: Record<TrackerPaletteFill, string> = {
     success: 'border-success bg-success text-white',
     // Ink flips with the theme, so its symbol takes the page background to stay readable.
     text: 'border-textPrimary bg-textPrimary text-bgBase',
+    primary: 'border-primary bg-primary text-primary-on',
 };
 
 function isPaletteFill(fill: string): fill is TrackerPaletteFill {
     return (TRACKER_PALETTE_FILLS as readonly string[]).includes(fill);
+}
+
+const PALETTE_CSS: Record<TrackerPaletteFill, string> = {
+    secondary: 'rgb(var(--secondary))',
+    error: 'rgb(var(--error))',
+    tertiary: 'rgb(var(--tertiary))',
+    success: 'rgb(var(--success))',
+    text: 'rgb(var(--text-primary))',
+    primary: 'rgb(var(--primary))',
+};
+
+/** A locked box (spec 020 FR-011) darkens in its own mark's color. */
+function darker(fill: string): string {
+    return `color-mix(in srgb, ${isPaletteFill(fill) ? PALETTE_CSS[fill] : fill}, black 35%)`;
 }
 
 function fillLook(mark: Pick<Mark, 'fill'> | undefined): {
@@ -47,6 +73,8 @@ const BOX = 'grid shrink-0 place-items-center rounded border-2 font-mono font-bo
 const BOX_SIZE = {
     md: 'h-[26px] w-[26px] text-xs',
     sm: 'h-5 w-5 text-[11px]',
+    // Spec 020: a pool row's boxes are the size of rating dots.
+    dot: 'h-4 w-4 text-[9px]',
     xs: 'h-3.5 w-3.5 border text-[9px]',
 } as const;
 
@@ -56,6 +84,7 @@ type BoxSize = keyof typeof BOX_SIZE;
 const OUTLINE_SIZE: Record<BoxSize, string> = {
     md: 'outline outline-[2.5px] outline-offset-[1.5px]',
     sm: 'outline outline-2 outline-offset-1',
+    dot: 'outline outline-2 outline-offset-1',
     xs: 'outline outline-[1.5px] outline-offset-1',
 };
 
@@ -65,6 +94,7 @@ const OUTLINE_CLASSES: Record<TrackerPaletteFill, string> = {
     tertiary: 'outline-tertiary',
     success: 'outline-success',
     text: 'outline-textPrimary',
+    primary: 'outline-primary',
 };
 
 const SYMBOL_CLASSES: Record<TrackerPaletteFill, string> = {
@@ -73,6 +103,7 @@ const SYMBOL_CLASSES: Record<TrackerPaletteFill, string> = {
     tertiary: 'text-tertiary',
     success: 'text-success',
     text: 'text-textPrimary',
+    primary: 'text-primary',
 };
 
 /** Classes, style, and symbol of a box holding an optional fill and an optional outline. */
@@ -122,6 +153,60 @@ export function MarkSwatch({
     );
 }
 
+const LONG_PRESS_MS = 500;
+const LONG_PRESS_SLOP_PX = 10;
+
+/**
+ * A touch long press (spec 020 FR-005a): held still for half a second, it runs `onLong` once and
+ * swallows the press's click and the phone's own context menu. Mouse and pen presses never start it.
+ */
+function useLongPress(onLong: (() => void) | undefined) {
+    const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const start = useRef<{ x: number; y: number } | undefined>(undefined);
+    const fired = useRef(false);
+    const touchedAt = useRef(0);
+    useEffect(() => () => clearTimeout(timer.current), []);
+    const cancel = () => {
+        clearTimeout(timer.current);
+        start.current = undefined;
+    };
+    return {
+        handlers: onLong
+            ? {
+                  onPointerDown: (event: ReactPointerEvent) => {
+                      if (event.pointerType !== 'touch') return;
+                      fired.current = false;
+                      touchedAt.current = Date.now();
+                      start.current = { x: event.clientX, y: event.clientY };
+                      clearTimeout(timer.current);
+                      timer.current = setTimeout(() => {
+                          start.current = undefined;
+                          fired.current = true;
+                          onLong();
+                      }, LONG_PRESS_MS);
+                  },
+                  onPointerMove: (event: ReactPointerEvent) => {
+                      const from = start.current;
+                      if (!from) return;
+                      const moved = Math.hypot(event.clientX - from.x, event.clientY - from.y);
+                      if (moved > LONG_PRESS_SLOP_PX) cancel();
+                  },
+                  onPointerUp: cancel,
+                  onPointerCancel: cancel,
+                  onPointerLeave: cancel,
+              }
+            : {},
+        /** True (once) when the click ending a long press must be dropped. */
+        consumeClick: () => {
+            const was = fired.current;
+            fired.current = false;
+            return was;
+        },
+        /** The phone's own long-press menu right after a touch: drop it, the timer acts instead. */
+        touchMenu: () => Date.now() - touchedAt.current < LONG_PRESS_MS * 2,
+    };
+}
+
 function MarkBox({
     disabled,
     label,
@@ -129,6 +214,8 @@ function MarkBox({
     fill,
     outline,
     onToggle,
+    onOutline,
+    locked,
     size,
 }: {
     disabled: boolean;
@@ -137,26 +224,67 @@ function MarkBox({
     fill: Mark | undefined;
     outline: Mark | undefined;
     onToggle: () => void;
-    size: 'sm' | 'md';
+    /** The outline action (right click, Shift+Enter/Space, long press); unset keeps the defaults. */
+    onOutline?: () => void;
+    /** Layers a minimum holds on this box (pools, spec 020). */
+    locked?: { fill: boolean; outline: boolean };
+    size: Exclude<BoxSize, 'xs'>;
 }) {
     const look = boxLook(fill, outline, size);
+    const lockedFill = locked?.fill === true && fill !== undefined;
+    const lockedOutline = locked?.outline === true && outline !== undefined;
+    const style: CSSProperties = {
+        ...look.style,
+        ...(lockedFill
+            ? { backgroundColor: darker(fill.fill), borderColor: darker(fill.fill) }
+            : {}),
+        ...(lockedOutline ? { outlineColor: darker(outline.fill) } : {}),
+    };
     const text = messages.tracker;
+    const names = [fill?.name, outline?.name].filter(Boolean).join(', ');
+    const outlineAction = disabled ? undefined : onOutline;
+    const longPress = useLongPress(outlineAction);
+    const shiftActivates = (event: ReactKeyboardEvent) =>
+        event.shiftKey && (event.key === 'Enter' || event.key === ' ');
     return (
         <button
             type="button"
             disabled={disabled}
-            onClick={onToggle}
+            onClick={() => {
+                if (!longPress.consumeClick()) onToggle();
+            }}
+            {...longPress.handlers}
+            {...(outlineAction
+                ? {
+                      onContextMenu: (event: ReactMouseEvent) => {
+                          event.preventDefault();
+                          if (!longPress.touchMenu()) outlineAction();
+                      },
+                      onKeyDown: (event: ReactKeyboardEvent) => {
+                          if (!shiftActivates(event)) return;
+                          // The button's own click must not follow (Enter clicks on key down).
+                          event.preventDefault();
+                          if (!event.repeat) outlineAction();
+                      },
+                      // Space clicks on key up.
+                      onKeyUp: (event: ReactKeyboardEvent) => {
+                          if (shiftActivates(event)) event.preventDefault();
+                      },
+                  }
+                : {})}
             aria-label={
-                fill && outline
-                    ? translate(text.boxBoth, {
-                          level: label,
-                          fill: fill.name,
-                          outline: outline.name,
-                      })
-                    : translate(text.box, {
-                          level: label,
-                          mark: (fill ?? outline)?.name ?? translate(text.empty),
-                      })
+                lockedFill || lockedOutline
+                    ? translate(text.boxLocked, { level: label, mark: names })
+                    : fill && outline
+                      ? translate(text.boxBoth, {
+                            level: label,
+                            fill: fill.name,
+                            outline: outline.name,
+                        })
+                      : translate(text.box, {
+                            level: label,
+                            mark: (fill ?? outline)?.name ?? translate(text.empty),
+                        })
             }
             title={title}
             className={clsx(
@@ -165,10 +293,12 @@ function MarkBox({
                 'transition-colors focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-70',
                 // The outline layer owns `outline`; plain boxes drop the browser's focus outline.
                 !outline && 'focus-visible:outline-none',
+                // A long press must not select text or open the phone's callout.
+                'select-none [-webkit-touch-callout:none]',
                 look.className,
                 !fill && !disabled && 'hover:border-primary'
             )}
-            style={look.style}
+            style={style}
         >
             {look.symbol}
         </button>
@@ -178,8 +308,8 @@ function MarkBox({
 export interface TrackerProps {
     model: TrackerModel;
     disabled: boolean;
-    /** A box click; `brush` is the mark picked in the legend (spec 019), else the click cycles. */
-    onMark: (columnId: string, copyId: string, levelId: string, brush?: string) => void;
+    /** A box press: the legend brush's mark (spec 019) or a layer (spec 020 outline action). */
+    onMark: (columnId: string, copyId: string, levelId: string, click: TrackerClick) => void;
     onText?: (columnId: string, copyId: string, levelId: string, text: string) => void;
     onAddCopy?: (columnId: string) => void;
     onRemoveCopy?: (columnId: string, copyId: string) => void;
@@ -266,7 +396,7 @@ export function Tracker({
     }, [brushOn]);
     const levelTitle = (level: TrackerModel['levels'][number]) =>
         model.valueColumn.show && level.value ? `${level.name} (${level.value})` : level.name;
-    const size = model.display === 'line' ? 'sm' : 'md';
+    const size = model.display === 'row' ? 'dot' : model.display === 'line' ? 'sm' : 'md';
     // The layer the total and the marked level name read (spec 019 FR-016).
     const readingOf = (copy: TrackerModelCopy) =>
         model.readingLayer === 'fill' ? copy.marks : copy.outlines;
@@ -282,15 +412,42 @@ export function Tracker({
 
     const box = (column: TrackerModelColumn, copy: TrackerModelCopy, levelId: string) => {
         const level = model.levels.find(({ id }) => id === levelId)!;
+        const position = column.covered.indexOf(levelId);
+        const locked = copy.locked && {
+            fill: position < copy.locked.fill,
+            outline: position < copy.locked.outline,
+        };
+        const held = locked?.fill
+            ? copy.locked!.fill
+            : locked?.outline
+              ? copy.locked!.outline
+              : undefined;
         return (
             <MarkBox
                 key={levelId}
                 disabled={disabled}
                 label={wording.boxLabel(level.name, column, copy)}
-                title={levelTitle(level)}
+                title={
+                    held === undefined
+                        ? levelTitle(level)
+                        : translate(messages.tracker.lockedTitle, { level: level.name, n: held })
+                }
+                locked={locked}
                 fill={markById.get(copy.marks[levelId] ?? '')}
                 outline={markById.get(copy.outlines[levelId] ?? '')}
-                onToggle={() => onMark(column.id, copy.id, levelId, activeBrush?.id)}
+                onToggle={() =>
+                    onMark(
+                        column.id,
+                        copy.id,
+                        levelId,
+                        activeBrush ? { brush: activeBrush.id } : { layer: model.readingLayer }
+                    )
+                }
+                onOutline={
+                    model.hasOutlines
+                        ? () => onMark(column.id, copy.id, levelId, { layer: 'outline' })
+                        : undefined
+                }
                 size={size}
             />
         );
@@ -344,7 +501,37 @@ export function Tracker({
 
     let body: ReactNode;
     if (model.display === 'table') body = renderTable();
+    else if (model.display === 'row') body = renderRow();
     else body = renderStrips();
+
+    /** A pool drawn like a rating row (spec 020 FR-011a): label left, boxes and count right. */
+    function renderRow() {
+        const column = model.columns[0];
+        const copy = column?.copies[0];
+        if (!column || !copy) return null;
+        return (
+            <div className="term-row flex items-center justify-between gap-2 py-1">
+                <StatLabel
+                    label={model.label}
+                    className={model.hideLabel ? 'sr-only' : undefined}
+                />
+                <span className="flex items-center gap-2">
+                    <span
+                        role="group"
+                        aria-label={model.label}
+                        className="flex flex-wrap items-center gap-[7px]"
+                    >
+                        {column.covered.map((levelId) => box(column, copy, levelId))}
+                    </span>
+                    {model.total && copy.total && (
+                        <span className="min-w-[3.2em] text-right font-mono text-xs font-bold text-textSecondary">
+                            {copy.total}
+                        </span>
+                    )}
+                </span>
+            </div>
+        );
+    }
 
     function renderTable() {
         const copies = model.columns.flatMap((column) =>

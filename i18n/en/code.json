@@ -3164,6 +3164,15 @@
     "ttgamer.ui.sheet.templates.editor.discard": {
         "message": "Discard"
     },
+    "ttgamer.ui.sheet.templates.editor.displayDots": {
+        "message": "Dots"
+    },
+    "ttgamer.ui.sheet.templates.editor.displayNumbers": {
+        "message": "Numbers"
+    },
+    "ttgamer.ui.sheet.templates.editor.displayTracker": {
+        "message": "Tracker"
+    },
     "ttgamer.ui.sheet.templates.editor.docsLink": {
         "message": "Documentation link (optional): /docs/… or https://…"
     },
@@ -3335,11 +3344,17 @@
     "ttgamer.ui.sheet.templates.editor.maxFromPlaceholder": {
         "message": "e.g. willpower.max"
     },
+    "ttgamer.ui.sheet.templates.editor.maxMinFrom": {
+        "message": "Maximum at least, from value or formula (optional)"
+    },
     "ttgamer.ui.sheet.templates.editor.maxRows": {
         "message": "Max rows"
     },
     "ttgamer.ui.sheet.templates.editor.minFrom": {
         "message": "Minimum from value or formula (optional)"
+    },
+    "ttgamer.ui.sheet.templates.editor.minFromCurrent": {
+        "message": "Current at least, from value or formula (optional)"
     },
     "ttgamer.ui.sheet.templates.editor.minFromPlaceholder": {
         "message": "e.g. self-control"
@@ -3461,6 +3476,27 @@
     "ttgamer.ui.sheet.templates.editor.placeholderText": {
         "message": "Placeholder text (optional)"
     },
+    "ttgamer.ui.sheet.templates.editor.poolCount": {
+        "message": "Show the count"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolCurrentMark": {
+        "message": "Current"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolLayerFixed": {
+        "message": "Current points fill the boxes; the maximum frames them."
+    },
+    "ttgamer.ui.sheet.templates.editor.poolLook": {
+        "message": "Look"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolMaxMark": {
+        "message": "Maximum"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolRow": {
+        "message": "Row (like a rating)"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolTrackerLimit": {
+        "message": "A tracker draws up to {max} boxes: lower the maximum to use it."
+    },
     "ttgamer.ui.sheet.templates.editor.presentation": {
         "message": "Presentation"
     },
@@ -3475,6 +3511,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.previewOpenDocument": {
         "message": "Open document: {title}"
+    },
+    "ttgamer.ui.sheet.templates.editor.primitiveDisplay": {
+        "message": "Display"
     },
     "ttgamer.ui.sheet.templates.editor.primitivePart": {
         "message": "Edits"
@@ -4052,6 +4091,9 @@
     "ttgamer.ui.sheet.templates.tracker.colorError": {
         "message": "Red"
     },
+    "ttgamer.ui.sheet.templates.tracker.colorPrimary": {
+        "message": "Accent"
+    },
     "ttgamer.ui.sheet.templates.tracker.colorSecondary": {
         "message": "Amber"
     },
@@ -4132,6 +4174,18 @@
     },
     "ttgamer.ui.sheet.templates.tracker.displayTable": {
         "message": "Table"
+    },
+    "ttgamer.ui.sheet.templates.tracker.fillInside": {
+        "message": "Fills stay inside the outline"
+    },
+    "ttgamer.ui.sheet.templates.tracker.fillInsideHint": {
+        "message": "A fill never goes past the last framed box."
+    },
+    "ttgamer.ui.sheet.templates.tracker.fromStart": {
+        "message": "Marks fill from the start"
+    },
+    "ttgamer.ui.sheet.templates.tracker.fromStartHint": {
+        "message": "Marking a box marks every box before it, like a rating's dots."
     },
     "ttgamer.ui.sheet.templates.tracker.issueCovers": {
         "message": "Tracker \"{id}\": a column covers all its levels or more; choose \"All levels\"."
@@ -4292,6 +4346,21 @@
     "ttgamer.ui.sheet.templates.tracker.total": {
         "message": "Total row: the {value} of the deepest marked level"
     },
+    "ttgamer.ui.sheet.templates.tracker.totalCount": {
+        "message": "Count"
+    },
+    "ttgamer.ui.sheet.templates.tracker.totalCountHint": {
+        "message": "How many boxes are filled, and how many are framed."
+    },
+    "ttgamer.ui.sheet.templates.tracker.totalDeepest": {
+        "message": "Deepest level"
+    },
+    "ttgamer.ui.sheet.templates.tracker.totalReads": {
+        "message": "The total reads"
+    },
+    "ttgamer.ui.sheet.templates.tracker.totalRow": {
+        "message": "Show the total row"
+    },
     "ttgamer.ui.sheet.templates.tracker.valueShow": {
         "message": "Show"
     },
@@ -4379,6 +4448,9 @@
     "ttgamer.ui.sheet.tracks.tracker.boxBoth": {
         "message": "{level}: {fill}, {outline}"
     },
+    "ttgamer.ui.sheet.tracks.tracker.boxLocked": {
+        "message": "{level}: {mark}, locked"
+    },
     "ttgamer.ui.sheet.tracks.tracker.brushOff": {
         "message": "Stop marking with {mark}"
     },
@@ -4403,8 +4475,17 @@
     "ttgamer.ui.sheet.tracks.tracker.level": {
         "message": "Level"
     },
+    "ttgamer.ui.sheet.tracks.tracker.lockedTitle": {
+        "message": "{level} — cannot go below {n}"
+    },
     "ttgamer.ui.sheet.tracks.tracker.out": {
         "message": "out"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.poolMaximum": {
+        "message": "Maximum"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.poolPoint": {
+        "message": "Point"
     },
     "ttgamer.ui.sheet.tracks.tracker.removeCopy": {
         "message": "Remove {name}"

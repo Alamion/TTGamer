@@ -247,6 +247,7 @@ export function validateTemplateReferences(
             }
             checkCoordinates(node.id, node.maxFrom);
             checkCoordinates(node.id, node.minFrom);
+            checkCoordinates(node.id, node.maxMinFrom);
         } else if (node.type === 'list' && node.bindingKey !== undefined) {
             const binding = bindings.get(node.bindingKey);
             if (!binding) {
