@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.17.0
+
+### Minor feat
+
+- **Mark with the legend (spec 019, T-086)**: with a tracker's legend on, readers press a mark in it (a yellow frame shows it is picked) and put it on any box in one click, or take it off with a second click; pressing it again or Escape stops; it works on built-in trackers too
+- **Two layers per box**: each mark of your own tracker is a fill or an outline, a ring around the box; a box holds one of each, for example Force Points with their maximum framed and the current points filled, or wounds with a bleeding mark; clicks cycle the fills, totals and "out" read the fills, and shortening folds each layer on its own; "Points: current and maximum" is a new starting set
+- **Smaller tracker boxes** with more room between them, so outlines never touch
+
 ## v3.16.0
 
 ### Minor feat

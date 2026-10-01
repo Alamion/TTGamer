@@ -815,7 +815,7 @@ const tracker = (id: string, label: string, extra: NodeInput = {}): NodeInput =>
 const trackers = story(
     'trackers',
     'Trackers',
-    'Own trackers (spec 018): a click moves a box to the next mark, then back to empty. Each display, one to three and own marks, text and repeated columns, lengths, and out.',
+    'Own trackers (spec 018): a click moves a box to the next fill mark, then back to empty. Each display, one to three and own marks, text and repeated columns, lengths, and out. With the legend on, pick a mark there to put it on boxes directly; outline marks (spec 019) frame a box next to its fill.',
     ENGINE,
     [
         {
@@ -845,6 +845,48 @@ const trackers = story(
                         { id: 'stress', kind: 'marks', title: 'Stress' },
                         { id: 'trigger', kind: 'text', title: 'Trigger', covers: 3 },
                     ],
+                }),
+                tracker('tracker-points', 'Force Points (fill + outline, legend brush)', {
+                    marks: [
+                        { id: 'point', name: 'Point', symbol: '●', fill: 'secondary' },
+                        {
+                            id: 'maximum',
+                            name: 'Maximum',
+                            symbol: '',
+                            fill: 'secondary',
+                            layer: 'outline',
+                        },
+                    ],
+                    levels: Array.from({ length: 10 }, (_, index) => ({
+                        id: `point-${index + 1}`,
+                        name: String(index + 1),
+                        value: '',
+                    })),
+                    valueColumn: { show: false },
+                    display: 'strip',
+                    total: false,
+                    legend: true,
+                }),
+                tracker('tracker-conditions', 'Wounds and conditions (two outlines)', {
+                    marks: [
+                        BASHING,
+                        LETHAL,
+                        {
+                            id: 'bleeding',
+                            name: 'Bleeding',
+                            symbol: '!',
+                            fill: 'error',
+                            layer: 'outline',
+                        },
+                        {
+                            id: 'treated',
+                            name: 'Treated',
+                            symbol: '+',
+                            fill: 'success',
+                            layer: 'outline',
+                        },
+                    ],
+                    legend: true,
                 }),
                 tracker('tracker-plain', 'Burden (one mark, no values)', {
                     marks: [{ id: 'marked', name: 'Marked', symbol: '×', fill: 'text' }],

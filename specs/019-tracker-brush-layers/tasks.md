@@ -206,10 +206,10 @@ Commit.
 
 **Independent test**: quickstart scenarios 4 and 12; the parity widget.
 
-- [ ] T029 [US4] In `src/sheet_manager/components/dialogs/template-editor/sourceNodes.ts`:
+- [x] T029 [US4] In `src/sheet_manager/components/dialogs/template-editor/sourceNodes.ts`:
       built-in → own produces marks with `layer: 'fill'`; own → built-in unchanged. Test in
       `tests/sheet_manager/template-editor.test.tsx` (source switch block).
-- [ ] T030 [P] [US4] Confirm `builtInSettingsUpdate` in
+- [x] T030 [P] [US4] Confirm `builtInSettingsUpdate` in
       `src/sheet_manager/components/dialogs/template-editor/builtInTrackerSettings.ts` never writes
       a layer into the override; cover it in the existing built-in rename test.
 
@@ -219,23 +219,23 @@ Commit.
 
 ## Phase 7: Polish & Cross-Cutting
 
-- [ ] T031 [P] Storybook in `src/sheet_manager/storybook/stories.ts` (`trackers` story): a
+- [x] T031 [P] Storybook in `src/sheet_manager/storybook/stories.ts` (`trackers` story): a
       "Force Points (fill + outline, legend)" strip and a "Wounds and conditions (two outlines)"
       table, both `legend: true`; add the `tracker:layer:outline` tag in
       `tests/sheet_manager/storybook.test.tsx` (tag when any mark has `layer: 'outline'`) and to
       `REQUIRED_VARIANTS`.
-- [ ] T032 [P] Guide: `docs/template-editor/elements.mdx` and
+- [x] T032 [P] Guide: `docs/template-editor/elements.mdx` and
       `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/elements.mdx` — marks get
       Layer, the points set, a "Marking with the legend" paragraph; built-in trackers keep fills.
-- [ ] T033 [P] Skill `.agents/skills/sheet-templates/SKILL.md` (tracker section: layers, resolver,
+- [x] T033 [P] Skill `.agents/skills/sheet-templates/SKILL.md` (tracker section: layers, resolver,
       reading layer, brush) and `src/sheet_manager/AGENTS.md` (tracker molecule line).
-- [ ] T034 [P] Spec 018 banner in `specs/018-configurable-trackers/spec.md`: the legend and the
+- [x] T034 [P] Spec 018 banner in `specs/018-configurable-trackers/spec.md`: the legend and the
       one-mark-per-box rule are changed by spec 019.
-- [ ] T035 `CHANGELOG.md` v3.17.0 (brush, layers, smaller boxes) and `package.json` 3.17.0; mark
+- [x] T035 `CHANGELOG.md` v3.17.0 (brush, layers, smaller boxes) and `package.json` 3.17.0; mark
       T-086 ✅ in `TODO.md`; run `yarn check:version` and `yarn validate:backlog`.
-- [ ] T036 Record deviations, if any, under "Implementation notes" in
+- [x] T036 Record deviations, if any, under "Implementation notes" in
       `specs/019-tracker-brush-layers/research.md`.
-- [ ] T037 Run `yarn verify:full`; fix findings.
+- [x] T037 Run `yarn verify:full`; fix findings.
 - [ ] T038 Walk through `specs/019-tracker-brush-layers/quickstart.md` with the maintainer on the
       dev server.
 

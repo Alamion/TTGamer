@@ -1,5 +1,7 @@
 # Feature Specification: Configurable trackers
 
+> **Change record.** Partly superseded by 019 (the legend is a brush; a box holds a fill and an outline mark, boxes are smaller). Current tracker behavior: `.agents/skills/sheet-templates/SKILL.md`.
+
 **Feature Branch**: `testing`
 
 **Created**: 2026-09-30

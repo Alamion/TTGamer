@@ -151,3 +151,20 @@ background); a thicker border (rejected by the maintainer: hides same-colored ou
 - Skill and `src/sheet_manager/AGENTS.md`: layers, resolver, brush.
 - Spec 018 spec.md: a banner noting that spec 019 changes the legend and the one-mark-per-box
   rule.
+
+## Implementation notes (2026-10-02)
+
+Where the built code refines the decisions above:
+
+- **One layer write** (`trackerModel.ts` `writeLayer`) serves both the click cycle and the brush.
+  Besides clearing the replaced mark from wherever it was stored (R3), it first moves a mark of
+  the other layer out of this layer's slot (a mark whose layer changed since it was stored), so
+  writing one layer never loses the other.
+- **Brush state** is `{ id, layer }`: a layer change in the editor ends the brush (FR-005), and it
+  does not come back when the mark returns.
+- **Escape** is a `keydown` listener on the tracker root, added while a brush is on (a JSX
+  handler on the wrapping `div` fails the a11y lint for static elements).
+- **Legend words**: the layer word ("fill" / "outline") follows the mark name only when the
+  tracker uses both layers, so single-layer legends keep their names as accessible names.
+- **Built-in trackers** needed no source-switch change: own marks taken over from a built-in
+  track come from the default mark set, which is fills.

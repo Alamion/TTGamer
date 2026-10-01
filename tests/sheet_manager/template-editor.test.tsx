@@ -1786,4 +1786,28 @@ describe('tracker settings (spec 018)', () => {
                 .getAttribute('aria-pressed')
         ).toBe('true');
     });
+
+    it('turns every taken-over mark into a fill when a built-in tracker gets own values', () => {
+        openTracker({
+            marks: [
+                { id: 'bashing', name: 'Bashing', symbol: '╱', fill: 'secondary' },
+                { id: 'bleed', name: 'Bleed', symbol: '!', fill: 'error', layer: 'outline' },
+            ],
+        });
+        fireEvent.change(within(settings('wounds')).getByLabelText('Source'), {
+            target: { value: 'track:health' },
+        });
+        selectInOutline('wounds');
+        fireEvent.change(within(settings('wounds')).getByLabelText('Source'), {
+            target: { value: 'custom' },
+        });
+        selectInOutline('wounds');
+        const panel = settings('wounds');
+        for (const n of [1, 2]) {
+            const group = within(panel).getByRole('group', { name: `Mark ${n} layer` });
+            expect(
+                within(group).getByRole('button', { name: 'Fill' }).getAttribute('aria-pressed')
+            ).toBe('true');
+        }
+    });
 });

@@ -73,14 +73,19 @@ re-look a template up by id — `getTemplate(id)` only sees user templates.
   `listEntryShape` (row: end of row; block: `LabeledField` trailing). Saving a template whose
   list item or naming changed runs `listItemChangeReport` (compatible documents' stored
   entries) and asks first; stored values are never rewritten by the change.
-- Trackers (spec 018): one configuration drawn by one molecule for own and built-in trackers. - **Own tracker** (`tracker` field): `display` (`table` | `strip` | `line`), `marks` (1–5
+- Trackers (specs 018, 019): one configuration drawn by one molecule for own and built-in trackers. - **Own tracker** (`tracker` field): `display` (`table` | `strip` | `line`), `marks` (1–5
   kinds: id, name, 1–2 code-point symbol, `fill` = palette key `secondary|error|tertiary|
-success|text` or `#rrggbb`; order = click order and weight), `levels` (1–20: id, name,
+success|text` or `#rrggbb`, `layer` = `fill` (default) | `outline`; order = click order and
+  weight within a layer; the 5-mark cap counts both layers), `levels` (1–20: id, name,
   short text `value`), `valueColumn` (title, show), `columns` (1–6, `marks` | `text`,
   `covers` first N shown levels, `copies: { max 1–24 }`, at least one marks column), `total`,
   `lengths` (0–6 lists of level ids), `out`. Not a list item type, rejected as a table column.
   Value (`TrackerValueSchema`, `templateValues[valueKey]`): `{ tracker: 1, length?, columns:
-{ [columnId]: [{ id, marks?: { levelId: markId }, texts?: { levelId: text } }] } }`; ids
+{ [columnId]: [{ id, marks?: { levelId: markId }, outlines?: { levelId: markId }, texts?:
+  { levelId: text } }] } }` — `marks` is the fill slot, `outlines` the outline slot. Display
+  reads a slot by the kind's current layer (`tracker.ts` `layerSource`/`layerMarks`: own slot,
+  else the other slot), so a layer change in the editor rewrites no document; a collision
+  leaves one entry hidden and counted (`hiddenSlotEntries`); ids
   keep marks on their level and kind when either moves, copy letters come from position, a
   missing column list reads as one copy `a`. The write path checks the shape and copy caps
   only (unknown ids pass, so hidden values survive the next write). - **Built-in tracker** (`primitive` on a `track` binding): optional `tracker` override
@@ -95,13 +100,22 @@ success|text` or `#rrggbb`; order = click order and weight), `levels` (1–20: i
   the game's levels"). Display without `tracker.display` (`trackerDisplayOf`): `compact` →
   `line`, else `trackLayout`, else `table` for named levels / `strip` for a computed length;
   the editor writes `tracker.display` and clears both. Total defaults: on for member tracks
-  with 2+ members, off otherwise; the shipped Star Wars character/droid page sets it on. - Rules (`features/sheet/data/tracker.ts`): cycle empty → kinds… → empty; total = value of
-  the deepest marked shown level; out = last shown level marked; switching the length keeps
-  each mark's shown position and folds the tail into the new last level (heaviest wins), the
+  with 2+ members, off otherwise; the shipped Star Wars character/droid page sets it on. - Rules (`features/sheet/data/tracker.ts`): the reading layer is `fill`, or `outline` when the
+  tracker has no fill kinds (`readingLayer`); a click cycles its kinds empty → kinds… → empty and
+  keeps the other layer; total = value of the deepest shown level marked on the reading layer;
+  out = last shown level marked there; switching the length keeps each mark's shown position
+  and folds the tail into the new last level (heaviest wins), each layer on its own, the
   same as `cohort.ts` `shortenMarks` for stored fodder members (proven by
   `tracker-parity.test.tsx`). - Rendering: `trackerModel.ts` (`ownTrackerModel`, `builtInTrackerModel`) → molecule
   `components/stat-fields/Tracker.tsx` (grid table with ARIA roles, strips, one line,
   legend only when `legend` is on (field or override; off by default, built-in too), copy add/remove with confirm, length −/+ with a danger confirm).
+  Boxes 26px (20px on one line); an outline is CSS `outline` + `outline-offset` in the mark's
+  color (see-through gap), its symbol shows only without a fill. Brush (spec 019): on an
+  editable sheet with the legend shown (not one line), legend items are `aria-pressed`
+  buttons; the molecule keeps one `{ id, layer }` brush (reset when the mark goes or changes
+  layer), passes it as `onMark(…, brush)`; own trackers write `paintTrackerMark` (set or clear
+  that layer), built-in game columns `cohort.ts` `paintMark`; Escape inside the tracker ends
+  it; a `role="status"` line says what it marks. Built-in marks are always fills.
   Own values: `declarative/TrackerFieldControl.tsx`; built-in: `declarative/BuiltInTracker.tsx`
   (replaces `CohortTrack`; page values reach it through `PrimitiveNodeView`'s `page`). - Editor: `TrackerSettings.tsx` serves both (game-fixed parts disabled, game text as
   placeholders; `builtInTrackerSettings.ts` maps the panel onto the override); the Source
