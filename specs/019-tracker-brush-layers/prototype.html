@@ -1,0 +1,1445 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <title>Tracker Brush and Layers</title>
+        <style>
+            /* Colors follow src/css/custom.css; the tracker look follows stat-fields/Tracker.tsx (spec 018 as built). */
+            :root {
+                --bg-base: rgb(245 245 249);
+                --bg-surface: rgb(249 249 255);
+                --text: rgb(15 23 42);
+                --muted: rgb(71 85 105);
+                --primary: rgb(220 38 38);
+                --on-primary: #fff;
+                --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(249 249 255) 92%);
+                --secondary: rgb(202 138 4);
+                --tertiary: rgb(79 70 229);
+                --error: rgb(185 28 28);
+                --warning: rgb(245 158 11);
+                --success: rgb(21 128 61);
+                --border: rgb(226 232 240);
+                --border-strong: rgb(206 212 220);
+                --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+                --mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+                color-scheme: light;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme='light']) {
+                    --bg-base: rgb(15 23 42);
+                    --bg-surface: rgb(30 41 59);
+                    --text: rgb(248 250 252);
+                    --muted: rgb(148 163 184);
+                    --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 70%);
+                    --tertiary: rgb(129 140 248);
+                    --border: rgb(51 65 85);
+                    --border-strong: rgb(71 85 105);
+                    color-scheme: dark;
+                }
+            }
+            :root[data-theme='dark'] {
+                --bg-base: rgb(15 23 42);
+                --bg-surface: rgb(30 41 59);
+                --text: rgb(248 250 252);
+                --muted: rgb(148 163 184);
+                --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 70%);
+                --tertiary: rgb(129 140 248);
+                --border: rgb(51 65 85);
+                --border-strong: rgb(71 85 105);
+                color-scheme: dark;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg-base);
+                color: var(--text);
+                font: 14px/1.5 var(--font);
+                padding-inline: 16px;
+                padding-block: 16px 40px;
+            }
+            .wrap {
+                max-width: 1240px;
+                margin: 0 auto;
+                display: grid;
+                gap: 16px;
+            }
+            h1 {
+                font-size: 20px;
+                margin: 0;
+                text-wrap: balance;
+            }
+            h2 {
+                font-size: 12px;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            p {
+                margin: 0;
+            }
+            .lead {
+                color: var(--muted);
+                max-width: 75ch;
+            }
+            .tabs,
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                align-items: center;
+            }
+            .tab,
+            .seg button,
+            .btn {
+                font: inherit;
+                font-size: 12px;
+                border: 1px solid var(--border-strong);
+                background: var(--bg-surface);
+                color: var(--text);
+                border-radius: 4px;
+                padding: 3px 10px;
+                cursor: pointer;
+            }
+            .tab[aria-pressed='true'],
+            .seg button[aria-pressed='true'] {
+                border-color: var(--primary);
+                background: var(--primary-soft);
+            }
+            .btn:disabled,
+            .seg button:disabled {
+                opacity: 0.4;
+                cursor: default;
+            }
+            .seg {
+                display: inline-flex;
+                gap: 4px;
+                flex-wrap: wrap;
+            }
+            button:focus-visible,
+            input:focus-visible,
+            select:focus-visible {
+                outline: 2px solid var(--primary);
+                outline-offset: 1px;
+            }
+            input[type='text'],
+            select {
+                font: inherit;
+                font-size: 13px;
+                border: 1px solid var(--border);
+                background: var(--bg-surface);
+                color: var(--text);
+                border-radius: 4px;
+                padding: 3px 7px;
+                min-width: 0;
+            }
+            .grid {
+                display: grid;
+                gap: 16px;
+                grid-template-columns: minmax(0, 1fr);
+            }
+            @media (min-width: 900px) {
+                .grid {
+                    grid-template-columns: 20rem minmax(0, 1fr);
+                }
+            }
+            .panel,
+            .sheet {
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 12px;
+                display: grid;
+                gap: 12px;
+                align-content: start;
+                min-width: 0;
+            }
+            fieldset {
+                min-width: 0;
+                margin: 0;
+                border: 0;
+                border-top: 1px solid var(--border);
+                padding: 12px 0 0;
+                display: grid;
+                gap: 8px;
+            }
+            legend {
+                font-size: 12px;
+                font-weight: 600;
+                padding: 0;
+            }
+            .hint {
+                font-size: 11px;
+                color: var(--muted);
+            }
+            .new {
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--tertiary);
+                margin-left: 4px;
+            }
+            .check {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .mark-row {
+                display: grid;
+                gap: 6px;
+                padding: 8px;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                background: var(--bg-base);
+            }
+            .mark-row .row > input[type='text'].name {
+                flex: 1 1 7rem;
+            }
+            .mark-row .row > input[type='text'].symbol {
+                width: 2.75rem;
+                text-align: center;
+                font-family: var(--mono);
+                font-weight: 700;
+            }
+            .dot {
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 2px solid transparent;
+                padding: 2px;
+                background: none;
+                cursor: pointer;
+            }
+            .dot span {
+                display: block;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+            }
+            .dot[aria-pressed='true'] {
+                border-color: var(--text);
+            }
+
+            /* ---------- Tracker (as built, plus layers) ---------- */
+            .tracker {
+                display: grid;
+                gap: 8px;
+            }
+            .tracker-head {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            .ttable {
+                display: grid;
+                font-size: 14px;
+            }
+            .trow {
+                display: grid;
+                align-items: center;
+                gap: 8px;
+                padding-block: 6px;
+                border-top: 1px solid color-mix(in srgb, var(--border), transparent 40%);
+            }
+            .trow.head {
+                border-top: 0;
+                padding-top: 0;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            .trow.total {
+                border-top: 2px solid var(--border);
+                font-family: var(--mono);
+                font-weight: 700;
+            }
+            .trow.total > :first-child {
+                font-family: var(--font);
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            .center {
+                text-align: center;
+                display: flex;
+                justify-content: center;
+            }
+            .val {
+                font-family: var(--mono);
+                color: var(--muted);
+                text-align: center;
+            }
+            .marked {
+                color: var(--error);
+            }
+            .box {
+                display: grid;
+                place-items: center;
+                flex-shrink: 0;
+                border-radius: 4px;
+                border: 2px solid var(--border);
+                background: var(--bg-base);
+                font-family: var(--mono);
+                font-weight: 700;
+                line-height: 1;
+                padding: 0;
+                cursor: pointer;
+                color: #fff;
+                transition:
+                    background-color 0.12s,
+                    box-shadow 0.12s;
+            }
+            .box.md {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            .box.sm {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+            .box.xs {
+                width: 14px;
+                height: 14px;
+                border-width: 1px;
+                font-size: 9px;
+            }
+            .box:disabled {
+                cursor: default;
+                opacity: 0.7;
+            }
+            .box:not(:disabled):hover {
+                border-color: var(--primary);
+            }
+            /* Look A: a thinner ring outside smaller boxes, with more room between boxes. */
+            .look-ring .box.md {
+                width: 26px;
+                height: 26px;
+                font-size: 12px;
+            }
+            .look-ring .box.sm {
+                width: 20px;
+                height: 20px;
+                font-size: 11px;
+            }
+            .look-ring .box.has-outline {
+                box-shadow:
+                    0 0 0 1.5px var(--bg-surface),
+                    0 0 0 4px var(--ol);
+            }
+            .look-ring .box.sm.has-outline {
+                box-shadow:
+                    0 0 0 1px var(--bg-surface),
+                    0 0 0 3px var(--ol);
+            }
+            .look-ring .box.xs.has-outline {
+                box-shadow:
+                    0 0 0 1px var(--bg-surface),
+                    0 0 0 2.5px var(--ol);
+            }
+            /* Look C: the border thickens both ways, inward and outward from the box edge, with no gap. */
+            .look-both .box.has-outline {
+                border-width: 3px;
+                border-color: var(--ol) !important;
+                box-shadow: 0 0 0 2px var(--ol);
+            }
+            .look-both .box.sm.has-outline {
+                border-width: 2.5px;
+                box-shadow: 0 0 0 1.5px var(--ol);
+            }
+            .look-both .box.xs.has-outline {
+                border-width: 1.5px;
+                box-shadow: 0 0 0 1px var(--ol);
+            }
+            /* Look B: the outline replaces the box border with a thick one. */
+            .look-border .box.has-outline {
+                border-width: 4px;
+                border-color: var(--ol) !important;
+            }
+            .look-border .box.sm.has-outline {
+                border-width: 3px;
+            }
+            .look-border .box.xs.has-outline {
+                border-width: 2px;
+            }
+            .box .ol-symbol {
+                color: var(--ol);
+            }
+            .strip {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px 12px;
+                align-items: center;
+                font-size: 12px;
+            }
+            .strip .name {
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+            }
+            .strip .boxes {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .look-ring .strip .boxes {
+                gap: 12px;
+            }
+            .look-both .strip .boxes {
+                gap: 9px;
+            }
+            .look-ring .ttable .trow,
+            .look-both .ttable .trow {
+                padding-block: 8px;
+            }
+            /* Room between an outlined legend swatch and the brush's yellow frame. */
+            .look-ring .tlegend button,
+            .look-both .tlegend button,
+            .look-ring .tlegend span.item,
+            .look-both .tlegend span.item {
+                padding: 6px 9px 6px 7px;
+            }
+            .out-badge {
+                border-radius: 4px;
+                background: color-mix(in srgb, var(--error), transparent 85%);
+                color: var(--error);
+                font: 600 10px var(--font);
+                text-transform: uppercase;
+                padding: 1px 6px;
+            }
+            .struck {
+                color: var(--error);
+                text-decoration: line-through;
+            }
+            .copy-x {
+                border: 0;
+                background: none;
+                color: var(--muted);
+                cursor: pointer;
+                padding: 0 2px;
+                font-size: 12px;
+            }
+            .add {
+                border: 0;
+                background: none;
+                color: var(--primary);
+                font: inherit;
+                font-size: 12px;
+                cursor: pointer;
+                padding: 2px 6px;
+                border-radius: 4px;
+            }
+            .tlegend {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px 6px;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .tlegend button,
+            .tlegend span.item {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font: inherit;
+                color: inherit;
+                background: none;
+                border: 1px solid transparent;
+                border-radius: 6px;
+                padding: 3px 7px 3px 3px;
+            }
+            .tlegend button {
+                cursor: pointer;
+                border-color: var(--border);
+            }
+            .tlegend button:hover:not(:disabled) {
+                border-color: var(--border-strong);
+                color: var(--text);
+            }
+            /* The active brush: a yellow (warning) outline around the legend item. */
+            .tlegend button[aria-pressed='true'] {
+                border-color: var(--warning);
+                box-shadow: 0 0 0 1px var(--warning);
+                color: var(--text);
+            }
+            .tlegend button:disabled {
+                cursor: default;
+                opacity: 0.6;
+            }
+            .tlegend .box {
+                cursor: inherit;
+            }
+            .layer-tag {
+                font-size: 10px;
+                color: var(--muted);
+                opacity: 0.8;
+            }
+            .brush-note {
+                font-size: 11px;
+                color: var(--muted);
+            }
+            .notes ul {
+                margin: 0;
+                padding-left: 18px;
+                display: grid;
+                gap: 6px;
+            }
+            .notes li {
+                max-width: 80ch;
+            }
+            .notes strong {
+                color: var(--text);
+            }
+            .sheet-tools {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                align-items: center;
+                padding-bottom: 8px;
+                border-bottom: 1px dashed var(--border);
+            }
+            .overflow {
+                overflow-x: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <header class="grid" style="grid-template-columns: minmax(0, 1fr); gap: 8px">
+                <h1>Tracker brush and two layers — prototype (spec 019)</h1>
+                <p class="lead">
+                    Left: the tracker settings as in the template editor today, with the new
+                    <em>Layer</em> of each mark. Right: the tracker on a sheet. Without a brush a
+                    click moves a box through the fill marks and back to empty. With the legend on,
+                    click a legend item to pick it as the brush (yellow outline); a click on a box
+                    then puts that mark on its layer, or clears it if the box already has it.
+                </p>
+                <div class="tabs" role="group" aria-label="Examples" id="presets"></div>
+            </header>
+            <div class="grid">
+                <section class="panel" aria-labelledby="editor-h">
+                    <h2 id="editor-h">Tracker settings</h2>
+                    <div id="editor" style="display: grid; gap: 12px"></div>
+                </section>
+                <div style="display: grid; gap: 16px; min-width: 0">
+                    <section class="sheet" aria-labelledby="sheet-h">
+                        <h2 id="sheet-h">On the sheet</h2>
+                        <div class="sheet-tools">
+                            <label class="check">
+                                <input type="checkbox" id="readonly" /> Read-only sheet
+                            </label>
+                            <span class="check"
+                                >Outline look:
+                                <span
+                                    class="seg"
+                                    role="group"
+                                    aria-label="Outline look"
+                                    id="look"
+                                ></span
+                            ></span>
+                        </div>
+                        <div id="sheet"></div>
+                    </section>
+                    <section class="panel notes" aria-labelledby="notes-h">
+                        <h2 id="notes-h">Decisions in this prototype</h2>
+                        <ul>
+                            <li>
+                                <strong>Brush.</strong> Only with the legend on (so never on one
+                                line). One brush per tracker at a time; a click on the active item
+                                turns it off. The brush lives while the sheet is open and is not
+                                saved. A read-only sheet shows the legend as plain labels.
+                            </li>
+                            <li>
+                                <strong>Brush click.</strong> The box gets the brush mark on the
+                                brush's layer; if that layer already holds that mark, it is cleared.
+                                The other layer never changes. No cycling while a brush is on.
+                            </li>
+                            <li>
+                                <strong>No brush.</strong> A click cycles the fill marks only (empty
+                                → first → … → last → empty) and keeps the outline. A tracker with no
+                                fill marks cycles its outline marks instead.
+                            </li>
+                            <li>
+                                <strong>Layers.</strong> Each mark is a <em>Fill</em> (background
+                                and symbol, as today) or an <em>Outline</em> (a thick frame in the
+                                mark's color; its symbol shows only when the box has no fill). A box
+                                holds at most one fill and one outline.
+                            </li>
+                            <li>
+                                <strong>Reading.</strong> The total row and "out" read the fill
+                                layer only. Shortening a tracker folds each layer separately;
+                                hidden-value counts include outlines.
+                            </li>
+                            <li>
+                                <strong>Built-in trackers</strong> stay fill-only (the game stores
+                                one mark per box); the layer setting is locked there, the brush
+                                works.
+                            </li>
+                            <li>
+                                <strong>Stored values</strong> of trackers saved before this change
+                                are fill marks; nothing is converted.
+                            </li>
+                            <li>
+                                <strong>Force Points</strong> here are an own tracker. Turning the
+                                Star Wars Force Points resources into a built-in tracker is a later
+                                task.
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+            <p class="hint">
+                Prototype only: nothing is kept. Lengths, text columns, and the Source switch work
+                as built in spec 018 and are left out here.
+            </p>
+        </div>
+        <script>
+            const COLORS = {
+                secondary: { label: 'Amber', css: 'var(--secondary)' },
+                error: { label: 'Red', css: 'var(--error)' },
+                tertiary: { label: 'Violet', css: 'var(--tertiary)' },
+                success: { label: 'Green', css: 'var(--success)' },
+                text: { label: 'Ink', css: 'var(--text)' },
+            };
+            const HEALTH = [
+                ['Bruised', '0'],
+                ['Hurt', '-1'],
+                ['Injured', '-1'],
+                ['Wounded', '-2'],
+                ['Mauled', '-2'],
+                ['Crippled', '-5'],
+                ['Incapacitated', ''],
+            ];
+            const LETTERS = 'ABCDEFGHIJKL';
+            let uid = 0;
+            const nid = (p) => `${p}${++uid}`;
+            const mark = (name, symbol, fill, layer = 'fill') => ({
+                id: nid('mk'),
+                name,
+                symbol,
+                fill,
+                layer,
+            });
+            const levels = (pairs) =>
+                pairs.map(([name, value]) => ({ id: nid('lv'), name, value }));
+
+            const PRESETS = {
+                health: {
+                    title: 'Health, two marks',
+                    make: () => ({
+                        label: 'Health',
+                        display: 'table',
+                        marks: [mark('Bashing', '╱', 'secondary'), mark('Lethal', '×', 'error')],
+                        levels: levels(HEALTH),
+                        valueTitle: 'Penalty',
+                        showValue: true,
+                        column: 'Damage',
+                        copies: false,
+                        total: true,
+                        out: false,
+                        legend: true,
+                    }),
+                    sample: (t, c) => {
+                        c[0].fill[t.levels[0].id] = t.marks[1].id;
+                        c[0].fill[t.levels[1].id] = t.marks[0].id;
+                    },
+                },
+                v20: {
+                    title: 'WoD 20th, three marks',
+                    make: () => ({
+                        ...PRESETS.health.make(),
+                        marks: [
+                            mark('Bashing', '╱', 'secondary'),
+                            mark('Lethal', '×', 'error'),
+                            mark('Aggravated', '✱', 'tertiary'),
+                        ],
+                    }),
+                    sample: (t, c) => {
+                        c[0].fill[t.levels[0].id] = t.marks[2].id;
+                        c[0].fill[t.levels[1].id] = t.marks[1].id;
+                        c[0].fill[t.levels[2].id] = t.marks[0].id;
+                    },
+                },
+                force: {
+                    title: 'Force Points, two layers',
+                    make: () => ({
+                        label: 'Force Points',
+                        display: 'strip',
+                        marks: [
+                            mark('Point', '', 'secondary', 'fill'),
+                            mark('Maximum', '', 'secondary', 'outline'),
+                        ],
+                        levels: levels(Array.from({ length: 10 }, (_, i) => [String(i + 1), ''])),
+                        valueTitle: '',
+                        showValue: false,
+                        column: 'Points',
+                        copies: false,
+                        total: false,
+                        out: false,
+                        legend: true,
+                    }),
+                    sample: (t, c) => {
+                        t.levels.slice(0, 5).forEach((l) => (c[0].outline[l.id] = t.marks[1].id));
+                        t.levels.slice(0, 2).forEach((l) => (c[0].fill[l.id] = t.marks[0].id));
+                    },
+                },
+                status: {
+                    title: 'Wounds and conditions',
+                    make: () => ({
+                        ...PRESETS.health.make(),
+                        label: 'Wounds',
+                        marks: [
+                            mark('Bashing', '╱', 'secondary'),
+                            mark('Lethal', '×', 'error'),
+                            mark('Bleeding', '!', 'error', 'outline'),
+                            mark('Treated', '+', 'success', 'outline'),
+                        ],
+                    }),
+                    sample: (t, c) => {
+                        c[0].fill[t.levels[0].id] = t.marks[1].id;
+                        c[0].outline[t.levels[0].id] = t.marks[2].id;
+                        c[0].fill[t.levels[1].id] = t.marks[0].id;
+                        c[0].outline[t.levels[1].id] = t.marks[3].id;
+                        c[0].outline[t.levels[2].id] = t.marks[3].id;
+                    },
+                },
+                fodder: {
+                    title: 'Fodder group (copies)',
+                    make: () => ({
+                        ...PRESETS.health.make(),
+                        label: 'Members',
+                        column: 'Health',
+                        copies: true,
+                        out: true,
+                        levels: levels([HEALTH[1], HEALTH[2], HEALTH[6]]),
+                    }),
+                    copies: 3,
+                    sample: (t, c) => {
+                        c[0].fill[t.levels[0].id] = t.marks[0].id;
+                        c[1].fill[t.levels[0].id] = t.marks[1].id;
+                        c[1].fill[t.levels[1].id] = t.marks[1].id;
+                        c[1].fill[t.levels[2].id] = t.marks[0].id;
+                    },
+                },
+                builtin: {
+                    title: 'Star Wars health (built-in)',
+                    make: () => ({
+                        ...PRESETS.health.make(),
+                        builtIn: true,
+                        legend: true,
+                    }),
+                    sample: (t, c) => PRESETS.health.sample(t, c),
+                },
+            };
+
+            let current = 'health';
+            let t;
+            let copies;
+            let brush;
+            let look = 'ring';
+
+            function load(key) {
+                current = key;
+                t = PRESETS[key].make();
+                const count = t.copies ? (PRESETS[key].copies ?? 1) : 1;
+                copies = Array.from({ length: count }, (_, i) => ({
+                    letter: t.copies ? LETTERS[i] : '',
+                    fill: {},
+                    outline: {},
+                }));
+                PRESETS[key].sample(t, copies);
+                brush = undefined;
+                renderAll();
+            }
+
+            const el = (tag, attrs = {}, ...children) => {
+                const node = document.createElement(tag);
+                for (const [key, value] of Object.entries(attrs)) {
+                    if (value === undefined || value === false || value === null) continue;
+                    if (key.startsWith('on')) node.addEventListener(key.slice(2), value);
+                    else if (key === 'text') node.textContent = value;
+                    else if (key === 'style' && typeof value === 'object')
+                        for (const [p, v] of Object.entries(value)) node.style.setProperty(p, v);
+                    else node.setAttribute(key, value === true ? '' : value);
+                }
+                for (const child of children.flat(Infinity)) if (child != null) node.append(child);
+                return node;
+            };
+            const colorOf = (m) => (m.fill.startsWith('#') ? m.fill : COLORS[m.fill].css);
+            const byId = (id) => t.marks.find((m) => m.id === id);
+            const fills = () => t.marks.filter((m) => m.layer === 'fill');
+            const outlines = () => t.marks.filter((m) => m.layer === 'outline');
+            const readOnly = () => document.getElementById('readonly').checked;
+
+            /* ---------- Rules ---------- */
+            function click(copy, levelId) {
+                if (brush) {
+                    const m = byId(brush);
+                    const layer = copy[m.layer];
+                    if (layer[levelId] === m.id) delete layer[levelId];
+                    else layer[levelId] = m.id;
+                } else {
+                    const cycle = fills().length > 0 ? fills() : outlines();
+                    if (cycle.length === 0) return;
+                    const layer = copy[cycle[0].layer];
+                    const at = cycle.findIndex((m) => m.id === layer[levelId]);
+                    if (at === cycle.length - 1) delete layer[levelId];
+                    else layer[levelId] = cycle[at + 1].id;
+                }
+                renderSheet();
+            }
+            function deepestFill(copy) {
+                let deepest = -1;
+                t.levels.forEach((l, i) => {
+                    if (byId(copy.fill[l.id])) deepest = i;
+                });
+                return deepest;
+            }
+            const isOut = (copy) =>
+                t.out && t.levels.length > 0 && !!byId(copy.fill[t.levels.at(-1).id]);
+
+            /* ---------- Sheet ---------- */
+            function boxEl(copy, level, size, labelLevel) {
+                const f = byId(copy.fill[level.id]);
+                const o = byId(copy.outline[level.id]);
+                const parts = [f?.name, o?.name].filter(Boolean);
+                const b = el(
+                    'button',
+                    {
+                        type: 'button',
+                        class: `box ${size}${o ? ' has-outline' : ''}`,
+                        disabled: readOnly(),
+                        title:
+                            t.showValue && level.value
+                                ? `${level.name} (${level.value})`
+                                : level.name,
+                        'aria-label': `${labelLevel}: ${parts.length ? parts.join(', ') : 'empty'}`,
+                        onclick: () => click(copy, level.id),
+                    },
+                    f ? f.symbol : o ? el('span', { class: 'ol-symbol', text: o.symbol }) : ''
+                );
+                if (f) {
+                    b.style.background = colorOf(f);
+                    b.style.borderColor = colorOf(f);
+                    if (f.fill === 'text') b.style.color = 'var(--bg-base)';
+                }
+                if (o) b.style.setProperty('--ol', colorOf(o));
+                return b;
+            }
+            function swatch(m) {
+                const b = el('span', {
+                    class: `box sm${m.layer === 'outline' ? ' has-outline' : ''}`,
+                    'aria-hidden': 'true',
+                });
+                if (m.layer === 'fill') {
+                    b.style.background = colorOf(m);
+                    b.style.borderColor = colorOf(m);
+                    if (m.fill === 'text') b.style.color = 'var(--bg-base)';
+                    b.textContent = m.symbol;
+                } else {
+                    b.style.setProperty('--ol', colorOf(m));
+                    b.append(el('span', { class: 'ol-symbol', text: m.symbol }));
+                }
+                return b;
+            }
+            function renderLegend() {
+                if (!t.legend || t.display === 'line') return null;
+                const interactive = !readOnly();
+                const list = el('ul', { class: 'tlegend', 'aria-label': `${t.label} marks` });
+                for (const m of t.marks) {
+                    const content = [
+                        swatch(m),
+                        m.name,
+                        outlines().length > 0 && fills().length > 0
+                            ? el('span', {
+                                  class: 'layer-tag',
+                                  text: m.layer === 'fill' ? 'fill' : 'outline',
+                              })
+                            : null,
+                    ];
+                    list.append(
+                        el(
+                            'li',
+                            {},
+                            interactive
+                                ? el(
+                                      'button',
+                                      {
+                                          type: 'button',
+                                          'aria-pressed': String(brush === m.id),
+                                          title:
+                                              brush === m.id
+                                                  ? 'Stop marking with this'
+                                                  : `Mark boxes with ${m.name}`,
+                                          onclick: () => {
+                                              brush = brush === m.id ? undefined : m.id;
+                                              renderSheet();
+                                          },
+                                      },
+                                      content
+                                  )
+                                : el('span', { class: 'item' }, content)
+                        )
+                    );
+                }
+                const wrap = el('div', { style: 'display:grid;gap:4px' }, list);
+                if (interactive)
+                    wrap.append(
+                        el('p', {
+                            class: 'brush-note',
+                            role: 'status',
+                            text: brush
+                                ? `Marking with ${byId(brush).name}: a click puts it on a box or takes it off. Click it again to stop.`
+                                : '',
+                        })
+                    );
+                return wrap;
+            }
+            function renderTable() {
+                const template = [
+                    'minmax(6rem,1fr)',
+                    ...(t.showValue ? ['4.5rem'] : []),
+                    ...copies.map(() => 'minmax(3.5rem,auto)'),
+                ].join(' ');
+                const row = (cls, ...cells) =>
+                    el(
+                        'div',
+                        {
+                            class: `trow ${cls}`,
+                            role: 'row',
+                            style: { 'grid-template-columns': template },
+                        },
+                        cells
+                    );
+                const table = el('div', { class: 'ttable', role: 'table', 'aria-label': t.label });
+                table.append(
+                    row(
+                        'head',
+                        el('span', { role: 'columnheader', text: 'Level' }),
+                        t.showValue
+                            ? el('span', {
+                                  role: 'columnheader',
+                                  class: 'center',
+                                  text: t.valueTitle || 'Value',
+                              })
+                            : null,
+                        copies.map((c) =>
+                            el(
+                                'span',
+                                { role: 'columnheader', class: 'center' },
+                                el('span', {
+                                    class: isOut(c) ? 'struck' : '',
+                                    text: c.letter || t.column,
+                                }),
+                                c.letter && !readOnly() && copies.length > 1
+                                    ? el(
+                                          'button',
+                                          {
+                                              type: 'button',
+                                              class: 'copy-x',
+                                              'aria-label': `Remove ${c.letter}`,
+                                              onclick: () => {
+                                                  copies.splice(copies.indexOf(c), 1);
+                                                  renderSheet();
+                                              },
+                                          },
+                                          '×'
+                                      )
+                                    : null
+                            )
+                        )
+                    )
+                );
+                for (const level of t.levels) {
+                    const single = copies.length === 1 && byId(copies[0].fill[level.id]);
+                    table.append(
+                        row(
+                            '',
+                            el('span', {
+                                role: 'rowheader',
+                                class: single ? 'marked' : '',
+                                style: 'font-weight:500',
+                                text: level.name,
+                            }),
+                            t.showValue
+                                ? el('span', {
+                                      role: 'cell',
+                                      class: 'val',
+                                      text: level.value || '—',
+                                  })
+                                : null,
+                            copies.map((c) =>
+                                el(
+                                    'span',
+                                    { role: 'cell', class: 'center' },
+                                    boxEl(
+                                        c,
+                                        level,
+                                        'md',
+                                        c.letter ? `${level.name} (${c.letter})` : level.name
+                                    )
+                                )
+                            )
+                        )
+                    );
+                }
+                if (t.total)
+                    table.append(
+                        row(
+                            'total',
+                            el('span', { role: 'rowheader', text: t.valueTitle || 'Value' }),
+                            t.showValue ? el('span', { role: 'cell' }) : null,
+                            copies.map((c) => {
+                                const d = deepestFill(c);
+                                return el(
+                                    'span',
+                                    { role: 'cell', class: 'center' },
+                                    isOut(c)
+                                        ? el('span', { class: 'out-badge', text: 'Out' })
+                                        : d >= 0
+                                          ? t.levels[d].value || '—'
+                                          : '—'
+                                );
+                            })
+                        )
+                    );
+                return el('div', { class: 'overflow' }, table);
+            }
+            function renderStrips(size) {
+                return el(
+                    'div',
+                    { style: 'display:grid;gap:8px' },
+                    copies.map((c) => {
+                        const d = deepestFill(c);
+                        return el(
+                            'div',
+                            { class: 'strip' },
+                            el('span', {
+                                class: `name${isOut(c) ? ' struck' : ''}`,
+                                text: c.letter ? `${t.label} ${c.letter}` : t.label,
+                            }),
+                            el(
+                                'span',
+                                { class: 'boxes', role: 'group', 'aria-label': t.label },
+                                t.levels.map((l) =>
+                                    boxEl(c, l, size, c.letter ? `${l.name} (${c.letter})` : l.name)
+                                )
+                            ),
+                            t.total
+                                ? isOut(c)
+                                    ? el('span', { class: 'out-badge', text: 'Out' })
+                                    : d >= 0 && t.levels[d].value
+                                      ? el('span', {
+                                            style: 'font-family:var(--mono);font-weight:700;color:var(--muted)',
+                                            text: `${t.valueTitle} ${t.levels[d].value}`,
+                                        })
+                                      : null
+                                : null
+                        );
+                    })
+                );
+            }
+            function renderSheet() {
+                const root = document.getElementById('sheet');
+                root.replaceChildren();
+                root.className = `look-${look}`;
+                const head = el(
+                    'div',
+                    { class: 'tracker-head' },
+                    el('span', { text: t.display === 'table' ? t.label : '' }),
+                    t.copies && !readOnly()
+                        ? el(
+                              'button',
+                              {
+                                  type: 'button',
+                                  class: 'add',
+                                  onclick: () => {
+                                      copies.push({
+                                          letter: LETTERS[copies.length],
+                                          fill: {},
+                                          outline: {},
+                                      });
+                                      renderSheet();
+                                  },
+                              },
+                              `+ ${t.column}`
+                          )
+                        : null
+                );
+                const body =
+                    t.display === 'table'
+                        ? renderTable()
+                        : renderStrips(t.display === 'line' ? 'sm' : 'md');
+                root.append(el('div', { class: 'tracker' }, head, body, renderLegend()));
+                if (t.builtIn)
+                    root.append(
+                        el('p', {
+                            class: 'hint',
+                            style: 'margin-top:8px',
+                            text: 'Built-in: the marks live in the character’s health; the brush works, the outline layer is not offered.',
+                        })
+                    );
+            }
+
+            /* ---------- Editor ---------- */
+            function group(title, hint, ...children) {
+                return el(
+                    'fieldset',
+                    {},
+                    el('legend', {}, title),
+                    hint ? el('p', { class: 'hint', text: hint }) : null,
+                    children
+                );
+            }
+            function seg(label, options, value, onPick, disabled) {
+                return el(
+                    'span',
+                    { class: 'seg', role: 'group', 'aria-label': label },
+                    options.map(([v, text]) =>
+                        el(
+                            'button',
+                            {
+                                type: 'button',
+                                'aria-pressed': String(value === v),
+                                disabled,
+                                onclick: () => onPick(v),
+                            },
+                            text
+                        )
+                    )
+                );
+            }
+            function renderEditor() {
+                const root = document.getElementById('editor');
+                root.replaceChildren();
+                const locked = !!t.builtIn;
+                root.append(
+                    group(
+                        'Display',
+                        'Table, strip, or one small line.',
+                        seg(
+                            'Display',
+                            [
+                                ['table', 'Table'],
+                                ['strip', 'Strip'],
+                                ['line', 'One line'],
+                            ],
+                            t.display,
+                            (v) => {
+                                t.display = v;
+                                renderAll();
+                            }
+                        )
+                    )
+                );
+                const markRows = t.marks.map((m, i) =>
+                    el(
+                        'div',
+                        { class: 'mark-row' },
+                        el(
+                            'div',
+                            { class: 'row' },
+                            swatch(m),
+                            el('input', {
+                                type: 'text',
+                                class: 'name',
+                                value: m.name,
+                                'aria-label': `Mark ${i + 1} name`,
+                                oninput: (e) => {
+                                    m.name = e.target.value;
+                                    renderSheet();
+                                },
+                            }),
+                            el('input', {
+                                type: 'text',
+                                class: 'symbol',
+                                value: m.symbol,
+                                'aria-label': `Mark ${i + 1} symbol`,
+                                oninput: (e) => {
+                                    m.symbol = Array.from(e.target.value).slice(0, 2).join('');
+                                    renderAll();
+                                },
+                            })
+                        ),
+                        el(
+                            'div',
+                            { class: 'row' },
+                            el(
+                                'span',
+                                { class: 'hint' },
+                                'Layer',
+                                el('span', { class: 'new', text: 'new' })
+                            ),
+                            seg(
+                                `Mark ${i + 1} layer`,
+                                [
+                                    ['fill', 'Fill'],
+                                    ['outline', 'Outline'],
+                                ],
+                                m.layer,
+                                (v) => {
+                                    m.layer = v;
+                                    if (brush === m.id) brush = undefined;
+                                    for (const c of copies) {
+                                        const from = v === 'fill' ? c.outline : c.fill;
+                                        const to = v === 'fill' ? c.fill : c.outline;
+                                        for (const [lv, id] of Object.entries(from))
+                                            if (id === m.id) {
+                                                delete from[lv];
+                                                if (!to[lv]) to[lv] = id;
+                                            }
+                                    }
+                                    renderAll();
+                                },
+                                locked
+                            )
+                        ),
+                        el(
+                            'div',
+                            { class: 'row' },
+                            Object.entries(COLORS).map(([key, c]) =>
+                                el(
+                                    'button',
+                                    {
+                                        type: 'button',
+                                        class: 'dot',
+                                        'aria-pressed': String(m.fill === key),
+                                        'aria-label': c.label,
+                                        title: c.label,
+                                        onclick: () => {
+                                            m.fill = key;
+                                            renderAll();
+                                        },
+                                    },
+                                    el('span', { style: { background: c.css } })
+                                )
+                            ),
+                            el('span', { style: 'flex:1' }),
+                            el(
+                                'button',
+                                {
+                                    type: 'button',
+                                    class: 'btn',
+                                    'aria-label': `Move mark ${i + 1} up`,
+                                    disabled: locked || i === 0,
+                                    onclick: () => {
+                                        [t.marks[i - 1], t.marks[i]] = [t.marks[i], t.marks[i - 1]];
+                                        renderAll();
+                                    },
+                                },
+                                '↑'
+                            ),
+                            el(
+                                'button',
+                                {
+                                    type: 'button',
+                                    class: 'btn',
+                                    'aria-label': `Move mark ${i + 1} down`,
+                                    disabled: locked || i === t.marks.length - 1,
+                                    onclick: () => {
+                                        [t.marks[i + 1], t.marks[i]] = [t.marks[i], t.marks[i + 1]];
+                                        renderAll();
+                                    },
+                                },
+                                '↓'
+                            ),
+                            el(
+                                'button',
+                                {
+                                    type: 'button',
+                                    class: 'btn',
+                                    'aria-label': `Remove mark ${i + 1}`,
+                                    disabled: locked || t.marks.length === 1,
+                                    onclick: () => {
+                                        if (brush === m.id) brush = undefined;
+                                        t.marks.splice(i, 1);
+                                        renderAll();
+                                    },
+                                },
+                                '×'
+                            )
+                        )
+                    )
+                );
+                root.append(
+                    group(
+                        'Marks',
+                        locked
+                            ? 'The game sets the marks and keeps one per box: names, symbols, and colors only.'
+                            : 'Up to five. Fill marks color the box and are what a click cycles through; outline marks frame it. A box holds one of each.',
+                        locked
+                            ? null
+                            : el(
+                                  'select',
+                                  {
+                                      'aria-label': 'Start from',
+                                      onchange: (e) => {
+                                          const sets = {
+                                              two: () => [
+                                                  mark('Bashing', '╱', 'secondary'),
+                                                  mark('Lethal', '×', 'error'),
+                                              ],
+                                              points: () => [
+                                                  mark('Point', '', 'secondary'),
+                                                  mark('Maximum', '', 'secondary', 'outline'),
+                                              ],
+                                          };
+                                          if (sets[e.target.value]) {
+                                              t.marks = sets[e.target.value]();
+                                              brush = undefined;
+                                              for (const c of copies) {
+                                                  c.fill = {};
+                                                  c.outline = {};
+                                              }
+                                              renderAll();
+                                          }
+                                      },
+                                  },
+                                  el('option', { value: '' }, 'Start from…'),
+                                  el('option', { value: 'two' }, 'Two marks (╱ ×)'),
+                                  el(
+                                      'option',
+                                      { value: 'points' },
+                                      'Points: current and maximum (fill + outline)'
+                                  )
+                              ),
+                        markRows,
+                        locked
+                            ? null
+                            : el(
+                                  'button',
+                                  {
+                                      type: 'button',
+                                      class: 'btn',
+                                      style: 'justify-self:start',
+                                      disabled: t.marks.length >= 5,
+                                      onclick: () => {
+                                          t.marks.push(
+                                              mark(`Mark ${t.marks.length + 1}`, '•', 'text')
+                                          );
+                                          renderAll();
+                                      },
+                                  },
+                                  '+ Mark'
+                              )
+                    )
+                );
+                root.append(
+                    group(
+                        'Levels',
+                        null,
+                        el('p', {
+                            class: 'hint',
+                            text: `${t.levels.length} levels: ${t.levels.map((l) => l.name).join(', ')} (unchanged from spec 018).`,
+                        })
+                    )
+                );
+                const toggle = (label, key, isNew) =>
+                    el(
+                        'label',
+                        { class: 'check' },
+                        el('input', {
+                            type: 'checkbox',
+                            checked: t[key],
+                            onchange: (e) => {
+                                t[key] = e.target.checked;
+                                if (key === 'legend' && !t.legend) brush = undefined;
+                                renderAll();
+                            },
+                        }),
+                        label,
+                        isNew ? el('span', { class: 'new', text: 'now a brush' }) : null
+                    );
+                root.append(
+                    group(
+                        'Reading the marks',
+                        null,
+                        toggle(
+                            `Total row: the ${t.valueTitle || 'value'} of the deepest filled level`,
+                            'total'
+                        ),
+                        locked
+                            ? null
+                            : toggle('Mark a copy as out when its last level is filled', 'out'),
+                        toggle('Name the marks under the tracker', 'legend', true),
+                        el('p', {
+                            class: 'hint',
+                            text: 'With the legend on, readers can pick a mark in it and put it on boxes directly.',
+                        })
+                    )
+                );
+            }
+
+            function renderAll() {
+                const presets = document.getElementById('presets');
+                presets.replaceChildren(
+                    ...Object.entries(PRESETS).map(([key, p]) =>
+                        el(
+                            'button',
+                            {
+                                type: 'button',
+                                class: 'tab',
+                                'aria-pressed': String(key === current),
+                                onclick: () => load(key),
+                            },
+                            p.title
+                        )
+                    )
+                );
+                document.getElementById('look').replaceChildren(
+                    ...[
+                        ['both', 'Border both ways'],
+                        ['ring', 'Ring outside'],
+                        ['border', 'Thick border'],
+                    ].map(([v, text]) =>
+                        el(
+                            'button',
+                            {
+                                type: 'button',
+                                'aria-pressed': String(look === v),
+                                onclick: () => {
+                                    look = v;
+                                    renderAll();
+                                },
+                            },
+                            text
+                        )
+                    )
+                );
+                renderEditor();
+                renderSheet();
+            }
+            document.getElementById('readonly').addEventListener('change', () => {
+                brush = undefined;
+                renderSheet();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && brush) {
+                    brush = undefined;
+                    renderSheet();
+                }
+            });
+            load('health');
+        </script>
+    </body>
+</html>
