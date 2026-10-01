@@ -558,6 +558,7 @@ const NodeView = memo(function NodeView({
         const maxState = {
             ...pageApi.formulaState.maxima.get(node.id),
             resolvedMin: pageApi.formulaState.minima.get(node.id),
+            resolvedMaxMin: pageApi.formulaState.maxMinima.get(node.id),
         };
         return (
             <PrimitiveNodeView
@@ -782,6 +783,7 @@ export function DeclarativeSheetView({
                 [...pageApi.formulaState.results],
                 [...pageApi.formulaState.maxima],
                 [...pageApi.formulaState.minima],
+                [...pageApi.formulaState.maxMinima],
             ]),
         [pageApi.formulaState]
     );

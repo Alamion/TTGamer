@@ -22,6 +22,7 @@ import type {
 import { TRACKER_PALETTE_FILLS, type TrackerPaletteFill } from '../../types/template';
 import { ConfirmDialog } from '../dialogs/ConfirmDialog';
 import { ConditionTrackLengthButtons } from './ConditionTrack';
+import { StatLabel } from './StatLabel';
 
 const messages = uiMessages.sheet.tracks;
 
@@ -41,6 +42,20 @@ function isPaletteFill(fill: string): fill is TrackerPaletteFill {
     return (TRACKER_PALETTE_FILLS as readonly string[]).includes(fill);
 }
 
+const PALETTE_CSS: Record<TrackerPaletteFill, string> = {
+    secondary: 'rgb(var(--secondary))',
+    error: 'rgb(var(--error))',
+    tertiary: 'rgb(var(--tertiary))',
+    success: 'rgb(var(--success))',
+    text: 'rgb(var(--text-primary))',
+    primary: 'rgb(var(--primary))',
+};
+
+/** A locked box (spec 020 FR-011) darkens in its own mark's color. */
+function darker(fill: string): string {
+    return `color-mix(in srgb, ${isPaletteFill(fill) ? PALETTE_CSS[fill] : fill}, black 35%)`;
+}
+
 function fillLook(mark: Pick<Mark, 'fill'> | undefined): {
     className: string;
     style?: CSSProperties;
@@ -58,6 +73,8 @@ const BOX = 'grid shrink-0 place-items-center rounded border-2 font-mono font-bo
 const BOX_SIZE = {
     md: 'h-[26px] w-[26px] text-xs',
     sm: 'h-5 w-5 text-[11px]',
+    // Spec 020: a pool row's boxes are the size of rating dots.
+    dot: 'h-4 w-4 text-[9px]',
     xs: 'h-3.5 w-3.5 border text-[9px]',
 } as const;
 
@@ -67,6 +84,7 @@ type BoxSize = keyof typeof BOX_SIZE;
 const OUTLINE_SIZE: Record<BoxSize, string> = {
     md: 'outline outline-[2.5px] outline-offset-[1.5px]',
     sm: 'outline outline-2 outline-offset-1',
+    dot: 'outline outline-2 outline-offset-1',
     xs: 'outline outline-[1.5px] outline-offset-1',
 };
 
@@ -197,6 +215,7 @@ function MarkBox({
     outline,
     onToggle,
     onOutline,
+    locked,
     size,
 }: {
     disabled: boolean;
@@ -207,10 +226,22 @@ function MarkBox({
     onToggle: () => void;
     /** The outline action (right click, Shift+Enter/Space, long press); unset keeps the defaults. */
     onOutline?: () => void;
-    size: 'sm' | 'md';
+    /** Layers a minimum holds on this box (pools, spec 020). */
+    locked?: { fill: boolean; outline: boolean };
+    size: Exclude<BoxSize, 'xs'>;
 }) {
     const look = boxLook(fill, outline, size);
+    const lockedFill = locked?.fill === true && fill !== undefined;
+    const lockedOutline = locked?.outline === true && outline !== undefined;
+    const style: CSSProperties = {
+        ...look.style,
+        ...(lockedFill
+            ? { backgroundColor: darker(fill.fill), borderColor: darker(fill.fill) }
+            : {}),
+        ...(lockedOutline ? { outlineColor: darker(outline.fill) } : {}),
+    };
     const text = messages.tracker;
+    const names = [fill?.name, outline?.name].filter(Boolean).join(', ');
     const outlineAction = disabled ? undefined : onOutline;
     const longPress = useLongPress(outlineAction);
     const shiftActivates = (event: ReactKeyboardEvent) =>
@@ -242,16 +273,18 @@ function MarkBox({
                   }
                 : {})}
             aria-label={
-                fill && outline
-                    ? translate(text.boxBoth, {
-                          level: label,
-                          fill: fill.name,
-                          outline: outline.name,
-                      })
-                    : translate(text.box, {
-                          level: label,
-                          mark: (fill ?? outline)?.name ?? translate(text.empty),
-                      })
+                lockedFill || lockedOutline
+                    ? translate(text.boxLocked, { level: label, mark: names })
+                    : fill && outline
+                      ? translate(text.boxBoth, {
+                            level: label,
+                            fill: fill.name,
+                            outline: outline.name,
+                        })
+                      : translate(text.box, {
+                            level: label,
+                            mark: (fill ?? outline)?.name ?? translate(text.empty),
+                        })
             }
             title={title}
             className={clsx(
@@ -265,7 +298,7 @@ function MarkBox({
                 look.className,
                 !fill && !disabled && 'hover:border-primary'
             )}
-            style={look.style}
+            style={style}
         >
             {look.symbol}
         </button>
@@ -363,7 +396,7 @@ export function Tracker({
     }, [brushOn]);
     const levelTitle = (level: TrackerModel['levels'][number]) =>
         model.valueColumn.show && level.value ? `${level.name} (${level.value})` : level.name;
-    const size = model.display === 'line' ? 'sm' : 'md';
+    const size = model.display === 'row' ? 'dot' : model.display === 'line' ? 'sm' : 'md';
     // The layer the total and the marked level name read (spec 019 FR-016).
     const readingOf = (copy: TrackerModelCopy) =>
         model.readingLayer === 'fill' ? copy.marks : copy.outlines;
@@ -379,12 +412,27 @@ export function Tracker({
 
     const box = (column: TrackerModelColumn, copy: TrackerModelCopy, levelId: string) => {
         const level = model.levels.find(({ id }) => id === levelId)!;
+        const position = column.covered.indexOf(levelId);
+        const locked = copy.locked && {
+            fill: position < copy.locked.fill,
+            outline: position < copy.locked.outline,
+        };
+        const held = locked?.fill
+            ? copy.locked!.fill
+            : locked?.outline
+              ? copy.locked!.outline
+              : undefined;
         return (
             <MarkBox
                 key={levelId}
                 disabled={disabled}
                 label={wording.boxLabel(level.name, column, copy)}
-                title={levelTitle(level)}
+                title={
+                    held === undefined
+                        ? levelTitle(level)
+                        : translate(messages.tracker.lockedTitle, { level: level.name, n: held })
+                }
+                locked={locked}
                 fill={markById.get(copy.marks[levelId] ?? '')}
                 outline={markById.get(copy.outlines[levelId] ?? '')}
                 onToggle={() =>
@@ -453,7 +501,37 @@ export function Tracker({
 
     let body: ReactNode;
     if (model.display === 'table') body = renderTable();
+    else if (model.display === 'row') body = renderRow();
     else body = renderStrips();
+
+    /** A pool drawn like a rating row (spec 020 FR-011a): label left, boxes and count right. */
+    function renderRow() {
+        const column = model.columns[0];
+        const copy = column?.copies[0];
+        if (!column || !copy) return null;
+        return (
+            <div className="term-row flex items-center justify-between gap-2 py-1">
+                <StatLabel
+                    label={model.label}
+                    className={model.hideLabel ? 'sr-only' : undefined}
+                />
+                <span className="flex items-center gap-2">
+                    <span
+                        role="group"
+                        aria-label={model.label}
+                        className="flex flex-wrap items-center gap-[7px]"
+                    >
+                        {column.covered.map((levelId) => box(column, copy, levelId))}
+                    </span>
+                    {model.total && copy.total && (
+                        <span className="min-w-[3.2em] text-right font-mono text-xs font-bold text-textSecondary">
+                            {copy.total}
+                        </span>
+                    )}
+                </span>
+            </div>
+        );
+    }
 
     function renderTable() {
         const copies = model.columns.flatMap((column) =>

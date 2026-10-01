@@ -167,14 +167,14 @@ the first outline on every tracker; "Fills stay inside the outline".
 
 ### Tests for User Story 3
 
-- [ ] T019 [P] [US3] Rule tests in new `tests/sheet_manager/pool-tracker.test.ts` for `markPool`
+- [x] T019 [P] [US3] Rule tests in new `tests/sheet_manager/pool-tracker.test.ts` for `markPool`
       and `poolTrackerModel` (data-model "Pool"): fill run up and down; last box shortens; fill
       past the maximum stops at it; with `raisesMax` it raises the maximum; `minCurrent` floor;
       outline up/down; outline floor `max(minMax, raisesMax ? minCurrent : 0)`, and the
       maximum reaching 0 with no minimum; lowering the
       maximum lowers current; `limit` cap; stored current above max shown as stored; model levels
       = limit, fills/outlines, locked counts, count total text, `hasOutlines: true`.
-- [ ] T020 [P] [US3] Component tests in new `tests/sheet_manager/pool-tracker.test.tsx` rendering
+- [x] T020 [P] [US3] Component tests in new `tests/sheet_manager/pool-tracker.test.tsx` rendering
       a page with a pool primitive and `poolTracker`: Row look (label, 16px boxes, count "2 / 3");
       left click writes current; right click, Shift+Enter, a touch long press, and the outline
       brush write the maximum (keyboard-only path proven on the shipped Force Points node); locked boxes
@@ -184,38 +184,38 @@ the first outline on every tracker; "Fills stay inside the outline".
 
 ### Implementation for User Story 3
 
-- [ ] T021 [US3] Create `src/sheet_manager/features/sheet/data/poolTracker.ts` with `PoolRules`,
+- [x] T021 [US3] Create `src/sheet_manager/features/sheet/data/poolTracker.ts` with `PoolRules`,
       `markPool(pair, rules, index, layer)`, and `poolTrackerModel({ label, hideLabel, pair,
 rules, override, readOnly })` returning a `TrackerModel` (one marks column, one copy,
       numbered levels up to `limit`, marks `current`/`max` with default names from
       `tracks.yaml`, fill `primary`, override looks, `fromStart` semantics, Count total,
       `locked` counts, display from the override) per R6.
-- [ ] T022 [US3] Resolve `maxMinFrom` in `src/sheet_manager/features/sheet/declarative/hooks.ts`
+- [x] T022 [US3] Resolve `maxMinFrom` in `src/sheet_manager/features/sheet/declarative/hooks.ts`
       next to `minFrom` (a `maxMinima` map, `formula-error` report on bad formulas) and pass it as
       `resolvedMaxMin` on `PrimitiveMaxState` from
       `src/sheet_manager/features/sheet/declarative/DeclarativeSheetView.tsx`; add `maxMinFrom`
       coordinates to `src/sheet_manager/features/sheet/data/templateReferences.ts`.
-- [ ] T023 [US3] In `src/sheet_manager/components/stat-fields/Tracker.tsx`: a `dot` box size (16px,
+- [x] T023 [US3] In `src/sheet_manager/components/stat-fields/Tracker.tsx`: a `dot` box size (16px,
       outline 2px offset 1px); the `row` display (label left with rating-row typography, boxes and
       count right, legend under it); locked boxes (index below `copy.locked.fill`/`.outline`)
       drawn in the darker mix of their mark's color (palette through a CSS variable, hex inline),
       named with `boxLocked`, titled with `lockedTitle` (R7, contract "pool resource").
-- [ ] T024 [US3] Create `src/sheet_manager/features/sheet/declarative/PoolTracker.tsx`: reads the
+- [x] T024 [US3] Create `src/sheet_manager/features/sheet/declarative/PoolTracker.tsx`: reads the
       pair from `useBoundDocument()`, builds rules from the descriptor (`maximum`,
       `currentRaisesMax`) and `maxState` (`resolvedMax`, `resolvedMin`, `resolvedMaxMin`), renders
       `Tracker` and writes `bound.update({ [dataKey]: markPool(…) })`; a brush maps to its mark's
       layer.
-- [ ] T025 [US3] In `PrimitiveResourceBody` (`src/sheet_manager/features/sheet/declarative/primitives.tsx`)
+- [x] T025 [US3] In `PrimitiveResourceBody` (`src/sheet_manager/features/sheet/declarative/primitives.tsx`)
       render `PoolTracker` when `node.poolTracker` is set and `descriptor.mode === 'pool'`
       (ignoring `part` and `compact`), with the clamp notice as for the dots.
-- [ ] T026 [US3] Star Wars full sheet in `src/sheet_manager/systems/star-wars-wod/templates/character.ts`
+- [x] T026 [US3] Star Wars full sheet in `src/sheet_manager/systems/star-wars-wod/templates/character.ts`
       `resourcesGroup`: replace `resource-max-force-points` and `resource-force-points` with one
       `resource-force-points` node (`poolTracker: {}`, `maxMinFrom: MINIMUMS.maxForcePoints`);
       extend the `resource` builder options in `src/sheet_manager/templates/builders.ts` (and
       `systems/wod2e/ruleset/templateParts.ts` if it wraps it) for `poolTracker`/`maxMinFrom`.
       The brief sheet stays. Check how saved copies of shipped templates follow a shipped change
       and record it in research.md "Implementation notes" (R9).
-- [ ] T027 [US3] Update `tests/sheet_manager/fixtures/star-wars-parity.json` / the parity test in
+- [x] T027 [US3] Update `tests/sheet_manager/fixtures/star-wars-parity.json` / the parity test in
       `tests/sheet_manager/systems/wod2e/star-wars-parity.test.ts` for the single Force Points node
       and add an assertion that the full character sheet has one `resource:force-points` node
       with `poolTracker` and `maxMinFrom`, and the brief sheet keeps its compact node.

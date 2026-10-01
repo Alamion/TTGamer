@@ -65,6 +65,7 @@ import {
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
+import { PoolTracker } from './PoolTracker';
 import { traitRowKind } from './rowKind';
 import { EnumField, RowsBody } from './RowsBody';
 
@@ -80,6 +81,8 @@ export interface PrimitiveMaxState {
     degraded?: boolean;
     /** Resolved `minFrom`: dots up to it are locked and writes never go below it. */
     resolvedMin?: number;
+    /** Resolved `maxMinFrom` (pool trackers, spec 020): the maximum never goes below it. */
+    resolvedMaxMin?: number;
 }
 
 type DegradedReason =
@@ -725,6 +728,29 @@ function PrimitiveResourceBody({
             {translate(page.formulaClamped)}
         </p>
     );
+    if (node.poolTracker && descriptor.mode === 'pool') {
+        // One tracker edits both values, so `part` and `compact` do not apply (spec 020 R5).
+        const limit = Math.max(0, effectiveMax);
+        return (
+            <div className="grid gap-1">
+                <PoolTracker
+                    label={label}
+                    hideLabel={node.hideLabel ?? false}
+                    pair={pair}
+                    rules={{
+                        limit,
+                        minCurrent: Math.max(0, Math.min(maxState?.resolvedMin ?? 0, limit)),
+                        minMax: Math.max(0, Math.min(maxState?.resolvedMaxMin ?? 0, limit)),
+                        raisesMax: descriptor.currentRaisesMax === true,
+                    }}
+                    override={node.poolTracker}
+                    disabled={readOnly}
+                    onChange={(next) => bound.update({ [descriptor.dataKey]: next })}
+                />
+                {clampedNotice}
+            </div>
+        );
+    }
     if (node.compact) {
         return (
             <div className="grid gap-1">

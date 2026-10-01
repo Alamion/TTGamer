@@ -120,16 +120,11 @@ function resourcesGroup(variant: SheetVariant, column: number): GroupNode {
             ...(variant === 'droid'
                 ? []
                 : [
-                      resource(
-                          'resource-max-force-points',
-                          'resource:force-points',
-                          'Max Force Points',
-                          {
-                              part: 'max',
-                              minFrom: MINIMUMS.maxForcePoints,
-                          }
-                      ),
-                      resource('resource-force-points', 'resource:force-points', 'Force Points'),
+                      // One tracker: the maximum framed, the current points filled (spec 020).
+                      resource('resource-force-points', 'resource:force-points', 'Force Points', {
+                          poolTracker: { display: 'row', legend: false, total: true },
+                          maxMinFrom: MINIMUMS.maxForcePoints,
+                      }),
                       resource(
                           'resource-dark-side',
                           'resource:dark-side-resistance',

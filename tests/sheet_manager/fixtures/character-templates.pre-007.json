@@ -998,21 +998,17 @@
                                 "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                             },
                             {
-                                "id": "resource-max-force-points",
-                                "type": "primitive",
-                                "bindingKey": "resource:force-points",
-                                "compact": false,
-                                "label": "Max Force Points",
-                                "minFrom": "self-control",
-                                "part": "max",
-                                "labelMessage": "ttgamer.ui.sheet.templates.defaults.maxForcePoints"
-                            },
-                            {
                                 "id": "resource-force-points",
                                 "type": "primitive",
                                 "bindingKey": "resource:force-points",
                                 "compact": false,
                                 "label": "Force Points",
+                                "poolTracker": {
+                                    "display": "row",
+                                    "legend": false,
+                                    "total": true
+                                },
+                                "maxMinFrom": "self-control",
                                 "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
                             },
                             {
