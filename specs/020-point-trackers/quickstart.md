@@ -15,6 +15,8 @@ Manual walk-through on the dev server, after `yarn verify:full` passes.
    box 2 again: only box 1.
 2. **Right click** (US1, FR-005a): right-click box 5: boxes 1–5 framed, the fills stay; the count
    reads "1 / 5". Right-click on a health tracker (no outlines): the browser menu opens.
+   Tab to box 6 and press Shift+Enter: boxes 1–6 framed. In the browser's phone emulation (or on a
+   phone), long-press box 3: boxes 1–3 framed, no tap and no menu follow.
 3. **Brush runs** (US1): add a second fill "Spent"; brush it on box 3: boxes 1–3 show "Spent",
    the first fill is gone after them.
 4. **Fills inside** (US1): turn on "Fills stay inside the outline"; with boxes 1–5 framed, click

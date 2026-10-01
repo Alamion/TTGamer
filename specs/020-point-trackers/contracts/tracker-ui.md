@@ -9,7 +9,11 @@ Changes to `specs/019-tracker-brush-layers/contracts/tracker-ui.md`. The prototy
 - **Right click** (`contextmenu`): the first outline mark, by the left click's rules (a run from
   the start, or the outline cycle). Taken (`preventDefault`) only when the tracker has outline
   marks and is enabled; otherwise the browser menu opens.
-- Keyboard: Enter/Space act as a left click; outlines are reached through the legend brush.
+- **Shift+Enter / Shift+Space** on a focused box: the same outline action (the button's click does
+  not follow). Enter/Space alone act as a left click.
+- **Long press** on touch (500 ms, under 10 px of movement): the same outline action; the tap's
+  click and the phone's menu do not follow. Boxes are not selectable and show no callout.
+- All three are taken only when the tracker has outline marks and is enabled.
 
 ## Sheet: own tracker that fills from the start
 

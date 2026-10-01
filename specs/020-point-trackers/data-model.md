@@ -47,18 +47,18 @@ Unchanged. Own trackers keep `TrackerValue`; pools keep `{ current, max }` in th
 
 ### TrackerModel
 
-| Field             | Change                                                                  |
-| ----------------- | ----------------------------------------------------------------------- |
-| `display`         | `TrackerDisplay \| 'row'` (`row` only from pool models)                 |
-| `fromStart`       | **new** boolean; the molecule does not need it, bound elements write it |
-| `hasOutlines`     | **new** boolean; right click is taken only when true                    |
-| `copies[].total`  | with `'count'`: `"{filled} / {framed}"` or `"{filled}"` (R4)            |
-| `copies[].locked` | **new**, opt.: `{ fill, outline }` locked box counts (pools only)       |
+| Field             | Change                                                            |
+| ----------------- | ----------------------------------------------------------------- |
+| `display`         | `TrackerDisplay \| 'row'` (`row` only from pool models)           |
+| `hasOutlines`     | **new** boolean; right click is taken only when true              |
+| `copies[].total`  | with `'count'`: `"{filled} / {framed}"` or `"{filled}"` (R4)      |
+| `copies[].locked` | **new**, opt.: `{ fill, outline }` locked box counts (pools only) |
 
 ### TrackerClick (molecule → bound element)
 
 `{ brush: markId }` (left click with a brush) or `{ layer: 'fill' | 'outline' }` (left click
-without a brush: the reading layer; right click: `outline`).
+without a brush: the reading layer; the outline action — right click, Shift+Enter/Shift+Space,
+touch long press: `outline`).
 
 ### PoolRules
 
@@ -80,7 +80,7 @@ The other layer never changes.
 
 ### Pool (fill = current, outline = maximum)
 
-| Click on box `i` | Result                                                                                                                     |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| fill             | `current = i+1 === current ? i : i+1`, at least `minCurrent`; capped by `max`, or raises `max` with `raisesMax`            |
-| outline          | `max = i+1 === max ? i : i+1`, within `[max(minMax, raisesMax ? minCurrent : 0, 1), limit]`; `current = min(current, max)` |
+| Click on box `i` | Result                                                                                                                  |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| fill             | `current = i+1 === current ? i : i+1`, at least `minCurrent`; capped by `max`, or raises `max` with `raisesMax`         |
+| outline          | `max = i+1 === max ? i : i+1`, within `[max(minMax, raisesMax ? minCurrent : 0), limit]`; `current = min(current, max)` |

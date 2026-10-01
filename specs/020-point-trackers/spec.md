@@ -40,6 +40,8 @@ Maintainer decisions (2026-10-02):
   the start); "Fills stay inside the outline" is an option of trackers that fill from the start,
   off by default; a pool drawn as a tracker looks like a rating row (label left, dot-sized boxes
   right, the rating dots' accent color), and locked boxes darken in their own mark's color.
+- Analysis (2026-10-02): the outline action also has a key (Shift+Enter or Shift+Space on a box)
+  and a touch long press, so keyboard and phone users can set a maximum without the legend.
 
 Out of scope:
 
@@ -196,7 +198,9 @@ the storybook page shows a point tracker and a built-in pool as a tracker.
   layer with its first mark, by the rules a left click follows on the fill layer: a run from the
   start on trackers that fill from the start, else the outline cycle. The brush applies to left
   clicks only. On a tracker without outline marks, the right click keeps the browser's own menu.
-  Keyboard users reach outlines through the legend brush.
+  The same outline action MUST also be reachable by Shift+Enter or Shift+Space on a focused box
+  and by a long press (about half a second, without moving) on touch screens; a long press does
+  not also count as a tap, and the phone's own selection or callout menu does not open on boxes.
 - **FR-005b**: A tracker that fills from the start MUST offer "Fills stay inside the outline", off
   by default: with it on, a fill run never passes the last framed box.
 - **FR-006**: The setting MUST apply per copy and only to marks columns.
@@ -264,4 +268,5 @@ the storybook page shows a point tracker and a built-in pool as a tracker.
 - The count ignores level values; levels may stay unnamed (numbered) for pools.
 - Rating resources (single numbers such as Dark Side Resistance) keep their dots; only pools get
   the tracker look.
-- A plain tracker built by "Start from… → Points" is the reference look for the built-in pool.
+- A plain tracker built by "Start from… → Points" is the reference behavior for the built-in
+  pool; the pool takes the accent color by default (FR-011a), the points set keeps its own.

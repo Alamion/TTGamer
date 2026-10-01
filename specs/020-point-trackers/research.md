@@ -30,8 +30,16 @@ onMark(columnId, copyId, levelId, click: TrackerClick)
 ```
 
 - Left click with a brush → `{ brush }`; left click without one → `{ layer: model.readingLayer }`.
-- Right click (`contextmenu`) → `{ layer: 'outline' }`, only when the tracker has outline marks
-  and is enabled; then `preventDefault()`. Otherwise the event is left alone (browser menu).
+- The outline action → `{ layer: 'outline' }`, only when the tracker has outline marks and is
+  enabled. Each box takes it three ways:
+    - right click (`contextmenu`, also fired by the Menu key and Shift+F10): `preventDefault()`;
+    - Shift+Enter or Shift+Space (`keydown` on the box button): `preventDefault()`, so the
+      button's own click does not follow;
+    - touch long press: `pointerdown` with `pointerType === 'touch'` starts a 500 ms timer;
+      moving more than 10 px, `pointerup`, or `pointercancel` cancels it; when it fires, the
+      outline action runs and the `click` and `contextmenu` of that press are swallowed. Boxes
+      get `select-none` and `-webkit-touch-callout: none`.
+- Otherwise every event is left alone (browser menu, normal click).
 - One pure write per kind of tracker resolves the click:
     - a brush → that mark on its layer;
     - a layer → its first mark when the tracker fills from the start, else the next mark of that
@@ -42,7 +50,8 @@ description keeps own, built-in, and pool trackers on the same molecule contract
 on a built-in tracker never reaches it: built-in marks are fills only, so the native menu stays.
 
 **Alternatives considered**: a separate `onOutline` callback (duplicates the brush/cycle branch in
-every bound element); long-press for touch (out of scope; touch uses the brush).
+every bound element); relying on the browser's `contextmenu` for a long press (Android fires
+it, iOS Safari does not); Shift+F10 alone (not discoverable, and jsdom cannot prove it).
 
 ## R3 — Filling from the start
 
@@ -116,13 +125,14 @@ pool, and its display set has no `row`).
       `raisesMax` the maximum rises to `c`, else `c = min(c, max)` (the fill stops at the last
       framed box);
     - outline: `m = index + 1 === max ? index : index + 1`; `m = clamp(m, floor, limit)` with
-      `floor = max(minMax, raisesMax ? minCurrent : 0, 1)`; `current = min(current, m)`.
+      `floor = max(minMax, raisesMax ? minCurrent : 0)`; `current = min(current, m)`.
 - `PoolTracker` (in `declarative/`) wires `bound.update({ [dataKey]: next })`; the brush and the
   right click map to the layer of the mark.
 
 **Rationale**: mirrors the dots' clamps in `PrimitiveResourceBody` (`writeValue`), so a pool reads
 and writes the same on a dots page and a tracker page (SC-004). The maximum's floor keeps current
-≥ its minimum when lowering the maximum would otherwise force it lower.
+≥ its minimum when lowering the maximum would otherwise force it lower; with no minimum the
+maximum can reach 0, as with the dots.
 
 **Edge**: stored data above the maximum shows as stored (fills past the frame); the next write
 clamps (spec edge case).
@@ -158,6 +168,10 @@ mark's own color; the pool row sits with rating rows).
   a small `PoolTrackerSettings` (display Row / Strip / One line, the two marks' name, symbol, and
   color, legend, total) and the "Maximum at least" formula (`maxMinFrom`); the "Part" select and
   "Compact" are hidden.
+- Switching a node with `part: 'max'` to Tracker moves its `minFrom` to `maxMinFrom` (it limited
+  the maximum) and drops `part`; switching a tracker back to Dots moves `maxMinFrom` to `minFrom`
+  with `part: 'max'` when the node has no `minFrom`, else drops `maxMinFrom`. No formula changes
+  meaning silently.
 - Formula checks (`draft.ts`, `template.ts` refine, `templateReferences.ts`) treat `maxMinFrom`
   as they treat `minFrom`; `hooks.ts` resolves it into the page's formula state next to `minima`.
 

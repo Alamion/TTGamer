@@ -94,12 +94,16 @@ the first outline on every tracker; "Fills stay inside the outline".
       run; `fillInside` stops at the last framed box and is ignored without `fromStart` or on
       outline writes; stored gaps become contiguous up to the click; levels outside the shown
       length keep their entries; without `fromStart` a layer click cycles that layer (outline
-      cycle included) and a brush paints as in spec 019.
+      cycle included) and a brush paints as in spec 019; copies A and B run on their own
+      (FR-006); a run 1–8 shortened by `stepTrackerLength` to five levels reads 1–5 (edge case).
 - [ ] T009 [P] [US1] Component tests in `tests/sheet_manager/tracker-brush.test.tsx` (or a new
       `tracker-from-start.test.tsx`): right click on an own tracker with outlines puts the first
       outline run and calls `preventDefault`; right click without outline marks, on a read-only
       sheet, and on a built-in tracker is not prevented and writes nothing; the brush does not
-      apply to right clicks.
+      apply to right clicks. Shift+Enter and Shift+Space on a box do the outline action and no
+      click follows; plain Enter stays a left click. A touch long press (fake timers, pointer
+      events with `pointerType: 'touch'`) does the outline action once and swallows the click;
+      moving 10 px or releasing early cancels it; a mouse press never starts it.
 
 ### Implementation for User Story 1
 
@@ -112,10 +116,13 @@ the first outline on every tracker; "Fills stay inside the outline".
       brush.
 - [ ] T011 [US1] In `src/sheet_manager/features/sheet/declarative/TrackerFieldControl.tsx` route
       every `onMark` click through `markTracker`.
-- [ ] T012 [US1] In `src/sheet_manager/components/stat-fields/Tracker.tsx` give `MarkBox` an
-      `onContextMenu`: when `model.hasOutlines` and not disabled, `preventDefault()` and call
-      `onMark(…, { layer: 'outline' })`; otherwise do nothing (browser menu). Pass it from the
-      `box` helper (R2).
+- [ ] T012 [US1] In `src/sheet_manager/components/stat-fields/Tracker.tsx` give `MarkBox` the
+      outline action (R2): `onContextMenu`, `onKeyDown` for Shift+Enter/Shift+Space, and a touch
+      long press (a small `useLongPress` hook in the same file: 500 ms timer, 10 px move cancel,
+      swallow the press's click and contextmenu); boxes get `select-none` and
+      `[-webkit-touch-callout:none]`. All active only when `model.hasOutlines` and not disabled;
+      they call `onMark(…, { layer: 'outline' })`; otherwise events are left alone. Pass it from
+      the `box` helper.
 - [ ] T013 [US1] Editor: in `src/sheet_manager/components/dialogs/template-editor/TrackerSettings.tsx`
       "Reading the marks" add the "Marks fill from the start" toggle and, when on, the "Fills stay
       inside the outline" toggle, with hints; hidden for built-in trackers (`game` set). Make
@@ -163,12 +170,14 @@ the first outline on every tracker; "Fills stay inside the outline".
 - [ ] T019 [P] [US3] Rule tests in new `tests/sheet_manager/pool-tracker.test.ts` for `markPool`
       and `poolTrackerModel` (data-model "Pool"): fill run up and down; last box shortens; fill
       past the maximum stops at it; with `raisesMax` it raises the maximum; `minCurrent` floor;
-      outline up/down; outline floor `max(minMax, raisesMax ? minCurrent : 0, 1)`; lowering the
+      outline up/down; outline floor `max(minMax, raisesMax ? minCurrent : 0)`, and the
+      maximum reaching 0 with no minimum; lowering the
       maximum lowers current; `limit` cap; stored current above max shown as stored; model levels
       = limit, fills/outlines, locked counts, count total text, `hasOutlines: true`.
 - [ ] T020 [P] [US3] Component tests in new `tests/sheet_manager/pool-tracker.test.tsx` rendering
       a page with a pool primitive and `poolTracker`: Row look (label, 16px boxes, count "2 / 3");
-      left click writes current, right click and the outline brush write the maximum; locked boxes
+      left click writes current; right click, Shift+Enter, a touch long press, and the outline
+      brush write the maximum (keyboard-only path proven on the shipped Force Points node); locked boxes
       from `minFrom`/`maxMinFrom` say "locked" and do not lower the value; read-only disables the
       boxes; a dots node of the same binding on the same page shows the same values; a degraded
       `maxFrom` shows the clamp notice.
@@ -229,11 +238,15 @@ rules, override, readOnly })` returning a `TrackerModel` (one marks column, one 
       pool resources: the "Display" choice Dots / Tracker (`poolTracker: {}` or `undefined`); with
       Tracker hide "Part" and "Compact", show `PoolTrackerSettings`, relabel `minFrom` as "At least
       (current)", and add the "Maximum at least" field (`maxMinFrom`) with the
-      `limitsFromValues` help. Add `maxMinFrom` and `poolTracker` to the optional keys and the
-      formula check in `src/sheet_manager/components/dialogs/template-editor/draft.ts`.
+      `limitsFromValues` help. Switching a `part: 'max'` node to Tracker moves `minFrom` to
+      `maxMinFrom` and back (research R8). Add `maxMinFrom` and `poolTracker` to the optional
+      keys and the formula check in
+      `src/sheet_manager/components/dialogs/template-editor/draft.ts`.
 - [ ] T030 [P] [US4] Editor tests in `tests/sheet_manager/template-editor.test.tsx`: a pool
       resource offers Display, a rating resource does not; choosing Tracker shows the panel and
-      hides Part/Compact; a bad "Maximum at least" formula blocks saving like `minFrom`.
+      hides Part/Compact; a bad "Maximum at least" formula blocks saving like `minFrom`; a
+      `part: 'max'` node with `minFrom` switched to Tracker and back keeps its formula on the
+      maximum.
 - [ ] T031 [US4] Storybook in `src/sheet_manager/storybook/stories.ts`: an own point tracker
       (fill from the start, Count, legend); a "two fills, two outlines" tracker with fills inside
       the outline; a pool resource as Row next to a rating row, and one with a locked minimum.
@@ -245,7 +258,8 @@ rules, override, readOnly })` returning a `TrackerModel` (one marks column, one 
 ## Phase 7: Polish & Cross-Cutting
 
 - [ ] T032 [P] Guide `docs/template-editor/elements.mdx` (Trackers: fill from the start, fills
-      inside, Count, right click; Built-in page parts: pool display) and the Russian mirror under
+      inside, Count, the outline action by right click, Shift+Enter, and long press; Built-in
+      page parts: pool display) and the Russian mirror under
       `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/elements.mdx`.
 - [ ] T033 [P] Update `.agents/skills/sheet-templates/SKILL.md` (tracker click rules, run writes,
       count, pool tracker module and `maxMinFrom`) and `src/sheet_manager/AGENTS.md`.
