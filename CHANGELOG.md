@@ -9,6 +9,7 @@
 - **Outlines with a right click**: on every tracker with outline marks, a right click, Shift+Enter or Shift+Space on a box, or a long press on a phone puts the first outline mark, by the same rules as a click puts the first fill
 - **Pools as one tracker**: a pool resource (Force Points, Willpower) can be drawn as one row of boxes — the maximum framed, the current points filled, the count after them — in a row that sits with the rating dots; minimums from formulas lock their boxes in a darker shade, and the values stay the document's own
 - **Star Wars Force Points in one row**: the full Star Wars character sheet shows Force Points as one tracker instead of the "Max Force Points" and "Force Points" rows; the brief sheet keeps its numbers
+- **WoD 2e Willpower in one row**: the full WoD 2e character sheet shows Willpower as one tracker too; the brief sheet keeps its numbers
 - **Accent color for marks**: tracker marks can take the rating dots' color
 
 ## v3.17.0

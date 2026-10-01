@@ -236,6 +236,8 @@ the storybook page shows a point tracker and a built-in pool as a tracker.
   Points as one tracker in place of the "Max Force Points" and "Force Points" rows, keeping the
   maximum's Self-Control minimum; the brief sheet MUST keep its compact numbers. No stored data
   changes.
+- **FR-014a** (maintainer review, 2026-10-02): the shipped WoD 2e full sheet MUST show Willpower
+  as one tracker as well; its brief sheet keeps its compact numbers.
 
 **Quality and documentation**
 

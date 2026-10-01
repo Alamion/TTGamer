@@ -4,6 +4,7 @@ import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/dec
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
 import { starWarsWodDefaultTemplates } from '@site/src/sheet_manager/systems/star-wars-wod/defaultTemplates';
+import { wod2eTemplates } from '@site/src/sheet_manager/systems/wod2e/templates';
 import {
     CustomTemplateSchema,
     type TemplateNode,
@@ -231,5 +232,27 @@ describe('the shipped Star Wars sheets', () => {
             expect(node).toMatchObject({ compact: true });
             expect(node).not.toHaveProperty('poolTracker');
         }
+    });
+
+    it('draws WoD 2e Willpower as one tracker on the full sheet and keeps the brief compact', () => {
+        const willpower = (templateId: string) => {
+            const nodes: TemplateNode[] = [];
+            walkTemplateNodes(
+                wod2eTemplates.find(({ id }) => id === templateId)!.children,
+                (node) => {
+                    if (node.type === 'primitive' && node.bindingKey === 'resource:willpower') {
+                        nodes.push(node);
+                    }
+                }
+            );
+            return nodes;
+        };
+        expect(willpower('wod2e-sheet')).toEqual([
+            expect.objectContaining({
+                poolTracker: { display: 'row', legend: false, total: true },
+            }),
+        ]);
+        expect(willpower('wod2e-brief')).toEqual([expect.objectContaining({ compact: true })]);
+        expect(willpower('wod2e-brief')[0]).not.toHaveProperty('poolTracker');
     });
 });
