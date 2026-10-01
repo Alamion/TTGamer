@@ -5,6 +5,7 @@ import type {
     TrackerColumn,
     TrackerDisplay,
     TrackerField,
+    TrackerLayer,
     TrackerMarkKind,
 } from '../../../types/template';
 import type { TrackerCopyValue, TrackerValue } from '../../../types/templateValues';
@@ -12,10 +13,14 @@ import {
     copyLabel,
     coveredLevelIds,
     deepestMarked,
+    hiddenSlotEntries,
     isCopyOut,
+    kindsOfLayer,
+    layerMarks,
     layerSource,
     lengthChangeHidesMarks,
     nextMarkId,
+    readingLayer,
     remapMarks,
     visibleLevelIds,
 } from './tracker';
@@ -36,7 +41,10 @@ export interface TrackerModelCopy {
     label: string;
     /** A, B, C… in a repeatable column. */
     letter?: string;
+    /** Shown fill marks by level id (spec 019: the fill layer). */
     marks: Readonly<Record<string, string>>;
+    /** Shown outline marks by level id. */
+    outlines: Readonly<Record<string, string>>;
     texts: Readonly<Record<string, string>>;
     out: boolean;
     /** Value of the deepest marked covered level; `undefined` when none. */
@@ -66,6 +74,8 @@ export interface TrackerModel {
     columns: readonly TrackerModelColumn[];
     total: boolean;
     legend: boolean;
+    /** The layer the click cycle, the total, the marked level, and "out" read (spec 019 R5). */
+    readingLayer: TrackerLayer;
     /** Present when the reader can switch lengths. */
     length?: { shown: number; canShorten: boolean; canLengthen: boolean };
     /** Stored marks, notes, and copies the tracker no longer shows (spec FR-026a). */
@@ -92,20 +102,19 @@ export function countHiddenTrackerValues(
 ): number {
     if (!value) return 0;
     const levelIds = new Set(field.levels.map(({ id }) => id));
-    const kindIds = new Set(field.marks.map(({ id }) => id));
     const columns = new Map(field.columns.map((column) => [column.id, column]));
     let hidden = 0;
     for (const [columnId, copies] of Object.entries(value.columns)) {
         const column = columns.get(columnId);
         copies.forEach((copy, index) => {
-            const copyCount = countEntries(copy.marks) + countEntries(copy.texts);
+            const copyCount =
+                countEntries(copy.marks) + countEntries(copy.outlines) + countEntries(copy.texts);
             if (!column || index >= (column.copies?.max ?? 1)) {
                 hidden += Math.max(1, copyCount);
                 return;
             }
-            for (const [levelId, markId] of Object.entries(copy.marks ?? {})) {
-                if (!levelIds.has(levelId) || !kindIds.has(markId)) hidden += 1;
-            }
+            // Marks of either slot that neither layer shows: gone levels or kinds, or collisions.
+            hidden += hiddenSlotEntries(field.marks, copy, (levelId) => levelIds.has(levelId));
             for (const levelId of Object.keys(copy.texts ?? {})) {
                 if (!levelIds.has(levelId)) hidden += 1;
             }
@@ -131,6 +140,8 @@ export function ownTrackerModel(
 ): TrackerModel {
     const visible = shownLevels(field, value);
     const byId = new Map(field.levels.map((level) => [level.id, level]));
+    const reading = readingLayer(field.marks);
+    const readingKinds = kindsOfLayer(field.marks, reading);
     const columns = field.columns.map((column): TrackerModelColumn => {
         const covered = coveredLevelIds(column, visible);
         const copies = copiesOf(column, value);
@@ -144,24 +155,31 @@ export function ownTrackerModel(
             canAdd: !readOnly && repeatable && copies.length < (column.copies?.max ?? 1),
             canRemove: !readOnly && repeatable && copies.length > 1,
             copies: copies.map((copy, index) => {
-                const marks = copy.marks ?? {};
+                const marks = layerMarks(field.marks, copy, 'fill');
+                const outlines = layerMarks(field.marks, copy, 'outline');
+                const read = reading === 'fill' ? marks : outlines;
                 const deepest =
                     column.kind === 'marks'
-                        ? deepestMarked(field.marks, covered, marks)
+                        ? deepestMarked(readingKinds, covered, read)
                         : undefined;
                 return {
                     id: copy.id,
                     label: repeatable ? `${column.title} ${copyLabel(index)}`.trim() : column.title,
                     ...(repeatable ? { letter: copyLabel(index) } : {}),
                     marks,
+                    outlines,
                     texts: copy.texts ?? {},
                     out:
                         column.kind === 'marks' &&
                         field.out &&
-                        isCopyOut(field.marks, covered, marks),
+                        isCopyOut(readingKinds, covered, read),
                     total:
                         deepest === undefined ? undefined : byId.get(deepest)?.value || undefined,
-                    hasValues: countEntries(copy.marks) + countEntries(copy.texts) > 0,
+                    hasValues:
+                        countEntries(copy.marks) +
+                            countEntries(copy.outlines) +
+                            countEntries(copy.texts) >
+                        0,
                 };
             }),
         };
@@ -180,6 +198,7 @@ export function ownTrackerModel(
         columns,
         total: field.total,
         legend: field.legend,
+        readingLayer: reading,
         ...(field.lengths.length > 1
             ? {
                   length: {
@@ -240,7 +259,10 @@ function setOptional<K extends 'marks' | 'outlines' | 'texts'>(
     return next;
 }
 
-/** A box click: the next mark of the cycle, or empty after the last. */
+/**
+ * A box click: the next mark of the reading layer's cycle, or empty after the last; the other
+ * layer stays (spec 019 FR-012).
+ */
 export function toggleTrackerMark(
     field: Pick<TrackerField, 'columns' | 'marks'>,
     value: TrackerValue | undefined,
@@ -248,16 +270,40 @@ export function toggleTrackerMark(
     copyId: string,
     levelId: string
 ): TrackerValue {
+    const layer = readingLayer(field.marks);
+    const kinds = kindsOfLayer(field.marks, layer);
     return withCopy(field, value, columnId, copyId, (copy) => {
-        const next = nextMarkId(field.marks, copy.marks?.[levelId]);
-        return setOptional(
-            copy,
-            'marks',
-            next === undefined
-                ? withoutKey(copy.marks, levelId)
-                : { ...copy.marks, [levelId]: next }
-        );
+        const source = layerSource(field.marks, copy, layer, levelId);
+        const next = nextMarkId(kinds, source ? copy[source]?.[levelId] : undefined);
+        return writeLayer(field.marks, copy, layer, levelId, next);
     });
+}
+
+const slotOf = (layer: TrackerLayer) => (layer === 'fill' ? 'marks' : 'outlines');
+
+/**
+ * Sets (or clears) what one layer of a box shows. The mark it replaces is removed from wherever it
+ * was stored; a mark of the other layer that sits in this layer's slot (its layer changed since)
+ * moves to its own slot first, so writing one layer never loses the other.
+ */
+function writeLayer(
+    kinds: TrackerField['marks'],
+    copy: TrackerCopyValue,
+    layer: TrackerLayer,
+    levelId: string,
+    markId: string | undefined
+): TrackerCopyValue {
+    const other: TrackerLayer = layer === 'fill' ? 'outline' : 'fill';
+    const own = slotOf(layer);
+    let next = copy;
+    const source = layerSource(kinds, next, layer, levelId);
+    if (source) next = setOptional(next, source, withoutKey(next[source], levelId));
+    if (markId === undefined) return next;
+    if (layerSource(kinds, next, other, levelId) === own) {
+        const moved = next[own]![levelId]!;
+        next = setOptional(next, slotOf(other), { ...next[slotOf(other)], [levelId]: moved });
+    }
+    return setOptional(next, own, { ...next[own], [levelId]: markId });
 }
 
 /**
@@ -278,11 +324,13 @@ export function paintTrackerMark(
     return withCopy(field, value, columnId, copyId, (copy) => {
         const source = layerSource(field.marks, copy, kind.layer, levelId);
         const shown = source ? copy[source]?.[levelId] : undefined;
-        let next: TrackerCopyValue = copy;
-        if (source) next = setOptional(next, source, withoutKey(next[source], levelId));
-        if (shown === markId) return next;
-        const own = kind.layer === 'fill' ? 'marks' : 'outlines';
-        return setOptional(next, own, { ...next[own], [levelId]: markId });
+        return writeLayer(
+            field.marks,
+            copy,
+            kind.layer,
+            levelId,
+            shown === markId ? undefined : markId
+        );
     });
 }
 
@@ -524,6 +572,7 @@ export function builtInTrackerModel(input: BuiltInTrackerInput): TrackerModel {
                 label: lettered ? (copy.label ?? '') : input.gameColumnTitle,
                 ...(lettered && copy.label ? { letter: copy.label } : {}),
                 marks,
+                outlines: {},
                 texts: {},
                 out: input.members !== undefined && isCopyOut(input.marks, visible, marks),
                 total: totalOf(marks),
@@ -560,6 +609,7 @@ export function builtInTrackerModel(input: BuiltInTrackerInput): TrackerModel {
                             : column.title,
                     ...(member && lettered && member.label ? { letter: member.label } : {}),
                     marks,
+                    outlines: {},
                     texts: copy.texts ?? {},
                     out: false,
                     total:
@@ -586,6 +636,7 @@ export function builtInTrackerModel(input: BuiltInTrackerInput): TrackerModel {
         columns: [game, ...extras],
         total: input.total,
         legend: input.legend,
+        readingLayer: 'fill',
         ...(input.length ? { length: input.length } : {}),
         hidden: 0,
     };

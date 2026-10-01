@@ -270,7 +270,7 @@ describe('templates saved before one display setting', () => {
         seed(SW_CHARACTER);
         mount(page(SW_CHARACTER, [track('track:health', { compact: true })]));
         expect(screen.queryByRole('table')).toBeNull();
-        expect(screen.getByRole('button', { name: 'Hurt: empty' }).className).toContain('h-6');
+        expect(screen.getByRole('button', { name: 'Hurt: empty' }).className).toContain('h-5');
     });
 
     it('keeps a stored view, and draws a computed track as a strip by default', () => {

@@ -43,28 +43,81 @@ function fillLook(mark: Pick<Mark, 'fill'> | undefined): {
 }
 
 const BOX = 'grid shrink-0 place-items-center rounded border-2 font-mono font-bold leading-none';
+// Spec 019: boxes are smaller and further apart, so outline rings never touch.
 const BOX_SIZE = {
-    md: 'h-8 w-8 text-sm',
-    sm: 'h-6 w-6 text-xs',
-    xs: 'h-3.5 w-3.5 border',
+    md: 'h-[26px] w-[26px] text-xs',
+    sm: 'h-5 w-5 text-[11px]',
+    xs: 'h-3.5 w-3.5 border text-[9px]',
 } as const;
 
-/** A mark's filled square, symbol centered; the preview in legends and the editor. */
+type BoxSize = keyof typeof BOX_SIZE;
+
+/** The outline layer: a ring outside the box with a see-through gap (spec 019 R7). */
+const OUTLINE_SIZE: Record<BoxSize, string> = {
+    md: 'outline outline-[2.5px] outline-offset-[1.5px]',
+    sm: 'outline outline-2 outline-offset-1',
+    xs: 'outline outline-[1.5px] outline-offset-1',
+};
+
+const OUTLINE_CLASSES: Record<TrackerPaletteFill, string> = {
+    secondary: 'outline-secondary',
+    error: 'outline-error',
+    tertiary: 'outline-tertiary',
+    success: 'outline-success',
+    text: 'outline-textPrimary',
+};
+
+const SYMBOL_CLASSES: Record<TrackerPaletteFill, string> = {
+    secondary: 'text-secondary',
+    error: 'text-error',
+    tertiary: 'text-tertiary',
+    success: 'text-success',
+    text: 'text-textPrimary',
+};
+
+/** Classes, style, and symbol of a box holding an optional fill and an optional outline. */
+function boxLook(
+    fill: Pick<Mark, 'fill' | 'symbol'> | undefined,
+    outline: Pick<Mark, 'fill' | 'symbol'> | undefined,
+    size: BoxSize
+): { className: string; style?: CSSProperties; symbol: string } {
+    const base = fillLook(fill);
+    if (!outline) return { ...base, symbol: fill?.symbol ?? '' };
+    const palette = isPaletteFill(outline.fill);
+    return {
+        className: clsx(
+            base.className,
+            OUTLINE_SIZE[size],
+            palette && OUTLINE_CLASSES[outline.fill as TrackerPaletteFill],
+            // An outline's symbol shows only on a box without a fill, in the outline's color.
+            !fill && palette && SYMBOL_CLASSES[outline.fill as TrackerPaletteFill]
+        ),
+        style: {
+            ...base.style,
+            ...(palette ? {} : { outlineColor: outline.fill }),
+            ...(!fill && !palette ? { color: outline.fill } : {}),
+        },
+        symbol: fill ? fill.symbol : outline.symbol,
+    };
+}
+
+/** A mark as it looks in a box, symbol centered; the preview in legends and the editor. */
 export function MarkSwatch({
     mark,
     size = 'sm',
 }: {
-    mark: Pick<Mark, 'fill' | 'symbol'>;
-    size?: keyof typeof BOX_SIZE;
+    mark: Pick<Mark, 'fill' | 'symbol'> & { layer?: Mark['layer'] };
+    size?: BoxSize;
 }) {
-    const look = fillLook(mark);
+    const look =
+        mark.layer === 'outline' ? boxLook(undefined, mark, size) : boxLook(mark, undefined, size);
     return (
         <span
             aria-hidden="true"
             className={clsx(BOX, BOX_SIZE[size], look.className)}
             style={look.style}
         >
-            {mark.symbol}
+            {look.symbol}
         </span>
     );
 }
@@ -73,38 +126,51 @@ function MarkBox({
     disabled,
     label,
     title,
-    mark,
+    fill,
+    outline,
     onToggle,
     size,
 }: {
     disabled: boolean;
     label: string;
     title: string;
-    mark: Mark | undefined;
+    fill: Mark | undefined;
+    outline: Mark | undefined;
     onToggle: () => void;
     size: 'sm' | 'md';
 }) {
-    const look = fillLook(mark);
+    const look = boxLook(fill, outline, size);
+    const text = messages.tracker;
     return (
         <button
             type="button"
             disabled={disabled}
             onClick={onToggle}
-            aria-label={translate(messages.tracker.box, {
-                level: label,
-                mark: mark ? mark.name : translate(messages.tracker.empty),
-            })}
+            aria-label={
+                fill && outline
+                    ? translate(text.boxBoth, {
+                          level: label,
+                          fill: fill.name,
+                          outline: outline.name,
+                      })
+                    : translate(text.box, {
+                          level: label,
+                          mark: (fill ?? outline)?.name ?? translate(text.empty),
+                      })
+            }
             title={title}
             className={clsx(
                 BOX,
                 BOX_SIZE[size],
-                'transition-colors disabled:opacity-70',
+                'transition-colors focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-70',
+                // The outline layer owns `outline`; plain boxes drop the browser's focus outline.
+                !outline && 'focus-visible:outline-none',
                 look.className,
-                !mark && !disabled && 'hover:border-primary'
+                !fill && !disabled && 'hover:border-primary'
             )}
             style={look.style}
         >
-            {mark?.symbol}
+            {look.symbol}
         </button>
     );
 }
@@ -201,6 +267,9 @@ export function Tracker({
     const levelTitle = (level: TrackerModel['levels'][number]) =>
         model.valueColumn.show && level.value ? `${level.name} (${level.value})` : level.name;
     const size = model.display === 'line' ? 'sm' : 'md';
+    // The layer the total and the marked level name read (spec 019 FR-016).
+    const readingOf = (copy: TrackerModelCopy) =>
+        model.readingLayer === 'fill' ? copy.marks : copy.outlines;
 
     const requestRemove = (column: TrackerModelColumn, copy: TrackerModelCopy) => {
         if (copy.hasValues) setPending({ type: 'remove', column, copy });
@@ -219,7 +288,8 @@ export function Tracker({
                 disabled={disabled}
                 label={wording.boxLabel(level.name, column, copy)}
                 title={levelTitle(level)}
-                mark={markById.get(copy.marks[levelId] ?? '')}
+                fill={markById.get(copy.marks[levelId] ?? '')}
+                outline={markById.get(copy.outlines[levelId] ?? '')}
                 onToggle={() => onMark(column.id, copy.id, levelId, activeBrush?.id)}
                 size={size}
             />
@@ -329,15 +399,15 @@ export function Tracker({
                             key={level.id}
                             role="row"
                             style={style}
-                            className={clsx(row, 'border-t border-border/60 py-1.5')}
+                            className={clsx(row, 'border-t border-border/60 py-2')}
                         >
                             <span
                                 role="rowheader"
                                 className={clsx(
                                     'font-medium',
                                     single &&
-                                        single.copy.marks[level.id] &&
-                                        markById.has(single.copy.marks[level.id]!)
+                                        readingOf(single.copy)[level.id] &&
+                                        markById.has(readingOf(single.copy)[level.id]!)
                                         ? 'text-error'
                                         : 'text-textPrimary'
                                 )}
@@ -462,7 +532,10 @@ export function Tracker({
                                 {ownName ? model.label : name}
                             </span>
                             <span
-                                className="flex flex-wrap items-center gap-1"
+                                className={clsx(
+                                    'flex flex-wrap items-center',
+                                    size === 'sm' ? 'gap-2.5' : 'gap-3'
+                                )}
                                 role="group"
                                 aria-label={ownName ? model.label : name}
                             >
@@ -491,7 +564,7 @@ export function Tracker({
             .filter((column) => column.kind === 'text')
             .map((column) => column.title);
         return (
-            <div className="grid gap-1">
+            <div className="grid gap-2">
                 {lines}
                 {textTitles.length > 0 && model.display === 'strip' && (
                     <p className="text-xs text-textSecondary">
@@ -504,6 +577,7 @@ export function Tracker({
         );
     }
 
+    const bothLayers = new Set(model.marks.map(({ layer }) => layer)).size > 1;
     const legend = legendShown ? (
         <div className="grid gap-1">
             <ul className="m-0 flex list-none flex-wrap gap-x-1.5 gap-y-1 p-0 text-xs text-textSecondary">
@@ -512,13 +586,23 @@ export function Tracker({
                         <>
                             <MarkSwatch mark={mark} />
                             {mark.name}
+                            {bothLayers && ' '}
+                            {bothLayers && (
+                                <span className="text-[10px] opacity-80">
+                                    {translate(
+                                        mark.layer === 'fill'
+                                            ? messages.tracker.layerFill
+                                            : messages.tracker.layerOutline
+                                    )}
+                                </span>
+                            )}
                         </>
                     );
                     const pressed = activeBrush?.id === mark.id;
                     return (
                         <li key={mark.id}>
                             {disabled ? (
-                                <span className="inline-flex items-center gap-1.5 border border-transparent px-1.5 py-1">
+                                <span className="inline-flex items-center gap-1.5 border border-transparent px-2 py-1.5">
                                     {content}
                                 </span>
                             ) : (
@@ -537,7 +621,7 @@ export function Tracker({
                                         )
                                     }
                                     className={clsx(
-                                        'inline-flex items-center gap-1.5 rounded-md border px-1.5 py-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                                        'inline-flex items-center gap-1.5 rounded-md border px-2 py-1.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
                                         pressed
                                             ? 'border-warning text-textPrimary ring-1 ring-warning'
                                             : 'border-border hover:border-borderMoreContrast hover:text-textPrimary'

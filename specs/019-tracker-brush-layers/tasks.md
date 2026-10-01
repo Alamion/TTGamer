@@ -123,24 +123,24 @@ Commit.
 
 ### Tests
 
-- [ ] T016 [P] [US2] Extend `tests/sheet_manager/tracker-rules.test.ts` (or a model block in
+- [x] T016 [P] [US2] Extend `tests/sheet_manager/tracker-rules.test.ts` (or a model block in
       it) with the data-model transition table: cycling keeps the outline; outline-only
       trackers cycle outlines; brush on a fill or outline changes only its layer; a brush on a
       shown other-slot mark replaces it and clears the other slot.
-- [ ] T017 [P] [US2] Extend `tests/sheet_manager/tracker-field.test.tsx`: a Force Points field
+- [x] T017 [P] [US2] Extend `tests/sheet_manager/tracker-field.test.tsx`: a Force Points field
       (fill "Point", outline "Maximum") — brush outlines on boxes 1–5 and fills on 1–2; stored
       value has `marks` and `outlines`; box names read "1: Point, Maximum" / "3: Maximum"; the
       outlined box carries the outline color style; the legend names layers when both exist.
 
 ### Implementation
 
-- [ ] T018 [US2] In `src/sheet_manager/features/sheet/data/trackerModel.ts`: `TrackerModel.marks`
+- [x] T018 [US2] In `src/sheet_manager/features/sheet/data/trackerModel.ts`: `TrackerModel.marks`
       gains `layer`; `TrackerModelCopy` gains `outlines`; `ownTrackerModel` builds `marks`
       (reading layer) and `outlines` through `layerMarks`; `hasValues` counts both slots;
       `toggleTrackerMark` cycles the reading layer's kinds and writes its slot;
       `paintTrackerMark` writes the brush mark's layer slot and removes a replaced other-slot mark
       (R3). `builtInTrackerModel` sets `layer: 'fill'` and empty `outlines`.
-- [ ] T019 [US2] In `src/sheet_manager/components/stat-fields/Tracker.tsx` (R7, contract
+- [x] T019 [US2] In `src/sheet_manager/components/stat-fields/Tracker.tsx` (R7, contract
       "boxes"): `MarkBox` takes `fill` and `outline` marks; sizes md `h-[26px] w-[26px]`, sm
       `h-5 w-5`; strip gap 12px, table rows `py-2`; outline via `outline` + `outline-offset`
       (md 2.5px/1.5px, sm 2px/1px; palette colors through classes or `outlineColor` style, own
@@ -149,14 +149,14 @@ Commit.
       draws outline marks as an outlined empty box; legend shows the layer word when both layers
       exist. Update the one-line size check (`h-6` → `h-5`) in
       `tests/sheet_manager/tracker-builtin.test.tsx`.
-- [ ] T020 [P] [US2] In `src/sheet_manager/features/sheet/data/trackerDefaults.ts`: `markSet`
+- [x] T020 [P] [US2] In `src/sheet_manager/features/sheet/data/trackerDefaults.ts`: `markSet`
       gains `'points'` (fill "Point" amber "●", outline "Maximum" amber no symbol) and the
       `MarkSetId` union.
-- [ ] T021 [US2] In `src/sheet_manager/components/dialogs/template-editor/TrackerSettings.tsx`
+- [x] T021 [US2] In `src/sheet_manager/components/dialogs/template-editor/TrackerSettings.tsx`
       (R8, contract "Editor: marks"): a Fill/Outline switch per mark (`aria-pressed`, label
       `markLayer`), disabled with `game` and the `layerLocked` hint; "Start from…" option
       `points`; the new marks hint; the legend toggle hint; new marks default to fill.
-- [ ] T022 [US2] Extend `tests/sheet_manager/template-editor.test.tsx` (tracker settings block):
+- [x] T022 [US2] Extend `tests/sheet_manager/template-editor.test.tsx` (tracker settings block):
       switching mark 2 to Outline saves `layer: 'outline'`; "Start from… Points" gives one fill
       and one outline; a built-in tracker shows the layer disabled.
 
@@ -193,7 +193,7 @@ Commit.
 - [ ] T027 [US3] In `src/sheet_manager/features/sheet/data/trackerChanges.ts`: `TrackerShape`
       keeps the own tracker's marks with layers; `shownValues` counts resolved fills and outlines
       per copy instead of raw `marks` entries.
-- [ ] T028 [US3] In `src/sheet_manager/components/stat-fields/Tracker.tsx`: the marked level name
+- [x] T028 [US3] In `src/sheet_manager/components/stat-fields/Tracker.tsx`: the marked level name
       in a single-copy table reads the reading layer only (unchanged for fill trackers).
 
 **Checkpoint**: totals, lengths, hidden counts, and the save report are layer-aware. Commit.

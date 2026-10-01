@@ -14,6 +14,10 @@ import {
     visibleLevelIds,
 } from '@site/src/sheet_manager/features/sheet/data/tracker';
 import {
+    paintTrackerMark,
+    toggleTrackerMark,
+} from '@site/src/sheet_manager/features/sheet/data/trackerModel';
+import {
     isDefeated,
     memberPenalty,
     paintMark,
@@ -233,5 +237,71 @@ describe('the brush on member tracks (spec 019)', () => {
         expect(paintMark(marks, 0, 'cross')).toEqual(['cross', 'empty', 'cross']);
         expect(paintMark(marks, 2, 'cross')).toEqual(['slash', 'empty', 'empty']);
         expect(marks).toEqual(['slash', 'empty', 'cross']);
+    });
+});
+
+describe('box writes on two layers (spec 019, data-model transitions)', () => {
+    const POINT = { id: 'point', name: 'Point', symbol: '●', fill: 'secondary', layer: 'fill' };
+    const HEAVY = { id: 'heavy', name: 'Heavy', symbol: '×', fill: 'error', layer: 'fill' };
+    const MAX = { id: 'max', name: 'Max', symbol: '', fill: 'secondary', layer: 'outline' };
+    const BLEED = { id: 'bleed', name: 'Bleed', symbol: '!', fill: 'error', layer: 'outline' };
+    const field = (...marks: (typeof POINT)[]) =>
+        ({ columns: [{ id: 'c', kind: 'marks', title: '' }], marks }) as never;
+    const value = (copy: Record<string, unknown>) =>
+        ({ tracker: 1, columns: { c: [{ id: 'a', ...copy }] } }) as never;
+    const copyOf = (next: { columns: Record<string, unknown[]> }) => next.columns.c![0];
+
+    it('cycles the fills and keeps the outline', () => {
+        const f = field(POINT, HEAVY, MAX);
+        let v = value({ outlines: { l1: 'max' } });
+        const steps: unknown[] = [];
+        for (let i = 0; i < 3; i += 1) {
+            v = toggleTrackerMark(f, v, 'c', 'a', 'l1') as never;
+            steps.push(copyOf(v as never));
+        }
+        expect(steps).toEqual([
+            { id: 'a', outlines: { l1: 'max' }, marks: { l1: 'point' } },
+            { id: 'a', outlines: { l1: 'max' }, marks: { l1: 'heavy' } },
+            { id: 'a', outlines: { l1: 'max' } },
+        ]);
+    });
+
+    it('cycles the outlines of a tracker with no fills', () => {
+        const f = field(MAX, BLEED);
+        const once = toggleTrackerMark(f, undefined, 'c', 'a', 'l1');
+        const twice = toggleTrackerMark(f, once, 'c', 'a', 'l1');
+        expect(copyOf(once as never)).toEqual({ id: 'a', outlines: { l1: 'max' } });
+        expect(copyOf(twice as never)).toEqual({ id: 'a', outlines: { l1: 'bleed' } });
+    });
+
+    it('paints only the brush layer, and clears it on the same mark', () => {
+        const f = field(POINT, HEAVY, MAX, BLEED);
+        const v = value({ marks: { l1: 'point' }, outlines: { l1: 'max' } });
+        expect(copyOf(paintTrackerMark(f, v, 'c', 'a', 'l1', 'bleed') as never)).toEqual({
+            id: 'a',
+            marks: { l1: 'point' },
+            outlines: { l1: 'bleed' },
+        });
+        expect(copyOf(paintTrackerMark(f, v, 'c', 'a', 'l1', 'heavy') as never)).toEqual({
+            id: 'a',
+            marks: { l1: 'heavy' },
+            outlines: { l1: 'max' },
+        });
+        expect(copyOf(paintTrackerMark(f, v, 'c', 'a', 'l1', 'max') as never)).toEqual({
+            id: 'a',
+            marks: { l1: 'point' },
+        });
+    });
+
+    it('replaces a mark shown from the other slot and never loses the other layer', () => {
+        // "max" was stored as a fill before the author made it an outline.
+        const f = field(POINT, MAX);
+        const v = value({ marks: { l1: 'max' } });
+        expect(copyOf(paintTrackerMark(f, v, 'c', 'a', 'l1', 'max') as never)).toEqual({ id: 'a' });
+        expect(copyOf(toggleTrackerMark(f, v, 'c', 'a', 'l1') as never)).toEqual({
+            id: 'a',
+            marks: { l1: 'point' },
+            outlines: { l1: 'max' },
+        });
     });
 });
