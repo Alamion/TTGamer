@@ -141,19 +141,19 @@ body: new URLSearchParams({ text: content }) }`, anchor `matrix`, placeholder
 **Independent test**: render the settings, enter a Discord address, switch to Matrix (field
 empty, Matrix wording), enter one, switch back ten times → both addresses intact (SC-004).
 
-- [ ] T014 [US2] Strings in `translations/source/{en,ru}/ui/dice/sharing.yaml`:
+- [x] T014 [US2] Strings in `translations/source/{en,ru}/ui/dice/sharing.yaml`:
       `enableDiscordWebhook` → "Share rolls" (key kept), `service` "Service", `webhookUrl`
       "{service} webhook URL", `webhookValid` "Valid {service} webhook", `webhookInvalid`
       "Invalid {service} webhook URL", `setupGuide` "How to set up sharing"; placeholders come from the
       registry (`service.placeholder`), with an exception reason in
       `translations/i18n-exceptions.yaml` if the verifier flags them. Run
       `yarn build:translations`.
-- [ ] T015 [US2] In `src/dice_roller/components/DiceRollerSettingsModal.tsx`: a labelled
+- [x] T015 [US2] In `src/dice_roller/components/DiceRollerSettingsModal.tsx`: a labelled
       `<select>` of `SHARING_SERVICES` (value `settings.sharingService`, `updateSettings`), the
       `SecretField` bound to `useSessionStorageState(service.addressKey, '')` with the service's
       label, placeholder, and validity hint, and a link "How to set up sharing" to
       `/docs/roll-sharing#<guideAnchor>` (base URL applied).
-- [ ] T016 [US2] Create `tests/dice_roller/components/roll-sharing-ui.test.tsx` (jsdom):
+- [x] T016 [US2] Create `tests/dice_roller/components/roll-sharing-ui.test.tsx` (jsdom):
       Discord default with an existing `discord_webhook_url` shown (US2-6); switch to Matrix →
       empty field, Matrix label; Discord address refused under Matrix; addresses survive ten
       switches (SC-004); the guide link targets the chosen service's anchor.
@@ -169,17 +169,17 @@ empty, Matrix wording), enter one, switch back ten times → both addresses inta
 **Independent test**: valid Matrix address → button labelled with Matrix and drawing the
 Matrix path; switch to Discord → Discord.
 
-- [ ] T017 [P] [US3] Create `src/integrations/roll-sharing/logos.tsx`: `ServiceLogo({ service,
+- [x] T017 [P] [US3] Create `src/integrations/roll-sharing/logos.tsx`: `ServiceLogo({ service,
 active })` returning the `<path>` for Discord (from `static/img/discord-icon.svg`,
       viewBox `0 -28.5 256 256`) or Matrix (from `static/img/matrix-icon.svg`, viewBox
       `0 0 24 24`) with fill `service.color` when active, `currentColor` + `opacity-40` when
       not; export the viewBox per service; export from `index.ts`.
-- [ ] T018 [US3] In `src/dice_roller/components/dice_pool/RollControls.tsx`: read the active
+- [x] T018 [US3] In `src/dice_roller/components/dice_pool/RollControls.tsx`: read the active
       service and its address, show the button when valid, draw the anonymize ring scaled to
       the service viewBox and `ServiceLogo`; `aria-label` and `title` from
       `uiMessages.dice.sharing.toggleTitle` with `{service}` (rename `discordToggleTitle` in
       `sharing.yaml` en/ru; run `yarn build:translations`).
-- [ ] T019 [US3] Add button tests to `tests/dice_roller/components/roll-sharing-ui.test.tsx`:
+- [x] T019 [US3] Add button tests to `tests/dice_roller/components/roll-sharing-ui.test.tsx`:
       hidden without a valid address; Matrix label and logo with a Matrix address; left click
       toggles `enableDiscordWebhook`, right click toggles anonymize, for Matrix.
 

@@ -1,10 +1,12 @@
 import { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { SHARING_SERVICES } from '@site/src/integrations/roll-sharing';
+import { SHARING_SERVICES, sharingServiceOf } from '@site/src/integrations/roll-sharing';
 import { SecretField } from '@site/src/shared/components/SecretField';
 import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
+import { useSitePath } from '@site/src/shared/hooks/useSitePath';
 import { Settings as SettingsIcon, X } from 'lucide-react';
+import { useId } from 'react';
 
 import { useDiceRollerStore } from '../store/diceRollerStore';
 
@@ -17,9 +19,12 @@ export default function DiceRollerSettingsModal() {
     const settings = useDiceRollerStore((s) => s.settings);
     const updateSettings = useDiceRollerStore((s) => s.updateSettings);
 
-    const service = SHARING_SERVICES[0]!;
+    const service = sharingServiceOf(settings.sharingService);
     const [webhookUrl, setWebhookUrl] = useSessionStorageState(service.addressKey, '');
     const isWebhookValid = webhookUrl.length > 0 && service.isValidAddress(webhookUrl);
+    const serviceSelectId = useId();
+    const sitePath = useSitePath();
+    const serviceName = { service: service.name };
 
     return (
         <Dialog.Root>
@@ -272,21 +277,59 @@ export default function DiceRollerSettingsModal() {
                             </span>
                         </label>
 
-                        <div className="border-t border-border pt-4">
+                        <div className="flex flex-col gap-3 border-t border-border pt-4">
+                            <div className="flex flex-col gap-1">
+                                <label
+                                    htmlFor={serviceSelectId}
+                                    className="text-xs text-textSecondary"
+                                >
+                                    {translate(uiMessages.dice.sharing.service)}
+                                </label>
+                                <select
+                                    id={serviceSelectId}
+                                    value={service.id}
+                                    onChange={(e) =>
+                                        updateSettings({
+                                            sharingService: sharingServiceOf(e.target.value).id,
+                                        })
+                                    }
+                                    className="px-3 py-2 text-sm rounded-lg border border-border
+                                        bg-bgSurface text-textPrimary focus:outline-none
+                                        focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                                >
+                                    {SHARING_SERVICES.map((entry) => (
+                                        <option key={entry.id} value={entry.id}>
+                                            {entry.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                             <SecretField
                                 value={webhookUrl}
                                 onChange={setWebhookUrl}
-                                placeholder="https://discord.com/api/webhooks/..."
-                                label={translate(uiMessages.dice.sharing.webhookUrl)}
+                                placeholder={service.placeholder}
+                                label={translate(uiMessages.dice.sharing.webhookUrl, serviceName)}
                                 validationMessage={
                                     webhookUrl.length > 0
                                         ? isWebhookValid
-                                            ? translate(uiMessages.dice.sharing.webhookValid)
-                                            : translate(uiMessages.dice.sharing.webhookInvalid)
+                                            ? translate(
+                                                  uiMessages.dice.sharing.webhookValid,
+                                                  serviceName
+                                              )
+                                            : translate(
+                                                  uiMessages.dice.sharing.webhookInvalid,
+                                                  serviceName
+                                              )
                                         : undefined
                                 }
                                 isValid={isWebhookValid}
                             />
+                            <a
+                                href={sitePath(`/docs/roll-sharing#${service.guideAnchor}`)}
+                                className="text-xs text-primary underline"
+                            >
+                                {translate(uiMessages.dice.sharing.setupGuide)}
+                            </a>
                         </div>
                     </div>
                 </Dialog.Content>

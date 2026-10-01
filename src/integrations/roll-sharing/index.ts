@@ -1,3 +1,4 @@
+export { ServiceLogo } from './logos';
 export type { RollShareReadingLines } from './message';
 export { buildRollShareMessage } from './message';
 export type { RollShareResult } from './queue';

@@ -18,8 +18,9 @@ function buildRollShareMessage(result: RollResult, reading?: RollShareReadingLin
 function queueRollShare(text: string, target: { service: SharingServiceId; address: string })
     : Promise<RollShareResult>;   // invalid address → { ok: false, reason: 'invalid-webhook' }
 
-function ServiceLogo(props: { service: SharingServiceId; active: boolean }): JSX.Element;
-// <path> elements only; the caller owns the <svg> and the anonymize ring
+function ServiceLogo(props: { service: SharingServiceId; active: boolean; ringed: boolean;
+    size?: number }): JSX.Element;
+// the whole <svg>: the service mark and the anonymize ring, scaled to the mark's viewBox
 ```
 
 Guarantees:
