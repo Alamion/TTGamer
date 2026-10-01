@@ -91,7 +91,7 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [ ] ⬜ **T-015 — Multi-system dice pool tabs** (none) — players keep separate dice pools per game system with favorites, once roll-session isolation and mixed-roll orchestrator tests are complete. (task for roadmap path `multi-system-sheets`)
 - [ ] ⬜ **T-016 — Discord webhook backend proxy** (a backend must exist) — roll sharing stops exposing the webhook secret to the browser: an authenticated backend proxy holds it server-side; not a current release blocker.
     - Frontend already complete: bounded messages, mention suppression, coalescing, client rate limiting, structured delivery errors, user-visible feedback.
-- [ ] ⬜ **T-087 — Matrix roll sharing through hookshot** (none) — groups on Matrix get roll results in their room the way Discord groups do: the user pastes a matrix-hookshot generic webhook URL set up by the homeserver admin, and the existing queue, coalescing, and rate limiting deliver to it.
+- [ ] 🟡 **T-087 — Matrix roll sharing through hookshot** (none) — groups on Matrix get roll results in their room the way Discord groups do: the user pastes a matrix-hookshot generic webhook URL set up by the homeserver admin, and the existing queue, coalescing, and rate limiting deliver to it.
     - Delivery: the target is picked from the URL (Discord pattern vs. any other `https://` URL as hookshot). Hookshot reads `text` (Markdown, rendered to HTML), optional `html` and `username`; without `text` it posts the raw payload as a JSON dump, so the body field differs per target.
     - CORS: hookshot sends no `Access-Control-*` headers and rejects `OPTIONS`. Send `application/x-www-form-urlencoded` (no preflight); the admin adds `Access-Control-Allow-Origin` for the site origin (and `http://localhost:3000`) on the webhook path at the reverse proxy, otherwise delivery fails or succeeds with a false `network` error. `mode: 'no-cors'` is a blind-send fallback only.
     - Hookshot URLs follow the admin's `urlPrefix`, so validation is only "an `https://` URL"; the Discord pattern stays to identify Discord.
@@ -215,6 +215,8 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 
 ### Verification Backlog
 
+- [ ] ⬜ **T-088 — Major dependency upgrades** (none) — maintainers start the backend work on current majors, one migration at a time with `yarn verify:full` after each: Tailwind 4 (CSS-first config and the Docusaurus integration), Zod 4 (schema and error API across every schema), TypeScript 7 (with typescript-eslint support), Vitest 5 with jsdom 30 and coverage, knip 6, lucide-react 1 (renamed icons), @tanstack/react-table 9, three 0.186 with its types (3D dice), and eslint-plugin-simple-import-sort 14 (may re-sort imports project-wide).
+    - 2026-10-02: Docusaurus 3.10.2 and every in-range update are already in (`2d503e7`); only the majors above remain.
 - [ ] ⬜ **T-028 — Boundary check** (the integration-module convention settles) — module boundaries are enforced automatically: `shared` cannot import feature modules and direct feature-to-feature imports are flagged.
 - [ ] ⬜ **T-029 — Bundle-budget report** (T-013) — bundle-size regressions are caught against meaningful per-chunk limits once the 3D renderer is lazy-loaded.
 - [x] ✅ **T-030 — Dead-code/export audit** (none) — unused exports and dead code surface with explicit MDX and Docusaurus entry-point configuration; dependency removal stays human-reviewed.
