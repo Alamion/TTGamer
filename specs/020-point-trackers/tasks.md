@@ -282,7 +282,7 @@ rules, override, readOnly })` returning a `TrackerModel` (one marks column, one 
 - [x] T040 View mode (found during review, not spec 020): a user setting's own page hides the
       engine's views in `src/sheet_manager/features/sheet/shell/ViewModeSelect.tsx`
       (`selectableViews`); `tests/sheet_manager/view-mode-select.test.tsx`.
-- [ ] T036 Walk `quickstart.md` on the dev server; record results and refinements in research.md
+- [x] T036 Walk `quickstart.md` on the dev server; record results and refinements in research.md
       "Implementation notes".
 
 ---
