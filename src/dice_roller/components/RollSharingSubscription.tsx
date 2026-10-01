@@ -1,13 +1,12 @@
 import { translate } from '@docusaurus/Translate';
 import { type UiMessageDescriptor, uiMessages } from '@site/src/i18n/generated/uiMessages';
 import {
-    buildDiscordHistoryMessage,
-    type DiscordDeliveryResult,
-    type DiscordReadingLines,
-    isValidDiscordWebhook,
-    queueDiscordMessage,
-    SESSION_STORAGE_KEY,
-} from '@site/src/integrations/discord';
+    buildRollShareMessage,
+    queueRollShare,
+    type RollShareReadingLines,
+    type RollShareResult,
+    SHARING_SERVICES,
+} from '@site/src/integrations/roll-sharing';
 import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
@@ -18,9 +17,9 @@ import { specialDiceValues } from '../dice-logic/utils';
 import { useDiceRollerStore } from '../store/diceRollerStore';
 import { verdictText } from './verdictText';
 
-type DeliveryFailureReason = Extract<DiscordDeliveryResult, { ok: false }>['reason'];
+type DeliveryFailureReason = Extract<RollShareResult, { ok: false }>['reason'];
 
-/** User-facing message per delivery failure code; the codes stay in the Discord integration. */
+/** User-facing message per delivery failure code; the codes stay in the roll-sharing integration. */
 const DELIVERY_ERROR_MESSAGES: Record<
     Exclude<DeliveryFailureReason, 'rate-limited'>,
     UiMessageDescriptor
@@ -30,7 +29,7 @@ const DELIVERY_ERROR_MESSAGES: Record<
     'invalid-webhook': uiMessages.integrations.discord.errors.rejected,
 };
 
-function readingLines(result: RollResult): DiscordReadingLines | undefined {
+function readingLines(result: RollResult): RollShareReadingLines | undefined {
     const values = result.diceGroups ? specialDiceValues(result) : [];
     const outcomes = result.reading?.outcomes.map((outcome) => translate(outcome.title)) ?? [];
     if (values.length === 0 && outcomes.length === 0 && !result.verdict) return undefined;
@@ -50,41 +49,47 @@ function readingLines(result: RollResult): DiscordReadingLines | undefined {
     };
 }
 
-export default function DiscordWebhookSubscription() {
+export default function RollSharingSubscription() {
     const settings = useDiceRollerStore((s) => s.settings);
-    const [webhookUrl] = useSessionStorageState(SESSION_STORAGE_KEY, '');
+    const service = SHARING_SERVICES[0]!;
+    const [webhookUrl] = useSessionStorageState(service.addressKey, '');
 
     const enableDiscordWebhook = settings.enableDiscordWebhook;
     const includeRollContext = settings.includeRollContext;
 
     useEffect(() => {
-        if (!webhookUrl || !isValidDiscordWebhook(webhookUrl) || !enableDiscordWebhook) {
+        if (!webhookUrl || !service.isValidAddress(webhookUrl) || !enableDiscordWebhook) {
             return;
         }
 
         const unsub = onRollResult((result: RollResult) => {
             const reading = readingLines(result);
             const message = includeRollContext
-                ? buildDiscordHistoryMessage(result, reading)
-                : buildDiscordHistoryMessage({ ...result, details: '', formatted: '' }, reading);
-            queueDiscordMessage(message, webhookUrl).then((delivery) => {
-                if (delivery.ok) return;
-                if (delivery.reason === 'rate-limited') {
-                    toast.error(
-                        delivery.retryAfterMs
-                            ? translate(uiMessages.integrations.discord.errors.rateLimitedRetry, {
-                                  seconds: Math.ceil(delivery.retryAfterMs / 1_000),
-                              })
-                            : translate(uiMessages.integrations.discord.errors.rateLimited)
-                    );
-                    return;
+                ? buildRollShareMessage(result, reading)
+                : buildRollShareMessage({ ...result, details: '', formatted: '' }, reading);
+            queueRollShare(message, { service: service.id, address: webhookUrl }).then(
+                (delivery) => {
+                    if (delivery.ok) return;
+                    if (delivery.reason === 'rate-limited') {
+                        toast.error(
+                            delivery.retryAfterMs
+                                ? translate(
+                                      uiMessages.integrations.discord.errors.rateLimitedRetry,
+                                      {
+                                          seconds: Math.ceil(delivery.retryAfterMs / 1_000),
+                                      }
+                                  )
+                                : translate(uiMessages.integrations.discord.errors.rateLimited)
+                        );
+                        return;
+                    }
+                    toast.error(translate(DELIVERY_ERROR_MESSAGES[delivery.reason]));
                 }
-                toast.error(translate(DELIVERY_ERROR_MESSAGES[delivery.reason]));
-            });
+            );
         });
 
         return () => unsub();
-    }, [webhookUrl, enableDiscordWebhook, includeRollContext]);
+    }, [service, webhookUrl, enableDiscordWebhook, includeRollContext]);
 
     return null;
 }

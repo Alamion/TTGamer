@@ -9,17 +9,17 @@ import { createElement } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const queued = vi.hoisted(() => ({ messages: [] as string[] }));
-vi.mock('@site/src/integrations/discord', async (importOriginal) => ({
-    ...(await importOriginal<typeof import('@site/src/integrations/discord')>()),
-    queueDiscordMessage: vi.fn(async (message: string) => {
+vi.mock('@site/src/integrations/roll-sharing', async (importOriginal) => ({
+    ...(await importOriginal<typeof import('@site/src/integrations/roll-sharing')>()),
+    queueRollShare: vi.fn(async (message: string) => {
         queued.messages.push(message);
         return { ok: true };
     }),
 }));
 vi.mock('react-hot-toast', () => ({ default: { error: vi.fn() } }));
 
-const { default: DiscordWebhookSubscription } =
-    await import('@site/src/dice_roller/components/DiscordWebhookSubscription');
+const { default: RollSharingSubscription } =
+    await import('@site/src/dice_roller/components/RollSharingSubscription');
 
 const result: RollResult = {
     notation: '(1d10+2d10:h)>=6',
@@ -65,7 +65,7 @@ const result: RollResult = {
     },
 };
 
-describe('Discord subscription with special dice', () => {
+describe('Roll sharing subscription with special dice', () => {
     afterEach(() => {
         cleanup();
         queued.messages = [];
@@ -80,7 +80,7 @@ describe('Discord subscription with special dice', () => {
         useDiceRollerStore.setState({
             settings: { ...DEFAULT_SETTINGS, includeRollContext: false },
         });
-        render(createElement(DiscordWebhookSubscription));
+        render(createElement(RollSharingSubscription));
         await act(async () => notifyRollResult({ ...result }));
 
         expect(queued.messages).toHaveLength(1);

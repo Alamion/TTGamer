@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { isValidDiscordWebhook, SESSION_STORAGE_KEY } from '@site/src/integrations/discord';
+import { SHARING_SERVICES } from '@site/src/integrations/roll-sharing';
 import { SecretField } from '@site/src/shared/components/SecretField';
 import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
 import { Settings as SettingsIcon, X } from 'lucide-react';
@@ -17,8 +17,9 @@ export default function DiceRollerSettingsModal() {
     const settings = useDiceRollerStore((s) => s.settings);
     const updateSettings = useDiceRollerStore((s) => s.updateSettings);
 
-    const [webhookUrl, setWebhookUrl] = useSessionStorageState(SESSION_STORAGE_KEY, '');
-    const isWebhookValid = webhookUrl.length > 0 && isValidDiscordWebhook(webhookUrl);
+    const service = SHARING_SERVICES[0]!;
+    const [webhookUrl, setWebhookUrl] = useSessionStorageState(service.addressKey, '');
+    const isWebhookValid = webhookUrl.length > 0 && service.isValidAddress(webhookUrl);
 
     return (
         <Dialog.Root>

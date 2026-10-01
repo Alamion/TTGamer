@@ -25,7 +25,7 @@ module and keep their meaning (SC-003).
 
 ## Phase 1: Setup
 
-- [ ] T001 Rename the module with `git mv`: `src/integrations/discord/` →
+- [x] T001 Rename the module with `git mv`: `src/integrations/discord/` →
       `src/integrations/roll-sharing/` (`webhook.ts` stays for now), and
       `tests/integrations/discord-webhook.test.ts` → `tests/integrations/roll-sharing.test.ts`,
       `tests/dice_roller/components/discord-subscription.test.tsx` →
@@ -41,7 +41,7 @@ module and keep their meaning (SC-003).
 
 **Purpose**: split the module into registry, queue, and message without changing behavior.
 
-- [ ] T002 Create `src/integrations/roll-sharing/services.ts`: `SharingServiceId`
+- [x] T002 Create `src/integrations/roll-sharing/services.ts`: `SharingServiceId`
       (`'discord'`), `SharingService` interface per data-model.md (`id`, `name`, `color`,
       `addressKey`, `contentLimit`, `isValidAddress`, `prepare`, `request`, `guideAnchor`),
       `SHARING_SERVICES` with the Discord entry (pattern, `#5865F2`, `discord_webhook_url`,
@@ -49,11 +49,11 @@ module and keep their meaning (SC-003).
       `content`, anchor `discord`, placeholder `https://discord.com/api/webhooks/...`, no
       `networkHint`), and `sharingServiceOf(id: unknown)` (unknown → first entry, reported with `warn` from
       `src/shared/utils/logging.ts`; constitution III).
-- [ ] T003 Create `src/integrations/roll-sharing/message.ts` from `webhook.ts`:
+- [x] T003 Create `src/integrations/roll-sharing/message.ts` from `webhook.ts`:
       `buildRollShareMessage` (was `buildDiscordHistoryMessage`), `RollShareReadingLines` (was
       `DiscordReadingLines`), and the `truncate`/escape helpers; the 2 000 limit comes from a
       shared `MESSAGE_LIMIT` constant.
-- [ ] T004 Create `src/integrations/roll-sharing/queue.ts` from `webhook.ts`:
+- [x] T004 Create `src/integrations/roll-sharing/queue.ts` from `webhook.ts`:
       `RollShareResult` (was `DiscordDeliveryResult`), `queueRollShare(text, { service,
 address })` — invalid address per `service.isValidAddress` → `invalid-webhook`; the item
       stores `service`, `address`, and `service.prepare(truncate(text, contentLimit))`; flush
@@ -61,16 +61,16 @@ address })` — invalid address per `service.isValidAddress` → `invalid-webhoo
       `service.request(content)`; 2xx/429/other/thrown mapping (R3); log
       `[Roll sharing] Delivery failed` with `{ service, reason, status }` only (FR-010). Delete
       `webhook.ts`.
-- [ ] T005 Rewrite `src/integrations/roll-sharing/index.ts` to the contract exports
+- [x] T005 Rewrite `src/integrations/roll-sharing/index.ts` to the contract exports
       (`SHARING_SERVICES`, `sharingServiceOf`, `SharingService`, `SharingServiceId`,
       `RollShareResult`, `RollShareReadingLines`, `buildRollShareMessage`, `queueRollShare`);
       drop `SESSION_STORAGE_KEY` and `isValidDiscordWebhook` (callers use the registry).
-- [ ] T006 Rename `src/dice_roller/components/DiscordWebhookSubscription.tsx` →
+- [x] T006 Rename `src/dice_roller/components/DiscordWebhookSubscription.tsx` →
       `RollSharingSubscription.tsx` (component `RollSharingSubscription`), reading the Discord
       entry's `addressKey` and calling `queueRollShare`; update `src/theme/Root.tsx`,
       `RollControls.tsx`, and `DiceRollerSettingsModal.tsx` to the registry's Discord entry
       (`isValidAddress`, `addressKey`). No visible change yet.
-- [ ] T007 Update `tests/integrations/roll-sharing.test.ts` and
+- [x] T007 Update `tests/integrations/roll-sharing.test.ts` and
       `tests/dice_roller/components/roll-sharing-subscription.test.tsx` to the new names (mock
       `queueRollShare`); every former assertion kept (SC-003). Run both plus `yarn typecheck`.
 

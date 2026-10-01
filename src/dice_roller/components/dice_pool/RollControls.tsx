@@ -1,6 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { isValidDiscordWebhook, SESSION_STORAGE_KEY } from '@site/src/integrations/discord';
+import { SHARING_SERVICES } from '@site/src/integrations/roll-sharing';
 import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
 import { useCallback } from 'react';
 
@@ -16,8 +16,9 @@ export default function RollControls() {
     const settings = useDiceRollerStore((s) => s.settings);
     const updateSettings = useDiceRollerStore((s) => s.updateSettings);
 
-    const [webhookUrl] = useSessionStorageState(SESSION_STORAGE_KEY, '');
-    const isWebhookValid = webhookUrl.length > 0 && isValidDiscordWebhook(webhookUrl);
+    const service = SHARING_SERVICES[0]!;
+    const [webhookUrl] = useSessionStorageState(service.addressKey, '');
+    const isWebhookValid = webhookUrl.length > 0 && service.isValidAddress(webhookUrl);
 
     const canClear = notationInput.trim().length > 0;
     const canRoll = notationInput.trim().length > 0 && validateNotation(notationInput);

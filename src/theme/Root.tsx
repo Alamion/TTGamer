@@ -1,6 +1,6 @@
 import DiceRollerPanel from '@site/src/dice_roller/components/DiceRollerPanel';
-import DiscordWebhookSubscription from '@site/src/dice_roller/components/DiscordWebhookSubscription';
 import Renderer3DFallbackNotice from '@site/src/dice_roller/components/Renderer3DFallbackNotice';
+import RollSharingSubscription from '@site/src/dice_roller/components/RollSharingSubscription';
 import { RollToastContent } from '@site/src/dice_roller/components/RollToastContent';
 import { onRollResult } from '@site/src/dice_roller/dice-logic';
 import RollReadingRegistration from '@site/src/integrations/roll-reading/RollReadingRegistration';
@@ -36,7 +36,7 @@ export default function Root({ children }: RootProps): ReactNode {
         <>
             {children}
             <RollReadingRegistration />
-            <DiscordWebhookSubscription />
+            <RollSharingSubscription />
             <Renderer3DFallbackNotice />
             <div id="modal-root" className="tailwind-root"></div>
             {isBrowser && (

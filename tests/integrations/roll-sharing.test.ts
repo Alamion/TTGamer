@@ -1,16 +1,17 @@
-import { buildDiscordHistoryMessage, queueDiscordMessage } from '@site/src/integrations/discord';
+import { buildRollShareMessage, queueRollShare } from '@site/src/integrations/roll-sharing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const webhookUrl = 'https://discord.com/api/webhooks/123456789/valid_token';
+const discord = { service: 'discord', address: webhookUrl } as const;
 
 afterEach(() => {
     vi.useRealTimers();
     vi.unstubAllGlobals();
 });
 
-describe('Discord webhook integration', () => {
+describe('Roll sharing: Discord', () => {
     it('escapes user markdown while preserving generated result formatting', () => {
-        const message = buildDiscordHistoryMessage({
+        const message = buildRollShareMessage({
             notation: '@everyone 2d6',
             diceGroups: [],
             total: 7,
@@ -33,7 +34,7 @@ describe('Discord webhook integration', () => {
             details: '',
             formatted: '',
         };
-        const message = buildDiscordHistoryMessage(result, {
+        const message = buildRollShareMessage(result, {
             specialDice: 'Special dice (Desperation): 6, 1',
             outcomes: ['A Desperation die shows 1'],
         });
@@ -43,7 +44,7 @@ describe('Discord webhook integration', () => {
     });
 
     it('puts the verdict right after the total', () => {
-        const message = buildDiscordHistoryMessage(
+        const message = buildRollShareMessage(
             { notation: '3d10>=6', diceGroups: [], total: 2, details: '', formatted: '' },
             { verdict: 'Success (needed 2, margin 0)' }
         );
@@ -61,9 +62,7 @@ describe('Discord webhook integration', () => {
             details: '3, 4',
             formatted: '3+4',
         };
-        expect(buildDiscordHistoryMessage(result, undefined)).toBe(
-            buildDiscordHistoryMessage(result)
-        );
+        expect(buildRollShareMessage(result, undefined)).toBe(buildRollShareMessage(result));
     });
 
     it('coalesces nearby messages and disables mentions', async () => {
@@ -71,8 +70,8 @@ describe('Discord webhook integration', () => {
         const fetchMock = vi.fn().mockResolvedValue({ ok: true });
         vi.stubGlobal('fetch', fetchMock);
 
-        const first = queueDiscordMessage('first', webhookUrl);
-        const second = queueDiscordMessage('second', webhookUrl);
+        const first = queueRollShare('first', discord);
+        const second = queueRollShare('second', discord);
         await vi.advanceTimersByTimeAsync(251);
 
         await expect(Promise.all([first, second])).resolves.toEqual([{ ok: true }, { ok: true }]);
@@ -89,8 +88,8 @@ describe('Discord webhook integration', () => {
         const fetchMock = vi.fn().mockResolvedValue({ ok: true });
         vi.stubGlobal('fetch', fetchMock);
 
-        const first = queueDiscordMessage('a'.repeat(1_200), webhookUrl);
-        const second = queueDiscordMessage('b'.repeat(1_200), webhookUrl);
+        const first = queueRollShare('a'.repeat(1_200), discord);
+        const second = queueRollShare('b'.repeat(1_200), discord);
         await vi.advanceTimersByTimeAsync(251);
         await vi.runAllTimersAsync();
 
@@ -116,7 +115,7 @@ describe('Discord webhook integration', () => {
             )
         );
 
-        const delivery = queueDiscordMessage('roll content', webhookUrl);
+        const delivery = queueRollShare('roll content', discord);
         await vi.advanceTimersByTimeAsync(251);
         await vi.runAllTimersAsync();
 
