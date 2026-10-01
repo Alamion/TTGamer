@@ -194,7 +194,7 @@ active })` returning the `<path>` for Discord (from `static/img/discord-icon.svg
 **Independent test**: `/docs/roll-sharing` and `/ru/docs/roll-sharing` build with the four
 anchors; `yarn validate:i18n` passes.
 
-- [ ] T020 [P] [US4] Write `docs/roll-sharing/index.mdx` (sidebar position 5, `In short` tip):
+- [x] T020 [P] [US4] Write `docs/roll-sharing/index.mdx` (sidebar position 5, `In short` tip):
       `## Discord {#discord}` (channel → Integrations → Webhooks → copy URL; the address is a
       secret, kept for the browser session only); `## Matrix {#matrix}` (admin: hookshot
       `generic.enabled`, `urlPrefix`, `waitForComplete: true` recommended; in the room invite
@@ -203,10 +203,10 @@ anchors; `yarn validate:i18n` passes.
       browser needs `Access-Control-Allow-Origin`; nginx and Caddy snippets echoing
       `https://ttgamer.vercel.app` and `http://localhost:3000` on the webhook path; no `OPTIONS`
       needed); `## Test the address {#test-address}` (the `curl` checks from quickstart §3).
-- [ ] T021 [P] [US4] Write the Russian mirror
+- [x] T021 [P] [US4] Write the Russian mirror
       `i18n/ru/docusaurus-plugin-content-docs/current/roll-sharing/index.mdx` with the same
       anchors.
-- [ ] T022 [US4] Add `'roll-sharing'` to `DOCUMENT_ROOTS` in `scripts/docs-source.ts`; run
+- [x] T022 [US4] Add `'roll-sharing'` to `DOCUMENT_ROOTS` in `scripts/docs-source.ts`; run
       `yarn validate:i18n` and `yarn i18n:verify` (glossary: Matrix, hookshot, webhook stay
       English).
 

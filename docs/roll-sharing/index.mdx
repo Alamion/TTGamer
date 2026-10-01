@@ -1,0 +1,102 @@
+---
+sidebar_position: 5
+slug: ./
+title: Sharing rolls
+sidebar_label: Sharing rolls
+description: How to post dice rolls to a Discord channel or a Matrix room — what players paste, and what a Matrix homeserver admin sets up.
+---
+
+# Sharing rolls
+
+:::tip[In short]
+Open the dice settings, pick a **Service**, paste the webhook address, and turn on **Share rolls**. Every roll then appears in your group's channel or room. Discord addresses come from the channel settings; Matrix addresses come from your homeserver admin, who also has to allow this site once.
+:::
+
+The dice roller can post each roll — the character name, the notation and total, the reading, and the dice — to one chat at a time. Rolls made within a moment are combined into one post. The button next to the dice settings shows the logo of the chosen service: a left click turns sharing on or off, a right click hides character data (name and stats) from the posts.
+
+Each service keeps its own address, so you can switch between Discord and Matrix without pasting again. Addresses last until you close the browser tab; they are never sent anywhere except to the service itself.
+
+:::caution[A webhook address is a password]
+Anyone with the address can post to your channel or room. Share it only with your group, and ask for a new one if it leaks.
+:::
+
+## Discord \{#discord}
+
+1. In Discord, open the channel's **Edit Channel → Integrations → Webhooks** (you need the **Manage Webhooks** permission).
+2. Create a webhook, name it (for example "Dice"), and press **Copy Webhook URL**.
+3. In the dice settings, pick **Discord** and paste the address. It looks like `https://discord.com/api/webhooks/…`.
+
+Discord posts never notify anyone: mentions in a character name are shown as text.
+
+## Matrix \{#matrix}
+
+Matrix rooms receive rolls through [matrix-hookshot](https://matrix-org.github.io/matrix-hookshot/latest/setup/webhooks.html) generic webhooks. A player cannot set this up alone: the homeserver admin enables the webhooks once, and someone with moderator rights creates the webhook for the room.
+
+**The admin** enables generic webhooks in the hookshot configuration:
+
+```yaml
+generic:
+    enabled: true
+    urlPrefix: https://matrix.example.org/webhook/
+    # Answer only after the message is in the room, so the dice roller can report failures.
+    waitForComplete: true
+```
+
+**In the room**:
+
+1. Invite the hookshot bot.
+2. Send `!hookshot webhook dice` (any name). The bot replies with the webhook address.
+3. Give that address to the players. In the dice settings they pick **Matrix** and paste it.
+
+Use an **unencrypted room**: hookshot may not be able to post into an encrypted one, and the dice roller cannot tell.
+
+Posts keep the same formatting as in Discord: bold names and totals, quotes for outcomes, a code block for the dice. `@room` in a roll never notifies the room. A Matrix client may still highlight a post for a member whose display name appears in it, for example a character named like a player.
+
+## Allow this site \{#site-permission}
+
+The browser posts the roll straight to the homeserver. The post itself arrives, but the browser shows the answer to the dice roller only if the server allows this site. Without that, every roll ends with "The Matrix room could not be reached", even when it was delivered.
+
+The admin adds one header, `Access-Control-Allow-Origin`, to answers from the webhook path at the reverse proxy in front of hookshot. Allow `https://ttgamer.vercel.app`, and `http://localhost:3000` if someone develops the site locally. No `OPTIONS` handling is needed: the dice roller sends a plain form post.
+
+nginx:
+
+```nginx
+map $http_origin $ttgamer_origin {
+    default "";
+    "https://ttgamer.vercel.app" $http_origin;
+    "http://localhost:3000" $http_origin;
+}
+
+location /webhook/ {
+    add_header Access-Control-Allow-Origin $ttgamer_origin always;
+    add_header Vary Origin always;
+    proxy_pass http://127.0.0.1:9000/webhook/; # your hookshot webhook listener
+}
+```
+
+Caddy:
+
+```text
+handle /webhook/* {
+    @ttgamer header_regexp Origin ^(https://ttgamer\.vercel\.app|http://localhost:3000)$
+    header @ttgamer Access-Control-Allow-Origin {http.request.header.Origin}
+    header Vary Origin
+    reverse_proxy 127.0.0.1:9000 # your hookshot webhook listener
+}
+```
+
+## Test the address \{#test-address}
+
+From a terminal, post a test message (replace the address):
+
+```bash
+curl -i -X POST --data-urlencode 'text=**Test roll** = 7' https://matrix.example.org/webhook/abc123
+```
+
+The answer is `200` and the room shows "**Test roll** = 7". Then check the site permission:
+
+```bash
+curl -i -X POST -H 'Origin: https://ttgamer.vercel.app' --data-urlencode 'text=Permission check' https://matrix.example.org/webhook/abc123
+```
+
+The answer must contain `Access-Control-Allow-Origin: https://ttgamer.vercel.app`. If both checks pass, a roll from the dice roller reaches the room without an error notice.
