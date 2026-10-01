@@ -266,6 +266,22 @@ rules, override, readOnly })` returning a `TrackerModel` (one marks column, one 
 - [x] T034 `CHANGELOG.md` new minor entry, `package.json` version, `TODO.md` T-085 ✅; run
       `yarn check:version`.
 - [x] T035 Run `yarn verify:full`; fix findings (knip: new exports must have importers).
+
+### Maintainer review additions (2026-10-02)
+
+- [x] T037 [US3] FR-014a: the WoD 2e full sheet draws Willpower as one tracker in
+      `src/sheet_manager/systems/wod2e/templates.ts`; assertion in
+      `tests/sheet_manager/pool-tracker.test.tsx`.
+- [x] T038 [US3] FR-010a: `poolTracker` on `ResourceFieldSchema` (refine: max ≤ 20) in
+      `src/sheet_manager/types/template.ts`; `ResourceFieldControlRender` draws `PoolTracker` in
+      `src/sheet_manager/features/sheet/declarative/fieldControls.tsx`; `sourceNodes.ts` keeps the
+      look on a switch to a built-in pool.
+- [x] T039 [US4] FR-010a editor: "Display: Numbers / Tracker" with `PoolTrackerSettings` in
+      `src/sheet_manager/components/dialogs/template-editor/FieldEditor.tsx`; storybook
+      `resource-tracker` and guard tag `resource:tracker`; schema, sheet, and editor tests.
+- [x] T040 View mode (found during review, not spec 020): a user setting's own page hides the
+      engine's views in `src/sheet_manager/features/sheet/shell/ViewModeSelect.tsx`
+      (`selectableViews`); `tests/sheet_manager/view-mode-select.test.tsx`.
 - [ ] T036 Walk `quickstart.md` on the dev server; record results and refinements in research.md
       "Implementation notes".
 

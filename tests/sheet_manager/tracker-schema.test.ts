@@ -313,4 +313,21 @@ describe('point trackers and pool trackers (spec 020)', () => {
         expect(nodeParses(pool({ maxMinFrom: '' }))).toBe(false);
         expect(nodeParses(pool({ maxMinFrom: 'x'.repeat(501) }))).toBe(false);
     });
+
+    it('takes the tracker look on a resource field of at most 20 boxes', () => {
+        const resource = (extra: Record<string, unknown>) => ({
+            id: 'luck',
+            type: 'resource',
+            label: 'Luck',
+            max: 10,
+            ...extra,
+        });
+        expect(TemplateFieldSchema.parse(resource({ poolTracker: {} }))).toMatchObject({
+            poolTracker: { display: 'row', legend: false, total: true },
+        });
+        expect(TemplateFieldSchema.parse(resource({}))).not.toHaveProperty('poolTracker');
+        expect(nodeParses(resource({ max: 20, poolTracker: {} }))).toBe(true);
+        expect(nodeParses(resource({ max: 21, poolTracker: {} }))).toBe(false);
+        expect(nodeParses(resource({ max: 50 }))).toBe(true);
+    });
 });

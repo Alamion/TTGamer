@@ -158,6 +158,8 @@ editor:
     primitiveDisplay: Вид
     displayDots: Точки
     displayTracker: Трекер
+    displayNumbers: Числа
+    poolTrackerLimit: 'Трекер рисует не больше {max} клеток: уменьшите максимум, чтобы его выбрать.'
     poolLook: Оформление
     poolRow: Строка (как рейтинг)
     poolCurrentMark: Текущее

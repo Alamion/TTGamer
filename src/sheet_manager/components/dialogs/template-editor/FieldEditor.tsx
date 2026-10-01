@@ -25,6 +25,7 @@ import { CatalogBindingEditor } from './CatalogBindingEditor';
 import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
+import { PoolTrackerSettings } from './PoolTrackerSettings';
 import { TrackerSourceSelect, ValueSourceSelect } from './SourceControls';
 import { currentValueSource, CUSTOM_SOURCE } from './sourceNodes';
 import { TermHintControl } from './TermHintControl';
@@ -478,7 +479,11 @@ export function FieldEditor({
                     <NumberInput
                         value={field.max}
                         min={Math.max(1, field.min)}
-                        max={TEMPLATE_LIMITS.resourceMax}
+                        max={
+                            field.poolTracker
+                                ? TEMPLATE_LIMITS.trackerLevelsMax
+                                : TEMPLATE_LIMITS.resourceMax
+                        }
                         step={1}
                         optional={false}
                         onChange={(max) => callbacks.onUpdate({ max: max ?? field.max })}
@@ -487,6 +492,13 @@ export function FieldEditor({
                         className={`${inputClasses} w-20`}
                     />
                 </div>
+            )}
+
+            {field.type === 'resource' && (
+                <ResourceDisplay
+                    field={field}
+                    onChange={(poolTracker) => callbacks.onUpdate({ poolTracker })}
+                />
             )}
 
             {field.type === 'reference' && (
@@ -636,6 +648,61 @@ function RatingSwitches({
                     ))}
                     <span className="basis-full text-[11px]">{t(editor.ratingFlagsHint)}</span>
                 </div>
+            )}
+        </div>
+    );
+}
+
+/** A resource field's look (spec 020): two numbers, or one tracker of up to 20 boxes. */
+function ResourceDisplay({
+    field,
+    onChange,
+}: {
+    field: Extract<TemplateField, { type: 'resource' }>;
+    onChange: (poolTracker: Extract<TemplateField, { type: 'resource' }>['poolTracker']) => void;
+}) {
+    const tooMany = field.max > TEMPLATE_LIMITS.trackerLevelsMax;
+    const asTracker = field.poolTracker !== undefined;
+    return (
+        <div className="grid gap-2">
+            <div
+                role="group"
+                aria-label={translate(editor.primitiveDisplay)}
+                className="flex flex-wrap items-center gap-1 text-xs text-textSecondary"
+            >
+                <span>{translate(editor.primitiveDisplay)}</span>
+                {([false, true] as const).map((tracker) => (
+                    <button
+                        key={String(tracker)}
+                        type="button"
+                        aria-pressed={asTracker === tracker}
+                        disabled={tracker && !asTracker && tooMany}
+                        onClick={() => {
+                            if (asTracker === tracker) return;
+                            onChange(
+                                tracker ? { display: 'row', legend: false, total: true } : undefined
+                            );
+                        }}
+                        className={clsx(
+                            'rounded border px-2.5 py-1 text-xs transition-colors disabled:opacity-50',
+                            asTracker === tracker
+                                ? 'border-primary bg-primary-muted text-textPrimary'
+                                : 'border-border text-textSecondary hover:border-primary/60'
+                        )}
+                    >
+                        {translate(tracker ? editor.displayTracker : editor.displayNumbers)}
+                    </button>
+                ))}
+            </div>
+            {tooMany && !asTracker && (
+                <p className="text-[11px] text-textSecondary">
+                    {translate(editor.poolTrackerLimit, {
+                        max: TEMPLATE_LIMITS.trackerLevelsMax,
+                    })}
+                </p>
+            )}
+            {field.poolTracker && (
+                <PoolTrackerSettings value={field.poolTracker} onChange={onChange} />
             )}
         </div>
     );

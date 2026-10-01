@@ -201,6 +201,44 @@ describe('a pool drawn as a tracker', () => {
     });
 });
 
+describe('a resource field drawn as a tracker', () => {
+    const LUCK = {
+        id: 'luck',
+        type: 'resource',
+        label: 'Luck',
+        min: 1,
+        max: 8,
+        poolTracker: {},
+    };
+    const luck = () => useDocumentStore.getState().documents[0]!.templateValues?.luck;
+    const at = (n: number) =>
+        within(screen.getByRole('group', { name: 'Luck' }))
+            .getAllByRole('button')
+            .find((button) => button.getAttribute('aria-label')?.startsWith(`${n}:`))!;
+
+    it('draws boxes up to the field maximum and writes the page value', () => {
+        seed();
+        mount([LUCK]);
+        expect(
+            within(screen.getByRole('group', { name: 'Luck' })).getAllByRole('button')
+        ).toHaveLength(8);
+        expect(at(1).getAttribute('aria-label')).toContain('locked');
+        fireEvent.click(at(3));
+        expect(luck()).toEqual({ current: 3, max: 8 });
+        fireEvent.contextMenu(at(5));
+        expect(luck()).toEqual({ current: 3, max: 5 });
+        fireEvent.click(at(1));
+        expect(luck()).toEqual({ current: 1, max: 5 });
+        expect(screen.getByText('1 / 5')).toBeTruthy();
+    });
+
+    it('falls back to the numbers above twenty boxes', () => {
+        seed();
+        mount([{ ...LUCK, max: 30, poolTracker: undefined }]);
+        expect(screen.queryByRole('group', { name: 'Luck' })).toBeNull();
+    });
+});
+
 describe('the shipped Star Wars sheets', () => {
     const forceNodes = (templateId: string) => {
         const template = starWarsWodDefaultTemplates.find(({ id }) => id === templateId)!;

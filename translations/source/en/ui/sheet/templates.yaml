@@ -158,6 +158,8 @@ editor:
     primitiveDisplay: Display
     displayDots: Dots
     displayTracker: Tracker
+    displayNumbers: Numbers
+    poolTrackerLimit: 'A tracker draws up to {max} boxes: lower the maximum to use it.'
     poolLook: Look
     poolRow: Row (like a rating)
     poolCurrentMark: Current

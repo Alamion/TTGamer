@@ -94,6 +94,9 @@ function variantsOf(node: TemplateNode): string[] {
             if (node.min > 0) tags.push('rating:min');
             if (node.max >= 30) tags.push('rating:many');
             break;
+        case 'resource':
+            if (node.poolTracker) tags.push('resource:tracker');
+            break;
         case 'formula':
             flag('prefix');
             flag('suffix');
@@ -255,6 +258,7 @@ const REQUIRED_VARIANTS = [
     'primitive:tracker:marks',
     'primitive:tracker:legend',
     'primitive:resource:tracker',
+    'resource:tracker',
     'primitive:resource:tracker:row',
     'primitive:resource:tracker:strip',
     'primitive:resource:tracker:line',

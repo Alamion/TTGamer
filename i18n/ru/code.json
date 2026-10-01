@@ -3167,6 +3167,9 @@
     "ttgamer.ui.sheet.templates.editor.displayDots": {
         "message": "Точки"
     },
+    "ttgamer.ui.sheet.templates.editor.displayNumbers": {
+        "message": "Числа"
+    },
     "ttgamer.ui.sheet.templates.editor.displayTracker": {
         "message": "Трекер"
     },
@@ -3490,6 +3493,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.poolRow": {
         "message": "Строка (как рейтинг)"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolTrackerLimit": {
+        "message": "Трекер рисует не больше {max} клеток: уменьшите максимум, чтобы его выбрать."
     },
     "ttgamer.ui.sheet.templates.editor.presentation": {
         "message": "Отображение"

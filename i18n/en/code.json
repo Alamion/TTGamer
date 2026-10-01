@@ -3167,6 +3167,9 @@
     "ttgamer.ui.sheet.templates.editor.displayDots": {
         "message": "Dots"
     },
+    "ttgamer.ui.sheet.templates.editor.displayNumbers": {
+        "message": "Numbers"
+    },
     "ttgamer.ui.sheet.templates.editor.displayTracker": {
         "message": "Tracker"
     },
@@ -3490,6 +3493,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.poolRow": {
         "message": "Row (like a rating)"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolTrackerLimit": {
+        "message": "A tracker draws up to {max} boxes: lower the maximum to use it."
     },
     "ttgamer.ui.sheet.templates.editor.presentation": {
         "message": "Presentation"

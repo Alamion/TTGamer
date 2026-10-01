@@ -10,7 +10,12 @@
 - **Pools as one tracker**: a pool resource (Force Points, Willpower) can be drawn as one row of boxes — the maximum framed, the current points filled, the count after them — in a row that sits with the rating dots; minimums from formulas lock their boxes in a darker shade, and the values stay the document's own
 - **Star Wars Force Points in one row**: the full Star Wars character sheet shows Force Points as one tracker instead of the "Max Force Points" and "Force Points" rows; the brief sheet keeps its numbers
 - **WoD 2e Willpower in one row**: the full WoD 2e character sheet shows Willpower as one tracker too; the brief sheet keeps its numbers
+- **Your own resources as trackers**: a Resource field of up to 20 boxes can be drawn the same way, its minimum holding both values
 - **Accent color for marks**: tracker marks can take the rating dots' color
+
+### Fix
+
+- **View mode lists only real pages**: a character of your own setting with its own page no longer offers the engine's Full sheet and Brief, which it could not switch to
 
 ## v3.17.0
 

@@ -310,6 +310,15 @@ const fields = story(
                     maxFrom: 'number-plain',
                 },
                 { id: 'resource', type: 'resource', label: 'Resource', max: 10 },
+                {
+                    id: 'resource-tracker',
+                    type: 'resource',
+                    label: 'Resource as a tracker (minimum 1)',
+                    labelPosition: 'left',
+                    min: 1,
+                    max: 8,
+                    poolTracker: { display: 'row' },
+                },
             ],
         },
         {

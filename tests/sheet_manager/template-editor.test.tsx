@@ -1824,6 +1824,47 @@ describe('tracker settings (spec 018)', () => {
         ).toBe('true');
     });
 
+    it('draws a resource field as a tracker of at most twenty boxes (spec 020)', () => {
+        const open = (max: number) => {
+            render(
+                createElement(TemplateEditorDialog, {
+                    base: {
+                        kind: 'edit',
+                        template: CustomTemplateSchema.parse({
+                            id: 'resource-kit',
+                            name: 'Resource Kit',
+                            documentKind: 'character',
+                            schemaVersion: 3,
+                            children: [{ id: 'luck', type: 'resource', label: 'Luck', max }],
+                        }),
+                    },
+                    onClose: () => {},
+                })
+            );
+            selectInOutline('luck');
+            return within(settings('luck')).getByRole('group', { name: 'Display' });
+        };
+        let display = open(30);
+        const tracker = within(display).getByRole('button', { name: 'Tracker' });
+        expect((tracker as HTMLButtonElement).disabled).toBe(true);
+        expect(within(settings('luck')).getByText(/up to 20 boxes/)).toBeTruthy();
+        cleanup();
+
+        display = open(8);
+        expect(
+            within(display).getByRole('button', { name: 'Numbers' }).getAttribute('aria-pressed')
+        ).toBe('true');
+        fireEvent.click(within(display).getByRole('button', { name: 'Tracker' }));
+        const look = within(settings('luck')).getByRole('group', { name: 'Look' });
+        fireEvent.click(within(look).getByRole('button', { name: 'One line' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore.getState().templates.find(({ id }) => id === 'resource-kit')!
+            .children[0] as TemplateNode & Record<string, unknown>;
+        expect(saved).toMatchObject({
+            poolTracker: { display: 'line', legend: false, total: true },
+        });
+    });
+
     it('offers no point-reading settings on built-in trackers', () => {
         const panel = openBuiltIn();
         expect(within(panel).queryByLabelText('Marks fill from the start')).toBeNull();

@@ -187,7 +187,9 @@ success|text|primary` (accent) or `#rrggbb`, `layer` = `fill` (default) | `outli
       binding maximum or `maxFrom`; `minFrom` then bounds the current value and `maxMinFrom`
       the maximum (resolved into `formulaState.maxMinima`); locked boxes (`copy.locked`) draw
       in a darker mix of their mark's color; `currentRaisesMax` raises the maximum from a fill.
-      `part` and `compact` are ignored with it. The `row` display (label left, 16px boxes,
+      `part` and `compact` are ignored with it. An own `resource` field takes the same
+      `poolTracker` (max ≤ `trackerLevelsMax`, schema refine; `fieldControls.tsx`): `min` holds
+      both values, the page label stays outside (`hideLabel`). The `row` display (label left, 16px boxes,
       count) exists only in pool models. The editor's Display choice moves `minFrom` of a
       `part: 'max'` node to `maxMinFrom` and back. The shipped Star Wars full sheet draws
       Force Points this way; edited copies of a shipped page (`defaultOverrides`) keep their

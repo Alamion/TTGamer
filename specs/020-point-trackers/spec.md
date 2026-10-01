@@ -219,6 +219,10 @@ the storybook page shows a point tracker and a built-in pool as a tracker.
   MUST offer a tracker look as a display option of the resource element, not a new element: one
   row of boxes up to the pool's game maximum, the maximum as outlines and the current value as
   fills, with fill-from-the-start behavior and a count total.
+- **FR-010a** (maintainer review, 2026-10-02): an own **Resource** field (a current value and a
+  maximum stored with the page) MUST offer the same tracker look: boxes up to the field's
+  maximum, the field's minimum holding both values, while the maximum is at most 20 boxes; a
+  larger maximum keeps the two numbers. Switching the field to a built-in pool keeps the look.
 - **FR-011**: Writes MUST keep the pool's rules: the current value never exceeds the maximum
   unless the game lets it raise the maximum (Star Wars Willpower), and the current value and the
   maximum never go below their minimum formulas (current Willpower ≥ Passion + Self-Control, Max

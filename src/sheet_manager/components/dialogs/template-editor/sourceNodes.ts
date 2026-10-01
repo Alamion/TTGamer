@@ -108,6 +108,10 @@ export function fieldFromSource(
                 bindingKey: source.key,
                 label,
                 compact: base.compact ?? false,
+                // A resource drawn as a tracker keeps its look on the game's pool (spec 020).
+                ...(node.type === 'resource' && node.poolTracker
+                    ? { poolTracker: node.poolTracker }
+                    : {}),
             };
         case 'field': {
             const shared = {

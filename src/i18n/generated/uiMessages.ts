@@ -4418,6 +4418,14 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.displayTracker',
                     message: 'Tracker',
                 },
+                displayNumbers: {
+                    id: 'ttgamer.ui.sheet.templates.editor.displayNumbers',
+                    message: 'Numbers',
+                },
+                poolTrackerLimit: {
+                    id: 'ttgamer.ui.sheet.templates.editor.poolTrackerLimit',
+                    message: 'A tracker draws up to {max} boxes: lower the maximum to use it.',
+                },
                 poolLook: {
                     id: 'ttgamer.ui.sheet.templates.editor.poolLook',
                     message: 'Look',

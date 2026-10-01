@@ -224,13 +224,6 @@ const RatingFieldSchema = z.object({
     ...maxFromShape,
 });
 
-const ResourceFieldSchema = z.object({
-    ...fieldBaseShape,
-    type: z.literal('resource'),
-    min: z.number().int().min(0).default(0),
-    max: z.number().int().min(1).max(TEMPLATE_LIMITS.resourceMax),
-});
-
 const ReferenceFieldSchema = z.object({
     ...fieldBaseShape,
     type: z.literal('reference'),
@@ -265,6 +258,44 @@ const trackerSymbolSchema = z
     });
 
 /** A fill colors the box behind its symbol; an outline frames it. A box holds one of each. */
+/** A built-in mark's page look: the game keeps its id and meaning. */
+const TrackerMarkOverrideSchema = z.object({
+    name: trackerNameSchema.optional(),
+    symbol: trackerSymbolSchema.optional(),
+    fill: TrackerFillSchema.optional(),
+});
+
+export const POOL_TRACKER_DISPLAYS = ['row', 'strip', 'line'] as const;
+
+export type PoolTrackerDisplay = (typeof POOL_TRACKER_DISPLAYS)[number];
+
+/**
+ * A pool resource drawn as a tracker (spec 020): the current value fills boxes, the maximum
+ * frames them. Only the look is stored; the values stay in the document's pool.
+ */
+export const PoolTrackerOverrideSchema = z.object({
+    display: z.enum(POOL_TRACKER_DISPLAYS).default('row'),
+    marks: z
+        .object({
+            current: TrackerMarkOverrideSchema.optional(),
+            max: TrackerMarkOverrideSchema.optional(),
+        })
+        .optional(),
+    legend: z.boolean().default(false),
+    total: z.boolean().default(true),
+});
+
+export type PoolTrackerOverride = z.infer<typeof PoolTrackerOverrideSchema>;
+
+const ResourceFieldSchema = z.object({
+    ...fieldBaseShape,
+    type: z.literal('resource'),
+    min: z.number().int().min(0).default(0),
+    max: z.number().int().min(1).max(TEMPLATE_LIMITS.resourceMax),
+    /** Spec 020: drawn as one tracker (up to `trackerLevelsMax` boxes) instead of two numbers. */
+    poolTracker: PoolTrackerOverrideSchema.optional(),
+});
+
 export const TRACKER_LAYERS = ['fill', 'outline'] as const;
 
 export type TrackerLayer = (typeof TRACKER_LAYERS)[number];
@@ -376,6 +407,13 @@ function refineField(field: TemplateFieldObject, context: z.RefinementCtx): void
         case 'rating':
         case 'resource':
             if (!hasValidBounds(field)) issue('Minimum cannot exceed maximum', ['min']);
+            if (
+                field.type === 'resource' &&
+                field.poolTracker &&
+                field.max > TEMPLATE_LIMITS.trackerLevelsMax
+            ) {
+                issue(`A tracker draws at most ${TEMPLATE_LIMITS.trackerLevelsMax} boxes`, ['max']);
+            }
             if (field.type === 'rating' && field.flags && !hasUniqueValues(field.flags)) {
                 issue('Rating flags must be unique', ['flags']);
             }
@@ -513,13 +551,6 @@ export const PrimitiveTrackOverrideSchema = z
 
 export type PrimitiveTrackOverride = z.infer<typeof PrimitiveTrackOverrideSchema>;
 
-/** A built-in mark's page look: the game keeps its id and meaning. */
-const TrackerMarkOverrideSchema = z.object({
-    name: trackerNameSchema.optional(),
-    symbol: trackerSymbolSchema.optional(),
-    fill: TrackerFillSchema.optional(),
-});
-
 /**
  * Built-in tracker settings on a track primitive (spec 018): the page's look, level text, and
  * extra columns. The game keeps the level count and order, a computed length, the mark kinds,
@@ -550,28 +581,6 @@ export const TrackerOverrideSchema = z.object({
 });
 
 export type TrackerOverride = z.infer<typeof TrackerOverrideSchema>;
-
-export const POOL_TRACKER_DISPLAYS = ['row', 'strip', 'line'] as const;
-
-export type PoolTrackerDisplay = (typeof POOL_TRACKER_DISPLAYS)[number];
-
-/**
- * A pool resource drawn as a tracker (spec 020): the current value fills boxes, the maximum
- * frames them. Only the look is stored; the values stay in the document's pool.
- */
-export const PoolTrackerOverrideSchema = z.object({
-    display: z.enum(POOL_TRACKER_DISPLAYS).default('row'),
-    marks: z
-        .object({
-            current: TrackerMarkOverrideSchema.optional(),
-            max: TrackerMarkOverrideSchema.optional(),
-        })
-        .optional(),
-    legend: z.boolean().default(false),
-    total: z.boolean().default(true),
-});
-
-export type PoolTrackerOverride = z.infer<typeof PoolTrackerOverrideSchema>;
 
 /**
  * Document-bound primitive (feature 005): references one binding key of the owning system's
