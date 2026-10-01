@@ -35,7 +35,7 @@ import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
 import { installTypePayload, rewriteTypeIdentity, typeInstallState } from './typeFile';
-import { templateSelectValue, ViewModeSelect } from './ViewModeSelect';
+import { selectableViews, templateSelectValue, ViewModeSelect } from './ViewModeSelect';
 
 interface SheetWorkspaceProps {
     children: React.ReactNode;
@@ -221,7 +221,11 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                         currentDocument && currentDefinition && currentView ? (
                             <>
                                 <ViewModeSelect
-                                    definition={currentDefinition}
+                                    views={selectableViews(
+                                        currentDefinition,
+                                        currentDocument,
+                                        settings
+                                    )}
                                     value={templateSelectValue(activeTemplateId, currentView.id)}
                                     onChangeTemplate={(templateId) =>
                                         updateDocumentMetadata(currentDocument.id, {
