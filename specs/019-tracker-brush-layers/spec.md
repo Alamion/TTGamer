@@ -115,7 +115,7 @@ reloading the sheet shows the same.
 6. **Given** a tracker whose marks are all outlines, **When** the user clicks without a brush,
    **Then** the click cycles the outline marks.
 7. **Given** the legend of a tracker with both layers, **Then** each item shows its swatch as it
-   appears in a box (filled square or ring) and names its layer.
+   appears in a box (filled square or ring), which alone tells its layer.
 
 ---
 
@@ -226,8 +226,8 @@ fodder-group parity example still matches at every length.
   empty.
 - **FR-012**: Without a brush, a click MUST cycle the fill marks (empty → first → … → last →
   empty) and keep the outline; a tracker with no fill marks MUST cycle its outline marks instead.
-- **FR-013**: The legend MUST show each mark's swatch as it looks in a box and, when the tracker has
-  marks on both layers, name each mark's layer.
+- **FR-013**: The legend MUST show each mark's swatch as it looks in a box (filled square or ring),
+  so the swatch tells the layer without a word.
 - **FR-014**: "Start from…" MUST offer "Points: current and maximum": one fill mark and one outline
   mark of the same color.
 - **FR-015**: The five-mark limit MUST count marks of both layers together.

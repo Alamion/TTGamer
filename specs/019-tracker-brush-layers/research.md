@@ -164,7 +164,7 @@ Where the built code refines the decisions above:
   does not come back when the mark returns.
 - **Escape** is a `keydown` listener on the tracker root, added while a brush is on (a JSX
   handler on the wrapping `div` fails the a11y lint for static elements).
-- **Legend words**: the layer word ("fill" / "outline") follows the mark name only when the
-  tracker uses both layers, so single-layer legends keep their names as accessible names.
+- **No layer words in the legend** (maintainer review): the swatch already shows a filled square
+  or a ring, so legend items carry only the mark name.
 - **Built-in trackers** needed no source-switch change: own marks taken over from a built-in
   track come from the default mark set, which is fills.

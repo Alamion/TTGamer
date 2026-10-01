@@ -418,9 +418,9 @@ describe('two layers (spec 019, US2)', () => {
 
     it('holds a fill and an outline in one box', () => {
         mount(forcePoints());
-        fireEvent.click(screen.getByRole('button', { name: 'Maximum outline' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Maximum' }));
         for (const n of ['1', '2', '3']) fireEvent.click(box(`${n}: empty`));
-        fireEvent.click(screen.getByRole('button', { name: 'Point fill' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Point' }));
         for (const n of ['1', '2']) fireEvent.click(box(`${n}: Maximum`));
         expect(stored().columns.damage![0]).toEqual({
             id: 'a',
@@ -471,12 +471,13 @@ describe('two layers (spec 019, US2)', () => {
         expect(box('Injured: Bleeding').style.color).toBe('rgb(170, 0, 0)');
     });
 
-    it('names the layers in the legend only when both are used', () => {
+    it('names marks in the legend without layer words; the swatch shows the layer', () => {
         mount(forcePoints());
-        expect(screen.getByRole('button', { name: 'Point fill' })).toBeTruthy();
-        cleanup();
-        mount(trackerPage({ legend: true }));
-        expect(screen.getByRole('button', { name: 'Bashing' })).toBeTruthy();
+        const swatch = (name: string) =>
+            screen.getByRole('button', { name }).querySelector('[aria-hidden="true"]')!;
+        expect(swatch('Point').className).toContain('bg-secondary');
+        expect(swatch('Maximum').className).toContain('outline-secondary');
+        expect(swatch('Maximum').className).not.toContain('bg-secondary');
     });
 });
 

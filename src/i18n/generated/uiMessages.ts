@@ -5887,14 +5887,6 @@ export const uiMessages = {
                     message:
                         'Marking with {mark}: a click puts it on a box or takes it off. Click it again or press Escape to stop.',
                 },
-                layerFill: {
-                    id: 'ttgamer.ui.sheet.tracks.tracker.layerFill',
-                    message: 'fill',
-                },
-                layerOutline: {
-                    id: 'ttgamer.ui.sheet.tracks.tracker.layerOutline',
-                    message: 'outline',
-                },
                 textOnlyInTable: {
                     id: 'ttgamer.ui.sheet.tracks.tracker.textOnlyInTable',
                     message: 'Text columns ({titles}) show only in the table.',

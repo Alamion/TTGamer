@@ -4400,12 +4400,6 @@
     "ttgamer.ui.sheet.tracks.tracker.empty": {
         "message": "пусто"
     },
-    "ttgamer.ui.sheet.tracks.tracker.layerFill": {
-        "message": "заливка"
-    },
-    "ttgamer.ui.sheet.tracks.tracker.layerOutline": {
-        "message": "обводка"
-    },
     "ttgamer.ui.sheet.tracks.tracker.level": {
         "message": "Уровень"
     },

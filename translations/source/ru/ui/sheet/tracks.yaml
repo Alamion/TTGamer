@@ -16,8 +16,6 @@ tracker:
     brushOn: 'Отмечать клетки: {mark}'
     brushOff: 'Перестать отмечать: {mark}'
     brushStatus: 'Отмечаем «{mark}»: щелчок ставит отметку на клетку или снимает её. Щёлкните ещё раз или нажмите Escape, чтобы закончить.'
-    layerFill: заливка
-    layerOutline: обводка
     textOnlyInTable: 'Текстовые столбцы ({titles}) показываются только в таблице.'
     slash: Косая черта
     cross: Крест

@@ -577,7 +577,6 @@ export function Tracker({
         );
     }
 
-    const bothLayers = new Set(model.marks.map(({ layer }) => layer)).size > 1;
     const legend = legendShown ? (
         <div className="grid gap-1">
             <ul className="m-0 flex list-none flex-wrap gap-x-1.5 gap-y-1 p-0 text-xs text-textSecondary">
@@ -586,16 +585,6 @@ export function Tracker({
                         <>
                             <MarkSwatch mark={mark} />
                             {mark.name}
-                            {bothLayers && ' '}
-                            {bothLayers && (
-                                <span className="text-[10px] opacity-80">
-                                    {translate(
-                                        mark.layer === 'fill'
-                                            ? messages.tracker.layerFill
-                                            : messages.tracker.layerOutline
-                                    )}
-                                </span>
-                            )}
                         </>
                     );
                     const pressed = activeBrush?.id === mark.id;

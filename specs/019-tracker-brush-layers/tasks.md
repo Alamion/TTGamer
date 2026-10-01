@@ -236,7 +236,7 @@ Commit.
 - [x] T036 Record deviations, if any, under "Implementation notes" in
       `specs/019-tracker-brush-layers/research.md`.
 - [x] T037 Run `yarn verify:full`; fix findings.
-- [ ] T038 Walk through `specs/019-tracker-brush-layers/quickstart.md` with the maintainer on the
+- [x] T038 Walk through `specs/019-tracker-brush-layers/quickstart.md` with the maintainer on the
       dev server.
 
 ---

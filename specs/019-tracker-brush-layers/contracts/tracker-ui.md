@@ -7,8 +7,8 @@ Changes to `specs/018-configurable-trackers/contracts/tracker-ui.md`. The protot
 
 - Shown only when the tracker's legend is on and the display is a table or strip.
 - **Editable sheet**: each item is a `<button type="button">` with `aria-pressed`. Its content is
-  the swatch (as the mark looks in a box), the mark name, and, when the tracker has marks on both
-  layers, the layer word ("fill" / "outline").
+  the swatch (as the mark looks in a box: filled square or ring) and the mark name; the swatch
+  alone tells the layer.
     - Title: "Mark boxes with {mark}" / "Stop marking with {mark}".
     - Pressed: `border-warning` plus a 1px `warning` ring; at most one pressed item per tracker.
     - Clicking the pressed item ends the brush; clicking another moves it.

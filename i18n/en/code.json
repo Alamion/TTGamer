@@ -4400,12 +4400,6 @@
     "ttgamer.ui.sheet.tracks.tracker.empty": {
         "message": "empty"
     },
-    "ttgamer.ui.sheet.tracks.tracker.layerFill": {
-        "message": "fill"
-    },
-    "ttgamer.ui.sheet.tracks.tracker.layerOutline": {
-        "message": "outline"
-    },
     "ttgamer.ui.sheet.tracks.tracker.level": {
         "message": "Level"
     },

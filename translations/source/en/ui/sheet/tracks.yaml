@@ -16,8 +16,6 @@ tracker:
     brushOn: 'Mark boxes with {mark}'
     brushOff: 'Stop marking with {mark}'
     brushStatus: 'Marking with {mark}: a click puts it on a box or takes it off. Click it again or press Escape to stop.'
-    layerFill: fill
-    layerOutline: outline
     textOnlyInTable: 'Text columns ({titles}) show only in the table.'
     slash: Slash
     cross: Cross
