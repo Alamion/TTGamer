@@ -81,6 +81,53 @@ const COLOR_LABEL = {
     primary: text.colorPrimary,
 } as const;
 
+/** A mark's color: the palette (theme colors) or an own color. */
+export function MarkColorPicker({
+    fill,
+    name,
+    onChange,
+}: {
+    fill: string;
+    name: string;
+    onChange: (fill: string) => void;
+}) {
+    return (
+        <span
+            role="group"
+            aria-label={t(text.markColors, { name })}
+            className="flex items-center gap-1"
+        >
+            {TRACKER_PALETTE_FILLS.map((palette) => (
+                <button
+                    key={palette}
+                    type="button"
+                    aria-pressed={fill === palette}
+                    aria-label={t(COLOR_LABEL[palette])}
+                    title={t(COLOR_LABEL[palette])}
+                    onClick={() => onChange(palette)}
+                    className={clsx(
+                        'h-5 w-5 rounded-full border-2',
+                        fill === palette ? 'border-textPrimary' : 'border-transparent'
+                    )}
+                >
+                    <MarkSwatch mark={{ fill: palette, symbol: '' }} size="xs" />
+                </button>
+            ))}
+            <input
+                type="color"
+                value={fill.startsWith('#') ? fill : '#0e7490'}
+                aria-label={t(text.markOwnColor, { name })}
+                title={t(text.markOwnColor, { name })}
+                onChange={(event) => onChange(event.target.value.toLowerCase())}
+                className={clsx(
+                    'h-6 w-7 cursor-pointer rounded border bg-transparent p-0',
+                    fill.startsWith('#') ? 'border-textPrimary' : 'border-border'
+                )}
+            />
+        </span>
+    );
+}
+
 function move<T>(list: readonly T[], index: number, step: -1 | 1): T[] {
     const next = [...list];
     const target = index + step;
@@ -285,45 +332,11 @@ export function TrackerSettings({
                                 }
                                 className={`${inputClasses} w-11 text-center font-mono font-bold`}
                             />
-                            <span
-                                role="group"
-                                aria-label={t(text.markColors, { name })}
-                                className="flex items-center gap-1"
-                            >
-                                {TRACKER_PALETTE_FILLS.map((fill) => (
-                                    <button
-                                        key={fill}
-                                        type="button"
-                                        aria-pressed={mark.fill === fill}
-                                        aria-label={t(COLOR_LABEL[fill])}
-                                        title={t(COLOR_LABEL[fill])}
-                                        onClick={() => setMark(index, { fill })}
-                                        className={clsx(
-                                            'h-5 w-5 rounded-full border-2',
-                                            mark.fill === fill
-                                                ? 'border-textPrimary'
-                                                : 'border-transparent'
-                                        )}
-                                    >
-                                        <MarkSwatch mark={{ fill, symbol: '' }} size="xs" />
-                                    </button>
-                                ))}
-                                <input
-                                    type="color"
-                                    value={mark.fill.startsWith('#') ? mark.fill : '#0e7490'}
-                                    aria-label={t(text.markOwnColor, { name })}
-                                    title={t(text.markOwnColor, { name })}
-                                    onChange={(event) =>
-                                        setMark(index, { fill: event.target.value.toLowerCase() })
-                                    }
-                                    className={clsx(
-                                        'h-6 w-7 cursor-pointer rounded border bg-transparent p-0',
-                                        mark.fill.startsWith('#')
-                                            ? 'border-textPrimary'
-                                            : 'border-border'
-                                    )}
-                                />
-                            </span>
+                            <MarkColorPicker
+                                fill={mark.fill}
+                                name={name}
+                                onChange={(fill) => setMark(index, { fill })}
+                            />
                             <span
                                 role="group"
                                 aria-label={t(text.markLayer, { n })}

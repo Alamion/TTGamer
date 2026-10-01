@@ -1,5 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { clsx } from 'clsx';
 
 import type { PrimitiveNode, TemplateNode } from '../../../types/template';
 import { builtInSettings, builtInSettingsUpdate } from './builtInTrackerSettings';
@@ -7,6 +8,7 @@ import type { NodeUpdates } from './draft';
 import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
 import { ToggleRow } from './LayoutControls';
+import { PoolTrackerSettings } from './PoolTrackerSettings';
 import { ListSourceSelect, TrackerSourceSelect, ValueSourceSelect } from './SourceControls';
 import { TermHintControl } from './TermHintControl';
 import { TrackerSettings } from './TrackerSettings';
@@ -41,6 +43,27 @@ export function PrimitiveConfig({
         ? bindings.filter((binding) => binding.kind === descriptor.kind)
         : bindings;
     const update = (updates: NodeUpdates) => onUpdate(node.id, updates);
+    const pool = descriptor?.kind === 'resource' && descriptor.mode === 'pool';
+    const asTracker = pool && node.poolTracker !== undefined;
+    // A dots node editing the maximum keeps its minimum on the maximum as a tracker, and back.
+    const setDisplay = (tracker: boolean) =>
+        update(
+            tracker
+                ? {
+                      poolTracker: { display: 'row', legend: false, total: true },
+                      part: undefined,
+                      ...(node.part === 'max' && node.minFrom
+                          ? { maxMinFrom: node.minFrom, minFrom: undefined }
+                          : {}),
+                  }
+                : {
+                      poolTracker: undefined,
+                      maxMinFrom: undefined,
+                      ...(node.maxMinFrom && !node.minFrom
+                          ? { minFrom: node.maxMinFrom, part: 'max' as const }
+                          : {}),
+                  }
+        );
 
     return (
         <div className="space-y-3 rounded border border-border bg-bgSurface p-3">
@@ -87,7 +110,35 @@ export function PrimitiveConfig({
                 />
             </label>
 
-            {descriptor?.kind !== 'track' && (
+            {pool && (
+                <div
+                    role="group"
+                    aria-label={t(editor.primitiveDisplay)}
+                    className="flex flex-wrap items-center gap-1 text-xs text-textSecondary"
+                >
+                    <span>{t(editor.primitiveDisplay)}</span>
+                    {([false, true] as const).map((tracker) => (
+                        <button
+                            key={String(tracker)}
+                            type="button"
+                            aria-pressed={asTracker === tracker}
+                            onClick={() => {
+                                if (asTracker !== tracker) setDisplay(tracker);
+                            }}
+                            className={clsx(
+                                'rounded border px-2.5 py-1 text-xs transition-colors',
+                                asTracker === tracker
+                                    ? 'border-primary bg-primary-muted text-textPrimary'
+                                    : 'border-border text-textSecondary hover:border-primary/60'
+                            )}
+                        >
+                            {t(tracker ? editor.displayTracker : editor.displayDots)}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {descriptor?.kind !== 'track' && !asTracker && (
                 <label className="flex items-center gap-2 text-xs text-textSecondary">
                     <input
                         type="checkbox"
@@ -105,7 +156,7 @@ export function PrimitiveConfig({
             />
             <TermHintControl node={node} onChange={(termHint) => update({ termHint })} />
 
-            {descriptor?.kind === 'resource' && descriptor.mode === 'pool' && (
+            {pool && !asTracker && (
                 <label className="grid gap-1 text-xs text-textSecondary">
                     {t(editor.primitivePart)}
                     <select
@@ -123,25 +174,23 @@ export function PrimitiveConfig({
             )}
 
             {descriptor?.kind === 'resource' && (
-                <label className="grid gap-1 text-xs text-textSecondary">
-                    <span className="flex items-center gap-1">
-                        {t(editor.minFrom)}
-                        <EditorHelp topic="limitsFromValues" about={t(editor.minFrom)} />
-                    </span>
-                    <input
-                        value={node.minFrom ?? ''}
-                        onChange={(event) =>
-                            update({
-                                minFrom:
-                                    event.target.value.length > 0 ? event.target.value : undefined,
-                            })
-                        }
-                        placeholder={t(editor.minFromPlaceholder)}
-                        aria-label={t(editor.minFrom)}
-                        list={coordinateListId}
-                        className={inputClasses}
-                    />
-                </label>
+                <FormulaInput
+                    label={t(asTracker ? editor.minFromCurrent : editor.minFrom)}
+                    value={node.minFrom}
+                    placeholder={t(editor.minFromPlaceholder)}
+                    list={coordinateListId}
+                    onChange={(minFrom) => update({ minFrom })}
+                />
+            )}
+
+            {asTracker && (
+                <FormulaInput
+                    label={t(editor.maxMinFrom)}
+                    value={node.maxMinFrom}
+                    placeholder={t(editor.minFromPlaceholder)}
+                    list={coordinateListId}
+                    onChange={(maxMinFrom) => update({ maxMinFrom })}
+                />
             )}
 
             {descriptor?.kind === 'resource' && (
@@ -166,6 +215,13 @@ export function PrimitiveConfig({
                 </label>
             )}
 
+            {asTracker && node.poolTracker && (
+                <PoolTrackerSettings
+                    value={node.poolTracker}
+                    onChange={(poolTracker) => update({ poolTracker })}
+                />
+            )}
+
             {descriptor?.kind === 'track' && (
                 <TrackerSettings
                     {...builtInSettings(node, descriptor, () => update({ track: undefined }))}
@@ -173,5 +229,39 @@ export function PrimitiveConfig({
                 />
             )}
         </div>
+    );
+}
+
+/** A minimum from a value or formula, with the shared `limitsFromValues` help. */
+function FormulaInput({
+    label,
+    value,
+    placeholder,
+    list,
+    onChange,
+}: {
+    label: string;
+    value: string | undefined;
+    placeholder: string;
+    list: string;
+    onChange: (next: string | undefined) => void;
+}) {
+    return (
+        <label className="grid gap-1 text-xs text-textSecondary">
+            <span className="flex items-center gap-1">
+                {label}
+                <EditorHelp topic="limitsFromValues" about={label} />
+            </span>
+            <input
+                value={value ?? ''}
+                onChange={(event) =>
+                    onChange(event.target.value.length > 0 ? event.target.value : undefined)
+                }
+                placeholder={placeholder}
+                aria-label={label}
+                list={list}
+                className={inputClasses}
+            />
+        </label>
     );
 }

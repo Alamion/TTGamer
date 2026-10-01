@@ -230,11 +230,11 @@ rules, override, readOnly })` returning a `TrackerModel` (one marks column, one 
 
 **Independent Test**: spec US4 Independent Test; quickstart scenarios 12–13.
 
-- [ ] T028 [US4] Create `src/sheet_manager/components/dialogs/template-editor/PoolTrackerSettings.tsx`
+- [x] T028 [US4] Create `src/sheet_manager/components/dialogs/template-editor/PoolTrackerSettings.tsx`
       (look Row / Strip / One line; Current and Maximum mark rows with name, symbol, color and the
       fixed layer as text, reusing `MarkSwatch` and the color list of `TrackerSettings.tsx`;
       legend and count toggles).
-- [ ] T029 [US4] In `src/sheet_manager/components/dialogs/template-editor/PrimitiveConfig.tsx` for
+- [x] T029 [US4] In `src/sheet_manager/components/dialogs/template-editor/PrimitiveConfig.tsx` for
       pool resources: the "Display" choice Dots / Tracker (`poolTracker: {}` or `undefined`); with
       Tracker hide "Part" and "Compact", show `PoolTrackerSettings`, relabel `minFrom` as "At least
       (current)", and add the "Maximum at least" field (`maxMinFrom`) with the
@@ -242,12 +242,12 @@ rules, override, readOnly })` returning a `TrackerModel` (one marks column, one 
       `maxMinFrom` and back (research R8). Add `maxMinFrom` and `poolTracker` to the optional
       keys and the formula check in
       `src/sheet_manager/components/dialogs/template-editor/draft.ts`.
-- [ ] T030 [P] [US4] Editor tests in `tests/sheet_manager/template-editor.test.tsx`: a pool
+- [x] T030 [P] [US4] Editor tests in `tests/sheet_manager/template-editor.test.tsx`: a pool
       resource offers Display, a rating resource does not; choosing Tracker shows the panel and
       hides Part/Compact; a bad "Maximum at least" formula blocks saving like `minFrom`; a
       `part: 'max'` node with `minFrom` switched to Tracker and back keeps its formula on the
       maximum.
-- [ ] T031 [US4] Storybook in `src/sheet_manager/storybook/stories.ts`: an own point tracker
+- [x] T031 [US4] Storybook in `src/sheet_manager/storybook/stories.ts`: an own point tracker
       (fill from the start, Count, legend); a "two fills, two outlines" tracker with fills inside
       the outline; a pool resource as Row next to a rating row, and one with a locked minimum.
       Add guard tags `tracker:from-start`, `tracker:count`, `primitive:resource:tracker` in
