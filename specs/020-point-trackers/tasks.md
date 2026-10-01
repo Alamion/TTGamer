@@ -257,15 +257,15 @@ rules, override, readOnly })` returning a `TrackerModel` (one marks column, one 
 
 ## Phase 7: Polish & Cross-Cutting
 
-- [ ] T032 [P] Guide `docs/template-editor/elements.mdx` (Trackers: fill from the start, fills
+- [x] T032 [P] Guide `docs/template-editor/elements.mdx` (Trackers: fill from the start, fills
       inside, Count, the outline action by right click, Shift+Enter, and long press; Built-in
       page parts: pool display) and the Russian mirror under
       `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/elements.mdx`.
-- [ ] T033 [P] Update `.agents/skills/sheet-templates/SKILL.md` (tracker click rules, run writes,
+- [x] T033 [P] Update `.agents/skills/sheet-templates/SKILL.md` (tracker click rules, run writes,
       count, pool tracker module and `maxMinFrom`) and `src/sheet_manager/AGENTS.md`.
-- [ ] T034 `CHANGELOG.md` new minor entry, `package.json` version, `TODO.md` T-085 ✅; run
+- [x] T034 `CHANGELOG.md` new minor entry, `package.json` version, `TODO.md` T-085 ✅; run
       `yarn check:version`.
-- [ ] T035 Run `yarn verify:full`; fix findings (knip: new exports must have importers).
+- [x] T035 Run `yarn verify:full`; fix findings (knip: new exports must have importers).
 - [ ] T036 Walk `quickstart.md` on the dev server; record results and refinements in research.md
       "Implementation notes".
 

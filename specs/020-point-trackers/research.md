@@ -198,3 +198,31 @@ lives in the document).
   the pool display.
 - Skill `sheet-templates` and `src/sheet_manager/AGENTS.md`: click rules, pool tracker module.
 - `CHANGELOG.md` and `package.json` minor bump; `TODO.md` T-085 ✅.
+
+## Implementation notes (2026-10-02)
+
+Where the built code refines the decisions above:
+
+- **One write per own-tracker press**: `markTracker` routes a `TrackerClick`; without
+  `fromStart` it keeps spec 019 (`paintTrackerMark` for a brush, `toggleTrackerMark` now taking
+  the layer). `runTrackerMark` rewrites the layer box by box through `writeLayer`, so slot rules
+  stay in one place. With `fillInside` and no framed box, a fill run places nothing.
+- **Outline action in the molecule**: `MarkBox` takes `onOutline` only when the model has
+  outline kinds and the tracker is enabled. A small `useLongPress` (500 ms, 10 px slop, touch
+  pointers only) swallows the click that ends the press and the phone's own `contextmenu` for
+  a short window after a touch. Shift+Space also prevents its key-up so the button's click does
+  not follow.
+- **Total row label**: own trackers show "Show the total row" plus the "The total reads" choice;
+  built-in trackers keep the old "deepest marked level" label (they have no count).
+- **Pool trackers**: `poolTrackerModel` builds the shared `TrackerModel` (level ids `p1…pN`,
+  marks `current`/`max`); `PoolTracker` maps a press, a brush, or the outline action to
+  `markPool`. Rules come from `PrimitiveResourceBody` (`limit` = resolved `maxFrom` capped by
+  the binding maximum; `minFrom` → current, `maxMinFrom` → maximum, resolved into
+  `formulaState.maxMinima`).
+- **Editor**: the mark color group became `MarkColorPicker` (shared by `TrackerSettings` and
+  the new `PoolTrackerSettings`); the minimum fields share a `FormulaInput`.
+- **Shipped template copies (R9 check)**: shipped pages are built in code, so every reader gets
+  the single Force Points row; a reader who edited the shipped page has a saved full copy in
+  `defaultOverrides`, which keeps its two rows until they restore the page. No stored document
+  value changes. Two template snapshots (`star-wars-parity.json`,
+  `character-templates.pre-007.json`) were refreshed for exactly this node change.

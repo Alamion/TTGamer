@@ -54,8 +54,9 @@ Use dependency direction, not component size, to classify sheet UI:
    one concrete stat. Extend an existing atom with an optional prop before adding a new one.
 2. **Molecules** (`components/sections`) combine atoms into one reusable interaction such
    as a trait group, resource group, tracker (`stat-fields/Tracker.tsx`: table, strip, or one
-   line, copies, −/+ length, fill and outline layers, a legend brush; own and built-in trackers
-   share it, specs 018–019), or editable table. They may accept
+   line, or a pool's rating-like row; copies, −/+ length, fill and outline layers, a legend
+   brush, the outline action by right click, Shift+Enter, or long press; own, built-in, and
+   pool trackers share it, specs 018–020), or editable table. They may accept
    definition/profile data but must not select the current document.
 3. **Bound elements** (`features/sheet/declarative`, `features/sheet/body`) adapt document data
    to molecules through bindings (`useBoundDocument`, `useBodyHandlers`). They must not decide
