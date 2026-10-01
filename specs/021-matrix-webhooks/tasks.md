@@ -216,18 +216,18 @@ anchors; `yarn validate:i18n` passes.
 
 ## Phase 7: Polish & cross-cutting
 
-- [ ] T023 [P] Module notes: `AGENTS.md` §6 tree (`roll-sharing/  # Queued roll sharing to
+- [x] T023 [P] Module notes: `AGENTS.md` §6 tree (`roll-sharing/  # Queued roll sharing to
 Discord, Matrix (service registry)`), `src/dice_roller/AGENTS.md` (Discord → roll sharing
       service; subscription name), and any skill mentioning the Discord integration.
-- [ ] T024 [P] `ROADMAP.md` `offline-support`: the optional network capability is "sharing roll
+- [x] T024 [P] `ROADMAP.md` `offline-support`: the optional network capability is "sharing roll
       results to an external chat service (Discord, Matrix)"; add a dated note.
-- [ ] T025 [P] `TODO.md`: T-087 notes updated to the shipped design (select, per-service
+- [x] T025 [P] `TODO.md`: T-087 notes updated to the shipped design (select, per-service
       addresses, live check pending); T-016 wording covers every service's webhook secret.
       Run `yarn validate:backlog`.
-- [ ] T026 `CHANGELOG.md` v3.19.0 entry (Matrix sharing, service select, logo, guide) and
+- [x] T026 `CHANGELOG.md` v3.19.0 entry (Matrix sharing, service select, logo, guide) and
       `package.json` version 3.19.0; `yarn check:version`.
-- [ ] T027 Run `yarn verify:full`; fix findings (knip: removed exports, unused static files).
-- [ ] T028 Local UI check per quickstart §2 with `playwright-cli` against
+- [x] T027 Run `yarn verify:full`; fix findings (knip: removed exports, unused static files).
+- [x] T028 Local UI check per quickstart §2 with `playwright-cli` against
       `http://localhost:3000` (reuse the running dev server).
 - [ ] T029 Live hookshot check per quickstart §3 with the admin's address; record date,
       homeserver, per-step result, and the time from opening the settings to the first roll in

@@ -2,7 +2,7 @@
 
 ## Scope
 
-This module owns notation editing, parsing/evaluation, roll history, 2D/3D presentation, and roll-result events. Discord delivery is a consumer in `src/integrations/discord`; it is not part of the dice engine.
+This module owns notation editing, parsing/evaluation, roll history, 2D/3D presentation, and roll-result events. Roll sharing (Discord, Matrix) is a consumer in `src/integrations/roll-sharing`, mounted as `RollSharingSubscription`; it is not part of the dice engine. Each service is one entry in that module's registry (`SHARING_SERVICES`); the chosen service is the `sharingService` setting, the on/off switch is still the `enableDiscordWebhook` key, and each service keeps its own session address.
 
 ## Structure
 
@@ -31,7 +31,7 @@ notation → tokenize → strict AST parse
                      └─ 3D: physics generates supported die values
                             → orchestrator handles physical rerolls/explosions
                             → evaluator applies remaining result semantics
-                     → RollResult event → history/toast/Discord subscribers
+                     → RollResult event → history/toast/roll-sharing subscribers
 ```
 
 The 3D renderer (`three` + `cannon-es`) is loaded on demand: `roll-orchestrator.ts` holds a
@@ -63,14 +63,14 @@ selected; rolls made in the panel follow the panel's tab and its settings.
 
 `store.roll()` hands origin-carrying rolls to the one registered `RollReader`:
 `prepare` may rewrite the notation (e.g. add `x2=10`), `interpret` returns a
-`RollReadingSummary` stored on `RollResult.reading` (history, toast, Discord). No reader, or a
+`RollReadingSummary` stored on `RollResult.reading` (history, toast, roll sharing). No reader, or a
 throwing reader, means an unread roll and a logged warning. The reader lives in
 `src/integrations/roll-reading/` and is registered lazily from `src/theme/Root.tsx`, so the
 system registry never joins the shared bundle. Documentation inline rolls call `rollDices()`
 directly and are never read.
 
 Labelled (`:h`) dice use `settings.specialDiceColor` in 3D (per flat group in the orchestrator,
-kept by explosions) and are listed as special dice in history and Discord. The WoD tab has a
+kept by explosions) and are listed as special dice in history and shared rolls. The WoD tab has a
 persisted Classic / V5 mode (`settings.wodMode`); V5 mode holds the line, the optional
 Difficulty in successes, and the `v5CriticalPairs` / `v5SpecialOutcomes` switches. Classic
 mode holds an optional success threshold (`wodThreshold`, default 6; unset adds plain `d10` and
@@ -81,7 +81,7 @@ botch-only top-level d10 terms the threshold via `addWodThreshold`) and optional
 The successes needed of the current mode travel in the panel origin (`wod.difficulty`). When it
 is set and the rolled notation is a success pool, the store attaches a neutral
 `RollResult.verdict` (`rollVerdict` in `utils/rollReader.ts`: succeeded, margin), shown in the
-toast, history, and Discord. Sheet rolls and other tabs get none; an unset value changes nothing.
+toast, history, and shared rolls. Sheet rolls and other tabs get none; an unset value changes nothing.
 
 The dice store persists with `version: 1`; its `merge` lays stored settings over
 `DEFAULT_SETTINGS`, so a new settings key needs only a default and a `SETTINGS_METADATA` entry.

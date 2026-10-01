@@ -585,7 +585,7 @@ each term, so a set can mix dice from different terms:
 
 Marks a term's dice as the pool's special subset (e.g. V5 Hunger or Desperation dice). It
 changes no value; the dice keep the label through explosions and rerolls, are drawn in the
-special dice colour in 3D, and are listed separately in history and Discord messages. A
+special dice colour in 3D, and are listed separately in history and shared roll messages (Discord, Matrix). A
 system reading (such as V5) decides what they mean.
 
 ```

@@ -96,7 +96,7 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 │   │   ├── types/             #   Zod schemas + TS types
 │   │   └── context/           #   CharacterContext (multi-character)
 │   ├── integrations/          # External/cross-feature adapters
-│   │   ├── discord/           #   Bounded, queued Discord webhook delivery
+│   │   ├── roll-sharing/      #   Queued roll sharing to Discord/Matrix (service registry)
 │   │   ├── docs-character-rolls/ # Documentation ↔ sheet/dice adapter
 │   │   ├── roll-reading/      #   Game-system dice readings (V5 criticals, special dice)
 │   │   └── sheet-dice/        #   Character stat ↔ dice panel adapter, shown document

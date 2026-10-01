@@ -112,6 +112,9 @@
   themes — and "off" is dimmed like Discord.
 - **Rationale**: the site has no SVG-as-component imports and Vitest has no SVG loader; an
   `<img>` cannot change color.
+- **Ring**: each logo has its own ring geometry. Discord keeps the old one exactly (wider than
+  the frame, only its arcs show in the mark's empty corners); the square Matrix mark gets a padded
+  frame so the whole ring fits around it (found in the T028 browser check).
 - **Placement**: `ServiceLogo` lives in the integration, not the dice roller, because a logo
   belongs to the service entry like its name and color; adding a service then touches one
   module.
