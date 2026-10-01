@@ -1,0 +1,7 @@
+errors:
+    rateLimited: '{service} is rate-limiting rolls. Try again in a moment.'
+    rateLimitedRetry: '{service} is rate-limiting rolls. Try again in about {seconds} seconds.'
+    network: '{service} could not be reached. Check your connection.'
+    sitePermission: 'The {service} room could not be reached. The server may not allow this site yet.'
+    rejected: '{service} rejected this roll. Check the webhook settings.'
+    setupGuide: Setup guide

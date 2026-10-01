@@ -1061,32 +1061,44 @@
     "ttgamer.ui.dice.settings.volume": {
         "message": "Volume"
     },
-    "ttgamer.ui.dice.sharing.discordToggleTitle": {
-        "message": "Left-click: toggle Discord webhook | Right-click: anonymize rolls (hide character data)"
-    },
     "ttgamer.ui.dice.sharing.enableDiscordWebhook": {
-        "message": "Enable Discord webhook"
+        "message": "Share rolls"
+    },
+    "ttgamer.ui.dice.sharing.service": {
+        "message": "Service"
+    },
+    "ttgamer.ui.dice.sharing.setupGuide": {
+        "message": "How to set up sharing"
+    },
+    "ttgamer.ui.dice.sharing.toggleTitle": {
+        "message": "Left-click: share rolls to {service} on or off | Right-click: anonymize rolls (hide character data)"
     },
     "ttgamer.ui.dice.sharing.webhookInvalid": {
-        "message": "Invalid Discord webhook URL format"
+        "message": "Invalid {service} webhook URL"
     },
     "ttgamer.ui.dice.sharing.webhookUrl": {
-        "message": "Discord Webhook URL"
+        "message": "{service} webhook URL"
     },
     "ttgamer.ui.dice.sharing.webhookValid": {
-        "message": "Valid Discord webhook"
+        "message": "Valid {service} webhook"
     },
-    "ttgamer.ui.integrations.discord.errors.network": {
-        "message": "Discord could not be reached. Check your connection."
+    "ttgamer.ui.integrations.sharing.errors.network": {
+        "message": "{service} could not be reached. Check your connection."
     },
-    "ttgamer.ui.integrations.discord.errors.rateLimited": {
-        "message": "Discord is rate-limiting rolls. Try again in a moment."
+    "ttgamer.ui.integrations.sharing.errors.rateLimited": {
+        "message": "{service} is rate-limiting rolls. Try again in a moment."
     },
-    "ttgamer.ui.integrations.discord.errors.rateLimitedRetry": {
-        "message": "Discord is rate-limiting rolls. Try again in about {seconds} seconds."
+    "ttgamer.ui.integrations.sharing.errors.rateLimitedRetry": {
+        "message": "{service} is rate-limiting rolls. Try again in about {seconds} seconds."
     },
-    "ttgamer.ui.integrations.discord.errors.rejected": {
-        "message": "Discord rejected this roll. Check the webhook settings."
+    "ttgamer.ui.integrations.sharing.errors.rejected": {
+        "message": "{service} rejected this roll. Check the webhook settings."
+    },
+    "ttgamer.ui.integrations.sharing.errors.setupGuide": {
+        "message": "Setup guide"
+    },
+    "ttgamer.ui.integrations.sharing.errors.sitePermission": {
+        "message": "The {service} room could not be reached. The server may not allow this site yet."
     },
     "ttgamer.ui.shared.bottomSheet.close": {
         "message": "Close details"

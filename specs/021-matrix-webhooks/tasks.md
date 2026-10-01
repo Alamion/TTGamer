@@ -87,7 +87,7 @@ a form body whose `text` carries both rolls.
 
 ### Tests
 
-- [ ] T008 [P] [US1] Add Matrix contract tests to `tests/integrations/roll-sharing.test.ts`:
+- [x] T008 [P] [US1] Add Matrix contract tests to `tests/integrations/roll-sharing.test.ts`:
       address rule (`https://` ok; `http://`, garbage, and a Discord webhook address refused);
       request is `POST` with a `URLSearchParams` body whose `text` equals the content and no
       `headers` (no preflight, R1); two messages within the window → one request; `@room` in a
@@ -99,24 +99,24 @@ a form body whose `text` carries both rolls.
 
 ### Implementation
 
-- [ ] T009 [US1] Add the Matrix entry to `src/integrations/roll-sharing/services.ts`
+- [x] T009 [US1] Add the Matrix entry to `src/integrations/roll-sharing/services.ts`
       (`id: 'matrix'`, `name: 'Matrix'`, `color: 'currentColor'`, `addressKey:
 'matrix_webhook_url'`, limit 2 000, `isValidAddress`: parseable `https:` URL that fails the
       Discord rule, `prepare`: replace `@room` with `@​room`, `request`: `{ method: 'POST',
 body: new URLSearchParams({ text: content }) }`, anchor `matrix`, placeholder
       `https://matrix.example.org/webhook/...`, `networkHint: 'site-permission'`); widen
       `SharingServiceId`.
-- [ ] T010 [US1] Add `sharingService: 'discord' as SharingServiceId` to `DEFAULT_SETTINGS`
+- [x] T010 [US1] Add `sharingService: 'discord' as SharingServiceId` to `DEFAULT_SETTINGS`
       and `{ type: 'choice', name: 'Roll sharing service' }` to the setting config in
       `src/dice_roller/utils/constants.ts`; add the field to `DiceRollerSettings` in
       `src/dice_roller/store/diceRollerStore.ts` (no version bump; `mergeStoredSettings`
       fills it). Extend `tests/dice_roller/utils/constants.test.ts` (key list, default
       `'discord'`).
-- [ ] T011 [US1] Make `src/dice_roller/components/RollSharingSubscription.tsx` read the
+- [x] T011 [US1] Make `src/dice_roller/components/RollSharingSubscription.tsx` read the
       active target: `sharingServiceOf(settings.sharingService)`, its address from
       `useSessionStorageState(service.addressKey, '')`, send only when
       `enableDiscordWebhook` and the address is valid; resubscribe when the service changes.
-- [ ] T012 [US1] Notices name the service: move
+- [x] T012 [US1] Notices name the service: move
       `translations/source/{en,ru}/ui/integrations/discord.yaml` →
       `translations/source/{en,ru}/ui/integrations/sharing.yaml` with `{service}` in
       `rateLimited`, `rateLimitedRetry`, `network`, `rejected`, plus `matrixNetwork` ("{service}
@@ -125,7 +125,7 @@ body: new URLSearchParams({ text: content }) }`, anchor `matrix`, placeholder
       `RollSharingSubscription.tsx` pass `service.name`, and when `service.networkHint` is set a
       `network` failure renders the hint text with a link to the guide's `#site-permission` anchor (R11; `useBaseUrl`-safe path,
       plain `<a>`).
-- [ ] T013 [US1] Extend `tests/dice_roller/components/roll-sharing-subscription.test.tsx`:
+- [x] T013 [US1] Extend `tests/dice_roller/components/roll-sharing-subscription.test.tsx`:
       Matrix chosen with a valid `matrix_webhook_url` → `queueRollShare` gets `service:
 'matrix'`; Matrix `network` failure → toast content contains the guide link; Discord
       failures still toast with "Discord" in the text.

@@ -61,7 +61,9 @@ export default function RollControls() {
                         e.preventDefault();
                         toggleAnonymize();
                     }}
-                    title={translate(uiMessages.dice.sharing.discordToggleTitle)}
+                    title={translate(uiMessages.dice.sharing.toggleTitle, {
+                        service: service.name,
+                    })}
                     className="inline-flex items-center justify-center w-8 h-8 rounded-md
                         hover:bg-bgBase/50 transition-colors"
                 >

@@ -1,5 +1,7 @@
-enableDiscordWebhook: Включить вебхук Discord
-webhookUrl: URL вебхука Discord
-webhookValid: Вебхук Discord указан верно
-webhookInvalid: Неверный формат URL вебхука Discord
-discordToggleTitle: 'ЛКМ: включить или выключить вебхук Discord | ПКМ: анонимные броски (скрыть данные персонажа)'
+enableDiscordWebhook: Делиться бросками
+service: Сервис
+webhookUrl: 'URL вебхука {service}'
+webhookValid: 'Вебхук {service} указан верно'
+webhookInvalid: 'Неверный URL вебхука {service}'
+setupGuide: Как настроить отправку бросков
+toggleTitle: 'ЛКМ: включить или выключить отправку бросков в {service} | ПКМ: анонимные броски (скрыть данные персонажа)'

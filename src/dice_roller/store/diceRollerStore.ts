@@ -1,3 +1,4 @@
+import type { SharingServiceId } from '@site/src/integrations/roll-sharing';
 import { warn } from '@site/src/shared/utils/logging';
 import type { StateCreator } from 'zustand';
 import { create } from 'zustand';
@@ -47,6 +48,7 @@ export interface DiceRollerSettings {
     /** 3D dice feel, 0 (heavy) to 100 (lively, the original behavior). */
     diceLiveliness: number;
     enableDiscordWebhook: boolean;
+    sharingService: SharingServiceId;
     includeCharacterName: boolean;
     includeCharacterStats: boolean;
     includeRollContext: boolean;

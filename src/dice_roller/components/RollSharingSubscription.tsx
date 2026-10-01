@@ -5,9 +5,11 @@ import {
     queueRollShare,
     type RollShareReadingLines,
     type RollShareResult,
-    SHARING_SERVICES,
+    type SharingService,
+    sharingServiceOf,
 } from '@site/src/integrations/roll-sharing';
 import { useSessionStorageState } from '@site/src/shared/hooks/useSessionStorageState';
+import { useSitePath } from '@site/src/shared/hooks/useSitePath';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
@@ -17,17 +19,45 @@ import { specialDiceValues } from '../dice-logic/utils';
 import { useDiceRollerStore } from '../store/diceRollerStore';
 import { verdictText } from './verdictText';
 
-type DeliveryFailureReason = Extract<RollShareResult, { ok: false }>['reason'];
+type DeliveryFailure = Extract<RollShareResult, { ok: false }>;
 
 /** User-facing message per delivery failure code; the codes stay in the roll-sharing integration. */
 const DELIVERY_ERROR_MESSAGES: Record<
-    Exclude<DeliveryFailureReason, 'rate-limited'>,
+    Exclude<DeliveryFailure['reason'], 'rate-limited'>,
     UiMessageDescriptor
 > = {
-    network: uiMessages.integrations.discord.errors.network,
-    rejected: uiMessages.integrations.discord.errors.rejected,
-    'invalid-webhook': uiMessages.integrations.discord.errors.rejected,
+    network: uiMessages.integrations.sharing.errors.network,
+    rejected: uiMessages.integrations.sharing.errors.rejected,
+    'invalid-webhook': uiMessages.integrations.sharing.errors.rejected,
 };
+
+function notifyFailure(delivery: DeliveryFailure, service: SharingService, guideUrl: string) {
+    const values = { service: service.name };
+    if (delivery.reason === 'rate-limited') {
+        toast.error(
+            delivery.retryAfterMs
+                ? translate(uiMessages.integrations.sharing.errors.rateLimitedRetry, {
+                      ...values,
+                      seconds: Math.ceil(delivery.retryAfterMs / 1_000),
+                  })
+                : translate(uiMessages.integrations.sharing.errors.rateLimited, values)
+        );
+        return;
+    }
+    if (delivery.reason === 'network' && service.networkHint === 'site-permission') {
+        toast.error(
+            <span>
+                {translate(uiMessages.integrations.sharing.errors.sitePermission, values)}{' '}
+                <a href={`${guideUrl}#site-permission`} className="underline">
+                    {translate(uiMessages.integrations.sharing.errors.setupGuide)}
+                </a>
+            </span>,
+            { duration: 8_000 }
+        );
+        return;
+    }
+    toast.error(translate(DELIVERY_ERROR_MESSAGES[delivery.reason], values));
+}
 
 function readingLines(result: RollResult): RollShareReadingLines | undefined {
     const values = result.diceGroups ? specialDiceValues(result) : [];
@@ -51,45 +81,28 @@ function readingLines(result: RollResult): RollShareReadingLines | undefined {
 
 export default function RollSharingSubscription() {
     const settings = useDiceRollerStore((s) => s.settings);
-    const service = SHARING_SERVICES[0]!;
-    const [webhookUrl] = useSessionStorageState(service.addressKey, '');
+    const service = sharingServiceOf(settings.sharingService);
+    const [address] = useSessionStorageState(service.addressKey, '');
+    const guideUrl = useSitePath()('/docs/roll-sharing');
 
-    const enableDiscordWebhook = settings.enableDiscordWebhook;
+    const enabled = settings.enableDiscordWebhook;
     const includeRollContext = settings.includeRollContext;
 
     useEffect(() => {
-        if (!webhookUrl || !service.isValidAddress(webhookUrl) || !enableDiscordWebhook) {
-            return;
-        }
+        if (!enabled || !service.isValidAddress(address)) return;
 
         const unsub = onRollResult((result: RollResult) => {
             const reading = readingLines(result);
             const message = includeRollContext
                 ? buildRollShareMessage(result, reading)
                 : buildRollShareMessage({ ...result, details: '', formatted: '' }, reading);
-            queueRollShare(message, { service: service.id, address: webhookUrl }).then(
-                (delivery) => {
-                    if (delivery.ok) return;
-                    if (delivery.reason === 'rate-limited') {
-                        toast.error(
-                            delivery.retryAfterMs
-                                ? translate(
-                                      uiMessages.integrations.discord.errors.rateLimitedRetry,
-                                      {
-                                          seconds: Math.ceil(delivery.retryAfterMs / 1_000),
-                                      }
-                                  )
-                                : translate(uiMessages.integrations.discord.errors.rateLimited)
-                        );
-                        return;
-                    }
-                    toast.error(translate(DELIVERY_ERROR_MESSAGES[delivery.reason]));
-                }
-            );
+            queueRollShare(message, { service: service.id, address }).then((delivery) => {
+                if (!delivery.ok) notifyFailure(delivery, service, guideUrl);
+            });
         });
 
         return () => unsub();
-    }, [service, webhookUrl, enableDiscordWebhook, includeRollContext]);
+    }, [service, address, enabled, includeRollContext, guideUrl]);
 
     return null;
 }

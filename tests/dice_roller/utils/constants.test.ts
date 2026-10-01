@@ -49,6 +49,7 @@ describe('DEFAULT_SETTINGS', () => {
             'timeToReactSeconds',
             'diceLiveliness',
             'enableDiscordWebhook',
+            'sharingService',
             'includeCharacterName',
             'includeCharacterStats',
             'includeRollContext',
@@ -89,6 +90,10 @@ describe('DEFAULT_SETTINGS', () => {
 
     it('timeToReactSeconds is 5', () => {
         expect(DEFAULT_SETTINGS.timeToReactSeconds).toBe(5);
+    });
+
+    it('shares to Discord by default', () => {
+        expect(DEFAULT_SETTINGS.sharingService).toBe('discord');
     });
 
     it('enableDiscordWebhook is true', () => {
