@@ -13,6 +13,10 @@ tracker:
     box: '{level}: {mark}'
     empty: empty
     boxBoth: '{level}: {fill}, {outline}'
+    boxLocked: '{level}: {mark}, locked'
+    lockedTitle: '{level} — cannot go below {n}'
+    poolPoint: Point
+    poolMaximum: Maximum
     brushOn: 'Mark boxes with {mark}'
     brushOff: 'Stop marking with {mark}'
     brushStatus: 'Marking with {mark}: a click puts it on a box or takes it off. Click it again or press Escape to stop.'

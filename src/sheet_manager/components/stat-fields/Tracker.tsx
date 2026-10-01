@@ -2,9 +2,19 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
-import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+import {
+    type CSSProperties,
+    type KeyboardEvent as ReactKeyboardEvent,
+    type MouseEvent as ReactMouseEvent,
+    type PointerEvent as ReactPointerEvent,
+    type ReactNode,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
 import type {
+    TrackerClick,
     TrackerModel,
     TrackerModelColumn,
     TrackerModelCopy,
@@ -24,6 +34,7 @@ const PALETTE_CLASSES: Record<TrackerPaletteFill, string> = {
     success: 'border-success bg-success text-white',
     // Ink flips with the theme, so its symbol takes the page background to stay readable.
     text: 'border-textPrimary bg-textPrimary text-bgBase',
+    primary: 'border-primary bg-primary text-primary-on',
 };
 
 function isPaletteFill(fill: string): fill is TrackerPaletteFill {
@@ -65,6 +76,7 @@ const OUTLINE_CLASSES: Record<TrackerPaletteFill, string> = {
     tertiary: 'outline-tertiary',
     success: 'outline-success',
     text: 'outline-textPrimary',
+    primary: 'outline-primary',
 };
 
 const SYMBOL_CLASSES: Record<TrackerPaletteFill, string> = {
@@ -73,6 +85,7 @@ const SYMBOL_CLASSES: Record<TrackerPaletteFill, string> = {
     tertiary: 'text-tertiary',
     success: 'text-success',
     text: 'text-textPrimary',
+    primary: 'text-primary',
 };
 
 /** Classes, style, and symbol of a box holding an optional fill and an optional outline. */
@@ -122,6 +135,60 @@ export function MarkSwatch({
     );
 }
 
+const LONG_PRESS_MS = 500;
+const LONG_PRESS_SLOP_PX = 10;
+
+/**
+ * A touch long press (spec 020 FR-005a): held still for half a second, it runs `onLong` once and
+ * swallows the press's click and the phone's own context menu. Mouse and pen presses never start it.
+ */
+function useLongPress(onLong: (() => void) | undefined) {
+    const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+    const start = useRef<{ x: number; y: number } | undefined>(undefined);
+    const fired = useRef(false);
+    const touchedAt = useRef(0);
+    useEffect(() => () => clearTimeout(timer.current), []);
+    const cancel = () => {
+        clearTimeout(timer.current);
+        start.current = undefined;
+    };
+    return {
+        handlers: onLong
+            ? {
+                  onPointerDown: (event: ReactPointerEvent) => {
+                      if (event.pointerType !== 'touch') return;
+                      fired.current = false;
+                      touchedAt.current = Date.now();
+                      start.current = { x: event.clientX, y: event.clientY };
+                      clearTimeout(timer.current);
+                      timer.current = setTimeout(() => {
+                          start.current = undefined;
+                          fired.current = true;
+                          onLong();
+                      }, LONG_PRESS_MS);
+                  },
+                  onPointerMove: (event: ReactPointerEvent) => {
+                      const from = start.current;
+                      if (!from) return;
+                      const moved = Math.hypot(event.clientX - from.x, event.clientY - from.y);
+                      if (moved > LONG_PRESS_SLOP_PX) cancel();
+                  },
+                  onPointerUp: cancel,
+                  onPointerCancel: cancel,
+                  onPointerLeave: cancel,
+              }
+            : {},
+        /** True (once) when the click ending a long press must be dropped. */
+        consumeClick: () => {
+            const was = fired.current;
+            fired.current = false;
+            return was;
+        },
+        /** The phone's own long-press menu right after a touch: drop it, the timer acts instead. */
+        touchMenu: () => Date.now() - touchedAt.current < LONG_PRESS_MS * 2,
+    };
+}
+
 function MarkBox({
     disabled,
     label,
@@ -129,6 +196,7 @@ function MarkBox({
     fill,
     outline,
     onToggle,
+    onOutline,
     size,
 }: {
     disabled: boolean;
@@ -137,15 +205,42 @@ function MarkBox({
     fill: Mark | undefined;
     outline: Mark | undefined;
     onToggle: () => void;
+    /** The outline action (right click, Shift+Enter/Space, long press); unset keeps the defaults. */
+    onOutline?: () => void;
     size: 'sm' | 'md';
 }) {
     const look = boxLook(fill, outline, size);
     const text = messages.tracker;
+    const outlineAction = disabled ? undefined : onOutline;
+    const longPress = useLongPress(outlineAction);
+    const shiftActivates = (event: ReactKeyboardEvent) =>
+        event.shiftKey && (event.key === 'Enter' || event.key === ' ');
     return (
         <button
             type="button"
             disabled={disabled}
-            onClick={onToggle}
+            onClick={() => {
+                if (!longPress.consumeClick()) onToggle();
+            }}
+            {...longPress.handlers}
+            {...(outlineAction
+                ? {
+                      onContextMenu: (event: ReactMouseEvent) => {
+                          event.preventDefault();
+                          if (!longPress.touchMenu()) outlineAction();
+                      },
+                      onKeyDown: (event: ReactKeyboardEvent) => {
+                          if (!shiftActivates(event)) return;
+                          // The button's own click must not follow (Enter clicks on key down).
+                          event.preventDefault();
+                          if (!event.repeat) outlineAction();
+                      },
+                      // Space clicks on key up.
+                      onKeyUp: (event: ReactKeyboardEvent) => {
+                          if (shiftActivates(event)) event.preventDefault();
+                      },
+                  }
+                : {})}
             aria-label={
                 fill && outline
                     ? translate(text.boxBoth, {
@@ -165,6 +260,8 @@ function MarkBox({
                 'transition-colors focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-70',
                 // The outline layer owns `outline`; plain boxes drop the browser's focus outline.
                 !outline && 'focus-visible:outline-none',
+                // A long press must not select text or open the phone's callout.
+                'select-none [-webkit-touch-callout:none]',
                 look.className,
                 !fill && !disabled && 'hover:border-primary'
             )}
@@ -178,8 +275,8 @@ function MarkBox({
 export interface TrackerProps {
     model: TrackerModel;
     disabled: boolean;
-    /** A box click; `brush` is the mark picked in the legend (spec 019), else the click cycles. */
-    onMark: (columnId: string, copyId: string, levelId: string, brush?: string) => void;
+    /** A box press: the legend brush's mark (spec 019) or a layer (spec 020 outline action). */
+    onMark: (columnId: string, copyId: string, levelId: string, click: TrackerClick) => void;
     onText?: (columnId: string, copyId: string, levelId: string, text: string) => void;
     onAddCopy?: (columnId: string) => void;
     onRemoveCopy?: (columnId: string, copyId: string) => void;
@@ -290,7 +387,19 @@ export function Tracker({
                 title={levelTitle(level)}
                 fill={markById.get(copy.marks[levelId] ?? '')}
                 outline={markById.get(copy.outlines[levelId] ?? '')}
-                onToggle={() => onMark(column.id, copy.id, levelId, activeBrush?.id)}
+                onToggle={() =>
+                    onMark(
+                        column.id,
+                        copy.id,
+                        levelId,
+                        activeBrush ? { brush: activeBrush.id } : { layer: model.readingLayer }
+                    )
+                }
+                onOutline={
+                    model.hasOutlines
+                        ? () => onMark(column.id, copy.id, levelId, { layer: 'outline' })
+                        : undefined
+                }
                 size={size}
             />
         );

@@ -239,7 +239,14 @@ const ReferenceFieldSchema = z.object({
 });
 
 /** Palette fills a tracker mark may take; they follow the theme. Any other fill is `#rrggbb`. */
-export const TRACKER_PALETTE_FILLS = ['secondary', 'error', 'tertiary', 'success', 'text'] as const;
+export const TRACKER_PALETTE_FILLS = [
+    'secondary',
+    'error',
+    'tertiary',
+    'success',
+    'text',
+    'primary',
+] as const;
 
 export type TrackerPaletteFill = (typeof TRACKER_PALETTE_FILLS)[number];
 
@@ -302,6 +309,11 @@ export const TRACKER_DISPLAYS = ['table', 'strip', 'line'] as const;
 
 export type TrackerDisplay = (typeof TRACKER_DISPLAYS)[number];
 
+/** What the total row reads (spec 020): the deepest marked level's value, or a box count. */
+export const TRACKER_TOTAL_READS = ['deepest', 'count'] as const;
+
+export type TrackerTotalReads = (typeof TRACKER_TOTAL_READS)[number];
+
 const TrackerValueColumnSchema = z.object({
     title: z.string().max(TEMPLATE_LIMITS.trackerNameMax).optional(),
     show: z.boolean().default(true),
@@ -320,6 +332,11 @@ const TrackerFieldSchema = z.object({
     valueColumn: TrackerValueColumnSchema.default({ show: true }),
     columns: trackerColumnsSchema(1),
     total: z.boolean().default(true),
+    totalReads: z.enum(TRACKER_TOTAL_READS).default('deepest'),
+    /** Spec 020: marking a box marks every box before it on that layer, like a rating's dots. */
+    fromStart: z.boolean().default(false),
+    /** Spec 020, with `fromStart`: a fill run never passes the last framed box. */
+    fillInside: z.boolean().default(false),
     lengths: z.array(TrackerLengthSchema).max(TEMPLATE_LIMITS.trackerLengthsMax).default([]),
     out: z.boolean().default(false),
     /** The row naming each mark kind under the tracker. */
@@ -534,6 +551,28 @@ export const TrackerOverrideSchema = z.object({
 
 export type TrackerOverride = z.infer<typeof TrackerOverrideSchema>;
 
+export const POOL_TRACKER_DISPLAYS = ['row', 'strip', 'line'] as const;
+
+export type PoolTrackerDisplay = (typeof POOL_TRACKER_DISPLAYS)[number];
+
+/**
+ * A pool resource drawn as a tracker (spec 020): the current value fills boxes, the maximum
+ * frames them. Only the look is stored; the values stay in the document's pool.
+ */
+export const PoolTrackerOverrideSchema = z.object({
+    display: z.enum(POOL_TRACKER_DISPLAYS).default('row'),
+    marks: z
+        .object({
+            current: TrackerMarkOverrideSchema.optional(),
+            max: TrackerMarkOverrideSchema.optional(),
+        })
+        .optional(),
+    legend: z.boolean().default(false),
+    total: z.boolean().default(true),
+});
+
+export type PoolTrackerOverride = z.infer<typeof PoolTrackerOverrideSchema>;
+
 /**
  * Document-bound primitive (feature 005): references one binding key of the owning system's
  * registry. Resolution is a runtime registry query — unavailable bindings degrade at render.
@@ -552,6 +591,10 @@ const PrimitiveNodeSchema = z.object({
     part: z.enum(['current', 'max']).optional(),
     /** Dynamic minimum (formula): lower dots are locked and writes never go below it. */
     minFrom: z.string().min(1).max(500).optional(),
+    /** Pool resources drawn as a tracker (spec 020); `minFrom` then bounds the current value. */
+    poolTracker: PoolTrackerOverrideSchema.optional(),
+    /** With `poolTracker`: the maximum's minimum (formula). */
+    maxMinFrom: z.string().min(1).max(500).optional(),
     compact: z.boolean().default(false),
     track: PrimitiveTrackOverrideSchema.optional(),
     /**
@@ -948,9 +991,11 @@ export function collectFormulaDependencies(template: CustomTemplate): FormulaDep
             const parsed = parseFormulaSafe(node.item.maxFrom);
             if (parsed) sources.push({ id: node.item.id, reads: parsed });
         }
-        if (node.type === 'primitive' && node.minFrom) {
-            const parsed = parseFormulaSafe(node.minFrom);
-            if (parsed) sources.push({ id: node.id, reads: parsed });
+        if (node.type === 'primitive') {
+            for (const source of [node.minFrom, node.maxMinFrom]) {
+                const parsed = source ? parseFormulaSafe(source) : undefined;
+                if (parsed) sources.push({ id: node.id, reads: parsed });
+            }
         }
     });
     return sources;

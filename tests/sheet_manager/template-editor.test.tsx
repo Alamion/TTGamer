@@ -1706,6 +1706,49 @@ describe('tracker settings (spec 018)', () => {
         ).toBe('true');
     });
 
+    it('reads marks from the start and counts them (spec 020)', () => {
+        const panel = openTracker();
+        const fromStart = () =>
+            within(settings('wounds')).getByLabelText(
+                'Marks fill from the start'
+            ) as HTMLInputElement;
+        const inside = () =>
+            within(settings('wounds')).queryByLabelText('Fills stay inside the outline');
+        const reads = () =>
+            within(settings('wounds')).getByRole('group', { name: 'The total reads' });
+        expect(fromStart().checked).toBe(false);
+        expect(inside()).toBeNull();
+        expect(
+            within(reads())
+                .getByRole('button', { name: /Deepest level/ })
+                .getAttribute('aria-pressed')
+        ).toBe('true');
+        fireEvent.click(fromStart());
+        fireEvent.click(inside()!);
+        fireEvent.click(within(reads()).getByRole('button', { name: 'Count' }));
+        expect(within(panel).getByText(/how many are framed/)).toBeTruthy();
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore.getState().templates.find(({ id }) => id === 'tracker-kit')!
+            .children[0] as TemplateNode & Record<string, unknown>;
+        expect(saved).toMatchObject({ fromStart: true, fillInside: true, totalReads: 'count' });
+        cleanup();
+
+        openTracker();
+        fireEvent.change(within(settings('wounds')).getByLabelText('Start from…'), {
+            target: { value: 'points' },
+        });
+        expect(fromStart().checked).toBe(true);
+        expect(
+            within(reads()).getByRole('button', { name: 'Count' }).getAttribute('aria-pressed')
+        ).toBe('true');
+    });
+
+    it('offers no point-reading settings on built-in trackers', () => {
+        const panel = openBuiltIn();
+        expect(within(panel).queryByLabelText('Marks fill from the start')).toBeNull();
+        expect(within(panel).queryByRole('group', { name: 'The total reads' })).toBeNull();
+    });
+
     it('keeps the layer of built-in marks locked to fill', () => {
         const panel = openBuiltIn();
         const layer = within(panel).getByRole('group', { name: 'Mark 2 layer' });

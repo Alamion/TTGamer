@@ -3164,6 +3164,12 @@
     "ttgamer.ui.sheet.templates.editor.discard": {
         "message": "Отменить"
     },
+    "ttgamer.ui.sheet.templates.editor.displayDots": {
+        "message": "Точки"
+    },
+    "ttgamer.ui.sheet.templates.editor.displayTracker": {
+        "message": "Трекер"
+    },
     "ttgamer.ui.sheet.templates.editor.docsLink": {
         "message": "Ссылка на документацию (необязательно): /docs/… или https://…"
     },
@@ -3335,11 +3341,17 @@
     "ttgamer.ui.sheet.templates.editor.maxFromPlaceholder": {
         "message": "например, willpower.max"
     },
+    "ttgamer.ui.sheet.templates.editor.maxMinFrom": {
+        "message": "Максимум не меньше, из значения или формулы (необязательно)"
+    },
     "ttgamer.ui.sheet.templates.editor.maxRows": {
         "message": "Макс. строк"
     },
     "ttgamer.ui.sheet.templates.editor.minFrom": {
         "message": "Минимум из значения или формулы (необязательно)"
+    },
+    "ttgamer.ui.sheet.templates.editor.minFromCurrent": {
+        "message": "Текущее не меньше, из значения или формулы (необязательно)"
     },
     "ttgamer.ui.sheet.templates.editor.minFromPlaceholder": {
         "message": "например, self-control"
@@ -3461,6 +3473,24 @@
     "ttgamer.ui.sheet.templates.editor.placeholderText": {
         "message": "Текст-подсказка (необязательно)"
     },
+    "ttgamer.ui.sheet.templates.editor.poolCount": {
+        "message": "Показывать счёт"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolCurrentMark": {
+        "message": "Текущее"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolLayerFixed": {
+        "message": "Текущие очки заливают клетки, максимум их обводит."
+    },
+    "ttgamer.ui.sheet.templates.editor.poolLook": {
+        "message": "Оформление"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolMaxMark": {
+        "message": "Максимум"
+    },
+    "ttgamer.ui.sheet.templates.editor.poolRow": {
+        "message": "Строка (как рейтинг)"
+    },
     "ttgamer.ui.sheet.templates.editor.presentation": {
         "message": "Отображение"
     },
@@ -3475,6 +3505,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.previewOpenDocument": {
         "message": "Открытый документ: {title}"
+    },
+    "ttgamer.ui.sheet.templates.editor.primitiveDisplay": {
+        "message": "Вид"
     },
     "ttgamer.ui.sheet.templates.editor.primitivePart": {
         "message": "Редактирует"
@@ -4052,6 +4085,9 @@
     "ttgamer.ui.sheet.templates.tracker.colorError": {
         "message": "Красный"
     },
+    "ttgamer.ui.sheet.templates.tracker.colorPrimary": {
+        "message": "Акцент"
+    },
     "ttgamer.ui.sheet.templates.tracker.colorSecondary": {
         "message": "Янтарный"
     },
@@ -4132,6 +4168,18 @@
     },
     "ttgamer.ui.sheet.templates.tracker.displayTable": {
         "message": "Таблица"
+    },
+    "ttgamer.ui.sheet.templates.tracker.fillInside": {
+        "message": "Заливка не выходит за обводку"
+    },
+    "ttgamer.ui.sheet.templates.tracker.fillInsideHint": {
+        "message": "Заливка не идёт дальше последней обведённой клетки."
+    },
+    "ttgamer.ui.sheet.templates.tracker.fromStart": {
+        "message": "Отметки заполняются с начала"
+    },
+    "ttgamer.ui.sheet.templates.tracker.fromStartHint": {
+        "message": "Отметка на клетке ставится и на все клетки перед ней, как точки рейтинга."
     },
     "ttgamer.ui.sheet.templates.tracker.issueCovers": {
         "message": "Трекер «{id}»: столбец охватывает все уровни или больше; выберите «Все уровни»."
@@ -4292,6 +4340,21 @@
     "ttgamer.ui.sheet.templates.tracker.total": {
         "message": "Итоговая строка: {value} самого глубокого отмеченного уровня"
     },
+    "ttgamer.ui.sheet.templates.tracker.totalCount": {
+        "message": "Количество"
+    },
+    "ttgamer.ui.sheet.templates.tracker.totalCountHint": {
+        "message": "Сколько клеток залито и сколько обведено."
+    },
+    "ttgamer.ui.sheet.templates.tracker.totalDeepest": {
+        "message": "Самый глубокий уровень"
+    },
+    "ttgamer.ui.sheet.templates.tracker.totalReads": {
+        "message": "Итог показывает"
+    },
+    "ttgamer.ui.sheet.templates.tracker.totalRow": {
+        "message": "Показывать строку итога"
+    },
     "ttgamer.ui.sheet.templates.tracker.valueShow": {
         "message": "Показывать"
     },
@@ -4379,6 +4442,9 @@
     "ttgamer.ui.sheet.tracks.tracker.boxBoth": {
         "message": "{level}: {fill}, {outline}"
     },
+    "ttgamer.ui.sheet.tracks.tracker.boxLocked": {
+        "message": "{level}: {mark}, закреплено"
+    },
     "ttgamer.ui.sheet.tracks.tracker.brushOff": {
         "message": "Перестать отмечать: {mark}"
     },
@@ -4403,8 +4469,17 @@
     "ttgamer.ui.sheet.tracks.tracker.level": {
         "message": "Уровень"
     },
+    "ttgamer.ui.sheet.tracks.tracker.lockedTitle": {
+        "message": "{level} — нельзя опустить ниже {n}"
+    },
     "ttgamer.ui.sheet.tracks.tracker.out": {
         "message": "выбыл"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.poolMaximum": {
+        "message": "Максимум"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.poolPoint": {
+        "message": "Очко"
     },
     "ttgamer.ui.sheet.tracks.tracker.removeCopy": {
         "message": "Удалить {name}"

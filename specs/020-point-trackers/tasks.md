@@ -25,7 +25,7 @@ changed only where the `onMark` signature changes.
 
 ## Phase 1: Setup
 
-- [ ] T001 Add the strings to `translations/source/{en,ru}/ui/sheet/templates.yaml` (group
+- [x] T001 Add the strings to `translations/source/{en,ru}/ui/sheet/templates.yaml` (group
       `tracker.*`: `fromStart` "Marks fill from the start", `fromStartHint`, `fillInside` "Fills
       stay inside the outline", `fillInsideHint`, `totalReads` "Total", `totalDeepest` "Deepest
       level", `totalCount` "Count", `totalCountHint`, `fillPrimary` "Accent"; group `editor.*`:
@@ -41,33 +41,33 @@ changed only where the `onMark` signature changes.
 
 ## Phase 2: Foundational (blocks every story)
 
-- [ ] T002 In `src/sheet_manager/types/template.ts` add to `TrackerFieldSchema`:
+- [x] T002 In `src/sheet_manager/types/template.ts` add to `TrackerFieldSchema`:
       `fromStart: z.boolean().default(false)`, `fillInside: z.boolean().default(false)`,
       `totalReads: z.enum(TRACKER_TOTAL_READS).default('deepest')` with
       `TRACKER_TOTAL_READS = ['deepest', 'count'] as const` and its type; add `'primary'` to
       `TRACKER_PALETTE_FILLS` (R1, R7).
-- [ ] T003 In `src/sheet_manager/types/template.ts` add `POOL_TRACKER_DISPLAYS = ['row', 'strip',
+- [x] T003 In `src/sheet_manager/types/template.ts` add `POOL_TRACKER_DISPLAYS = ['row', 'strip',
 'line'] as const`, `PoolTrackerOverrideSchema` (`display` default `'row'`, optional `marks`
       `{ current?, max? }` of `TrackerMarkOverrideSchema`, `legend` default `false`, `total`
       default `true`), and on `PrimitiveNodeSchema` optional `poolTracker` and `maxMinFrom`
       (`z.string().min(1).max(500)`); extend the formula refine near the `minFrom` check (≈ line 951) to parse `maxMinFrom` the same way (R5, data-model "PrimitiveNode").
-- [ ] T004 Add `primary` everywhere a palette fill is mapped: `OUTLINE_CLASSES`, `SYMBOL_CLASSES`,
+- [x] T004 Add `primary` everywhere a palette fill is mapped: `OUTLINE_CLASSES`, `SYMBOL_CLASSES`,
       and the fill look in `src/sheet_manager/components/stat-fields/Tracker.tsx`; the color list
       in `src/sheet_manager/components/dialogs/template-editor/TrackerSettings.tsx` (label
       `fillPrimary`). Fix compile errors from T002–T003 (fixtures in
       `src/sheet_manager/storybook/stories.ts`, `trackerDefaults.ts`, tests). Run `yarn typecheck`.
-- [ ] T005 [P] Schema tests in `tests/sheet_manager/tracker-schema.test.ts`: a spec 019 tracker
+- [x] T005 [P] Schema tests in `tests/sheet_manager/tracker-schema.test.ts`: a spec 019 tracker
       parses with `fromStart: false`, `fillInside: false`, `totalReads: 'deepest'`; `primary`
       parses as a fill; a primitive with `poolTracker: {}` parses with `display: 'row'`,
       `legend: false`, `total: true`; a bad `maxMinFrom` formula is rejected; an older primitive
       without the new keys parses unchanged.
-- [ ] T006 Define the click description in `src/sheet_manager/features/sheet/data/trackerModel.ts`:
+- [x] T006 Define the click description in `src/sheet_manager/features/sheet/data/trackerModel.ts`:
       `export type TrackerClick = { brush: string } | { layer: TrackerLayer }`; add to
       `TrackerModel` the fields `hasOutlines: boolean` and, on `TrackerModelCopy`, optional
       `locked?: { fill: number; outline: number }`; widen `TrackerModel.display` to
       `TrackerDisplay | 'row'`. Set `hasOutlines` in `ownTrackerModel` and
       `builtInTrackerModel` (data-model "TrackerModel", R2).
-- [ ] T007 Change the molecule contract in `src/sheet_manager/components/stat-fields/Tracker.tsx`:
+- [x] T007 Change the molecule contract in `src/sheet_manager/components/stat-fields/Tracker.tsx`:
       `onMark(columnId, copyId, levelId, click: TrackerClick)`; a left click sends
       `{ brush: id }` with an active brush, else `{ layer: model.readingLayer }`. Update callers
       without changing behavior: `TrackerFieldControl.tsx` (`brush` → `paintTrackerMark`, layer →
@@ -88,7 +88,7 @@ the first outline on every tracker; "Fills stay inside the outline".
 
 ### Tests for User Story 1
 
-- [ ] T008 [P] [US1] Rule tests in `tests/sheet_manager/tracker-rules.test.ts` for
+- [x] T008 [P] [US1] Rule tests in `tests/sheet_manager/tracker-rules.test.ts` for
       `markTracker` (T010): run from empty (box 4 → 1–4); shorter (box 2 after 1–4 → 1–2); last
       box shortens by one; the other layer never changes; a brush with a second fill repaints the
       run; `fillInside` stops at the last framed box and is ignored without `fromStart` or on
@@ -96,7 +96,7 @@ the first outline on every tracker; "Fills stay inside the outline".
       length keep their entries; without `fromStart` a layer click cycles that layer (outline
       cycle included) and a brush paints as in spec 019; copies A and B run on their own
       (FR-006); a run 1–8 shortened by `stepTrackerLength` to five levels reads 1–5 (edge case).
-- [ ] T009 [P] [US1] Component tests in `tests/sheet_manager/tracker-brush.test.tsx` (or a new
+- [x] T009 [P] [US1] Component tests in `tests/sheet_manager/tracker-brush.test.tsx` (or a new
       `tracker-from-start.test.tsx`): right click on an own tracker with outlines puts the first
       outline run and calls `preventDefault`; right click without outline marks, on a read-only
       sheet, and on a built-in tracker is not prevented and writes nothing; the brush does not
@@ -107,28 +107,28 @@ the first outline on every tracker; "Fills stay inside the outline".
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] In `src/sheet_manager/features/sheet/data/trackerModel.ts` add
+- [x] T010 [US1] In `src/sheet_manager/features/sheet/data/trackerModel.ts` add
       `markTracker(field, value, columnId, copyId, levelId, click)`: resolve the mark (brush id,
       or the layer's first kind with `fromStart`, else delegate to the layer cycle); with
       `field.fromStart` call a new `runTrackerMark` implementing R3 over the column's covered
       levels at the current length (via `coveredLevelIds`/`visibleLevelIds`) and `writeLayer`;
       generalize `toggleTrackerMark` to take a layer. Keep `paintTrackerMark` for the non-run
       brush.
-- [ ] T011 [US1] In `src/sheet_manager/features/sheet/declarative/TrackerFieldControl.tsx` route
+- [x] T011 [US1] In `src/sheet_manager/features/sheet/declarative/TrackerFieldControl.tsx` route
       every `onMark` click through `markTracker`.
-- [ ] T012 [US1] In `src/sheet_manager/components/stat-fields/Tracker.tsx` give `MarkBox` the
+- [x] T012 [US1] In `src/sheet_manager/components/stat-fields/Tracker.tsx` give `MarkBox` the
       outline action (R2): `onContextMenu`, `onKeyDown` for Shift+Enter/Shift+Space, and a touch
       long press (a small `useLongPress` hook in the same file: 500 ms timer, 10 px move cancel,
       swallow the press's click and contextmenu); boxes get `select-none` and
       `[-webkit-touch-callout:none]`. All active only when `model.hasOutlines` and not disabled;
       they call `onMark(…, { layer: 'outline' })`; otherwise events are left alone. Pass it from
       the `box` helper.
-- [ ] T013 [US1] Editor: in `src/sheet_manager/components/dialogs/template-editor/TrackerSettings.tsx`
+- [x] T013 [US1] Editor: in `src/sheet_manager/components/dialogs/template-editor/TrackerSettings.tsx`
       "Reading the marks" add the "Marks fill from the start" toggle and, when on, the "Fills stay
       inside the outline" toggle, with hints; hidden for built-in trackers (`game` set). Make
       `src/sheet_manager/features/sheet/data/trackerDefaults.ts` set `fromStart: true` for the
       `points` set.
-- [ ] T014 [US1] Editor tests in `tests/sheet_manager/template-editor.test.tsx`: the toggles show
+- [x] T014 [US1] Editor tests in `tests/sheet_manager/template-editor.test.tsx`: the toggles show
       for own trackers only, the second only with the first; "Start from… → Points" turns on
       fill from the start.
 
@@ -142,16 +142,16 @@ the first outline on every tracker; "Fills stay inside the outline".
 
 **Independent Test**: spec US2 Independent Test; quickstart scenario 5.
 
-- [ ] T015 [P] [US2] Rule tests in `tests/sheet_manager/tracker-rules.test.ts` for the count total
+- [x] T015 [P] [US2] Rule tests in `tests/sheet_manager/tracker-rules.test.ts` for the count total
       in `ownTrackerModel`: "2 / 5"; "2" without outline marks; "2" with outline marks and no
       framed box; "0" when empty; only covered boxes counted; per-copy counts in a table;
       `deepest` unchanged.
-- [ ] T016 [US2] In `ownTrackerModel` (`src/sheet_manager/features/sheet/data/trackerModel.ts`)
+- [x] T016 [US2] In `ownTrackerModel` (`src/sheet_manager/features/sheet/data/trackerModel.ts`)
       compute `copy.total` from `field.totalReads` per R4 (marks columns only).
-- [ ] T017 [US2] Editor: the "Total" choice Deepest level / Count in "Reading the marks" of
+- [x] T017 [US2] Editor: the "Total" choice Deepest level / Count in "Reading the marks" of
       `TrackerSettings.tsx` (shown with the total row on, own trackers only); the `points` set in
       `trackerDefaults.ts` sets `totalReads: 'count'`. Extend the editor test from T014.
-- [ ] T018 [P] [US2] Component test in `tests/sheet_manager/tracker-field.test.tsx`: a strip and a
+- [x] T018 [P] [US2] Component test in `tests/sheet_manager/tracker-field.test.tsx`: a strip and a
       one-line tracker with Count print the count after the boxes; a table prints it per copy.
 
 **Checkpoint**: US1 + US2 make own point trackers complete (MVP).

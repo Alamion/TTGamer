@@ -178,6 +178,15 @@ describe('page settings of a built-in tracker', () => {
         expect(hidden).toHaveLength(1);
     });
 
+    it('leaves the right click to the browser: built-in marks have no outline (spec 020)', () => {
+        seed(SW_CHARACTER);
+        mount(page(SW_CHARACTER, [track('track:health')]));
+        const box = screen.getByRole('button', { name: 'Hurt: empty' });
+        expect(fireEvent.contextMenu(box)).toBe(true);
+        fireEvent.keyDown(box, { key: 'Enter', shiftKey: true });
+        expect(screen.getByRole('button', { name: 'Hurt: empty' })).toBeTruthy();
+    });
+
     it('changes nothing on a read-only sheet', () => {
         seed(SW_CHARACTER);
         mount(page(SW_CHARACTER, [track('track:health')]), { readOnly: true });
