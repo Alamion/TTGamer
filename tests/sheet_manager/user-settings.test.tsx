@@ -136,10 +136,8 @@ describe('user settings (spec 012, US6)', () => {
         ]);
 
         render(createElement(CharacterSheet));
-        const views = screen.getByLabelText('View mode') as HTMLSelectElement;
-        expect([...views.options].map(({ textContent }) => textContent)).toContain(
-            'Ashen character'
-        );
+        // The setting's own page is the only page: the engine's views are not offered.
+        expect(screen.queryByLabelText('View mode')).toBeNull();
         expect(screen.getByRole('complementary', { name: 'Publisher notice' })).toBeTruthy();
     });
 
