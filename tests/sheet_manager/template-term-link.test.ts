@@ -20,8 +20,7 @@ function findNode(children: readonly TemplateNode[], id: string) {
         if (node.id === id) found = node;
     });
     return found as
-        | (TemplateNode & { termRef?: string; termHint?: false; labelMessage?: string })
-        | undefined;
+        (TemplateNode & { termRef?: string; termHint?: false; labelMessage?: string }) | undefined;
 }
 
 describe('book-term link in the template editor', () => {

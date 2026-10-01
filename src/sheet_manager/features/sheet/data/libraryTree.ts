@@ -324,21 +324,19 @@ function userCatalogNode(catalog: UserCatalog, unavailable = false): CatalogNode
 
 /** The shipped catalogs a plugin declares, read-only (placed under that plugin's node). */
 function shippedCatalogNodes(system: SystemPlugin): CatalogNode[] {
-    return (system.catalogs ?? []).map(
-        (binding): CatalogNode => ({
-            key: catalogNodeKey({
-                kind: 'shipped',
-                systemId: system.id,
-                catalogId: binding.catalogId,
-            }),
-            level: 'catalog',
-            name: catalogDisplayName(binding.catalogId),
-            ownership: 'shipped',
-            documentCount: 0,
-            ref: { kind: 'shipped', systemId: system.id, catalogId: binding.catalogId },
-            entryCount: binding.entries.length,
-        })
-    );
+    return (system.catalogs ?? []).map((binding): CatalogNode => ({
+        key: catalogNodeKey({
+            kind: 'shipped',
+            systemId: system.id,
+            catalogId: binding.catalogId,
+        }),
+        level: 'catalog',
+        name: catalogDisplayName(binding.catalogId),
+        ownership: 'shipped',
+        documentCount: 0,
+        ref: { kind: 'shipped', systemId: system.id, catalogId: binding.catalogId },
+        entryCount: binding.entries.length,
+    }));
 }
 
 /**

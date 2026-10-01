@@ -22,9 +22,7 @@ available (editor + renderer).
         "systemId": "star-wars-wod", // compatibility: systemId + documentKind
         "documentKind": "character",
         "schemaVersion": 3,
-        "children": [
-            /* TemplateNode[] — page root */
-        ],
+        "children": [/* TemplateNode[] — page root */],
     },
 }
 ```

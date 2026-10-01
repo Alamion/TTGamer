@@ -705,12 +705,7 @@ export type PrimitiveNode = z.infer<typeof PrimitiveNodeSchema>;
 
 /** Any node of the template tree — containers and leaves share one placement model (FR-1). */
 export type TemplateNode =
-    | SectionNode
-    | GroupNode
-    | TableNode
-    | ListNode
-    | PrimitiveNode
-    | TemplateField;
+    SectionNode | GroupNode | TableNode | ListNode | PrimitiveNode | TemplateField;
 
 /** Container and leaf node types that are not fields. */
 export const TEMPLATE_STRUCTURE_TYPES = ['section', 'group', 'table', 'list', 'primitive'] as const;

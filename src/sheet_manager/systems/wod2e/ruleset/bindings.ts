@@ -148,17 +148,15 @@ export function wod2eFieldBindings(
 ): DocumentBindingDescriptor[] {
     return [
         portraitFieldBinding(documentKinds),
-        ...metadataFields.map(
-            ([fieldKey, label]): DocumentBindingDescriptor => ({
-                key: `field:${fieldKey}`,
-                kind: 'field',
-                label,
-                documentKinds,
-                path: ['metadata', fieldKey],
-                valueType: 'string',
-                coordinate: toCoordinate(label),
-            })
-        ),
+        ...metadataFields.map(([fieldKey, label]): DocumentBindingDescriptor => ({
+            key: `field:${fieldKey}`,
+            kind: 'field',
+            label,
+            documentKinds,
+            path: ['metadata', fieldKey],
+            valueType: 'string',
+            coordinate: toCoordinate(label),
+        })),
         {
             key: 'field:notes',
             kind: 'field',

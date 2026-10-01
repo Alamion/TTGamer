@@ -83,7 +83,7 @@ success|text|primary` (accent) or `#rrggbb`, `layer` = `fill` (default) | `outli
   `lengths` (0–6 lists of level ids), `out`. Not a list item type, rejected as a table column.
   Value (`TrackerValueSchema`, `templateValues[valueKey]`): `{ tracker: 1, length?, columns:
 { [columnId]: [{ id, marks?: { levelId: markId }, outlines?: { levelId: markId }, texts?:
-  { levelId: text } }] } }` — `marks` is the fill slot, `outlines` the outline slot. Display
+{ levelId: text } }] } }` — `marks` is the fill slot, `outlines` the outline slot. Display
   reads a slot by the kind's current layer (`tracker.ts` `layerSource`/`layerMarks`: own slot,
   else the other slot), so a layer change in the editor rewrites no document; a collision
   leaves one entry hidden and counted (`hiddenSlotEntries`); ids

@@ -2,9 +2,7 @@
 
 /** A localized catalog field: text, a list, or nested fields (e.g. `_labels`). */
 export type CatalogFieldValue =
-    | string
-    | readonly string[]
-    | { readonly [key: string]: CatalogFieldValue };
+    string | readonly string[] | { readonly [key: string]: CatalogFieldValue };
 
 export type CatalogTranslations = Record<
     string,

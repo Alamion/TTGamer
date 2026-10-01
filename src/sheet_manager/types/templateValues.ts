@@ -236,8 +236,7 @@ export type TemplateFieldValue =
     | TrackerValue;
 
 export type ValidateValueResult =
-    | { ok: true; value: TemplateFieldValue }
-    | { ok: false; reason: 'type' | 'bounds' | 'options' };
+    { ok: true; value: TemplateFieldValue } | { ok: false; reason: 'type' | 'bounds' | 'options' };
 
 function isResourceCandidate(value: unknown): value is { current: unknown; max: unknown } {
     return (

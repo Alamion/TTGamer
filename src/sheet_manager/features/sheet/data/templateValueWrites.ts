@@ -30,8 +30,7 @@ import {
 } from '../../../types/templateValues';
 
 export type TemplateValueWriteResult =
-    | { ok: true; values: TemplatePageValues }
-    | { ok: false; key: string; reason: string };
+    { ok: true; values: TemplatePageValues } | { ok: false; key: string; reason: string };
 
 /** A choice field bound to a catalog: picks from it may keep the picked name beside the id. */
 function isCatalogSelect(field: TemplateField | undefined): boolean {
@@ -51,8 +50,7 @@ export function collectTableBlocks(template: CustomTemplate): Map<string, TableN
 }
 
 type ListValidation =
-    | { ok: true; value: TemplateListEntry[] }
-    | { ok: false; key: string; reason: string };
+    { ok: true; value: TemplateListEntry[] } | { ok: false; key: string; reason: string };
 
 /**
  * A custom list's entries against its entry template (spec 016, R3). Only changed entries are

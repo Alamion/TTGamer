@@ -13,11 +13,12 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 **Running server:** Usually user is already running dev server of app on http://localhost:3000/, so check fo it existence before killing processes or creating new one.
 
 **Routes:**
-| Route | Purpose |
-| --- | --- |
-| `/` | Homepage |
+
+| Route              | Purpose                 |
+| ------------------ | ----------------------- |
+| `/`                | Homepage                |
 | `/universal_sheet` | Character Sheet Manager |
-| `/docs/*` | Documentation |
+| `/docs/*`          | Documentation           |
 
 ## 2. Tech Stack
 

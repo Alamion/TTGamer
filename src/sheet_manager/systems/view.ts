@@ -18,9 +18,7 @@ export function resolveDocumentView(
 }
 
 export type ResolvedCustomTemplate =
-    | CustomTemplate
-    | { reason: 'missing' | 'kind-mismatch' | 'system-mismatch' }
-    | undefined;
+    CustomTemplate | { reason: 'missing' | 'kind-mismatch' | 'system-mismatch' } | undefined;
 
 /**
  * Resolves a document's custom page assignment: `undefined` = no assignment (built-in path),

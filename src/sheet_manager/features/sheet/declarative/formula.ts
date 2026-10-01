@@ -17,14 +17,10 @@ export type FormulaFunction = 'min' | 'max';
 const FUNCTIONS: ReadonlySet<string> = new Set<FormulaFunction>(['min', 'max']);
 
 export type FormulaEvaluationError =
-    | 'unknown-coordinate'
-    | 'non-numeric'
-    | 'division-by-zero'
-    | 'circular';
+    'unknown-coordinate' | 'non-numeric' | 'division-by-zero' | 'circular';
 
 export type FormulaEvaluationResult =
-    | { ok: true; value: number }
-    | { ok: false; error: FormulaEvaluationError; coordinate?: string };
+    { ok: true; value: number } | { ok: false; error: FormulaEvaluationError; coordinate?: string };
 
 export type FormulaParseResult =
     | { ok: true; expr: Expr; coords: string[] }
