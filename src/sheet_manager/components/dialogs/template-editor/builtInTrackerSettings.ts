@@ -67,6 +67,8 @@ export function builtInSettings(
                     name: override?.name ?? '',
                     symbol: override?.symbol ?? '',
                     fill: override?.fill ?? GAME_FILL[id]!,
+                    // The game keeps one mark per box (spec 019 FR-022).
+                    layer: 'fill',
                 };
             }),
             levels: baseLevels.map((level, index) => ({

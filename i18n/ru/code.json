@@ -4139,8 +4139,20 @@
     "ttgamer.ui.sheet.templates.tracker.issueLengthEmpty": {
         "message": "Трекер «{id}»: длина {n} не показывает ни одного уровня."
     },
+    "ttgamer.ui.sheet.templates.tracker.layerFill": {
+        "message": "Заливка"
+    },
+    "ttgamer.ui.sheet.templates.tracker.layerLocked": {
+        "message": "Игра хранит одну отметку в клетке, поэтому все отметки — заливки."
+    },
+    "ttgamer.ui.sheet.templates.tracker.layerOutline": {
+        "message": "Обводка"
+    },
     "ttgamer.ui.sheet.templates.tracker.legend": {
         "message": "Подписывать отметки под трекером"
+    },
+    "ttgamer.ui.sheet.templates.tracker.legendHint": {
+        "message": "Читатели смогут выбрать отметку в легенде и ставить её на клетки сразу."
     },
     "ttgamer.ui.sheet.templates.tracker.lengthColumn": {
         "message": "Длина {n}"
@@ -4187,17 +4199,26 @@
     "ttgamer.ui.sheet.templates.tracker.markColors": {
         "message": "Цвет: {name}"
     },
+    "ttgamer.ui.sheet.templates.tracker.markLayer": {
+        "message": "Слой отметки {n}"
+    },
     "ttgamer.ui.sheet.templates.tracker.markLethal": {
         "message": "Летальный"
     },
     "ttgamer.ui.sheet.templates.tracker.markMarked": {
         "message": "Отмечено"
     },
+    "ttgamer.ui.sheet.templates.tracker.markMaximum": {
+        "message": "Максимум"
+    },
     "ttgamer.ui.sheet.templates.tracker.markName": {
         "message": "Название отметки {n}"
     },
     "ttgamer.ui.sheet.templates.tracker.markOwnColor": {
         "message": "{name}: свой цвет"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markPoint": {
+        "message": "Очко"
     },
     "ttgamer.ui.sheet.templates.tracker.marks": {
         "message": "Отметки"
@@ -4206,7 +4227,7 @@
         "message": "Число отметок задаёт игра; их можно переименовать и перекрасить."
     },
     "ttgamer.ui.sheet.templates.tracker.marksHint": {
-        "message": "Щелчок переводит клетку к следующей отметке в этом порядке, затем снова к пустой; более поздняя отметка считается тяжелее."
+        "message": "До пяти. Заливки окрашивают клетку: щелчок переводит её к следующей заливке в этом порядке, затем снова к пустой, и более поздняя отметка считается тяжелее. Обводки обрамляют клетку. В клетке может быть по одной каждого вида."
     },
     "ttgamer.ui.sheet.templates.tracker.markSymbol": {
         "message": "Символ отметки {n}"
@@ -4249,6 +4270,9 @@
     },
     "ttgamer.ui.sheet.templates.tracker.setOne": {
         "message": "Одна отметка"
+    },
+    "ttgamer.ui.sheet.templates.tracker.setPoints": {
+        "message": "Очки: текущие и максимум (заливка + обводка)"
     },
     "ttgamer.ui.sheet.templates.tracker.setThree": {
         "message": "Три отметки, WoD 20th (╱ × ✱)"
@@ -4351,6 +4375,18 @@
     },
     "ttgamer.ui.sheet.tracks.tracker.box": {
         "message": "{level}: {mark}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.boxBoth": {
+        "message": "{level}: {fill}, {outline}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.brushOff": {
+        "message": "Перестать отмечать: {mark}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.brushOn": {
+        "message": "Отмечать клетки: {mark}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.brushStatus": {
+        "message": "Отмечаем «{mark}»: щелчок ставит отметку на клетку или снимает её. Щёлкните ещё раз или нажмите Escape, чтобы закончить."
     },
     "ttgamer.ui.sheet.tracks.tracker.cancel": {
         "message": "Отмена"

@@ -24,12 +24,19 @@ import {
     builtInTrackerModel,
     countHiddenExtraValues,
     GAME_COLUMN_ID,
+    paintTrackerMark,
     setTrackerText,
     toggleTrackerMark,
     trackerDisplayOf,
 } from '../data/trackerModel';
 import type { BoundDocument } from './boundDocument';
-import { nextMemberLabel, shorteningHidesMarks, shortenMarks, toggleMark } from './cohort';
+import {
+    nextMemberLabel,
+    paintMark,
+    shorteningHidesMarks,
+    shortenMarks,
+    toggleMark,
+} from './cohort';
 import { mergeVisibleMarks, resolveComputedTrackLength, visibleMarks } from './trackLength';
 
 const cohort = uiMessages.sheet.templates.cohort;
@@ -232,17 +239,31 @@ export function BuiltInTracker({
     >;
     const writeExtras = (next: TrackerValue) => page?.setValue(extrasKey, next);
 
-    const onMark = (columnId: string, copyId: string, levelId: string) => {
+    const onMark = (columnId: string, copyId: string, levelId: string, brush?: string) => {
         if (columnId !== GAME_COLUMN_ID) {
             if (page)
-                writeExtras(toggleTrackerMark(extrasField, extrasValue, columnId, copyId, levelId));
+                writeExtras(
+                    brush
+                        ? paintTrackerMark(
+                              extrasField,
+                              extrasValue,
+                              columnId,
+                              copyId,
+                              levelId,
+                              brush
+                          )
+                        : toggleTrackerMark(extrasField, extrasValue, columnId, copyId, levelId)
+                );
             return;
         }
         const index = levels.findIndex(({ id }) => id === levelId);
         if (index < 0) return;
+        // The legend's brush puts its mark in one click (spec 019); otherwise the click cycles.
+        const mark = (current: readonly ConditionMark[]) =>
+            brush ? paintMark(current, index, brush as ConditionMark) : toggleMark(current, index);
         if (!members) {
             const shown = copies[0]!.marks;
-            const next = toggleMark(shown, index);
+            const next = mark(shown);
             writeTrack({ levels: computed ? mergeVisibleMarks(track?.levels, next) : next });
             return;
         }
@@ -253,7 +274,7 @@ export function BuiltInTracker({
                           ...member,
                           [members.trackKey]: {
                               ...(member[members.trackKey] as object),
-                              levels: toggleMark(marksOf(member), index),
+                              levels: mark(marksOf(member)),
                           },
                       }
                     : member

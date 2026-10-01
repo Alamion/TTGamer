@@ -12,6 +12,10 @@ tracker:
     removeCopy: 'Удалить {name}'
     box: '{level}: {mark}'
     empty: пусто
+    boxBoth: '{level}: {fill}, {outline}'
+    brushOn: 'Отмечать клетки: {mark}'
+    brushOff: 'Перестать отмечать: {mark}'
+    brushStatus: 'Отмечаем «{mark}»: щелчок ставит отметку на клетку или снимает её. Щёлкните ещё раз или нажмите Escape, чтобы закончить.'
     textOnlyInTable: 'Текстовые столбцы ({titles}) показываются только в таблице.'
     slash: Косая черта
     cross: Крест

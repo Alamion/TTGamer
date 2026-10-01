@@ -1,4 +1,9 @@
-import type { TrackerColumn, TrackerLength, TrackerMarkKind } from '../../../types/template';
+import type {
+    TrackerColumn,
+    TrackerLayer,
+    TrackerLength,
+    TrackerMarkKind,
+} from '../../../types/template';
 
 /**
  * Pure tracker rules (spec 018, R7), shared by own trackers and built-in ones. Marks are stored
@@ -6,6 +11,88 @@ import type { TrackerColumn, TrackerLength, TrackerMarkKind } from '../../../typ
  */
 
 export type TrackerMarks = Readonly<Record<string, string>>;
+
+type LayeredKind = Pick<TrackerMarkKind, 'id'> & { layer?: TrackerLayer };
+
+const layerOf = (kind: LayeredKind): TrackerLayer => kind.layer ?? 'fill';
+
+/** Kinds of one layer, in order (order is weight within a layer). */
+export function kindsOfLayer<K extends LayeredKind>(kinds: readonly K[], layer: TrackerLayer): K[] {
+    return kinds.filter((kind) => layerOf(kind) === layer);
+}
+
+/**
+ * The layer a click cycles and the total, marked level, and "out" read (spec 019 R5): the fills,
+ * or the outlines of a tracker that has no fill marks.
+ */
+export function readingLayer(kinds: readonly LayeredKind[]): TrackerLayer {
+    return kinds.some((kind) => layerOf(kind) === 'fill') ? 'fill' : 'outline';
+}
+
+/** A stored copy's two slots: `marks` holds fills, `outlines` holds outlines. */
+export interface TrackerSlots {
+    marks?: TrackerMarks;
+    outlines?: TrackerMarks;
+}
+
+const slotOf = (layer: TrackerLayer): keyof TrackerSlots =>
+    layer === 'fill' ? 'marks' : 'outlines';
+
+/**
+ * Where a layer's shown mark of a level is stored, if any (spec 019 R3): the layer's own slot when
+ * its kind is on that layer, else the other slot when its kind moved to that layer. Display reads
+ * the kind's current layer, so changing a mark's layer rewrites no stored value.
+ */
+export function layerSource(
+    kinds: readonly LayeredKind[],
+    copy: TrackerSlots,
+    layer: TrackerLayer,
+    levelId: string
+): keyof TrackerSlots | undefined {
+    const onLayer = (markId: string | undefined) =>
+        markId !== undefined && kinds.some((kind) => kind.id === markId && layerOf(kind) === layer);
+    const own = slotOf(layer);
+    if (onLayer(copy[own]?.[levelId])) return own;
+    const other = slotOf(layer === 'fill' ? 'outline' : 'fill');
+    return onLayer(copy[other]?.[levelId]) ? other : undefined;
+}
+
+/** The marks a layer shows, by level id; stored entries of the other layer or gone kinds drop out. */
+export function layerMarks(
+    kinds: readonly LayeredKind[],
+    copy: TrackerSlots,
+    layer: TrackerLayer
+): Record<string, string> {
+    const shown: Record<string, string> = {};
+    const levelIds = new Set([
+        ...Object.keys(copy.marks ?? {}),
+        ...Object.keys(copy.outlines ?? {}),
+    ]);
+    for (const levelId of levelIds) {
+        const source = layerSource(kinds, copy, layer, levelId);
+        if (source) shown[levelId] = copy[source]![levelId]!;
+    }
+    return shown;
+}
+
+/** Stored entries of a copy that neither layer shows (removed kinds, or a layer collision). */
+export function hiddenSlotEntries(
+    kinds: readonly LayeredKind[],
+    copy: TrackerSlots,
+    isShownLevel: (levelId: string) => boolean = () => true
+): number {
+    let hidden = 0;
+    for (const slot of ['marks', 'outlines'] as const) {
+        for (const levelId of Object.keys(copy[slot] ?? {})) {
+            const shown =
+                isShownLevel(levelId) &&
+                (layerSource(kinds, copy, 'fill', levelId) === slot ||
+                    layerSource(kinds, copy, 'outline', levelId) === slot);
+            if (!shown) hidden += 1;
+        }
+    }
+    return hidden;
+}
 
 /** Next mark of a box: empty → first kind → … → last kind → empty (`undefined`). */
 export function nextMarkId(

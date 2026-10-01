@@ -248,10 +248,10 @@ describe('displays (US3)', () => {
         mount(trackerPage({ display: 'strip' }));
         expect(screen.queryByRole('table')).toBeNull();
         expect(screen.getByRole('group', { name: 'Wounds' })).toBeTruthy();
-        expect(box('Hurt: empty').className).toContain('h-8');
+        expect(box('Hurt: empty').className).toContain('h-[26px]');
         cleanup();
         mount(trackerPage({ display: 'line' }));
-        expect(box('Hurt: empty').className).toContain('h-6');
+        expect(box('Hurt: empty').className).toContain('h-5');
     });
 });
 
@@ -393,5 +393,122 @@ describe('lengths and out (US5)', () => {
         const header = screen.getByRole('columnheader', { name: /Health A/ });
         expect(header.querySelector('.line-through')).toBeTruthy();
         expect(totalRow().textContent).toContain('out');
+    });
+});
+
+describe('two layers (spec 019, US2)', () => {
+    const POINT = { id: 'point', name: 'Point', symbol: '●', fill: 'secondary' };
+    const MAXIMUM = { id: 'max', name: 'Maximum', symbol: '', fill: 'secondary', layer: 'outline' };
+    const POINTS = Array.from({ length: 6 }, (_, i) => ({
+        id: `p${i + 1}`,
+        name: String(i + 1),
+        value: '',
+    }));
+    const forcePoints = (extra: Record<string, unknown> = {}) =>
+        trackerPage({
+            label: 'Force Points',
+            marks: [POINT, MAXIMUM],
+            levels: POINTS,
+            valueColumn: { show: false },
+            display: 'strip',
+            total: false,
+            legend: true,
+            ...extra,
+        });
+
+    it('holds a fill and an outline in one box', () => {
+        mount(forcePoints());
+        fireEvent.click(screen.getByRole('button', { name: 'Maximum' }));
+        for (const n of ['1', '2', '3']) fireEvent.click(box(`${n}: empty`));
+        fireEvent.click(screen.getByRole('button', { name: 'Point' }));
+        for (const n of ['1', '2']) fireEvent.click(box(`${n}: Maximum`));
+        expect(stored().columns.damage![0]).toEqual({
+            id: 'a',
+            marks: { p1: 'point', p2: 'point' },
+            outlines: { p1: 'max', p2: 'max', p3: 'max' },
+        });
+        expect(box('1: Point, Maximum').className).toContain('outline-secondary');
+        expect(box('1: Point, Maximum').textContent).toBe('●');
+        expect(box('3: Maximum').className).toContain('bg-bgBase');
+        expect(box('4: empty').className).not.toContain('outline-secondary');
+    });
+
+    it('cycles the fill and keeps the outline without a brush', () => {
+        mount(forcePoints(), {
+            value: { tracker: 1, columns: { damage: [{ id: 'a', outlines: { p1: 'max' } }] } },
+        });
+        fireEvent.click(box('1: Maximum'));
+        expect(box('1: Point, Maximum')).toBeTruthy();
+        fireEvent.click(box('1: Point, Maximum'));
+        expect(box('1: Maximum')).toBeTruthy();
+    });
+
+    it('shows an own outline color and the outline symbol only without a fill', () => {
+        const bleed = {
+            id: 'bleed',
+            name: 'Bleeding',
+            symbol: '!',
+            fill: '#aa0000',
+            layer: 'outline',
+        };
+        mount(trackerPage({ marks: [BASHING, bleed] }), {
+            value: {
+                tracker: 1,
+                columns: {
+                    damage: [
+                        {
+                            id: 'a',
+                            marks: { hurt: 'bashing' },
+                            outlines: { hurt: 'bleed', injured: 'bleed' },
+                        },
+                    ],
+                },
+            },
+        });
+        expect(box('Hurt: Bashing, Bleeding').style.outlineColor).toBe('rgb(170, 0, 0)');
+        expect(box('Hurt: Bashing, Bleeding').textContent).toBe('╱');
+        expect(box('Injured: Bleeding').textContent).toBe('!');
+        expect(box('Injured: Bleeding').style.color).toBe('rgb(170, 0, 0)');
+    });
+
+    it('names marks in the legend without layer words; the swatch shows the layer', () => {
+        mount(forcePoints());
+        const swatch = (name: string) =>
+            screen.getByRole('button', { name }).querySelector('[aria-hidden="true"]')!;
+        expect(swatch('Point').className).toContain('bg-secondary');
+        expect(swatch('Maximum').className).toContain('outline-secondary');
+        expect(swatch('Maximum').className).not.toContain('bg-secondary');
+    });
+});
+
+describe('hidden outlines and copies (spec 019, US3)', () => {
+    const BLEED = { id: 'bleed', name: 'Bleeding', symbol: '!', fill: 'error', layer: 'outline' };
+
+    it('reports outlines the tracker cannot show', () => {
+        mount(trackerPage(), {
+            value: {
+                tracker: 1,
+                columns: { damage: [{ id: 'a', outlines: { hurt: 'bleed', gone: 'bleed' } }] },
+            },
+        });
+        const hidden = takeSheetIssues().filter(({ code }) => code === 'template-value-hidden');
+        expect(hidden[0]!.details).toMatchObject({ count: 2 });
+    });
+
+    it('asks before removing a copy that holds only outlines', () => {
+        mount(
+            trackerPage({
+                marks: [BASHING, BLEED],
+                columns: [{ id: 'damage', kind: 'marks', title: 'Damage', copies: { max: 3 } }],
+            }),
+            {
+                value: {
+                    tracker: 1,
+                    columns: { damage: [{ id: 'a' }, { id: 'b', outlines: { hurt: 'bleed' } }] },
+                },
+            }
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'Remove Damage B' }));
+        expect(screen.getByRole('dialog')).toBeTruthy();
     });
 });

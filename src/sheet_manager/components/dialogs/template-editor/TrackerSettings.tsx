@@ -19,7 +19,12 @@ import type {
     TrackerMarkKind,
     TrackerValueColumn,
 } from '../../../types/template';
-import { TEMPLATE_LIMITS, TRACKER_DISPLAYS, TRACKER_PALETTE_FILLS } from '../../../types/template';
+import {
+    TEMPLATE_LIMITS,
+    TRACKER_DISPLAYS,
+    TRACKER_LAYERS,
+    TRACKER_PALETTE_FILLS,
+} from '../../../types/template';
 import { MarkSwatch } from '../../stat-fields/Tracker';
 import { ToggleRow } from './LayoutControls';
 
@@ -229,7 +234,11 @@ export function TrackerSettings({
                         <option value="one">{t(text.setOne)}</option>
                         <option value="two">{t(text.setTwo)}</option>
                         <option value="three">{t(text.setThree)}</option>
+                        <option value="points">{t(text.setPoints)}</option>
                     </select>
+                )}
+                {locked && (
+                    <p className="m-0 text-[11px] text-textSecondary">{t(text.layerLocked)}</p>
                 )}
                 {value.marks.map((mark, index) => {
                     const n = index + 1;
@@ -302,6 +311,29 @@ export function TrackerSettings({
                                     )}
                                 />
                             </span>
+                            <span
+                                role="group"
+                                aria-label={t(text.markLayer, { n })}
+                                className="flex items-center gap-1"
+                            >
+                                {TRACKER_LAYERS.map((layer) => (
+                                    <button
+                                        key={layer}
+                                        type="button"
+                                        aria-pressed={mark.layer === layer}
+                                        disabled={locked}
+                                        onClick={() => setMark(index, { layer })}
+                                        className={clsx(
+                                            'rounded border px-1.5 py-0.5 text-[11px] transition-colors disabled:opacity-60',
+                                            mark.layer === layer
+                                                ? 'border-primary bg-primary-muted text-textPrimary'
+                                                : 'border-border text-textSecondary hover:border-primary/60'
+                                        )}
+                                    >
+                                        {t(layer === 'fill' ? text.layerFill : text.layerOutline)}
+                                    </button>
+                                ))}
+                            </span>
                             <RowButtons
                                 index={index}
                                 count={value.marks.length}
@@ -334,6 +366,7 @@ export function TrackerSettings({
                                         name: t(text.newMark, { n: value.marks.length + 1 }),
                                         symbol: '•',
                                         fill: 'text',
+                                        layer: 'fill',
                                     },
                                 ],
                             })
@@ -606,6 +639,7 @@ export function TrackerSettings({
                 )}
                 <ToggleRow
                     checked={value.legend}
+                    hint={t(text.legendHint)}
                     label={t(text.legend)}
                     onChange={(legend) => onChange({ legend })}
                 />

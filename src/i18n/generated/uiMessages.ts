@@ -4706,7 +4706,7 @@ export const uiMessages = {
                 marksHint: {
                     id: 'ttgamer.ui.sheet.templates.tracker.marksHint',
                     message:
-                        'A click moves a box to the next mark in this order, then back to empty; a later mark counts as heavier.',
+                        'Up to five. Fill marks color the box: a click moves it to the next fill in this order, then back to empty, and a later mark counts as heavier. Outline marks frame the box. A box holds one of each.',
                 },
                 marksBuiltIn: {
                     id: 'ttgamer.ui.sheet.templates.tracker.marksBuiltIn',
@@ -4727,6 +4727,34 @@ export const uiMessages = {
                 setThree: {
                     id: 'ttgamer.ui.sheet.templates.tracker.setThree',
                     message: 'Three marks, WoD 20th (╱ × ✱)',
+                },
+                setPoints: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.setPoints',
+                    message: 'Points: current and maximum (fill + outline)',
+                },
+                markPoint: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markPoint',
+                    message: 'Point',
+                },
+                markMaximum: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markMaximum',
+                    message: 'Maximum',
+                },
+                layerFill: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.layerFill',
+                    message: 'Fill',
+                },
+                layerOutline: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.layerOutline',
+                    message: 'Outline',
+                },
+                markLayer: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.markLayer',
+                    message: 'Mark {n} layer',
+                },
+                layerLocked: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.layerLocked',
+                    message: 'The game keeps one mark per box, so every mark is a fill.',
                 },
                 markMarked: {
                     id: 'ttgamer.ui.sheet.templates.tracker.markMarked',
@@ -4981,6 +5009,10 @@ export const uiMessages = {
                 legend: {
                     id: 'ttgamer.ui.sheet.templates.tracker.legend',
                     message: 'Name the marks under the tracker',
+                },
+                legendHint: {
+                    id: 'ttgamer.ui.sheet.templates.tracker.legendHint',
+                    message: 'Readers can pick a mark in the legend and put it on boxes directly.',
                 },
                 defaultLabel: {
                     id: 'ttgamer.ui.sheet.templates.tracker.defaultLabel',
@@ -5837,6 +5869,23 @@ export const uiMessages = {
                 empty: {
                     id: 'ttgamer.ui.sheet.tracks.tracker.empty',
                     message: 'empty',
+                },
+                boxBoth: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.boxBoth',
+                    message: '{level}: {fill}, {outline}',
+                },
+                brushOn: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.brushOn',
+                    message: 'Mark boxes with {mark}',
+                },
+                brushOff: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.brushOff',
+                    message: 'Stop marking with {mark}',
+                },
+                brushStatus: {
+                    id: 'ttgamer.ui.sheet.tracks.tracker.brushStatus',
+                    message:
+                        'Marking with {mark}: a click puts it on a box or takes it off. Click it again or press Escape to stop.',
                 },
                 textOnlyInTable: {
                     id: 'ttgamer.ui.sheet.tracks.tracker.textOnlyInTable',

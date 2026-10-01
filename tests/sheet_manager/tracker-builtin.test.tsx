@@ -239,12 +239,38 @@ describe('shipped pages and game marks', () => {
     });
 });
 
+describe('the brush on built-in trackers (spec 019)', () => {
+    it('puts the brush mark in the game data and takes it off again', () => {
+        seed(SW_CHARACTER);
+        mount(page(SW_CHARACTER, [track('track:health', named)]));
+        fireEvent.click(screen.getByRole('button', { name: 'Lethal' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Hurt: empty' }));
+        const health = () => (stored().data as { health: { levels: string[] } }).health.levels;
+        expect(health()[1]).toBe('cross');
+        fireEvent.click(screen.getByRole('button', { name: 'Hurt: Lethal' }));
+        expect(health()[1]).toBe('empty');
+    });
+
+    it('marks each member of a member track on its own', () => {
+        seed(SW_CREATURE);
+        mount(page(SW_CREATURE, [track('track:members-health', named)]));
+        fireEvent.click(screen.getByRole('button', { name: 'Add member' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Lethal' }));
+        const [first, second] = screen.getAllByRole('button', { name: /Hurt: empty$/ });
+        fireEvent.click(second!);
+        expect(screen.getAllByRole('button', { name: /Hurt: Lethal$/ })).toHaveLength(1);
+        fireEvent.click(first!);
+        expect(screen.getAllByRole('button', { name: /Hurt: Lethal$/ })).toHaveLength(2);
+        expect(screen.getAllByRole('button', { name: /Member/ }).length).toBeGreaterThan(0);
+    });
+});
+
 describe('templates saved before one display setting', () => {
     it('draws a compact track as one small line', () => {
         seed(SW_CHARACTER);
         mount(page(SW_CHARACTER, [track('track:health', { compact: true })]));
         expect(screen.queryByRole('table')).toBeNull();
-        expect(screen.getByRole('button', { name: 'Hurt: empty' }).className).toContain('h-6');
+        expect(screen.getByRole('button', { name: 'Hurt: empty' }).className).toContain('h-5');
     });
 
     it('keeps a stored view, and draws a computed track as a strip by default', () => {

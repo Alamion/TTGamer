@@ -179,3 +179,72 @@ describe('the stored tracker value', () => {
         expect(coerceStoredValue(field, 'broken')).toBeUndefined();
     });
 });
+
+describe('mark layers and the outline slot (spec 019)', () => {
+    it('reads marks saved before layers as fills and takes outlines', () => {
+        const parsed = TemplateFieldSchema.parse(tracker()) as { marks: { layer: string }[] };
+        expect(parsed.marks.map(({ layer }) => layer)).toEqual(['fill']);
+        const outlined = TemplateFieldSchema.parse(
+            tracker({ marks: [mark('m1'), { ...mark('m2'), symbol: '', layer: 'outline' }] })
+        ) as { marks: { layer: string }[] };
+        expect(outlined.marks.map(({ layer }) => layer)).toEqual(['fill', 'outline']);
+        expect(parses(tracker({ marks: [{ ...mark('m1'), layer: 'ring' }] }))).toBe(false);
+    });
+
+    it('counts marks of both layers against the five-mark limit', () => {
+        const marks = ['a', 'b', 'c', 'd', 'e', 'f'].map((id, index) => ({
+            ...mark(id),
+            layer: index % 2 ? 'outline' : 'fill',
+        }));
+        expect(parses(tracker({ marks }))).toBe(false);
+        expect(parses(tracker({ marks: marks.slice(0, 5) }))).toBe(true);
+    });
+
+    it('keeps the built-in override fill-only', () => {
+        const node = CustomTemplateSchema.parse({
+            id: 'tpl-tracker',
+            name: 'Trackers',
+            systemId: 'wod-2e',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'health',
+                    type: 'primitive',
+                    bindingKey: 'track:health',
+                    tracker: { marks: { cross: { name: 'Lethal', layer: 'outline' } } },
+                },
+            ],
+        }).children[0] as { tracker: { marks: Record<string, object> } };
+        expect(node.tracker.marks.cross).toEqual({ name: 'Lethal' });
+    });
+
+    it('stores outlines next to fills, bounded the same way', () => {
+        const both = {
+            tracker: 1,
+            columns: { c1: [{ id: 'a', marks: { l1: 'm1' }, outlines: { l1: 'm2', l2: 'm2' } }] },
+        };
+        expect(TemplatePageValuesSchema.parse({ stress: both }).stress).toEqual(both);
+        const oldValue = { tracker: 1, columns: { c1: [{ id: 'a', marks: { l1: 'm1' } }] } };
+        expect(TemplatePageValuesSchema.parse({ stress: oldValue }).stress).toEqual(oldValue);
+        const badId = {
+            tracker: 1,
+            columns: { c1: [{ id: 'a', outlines: { l1: 'm'.repeat(65) } }] },
+        };
+        expect(TemplatePageValuesSchema.safeParse({ stress: badId }).success).toBe(false);
+        const huge = {
+            tracker: 1,
+            columns: {
+                c1: [
+                    {
+                        id: 'a',
+                        outlines: Object.fromEntries(
+                            Array.from({ length: 41 }, (_, i) => [`l${i}`, 'm2'])
+                        ),
+                    },
+                ],
+            },
+        };
+        expect(TemplatePageValuesSchema.safeParse({ stress: huge }).success).toBe(false);
+    });
+});

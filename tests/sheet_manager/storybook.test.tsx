@@ -118,6 +118,8 @@ function variantsOf(node: TemplateNode): string[] {
             flag('legend');
             flag('hideLabel');
             if (!node.valueColumn.show) tags.push('tracker:value-hidden');
+            if (node.marks.some(({ layer }) => layer === 'outline'))
+                tags.push('tracker:layer:outline');
             break;
         }
         case 'list':
@@ -229,6 +231,7 @@ const REQUIRED_VARIANTS = [
     'tracker:out',
     'tracker:total',
     'tracker:legend',
+    'tracker:layer:outline',
     'tracker:hideLabel',
     'tracker:value-hidden',
     'primitive:compact',

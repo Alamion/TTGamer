@@ -1675,6 +1675,45 @@ describe('tracker settings (spec 018)', () => {
         expect(saved.tracker).toEqual({ legend: true });
     });
 
+    it('puts a mark on the outline layer and starts from points (spec 019)', () => {
+        openTracker();
+        const layer = (n: number) =>
+            within(settings('wounds')).getByRole('group', { name: `Mark ${n} layer` });
+        fireEvent.click(within(layer(2)).getByRole('button', { name: 'Outline' }));
+        expect(
+            within(layer(2)).getByRole('button', { name: 'Outline' }).getAttribute('aria-pressed')
+        ).toBe('true');
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const saved = useTemplateStore.getState().templates.find(({ id }) => id === 'tracker-kit')!
+            .children[0] as TemplateNode & {
+            marks: { id: string; layer: string }[];
+        };
+        expect(saved.marks.map(({ id, layer }) => [id, layer])).toEqual([
+            ['bashing', 'fill'],
+            ['lethal', 'outline'],
+        ]);
+        cleanup();
+
+        openTracker();
+        fireEvent.change(within(settings('wounds')).getByLabelText('Start from…'), {
+            target: { value: 'points' },
+        });
+        expect(
+            within(layer(1)).getByRole('button', { name: 'Fill' }).getAttribute('aria-pressed')
+        ).toBe('true');
+        expect(
+            within(layer(2)).getByRole('button', { name: 'Outline' }).getAttribute('aria-pressed')
+        ).toBe('true');
+    });
+
+    it('keeps the layer of built-in marks locked to fill', () => {
+        const panel = openBuiltIn();
+        const layer = within(panel).getByRole('group', { name: 'Mark 2 layer' });
+        const outline = within(layer).getByRole('button', { name: 'Outline' }) as HTMLButtonElement;
+        expect(outline.disabled).toBe(true);
+        expect(within(panel).getByText(/keeps one mark per box/)).toBeTruthy();
+    });
+
     it('lets a built-in tracker rename its marks but not add or reorder them', () => {
         const panel = openBuiltIn();
         expect(within(panel).queryByRole('button', { name: 'Add mark' })).toBeNull();
@@ -1746,5 +1785,29 @@ describe('tracker settings (spec 018)', () => {
                 .getByRole('button', { name: 'Strip' })
                 .getAttribute('aria-pressed')
         ).toBe('true');
+    });
+
+    it('turns every taken-over mark into a fill when a built-in tracker gets own values', () => {
+        openTracker({
+            marks: [
+                { id: 'bashing', name: 'Bashing', symbol: '╱', fill: 'secondary' },
+                { id: 'bleed', name: 'Bleed', symbol: '!', fill: 'error', layer: 'outline' },
+            ],
+        });
+        fireEvent.change(within(settings('wounds')).getByLabelText('Source'), {
+            target: { value: 'track:health' },
+        });
+        selectInOutline('wounds');
+        fireEvent.change(within(settings('wounds')).getByLabelText('Source'), {
+            target: { value: 'custom' },
+        });
+        selectInOutline('wounds');
+        const panel = settings('wounds');
+        for (const n of [1, 2]) {
+            const group = within(panel).getByRole('group', { name: `Mark ${n} layer` });
+            expect(
+                within(group).getByRole('button', { name: 'Fill' }).getAttribute('aria-pressed')
+            ).toBe('true');
+        }
     });
 });

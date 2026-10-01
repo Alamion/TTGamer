@@ -8,6 +8,7 @@ import type { TrackerValue } from '../../../types/templateValues';
 import {
     addTrackerCopy,
     ownTrackerModel,
+    paintTrackerMark,
     removeTrackerCopy,
     setTrackerText,
     stepTrackerLength,
@@ -63,8 +64,12 @@ export function TrackerFieldControl({
         <Tracker
             model={model}
             disabled={disabled}
-            onMark={(columnId, copyId, levelId) =>
-                onChange(toggleTrackerMark(tracker, stored, columnId, copyId, levelId))
+            onMark={(columnId, copyId, levelId, brush) =>
+                onChange(
+                    brush
+                        ? paintTrackerMark(tracker, stored, columnId, copyId, levelId, brush)
+                        : toggleTrackerMark(tracker, stored, columnId, copyId, levelId)
+                )
             }
             onText={(columnId, copyId, levelId, text) =>
                 onChange(setTrackerText(tracker, stored, columnId, copyId, levelId, text))

@@ -2,7 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
-import { type CSSProperties, type ReactNode, useState } from 'react';
+import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 
 import type {
     TrackerModel,
@@ -43,28 +43,81 @@ function fillLook(mark: Pick<Mark, 'fill'> | undefined): {
 }
 
 const BOX = 'grid shrink-0 place-items-center rounded border-2 font-mono font-bold leading-none';
+// Spec 019: boxes are smaller and further apart, so outline rings never touch.
 const BOX_SIZE = {
-    md: 'h-8 w-8 text-sm',
-    sm: 'h-6 w-6 text-xs',
-    xs: 'h-3.5 w-3.5 border',
+    md: 'h-[26px] w-[26px] text-xs',
+    sm: 'h-5 w-5 text-[11px]',
+    xs: 'h-3.5 w-3.5 border text-[9px]',
 } as const;
 
-/** A mark's filled square, symbol centered; the preview in legends and the editor. */
+type BoxSize = keyof typeof BOX_SIZE;
+
+/** The outline layer: a ring outside the box with a see-through gap (spec 019 R7). */
+const OUTLINE_SIZE: Record<BoxSize, string> = {
+    md: 'outline outline-[2.5px] outline-offset-[1.5px]',
+    sm: 'outline outline-2 outline-offset-1',
+    xs: 'outline outline-[1.5px] outline-offset-1',
+};
+
+const OUTLINE_CLASSES: Record<TrackerPaletteFill, string> = {
+    secondary: 'outline-secondary',
+    error: 'outline-error',
+    tertiary: 'outline-tertiary',
+    success: 'outline-success',
+    text: 'outline-textPrimary',
+};
+
+const SYMBOL_CLASSES: Record<TrackerPaletteFill, string> = {
+    secondary: 'text-secondary',
+    error: 'text-error',
+    tertiary: 'text-tertiary',
+    success: 'text-success',
+    text: 'text-textPrimary',
+};
+
+/** Classes, style, and symbol of a box holding an optional fill and an optional outline. */
+function boxLook(
+    fill: Pick<Mark, 'fill' | 'symbol'> | undefined,
+    outline: Pick<Mark, 'fill' | 'symbol'> | undefined,
+    size: BoxSize
+): { className: string; style?: CSSProperties; symbol: string } {
+    const base = fillLook(fill);
+    if (!outline) return { ...base, symbol: fill?.symbol ?? '' };
+    const palette = isPaletteFill(outline.fill);
+    return {
+        className: clsx(
+            base.className,
+            OUTLINE_SIZE[size],
+            palette && OUTLINE_CLASSES[outline.fill as TrackerPaletteFill],
+            // An outline's symbol shows only on a box without a fill, in the outline's color.
+            !fill && palette && SYMBOL_CLASSES[outline.fill as TrackerPaletteFill]
+        ),
+        style: {
+            ...base.style,
+            ...(palette ? {} : { outlineColor: outline.fill }),
+            ...(!fill && !palette ? { color: outline.fill } : {}),
+        },
+        symbol: fill ? fill.symbol : outline.symbol,
+    };
+}
+
+/** A mark as it looks in a box, symbol centered; the preview in legends and the editor. */
 export function MarkSwatch({
     mark,
     size = 'sm',
 }: {
-    mark: Pick<Mark, 'fill' | 'symbol'>;
-    size?: keyof typeof BOX_SIZE;
+    mark: Pick<Mark, 'fill' | 'symbol'> & { layer?: Mark['layer'] };
+    size?: BoxSize;
 }) {
-    const look = fillLook(mark);
+    const look =
+        mark.layer === 'outline' ? boxLook(undefined, mark, size) : boxLook(mark, undefined, size);
     return (
         <span
             aria-hidden="true"
             className={clsx(BOX, BOX_SIZE[size], look.className)}
             style={look.style}
         >
-            {mark.symbol}
+            {look.symbol}
         </span>
     );
 }
@@ -73,38 +126,51 @@ function MarkBox({
     disabled,
     label,
     title,
-    mark,
+    fill,
+    outline,
     onToggle,
     size,
 }: {
     disabled: boolean;
     label: string;
     title: string;
-    mark: Mark | undefined;
+    fill: Mark | undefined;
+    outline: Mark | undefined;
     onToggle: () => void;
     size: 'sm' | 'md';
 }) {
-    const look = fillLook(mark);
+    const look = boxLook(fill, outline, size);
+    const text = messages.tracker;
     return (
         <button
             type="button"
             disabled={disabled}
             onClick={onToggle}
-            aria-label={translate(messages.tracker.box, {
-                level: label,
-                mark: mark ? mark.name : translate(messages.tracker.empty),
-            })}
+            aria-label={
+                fill && outline
+                    ? translate(text.boxBoth, {
+                          level: label,
+                          fill: fill.name,
+                          outline: outline.name,
+                      })
+                    : translate(text.box, {
+                          level: label,
+                          mark: (fill ?? outline)?.name ?? translate(text.empty),
+                      })
+            }
             title={title}
             className={clsx(
                 BOX,
                 BOX_SIZE[size],
-                'transition-colors disabled:opacity-70',
+                'transition-colors focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-70',
+                // The outline layer owns `outline`; plain boxes drop the browser's focus outline.
+                !outline && 'focus-visible:outline-none',
                 look.className,
-                !mark && !disabled && 'hover:border-primary'
+                !fill && !disabled && 'hover:border-primary'
             )}
             style={look.style}
         >
-            {mark?.symbol}
+            {look.symbol}
         </button>
     );
 }
@@ -112,7 +178,8 @@ function MarkBox({
 export interface TrackerProps {
     model: TrackerModel;
     disabled: boolean;
-    onMark: (columnId: string, copyId: string, levelId: string) => void;
+    /** A box click; `brush` is the mark picked in the legend (spec 019), else the click cycles. */
+    onMark: (columnId: string, copyId: string, levelId: string, brush?: string) => void;
     onText?: (columnId: string, copyId: string, levelId: string, text: string) => void;
     onAddCopy?: (columnId: string) => void;
     onRemoveCopy?: (columnId: string, copyId: string) => void;
@@ -173,11 +240,36 @@ export function Tracker({
     wording: wordingOverrides,
 }: TrackerProps) {
     const [pending, setPending] = useState<Pending>();
+    const [brush, setBrush] = useState<Pick<Mark, 'id' | 'layer'>>();
     const wording = { ...defaultWording(), ...wordingOverrides };
     const markById = new Map(model.marks.map((mark) => [mark.id, mark]));
+    const legendShown = model.legend && model.display !== 'line';
+    const brushMark = brush ? markById.get(brush.id) : undefined;
+    // A brush whose mark is gone or changed layer, or that has no legend to show it, ends for good.
+    if (brush && (!brushMark || brushMark.layer !== brush.layer || !legendShown || disabled)) {
+        setBrush(undefined);
+    }
+    const activeBrush = brush && brushMark?.layer === brush.layer ? brushMark : undefined;
+    const root = useRef<HTMLDivElement>(null);
+    const brushOn = activeBrush !== undefined;
+    useEffect(() => {
+        const node = root.current;
+        if (!node || !brushOn) return;
+        // Escape ends the brush while focus is inside this tracker; open dialogs take it first.
+        const onKey = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape') return;
+            event.stopPropagation();
+            setBrush(undefined);
+        };
+        node.addEventListener('keydown', onKey);
+        return () => node.removeEventListener('keydown', onKey);
+    }, [brushOn]);
     const levelTitle = (level: TrackerModel['levels'][number]) =>
         model.valueColumn.show && level.value ? `${level.name} (${level.value})` : level.name;
     const size = model.display === 'line' ? 'sm' : 'md';
+    // The layer the total and the marked level name read (spec 019 FR-016).
+    const readingOf = (copy: TrackerModelCopy) =>
+        model.readingLayer === 'fill' ? copy.marks : copy.outlines;
 
     const requestRemove = (column: TrackerModelColumn, copy: TrackerModelCopy) => {
         if (copy.hasValues) setPending({ type: 'remove', column, copy });
@@ -196,8 +288,9 @@ export function Tracker({
                 disabled={disabled}
                 label={wording.boxLabel(level.name, column, copy)}
                 title={levelTitle(level)}
-                mark={markById.get(copy.marks[levelId] ?? '')}
-                onToggle={() => onMark(column.id, copy.id, levelId)}
+                fill={markById.get(copy.marks[levelId] ?? '')}
+                outline={markById.get(copy.outlines[levelId] ?? '')}
+                onToggle={() => onMark(column.id, copy.id, levelId, activeBrush?.id)}
                 size={size}
             />
         );
@@ -306,15 +399,15 @@ export function Tracker({
                             key={level.id}
                             role="row"
                             style={style}
-                            className={clsx(row, 'border-t border-border/60 py-1.5')}
+                            className={clsx(row, 'border-t border-border/60 py-2')}
                         >
                             <span
                                 role="rowheader"
                                 className={clsx(
                                     'font-medium',
                                     single &&
-                                        single.copy.marks[level.id] &&
-                                        markById.has(single.copy.marks[level.id]!)
+                                        readingOf(single.copy)[level.id] &&
+                                        markById.has(readingOf(single.copy)[level.id]!)
                                         ? 'text-error'
                                         : 'text-textPrimary'
                                 )}
@@ -439,7 +532,10 @@ export function Tracker({
                                 {ownName ? model.label : name}
                             </span>
                             <span
-                                className="flex flex-wrap items-center gap-1"
+                                className={clsx(
+                                    'flex flex-wrap items-center',
+                                    size === 'sm' ? 'gap-2.5' : 'gap-3'
+                                )}
                                 role="group"
                                 aria-label={ownName ? model.label : name}
                             >
@@ -468,7 +564,7 @@ export function Tracker({
             .filter((column) => column.kind === 'text')
             .map((column) => column.title);
         return (
-            <div className="grid gap-1">
+            <div className="grid gap-2">
                 {lines}
                 {textTitles.length > 0 && model.display === 'strip' && (
                     <p className="text-xs text-textSecondary">
@@ -481,17 +577,61 @@ export function Tracker({
         );
     }
 
-    const legend =
-        model.legend && model.display !== 'line' ? (
-            <ul className="m-0 flex list-none flex-wrap gap-x-3 gap-y-1 p-0 text-xs text-textSecondary">
-                {model.marks.map((mark) => (
-                    <li key={mark.id} className="inline-flex items-center gap-1">
-                        <MarkSwatch mark={mark} />
-                        {mark.name}
-                    </li>
-                ))}
+    const legend = legendShown ? (
+        <div className="grid gap-1">
+            <ul className="m-0 flex list-none flex-wrap gap-x-1.5 gap-y-1 p-0 text-xs text-textSecondary">
+                {model.marks.map((mark) => {
+                    const content = (
+                        <>
+                            <MarkSwatch mark={mark} />
+                            {mark.name}
+                        </>
+                    );
+                    const pressed = activeBrush?.id === mark.id;
+                    return (
+                        <li key={mark.id}>
+                            {disabled ? (
+                                <span className="inline-flex items-center gap-1.5 border border-transparent px-2 py-1.5">
+                                    {content}
+                                </span>
+                            ) : (
+                                <button
+                                    type="button"
+                                    aria-pressed={pressed}
+                                    title={translate(
+                                        pressed
+                                            ? messages.tracker.brushOff
+                                            : messages.tracker.brushOn,
+                                        { mark: mark.name }
+                                    )}
+                                    onClick={() =>
+                                        setBrush(
+                                            pressed ? undefined : { id: mark.id, layer: mark.layer }
+                                        )
+                                    }
+                                    className={clsx(
+                                        'inline-flex items-center gap-1.5 rounded-md border px-2 py-1.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                                        pressed
+                                            ? 'border-warning text-textPrimary ring-1 ring-warning'
+                                            : 'border-border hover:border-borderMoreContrast hover:text-textPrimary'
+                                    )}
+                                >
+                                    {content}
+                                </button>
+                            )}
+                        </li>
+                    );
+                })}
             </ul>
-        ) : null;
+            {!disabled && (
+                <p role="status" className="m-0 min-h-0 text-[11px] text-textSecondary">
+                    {activeBrush
+                        ? translate(messages.tracker.brushStatus, { mark: activeBrush.name })
+                        : ''}
+                </p>
+            )}
+        </div>
+    ) : null;
 
     const capNotes = disabled
         ? []
@@ -506,7 +646,7 @@ export function Tracker({
     const toolbar = [lengthControl, ...addButtons, ...capNotes].filter(Boolean);
 
     return (
-        <div className="grid gap-2">
+        <div ref={root} className="grid gap-2">
             {(showHeaderLabel || toolbar.length > 0) && (
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     {showHeaderLabel ? (
