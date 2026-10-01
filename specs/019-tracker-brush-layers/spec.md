@@ -182,8 +182,8 @@ fodder-group parity example still matches at every length.
 - The brush is not saved: reloading the sheet, switching pages, or opening another document starts
   without one.
 - A level not covered by a column has no box; the brush does nothing there.
-- Outline and fill of the same color stay distinguishable: the ring sits outside the box with a gap
-  in the surface color.
+- Outline and fill of the same color stay distinguishable: the ring sits outside the box with a
+  see-through gap that shows the background behind the tracker.
 - On one line (the smallest boxes) outlines still show, as a thinner ring.
 - A stored outline whose mark kind no longer exists, or whose mark is now a fill on a box that
   already holds another fill, is hidden and reported, never deleted.
@@ -198,7 +198,7 @@ fodder-group parity example still matches at every length.
   button the sheet's user can press; a pressed item MUST show a yellow (warning color) frame and
   be announced as pressed.
 - **FR-002**: At most one legend item per tracker MUST be pressed at a time; pressing another item
-  MUST move the brush to it; pressing the pressed item or pressing Escape MUST end the brush.
+  MUST move the brush to it; pressing the pressed item, or Escape while focus is inside the tracker, MUST end the brush.
 - **FR-003**: While a brush is on, a click on a box MUST put the brush's mark on the mark's layer
   of that box, replacing whatever that layer held, or clear that layer if it already holds the
   brush's mark; the other layer MUST NOT change, and no cycling MUST happen.
@@ -217,8 +217,8 @@ fodder-group parity example still matches at every length.
 - **FR-008**: A box MUST hold at most one fill mark and one outline mark, each optional and
   independent.
 - **FR-009**: A fill MUST look as today (the mark's color behind its symbol). An outline MUST be a
-  ring in the mark's color drawn outside the box, separated from it by a thin gap in the surface
-  color; its symbol MUST show, in the mark's color, only when the box has no fill.
+  ring in the mark's color drawn outside the box, separated from it by a thin see-through gap; its
+  symbol MUST show, in the mark's color, only when the box has no fill.
 - **FR-010**: Boxes MUST become smaller with more room between them than in spec 018, so that rings
   of neighboring boxes and the brush's frame around a legend swatch never touch (sizes as in the
   approved prototype).

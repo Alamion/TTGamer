@@ -232,12 +232,19 @@ tracker:
     displayLine: One line
     displayHint: One line is the small strip for brief pages, with the label inline and no length buttons.
     marks: Marks
-    marksHint: A click moves a box to the next mark in this order, then back to empty; a later mark counts as heavier.
+    marksHint: 'Up to five. Fill marks color the box: a click moves it to the next fill in this order, then back to empty, and a later mark counts as heavier. Outline marks frame the box. A box holds one of each.'
     marksBuiltIn: The game sets the number of marks; you can rename and recolor them.
     startFrom: Start from…
     setOne: One mark
     setTwo: Two marks (╱ ×)
     setThree: Three marks, WoD 20th (╱ × ✱)
+    setPoints: 'Points: current and maximum (fill + outline)'
+    markPoint: Point
+    markMaximum: Maximum
+    layerFill: Fill
+    layerOutline: Outline
+    markLayer: 'Mark {n} layer'
+    layerLocked: The game keeps one mark per box, so every mark is a fill.
     markMarked: Marked
     markBashing: Bashing
     markLethal: Lethal
@@ -301,6 +308,7 @@ tracker:
     total: 'Total row: the {value} of the deepest marked level'
     out: Mark a copy as out when its last level is marked
     legend: Name the marks under the tracker
+    legendHint: Readers can pick a mark in the legend and put it on boxes directly.
     defaultLabel: Health
     issueLengthEmpty: 'Tracker "{id}": length {n} shows no level.'
     issueCovers: 'Tracker "{id}": a column covers all its levels or more; choose "All levels".'

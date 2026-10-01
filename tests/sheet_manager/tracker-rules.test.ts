@@ -2,16 +2,21 @@ import {
     copyLabel,
     coveredLevelIds,
     deepestMarked,
+    hiddenSlotEntries,
     isCopyOut,
+    kindsOfLayer,
+    layerMarks,
     lengthChangeHidesMarks,
     markWeight,
     nextMarkId,
+    readingLayer,
     remapMarks,
     visibleLevelIds,
 } from '@site/src/sheet_manager/features/sheet/data/tracker';
 import {
     isDefeated,
     memberPenalty,
+    paintMark,
     shortenMarks,
 } from '@site/src/sheet_manager/features/sheet/declarative/cohort';
 import type { ConditionMark } from '@site/src/sheet_manager/types/character';
@@ -165,5 +170,68 @@ describe('parity with member tracks', () => {
                 isDefeated(shortenMarks(marks, length), length)
             );
         }
+    });
+});
+
+describe('layers (spec 019)', () => {
+    const POINT = { id: 'point', layer: 'fill' as const };
+    const MAX = { id: 'max', layer: 'outline' as const };
+    const BLEED = { id: 'bleed', layer: 'outline' as const };
+
+    it('reads the fills, or the outlines of a tracker with no fills', () => {
+        expect(readingLayer([POINT, MAX])).toBe('fill');
+        expect(readingLayer([MAX, BLEED])).toBe('outline');
+        expect(readingLayer(TWO)).toBe('fill');
+        expect(kindsOfLayer([POINT, MAX, BLEED], 'outline').map(({ id }) => id)).toEqual([
+            'max',
+            'bleed',
+        ]);
+    });
+
+    it('shows each slot on its kind layer', () => {
+        const copy = { marks: { l1: 'point' }, outlines: { l1: 'max', l2: 'max' } };
+        expect(layerMarks([POINT, MAX], copy, 'fill')).toEqual({ l1: 'point' });
+        expect(layerMarks([POINT, MAX], copy, 'outline')).toEqual({ l1: 'max', l2: 'max' });
+        expect(hiddenSlotEntries([POINT, MAX], copy)).toBe(0);
+    });
+
+    it('follows a mark whose layer changed without rewriting the value', () => {
+        // "max" was stored as a fill, then the author made it an outline.
+        const copy = { marks: { l1: 'max', l2: 'point' } };
+        expect(layerMarks([POINT, MAX], copy, 'outline')).toEqual({ l1: 'max' });
+        expect(layerMarks([POINT, MAX], copy, 'fill')).toEqual({ l2: 'point' });
+        expect(hiddenSlotEntries([POINT, MAX], copy)).toBe(0);
+    });
+
+    it('keeps the own slot on a collision and counts the other as hidden', () => {
+        // "bleed" became a fill on a box whose fill slot already holds "point".
+        const fills = [POINT, { id: 'bleed', layer: 'fill' as const }];
+        const copy = { marks: { l1: 'point' }, outlines: { l1: 'bleed' } };
+        expect(layerMarks(fills, copy, 'fill')).toEqual({ l1: 'point' });
+        expect(layerMarks(fills, copy, 'outline')).toEqual({});
+        expect(hiddenSlotEntries(fills, copy)).toBe(1);
+    });
+
+    it('hides marks of removed kinds and of levels no longer shown', () => {
+        const copy = { marks: { l1: 'gone' }, outlines: { l2: 'max', l3: 'max' } };
+        expect(layerMarks([POINT, MAX], copy, 'fill')).toEqual({});
+        expect(hiddenSlotEntries([POINT, MAX], copy, (levelId) => levelId !== 'l3')).toBe(2);
+    });
+
+    it('reads stored values of spec 018 as fills', () => {
+        const copy = { marks: { hurt: 'slash', injured: 'cross' } };
+        expect(layerMarks(TWO, copy, 'fill')).toEqual(copy.marks);
+        expect(layerMarks(TWO, copy, 'outline')).toEqual({});
+    });
+});
+
+describe('the brush on member tracks (spec 019)', () => {
+    const marks: ConditionMark[] = ['slash', 'empty', 'cross'];
+
+    it('puts the mark in one step and clears it when it is already there', () => {
+        expect(paintMark(marks, 1, 'cross')).toEqual(['slash', 'cross', 'cross']);
+        expect(paintMark(marks, 0, 'cross')).toEqual(['cross', 'empty', 'cross']);
+        expect(paintMark(marks, 2, 'cross')).toEqual(['slash', 'empty', 'empty']);
+        expect(marks).toEqual(['slash', 'empty', 'cross']);
     });
 });

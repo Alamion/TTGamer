@@ -22,16 +22,22 @@ export function newTrackerId(prefix: 'lv' | 'mk' | 'col'): string {
     return `${prefix}-${token}`;
 }
 
-export type MarkSetId = 'one' | 'two' | 'three';
+export type MarkSetId = 'one' | 'two' | 'three' | 'points';
 
-/** Ready sets of marks (spec 018 FR-007), named in the editor's language. */
+/** Ready sets of marks (spec 018 FR-007, spec 019 points), named in the editor's language. */
 export function markSet(set: MarkSetId): TrackerMarkKind[] {
-    const mark = (name: string, symbol: string, fill: TrackerMarkKind['fill']) => ({
-        id: newTrackerId('mk'),
-        name,
-        symbol,
-        fill,
-    });
+    const mark = (
+        name: string,
+        symbol: string,
+        fill: TrackerMarkKind['fill'],
+        layer: TrackerMarkKind['layer'] = 'fill'
+    ): TrackerMarkKind => ({ id: newTrackerId('mk'), name, symbol, fill, layer });
+    if (set === 'points') {
+        return [
+            mark(translate(text.markPoint), '●', 'secondary'),
+            mark(translate(text.markMaximum), '', 'secondary', 'outline'),
+        ];
+    }
     if (set === 'one') return [mark(translate(text.markMarked), '×', 'error')];
     const two = [
         mark(translate(text.markBashing), '╱', 'secondary'),

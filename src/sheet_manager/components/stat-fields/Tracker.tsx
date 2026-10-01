@@ -2,7 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { Plus, X } from 'lucide-react';
-import { type CSSProperties, type ReactNode, useState } from 'react';
+import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 
 import type {
     TrackerModel,
@@ -112,7 +112,8 @@ function MarkBox({
 export interface TrackerProps {
     model: TrackerModel;
     disabled: boolean;
-    onMark: (columnId: string, copyId: string, levelId: string) => void;
+    /** A box click; `brush` is the mark picked in the legend (spec 019), else the click cycles. */
+    onMark: (columnId: string, copyId: string, levelId: string, brush?: string) => void;
     onText?: (columnId: string, copyId: string, levelId: string, text: string) => void;
     onAddCopy?: (columnId: string) => void;
     onRemoveCopy?: (columnId: string, copyId: string) => void;
@@ -173,8 +174,30 @@ export function Tracker({
     wording: wordingOverrides,
 }: TrackerProps) {
     const [pending, setPending] = useState<Pending>();
+    const [brush, setBrush] = useState<Pick<Mark, 'id' | 'layer'>>();
     const wording = { ...defaultWording(), ...wordingOverrides };
     const markById = new Map(model.marks.map((mark) => [mark.id, mark]));
+    const legendShown = model.legend && model.display !== 'line';
+    const brushMark = brush ? markById.get(brush.id) : undefined;
+    // A brush whose mark is gone or changed layer, or that has no legend to show it, ends for good.
+    if (brush && (!brushMark || brushMark.layer !== brush.layer || !legendShown || disabled)) {
+        setBrush(undefined);
+    }
+    const activeBrush = brush && brushMark?.layer === brush.layer ? brushMark : undefined;
+    const root = useRef<HTMLDivElement>(null);
+    const brushOn = activeBrush !== undefined;
+    useEffect(() => {
+        const node = root.current;
+        if (!node || !brushOn) return;
+        // Escape ends the brush while focus is inside this tracker; open dialogs take it first.
+        const onKey = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape') return;
+            event.stopPropagation();
+            setBrush(undefined);
+        };
+        node.addEventListener('keydown', onKey);
+        return () => node.removeEventListener('keydown', onKey);
+    }, [brushOn]);
     const levelTitle = (level: TrackerModel['levels'][number]) =>
         model.valueColumn.show && level.value ? `${level.name} (${level.value})` : level.name;
     const size = model.display === 'line' ? 'sm' : 'md';
@@ -197,7 +220,7 @@ export function Tracker({
                 label={wording.boxLabel(level.name, column, copy)}
                 title={levelTitle(level)}
                 mark={markById.get(copy.marks[levelId] ?? '')}
-                onToggle={() => onMark(column.id, copy.id, levelId)}
+                onToggle={() => onMark(column.id, copy.id, levelId, activeBrush?.id)}
                 size={size}
             />
         );
@@ -481,17 +504,61 @@ export function Tracker({
         );
     }
 
-    const legend =
-        model.legend && model.display !== 'line' ? (
-            <ul className="m-0 flex list-none flex-wrap gap-x-3 gap-y-1 p-0 text-xs text-textSecondary">
-                {model.marks.map((mark) => (
-                    <li key={mark.id} className="inline-flex items-center gap-1">
-                        <MarkSwatch mark={mark} />
-                        {mark.name}
-                    </li>
-                ))}
+    const legend = legendShown ? (
+        <div className="grid gap-1">
+            <ul className="m-0 flex list-none flex-wrap gap-x-1.5 gap-y-1 p-0 text-xs text-textSecondary">
+                {model.marks.map((mark) => {
+                    const content = (
+                        <>
+                            <MarkSwatch mark={mark} />
+                            {mark.name}
+                        </>
+                    );
+                    const pressed = activeBrush?.id === mark.id;
+                    return (
+                        <li key={mark.id}>
+                            {disabled ? (
+                                <span className="inline-flex items-center gap-1.5 border border-transparent px-1.5 py-1">
+                                    {content}
+                                </span>
+                            ) : (
+                                <button
+                                    type="button"
+                                    aria-pressed={pressed}
+                                    title={translate(
+                                        pressed
+                                            ? messages.tracker.brushOff
+                                            : messages.tracker.brushOn,
+                                        { mark: mark.name }
+                                    )}
+                                    onClick={() =>
+                                        setBrush(
+                                            pressed ? undefined : { id: mark.id, layer: mark.layer }
+                                        )
+                                    }
+                                    className={clsx(
+                                        'inline-flex items-center gap-1.5 rounded-md border px-1.5 py-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                                        pressed
+                                            ? 'border-warning text-textPrimary ring-1 ring-warning'
+                                            : 'border-border hover:border-borderMoreContrast hover:text-textPrimary'
+                                    )}
+                                >
+                                    {content}
+                                </button>
+                            )}
+                        </li>
+                    );
+                })}
             </ul>
-        ) : null;
+            {!disabled && (
+                <p role="status" className="m-0 min-h-0 text-[11px] text-textSecondary">
+                    {activeBrush
+                        ? translate(messages.tracker.brushStatus, { mark: activeBrush.name })
+                        : ''}
+                </p>
+            )}
+        </div>
+    ) : null;
 
     const capNotes = disabled
         ? []
@@ -506,7 +573,7 @@ export function Tracker({
     const toolbar = [lengthControl, ...addButtons, ...capNotes].filter(Boolean);
 
     return (
-        <div className="grid gap-2">
+        <div ref={root} className="grid gap-2">
             {(showHeaderLabel || toolbar.length > 0) && (
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     {showHeaderLabel ? (

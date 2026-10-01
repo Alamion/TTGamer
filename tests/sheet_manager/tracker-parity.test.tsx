@@ -108,4 +108,21 @@ describe('fodder-group parity (spec 018, US7)', () => {
         fireEvent.click(screen.getByRole('button', { name: `Extend ${OWN}` }));
         expect(read(OWN)).toEqual(read(BUILT_IN));
     });
+
+    it('marks and clears the same way with the legend brush (spec 019)', () => {
+        render(createElement(TrackerParity));
+        shorten(BUILT_IN);
+        shorten(OWN);
+        const [builtInLethal, ownLethal] = screen.getAllByRole('button', { name: 'Lethal' });
+        fireEvent.click(builtInLethal!);
+        fireEvent.click(ownLethal!);
+        expect(builtInLethal!.getAttribute('aria-pressed')).toBe('true');
+        expect(ownLethal!.getAttribute('aria-pressed')).toBe('true');
+        fireEvent.click(screen.getByRole('button', { name: 'Member A — Wounded: empty' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Wounded (A): empty' }));
+        expect(read(OWN)).toEqual(read(BUILT_IN));
+        fireEvent.click(screen.getByRole('button', { name: 'Member A — Wounded: Lethal' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Wounded (A): Lethal' }));
+        expect(read(OWN)).toEqual(read(BUILT_IN));
+    });
 });

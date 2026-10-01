@@ -64,6 +64,17 @@ export function shortenMarks(marks: readonly ConditionMark[], length: number): C
 }
 
 /** Cycles a stored slot through empty → bashing → lethal. */
+/** A brush click (spec 019): the box gets the mark, or empties when it already has it. */
+export function paintMark(
+    marks: readonly ConditionMark[],
+    index: number,
+    mark: ConditionMark
+): ConditionMark[] {
+    const next = [...marks];
+    next[index] = next[index] === mark ? 'empty' : mark;
+    return next;
+}
+
 export function toggleMark(marks: readonly ConditionMark[], index: number): ConditionMark[] {
     const order: ConditionMark[] = ['empty', 'slash', 'cross'];
     const next = [...marks];

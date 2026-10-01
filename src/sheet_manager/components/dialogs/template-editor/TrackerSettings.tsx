@@ -334,6 +334,7 @@ export function TrackerSettings({
                                         name: t(text.newMark, { n: value.marks.length + 1 }),
                                         symbol: '•',
                                         fill: 'text',
+                                        layer: 'fill',
                                     },
                                 ],
                             })

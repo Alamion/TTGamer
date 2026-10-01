@@ -13,6 +13,7 @@ import {
     coveredLevelIds,
     deepestMarked,
     isCopyOut,
+    layerSource,
     lengthChangeHidesMarks,
     nextMarkId,
     remapMarks,
@@ -59,7 +60,7 @@ export interface TrackerModel {
     label: string;
     hideLabel: boolean;
     display: TrackerDisplay;
-    marks: readonly Pick<TrackerMarkKind, 'id' | 'name' | 'symbol' | 'fill'>[];
+    marks: readonly Pick<TrackerMarkKind, 'id' | 'name' | 'symbol' | 'fill' | 'layer'>[];
     levels: readonly TrackerModelLevel[];
     valueColumn: { title: string; show: boolean };
     columns: readonly TrackerModelColumn[];
@@ -228,7 +229,7 @@ function withoutKey<T>(record: Readonly<Record<string, T>> | undefined, key: str
     return Object.keys(next).length > 0 ? next : undefined;
 }
 
-function setOptional<K extends 'marks' | 'texts'>(
+function setOptional<K extends 'marks' | 'outlines' | 'texts'>(
     copy: TrackerCopyValue,
     key: K,
     record: TrackerCopyValue[K]
@@ -256,6 +257,32 @@ export function toggleTrackerMark(
                 ? withoutKey(copy.marks, levelId)
                 : { ...copy.marks, [levelId]: next }
         );
+    });
+}
+
+/**
+ * A brush click (spec 019): the box's layer of that mark gets it, or loses it when it already
+ * shows it. The other layer never changes. A mark shown from the other slot (its layer changed
+ * since it was stored) is replaced there.
+ */
+export function paintTrackerMark(
+    field: Pick<TrackerField, 'columns' | 'marks'>,
+    value: TrackerValue | undefined,
+    columnId: string,
+    copyId: string,
+    levelId: string,
+    markId: string
+): TrackerValue {
+    const kind = field.marks.find(({ id }) => id === markId);
+    if (!kind) return value ?? emptyValue();
+    return withCopy(field, value, columnId, copyId, (copy) => {
+        const source = layerSource(field.marks, copy, kind.layer, levelId);
+        const shown = source ? copy[source]?.[levelId] : undefined;
+        let next: TrackerCopyValue = copy;
+        if (source) next = setOptional(next, source, withoutKey(next[source], levelId));
+        if (shown === markId) return next;
+        const own = kind.layer === 'fill' ? 'marks' : 'outlines';
+        return setOptional(next, own, { ...next[own], [levelId]: markId });
     });
 }
 
@@ -437,6 +464,8 @@ export function builtInMarks(
             name: override?.name || name,
             symbol: override?.symbol ?? GAME_MARK_LOOK[id].symbol,
             fill: override?.fill ?? GAME_MARK_LOOK[id].fill,
+            // The game keeps one mark per box (spec 019 FR-022).
+            layer: 'fill',
         };
     });
 }

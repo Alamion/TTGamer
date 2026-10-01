@@ -257,11 +257,18 @@ const trackerSymbolSchema = z
         message: `At most ${TEMPLATE_LIMITS.trackerSymbolMax} characters`,
     });
 
+/** A fill colors the box behind its symbol; an outline frames it. A box holds one of each. */
+export const TRACKER_LAYERS = ['fill', 'outline'] as const;
+
+export type TrackerLayer = (typeof TRACKER_LAYERS)[number];
+
 export const TrackerMarkKindSchema = z.object({
     id: templateIdentifierSchema,
     name: trackerNameSchema,
     symbol: trackerSymbolSchema,
     fill: TrackerFillSchema,
+    /** Spec 019: marks saved before layers are fills. */
+    layer: z.enum(TRACKER_LAYERS).default('fill'),
 });
 
 export const TrackerLevelSchema = z.object({

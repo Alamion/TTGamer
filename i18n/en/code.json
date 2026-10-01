@@ -4139,8 +4139,20 @@
     "ttgamer.ui.sheet.templates.tracker.issueLengthEmpty": {
         "message": "Tracker \"{id}\": length {n} shows no level."
     },
+    "ttgamer.ui.sheet.templates.tracker.layerFill": {
+        "message": "Fill"
+    },
+    "ttgamer.ui.sheet.templates.tracker.layerLocked": {
+        "message": "The game keeps one mark per box, so every mark is a fill."
+    },
+    "ttgamer.ui.sheet.templates.tracker.layerOutline": {
+        "message": "Outline"
+    },
     "ttgamer.ui.sheet.templates.tracker.legend": {
         "message": "Name the marks under the tracker"
+    },
+    "ttgamer.ui.sheet.templates.tracker.legendHint": {
+        "message": "Readers can pick a mark in the legend and put it on boxes directly."
     },
     "ttgamer.ui.sheet.templates.tracker.lengthColumn": {
         "message": "Length {n}"
@@ -4187,17 +4199,26 @@
     "ttgamer.ui.sheet.templates.tracker.markColors": {
         "message": "{name} color"
     },
+    "ttgamer.ui.sheet.templates.tracker.markLayer": {
+        "message": "Mark {n} layer"
+    },
     "ttgamer.ui.sheet.templates.tracker.markLethal": {
         "message": "Lethal"
     },
     "ttgamer.ui.sheet.templates.tracker.markMarked": {
         "message": "Marked"
     },
+    "ttgamer.ui.sheet.templates.tracker.markMaximum": {
+        "message": "Maximum"
+    },
     "ttgamer.ui.sheet.templates.tracker.markName": {
         "message": "Mark {n} name"
     },
     "ttgamer.ui.sheet.templates.tracker.markOwnColor": {
         "message": "{name}: own color"
+    },
+    "ttgamer.ui.sheet.templates.tracker.markPoint": {
+        "message": "Point"
     },
     "ttgamer.ui.sheet.templates.tracker.marks": {
         "message": "Marks"
@@ -4206,7 +4227,7 @@
         "message": "The game sets the number of marks; you can rename and recolor them."
     },
     "ttgamer.ui.sheet.templates.tracker.marksHint": {
-        "message": "A click moves a box to the next mark in this order, then back to empty; a later mark counts as heavier."
+        "message": "Up to five. Fill marks color the box: a click moves it to the next fill in this order, then back to empty, and a later mark counts as heavier. Outline marks frame the box. A box holds one of each."
     },
     "ttgamer.ui.sheet.templates.tracker.markSymbol": {
         "message": "Mark {n} symbol"
@@ -4249,6 +4270,9 @@
     },
     "ttgamer.ui.sheet.templates.tracker.setOne": {
         "message": "One mark"
+    },
+    "ttgamer.ui.sheet.templates.tracker.setPoints": {
+        "message": "Points: current and maximum (fill + outline)"
     },
     "ttgamer.ui.sheet.templates.tracker.setThree": {
         "message": "Three marks, WoD 20th (╱ × ✱)"
@@ -4352,6 +4376,18 @@
     "ttgamer.ui.sheet.tracks.tracker.box": {
         "message": "{level}: {mark}"
     },
+    "ttgamer.ui.sheet.tracks.tracker.boxBoth": {
+        "message": "{level}: {fill}, {outline}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.brushOff": {
+        "message": "Stop marking with {mark}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.brushOn": {
+        "message": "Mark boxes with {mark}"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.brushStatus": {
+        "message": "Marking with {mark}: a click puts it on a box or takes it off. Click it again or press Escape to stop."
+    },
     "ttgamer.ui.sheet.tracks.tracker.cancel": {
         "message": "Cancel"
     },
@@ -4363,6 +4399,12 @@
     },
     "ttgamer.ui.sheet.tracks.tracker.empty": {
         "message": "empty"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.layerFill": {
+        "message": "fill"
+    },
+    "ttgamer.ui.sheet.tracks.tracker.layerOutline": {
+        "message": "outline"
     },
     "ttgamer.ui.sheet.tracks.tracker.level": {
         "message": "Level"

@@ -133,13 +133,17 @@ const trackerIdSchema = z.string().min(1).max(64);
  * Ids of levels, kinds, or columns the tracker no longer has stay stored and are not shown; the
  * record bounds leave room for them without letting the value grow without end.
  */
+const trackerMarksSchema = z
+    .record(trackerIdSchema, trackerIdSchema)
+    .refine((marks) => Object.keys(marks).length <= TEMPLATE_LIMITS.trackerLevelsMax * 2);
+
 export const TrackerCopyValueSchema = z
     .object({
         id: trackerIdSchema,
-        marks: z
-            .record(trackerIdSchema, trackerIdSchema)
-            .refine((marks) => Object.keys(marks).length <= TEMPLATE_LIMITS.trackerLevelsMax * 2)
-            .optional(),
+        /** The fill layer (spec 019); values saved before layers hold only this. */
+        marks: trackerMarksSchema.optional(),
+        /** The outline layer (spec 019). */
+        outlines: trackerMarksSchema.optional(),
         texts: z
             .record(trackerIdSchema, z.string().max(TEMPLATE_LIMITS.trackerTextMax))
             .refine((texts) => Object.keys(texts).length <= TEMPLATE_LIMITS.trackerLevelsMax * 2)

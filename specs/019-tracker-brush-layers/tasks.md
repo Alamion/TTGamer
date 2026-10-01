@@ -26,7 +26,7 @@ changed only where box sizes or accessible names change.
 
 ## Phase 1: Setup
 
-- [ ] T001 Add the strings to `translations/source/{en,ru}/ui/sheet/templates.yaml` (group
+- [x] T001 Add the strings to `translations/source/{en,ru}/ui/sheet/templates.yaml` (group
       `tracker.*`: `layer` "Layer", `layerFill` "Fill", `layerOutline` "Outline", `markLayer`
       "Mark {n} layer", `layerLocked` hint, `setPoints` "Points: current and maximum (fill +
       outline)", `pointName` "Point", `maximumName` "Maximum", the new own-tracker marks hint,
@@ -39,26 +39,26 @@ changed only where box sizes or accessible names change.
 
 ## Phase 2: Foundational (blocks every story)
 
-- [ ] T002 Add `TRACKER_LAYERS = ['fill', 'outline'] as const`, the `TrackerLayer` type, and
+- [x] T002 Add `TRACKER_LAYERS = ['fill', 'outline'] as const`, the `TrackerLayer` type, and
       `layer: z.enum(TRACKER_LAYERS).default('fill')` on `TrackerMarkKindSchema` in
       `src/sheet_manager/types/template.ts`. Keep `TrackerOverrideSchema` marks unchanged (R3, R8).
-- [ ] T003 [P] Add the optional `outlines` record to `TrackerCopyValueSchema` in
+- [x] T003 [P] Add the optional `outlines` record to `TrackerCopyValueSchema` in
       `src/sheet_manager/types/templateValues.ts`, with the same id validation and entry bound as
       `marks` (R4).
-- [ ] T004 Fix every compile error from T002–T003: mark literals in
+- [x] T004 Fix every compile error from T002–T003: mark literals in
       `src/sheet_manager/features/sheet/data/trackerDefaults.ts` (`markSet` returns
       `layer: 'fill'`), `src/sheet_manager/storybook/stories.ts`, `builtInTrackerSettings.ts`
       (`layer: 'fill'` in reported marks), tests' fixtures. Run `yarn typecheck`.
-- [ ] T005 [P] Schema tests in `tests/sheet_manager/tracker-schema.test.ts`: a spec 018 field
+- [x] T005 [P] Schema tests in `tests/sheet_manager/tracker-schema.test.ts`: a spec 018 field
       without `layer` parses with every mark a fill; a stored value without `outlines` parses; a
       value with `outlines` parses; `outlines` rejects bad ids and oversize records; an override
       with a `layer` key strips it.
-- [ ] T006 Add to `src/sheet_manager/features/sheet/data/tracker.ts` (R3, R5, data-model
+- [x] T006 Add to `src/sheet_manager/features/sheet/data/tracker.ts` (R3, R5, data-model
       "Resolved layer"): `readingLayer(kinds)`, `kindsOfLayer(kinds, layer)`, and
       `layerMarks(kinds, copy, layer)` resolving each level from the layer's own slot, else the
       other slot, by the kind's current layer. Keep `nextMarkId`, `deepestMarked`, `isCopyOut`,
       `remapMarks` single-layer (callers pass one layer's kinds and resolved record).
-- [ ] T007 [P] Rule tests in `tests/sheet_manager/tracker-rules.test.ts`: resolver cases (own
+- [x] T007 [P] Rule tests in `tests/sheet_manager/tracker-rules.test.ts`: resolver cases (own
       slot, other slot after a layer change, collision keeps the own-slot mark, removed kind
       hidden), `readingLayer` with fills, outlines only, and mixed.
 
@@ -74,38 +74,39 @@ changed only where box sizes or accessible names change.
 
 ### Tests
 
-- [ ] T008 [P] [US1] Create `tests/sheet_manager/tracker-brush.test.tsx` (pattern of
+- [x] T008 [P] [US1] Create `tests/sheet_manager/tracker-brush.test.tsx` (pattern of
       `tracker-field.test.tsx`): pressing a legend item sets `aria-pressed` and the status line;
       a brush click on empty and lighter boxes sets the mark in one write; on the same mark
       clears it; pressing the item again or another item ends or moves the brush; Escape on a
       focused box ends it; read-only, legend off, and `display: 'line'` render no legend buttons;
-      removing the brush's mark from the field (rerender) ends the brush.
-- [ ] T009 [P] [US1] Extend `tests/sheet_manager/tracker-builtin.test.tsx`: with
+      removing the brush's mark from the field (rerender) or changing its layer ends the brush;
+      two trackers on one page keep separate brushes; a one-mark tracker's single item is a brush.
+- [x] T009 [P] [US1] Extend `tests/sheet_manager/tracker-builtin.test.tsx`: with
       `tracker: { legend: true }` on Star Wars health, the brush writes `cross` into
       `document.data` health levels and clears it on a second click; on a creature member track
       it marks members A and B independently.
 
 ### Implementation
 
-- [ ] T010 [US1] Add `paintTrackerMark(field, value, columnId, copyId, levelId, markId)` to
+- [x] T010 [US1] Add `paintTrackerMark(field, value, columnId, copyId, levelId, markId)` to
       `src/sheet_manager/features/sheet/data/trackerModel.ts` (R2; fill-slot only at this point,
       layers come in US2), next to `toggleTrackerMark`, reusing `withCopy`/`setOptional`.
-- [ ] T011 [P] [US1] Add `paintMark(marks, index, mark)` to
+- [x] T011 [P] [US1] Add `paintMark(marks, index, mark)` to
       `src/sheet_manager/features/sheet/declarative/cohort.ts`: sets `marks[index]` to `mark`,
       or to `'empty'` when equal; unit cases in `tests/sheet_manager/tracker-rules.test.ts`.
-- [ ] T012 [US1] In `src/sheet_manager/components/stat-fields/Tracker.tsx` (R1, contract
+- [x] T012 [US1] In `src/sheet_manager/components/stat-fields/Tracker.tsx` (R1, contract
       "legend as a brush"): `brush` state; `TrackerProps.onMark` gains an optional fourth
       `brush?: string`; the legend renders `<button aria-pressed>` items when `!disabled`
       (plain items otherwise) with the yellow `border-warning` + 1px warning ring when pressed,
       inner padding, titles from `brushOn`/`brushOff`; a `role="status"` line; `onKeyDown`
-      Escape on the root; the brush is ignored and reset when invalid (mark gone, legend off,
-      line display, disabled).
-- [ ] T013 [US1] Wire the brush in `src/sheet_manager/features/sheet/declarative/TrackerFieldControl.tsx`:
+      Escape on the root; the brush keeps the mark id and its layer, and is ignored and reset when
+      invalid (mark gone, its layer changed, legend off, line display, disabled).
+- [x] T013 [US1] Wire the brush in `src/sheet_manager/features/sheet/declarative/TrackerFieldControl.tsx`:
       `onMark(…, brush)` writes `paintTrackerMark` with a brush, `toggleTrackerMark` without.
-- [ ] T014 [US1] Wire the brush in `src/sheet_manager/features/sheet/declarative/BuiltInTracker.tsx`:
+- [x] T014 [US1] Wire the brush in `src/sheet_manager/features/sheet/declarative/BuiltInTracker.tsx`:
       the game column uses `paintMark` (plain track, computed track via `mergeVisibleMarks`,
       members), extra marks columns use `paintTrackerMark`.
-- [ ] T015 [US1] Extend `tests/sheet_manager/tracker-parity.test.tsx`: after folding, brush
+- [x] T015 [US1] Extend `tests/sheet_manager/tracker-parity.test.tsx`: after folding, brush
       "Lethal" on the same box of both trackers and compare `read()` results; brush it again
       (clears) and compare.
 
@@ -146,7 +147,8 @@ Commit.
       hex through style); outline symbol in its color only without a fill; `focus-visible` ring
       instead of the default outline; accessible name with both marks (`boxBoth`); `MarkSwatch`
       draws outline marks as an outlined empty box; legend shows the layer word when both layers
-      exist.
+      exist. Update the one-line size check (`h-6` → `h-5`) in
+      `tests/sheet_manager/tracker-builtin.test.tsx`.
 - [ ] T020 [P] [US2] In `src/sheet_manager/features/sheet/data/trackerDefaults.ts`: `markSet`
       gains `'points'` (fill "Point" amber "●", outline "Maximum" amber no symbol) and the
       `MarkSetId` union.

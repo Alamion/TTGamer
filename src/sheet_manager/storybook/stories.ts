@@ -941,6 +941,7 @@ export function fodderParityTemplate(): CustomTemplate | undefined {
                         type: 'primitive',
                         bindingKey: binding.key,
                         label: 'Members (built-in)',
+                        tracker: { legend: true },
                     },
                     {
                         id: PARITY_OWN_ID,
@@ -960,6 +961,7 @@ export function fodderParityTemplate(): CustomTemplate | undefined {
                         lengths,
                         total: true,
                         out: true,
+                        legend: true,
                     },
                 ],
             },
