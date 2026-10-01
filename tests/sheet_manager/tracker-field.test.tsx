@@ -479,3 +479,35 @@ describe('two layers (spec 019, US2)', () => {
         expect(screen.getByRole('button', { name: 'Bashing' })).toBeTruthy();
     });
 });
+
+describe('hidden outlines and copies (spec 019, US3)', () => {
+    const BLEED = { id: 'bleed', name: 'Bleeding', symbol: '!', fill: 'error', layer: 'outline' };
+
+    it('reports outlines the tracker cannot show', () => {
+        mount(trackerPage(), {
+            value: {
+                tracker: 1,
+                columns: { damage: [{ id: 'a', outlines: { hurt: 'bleed', gone: 'bleed' } }] },
+            },
+        });
+        const hidden = takeSheetIssues().filter(({ code }) => code === 'template-value-hidden');
+        expect(hidden[0]!.details).toMatchObject({ count: 2 });
+    });
+
+    it('asks before removing a copy that holds only outlines', () => {
+        mount(
+            trackerPage({
+                marks: [BASHING, BLEED],
+                columns: [{ id: 'damage', kind: 'marks', title: 'Damage', copies: { max: 3 } }],
+            }),
+            {
+                value: {
+                    tracker: 1,
+                    columns: { damage: [{ id: 'a' }, { id: 'b', outlines: { hurt: 'bleed' } }] },
+                },
+            }
+        );
+        fireEvent.click(screen.getByRole('button', { name: 'Remove Damage B' }));
+        expect(screen.getByRole('dialog')).toBeTruthy();
+    });
+});

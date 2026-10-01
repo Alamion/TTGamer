@@ -106,3 +106,35 @@ describe('tracker change report', () => {
         ]);
     });
 });
+
+describe('outlines in the change report (spec 019)', () => {
+    const LAYERED = [
+        ...MARKS,
+        { id: 'bleed', name: 'Bleed', symbol: '!', fill: 'error', layer: 'outline' },
+    ];
+    const OUTLINED = {
+        tracker: 1,
+        columns: {
+            damage: [
+                { id: 'a', marks: { hurt: 'bashing' }, outlines: { hurt: 'bleed', down: 'bleed' } },
+            ],
+        },
+    };
+    const lost = (after: ReturnType<typeof page>) =>
+        trackerChangeReport(page({ marks: LAYERED }), after, [document(OUTLINED)])[0]?.lostMarks ??
+        0;
+
+    it('counts outlines of a removed kind or level', () => {
+        expect(lost(page({ marks: MARKS }))).toBe(2);
+        expect(lost(page({ marks: LAYERED, levels: LEVELS.slice(0, 2) }))).toBe(1);
+    });
+
+    it('counts a layer change that collides, and nothing once it is undone', () => {
+        const asFill = LAYERED.map((mark) =>
+            mark.id === 'bleed' ? { ...mark, layer: 'fill' } : mark
+        );
+        // "hurt" already holds a fill; "down" has room on the fill layer.
+        expect(lost(page({ marks: asFill }))).toBe(1);
+        expect(lost(page({ marks: LAYERED }))).toBe(0);
+    });
+});

@@ -2,10 +2,13 @@ import { isTemplateCompatible } from '../../../systems/view';
 import {
     type CustomTemplate,
     fieldValueKey,
+    TRACKER_LAYERS,
     type TrackerColumn,
+    type TrackerMarkKind,
     walkTemplateNodes,
 } from '../../../types/template';
 import { type TrackerValue, TrackerValueSchema } from '../../../types/templateValues';
+import { layerMarks } from './tracker';
 
 /** What saving a tracker's new settings stops showing (spec 018, FR-026). */
 export interface TrackerChange {
@@ -31,7 +34,8 @@ interface TrackerShape {
     columns: readonly TrackerColumn[];
     /** Own trackers only: built-in levels and marks are the game's and never change here. */
     levelIds?: ReadonlySet<string>;
-    markIds?: ReadonlySet<string>;
+    /** Own trackers: mark kinds with their layers, which decide what each slot shows. */
+    kinds?: readonly Pick<TrackerMarkKind, 'id' | 'layer'>[];
     /** Built-in member tracks: extra-column copies follow the members, not a column maximum. */
     membersCopies?: boolean;
 }
@@ -45,7 +49,7 @@ function trackerShapes(template: CustomTemplate): Map<string, TrackerShape> {
                 title: node.label,
                 columns: node.columns,
                 levelIds: new Set(node.levels.map(({ id }) => id)),
-                markIds: new Set(node.marks.map(({ id }) => id)),
+                kinds: node.marks,
             });
         } else if (node.type === 'primitive' && node.bindingKey.startsWith('track:')) {
             // Every built-in tracker counts: removing its last extra column hides values too.
@@ -75,11 +79,16 @@ function shownValues(shape: TrackerShape, value: TrackerValue): Shown {
         copies.slice(0, limit).forEach((copy) => {
             let held = 0;
             if (column.kind === 'marks') {
-                for (const [levelId, markId] of Object.entries(copy.marks ?? {})) {
-                    if (shape.levelIds && !shape.levelIds.has(levelId)) continue;
-                    if (shape.markIds && !shape.markIds.has(markId)) continue;
-                    shown.marks += 1;
-                    held += 1;
+                // Both layers count as marks (spec 019); own trackers read slots by kind layer.
+                const layers = shape.kinds
+                    ? TRACKER_LAYERS.map((layer) => layerMarks(shape.kinds!, copy, layer))
+                    : [copy.marks ?? {}, copy.outlines ?? {}];
+                for (const marks of layers) {
+                    for (const levelId of Object.keys(marks)) {
+                        if (shape.levelIds && !shape.levelIds.has(levelId)) continue;
+                        shown.marks += 1;
+                        held += 1;
+                    }
                 }
             } else {
                 for (const levelId of Object.keys(copy.texts ?? {})) {

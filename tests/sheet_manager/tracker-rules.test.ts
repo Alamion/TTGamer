@@ -14,8 +14,11 @@ import {
     visibleLevelIds,
 } from '@site/src/sheet_manager/features/sheet/data/tracker';
 import {
+    ownTrackerModel,
     paintTrackerMark,
+    stepTrackerLength,
     toggleTrackerMark,
+    trackerLengthHidesMarks,
 } from '@site/src/sheet_manager/features/sheet/data/trackerModel';
 import {
     isDefeated,
@@ -24,6 +27,8 @@ import {
     shortenMarks,
 } from '@site/src/sheet_manager/features/sheet/declarative/cohort';
 import type { ConditionMark } from '@site/src/sheet_manager/types/character';
+import { TemplateFieldSchema, type TrackerField } from '@site/src/sheet_manager/types/template';
+import type { TrackerValue } from '@site/src/sheet_manager/types/templateValues';
 import { describe, expect, it } from 'vitest';
 
 /** Tracker rules over level and mark ids (spec 018, R7). */
@@ -303,5 +308,77 @@ describe('box writes on two layers (spec 019, data-model transitions)', () => {
             marks: { l1: 'point' },
             outlines: { l1: 'max' },
         });
+    });
+});
+
+describe('reading and folding two layers (spec 019, US3)', () => {
+    const LV = ['a', 'b', 'c', 'd'];
+    const field = (extra: Record<string, unknown> = {}) =>
+        TemplateFieldSchema.parse({
+            id: 'wounds',
+            type: 'tracker',
+            label: 'Wounds',
+            marks: [
+                { id: 'bash', name: 'Bash', symbol: '╱', fill: 'secondary' },
+                { id: 'lethal', name: 'Lethal', symbol: '×', fill: 'error' },
+                { id: 'mild', name: 'Mild', symbol: '', fill: 'success', layer: 'outline' },
+                { id: 'bleed', name: 'Bleed', symbol: '!', fill: 'error', layer: 'outline' },
+            ],
+            levels: LV.map((id, index) => ({ id, name: id, value: String(-index) })),
+            columns: [{ id: 'c', kind: 'marks', title: 'C' }],
+            lengths: [{ levels: ['a', 'b'] }, { levels: LV }],
+            out: true,
+            ...extra,
+        }) as TrackerField;
+    const value = (copy: Record<string, unknown>, length = 1) =>
+        ({ tracker: 1, length, columns: { c: [{ id: 'k', ...copy }] } }) as TrackerValue;
+
+    it('folds each layer into the new last level on its own', () => {
+        const before = value({
+            marks: { a: 'bash', c: 'bash', d: 'lethal' },
+            outlines: { b: 'bleed', c: 'mild', d: 'mild' },
+        });
+        expect(trackerLengthHidesMarks(field(), before, -1)).toBe(true);
+        const after = stepTrackerLength(field(), before, -1)!;
+        expect(after.columns.c![0]).toEqual({
+            id: 'k',
+            marks: { a: 'bash', b: 'lethal' },
+            outlines: { b: 'bleed' },
+        });
+    });
+
+    it('asks before a shortening that folds only outlines', () => {
+        expect(trackerLengthHidesMarks(field(), value({ outlines: { d: 'mild' } }), -1)).toBe(true);
+        expect(trackerLengthHidesMarks(field(), value({ outlines: { a: 'mild' } }), -1)).toBe(
+            false
+        );
+    });
+
+    it('reads the total and out from the fills only', () => {
+        const model = ownTrackerModel(
+            field(),
+            value({ marks: { b: 'bash' }, outlines: { c: 'bleed', d: 'bleed' } }),
+            'Wounds',
+            false
+        );
+        const copy = model.columns[0]!.copies[0]!;
+        expect(copy.total).toBe('-1');
+        expect(copy.out).toBe(false);
+        expect(model.readingLayer).toBe('fill');
+    });
+
+    it('reads the outlines of a tracker without fills', () => {
+        const outlinesOnly = field({
+            marks: [{ id: 'mild', name: 'Mild', symbol: '', fill: 'success', layer: 'outline' }],
+        });
+        const model = ownTrackerModel(
+            outlinesOnly,
+            value({ outlines: { c: 'mild', d: 'mild' } }),
+            'Wounds',
+            false
+        );
+        expect(model.readingLayer).toBe('outline');
+        expect(model.columns[0]!.copies[0]!.total).toBe('-3');
+        expect(model.columns[0]!.copies[0]!.out).toBe(true);
     });
 });

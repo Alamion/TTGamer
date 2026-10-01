@@ -8,6 +8,7 @@ import type {
     TrackerLayer,
     TrackerMarkKind,
 } from '../../../types/template';
+import { TRACKER_LAYERS } from '../../../types/template';
 import type { TrackerCopyValue, TrackerValue } from '../../../types/templateValues';
 import {
     copyLabel,
@@ -403,12 +404,22 @@ export function trackerLengthHidesMarks(
         (column) =>
             column.kind === 'marks' &&
             copiesOf(column, value).some((copy) =>
-                lengthChangeHidesMarks(field.marks, before, after, copy.marks ?? {})
+                TRACKER_LAYERS.some((layer) =>
+                    lengthChangeHidesMarks(
+                        kindsOfLayer(field.marks, layer),
+                        before,
+                        after,
+                        layerMarks(field.marks, copy, layer)
+                    )
+                )
             )
     );
 }
 
-/** Steps the shown length; marks keep their shown position and fold into the new end. */
+/**
+ * Steps the shown length; marks keep their shown position and fold into the new end, each layer on
+ * its own (the heaviest of that layer wins; spec 019 FR-017).
+ */
 export function stepTrackerLength(
     field: TrackerField,
     value: TrackerValue | undefined,
@@ -426,13 +437,22 @@ export function stepTrackerLength(
     const columns = { ...base.columns };
     for (const column of field.columns) {
         if (column.kind !== 'marks' || !columns[column.id]) continue;
-        columns[column.id] = columns[column.id]!.map((copy) =>
-            setOptional(
-                copy,
-                'marks',
-                emptyToUndefined(remapMarks(field.marks, before, after, copy.marks ?? {}))
-            )
-        );
+        columns[column.id] = columns[column.id]!.map((copy) => {
+            const remap = (layer: TrackerLayer) =>
+                emptyToUndefined(
+                    remapMarks(
+                        kindsOfLayer(field.marks, layer),
+                        before,
+                        after,
+                        layerMarks(field.marks, copy, layer)
+                    )
+                );
+            return setOptional(
+                setOptional(copy, 'marks', remap('fill')),
+                'outlines',
+                remap('outline')
+            );
+        });
     }
     return { ...base, length: next, columns };
 }

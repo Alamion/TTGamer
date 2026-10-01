@@ -172,25 +172,25 @@ Commit.
 
 ### Tests
 
-- [ ] T023 [P] [US3] Extend `tests/sheet_manager/tracker-rules.test.ts`: per-layer fold on
+- [x] T023 [P] [US3] Extend `tests/sheet_manager/tracker-rules.test.ts`: per-layer fold on
       shortening (heaviest per layer, layers independent); `lengthChangeHidesMarks` true for an
       outline past the end; total and out ignore outlines on a fill tracker and read outlines on
       an outline-only tracker.
-- [ ] T024 [P] [US3] Extend `tests/sheet_manager/tracker-changes.test.ts`: removing the outline
+- [x] T024 [P] [US3] Extend `tests/sheet_manager/tracker-changes.test.ts`: removing the outline
       mark, removing a level holding an outline, and switching a mark's layer onto taken boxes
       are counted in `lostMarks`; switching back counts nothing.
-- [ ] T025 [P] [US3] Extend `tests/sheet_manager/tracker-field.test.tsx`: `template-value-hidden`
+- [x] T025 [P] [US3] Extend `tests/sheet_manager/tracker-field.test.tsx`: `template-value-hidden`
       counts hidden outlines; removing a copy holding only outlines asks first; a spec 018 value
       renders the same names and totals as before.
 
 ### Implementation
 
-- [ ] T026 [US3] In `src/sheet_manager/features/sheet/data/trackerModel.ts`: `stepTrackerLength`
+- [x] T026 [US3] In `src/sheet_manager/features/sheet/data/trackerModel.ts`: `stepTrackerLength`
       remaps each layer on resolved records with that layer's kinds and writes `marks` and
       `outlines`; `trackerLengthHidesMarks` checks both; `countHiddenTrackerValues` counts entries
       of both slots not shown by the resolver; totals/out/marked level use the reading layer
       (R5, R6).
-- [ ] T027 [US3] In `src/sheet_manager/features/sheet/data/trackerChanges.ts`: `TrackerShape`
+- [x] T027 [US3] In `src/sheet_manager/features/sheet/data/trackerChanges.ts`: `TrackerShape`
       keeps the own tracker's marks with layers; `shownValues` counts resolved fills and outlines
       per copy instead of raw `marks` entries.
 - [x] T028 [US3] In `src/sheet_manager/components/stat-fields/Tracker.tsx`: the marked level name
