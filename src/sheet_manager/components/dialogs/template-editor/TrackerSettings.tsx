@@ -95,7 +95,7 @@ export function MarkColorPicker({
         <span
             role="group"
             aria-label={t(text.markColors, { name })}
-            className="flex items-center gap-1"
+            className="flex items-center gap-2.5 px-1"
         >
             {TRACKER_PALETTE_FILLS.map((palette) => (
                 <button
@@ -106,8 +106,9 @@ export function MarkColorPicker({
                     title={t(COLOR_LABEL[palette])}
                     onClick={() => onChange(palette)}
                     className={clsx(
-                        'h-5 w-5 rounded-full border-2',
-                        fill === palette ? 'border-textPrimary' : 'border-transparent'
+                        // The picked color gets a bright frame with a gap, as the brush does.
+                        'grid h-3.5 w-3.5 place-items-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                        fill === palette && 'outline outline-2 outline-offset-2 outline-textPrimary'
                     )}
                 >
                     <MarkSwatch mark={{ fill: palette, symbol: '' }} size="xs" />
@@ -120,8 +121,8 @@ export function MarkColorPicker({
                 title={t(text.markOwnColor, { name })}
                 onChange={(event) => onChange(event.target.value.toLowerCase())}
                 className={clsx(
-                    'h-6 w-7 cursor-pointer rounded border bg-transparent p-0',
-                    fill.startsWith('#') ? 'border-textPrimary' : 'border-border'
+                    'h-6 w-7 cursor-pointer rounded border border-border bg-transparent p-0',
+                    fill.startsWith('#') && 'outline outline-2 outline-offset-2 outline-textPrimary'
                 )}
             />
         </span>
