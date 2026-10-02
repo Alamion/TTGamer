@@ -4,7 +4,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { clsx } from 'clsx';
 import { Redo2, Undo2 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ZodError } from 'zod';
 
 import { describeError, reportSheetIssue } from '../../diagnostics';
@@ -111,6 +111,7 @@ import {
 } from './template-editor/issues';
 import { type MoveCommand, resolveMoveTarget } from './template-editor/moveTargets';
 import { OutlineTree } from './template-editor/OutlineTree';
+import { PaneDivider } from './template-editor/PaneDivider';
 import type { SettingsGroupId } from './template-editor/settings/groupedSettings';
 import {
     IssueGroupCountsContext,
@@ -120,6 +121,7 @@ import {
 import { inputClasses } from './template-editor/settings/inputClasses';
 import { type EditorShortcutHandlers, useEditorShortcuts } from './template-editor/shortcuts';
 import { EditorDragContext, useEditorDrag } from './template-editor/useEditorDrag';
+import { type Pane, PANE_LIMITS, usePaneWidths } from './template-editor/usePaneWidths';
 
 const editor = uiMessages.sheet.templates.editor;
 const library = uiMessages.sheet.templates.library;
@@ -222,6 +224,26 @@ export function TemplateEditorDialog({
     const [initialJson] = useState(() => JSON.stringify(draft));
     const isDirty = JSON.stringify(draft) !== initialJson;
     const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null);
+    const gridRef = useRef<HTMLDivElement | null>(null);
+    const [gridWidth, setGridWidth] = useState<number | undefined>(undefined);
+    useEffect(() => {
+        const measure = () => setGridWidth(gridRef.current?.clientWidth || undefined);
+        measure();
+        window.addEventListener('resize', measure);
+        return () => window.removeEventListener('resize', measure);
+    }, [mode]);
+    const {
+        widths: paneWidths,
+        setWidth: setPaneWidth,
+        reset: resetPane,
+        clamp: clampPane,
+    } = usePaneWidths(gridWidth);
+    // Only the CSS variable moves while a divider is dragged; the width is stored on release.
+    const previewPane = useCallback(
+        (pane: Pane, width: number) =>
+            gridRef.current?.style.setProperty(`--${pane}`, `${width}px`),
+        []
+    );
 
     // Callbacks keep their identity across edits (memoized panels and frames), so they read the
     // latest state from a ref instead of a render-time closure.
@@ -738,6 +760,20 @@ export function TemplateEditorDialog({
         selectedPosition !== undefined &&
         selectedPosition.index < selectedPosition.siblings.length - 1;
 
+    const paneStyle = {
+        '--outline': `${paneWidths.outline}px`,
+        '--settings': `${paneWidths.settings}px`,
+    } as CSSProperties;
+    const dividerProps = (pane: Pane) => ({
+        value: paneWidths[pane],
+        min: PANE_LIMITS[pane].min,
+        max: PANE_LIMITS[pane].max,
+        clamp: (width: number) => clampPane(pane, width),
+        onPreview: (width: number) => previewPane(pane, width),
+        onChange: (width: number) => setPaneWidth(pane, width),
+        onReset: () => resetPane(pane),
+    });
+
     const areas: ReadonlyArray<{ id: EditorArea; label: string }> = [
         { id: 'page', label: t(editor.areaPage) },
         { id: 'outline', label: t(editor.areaOutline) },
@@ -907,7 +943,11 @@ export function TemplateEditorDialog({
                                                                     </button>
                                                                 ))}
                                                             </div>
-                                                            <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)_20rem]">
+                                                            <div
+                                                                ref={gridRef}
+                                                                style={paneStyle}
+                                                                className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[var(--outline)_6px_minmax(22.5rem,1fr)_6px_var(--settings)]"
+                                                            >
                                                                 <section
                                                                     aria-label={t(
                                                                         editor.areaOutline
@@ -915,7 +955,7 @@ export function TemplateEditorDialog({
                                                                     data-editor-scroll="outline"
                                                                     className={clsx(
                                                                         paneClasses('outline'),
-                                                                        'border-border p-2 md:border-r'
+                                                                        'p-2'
                                                                     )}
                                                                 >
                                                                     <h3 className="mb-1 hidden px-1 text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
@@ -925,6 +965,10 @@ export function TemplateEditorDialog({
                                                                         nodes={shownDraft.children}
                                                                     />
                                                                 </section>
+                                                                <PaneDivider
+                                                                    label={t(editor.resizeOutline)}
+                                                                    {...dividerProps('outline')}
+                                                                />
                                                                 <section
                                                                     aria-label={t(editor.areaPage)}
                                                                     data-editor-scroll="page"
@@ -937,13 +981,18 @@ export function TemplateEditorDialog({
                                                                         draft={shownDraft}
                                                                     />
                                                                 </section>
+                                                                <PaneDivider
+                                                                    label={t(editor.resizeSettings)}
+                                                                    invert
+                                                                    {...dividerProps('settings')}
+                                                                />
                                                                 <section
                                                                     aria-label={t(
                                                                         editor.areaSettings
                                                                     )}
                                                                     className={clsx(
                                                                         paneClasses('settings'),
-                                                                        'space-y-4 border-border p-3 md:border-l'
+                                                                        'space-y-4 p-3'
                                                                     )}
                                                                 >
                                                                     <h3 className="hidden text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">

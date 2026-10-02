@@ -249,15 +249,15 @@ showed; one undo puts it back.
 
 **Independent test**: widen settings, reopen on another template: same width; double click: default.
 
-- [ ] T024 [P] [US3] Create `TE/usePaneWidths.ts` (localStorage `template-editor-panes` through
+- [x] T024 [P] [US3] Create `TE/usePaneWidths.ts` (localStorage `template-editor-panes` through
       `useLocalStorageState`, limits and defaults per data-model.md, `fit(dialogWidth)` keeping the
       page ≥ 360 px) and `TE/PaneDivider.tsx` (`role="separator"`, `aria-orientation`, value
       attributes, pointer capture with CSS-variable-only updates during the drag and one commit on
       release, arrows ±10 / Shift ±40, Home and double click reset).
-- [ ] T025 [US3] Replace the fixed grid in Dialog (`md:grid-cols-[15rem_minmax(0,1fr)_20rem]`) with
+- [x] T025 [US3] Replace the fixed grid in Dialog (`md:grid-cols-[15rem_minmax(0,1fr)_20rem]`) with
       `md:grid-cols-[var(--outline)_6px_minmax(22.5rem,1fr)_6px_var(--settings)]` and the two
       dividers (desktop only; phones keep the tabs); refit on window resize.
-- [ ] T026 [P] [US3] Create `tests/sheet_manager/template-editor-panes.test.tsx`: arrows move and clamp,
+- [x] T026 [P] [US3] Create `tests/sheet_manager/template-editor-panes.test.tsx`: arrows move and clamp,
       Home and double click reset, widths stored and read back after remount, broken stored JSON
       falls back to defaults, dividers have the separator role and names.
 
