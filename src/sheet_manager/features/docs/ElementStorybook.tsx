@@ -1,6 +1,6 @@
+import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
 import { type ReactNode, useMemo, useState } from 'react';
 
-import { DocsHelpLink } from '../../components/controls/DocsHelpLink';
 import {
     blankDocument,
     definitionExamples,

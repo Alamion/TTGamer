@@ -1,8 +1,9 @@
+import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
 import { clsx } from 'clsx';
 import { ChevronDown } from 'lucide-react';
 
 import { useExpandedState } from '../../hooks';
-import { DocsHelpLink, documentationFor } from '../controls/DocsHelpLink';
+import { documentationFor } from '../controls/documentationFor';
 
 export type AccentColor = 'primary' | 'secondary';
 

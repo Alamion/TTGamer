@@ -45,8 +45,8 @@ Guarantees:
 # Contract: UI
 
 - Dice settings, "Sharing" block: **Service** select (Discord, Matrix) → address field whose
-  label, placeholder, and validity hint name the chosen service → link "How to set up
-  sharing" to `/docs/roll-sharing#<guideAnchor>`.
+  label, placeholder, and validity hint name the chosen service → the shared "?" help link (`DocsHelpLink`, moved to `shared/components`) beside the
+  Service label, to `/docs/roll-sharing#<guideAnchor>`.
 - Sharing button (next to dice settings): visible when the active service has a valid
   address; shows `ServiceLogo`; `aria-label` and `title` name the service; left click toggles
   sharing, right click toggles anonymize.
