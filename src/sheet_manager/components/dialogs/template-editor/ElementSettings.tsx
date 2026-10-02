@@ -397,7 +397,10 @@ function tableSettings(node: TableNode, callbacks: ElementEditorCallbacks): Grou
     return {
         content: (
             <>
-                <TitleSetting node={node} onChange={(title) => update({ title })} />
+                <TitleSetting
+                    node={node}
+                    onChange={(title) => update({ title: title || undefined })}
+                />
                 <TableColumns callbacks={callbacks} node={node} />
             </>
         ),

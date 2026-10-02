@@ -747,6 +747,86 @@ function formulaSyntaxProblem(source: string | undefined): string | undefined {
 }
 
 /**
+ * The checks of one field's own settings, shared by page fields, table columns, and list entry
+ * fields (spec 022, R4): label, options, bounds, formulas, pool tracker length, tracker names.
+ * `report` receives the problem and the setting inside the field.
+ */
+function checkFieldSettings(
+    field: TemplateField,
+    messages: DraftIssueMessages,
+    /** `named`: the message already names the element (or needs no name, like empty labels). */
+    report: (problem: string, setting: SettingRef, named?: true) => void
+): void {
+    const text = uiMessages.sheet.templates.editor;
+    if (field.label.trim().length === 0) report(messages.emptyLabel, at('content', 'label'), true);
+    if (field.type === 'formula') {
+        if (field.formula.trim().length === 0) {
+            report(translate(text.issueFormulaEmpty), at('limits', 'formula'));
+        } else {
+            const problem = formulaSyntaxProblem(field.formula);
+            if (problem) report(problem, at('limits', 'formula'));
+        }
+    }
+    if (field.type === 'rating' || field.type === 'number') {
+        const problem = formulaSyntaxProblem(field.maxFrom);
+        if (problem) report(problem, at('limits', 'maxFrom'));
+    }
+    if (field.type === 'select') {
+        const seenOptions = new Set<string>();
+        field.options.forEach((option, index) => {
+            if (seenOptions.has(option.id)) {
+                report(
+                    interpolate(messages.duplicateId, { id: option.id }),
+                    at('content', `option:${index}`)
+                );
+            }
+            seenOptions.add(option.id);
+            if (option.label.trim().length === 0) {
+                report(translate(text.issueOptionEmpty), at('content', `option:${index}`));
+            }
+        });
+    }
+    if (field.type === 'number' || field.type === 'rating' || field.type === 'resource') {
+        if (field.min !== undefined && field.max !== undefined && field.min > field.max) {
+            report(messages.invalidBounds, at('limits', 'min'));
+        }
+    }
+    if (
+        field.type === 'resource' &&
+        field.poolTracker &&
+        field.max > TEMPLATE_LIMITS.trackerLevelsMax
+    ) {
+        report(
+            translate(text.issuePoolTooLong, { max: TEMPLATE_LIMITS.trackerLevelsMax }),
+            at('limits', 'max')
+        );
+    }
+    if (field.type === 'tracker') {
+        const tracker = at('look', 'tracker');
+        if ([...field.marks, ...field.levels].some(({ name }) => name.trim().length === 0)) {
+            report(translate(text.issueTrackerNameEmpty), tracker);
+        }
+        const levelIds = new Set(field.levels.map(({ id }) => id));
+        field.lengths.forEach((length, index) => {
+            if (!length.levels.some((id) => levelIds.has(id))) {
+                report(
+                    interpolate(messages.trackerLengthEmpty, { id: field.label, n: index + 1 }),
+                    tracker,
+                    true
+                );
+            }
+        });
+        if (
+            field.columns.some(
+                ({ covers }) => covers !== undefined && covers >= field.levels.length
+            )
+        ) {
+            report(interpolate(messages.trackerCovers, { id: field.label }), tracker, true);
+        }
+    }
+}
+
+/**
  * Live draft integrity feedback. Structural identifiers are generated, but the checks stay
  * defensive (imports/edits could introduce collisions) alongside limits, bounds, and formula
  * validation (parse errors, unknown coordinates, cycles — FR-14). Each issue names its element
@@ -820,62 +900,69 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
         if (node.type === 'section' || node.type === 'group') {
             if (node.title.trim().length === 0) issue(messages.emptyLabel, at('content', 'title'));
         }
+        if ((node.type === 'table' || node.type === 'list') && node.title?.trim() === '') {
+            issue(messages.emptyLabel, at('content', 'title'));
+        }
         if (node.type === 'table') {
             checkEffectiveKey(node.valueKey ?? node.id, node.id, at('value', 'valueKey'));
             if (node.minRows > node.maxRows) issue(messages.invalidBounds, at('limits', 'minRows'));
-        }
-        if (isTemplateField(node)) {
-            if (node.label.trim().length === 0) issue(messages.emptyLabel, at('content', 'label'));
-            checkEffectiveKey(node.valueKey ?? node.id, node.id, at('value', 'valueKey'));
-            if (node.type === 'formula') formulaIssue(node.formula, at('limits', 'formula'));
-        }
-        if (node.type === 'select') {
-            const seenOptions = new Set<string>();
-            node.options.forEach((option, index) => {
-                if (seenOptions.has(option.id)) {
+            node.columns.forEach((column, index) => {
+                const columnName = column.label.trim() || `#${index + 1}`;
+                checkFieldSettings(column, messages, (problem, setting) =>
                     issue(
-                        interpolate(messages.duplicateId, { id: option.id }),
-                        at('content', `option:${index}`)
-                    );
-                }
-                seenOptions.add(option.id);
+                        translate(uiMessages.sheet.templates.editor.issueColumn, {
+                            table: name,
+                            column: columnName,
+                            problem,
+                        }),
+                        at('content', `column:${column.id}.${setting.key}`)
+                    )
+                );
             });
         }
-        if (node.type === 'number' || node.type === 'rating' || node.type === 'resource') {
-            if (node.min !== undefined && node.max !== undefined && node.min > node.max) {
-                issue(messages.invalidBounds, at('limits', 'min'));
-            }
+        if (isTemplateField(node)) {
+            checkEffectiveKey(node.valueKey ?? node.id, node.id, at('value', 'valueKey'));
+            checkFieldSettings(node, messages, (problem, setting, named) =>
+                issue(named ? problem : inElement(name, problem), setting)
+            );
         }
         if (node.type === 'primitive') {
             formulaIssue(node.minFrom, at('limits', 'minFrom'));
             formulaIssue(node.maxMinFrom, at('limits', 'maxMinFrom'));
-        }
-        if (node.type === 'rating' || node.type === 'number' || node.type === 'primitive') {
             formulaIssue(node.maxFrom, at('limits', 'maxFrom'));
         }
-        if (node.type === 'list' && node.valueKey !== undefined) {
-            checkEffectiveKey(node.valueKey, node.id, at('value', 'valueKey'));
-        }
-        if (node.type === 'tracker') {
-            const levelIds = new Set(node.levels.map(({ id }) => id));
-            node.lengths.forEach((length, index) => {
-                if (!length.levels.some((id) => levelIds.has(id))) {
+        if (node.type === 'list') {
+            if ((node.valueKey === undefined) === (node.bindingKey === undefined)) {
+                issue(
+                    inElement(name, translate(uiMessages.sheet.templates.editor.issueListSource)),
+                    at('value', 'source')
+                );
+            }
+            if (node.valueKey !== undefined) {
+                checkEffectiveKey(node.valueKey, node.id, at('value', 'valueKey'));
+                const item = listItemField(node);
+                checkFieldSettings(item, messages, (problem, setting) =>
                     issue(
-                        interpolate(messages.trackerLengthEmpty, { id: node.label, n: index + 1 }),
-                        at('look', 'tracker')
+                        setting.key === 'label'
+                            ? translate(uiMessages.sheet.templates.editor.issueEntryLabel, {
+                                  list: name,
+                              })
+                            : inElement(name, problem),
+                        at('content', `entry.${setting.key}`)
+                    )
+                );
+            }
+            (node.presets ?? []).forEach((preset, index) => {
+                if (preset.label.trim().length === 0) {
+                    issue(
+                        inElement(
+                            name,
+                            translate(uiMessages.sheet.templates.editor.issuePresetEmpty)
+                        ),
+                        at('content', `preset:${index}`)
                     );
                 }
             });
-            if (
-                node.columns.some(
-                    ({ covers }) => covers !== undefined && covers >= node.levels.length
-                )
-            ) {
-                issue(
-                    interpolate(messages.trackerCovers, { id: node.label }),
-                    at('look', 'tracker')
-                );
-            }
         }
         // A built-in tracker's extra columns keep their values under their own key.
         if (node.type === 'primitive' && (node.tracker?.columns ?? []).length > 0) {

@@ -106,8 +106,11 @@ hooks.ts:228-275`). Own-value list entries are an array of `{id, …}` (`updateL
        mapping and never shows raw text.
 - **Rationale**: specific checks give the best wording; the backstop guarantees FR-019 for rules
   added later.
-- **Cost**: one schema parse per draft change, deferred like the page; budget checked in the
-  editor performance test.
+- **Cost**: one schema parse takes about 20 ms on the full Star Wars sheet (jsdom). Run on every
+  deferred render it doubled the editor's keystroke median (26 → 65 ms), so the editor parses
+  when the dialog opens and again 300 ms after typing pauses (`useSchemaBackstop`). Save always
+  parses in full. The Save button is disabled by the specific checks only, so a backstop-only
+  problem still reaches the save handler, which refuses it plainly and reports the rule.
 
 ### R5. Pointer-driven drag with live placement
 

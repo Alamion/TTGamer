@@ -5,7 +5,9 @@ import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { clsx } from 'clsx';
 import { Redo2, Undo2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ZodError } from 'zod';
 
+import { describeError, reportSheetIssue } from '../../diagnostics';
 import {
     listTemplateTargetGroups,
     parseTemplateTargetValue,
@@ -47,6 +49,8 @@ import {
     createEmptyDraft,
     describeDraft,
     detachCatalog,
+    type DraftIssue,
+    type DraftIssueMessages,
     type DraftOpResult,
     duplicateNode,
     type EditorDraft,
@@ -99,6 +103,12 @@ import {
     select,
     undo,
 } from './template-editor/history';
+import {
+    describeLocation,
+    issueLocation,
+    reportUncoveredIssues,
+    useSchemaBackstop,
+} from './template-editor/issues';
 import { type MoveCommand, resolveMoveTarget } from './template-editor/moveTargets';
 import { OutlineTree } from './template-editor/OutlineTree';
 import type { SettingsGroupId } from './template-editor/settings/groupedSettings';
@@ -206,7 +216,7 @@ export function TemplateEditorDialog({
         trackers: readonly TrackerChange[];
     } | null>(null);
     const plural = usePluralMessage();
-    const [saveIssues, setSaveIssues] = useState<readonly string[]>([]);
+    const [saveIssues, setSaveIssues] = useState<readonly DraftIssue[]>([]);
     const [announcement, setAnnouncement] = useState('');
     const [initialJson] = useState(() => JSON.stringify(draft));
     const isDirty = JSON.stringify(draft) !== initialJson;
@@ -252,7 +262,7 @@ export function TemplateEditorDialog({
             const result = operation(current.present.draft);
             if (!result.ok) {
                 const message = describeFailure(result);
-                setSaveIssues([message]);
+                setSaveIssues([{ message }]);
                 setAnnouncement(message);
                 return false;
             }
@@ -433,28 +443,36 @@ export function TemplateEditorDialog({
     }, [duplicate, moveByCommand, onSelection, redoChange, removeSelected, undoChange]);
     useEditorShortcuts(contentElement, mode === 'edit' ? shortcutHandlers : {});
 
+    const issueMessages = useMemo<DraftIssueMessages>(
+        () => ({
+            emptyName: t(editor.emptyName),
+            emptyLabel: t(editor.emptyLabel),
+            duplicateId: t(editor.duplicateId),
+            invalidKey: t(editor.invalidKey),
+            limitReached: t(editor.limitReached),
+            invalidBounds: t(editor.invalidBounds),
+            unknownCoordinate: t(editor.unknownCoordinate),
+            circularDependency: t(editor.circularDependency),
+            unknownBinding: t(editor.unknownBinding),
+            unknownCatalog: t(editor.unknownCatalog),
+            unknownFillTarget: t(editor.unknownFillTarget),
+            listCatalogUnnamed: t(editor.listCatalogNeedsNames),
+            unknownLabelMessage: t(editor.unknownLabelMessage),
+            invalidDocsLink: t(editor.invalidDocsLink),
+            referenceTargetUnavailable: t(editor.referenceTargetUnavailable),
+            trackerLengthEmpty: t(uiMessages.sheet.templates.tracker.issueLengthEmpty),
+            trackerCovers: t(uiMessages.sheet.templates.tracker.issueCovers),
+        }),
+        [t]
+    );
+    const specificIssues = useMemo(
+        () => collectDraftIssues(draft, issueMessages),
+        [draft, issueMessages]
+    );
+    const backstopIssues = useSchemaBackstop(draft, specificIssues);
     const draftIssues = useMemo(
-        () =>
-            collectDraftIssues(draft, {
-                emptyName: t(editor.emptyName),
-                emptyLabel: t(editor.emptyLabel),
-                duplicateId: t(editor.duplicateId),
-                invalidKey: t(editor.invalidKey),
-                limitReached: t(editor.limitReached),
-                invalidBounds: t(editor.invalidBounds),
-                unknownCoordinate: t(editor.unknownCoordinate),
-                circularDependency: t(editor.circularDependency),
-                unknownBinding: t(editor.unknownBinding),
-                unknownCatalog: t(editor.unknownCatalog),
-                unknownFillTarget: t(editor.unknownFillTarget),
-                listCatalogUnnamed: t(editor.listCatalogNeedsNames),
-                unknownLabelMessage: t(editor.unknownLabelMessage),
-                invalidDocsLink: t(editor.invalidDocsLink),
-                referenceTargetUnavailable: t(editor.referenceTargetUnavailable),
-                trackerLengthEmpty: t(uiMessages.sheet.templates.tracker.issueLengthEmpty),
-                trackerCovers: t(uiMessages.sheet.templates.tracker.issueCovers),
-            }),
-        [draft, t]
+        () => [...specificIssues, ...backstopIssues],
+        [specificIssues, backstopIssues]
     );
     const issueGroupsKey = draftIssues
         .filter(({ nodeId, setting }) => nodeId && setting)
@@ -471,6 +489,38 @@ export function TemplateEditorDialog({
         return counts;
     }, [issueGroupsKey]);
     const groupSession = useSettingsGroupSession();
+    const { setOpen: openGroup } = groupSession;
+
+    /** Selects the issue's element, opens its group, and focuses the setting (spec 022, R3). */
+    const goToIssue = useCallback(
+        (issue: DraftIssue) => {
+            const { nodeId, setting } = issue;
+            if (!nodeId) return;
+            setMode('edit');
+            setArea('settings');
+            selectNode(nodeId, 'outline');
+            reveal(`[data-outline-row="${nodeId}"]`, 'nearest');
+            if (!setting) return;
+            openGroup(setting.group, true);
+            const focus = () => {
+                const target = document.querySelector<HTMLElement>(
+                    `[data-settings-for="${nodeId}"] [data-setting="${setting.key}"]`
+                );
+                if (!target) return;
+                for (let details = target.closest('details'); details;) {
+                    details.open = true;
+                    details = details.parentElement?.closest('details') ?? null;
+                }
+                target.focus();
+                target.scrollIntoView?.({ block: 'nearest' });
+            };
+            // The settings remount for the new selection first.
+            if (typeof window.requestAnimationFrame === 'function') {
+                window.requestAnimationFrame(focus);
+            } else setTimeout(focus, 0);
+        },
+        [openGroup, selectNode]
+    );
     const issueNodeKey = draftIssues
         .map(({ nodeId }) => nodeId)
         .filter(Boolean)
@@ -534,9 +584,27 @@ export function TemplateEditorDialog({
                 setPendingSave({ template: parsed, plan, lists, trackers });
             } else saveUserTemplate(parsed, plan);
         } catch (error) {
-            const fallback =
-                error instanceof Error && error.message.length > 0 ? [error.message] : [];
-            setSaveIssues(fallback);
+            // Raw schema text never reaches the author (spec 022, FR-019): each problem is
+            // mapped to its element and setting, and rules no check covers are reported.
+            if (error instanceof ZodError) {
+                reportUncoveredIssues(draft, specificIssues);
+                const mapped = error.issues.map((issue) =>
+                    describeLocation(draft, issueLocation(draft, issue.path))
+                );
+                setSaveIssues(
+                    mapped.filter(
+                        (issue, index) =>
+                            mapped.findIndex(({ message }) => message === issue.message) === index
+                    )
+                );
+            } else {
+                reportSheetIssue({
+                    code: 'template-draft-invalid',
+                    message: 'Saving the template failed',
+                    details: { error: describeError(error) },
+                });
+                setSaveIssues([describeLocation(draft, {})]);
+            }
         }
     };
 
@@ -654,7 +722,7 @@ export function TemplateEditorDialog({
     ];
     const paneClasses = (id: EditorArea) =>
         clsx('min-h-0 overflow-y-auto', area === id ? 'block' : 'hidden', 'md:block');
-    const visibleIssues = [...draftIssues.map(({ message }) => message), ...saveIssues];
+    const visibleIssues = [...draftIssues, ...saveIssues];
     const toolbarButton =
         'flex items-center gap-1 rounded border border-border px-2 py-1 text-xs text-textSecondary hover:bg-bgBase hover:text-textPrimary disabled:opacity-40';
 
@@ -912,27 +980,20 @@ export function TemplateEditorDialog({
                         <div role="alert" aria-live="polite">
                             {visibleIssues.length > 0 && (
                                 <ul className="mb-3 max-h-24 space-y-1 overflow-y-auto text-xs text-error">
-                                    {draftIssues.map(({ message, nodeId }, index) => (
-                                        <li key={`draft-${index}`}>
-                                            {nodeId ? (
+                                    {visibleIssues.map((issue, index) => (
+                                        <li key={index}>
+                                            {issue.nodeId ? (
                                                 <button
                                                     type="button"
-                                                    onClick={() => {
-                                                        setMode('edit');
-                                                        setArea('settings');
-                                                        selectNode(nodeId, 'outline');
-                                                    }}
+                                                    onClick={() => goToIssue(issue)}
                                                     className="text-left underline decoration-dotted"
                                                 >
-                                                    {message}
+                                                    {issue.message}
                                                 </button>
                                             ) : (
-                                                message
+                                                issue.message
                                             )}
                                         </li>
-                                    ))}
-                                    {saveIssues.map((message, index) => (
-                                        <li key={`save-${index}`}>{message}</li>
                                     ))}
                                 </ul>
                             )}
@@ -951,7 +1012,7 @@ export function TemplateEditorDialog({
                             <button
                                 type="button"
                                 onClick={handleSave}
-                                disabled={draftIssues.length > 0}
+                                disabled={specificIssues.length > 0}
                                 className="rounded border border-transparent bg-primary-muted px-4 py-2 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
                             >
                                 {t(editor.save)}

@@ -21,10 +21,11 @@ import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import type { ListNode, TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema, TEMPLATE_LIMITS } from '@site/src/sheet_manager/types/template';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { takeSheetIssues } from '../setup/sheetIssues';
 import { dragNode, openSettingsGroups } from './helpers/editor';
 import {
     ASHEN_ID,
@@ -1990,5 +1991,80 @@ describe('tracker settings (spec 018)', () => {
                 within(group).getByRole('button', { name: 'Fill' }).getAttribute('aria-pressed')
             ).toBe('true');
         }
+    });
+});
+
+describe('save problems lead to their setting (spec 022, US4)', () => {
+    afterEach(cleanup);
+
+    const open = (children: unknown[]) =>
+        render(
+            createElement(TemplateEditorDialog, {
+                base: {
+                    kind: 'edit',
+                    // Drafts may hold what the schema refuses; the editor must name it plainly.
+                    template: {
+                        id: 'save-kit',
+                        name: 'Save Kit',
+                        systemId: 'star-wars-wod',
+                        documentKind: 'character',
+                        schemaVersion: 3,
+                        children,
+                    } as unknown as ReturnType<typeof CustomTemplateSchema.parse>,
+                },
+                onClose: () => {},
+            })
+        );
+
+    it('focuses the entry label of a list from its issue', async () => {
+        open([
+            {
+                id: 'notes',
+                type: 'list',
+                title: 'Notes',
+                valueKey: 'notes',
+                columns: 1,
+                item: { id: 'note', type: 'text', label: '', required: false, compact: false },
+            },
+        ]);
+        const alert = screen.getByRole('alert');
+        const issue = within(alert).getByRole('button', {
+            name: 'The entry field of list “Notes” has no label.',
+        });
+        fireEvent.click(issue);
+        await waitFor(() =>
+            expect(document.activeElement?.getAttribute('data-setting')).toBe('entry.label')
+        );
+        expect(
+            document.activeElement
+                ?.closest('[data-settings-for]')
+                ?.getAttribute('data-settings-for')
+        ).toBe('notes');
+        expect(takeSheetIssues()).toEqual([]);
+    });
+
+    it('refuses a save the checks missed in plain words and reports the rule', () => {
+        open([
+            {
+                id: 'stats',
+                type: 'section',
+                title: 'Stats',
+                columns: 2,
+                columnWidths: [0, 1],
+                children: [
+                    { id: 'luck', type: 'number', label: 'Luck', required: false, compact: false },
+                ],
+            },
+        ]);
+        const alert = screen.getByRole('alert');
+        expect(alert.textContent).toContain('Stats: Columns has a value that is not allowed.');
+        // Editing reports nothing: only a refused save does.
+        expect(takeSheetIssues()).toEqual([]);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(alert.textContent).not.toMatch(/"code"|too_small|"path"/);
+        const reported = takeSheetIssues();
+        expect(reported.map(({ code }) => code)).toEqual(['template-draft-invalid']);
+        expect(reported[0]?.details).toMatchObject({ nodeId: 'stats', setting: 'columnWidths' });
     });
 });

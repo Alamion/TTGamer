@@ -155,24 +155,24 @@ the entry label box.
 
 ### Tests
 
-- [ ] T013 [P] [US4] Create `tests/sheet_manager/draft-issues-coverage.test.ts`: one draft per rule in
+- [x] T013 [P] [US4] Create `tests/sheet_manager/draft-issues-coverage.test.ts`: one draft per rule in
       the research gap list (entry field label, column label, column option label, preset label,
       tracker mark/level name, pool resource max > 20, empty formula field, table title "", list
       source combinations, select with no options, bad column widths, bad identifier) → exactly one
       issue with the expected `nodeId` and `setting`, no message containing `"code"` or `path`; and a
       fuzz-style check: for each shipped template (via the system registry) and the storybook
       templates, `collectDraftIssues` is empty and `CustomTemplateSchema.safeParse` succeeds.
-- [ ] T014 [P] [US4] Create `tests/sheet_manager/issue-location.test.ts` for `issueLocation`: paths into
+- [x] T014 [P] [US4] Create `tests/sheet_manager/issue-location.test.ts` for `issueLocation`: paths into
       `children`, table `columns`, list `item`, select `options`, presets, tracker arrays map to the
       nearest node and setting key; unknown paths return `{}`.
 
 ### Implementation
 
-- [ ] T015 [US4] In `TE/draft.ts` walk table columns and the list `item` with the field checks (label,
+- [x] T015 [US4] In `TE/draft.ts` walk table columns and the list `item` with the field checks (label,
       options, bounds, formula, key rules where they apply), naming the table/list and the column or
       entry field in the message (T001 strings) and pointing `setting` at `column:<id>.<key>` or
       `entry.<key>`; add the remaining gap checks from research R4 step 1.
-- [ ] T016 [US4] Create `TE/issues.ts`: `issueLocation(draft, path)` per data-model.md and
+- [x] T016 [US4] Create `TE/issues.ts`: `issueLocation(draft, path)` per data-model.md and
       `schemaIssues(draft, messages, known)` that runs `CustomTemplateSchema.safeParse(draft)`, drops
       Zod issues already covered by a specific issue on the same node and setting, maps the rest to
       `issueNotAllowed` with a translated setting name where known, and returns them without reporting.
@@ -180,7 +180,7 @@ the entry label box.
       Export `reportUncoveredIssues(draft)` that reports each uncovered raw issue once through
       `reportSheetIssue({ code: 'template-draft-invalid', … })`; only the save handler calls it
       (research R4 step 3).
-- [ ] T017 [US4] In Dialog: the save `catch` maps a Zod error through `issueLocation` and the same
+- [x] T017 [US4] In Dialog: the save `catch` maps a Zod error through `issueLocation` and the same
       messages (never `error.message`); issue buttons call a new `goToIssue(issue)`: select the node,
       open `issue.setting.group` in the group context, open a closed column `<details>` when the key
       starts with `column:`, then in the next animation frame focus
