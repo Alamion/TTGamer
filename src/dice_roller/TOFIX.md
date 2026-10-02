@@ -29,16 +29,11 @@ See root `TOFIX.md` — cross-cutting issue, severity owned there. Dice roller o
 
 **Fix prerequisites:** define shared-resource ownership/reference counting, route removal through one release operation, add fake disposable-resource tests, then run a manual repeated-roll/resize stress check. Do not blindly dispose shared materials while live dice still reference them.
 
-## 🟢 Medium
-
-### 3D physics artifacts (tracked as root TOFIX F-004 and F-005)
-
-See root `TOFIX.md`. F-004: dice spawn inside each other and scatter at high speed. F-005: show/fade phases are frame-counted, so roll timing depends on the display refresh rate (supersedes the former "High-refresh-rate settling" entry). Both are reproduced first by the display-condition tests (root T-066).
-
 ---
 
 ## ✅ Done
 
+- 3D physics artifacts (root F-004 spawns inside each other, F-005 refresh-rate timing) — FIXED in `808cecd`: simulated-time settle and fade, separated spawns, covered by the display-condition tests (T-066)
 - `buildDiscordHistoryMessage` type hack (`undefined as unknown as string`) — FIXED: `details`/`formatted` made optional
 - `sessionStorage.ts` — empty catch blocks now log warnings
 - `Root.tsx` inline roll toast — extracted to `RollToastContent` component

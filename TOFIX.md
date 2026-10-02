@@ -30,7 +30,7 @@ reused for a different entry, never renumbered (gaps after removals are permanen
 
 ## 🟢 Medium
 
-### F-003 — Template editor settings panel is hard to read
+### F-007 — Template editor settings panel is hard to read
 
 **Area:** template editor settings panel (`ElementSettings`, `FieldEditor`, `PrimitiveConfig`)
 
