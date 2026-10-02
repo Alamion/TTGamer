@@ -122,9 +122,7 @@ export type UserCatalog = z.output<typeof UserCatalogSchema>;
 
 /** An owner as plain ids (a stored owner, or one derived from a template). */
 export type CatalogOwnerRef =
-    | { settingId: string }
-    | { systemId: string; moduleId?: string }
-    | { rulesetId: string };
+    { settingId: string } | { systemId: string; moduleId?: string } | { rulesetId: string };
 
 /** A stable string for one owner: compares and counts owners. */
 export function catalogOwnerKey(owner: CatalogOwnerRef): string {

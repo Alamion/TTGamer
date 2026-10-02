@@ -20,13 +20,13 @@ reused for a different entry, never renumbered (gaps after removals are permanen
 
 ## 🟡 High
 
-### F-001 — Discord webhook secret exposed to the client
+### F-001 — Roll-sharing webhook secrets exposed to the client
 
-**Area:** dice roller sharing (Discord delivery integration)
+**Area:** dice roller sharing (roll-sharing integration: Discord, Matrix)
 
-**Evidence:** The webhook URL is stored in `sessionStorage` and sent directly from the client via `fetch()`, so it is visible to browser DevTools. Affected surfaces: `src/integrations/discord/webhook.ts`, `src/dice_roller/store/diceRollerStore.ts`, `src/dice_roller/components/DiceRollerSettingsModal.tsx`, `src/dice_roller/components/DiscordWebhookSubscription.tsx`.
+**Evidence:** The webhook URL is stored in `sessionStorage` and sent directly from the client via `fetch()`, so it is visible to browser DevTools. Affected surfaces: `src/integrations/roll-sharing/queue.ts`, `src/dice_roller/store/diceRollerStore.ts`, `src/dice_roller/components/DiceRollerSettingsModal.tsx`, `src/dice_roller/components/RollSharingSubscription.tsx`. A Matrix hookshot address is a secret in the same way.
 
-**Recommendation:** Remove the client-side `sendToDiscordWebhook` call and POST to an authenticated backend endpoint that proxies the message to Discord with server-side secret storage; no anonymous proxy. Important but not a release blocker for the offline-first product.
+**Recommendation:** Remove the client-side delivery and POST to an authenticated backend endpoint that proxies the message to the chosen service with server-side secret storage; no anonymous proxy. Important but not a release blocker for the offline-first product.
 
 ## 🟢 Medium
 

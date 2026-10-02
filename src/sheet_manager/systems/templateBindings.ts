@@ -8,13 +8,7 @@ import { systemRegistry } from './index';
  */
 
 export type DocumentBindingKind =
-    | 'trait'
-    | 'list'
-    | 'resource'
-    | 'track'
-    | 'field'
-    | 'equipment'
-    | 'rows';
+    'trait' | 'list' | 'resource' | 'track' | 'field' | 'equipment' | 'rows';
 
 interface BindingBase {
     key: string;

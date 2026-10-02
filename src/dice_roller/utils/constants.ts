@@ -1,3 +1,5 @@
+import type { SharingServiceId } from '@site/src/integrations/roll-sharing';
+
 import type { V5Line, WodMode } from './rollReader';
 
 export const MODULE_NAME = '3DDiceRolls';
@@ -38,6 +40,7 @@ export const DEFAULT_SETTINGS = {
     timeToReactSeconds: 5,
     diceLiveliness: 100,
     enableDiscordWebhook: true,
+    sharingService: 'discord' as SharingServiceId,
     includeCharacterName: true,
     includeCharacterStats: true,
     includeRollContext: true,
@@ -96,7 +99,8 @@ export const SETTINGS_METADATA: Record<keyof typeof DEFAULT_SETTINGS, SettingMet
     },
     timeToReactSeconds: { type: 'number', name: 'Time to react seconds' },
     diceLiveliness: { type: 'number', name: 'Dice feel (0 heavy to 100 lively)' },
-    enableDiscordWebhook: { type: 'boolean', name: 'Enable Discord webhook' },
+    enableDiscordWebhook: { type: 'boolean', name: 'Share rolls' },
+    sharingService: { type: 'choice', name: 'Roll sharing service' },
     includeCharacterName: { type: 'boolean', name: 'Include character name' },
     includeCharacterStats: { type: 'boolean', name: 'Include character stats' },
     includeRollContext: { type: 'boolean', name: 'Include roll context' },

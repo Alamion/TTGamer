@@ -1,5 +1,14 @@
 # Changelog
 
+## v3.19.0
+
+### Minor feat
+
+- **Share rolls to Matrix (spec 021, T-087)**: the dice settings have a **Service** choice, Discord or Matrix; Matrix rolls go to a room through a matrix-hookshot generic webhook your homeserver admin sets up, with the same formatting, combining of quick rolls, spacing, and anonymizing as Discord, and `@room` in a roll never notifies the room
+- **One address per service**: Discord and Matrix each keep their own webhook address for the session, so switching does not lose either; only the chosen service gets rolls, and anyone already sharing to Discord sees no change
+- **The sharing button shows the service**: the button next to the dice settings draws the Discord or Matrix logo and names the service for screen readers; failure notices name the service, and a Matrix room that cannot be reached links to the setup guide
+- **Setup guide**: the new "Sharing rolls" docs page (English and Russian) covers Discord webhooks and the Matrix admin setup — hookshot, allowing this site, and testing the address
+
 ## v3.18.0
 
 ### Minor feat

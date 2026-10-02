@@ -86,14 +86,12 @@ export function CatalogBrowser({ catalogId }: { catalogId: string }) {
         },
         ...browse.columns
             .filter((column) => !column.detailOnly)
-            .map(
-                (column): ColumnDef<BrowserRow> => ({
-                    id: column.key,
-                    header: translate(column.header),
-                    accessorKey: column.key,
-                    enableSorting: Boolean(column.filter),
-                })
-            ),
+            .map((column): ColumnDef<BrowserRow> => ({
+                id: column.key,
+                header: translate(column.header),
+                accessorKey: column.key,
+                enableSorting: Boolean(column.filter),
+            })),
     ];
 
     return (

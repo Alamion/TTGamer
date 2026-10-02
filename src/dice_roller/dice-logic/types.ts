@@ -140,11 +140,7 @@ export interface ParenthesizedNode {
 }
 
 export type ASTNode =
-    | NumericLiteralNode
-    | DiceGroupNode
-    | BinaryOpNode
-    | UnaryOpNode
-    | ParenthesizedNode;
+    NumericLiteralNode | DiceGroupNode | BinaryOpNode | UnaryOpNode | ParenthesizedNode;
 
 export interface DiceRoll {
     sides: number;

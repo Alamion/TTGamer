@@ -1061,32 +1061,44 @@
     "ttgamer.ui.dice.settings.volume": {
         "message": "Громкость"
     },
-    "ttgamer.ui.dice.sharing.discordToggleTitle": {
-        "message": "ЛКМ: включить или выключить вебхук Discord | ПКМ: анонимные броски (скрыть данные персонажа)"
-    },
     "ttgamer.ui.dice.sharing.enableDiscordWebhook": {
-        "message": "Включить вебхук Discord"
+        "message": "Делиться бросками"
+    },
+    "ttgamer.ui.dice.sharing.service": {
+        "message": "Сервис"
+    },
+    "ttgamer.ui.dice.sharing.setupGuide": {
+        "message": "Как настроить отправку бросков"
+    },
+    "ttgamer.ui.dice.sharing.toggleTitle": {
+        "message": "ЛКМ: включить или выключить отправку бросков в {service} | ПКМ: анонимные броски (скрыть данные персонажа)"
     },
     "ttgamer.ui.dice.sharing.webhookInvalid": {
-        "message": "Неверный формат URL вебхука Discord"
+        "message": "Неверный URL вебхука {service}"
     },
     "ttgamer.ui.dice.sharing.webhookUrl": {
-        "message": "URL вебхука Discord"
+        "message": "URL вебхука {service}"
     },
     "ttgamer.ui.dice.sharing.webhookValid": {
-        "message": "Вебхук Discord указан верно"
+        "message": "Вебхук {service} указан верно"
     },
-    "ttgamer.ui.integrations.discord.errors.network": {
-        "message": "Не удалось связаться с Discord. Проверьте подключение."
+    "ttgamer.ui.integrations.sharing.errors.network": {
+        "message": "Не удалось связаться с {service}. Проверьте подключение."
     },
-    "ttgamer.ui.integrations.discord.errors.rateLimited": {
-        "message": "Discord ограничивает частоту бросков. Повторите чуть позже."
+    "ttgamer.ui.integrations.sharing.errors.rateLimited": {
+        "message": "{service} ограничивает частоту бросков. Повторите чуть позже."
     },
-    "ttgamer.ui.integrations.discord.errors.rateLimitedRetry": {
-        "message": "Discord ограничивает частоту бросков. Повторите примерно через {seconds} с."
+    "ttgamer.ui.integrations.sharing.errors.rateLimitedRetry": {
+        "message": "{service} ограничивает частоту бросков. Повторите примерно через {seconds} с."
     },
-    "ttgamer.ui.integrations.discord.errors.rejected": {
-        "message": "Discord отклонил бросок. Проверьте настройки вебхука."
+    "ttgamer.ui.integrations.sharing.errors.rejected": {
+        "message": "{service} отклонил бросок. Проверьте настройки вебхука."
+    },
+    "ttgamer.ui.integrations.sharing.errors.setupGuide": {
+        "message": "Инструкция по настройке"
+    },
+    "ttgamer.ui.integrations.sharing.errors.sitePermission": {
+        "message": "Не удалось связаться с комнатой {service}. Возможно, сервер ещё не разрешил этот сайт."
     },
     "ttgamer.ui.shared.bottomSheet.close": {
         "message": "Закрыть подробности"

@@ -39,13 +39,7 @@ export interface DiceRendererConfig {
 }
 
 type SessionPhase =
-    | 'physics'
-    | 'exploding'
-    | 'waiting_reroll'
-    | 'arranging'
-    | 'showing'
-    | 'fading'
-    | 'complete';
+    'physics' | 'exploding' | 'waiting_reroll' | 'arranging' | 'showing' | 'fading' | 'complete';
 
 interface RollSession {
     id: number;

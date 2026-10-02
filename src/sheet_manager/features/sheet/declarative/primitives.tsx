@@ -86,10 +86,7 @@ export interface PrimitiveMaxState {
 }
 
 type DegradedReason =
-    | 'unregistered-binding'
-    | 'wrong-binding-kind'
-    | 'no-document'
-    | 'no-body-handlers';
+    'unregistered-binding' | 'wrong-binding-kind' | 'no-document' | 'no-body-handlers';
 
 function DegradedBinding({ bindingKey, reason }: { bindingKey: string; reason: DegradedReason }) {
     reportSheetIssue({

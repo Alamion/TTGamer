@@ -31,19 +31,24 @@ function writeValue(key: string, value: unknown): void {
     }
 }
 
+function currentValue<T>(key: string, defaultValue: T): T {
+    if (values.has(key)) return values.get(key) as T;
+    const value = readValue(key, defaultValue);
+    values.set(key, value);
+    return value;
+}
+
+/** Session-scoped state shared by every user of `key`; a new `key` reads that key's value. */
 export function useSessionStorageState<T>(
     key: string,
     defaultValue: T
 ): [T, (value: SetStateAction<T>) => void] {
-    const [state, setState] = useState<T>(() => {
-        if (values.has(key)) return values.get(key) as T;
-        const value = readValue(key, defaultValue);
-        values.set(key, value);
-        return value;
-    });
+    const [state, setState] = useState(() => ({ key, value: currentValue(key, defaultValue) }));
+    const value = state.key === key ? state.value : currentValue(key, defaultValue);
+    if (state.key !== key) setState({ key, value });
 
     useEffect(() => {
-        const listener = (value: unknown) => setState(value as T);
+        const listener = (next: unknown) => setState({ key, value: next as T });
         const set = listeners.get(key) ?? new Set();
         set.add(listener);
         listeners.set(key, set);
@@ -51,18 +56,17 @@ export function useSessionStorageState<T>(
             set.delete(listener);
             if (set.size === 0) listeners.delete(key);
         };
-    }, [key, setState]);
+    }, [key]);
 
     const setValue = useCallback(
-        (value: SetStateAction<T>) => {
-            setState((prev) => {
-                const next = typeof value === 'function' ? (value as (prev: T) => T)(prev) : value;
-                writeValue(key, next);
-                return next;
-            });
+        (action: SetStateAction<T>) => {
+            const prev = currentValue(key, defaultValue);
+            const next =
+                typeof action === 'function' ? (action as (prevState: T) => T)(prev) : action;
+            writeValue(key, next);
         },
-        [key]
+        [key, defaultValue]
     );
 
-    return [state, setValue];
+    return [value, setValue];
 }

@@ -1,7 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-
-import { DocsHelpLink } from '../../controls/DocsHelpLink';
+import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
 
 /** Anchors of the template editor guide (`docs/template-editor/`), one per explained setting. */
 export const EDITOR_GUIDE = {

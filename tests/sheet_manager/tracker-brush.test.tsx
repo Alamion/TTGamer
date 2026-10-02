@@ -77,8 +77,7 @@ function view(template: ReturnType<typeof page>, readOnly = false) {
 const marksOf = (key = 'wounds') =>
     (
         useDocumentStore.getState().documents[0]!.templateValues?.[key] as
-            | { columns: Record<string, { marks?: Record<string, string> }[]> }
-            | undefined
+            { columns: Record<string, { marks?: Record<string, string> }[]> } | undefined
     )?.columns.damage?.[0]?.marks ?? {};
 
 const legendItem = (name: string, scope: HTMLElement = document.body) =>

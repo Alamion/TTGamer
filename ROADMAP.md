@@ -120,12 +120,14 @@ dependencies — they are not identifiers; slugs are.
 - **Depends on**: none
 - **Scope**: The tool works fully without a network connection: sheets, catalogs,
   dice, and notes all run on local data. The only optional network capability is
-  sharing roll results to an external Discord channel; every other behavior runs
-  locally.
+  sharing roll results to an external chat service (a Discord channel or a Matrix
+  room); every other behavior runs locally.
 - **Open questions**: none recorded.
 - **Notes**:
     - 2026-09-02 — confirmed done: the Discord delivery integration is optional and
       the product is fully usable without it.
+    - 2026-10-02 — spec 021 adds Matrix rooms (hookshot generic webhooks) as a second
+      optional sharing service; still optional, still off the critical path.
 
 ### `app-packaging` — App packaging and distribution
 

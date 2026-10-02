@@ -13,11 +13,12 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 **Running server:** Usually user is already running dev server of app on http://localhost:3000/, so check fo it existence before killing processes or creating new one.
 
 **Routes:**
-| Route | Purpose |
-| --- | --- |
-| `/` | Homepage |
+
+| Route              | Purpose                 |
+| ------------------ | ----------------------- |
+| `/`                | Homepage                |
 | `/universal_sheet` | Character Sheet Manager |
-| `/docs/*` | Documentation |
+| `/docs/*`          | Documentation           |
 
 ## 2. Tech Stack
 
@@ -95,7 +96,7 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 │   │   ├── types/             #   Zod schemas + TS types
 │   │   └── context/           #   CharacterContext (multi-character)
 │   ├── integrations/          # External/cross-feature adapters
-│   │   ├── discord/           #   Bounded, queued Discord webhook delivery
+│   │   ├── roll-sharing/      #   Queued roll sharing to Discord/Matrix (service registry)
 │   │   ├── docs-character-rolls/ # Documentation ↔ sheet/dice adapter
 │   │   ├── roll-reading/      #   Game-system dice readings (V5 criticals, special dice)
 │   │   └── sheet-dice/        #   Character stat ↔ dice panel adapter, shown document

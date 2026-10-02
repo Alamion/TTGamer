@@ -17,9 +17,9 @@
 
 ## 🟡 High
 
-### Discord webhook sends from client (tracked as root TOFIX F-001)
+### Roll-sharing webhooks sent from the client (tracked as root TOFIX F-001)
 
-See root `TOFIX.md` — cross-cutting issue, severity owned there. Dice roller owns the UI components (`DiscordWebhookSubscription`, `DiceRollerSettingsModal`, `sessionStorage`) but the fix requires a backend proxy.
+See root `TOFIX.md` — cross-cutting issue, severity owned there. Dice roller owns the UI components (`RollSharingSubscription`, `DiceRollerSettingsModal`, `sessionStorage`) but the fix requires a backend proxy.
 
 ### Three.js resource ownership and disposal
 

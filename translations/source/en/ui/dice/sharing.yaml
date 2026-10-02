@@ -1,5 +1,7 @@
-enableDiscordWebhook: Enable Discord webhook
-webhookUrl: Discord Webhook URL
-webhookValid: Valid Discord webhook
-webhookInvalid: Invalid Discord webhook URL format
-discordToggleTitle: 'Left-click: toggle Discord webhook | Right-click: anonymize rolls (hide character data)'
+enableDiscordWebhook: Share rolls
+service: Service
+webhookUrl: '{service} webhook URL'
+webhookValid: 'Valid {service} webhook'
+webhookInvalid: 'Invalid {service} webhook URL'
+setupGuide: How to set up sharing
+toggleTitle: 'Left-click: share rolls to {service} on or off | Right-click: anonymize rolls (hide character data)'

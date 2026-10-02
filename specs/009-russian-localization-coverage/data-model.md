@@ -8,12 +8,12 @@ no migration (clarification Q3). Russian-language content lives only in `transla
 
 Location: `translations/source/<locale>/ui/**/*.yaml` (existing).
 
-| Field         | Type                            | Rule                                                       |
+| Field | Type | Rule |
 | ------------- | ------------------------------- | ---------------------------------------------------------- | ----------------------------------- | --- | -------------------------------------------------- |
-| key path      | YAML path → `ttgamer.ui.<path>` | unchanged                                                  |
-| `message`     | string                          | required; plain string leaf is shorthand for `{message}`   |
-| `description` | string?                         | unchanged                                                  |
-| `plural`      | boolean?                        | **new**. When `true`, `message` holds forms separated by ` | `: en exactly 2, ru exactly 3 (`one | few | many`). Every form keeps the same `{placeholders}` |
+| key path | YAML path → `ttgamer.ui.<path>` | unchanged |
+| `message` | string | required; plain string leaf is shorthand for `{message}` |
+| `description` | string? | unchanged |
+| `plural` | boolean? | **new**. When `true`, `message` holds forms separated by `|`: en exactly 2, ru exactly 3 (`one | few | many`). Every form keeps the same `{placeholders}` |
 
 Validation (verifier `keys`, `identical`, `plural` rules): key mirror across locales (existing);
 placeholder parity (existing); a ru value equal to its en value is an error unless excepted; plural

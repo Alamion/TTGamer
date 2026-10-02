@@ -1,6 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import clsx from 'clsx';
 import { Search, X } from 'lucide-react';
@@ -48,7 +49,6 @@ import { useTemplateStore } from '../../store/templateStore';
 import { systemRegistry } from '../../systems';
 import type { CustomTemplate } from '../../types/template';
 import { TEMPLATE_LIMITS } from '../../types/templateLimits';
-import { DocsHelpLink } from '../controls/DocsHelpLink';
 import { ConfirmDialog } from './ConfirmDialog';
 import { availableActions, type LibraryActionId } from './library/actions';
 import { ContextMenu } from './library/ContextMenu';
