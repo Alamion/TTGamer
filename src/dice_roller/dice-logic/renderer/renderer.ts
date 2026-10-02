@@ -16,6 +16,7 @@ import {
 } from '../../utils/constants';
 import { RollCancelledError } from '../errors';
 import { applyCrowdCollisions } from './crowd';
+import { releaseDiceGeometry } from './factory';
 import type { DiceGeometryData } from './geometries';
 import { MAX_LIVELINESS, physicsProfile } from './liveliness';
 import { PhysicsWorld } from './physics';
@@ -313,16 +314,12 @@ export class DiceRenderer {
         }
     }
 
-    /**
-     * Removes dice and frees their own materials. Geometry and the face atlas belong to the
-     * factory's dice templates and are shared across dice and rolls, so they stay.
-     */
+    /** Removes dice and hands them back to the factory, which frees what they own. */
     private removeDiceFromScene(diceShapes: DiceShape[]): void {
         for (const shape of diceShapes) {
             this.sceneManager.remove(shape.geometry);
             this.physicsWorld.remove(shape);
-            const { material } = shape.geometry;
-            for (const each of Array.isArray(material) ? material : [material]) each.dispose();
+            releaseDiceGeometry(shape.geometry);
         }
     }
 

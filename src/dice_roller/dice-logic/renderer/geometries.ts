@@ -39,26 +39,19 @@ export interface DiceGeometryData {
     values: number[];
 }
 
-const textureCache = new Map<string, Texture>();
-
 interface FaceAtlas {
     texture: Texture;
     cols: number;
     rows: number;
 }
 
-const atlasCache = new Map<string, FaceAtlas>();
-
 /**
- * Packs every face texture of a die into one texture so the die draws with one material.
+ * Packs every face texture of a die into one texture so the die draws with one material. The
+ * atlas belongs to the die template that built it and is freed with it.
  * With one material per face three.js issues a draw call per triangle group — over a hundred
  * for a chamfered d20 — which made large pools unplayable (dice #12).
  */
 function faceAtlas(faceTextures: (Texture | null)[], blankColor: string): FaceAtlas {
-    const key = `${faceTextures.map((texture) => texture?.uuid ?? '-').join('|')}_${blankColor}`;
-    const cached = atlasCache.get(key);
-    if (cached) return cached;
-
     const images = faceTextures.map(
         (texture) => (texture?.image as HTMLCanvasElement | undefined) ?? null
     );
@@ -82,9 +75,7 @@ function faceAtlas(faceTextures: (Texture | null)[], blankColor: string): FaceAt
 
     const texture = new Texture(canvas);
     texture.needsUpdate = true;
-    const atlas = { texture, cols, rows };
-    atlasCache.set(key, atlas);
-    return atlas;
+    return { texture, cols, rows };
 }
 
 const clampUnit = (value: number) => Math.max(0, Math.min(1, value));
@@ -219,7 +210,10 @@ export default abstract class DiceGeometry {
             fixBrightness(this.diceColor, -10)
         );
         mapUvsToAtlas(geometry, atlas);
-        for (const material of materials) material.dispose();
+        for (const material of materials) {
+            material.map?.dispose();
+            material.dispose();
+        }
         this.geometry = new Mesh(
             geometry,
             new MeshPhongMaterial({
@@ -450,11 +444,6 @@ export default abstract class DiceGeometry {
         const text = this.labels[index];
         if (text == undefined) return null;
 
-        const cacheKey = `texture_${this.sides}_${this.textureSize}_${index}_${this.diceColor}_${this.textColor}_${text}`;
-        if (textureCache.has(cacheKey)) {
-            return textureCache.get(cacheKey)!;
-        }
-
         const canvas = document.createElement('canvas');
         canvas.width = canvas.height = this.textureSize;
         let textStartY = this.textureSize / 2;
@@ -503,8 +492,17 @@ export default abstract class DiceGeometry {
 
         const texture = new Texture(canvas);
         texture.needsUpdate = true;
-        textureCache.set(cacheKey, texture);
         return texture;
+    }
+
+    /** Frees what every clone shares: the mesh geometry and the face atlas. */
+    dispose(): void {
+        this.buffer.dispose();
+        const { material } = this.geometry;
+        for (const each of Array.isArray(material) ? material : [material]) {
+            (each as MeshPhongMaterial).map?.dispose();
+            each.dispose();
+        }
     }
 
     clone(): DiceGeometryData {
@@ -848,11 +846,6 @@ export class D4DiceGeometry extends DiceGeometry {
     }
 
     createTextTexture(index: number) {
-        const cacheKey = `d4_texture_${index}_${this.diceColor}_${this.textColor}`;
-        if (textureCache.has(cacheKey)) {
-            return textureCache.get(cacheKey)!;
-        }
-
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d')!;
         const textStart = this.calculateTextureSize(this.radius / 2 + this.radius * 2) * 2;
@@ -875,7 +868,6 @@ export class D4DiceGeometry extends DiceGeometry {
         }
         const texture = new Texture(canvas);
         texture.needsUpdate = true;
-        textureCache.set(cacheKey, texture);
         return texture;
     }
 }

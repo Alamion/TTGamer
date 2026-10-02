@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.19.1
+
+### Fix
+
+- **3D dice no longer pile up video memory**: resizing the window frees the old light's shadow map and the dice table instead of keeping them; dice looks dropped from the cache free their shapes and face pictures once no die on screen uses them, and face pictures are no longer kept for every colour ever rolled
+
 ## v3.19.0
 
 ### Minor feat

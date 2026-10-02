@@ -1,4 +1,5 @@
 import { warn } from '@site/src/shared/utils/logging';
+import type { Mesh } from 'three';
 
 import type { DiceGroup } from '../types';
 import {
@@ -12,10 +13,10 @@ import {
     D100DiceGeometry,
     type DiceGeometryData,
 } from './geometries';
-import { type DiceRendererConfig } from './renderer';
+import type { DiceRendererConfig } from './renderer';
 
 interface DiceGeometryInstance {
-    create(): { clone(): DiceGeometryData };
+    create(): { clone(): DiceGeometryData; dispose(): void };
     values: number[];
     labels: string[];
 }
@@ -44,9 +45,25 @@ export interface DiceFactoryConfig extends DiceRendererConfig {
     scaler: number;
 }
 
+interface DiceTemplate {
+    clone(): DiceGeometryData;
+    values: number[];
+    /** Dice cloned from this template that have not been released. */
+    users: number;
+    evicted: boolean;
+    /** Frees the geometry and face atlas every clone shares. */
+    dispose(): void;
+}
+
 /** Built dice per look; a die of a large pool is a clone, not a rebuild (dice #12). */
-const templates = new Map<string, { clone(): DiceGeometryData; values: number[] }>();
+const templates = new Map<string, DiceTemplate>();
 const MAX_TEMPLATES = 48;
+const templateOf = new WeakMap<Mesh, DiceTemplate>();
+
+function evict(template: DiceTemplate): void {
+    template.evicted = true;
+    if (template.users === 0) template.dispose();
+}
 
 function getOrCreateGeometry(
     sides: number,
@@ -66,20 +83,38 @@ function getOrCreateGeometry(
         template = buildTemplate(GeometryClass, config, fudge) ?? undefined;
         if (!template) return null;
         if (templates.size >= MAX_TEMPLATES) {
-            templates.delete(templates.keys().next().value!);
+            const oldest = templates.keys().next().value!;
+            evict(templates.get(oldest)!);
+            templates.delete(oldest);
         }
         templates.set(key, template);
     }
     const geom = template.clone();
     geom.values = template.values;
+    template.users++;
+    templateOf.set(geom.geometry, template);
     return geom;
+}
+
+/**
+ * The one way a die leaves for good: frees its own material and lets go of its template, whose
+ * shared geometry and atlas are freed once the template is evicted and no die uses it.
+ */
+export function releaseDiceGeometry(mesh: Mesh): void {
+    const { material } = mesh;
+    for (const each of Array.isArray(material) ? material : [material]) each.dispose();
+    const template = templateOf.get(mesh);
+    if (!template) return;
+    templateOf.delete(mesh);
+    template.users--;
+    if (template.evicted && template.users === 0) template.dispose();
 }
 
 function buildTemplate(
     GeometryClass: DiceGeometryClass,
     config: DiceFactoryConfig,
     fudge?: boolean
-): { clone(): DiceGeometryData; values: number[] } | null {
+): DiceTemplate | null {
     const options = {
         diceColor: config.diceColor,
         textColor: config.textColor,
@@ -104,7 +139,13 @@ function buildTemplate(
         return null;
     }
     const values = fudge ? g.values : g.values.map((v) => v + 1);
-    return { clone: () => created.clone(), values };
+    return {
+        clone: () => created.clone(),
+        values,
+        users: 0,
+        evicted: false,
+        dispose: () => created.dispose(),
+    };
 }
 
 export function prepareDiceGeometries(
