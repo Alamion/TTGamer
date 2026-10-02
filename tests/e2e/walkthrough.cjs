@@ -34,7 +34,7 @@ const step = (name) => console.log(`\n=== ${name} ===`);
         await nameInput.fill('Walkthrough Kit');
 
         // Regression: transiently clearing a field label must not crash the page
-        const labelInput = page.getByLabel('Field label').first();
+        const labelInput = page.getByLabel('Label', { exact: true }).first();
         await labelInput.fill('');
         await page.getByRole('alert').waitFor();
         await labelInput.fill('Name');

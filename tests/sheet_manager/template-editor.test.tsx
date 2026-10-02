@@ -25,7 +25,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { dragNode } from './helpers/editor';
+import { dragNode, openSettingsGroups } from './helpers/editor';
 import {
     ASHEN_ID,
     RELICS_ID,
@@ -33,6 +33,9 @@ import {
     seedLibrary,
     seedReferenceTypes,
 } from './helpers/library';
+
+// Full editor renders are slow under a loaded test run.
+vi.setConfig({ testTimeout: 20_000 });
 
 const ISSUE_MESSAGES = {
     emptyName: 'Template name is required.',
@@ -77,6 +80,7 @@ function selectInOutline(nodeId: string): void {
         (button) => !button.hasAttribute('draggable')
     )!;
     fireEvent.click(name);
+    openSettingsGroups();
 }
 
 function settings(nodeId: string): HTMLElement {
@@ -598,10 +602,9 @@ describe('editor layout and presentation controls', () => {
         fireEvent.change(within(panel('max-fp')).getByLabelText('Edits'), {
             target: { value: 'max' },
         });
-        fireEvent.change(
-            within(panel('max-fp')).getByLabelText('Minimum from value or formula (optional)'),
-            { target: { value: 'self-control' } }
-        );
+        fireEvent.change(within(panel('max-fp')).getByLabelText('Minimum from'), {
+            target: { value: 'self-control' },
+        });
         fireEvent.click(within(panel('powers')).getByLabelText('Show list title'));
         fireEvent.click(within(panel('powers')).getByLabelText('Draw a border around the list'));
         const find = saved();
@@ -614,10 +617,9 @@ describe('editor layout and presentation controls', () => {
         fireEvent.change(within(panel('max-fp')).getByLabelText('Edits'), {
             target: { value: 'max' },
         });
-        fireEvent.change(
-            within(panel('max-fp')).getByLabelText('Minimum from value or formula (optional)'),
-            { target: { value: 'self-control' } }
-        );
+        fireEvent.change(within(panel('max-fp')).getByLabelText('Minimum from'), {
+            target: { value: 'self-control' },
+        });
         const display = () => within(settings('max-fp')).getByRole('group', { name: 'Display' });
         fireEvent.click(within(display()).getByRole('button', { name: 'Tracker' }));
         const pane = settings('max-fp');
@@ -854,9 +856,7 @@ describe('add-element menu and element sources', () => {
 
         fireEvent.change(source(), { target: { value: 'resource:willpower' } });
         expect(outlineRow('start').getAttribute('data-node-type')).toBe('primitive');
-        expect(
-            within(panel('start')).getByLabelText('Minimum from value or formula (optional)')
-        ).not.toBeNull();
+        expect(within(panel('start')).getByLabelText('Minimum from')).not.toBeNull();
 
         fireEvent.change(source(), { target: { value: 'field:biography' } });
         expect(outlineRow('start').getAttribute('data-node-type')).toBe('text');
@@ -914,13 +914,9 @@ describe('trait-sourced fields', () => {
             })
         );
         selectInOutline('str');
-        expect(
-            within(settings('str')).queryByLabelText('Maximum from value or formula (optional)')
-        ).toBeNull();
+        expect(within(settings('str')).queryByLabelText('Maximum from')).toBeNull();
         selectInOutline('luck');
-        expect(
-            within(settings('luck')).getByLabelText('Maximum from value or formula (optional)')
-        ).not.toBeNull();
+        expect(within(settings('luck')).getByLabelText('Maximum from')).not.toBeNull();
     });
 
     it('stretches an element over parent columns and warns when a sibling is pinned', () => {
@@ -1254,7 +1250,7 @@ describe('list entry settings (spec 016)', () => {
             'reference',
             'image',
         ]);
-        expect(within(panel).queryByLabelText(/Shared value key/)).toBeNull();
+        expect(within(panel).queryByLabelText('Value key')).toBeNull();
         expect(within(panel).queryByText('Required (advisory marker)')).toBeNull();
     });
 

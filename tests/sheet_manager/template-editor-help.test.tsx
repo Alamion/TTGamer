@@ -55,7 +55,7 @@ describe('template editor help and documentation links (T-068)', () => {
 
         selectInOutline('motto');
         const help = within(settingsOf('motto')).getByRole('link', {
-            name: /^Help: Shared value key/,
+            name: /^Help: Value key/,
         });
         expect(help.getAttribute('href')).toBe('/docs/template-editor/values#shared-value-key');
         expect(help.getAttribute('target')).toBe('_blank');

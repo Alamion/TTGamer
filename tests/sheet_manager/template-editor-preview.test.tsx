@@ -169,7 +169,7 @@ describe('quick preview and edit history (spec 012, US3)', () => {
         selectInOutline('origin');
         const label = within(
             document.querySelector('[data-settings-for="origin"]') as HTMLElement
-        ).getByLabelText('Field label');
+        ).getByLabelText('Label');
         pressShortcut(label, 'Delete', { key: 'Delete' });
         expect(outlineRow('origin')).not.toBeNull();
     });
@@ -179,7 +179,7 @@ describe('quick preview and edit history (spec 012, US3)', () => {
         selectInOutline('origin');
         const label = within(
             document.querySelector('[data-settings-for="origin"]') as HTMLElement
-        ).getByLabelText('Field label');
+        ).getByLabelText('Label');
         for (const value of ['H', 'Ho', 'Hom', 'Home']) {
             fireEvent.change(label, { target: { value } });
         }

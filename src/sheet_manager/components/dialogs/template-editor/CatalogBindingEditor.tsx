@@ -13,8 +13,8 @@ import {
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { systemRegistry } from '../../../systems';
 import type { TemplateField } from '../../../types/template';
-import { EditorHelp } from './EditorHelp';
 import { type FillTarget, useEditorModel, useFillTargets } from './EditorModel';
+import { SettingField } from './settings/SettingField';
 
 const bindingMessages = uiMessages.sheet.templates.binding;
 
@@ -39,6 +39,8 @@ interface CatalogBindingEditorProps {
     callbacks: CatalogBindingEditorCallbacks;
     field: Extract<TemplateField, { type: 'select' }>;
     selfId: string;
+    /** The catalog select's `data-setting` key. */
+    setting?: string;
 }
 
 /**
@@ -98,9 +100,11 @@ export function ListCatalogPicker({
     itemType,
     disabledNote,
     onChange,
+    setting = 'catalog',
 }: {
     catalog: { catalogId: string; valueFrom?: string } | undefined;
     itemType: string;
+    setting?: string;
     /** Why the catalog cannot be set (unnamed entries have no name to suggest into). */
     disabledNote?: string;
     onChange: (next: { catalogId: string; valueFrom?: string } | undefined) => void;
@@ -116,66 +120,81 @@ export function ListCatalogPicker({
         return <p className="text-[11px] text-textSecondary">{disabledNote}</p>;
     }
     return (
-        <div className="flex flex-wrap items-center gap-2">
-            <select
-                value={catalog?.catalogId ?? ''}
-                onChange={(event) =>
-                    onChange(event.target.value ? { catalogId: event.target.value } : undefined)
-                }
-                aria-label={t(bindingMessages.listCatalog)}
-                className={inputClasses}
-            >
-                <option value="">{t(bindingMessages.listCatalog)}</option>
-                {options}
-            </select>
+        <div className="grid gap-2">
+            <SettingField label={t(bindingMessages.listCatalog)} help="catalogs" setting={setting}>
+                {(control) => (
+                    <select
+                        {...control}
+                        value={catalog?.catalogId ?? ''}
+                        onChange={(event) =>
+                            onChange(
+                                event.target.value ? { catalogId: event.target.value } : undefined
+                            )
+                        }
+                        className={`${inputClasses} w-full`}
+                    >
+                        <option value="">{t(bindingMessages.none)}</option>
+                        {options}
+                    </select>
+                )}
+            </SettingField>
             {catalog && (
-                <select
-                    value={catalog.valueFrom ?? ''}
-                    onChange={(event) =>
-                        onChange({
-                            catalogId: catalog.catalogId,
-                            ...(event.target.value ? { valueFrom: event.target.value } : {}),
-                        })
-                    }
-                    aria-label={t(bindingMessages.valueFrom)}
-                    className={inputClasses}
-                >
-                    <option value="">
-                        {t(bindingMessages.valueFrom)}: {t(bindingMessages.none)}
-                    </option>
-                    {fitting.map(({ key, label }) => (
-                        <option key={key} value={key}>
-                            {label}
-                        </option>
-                    ))}
-                </select>
+                <SettingField label={t(bindingMessages.valueFrom)}>
+                    {(control) => (
+                        <select
+                            {...control}
+                            value={catalog.valueFrom ?? ''}
+                            onChange={(event) =>
+                                onChange({
+                                    catalogId: catalog.catalogId,
+                                    ...(event.target.value
+                                        ? { valueFrom: event.target.value }
+                                        : {}),
+                                })
+                            }
+                            className={`${inputClasses} w-full`}
+                        >
+                            <option value="">{t(bindingMessages.none)}</option>
+                            {fitting.map(({ key, label }) => (
+                                <option key={key} value={key}>
+                                    {label}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                </SettingField>
             )}
-            <EditorHelp topic="catalogs" about={t(bindingMessages.listCatalog)} />
         </div>
     );
 }
 
-export function CatalogBindingEditor({ callbacks, field, selfId }: CatalogBindingEditorProps) {
+export function CatalogBindingEditor({
+    callbacks,
+    field,
+    selfId,
+    setting = 'catalog',
+}: CatalogBindingEditorProps) {
     const fillTargets = useFillTargets();
     const t = (descriptor: { message: string }) => translate(descriptor);
     const options = useCatalogOptions(field.binding?.catalogId);
 
     if (!field.binding) {
         return (
-            <div className="flex items-center gap-2">
-                <select
-                    value=""
-                    onChange={(event) => {
-                        if (event.target.value) callbacks.onAttach(event.target.value);
-                    }}
-                    aria-label={t(bindingMessages.attach)}
-                    className={inputClasses}
-                >
-                    <option value="">{t(bindingMessages.attach)}</option>
-                    {options}
-                </select>
-                <EditorHelp topic="catalogs" about={t(bindingMessages.attach)} />
-            </div>
+            <SettingField label={t(bindingMessages.attach)} help="catalogs" setting={setting}>
+                {(control) => (
+                    <select
+                        {...control}
+                        value=""
+                        onChange={(event) => {
+                            if (event.target.value) callbacks.onAttach(event.target.value);
+                        }}
+                        className={`${inputClasses} w-full`}
+                    >
+                        <option value="">{t(bindingMessages.none)}</option>
+                        {options}
+                    </select>
+                )}
+            </SettingField>
         );
     }
 
@@ -185,17 +204,25 @@ export function CatalogBindingEditor({ callbacks, field, selfId }: CatalogBindin
         .map((target) => [target.id, target] as const);
 
     return (
-        <div className="mt-2 rounded border border-border bg-bgBase p-2">
-            <div className="flex items-center gap-2">
-                <select
-                    value={field.binding.catalogId}
-                    onChange={(event) => callbacks.onAttach(event.target.value)}
-                    aria-label={t(bindingMessages.catalog)}
-                    className={inputClasses}
+        <div className="grid gap-2 rounded border border-border bg-bgBase p-2">
+            <div className="flex items-end gap-2">
+                <SettingField
+                    className="flex-1"
+                    label={t(bindingMessages.catalog)}
+                    help="catalogs"
+                    setting={setting}
                 >
-                    {options}
-                </select>
-                <EditorHelp topic="catalogs" about={t(bindingMessages.catalog)} />
+                    {(control) => (
+                        <select
+                            {...control}
+                            value={field.binding?.catalogId}
+                            onChange={(event) => callbacks.onAttach(event.target.value)}
+                            className={`${inputClasses} w-full`}
+                        >
+                            {options}
+                        </select>
+                    )}
+                </SettingField>
                 <button
                     type="button"
                     onClick={callbacks.onDetach}
@@ -207,7 +234,7 @@ export function CatalogBindingEditor({ callbacks, field, selfId }: CatalogBindin
             </div>
 
             {binding && (
-                <div className="mt-2 space-y-1">
+                <div className="space-y-1" data-setting-list="">
                     <p className="text-xs font-medium text-textSecondary">
                         {t(bindingMessages.fills)}
                     </p>

@@ -31,7 +31,7 @@ describe('template editor responsiveness (SC-002)', () => {
         const sectionId = row.getAttribute('data-outline-row')!;
         fireEvent.click([...row.querySelectorAll('button')].find((b) => !b.draggable)!);
         const panel = document.querySelector(`[data-settings-for="${sectionId}"]`) as HTMLElement;
-        const title = within(panel).getByLabelText('Section title');
+        const title = within(panel).getByLabelText('Title');
 
         const timings: number[] = [];
         for (let stroke = 1; stroke <= KEYSTROKES; stroke++) {

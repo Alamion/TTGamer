@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Children, Fragment, isValidElement, type ReactNode } from 'react';
 
 /** The settings groups of every element kind, in display order (spec 022, FR-002). */
 export const SETTINGS_GROUP_ORDER = ['content', 'value', 'limits', 'look', 'visibility'] as const;
@@ -14,7 +14,14 @@ export interface SettingRef {
     key: string;
 }
 
-const present = (node: ReactNode) => node !== undefined && node !== null && node !== false;
+/** A part's group is empty when it is nothing, or a fragment whose children are all nothing. */
+function present(node: ReactNode): boolean {
+    if (node === undefined || node === null || typeof node === 'boolean') return false;
+    if (isValidElement<{ children?: ReactNode }>(node) && node.type === Fragment) {
+        return Children.toArray(node.props.children).length > 0;
+    }
+    return true;
+}
 
 /** The parts' settings per group, in part order; groups no part fills are left out. */
 export function mergeGroups(

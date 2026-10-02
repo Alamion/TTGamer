@@ -94,7 +94,7 @@ in Value and Limits and formulas; a bad formula shows its message under the box.
 
 ### Tests
 
-- [ ] T006 [P] [US1] Create `tests/sheet_manager/template-editor-settings.test.tsx`: for a rating, a
+- [x] T006 [P] [US1] Create `tests/sheet_manager/template-editor-settings.test.tsx`: for a rating, a
       formula field, a table, a list, a section, a group, a primitive (trait and pool), and a tracker,
       the group headers appear in order Content → Visibility and help and only non-empty ones; every
       text input inside `[data-settings-for]` has a visible label (no input named only by aria-label
@@ -104,22 +104,22 @@ in Value and Limits and formulas; a bad formula shows its message under the box.
 
 ### Implementation
 
-- [ ] T007 [US1] Rewrite the header in `TE/ElementSettings.tsx`: action row (Move up, Move down,
+- [x] T007 [US1] Rewrite the header in `TE/ElementSettings.tsx`: action row (Move up, Move down,
       Duplicate, spacer, Remove; same accessible names) above a line with the kind chip
       (`nodeKindLabel`) and the full name (`nodeDisplayName`, wrapping); `ElementSettings` now renders
       `mergeGroups` of the parts inside `SettingsGroup`s, reading open state from the T002 context
       provided in Dialog.
-- [ ] T008 [P] [US1] Convert `TE/LayoutControls.tsx` to grouped parts: column placement and span →
+- [x] T008 [P] [US1] Convert `TE/LayoutControls.tsx` to grouped parts: column placement and span →
       look; `ColumnLayoutControl` → look; `VisibilityControl` → visibility (coordinate input via
       `KeyField`, `data-setting="visibleWhen"`); `ToggleRow` keeps its look; use the shared
       `inputClasses`.
-- [ ] T009 [P] [US1] Convert `SectionConfig`, `GroupConfig`, `TableConfig`, `ListConfig`,
+- [x] T009 [P] [US1] Convert `SectionConfig`, `GroupConfig`, `TableConfig`, `ListConfig`,
       `ListPresetsEditor` in `TE/ElementSettings.tsx` into hooks returning `GroupedSettings` per
       data-model.md (titles via `SettingField` "Title" `data-setting="title"`; docs link → visibility
       `docsPath`; collapsible / starts collapsed → visibility (as in the prototype: "Readers can fold
       it", "Starts folded"); show title → look; table rows → limits; table/list value key → value via `KeyField`; table column rows
       and list entry field → content; presets → content `preset:<i>`).
-- [ ] T010 [P] [US1] Convert `TE/FieldEditor.tsx` into a hook returning `GroupedSettings`: label,
+- [x] T010 [P] [US1] Convert `TE/FieldEditor.tsx` into a hook returning `GroupedSettings`: label,
       help text, show label, label position, placeholder, options (`option:<i>`) → content; source,
       value key (`KeyField`), catalog binding, reference kinds, multiple → value; min/max/step, formula
       (`FormulaField`, key `formula`), maxFrom (`FormulaField`, key `maxFrom`) → limits;
@@ -128,13 +128,13 @@ in Value and Limits and formulas; a bad formula shows its message under the box.
       the prototype). For table columns
       and list entries the keys are prefixed `column:<id>.` / `entry.` and the part renders inside the
       parent's content group.
-- [ ] T011 [P] [US1] Convert `TE/PrimitiveConfig.tsx` (source and edits → value; label override →
+- [x] T011 [P] [US1] Convert `TE/PrimitiveConfig.tsx` (source and edits → value; label override →
       content with an accessible name; display, compact, show label, pool and built-in tracker
       settings → look; minFrom/maxMinFrom/maxFrom as `FormulaField` → limits; term hint →
       visibility) and wrap `TE/TrackerSettings.tsx` and `TE/PoolTrackerSettings.tsx` output in the
       look group; `TE/SourceControls.tsx` and `TE/CatalogBindingEditor.tsx` use `SettingField` and
       the shared `inputClasses` (help links moved out of `<label>`s).
-- [ ] T012 [US1] Provide the group state context in Dialog around the settings area and update the
+- [x] T012 [US1] Provide the group state context in Dialog around the settings area and update the
       existing editor tests to the new names (contract table "Names that change"):
       `tests/sheet_manager/template-editor.test.tsx`, `template-editor-help.test.tsx`,
       `template-editor-page.test.tsx`, `template-editor-preview.test.tsx`,

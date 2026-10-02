@@ -53,3 +53,15 @@ export function dragNode(nodeId: string, target: Element): void {
     fireEvent.dragOver(target, { dataTransfer });
     fireEvent.drop(target, { dataTransfer });
 }
+
+/**
+ * Opens the settings groups that start closed (Look, Visibility and help; spec 022). The open
+ * state lasts for the dialog session, so later selections keep them open.
+ */
+export function openSettingsGroups(): void {
+    for (const button of document.querySelectorAll<HTMLButtonElement>(
+        '[data-settings-group] > button[aria-expanded="false"]'
+    )) {
+        fireEvent.click(button);
+    }
+}
