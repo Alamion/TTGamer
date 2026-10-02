@@ -30,6 +30,14 @@ reused for a different entry, never renumbered (gaps after removals are permanen
 
 ## 🟢 Medium
 
+### F-003 — Template editor settings panel is hard to read
+
+**Area:** template editor settings panel (`ElementSettings`, `FieldEditor`, `PrimitiveConfig`)
+
+**Evidence:** 2026-10-02 player report: an author mistook a rating's tag field for its formula field and configured the wrong one; authors find the panel's settings hard to tell apart.
+
+**Recommendation:** Review the panel with the guide's structure: group settings by purpose (what the element shows, where its value comes from, limits and formulas, look, visibility) under headings; give formula inputs their own look (an fx mark, monospace, live validation) and every input a short hint; fold rarely used groups. Check with a quick prototype before the rework.
+
 ### F-002 — DataCatalog URL parameter initialization race
 
 **Area:** shared catalog components
