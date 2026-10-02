@@ -60,6 +60,7 @@ import {
     insertAtPlacement,
     materializeColumns,
     moveNode,
+    moveTableColumn,
     placeNode,
     removeNode,
     removeOption,
@@ -459,6 +460,8 @@ export function TemplateEditorDialog({
             onAddTableColumn: (tableId) => change((current) => addTableColumn(current, tableId)),
             onRemoveTableColumn: (tableId, columnId) =>
                 change((current) => removeTableColumn(current, tableId, columnId)),
+            onMoveTableColumn: (tableId, from, to) =>
+                change((current) => moveTableColumn(current, tableId, from, to)),
             onReplace: (nodeId, next) => change((current) => replaceNode(current, nodeId, next)),
         }),
         [applyOp, change, removeSelected]

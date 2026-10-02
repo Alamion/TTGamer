@@ -1,9 +1,6 @@
 length:
     decrease: 'Укоротить: {track}'
     increase: 'Удлинить: {track}'
-rows:
-    moveUp: Переместить строку {index} выше
-    moveDown: Переместить строку {index} ниже
 tracker:
     level: Уровень
     value: Значение

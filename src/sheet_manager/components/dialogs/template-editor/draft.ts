@@ -14,6 +14,7 @@ import {
     detectDependencyCycles,
     type FormulaDependencyEntry,
 } from '../../../features/sheet/declarative/formula';
+import { moveItem } from '../../../features/sheet/declarative/rowOrder';
 import { systemRegistry } from '../../../systems';
 import { resolveDataBindingByCoordinate } from '../../../systems/templateBindings';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
@@ -1041,6 +1042,16 @@ export function addTableColumn(draft: EditorDraft, tableId: string): EditorDraft
             ? columns
             : [...columns, newField('text', `Column ${columns.length + 1}`)]
     );
+}
+
+/** Moves a table column (spec 022, US5): cells are keyed by column id, so values stay put. */
+export function moveTableColumn(
+    draft: EditorDraft,
+    tableId: string,
+    from: number,
+    to: number
+): EditorDraft {
+    return mapTableColumns(draft, tableId, (columns) => moveItem(columns, from, to));
 }
 
 export function removeTableColumn(

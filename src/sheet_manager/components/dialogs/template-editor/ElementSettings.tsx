@@ -20,6 +20,7 @@ import {
     listItemField,
     TEMPLATE_LIMITS,
 } from '../../../types/template';
+import { fallbackRowName, RowMoveControls } from '../../controls/RowMoveControls';
 import { ListCatalogPicker } from './CatalogBindingEditor';
 import type { NodeUpdates } from './draft';
 import { EditorFillTargetsContext, useEditorModel } from './EditorModel';
@@ -65,6 +66,7 @@ export interface ElementEditorCallbacks {
     ) => void;
     onAddTableColumn: (tableId: string) => void;
     onRemoveTableColumn: (tableId: string, columnId: string) => void;
+    onMoveTableColumn: (tableId: string, from: number, to: number) => void;
     /** Swaps a node for another shape (source changes), keeping its id. */
     onReplace: (nodeId: string, next: TemplateNode) => void;
 }
@@ -458,10 +460,21 @@ function TableColumns({ callbacks, node }: { callbacks: ElementEditorCallbacks; 
     return (
         <div className="grid gap-1">
             <p className="text-xs font-semibold text-textPrimary">{t(editor.columns)}</p>
-            <div className="grid gap-1" data-setting-list="">
-                {node.columns.map((column) => (
-                    <div key={column.id} className="grid gap-1" data-column-id={column.id}>
+            <div className="grid gap-1" data-setting-list="" data-reorder-list="">
+                {node.columns.map((column, index) => (
+                    <div
+                        key={column.id}
+                        className="grid gap-1 [&[data-reorder-target]]:shadow-[0_-2px_0_0_rgb(var(--primary))]"
+                        data-column-id={column.id}
+                        data-reorder-row=""
+                    >
                         <div className="flex items-center gap-1">
+                            <RowMoveControls
+                                count={node.columns.length}
+                                index={index}
+                                name={column.label || fallbackRowName(index)}
+                                onMove={(to) => callbacks.onMoveTableColumn(node.id, index, to)}
+                            />
                             <input
                                 value={column.label}
                                 onChange={(event) =>

@@ -3137,9 +3137,6 @@
     "ttgamer.ui.sheet.templates.editor.columnAuto": {
         "message": "Auto"
     },
-    "ttgamer.ui.sheet.templates.editor.columnGrip": {
-        "message": "Drag {label} to reorder"
-    },
     "ttgamer.ui.sheet.templates.editor.columnPlacement": {
         "message": "Column in parent"
     },
@@ -3529,12 +3526,6 @@
     },
     "ttgamer.ui.sheet.templates.editor.modePreview": {
         "message": "Preview"
-    },
-    "ttgamer.ui.sheet.templates.editor.moveColumnDown": {
-        "message": "Move {label} down"
-    },
-    "ttgamer.ui.sheet.templates.editor.moveColumnUp": {
-        "message": "Move {label} up"
     },
     "ttgamer.ui.sheet.templates.editor.moved": {
         "message": "{label} moved."
@@ -4618,12 +4609,6 @@
     },
     "ttgamer.ui.sheet.tracks.length.increase": {
         "message": "Extend {track}"
-    },
-    "ttgamer.ui.sheet.tracks.rows.moveDown": {
-        "message": "Move row {index} down"
-    },
-    "ttgamer.ui.sheet.tracks.rows.moveUp": {
-        "message": "Move row {index} up"
     },
     "ttgamer.ui.sheet.tracks.tracker.add": {
         "message": "Add {title}"

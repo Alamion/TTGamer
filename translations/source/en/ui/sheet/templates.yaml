@@ -289,9 +289,6 @@ editor:
     dropColumnsButton: Remove columns
     kindChangeTitle: Change list kinds?
     kindChangeSaveWarning: '{title} is now shown as {kind}. Values documents stored under its earlier kind are not shown, but they stay stored.'
-    moveColumnUp: 'Move {label} up'
-    moveColumnDown: 'Move {label} down'
-    columnGrip: 'Drag {label} to reorder'
 tracker:
     source: Source
     sourceOwn: Own values

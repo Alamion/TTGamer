@@ -160,6 +160,11 @@ settings}` in px, try/catch) and a `PaneDivider` (`role="separator"`, `aria-orie
       on a focused row.
 - **Rationale**: table cells are keyed by column id, so column order is free; rows need key rewriting
   because order is the numeric key order.
+- **Refinement (implementation)**: `RowMoveControls` lives in `components/controls/`, not in the
+  declarative renderer: the game lists render through molecules (`CustomTraitList`,
+  `MeritFlawList`) that may not import sheet features, so they take an optional `onMove`. The
+  editor's column rows reuse the same control, whose names ("Move {name} up/down") match the
+  column names of the contract.
 
 ### R8. Group and List kinds
 

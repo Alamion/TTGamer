@@ -8,6 +8,7 @@ import { createElement, memo, useCallback, useEffect, useMemo } from 'react';
 import { generateId } from '../../../../shared/utils/random';
 import type { CatalogEntry } from '../../../components';
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
+import { RowMoveControls, rowMoveKeys } from '../../../components/controls/RowMoveControls';
 import { SectionCard } from '../../../components/sections/SectionCard';
 import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
@@ -38,6 +39,7 @@ import { listEntryShape } from './fieldControls';
 import type { CatalogFieldRuntime, UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
 import { toCatalogEntries } from './primitives';
+import { moveItem } from './rowOrder';
 
 const labels = uiMessages.sheet.templates.listEntry;
 
@@ -347,32 +349,61 @@ export function CustomListView({
         [catalog, item, key, updateList]
     );
     const full = entries.length >= TEMPLATE_VALUES_LIMITS.listEntriesMax;
+    const movable = !disabled && entries.length > 1;
+    const onMoveTo = (from: number) => (to: number) =>
+        updateList(key, (current) => moveItem(current, from, to));
 
     const body = (
         <div className="grid gap-1">
             <div
                 className={clsx('grid gap-x-4 gap-y-1', listColumns[list.columns as 1 | 2 | 3 | 4])}
                 data-list-columns={list.columns}
+                data-reorder-list=""
             >
                 {entries.map((entry, index) => (
-                    <ListEntryRow
+                    // Alt+↑/↓ from the row's own controls bubble here (spec 022).
+                    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                    <div
                         key={entry.id}
-                        entry={entry}
-                        index={index}
-                        item={item}
-                        named={named}
-                        listTitle={title}
-                        disabled={disabled}
-                        catalog={catalog}
-                        itemCatalog={itemCatalog}
-                        maxState={pageApi.formulaState.maxima.get(item.id)}
-                        documentOptions={pageApi.documentOptions}
-                        onOpenDocument={pageApi.openDocument}
-                        previewSource={pageApi.previewSource}
-                        onChange={onChange}
-                        onRemove={onRemove}
-                        onPick={onPick}
-                    />
+                        data-reorder-row=""
+                        onKeyDown={
+                            movable
+                                ? rowMoveKeys(index, entries.length, onMoveTo(index))
+                                : undefined
+                        }
+                        className="flex min-w-0 items-start gap-1 [&[data-reorder-target]]:shadow-[0_-2px_0_0_rgb(var(--primary))]"
+                    >
+                        {movable && (
+                            <RowMoveControls
+                                count={entries.length}
+                                index={index}
+                                name={
+                                    entry.label ||
+                                    translate(labels.nth, { list: title, n: index + 1 })
+                                }
+                                onMove={onMoveTo(index)}
+                            />
+                        )}
+                        <div className="min-w-0 flex-1">
+                            <ListEntryRow
+                                entry={entry}
+                                index={index}
+                                item={item}
+                                named={named}
+                                listTitle={title}
+                                disabled={disabled}
+                                catalog={catalog}
+                                itemCatalog={itemCatalog}
+                                maxState={pageApi.formulaState.maxima.get(item.id)}
+                                documentOptions={pageApi.documentOptions}
+                                onOpenDocument={pageApi.openDocument}
+                                previewSource={pageApi.previewSource}
+                                onChange={onChange}
+                                onRemove={onRemove}
+                                onPick={onPick}
+                            />
+                        </div>
+                    </div>
                 ))}
             </div>
             {!disabled && (

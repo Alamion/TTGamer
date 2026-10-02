@@ -3137,9 +3137,6 @@
     "ttgamer.ui.sheet.templates.editor.columnAuto": {
         "message": "Авто"
     },
-    "ttgamer.ui.sheet.templates.editor.columnGrip": {
-        "message": "Перетащите {label}, чтобы переставить"
-    },
     "ttgamer.ui.sheet.templates.editor.columnPlacement": {
         "message": "Колонка в родителе"
     },
@@ -3529,12 +3526,6 @@
     },
     "ttgamer.ui.sheet.templates.editor.modePreview": {
         "message": "Превью"
-    },
-    "ttgamer.ui.sheet.templates.editor.moveColumnDown": {
-        "message": "Переместить {label} ниже"
-    },
-    "ttgamer.ui.sheet.templates.editor.moveColumnUp": {
-        "message": "Переместить {label} выше"
     },
     "ttgamer.ui.sheet.templates.editor.moved": {
         "message": "{label}: перемещено."
@@ -4618,12 +4609,6 @@
     },
     "ttgamer.ui.sheet.tracks.length.increase": {
         "message": "Удлинить: {track}"
-    },
-    "ttgamer.ui.sheet.tracks.rows.moveDown": {
-        "message": "Переместить строку {index} ниже"
-    },
-    "ttgamer.ui.sheet.tracks.rows.moveUp": {
-        "message": "Переместить строку {index} выше"
     },
     "ttgamer.ui.sheet.tracks.tracker.add": {
         "message": "Добавить: {title}"

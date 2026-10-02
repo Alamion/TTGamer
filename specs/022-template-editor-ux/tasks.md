@@ -274,7 +274,7 @@ reload: order kept.
 
 ### Tests
 
-- [ ] T027 [P] [US5] Create `tests/sheet_manager/table-list-order.test.tsx`: `moveTableRow` compacts
+- [x] T027 [P] [US5] Create `tests/sheet_manager/table-list-order.test.tsx`: `moveTableRow` compacts
       keys and keeps cells; `moveItem` for arrays; on a rendered sheet, table rows, own-value list
       entries, and a system list (merits) move with the buttons and Alt+↑/↓, first/last controls are
       absent, focus stays on the moved row, read-only sources show no controls; in the editor,
@@ -285,15 +285,15 @@ reload: order kept.
 
 ### Implementation
 
-- [ ] T028 [P] [US5] Create `SHEET/rowOrder.ts` (`moveTableRow`, `moveItem`) and
+- [x] T028 [P] [US5] Create `SHEET/rowOrder.ts` (`moveTableRow`, `moveItem`) and
       `SHEET/RowMoveControls.tsx` (grip with a small pointer reorder hook `useRowReorder` built on a
       pure `rowIndexAt(rects, y)`, up/down
       buttons named from `rows.moveUp/moveDown`, Alt+↑/↓ handler for the row).
-- [ ] T029 [US5] Use them in `SHEET/DeclarativeSheetView.tsx` (`TableBlock`, through a new `moveRow`
+- [x] T029 [US5] Use them in `SHEET/DeclarativeSheetView.tsx` (`TableBlock`, through a new `moveRow`
       in `SHEET/hooks.ts`), `SHEET/listEntries.tsx` (`updateList` move), and `SHEET/primitives.tsx`
       (`SystemListBody`, bound data array move); switch `SHEET/RowsBody.tsx` to the shared controls;
       hide controls when `pageApi.disabled`.
-- [ ] T030 [US5] Add `moveTableColumn(draft, tableId, from, to)` to `TE/draft.ts` and a grip plus Move
+- [x] T030 [US5] Add `moveTableColumn(draft, tableId, from, to)` to `TE/draft.ts` and a grip plus Move
       up/Move down per column row in the table settings (`TE/ElementSettings.tsx`, names from
       `moveColumnUp/Down`).
 

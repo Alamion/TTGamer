@@ -322,6 +322,13 @@ describe('element storybook (constitution VI, T-069)', () => {
         for (const { id, title } of listElementStories()) {
             expect(screen.getByRole('heading', { name: title }), id).toBeTruthy();
         }
+        // Editable tables and lists show their order controls (spec 022, US5).
+        expect(
+            document.querySelectorAll('tbody[data-reorder-list] [data-row-move]').length
+        ).toBeGreaterThan(0);
+        expect(
+            document.querySelectorAll('div[data-reorder-list] [data-row-move]').length
+        ).toBeGreaterThan(0);
         // The deliberate formula errors report; nothing else may.
         const unexpected = takeSheetIssues().filter(({ code }) => code !== 'formula-error');
         expect(unexpected).toEqual([]);

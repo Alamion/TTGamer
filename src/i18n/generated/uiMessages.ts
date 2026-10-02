@@ -4962,18 +4962,6 @@ export const uiMessages = {
                     message:
                         '{title} is now shown as {kind}. Values documents stored under its earlier kind are not shown, but they stay stored.',
                 },
-                moveColumnUp: {
-                    id: 'ttgamer.ui.sheet.templates.editor.moveColumnUp',
-                    message: 'Move {label} up',
-                },
-                moveColumnDown: {
-                    id: 'ttgamer.ui.sheet.templates.editor.moveColumnDown',
-                    message: 'Move {label} down',
-                },
-                columnGrip: {
-                    id: 'ttgamer.ui.sheet.templates.editor.columnGrip',
-                    message: 'Drag {label} to reorder',
-                },
             },
             tracker: {
                 source: {
@@ -6175,16 +6163,6 @@ export const uiMessages = {
                 increase: {
                     id: 'ttgamer.ui.sheet.tracks.length.increase',
                     message: 'Extend {track}',
-                },
-            },
-            rows: {
-                moveUp: {
-                    id: 'ttgamer.ui.sheet.tracks.rows.moveUp',
-                    message: 'Move row {index} up',
-                },
-                moveDown: {
-                    id: 'ttgamer.ui.sheet.tracks.rows.moveDown',
-                    message: 'Move row {index} down',
                 },
             },
             tracker: {

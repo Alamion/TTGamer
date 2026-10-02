@@ -40,6 +40,7 @@ import { isDocumentInReferenceScope, referenceScopeOf } from '../data/referenceS
 import { useBoundDocument } from './boundDocument';
 import type { CatalogOption, DocumentOption } from './fieldControls';
 import { evaluateFormula, type Expr, type FormulaEvaluationError, parseFormula } from './formula';
+import { moveTableRow } from './rowOrder';
 
 export type TemplatePageStatus = 'none' | 'ready' | 'missing';
 
@@ -101,6 +102,8 @@ export interface UseTemplatePageResult {
     documentOptions: ReadonlyArray<DocumentOption>;
     formulaState: FormulaState;
     removeRow: (blockId: string, rowIndex: string) => void;
+    /** Moves the row shown at `from` to `to`; row keys are rewritten in the new order. */
+    moveRow: (blockId: string, from: number, to: number) => void;
     resolveCatalogField: (field: TemplateField) => CatalogFieldRuntime | undefined;
     resolveSystemList: (list: ListNode) => SystemListRuntime | undefined;
     setRowValue: (blockId: string, rowIndex: string, columnId: string, value: unknown) => void;
@@ -275,6 +278,17 @@ export function useTemplatePage(
                 delete next[rowIndex];
                 return { ...page, [blockId]: next } as TemplatePageValues;
             });
+        },
+        [currentDocumentId, template, readOnly, updateTemplateValues]
+    );
+
+    const moveRow = useCallback(
+        (blockId: string, from: number, to: number) => {
+            if (!currentDocumentId || !template || readOnly) return;
+            updateTemplateValues(currentDocumentId, template, (page) => ({
+                ...page,
+                [blockId]: moveTableRow(readRows(page[blockId]), from, to),
+            }));
         },
         [currentDocumentId, template, readOnly, updateTemplateValues]
     );
@@ -747,6 +761,7 @@ export function useTemplatePage(
             disabled: readOnly,
             documentOptions,
             formulaState,
+            moveRow,
             removeRow,
             resolveCatalogField,
             resolveSystemList,
@@ -767,6 +782,7 @@ export function useTemplatePage(
             readOnly,
             documentOptions,
             formulaState,
+            moveRow,
             removeRow,
             resolveCatalogField,
             resolveSystemList,

@@ -289,9 +289,6 @@ editor:
     dropColumnsButton: Убрать колонки
     kindChangeTitle: Сменить вид списков?
     kindChangeSaveWarning: '{title} теперь показывается как «{kind}». Значения, сохранённые в документах под прежним видом, не показываются, но остаются сохранёнными.'
-    moveColumnUp: 'Переместить {label} выше'
-    moveColumnDown: 'Переместить {label} ниже'
-    columnGrip: 'Перетащите {label}, чтобы переставить'
 tracker:
     source: Источник
     sourceOwn: Свои значения

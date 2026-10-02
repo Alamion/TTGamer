@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 
 import type { CatalogEntry } from '../controls/CatalogSuggest.tsx';
 import { CatalogSuggest } from '../controls/CatalogSuggest.tsx';
+import { fallbackRowName, RowMoveControls, rowMoveKeys } from '../controls/RowMoveControls';
 import type { TermLink } from '../terms/termLink';
 import { StatDot } from './StatDot.tsx';
 import { StatLabel } from './StatLabel.tsx';
@@ -213,6 +214,8 @@ interface CustomTraitListProps {
     characterName?: string;
     /** Row layout for the list, 1–4 (feature 006 FR-17); default stacks rows. */
     columns?: 1 | 2 | 3 | 4;
+    /** Moves the row at `from` to `to` (spec 022); without it the rows have no order controls. */
+    onMove?: (from: number, to: number) => void;
 }
 
 const traitListColumns = {
@@ -238,16 +241,38 @@ export function CustomTraitList({
     onCatalogSelect,
     characterName,
     columns = 1,
+    onMove,
 }: CustomTraitListProps) {
+    const movable = onMove !== undefined && !disabled && items.length > 1;
     return (
         <div
+            data-reorder-list=""
             className={clsx(
                 'gap-x-4 gap-y-1',
                 columns > 1 ? `grid ${traitListColumns[columns]}` : 'grid grid-cols-1'
             )}
         >
-            {items.map((item) => (
-                <div key={item.id} className="flex items-end gap-2 py-1">
+            {items.map((item, index) => (
+                // Alt+↑/↓ from the row's own controls bubble here (spec 022).
+                // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                <div
+                    key={item.id}
+                    data-reorder-row=""
+                    onKeyDown={
+                        movable
+                            ? rowMoveKeys(index, items.length, (to) => onMove(index, to))
+                            : undefined
+                    }
+                    className="flex items-end gap-2 py-1 [&[data-reorder-target]]:shadow-[0_-2px_0_0_rgb(var(--primary))]"
+                >
+                    {movable && (
+                        <RowMoveControls
+                            count={items.length}
+                            index={index}
+                            name={item.label || fallbackRowName(index)}
+                            onMove={(to) => onMove(index, to)}
+                        />
+                    )}
                     {catalog && onCatalogSelect ? (
                         <CatalogSuggest
                             catalog={catalog}

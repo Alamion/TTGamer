@@ -201,8 +201,9 @@ describe('long lists (spec 016, SC-006)', () => {
         mount(withItem('text', { named: false }), entries);
         const before = stored();
         act(() => {
+            // A selector, not a label query: label lookup over 1000 rows of controls is slow.
             fireEvent.change(
-                screen.getByLabelText('Bond', { selector: '[data-list-entry="e500"] input' }),
+                document.querySelector('[data-list-entry="e500"] input[aria-label="Bond"]')!,
                 {
                     target: { value: 'changed' },
                 }
