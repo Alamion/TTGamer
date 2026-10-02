@@ -179,3 +179,8 @@ fields:
         speeder: Speeder
         character: Character
         vermin: Vermin
+rows:
+    moveUp: 'Move {name} up'
+    moveDown: 'Move {name} down'
+    reorder: Drag to reorder
+    fallbackName: 'row {index}'

@@ -37,3 +37,10 @@ export const EditorFillTargetsContext = createContext<readonly FillTarget[]>([])
 export function useFillTargets(): readonly FillTarget[] {
     return useContext(EditorFillTargetsContext);
 }
+
+/** The draft's numeric coordinates, which formula settings check names against. */
+export const EditorCoordinatesContext = createContext<ReadonlySet<string> | undefined>(undefined);
+
+export function useEditorCoordinates(): ReadonlySet<string> | undefined {
+    return useContext(EditorCoordinatesContext);
+}

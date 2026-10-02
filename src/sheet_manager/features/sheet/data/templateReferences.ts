@@ -20,6 +20,7 @@ import {
 import { parseFormula } from '../declarative/formula';
 import { isKnownLabelMessage } from '../declarative/localizeTemplate';
 import { catalogKindFitsListItem, getCatalogBinding, isCatalogInScope } from './catalogBindings';
+import { unknownCoordinates } from './formulaCheck';
 import { referenceTargetsOf } from './referenceScope';
 
 /**
@@ -36,10 +37,14 @@ export type TemplateReferenceIssue =
     | { code: 'unknown-fill-detail'; nodeId: string; key: string }
     | { code: 'unknown-fill-target'; nodeId: string; key: string }
     | { code: 'list-catalog-unnamed'; nodeId: string; key: string }
-    | { code: 'unknown-coordinate'; nodeId: string; key: string }
+    | { code: 'unknown-coordinate'; nodeId: string; key: string; setting: CoordinateSetting }
     | { code: 'unknown-label-message'; nodeId: string; key: string }
     | { code: 'invalid-docs-link'; nodeId: string; key: string }
     | { code: 'reference-target-unavailable'; nodeId: string; key: string; label: string };
+
+/** The formula settings and the display condition, which address template coordinates. */
+type FormulaSetting = 'formula' | 'maxFrom' | 'minFrom' | 'maxMinFrom';
+export type CoordinateSetting = FormulaSetting | 'visibleWhen';
 
 export interface TemplateReferenceOptions {
     /**
@@ -132,15 +137,17 @@ export function validateTemplateReferences(
         storageCoordinates.has(key) ||
         resolveWritableBinding(template.systemId, template.documentKind, key) !== undefined;
 
-    const checkCoordinates = (nodeId: string, source: string | undefined) => {
+    const checkCoordinates = (
+        nodeId: string,
+        source: string | undefined,
+        setting: FormulaSetting
+    ) => {
         if (!source) return;
         const parsed = parseFormula(source);
         // Unparseable formulas are authoring errors reported by the draft checks.
         if (!parsed.ok) return;
-        for (const coordinate of parsed.coords) {
-            if (!coordinates.has(coordinate)) {
-                issues.push({ code: 'unknown-coordinate', nodeId, key: coordinate });
-            }
+        for (const coordinate of unknownCoordinates(parsed.coords, coordinates)) {
+            issues.push({ code: 'unknown-coordinate', nodeId, key: coordinate, setting });
         }
     };
 
@@ -169,9 +176,9 @@ export function validateTemplateReferences(
                 });
             }
         }
-        if (field.type === 'formula') checkCoordinates(field.id, field.formula);
+        if (field.type === 'formula') checkCoordinates(field.id, field.formula, 'formula');
         if ((field.type === 'number' || field.type === 'rating') && field.maxFrom) {
-            checkCoordinates(field.id, field.maxFrom);
+            checkCoordinates(field.id, field.maxFrom, 'maxFrom');
         }
         if (field.type !== 'select' || !field.binding) return;
         const catalog = catalogInScope(field.binding.catalogId);
@@ -239,15 +246,16 @@ export function validateTemplateReferences(
                 code: 'unknown-coordinate',
                 nodeId: node.id,
                 key: node.visibleWhen.coordinate,
+                setting: 'visibleWhen',
             });
         }
         if (node.type === 'primitive') {
             if (!bindings.has(node.bindingKey)) {
                 issues.push({ code: 'unknown-binding', nodeId: node.id, key: node.bindingKey });
             }
-            checkCoordinates(node.id, node.maxFrom);
-            checkCoordinates(node.id, node.minFrom);
-            checkCoordinates(node.id, node.maxMinFrom);
+            checkCoordinates(node.id, node.maxFrom, 'maxFrom');
+            checkCoordinates(node.id, node.minFrom, 'minFrom');
+            checkCoordinates(node.id, node.maxMinFrom, 'maxMinFrom');
         } else if (node.type === 'list' && node.bindingKey !== undefined) {
             const binding = bindings.get(node.bindingKey);
             if (!binding) {

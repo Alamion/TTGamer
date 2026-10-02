@@ -31,7 +31,9 @@ export type SheetIssueCode =
     /** A template was applied to a document of another system or kind; its default page rendered. */
     | 'template-incompatible'
     /** A library item could not be placed in the tree where its references say (spec 013). */
-    | 'library-placement';
+    | 'library-placement'
+    /** A schema rule no editor check covers blocked a save (spec 022): add a specific check. */
+    | 'template-draft-invalid';
 
 export interface SheetIssue {
     code: SheetIssueCode;

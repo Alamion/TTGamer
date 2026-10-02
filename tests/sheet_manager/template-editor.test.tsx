@@ -41,7 +41,6 @@ const ISSUE_MESSAGES = {
     invalidKey: 'Invalid key "{id}" — use lowercase letters, digits, and dashes.',
     limitReached: 'Limit reached — {limit} {subject} maximum.',
     invalidBounds: 'Minimum cannot exceed maximum.',
-    invalidFormula: 'Invalid formula in "{id}".',
     unknownCoordinate: 'Unknown value "{id}".',
     circularDependency: 'Circular dependency: {id}',
     unknownBinding: 'Unknown binding "{id}".',
@@ -1088,7 +1087,11 @@ describe('duplicating elements and locating issues', () => {
     it('attaches the node id to element issues', () => {
         const draft = updateField(source(), 'mood', { label: '' });
         const issues = collectDraftIssues(draft, ISSUE_MESSAGES);
-        expect(issues).toContainEqual({ message: ISSUE_MESSAGES.emptyLabel, nodeId: 'mood' });
+        expect(issues).toContainEqual({
+            message: ISSUE_MESSAGES.emptyLabel,
+            nodeId: 'mood',
+            setting: { group: 'content', key: 'label' },
+        });
         const unnamed = collectDraftIssues({ ...draft, name: '' }, ISSUE_MESSAGES);
         expect(unnamed[0]).toEqual({ message: ISSUE_MESSAGES.emptyName });
     });
@@ -1344,10 +1347,18 @@ describe('derived values in the editor (T-076)', () => {
     it('lists a formula that does not parse, on its element', () => {
         expect(
             issuesOf([{ id: 'total', type: 'formula', label: 'Total', formula: 'base +' }])
-        ).toContainEqual({ message: 'Invalid formula in "Total".', nodeId: 'total' });
+        ).toContainEqual({
+            message: 'Total: This formula does not parse (at character 7).',
+            nodeId: 'total',
+            setting: { group: 'limits', key: 'formula' },
+        });
         expect(
             issuesOf([{ id: 'luck', type: 'rating', label: 'Luck', max: 5, maxFrom: 'min(' }])
-        ).toContainEqual({ message: 'Invalid formula in "Luck".', nodeId: 'luck' });
+        ).toContainEqual({
+            message: expect.stringMatching(/^Luck: This formula does not parse/),
+            nodeId: 'luck',
+            setting: { group: 'limits', key: 'maxFrom' },
+        });
     });
 
     it("lists a pool tracker's maximum formula that does not parse (spec 020)", () => {
@@ -1362,13 +1373,21 @@ describe('derived values in the editor (T-076)', () => {
                     maxMinFrom: 'self-control +',
                 },
             ])
-        ).toContainEqual({ message: 'Invalid formula in "Force".', nodeId: 'force' });
+        ).toContainEqual({
+            message: expect.stringMatching(/^Force: This formula does not parse/),
+            nodeId: 'force',
+            setting: { group: 'limits', key: 'maxMinFrom' },
+        });
     });
 
     it('lists a value the formula reads that the page does not have', () => {
         expect(
             issuesOf([{ id: 'total', type: 'formula', label: 'Total', formula: 'missing + 1' }])
-        ).toContainEqual({ message: 'Unknown value "missing".', nodeId: 'total' });
+        ).toContainEqual({
+            message: 'Total: No value named “missing”.',
+            nodeId: 'total',
+            setting: { group: 'limits', key: 'formula' },
+        });
     });
 
     it('lists a circular dependency', () => {
@@ -1541,6 +1560,7 @@ describe('reference targets (T-075)', () => {
         expect(issues).toContainEqual({
             message: expect.stringMatching(/^"Ally" can point to .*Creature/),
             nodeId: 'ally',
+            setting: { group: 'value', key: 'targetKinds' },
         });
         const [field] = draft.children;
         expect(field?.type === 'reference' && field.targetKinds).toEqual(['character', 'creature']);

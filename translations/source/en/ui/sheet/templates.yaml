@@ -185,7 +185,6 @@ editor:
         plural: true
     listChangeNote: The values stay stored; changing the entry back shows them again, except for entries edited in between.
     listChangeConfirm: Save anyway
-    invalidFormula: Invalid formula in "{id}" — check the expression.
     unknownCoordinate: Unknown value "{id}" referenced by a formula.
     circularDependency: 'Circular dependency detected: {id}'
     unknownBinding: Unknown data binding "{id}" for this document kind.
@@ -236,6 +235,63 @@ editor:
     shortcutsHint: 'Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo'
     coordinateCurrent: '{label} (current)'
     coordinateMax: '{label} (max)'
+    groupContent: Content
+    groupValue: Value
+    groupLimits: Limits and formulas
+    groupLook: Look
+    groupVisibility: Visibility and help
+    groupIssues:
+        message: '{count} issue|{count} issues'
+        plural: true
+    label: Label
+    helpText: Help text
+    title: Title
+    valueKey: Value key
+    valueKeyHint: A name for the value. Fields with the same key share one value.
+    rowsKeyHint: A name for the entries. Tables and lists with the same key share them.
+    maxFromShort: Maximum from
+    minFromShort: Minimum from
+    currentAtLeast: Current at least
+    maxAtLeast: Maximum at least
+    entryLabel: Entry field label
+    entryLabelHint: What the value of each entry is called.
+    formulaNoParse: 'This formula does not parse (at character {position}).'
+    formulaUnknown: 'No value named “{name}”.'
+    formulaReads: 'Reads {names}.'
+    issueIn: '{element}: {problem}'
+    issueEntryLabel: 'The entry field of list “{list}” has no label.'
+    issueColumn: '{table}, column “{column}”: {problem}'
+    issueNotAllowed: '{setting} has a value that is not allowed.'
+    issueSomething: A setting
+    issueOptionEmpty: An option has no label.
+    issuePresetEmpty: A preset entry has no label.
+    issueTrackerNameEmpty: A mark, level, or column has no name.
+    issuePoolTooLong: 'A tracker draws at most {max} boxes: lower the maximum.'
+    issueFormulaEmpty: The formula is empty.
+    issueListSource: A list takes its entries from one place only.
+    resizeOutline: Resize outline
+    resizeSettings: Resize settings
+    kindOf: '{element} · {kind}'
+    elementGroup: Group
+    elementList: List
+    kind: Kind
+    kindSection: Section
+    kindSectionHint: A page block with an accent bar. Readers can always fold it.
+    kindCard: Card
+    kindCardHint: A titled card. It can hide its title or fold.
+    kindEntries: Entries
+    kindEntriesHint: Entries added one by one, one value each.
+    kindTable: Table
+    kindTableHint: Rows with several columns.
+    tableUnavailable: Not for game lists or lists with catalog suggestions.
+    dropColumnsTitle: Remove columns?
+    dropColumnsConfirm: 'Entries keep one value per entry. Remove the columns {columns}?'
+    dropColumnsButton: Remove columns
+    kindChangeTitle: Change list kinds?
+    kindChangeSaveWarning: '{title} is now shown as {kind}. Values documents stored under its earlier kind are not shown, but they stay stored.'
+    moveColumnUp: 'Move {label} up'
+    moveColumnDown: 'Move {label} down'
+    columnGrip: 'Drag {label} to reorder'
 tracker:
     source: Source
     sourceOwn: Own values

@@ -185,7 +185,6 @@ editor:
         plural: true
     listChangeNote: Значения остаются сохранёнными; если вернуть прежний тип записи, они снова появятся — кроме записей, изменённых за это время.
     listChangeConfirm: Всё равно сохранить
-    invalidFormula: Неверная формула в «{id}» — проверьте выражение.
     unknownCoordinate: Неизвестное значение «{id}» в формуле.
     circularDependency: 'Обнаружена циклическая зависимость: {id}'
     unknownBinding: Неизвестная привязка к данным «{id}» для этого типа документа.
@@ -236,6 +235,63 @@ editor:
     shortcutsHint: 'Клавиши: Alt+↑/↓ — переместить · Alt+←/→ — из группы или в группу · Alt+Shift+←/→ — колонка · Ctrl+D — дублировать · Delete — удалить · Ctrl+Z — отменить · Ctrl+Shift+Z — повторить'
     coordinateCurrent: '{label} (текущее)'
     coordinateMax: '{label} (максимум)'
+    groupContent: Содержимое
+    groupValue: Значение
+    groupLimits: Пределы и формулы
+    groupLook: Вид
+    groupVisibility: Видимость и справка
+    groupIssues:
+        message: '{count} проблема|{count} проблемы|{count} проблем'
+        plural: true
+    label: Подпись
+    helpText: Подсказка
+    title: Заголовок
+    valueKey: Ключ значения
+    valueKeyHint: Имя значения. Поля с одним ключом хранят одно значение.
+    rowsKeyHint: Имя записей. Таблицы и списки с одним ключом делят их.
+    maxFromShort: Максимум из
+    minFromShort: Минимум из
+    currentAtLeast: Текущее не меньше
+    maxAtLeast: Максимум не меньше
+    entryLabel: Подпись поля записи
+    entryLabelHint: Как называется значение каждой записи.
+    formulaNoParse: 'Формула не разбирается (символ {position}).'
+    formulaUnknown: 'Нет значения «{name}».'
+    formulaReads: 'Читает {names}.'
+    issueIn: '{element}: {problem}'
+    issueEntryLabel: 'У поля записи списка «{list}» нет подписи.'
+    issueColumn: '{table}, колонка «{column}»: {problem}'
+    issueNotAllowed: '{setting}: недопустимое значение.'
+    issueSomething: Настройка
+    issueOptionEmpty: У варианта нет подписи.
+    issuePresetEmpty: У готовой записи нет подписи.
+    issueTrackerNameEmpty: У отметки, уровня или колонки нет названия.
+    issuePoolTooLong: 'Трекер рисует не больше {max} клеток: уменьшите максимум.'
+    issueFormulaEmpty: Формула пуста.
+    issueListSource: Список берёт записи только из одного источника.
+    resizeOutline: Изменить ширину структуры
+    resizeSettings: Изменить ширину настроек
+    kindOf: '{element} · {kind}'
+    elementGroup: Группа
+    elementList: Список
+    kind: Вид элемента
+    kindSection: Раздел
+    kindSectionHint: Блок страницы с цветной полосой. Читатель всегда может его свернуть.
+    kindCard: Карточка
+    kindCardHint: Карточка с заголовком. Может скрыть заголовок или сворачиваться.
+    kindEntries: Записи
+    kindEntriesHint: Записи добавляются по одной, по одному значению.
+    kindTable: Таблица
+    kindTableHint: Строки с несколькими колонками.
+    tableUnavailable: Не для игровых списков и списков с подсказками из каталога.
+    dropColumnsTitle: Убрать колонки?
+    dropColumnsConfirm: 'В записи хранится одно значение. Убрать колонки {columns}?'
+    dropColumnsButton: Убрать колонки
+    kindChangeTitle: Сменить вид списков?
+    kindChangeSaveWarning: '{title} теперь показывается как «{kind}». Значения, сохранённые в документах под прежним видом, не показываются, но остаются сохранёнными.'
+    moveColumnUp: 'Переместить {label} выше'
+    moveColumnDown: 'Переместить {label} ниже'
+    columnGrip: 'Перетащите {label}, чтобы переставить'
 tracker:
     source: Источник
     sourceOwn: Свои значения

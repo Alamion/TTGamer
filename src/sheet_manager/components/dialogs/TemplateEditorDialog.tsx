@@ -437,7 +437,6 @@ export function TemplateEditorDialog({
                 invalidKey: t(editor.invalidKey),
                 limitReached: t(editor.limitReached),
                 invalidBounds: t(editor.invalidBounds),
-                invalidFormula: t(editor.invalidFormula),
                 unknownCoordinate: t(editor.unknownCoordinate),
                 circularDependency: t(editor.circularDependency),
                 unknownBinding: t(editor.unknownBinding),

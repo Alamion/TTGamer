@@ -30,7 +30,7 @@ SHEET = `src/sheet_manager/features/sheet/declarative`. Every task that adds UI 
 
 ## Phase 1: Setup
 
-- [ ] T001 Add the strings of the whole feature to `translations/source/{en,ru}/ui/sheet/templates.yaml`
+- [x] T001 Add the strings of the whole feature to `translations/source/{en,ru}/ui/sheet/templates.yaml`
       (group `editor.*`): - settings groups `groupContent` "Content", `groupValue` "Value", `groupLimits` "Limits and
       formulas", `groupLook` "Look", `groupVisibility` "Visibility and help", `groupIssues`
       "{count} issue(s)" (plural forms); - setting names `label` "Label", `helpText` "Help text", `title` "Title", `valueKey` "Value
@@ -53,7 +53,7 @@ SHEET = `src/sheet_manager/features/sheet/declarative`. Every task that adds UI 
 
 ## Phase 2: Foundational (blocks all stories)
 
-- [ ] T002 [P] Create `TE/settings/` building blocks: `inputClasses.ts` (the shared class string
+- [x] T002 [P] Create `TE/settings/` building blocks: `inputClasses.ts` (the shared class string
       from research R1), `SettingField.tsx` (visible `<label>` above the control as its accessible
       name, optional help link beside it outside the label, optional hint, optional error with
       `aria-invalid`, `data-setting` on the control via a render prop or cloneElement),
@@ -61,17 +61,17 @@ SHEET = `src/sheet_manager/features/sheet/declarative`. Every task that adds UI 
       badge), `groupedSettings.ts` (`SettingsGroupId`, `GroupedSettings`, `mergeGroups(parts)` in the
       fixed order, `SETTINGS_GROUP_ORDER`), and `groupState.ts` (a small React context with the
       session open/closed record, defaults content/value/limits open).
-- [ ] T003 [P] Create `src/sheet_manager/features/sheet/data/formulaCheck.ts`:
+- [x] T003 [P] Create `src/sheet_manager/features/sheet/data/formulaCheck.ts`:
       `checkFormulaInput(source, coordinates)` → `{ kind: 'empty' } | { kind: 'ok', reads } |
 { kind: 'error', code: 'parse' | 'unknown', name?, position? }` using `parseFormula`
       (`SHEET/formula.ts`) and the coordinate test extracted from
       `src/sheet_manager/features/sheet/data/templateReferences.ts` (`checkCoordinates` now calls the
       shared test). Unit tests in `tests/sheet_manager/formula-check.test.ts` (empty, ok with reads,
       parse error with position, unknown name, dotted coordinates like `willpower.max`).
-- [ ] T004 Create `TE/settings/FormulaField.tsx` on top of `SettingField`: fx mark, `font-mono`,
+- [x] T004 Create `TE/settings/FormulaField.tsx` on top of `SettingField`: fx mark, `font-mono`,
       the shared coordinate datalist id from `TE/EditorModel.tsx`, inline message from
       `checkFormulaInput` with the T001 strings (error red, ok muted green, empty nothing).
-- [ ] T005 Extend `DraftIssue` in `TE/draft.ts` with `setting?: SettingRef` (`{group, key}` per
+- [x] T005 Extend `DraftIssue` in `TE/draft.ts` with `setting?: SettingRef` (`{group, key}` per
       data-model.md) and export the type; existing issues get their setting (label → content/`label`,
       formulas → limits/`formula|maxFrom|minFrom|maxMinFrom`, keys → value/`valueKey`, docs link →
       visibility/`docsPath`, display condition → visibility/`visibleWhen`, tracker issues →

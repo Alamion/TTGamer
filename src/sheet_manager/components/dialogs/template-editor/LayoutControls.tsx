@@ -22,12 +22,14 @@ export function ToggleRow({
     hint,
     label,
     onChange,
+    setting,
 }: {
     checked: boolean;
     disabled?: boolean;
     hint?: string;
     label: string;
     onChange: (checked: boolean) => void;
+    setting?: string;
 }) {
     return (
         <div className="grid gap-0.5">
@@ -42,6 +44,7 @@ export function ToggleRow({
                     checked={checked}
                     disabled={disabled}
                     onChange={(event) => onChange(event.target.checked)}
+                    data-setting={setting}
                     className="h-3.5 w-3.5"
                 />
                 {label}
