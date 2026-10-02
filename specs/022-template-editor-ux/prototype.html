@@ -18,6 +18,7 @@
                 --secondary: rgb(202 138 4);
                 --secondary-soft: color-mix(in srgb, rgb(202 138 4), rgb(249 249 255) 88%);
                 --error: rgb(185 28 28);
+                --warning: rgb(217 119 6);
                 --success: rgb(21 128 61);
                 --border: rgb(226 232 240);
                 --border-strong: rgb(206 212 220);
@@ -36,6 +37,7 @@
                     --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 72%);
                     --secondary-soft: color-mix(in srgb, rgb(202 138 4), rgb(30 41 59) 75%);
                     --error: rgb(248 113 113);
+                    --warning: rgb(251 191 36);
                     --success: rgb(74 222 128);
                     --border: rgb(51 65 85);
                     --border-strong: rgb(71 85 105);
@@ -52,6 +54,7 @@
                 --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 72%);
                 --secondary-soft: color-mix(in srgb, rgb(202 138 4), rgb(30 41 59) 75%);
                 --error: rgb(248 113 113);
+                --warning: rgb(251 191 36);
                 --success: rgb(74 222 128);
                 --border: rgb(51 65 85);
                 --border-strong: rgb(71 85 105);
@@ -60,25 +63,21 @@
             * {
                 box-sizing: border-box;
             }
-            html,
-            body {
-                height: 100%;
-            }
             body {
                 margin: 0;
                 background: var(--bg-base);
                 color: var(--text);
                 font: 14px/1.45 var(--font);
                 padding-inline: 16px;
-                padding-block: 12px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
+                padding-block: 12px 32px;
+            }
+            .wrap {
+                max-width: 1400px;
+                margin: 0 auto;
+                display: grid;
+                gap: 12px;
             }
             .intro {
-                max-width: 1400px;
-                width: 100%;
-                margin: 0 auto;
                 display: flex;
                 flex-wrap: wrap;
                 gap: 6px 16px;
@@ -92,7 +91,14 @@
                 margin: 0;
                 color: var(--muted);
                 font-size: 13px;
-                max-width: 90ch;
+                max-width: 100ch;
+            }
+            h2 {
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--muted);
+                margin: 8px 0 0;
             }
             kbd {
                 font: 11px var(--mono);
@@ -104,11 +110,8 @@
 
             /* Editor frame */
             .editor {
-                flex: 1;
-                min-height: 0;
-                max-width: 1400px;
-                width: 100%;
-                margin: 0 auto;
+                height: min(860px, calc(100vh - 120px));
+                min-height: 520px;
                 border: 1px solid var(--border);
                 border-radius: 8px;
                 background: var(--bg-surface);
@@ -118,6 +121,7 @@
             }
             .editor-head {
                 display: flex;
+                flex-wrap: wrap;
                 align-items: center;
                 gap: 8px;
                 padding: 8px 12px;
@@ -135,6 +139,11 @@
                 border-radius: 4px;
                 padding: 3px 8px;
                 cursor: pointer;
+            }
+            .btn.primary {
+                background: var(--primary);
+                border-color: var(--primary);
+                color: #fff;
             }
             .btn:disabled {
                 opacity: 0.4;
@@ -192,6 +201,43 @@
             }
             .tabs {
                 display: none;
+            }
+            .issues {
+                border-top: 1px solid var(--border);
+                padding: 6px 12px;
+                max-height: 120px;
+                overflow: auto;
+                font-size: 12px;
+            }
+            .issues ul {
+                margin: 4px 0 0;
+                padding: 0;
+                list-style: none;
+                display: grid;
+                gap: 2px;
+            }
+            .issues li button {
+                font: inherit;
+                text-align: left;
+                background: none;
+                border: 0;
+                padding: 2px 4px;
+                color: var(--error);
+                cursor: pointer;
+                border-radius: 3px;
+                width: 100%;
+            }
+            .issues li button:hover {
+                background: var(--primary-soft);
+            }
+            .issues .raw {
+                font: 11px var(--mono);
+                color: var(--error);
+                white-space: pre-wrap;
+                margin: 4px 0 0;
+            }
+            .issues .ok {
+                color: var(--success);
             }
             @media (max-width: 760px) {
                 .areas {
@@ -253,6 +299,13 @@
             .outline li.selected .kind {
                 color: rgb(255 255 255 / 0.75);
             }
+            .outline .warn {
+                color: var(--warning);
+                margin-right: 3px;
+            }
+            .outline li.selected .warn {
+                color: #fff;
+            }
             .outline li.drop-row {
                 height: 0;
                 padding: 0;
@@ -268,33 +321,56 @@
             #page {
                 user-select: none;
             }
-            .group.origin-collapsed {
-                display: none;
+            .add-wrap {
+                position: relative;
+                display: inline-block;
+                margin-top: 4px;
             }
-            .sheet-section {
+            .add-menu {
+                position: absolute;
+                z-index: 20;
+                top: 100%;
+                left: 0;
+                margin-top: 4px;
+                width: 300px;
                 background: var(--bg-surface);
                 border: 1px solid var(--border);
-                border-top: 3px solid var(--primary);
                 border-radius: 6px;
-                padding: 10px;
-                margin-bottom: 14px;
+                box-shadow: 0 8px 24px rgb(0 0 0 / 0.15);
+                padding: 4px;
             }
-            .sheet-section > .title {
-                font-weight: 600;
-                margin-bottom: 8px;
-            }
-            .section-grid {
+            .add-menu button {
                 display: grid;
-                gap: 10px;
+                width: 100%;
+                text-align: left;
+                font: inherit;
+                background: none;
+                border: 0;
+                border-radius: 4px;
+                padding: 6px 8px;
+                cursor: pointer;
+                color: var(--text);
             }
-            .group {
+            .add-menu button:hover {
+                background: var(--primary-soft);
+            }
+            .add-menu small {
+                color: var(--muted);
+                font-size: 11px;
+            }
+            .block {
                 border: 1px solid var(--border);
                 border-radius: 6px;
                 padding: 8px;
                 background: var(--bg-surface);
                 position: relative;
+                margin-bottom: 0;
             }
-            .group > .title {
+            .block.kind-section {
+                border-top: 3px solid var(--primary);
+                padding: 10px;
+            }
+            .block > .title {
                 font-size: 12px;
                 font-weight: 600;
                 text-transform: uppercase;
@@ -302,8 +378,30 @@
                 color: var(--secondary);
                 margin-bottom: 4px;
                 cursor: grab;
+                display: flex;
+                gap: 6px;
+                align-items: center;
             }
-            .group-body {
+            .block.kind-section > .title {
+                font-size: 15px;
+                text-transform: none;
+                letter-spacing: 0;
+                color: var(--text);
+                margin-bottom: 8px;
+            }
+            .block .title .chev {
+                color: var(--faint);
+                font-size: 11px;
+            }
+            .root-list {
+                display: grid;
+                gap: 14px;
+            }
+            .grid {
+                display: grid;
+                gap: 10px;
+            }
+            .body {
                 min-height: 28px;
                 position: relative;
             }
@@ -314,11 +412,10 @@
                 padding: 4px 6px;
                 border-radius: 4px;
                 cursor: grab;
-                user-select: none;
                 position: relative;
             }
             .row:hover,
-            .group:hover > .title {
+            .block:hover > .title {
                 background: var(--primary-soft);
             }
             .row .label {
@@ -344,8 +441,27 @@
             .selected-el {
                 box-shadow: 0 0 0 2px var(--primary);
             }
-            .group.selected-el {
-                box-shadow: 0 0 0 2px var(--primary);
+            .has-issue::after {
+                content: '!';
+                position: absolute;
+                top: -7px;
+                right: -7px;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: var(--warning);
+                color: #fff;
+                font: 700 11px/16px var(--font);
+                text-align: center;
+            }
+            .flash {
+                animation: flash 0.9s ease-out;
+            }
+            @keyframes flash {
+                0%,
+                40% {
+                    box-shadow: 0 0 0 4px var(--warning);
+                }
             }
             .origin {
                 opacity: 0.35;
@@ -355,13 +471,15 @@
                 height: 6px !important;
                 padding: 0 !important;
                 overflow: hidden;
-                opacity: 1;
-                background: none;
+                background: none !important;
                 outline: 1px dashed var(--faint);
                 border: 0 !important;
             }
             .origin-collapsed > * {
                 visibility: hidden;
+            }
+            .block.origin-collapsed {
+                display: none;
             }
             .previewing {
                 background: var(--primary-soft);
@@ -380,9 +498,6 @@
                 border-radius: 2px;
                 pointer-events: none;
                 z-index: 5;
-                transition:
-                    top 0.06s,
-                    left 0.06s;
             }
             .drop-marker.vertical {
                 width: 3px;
@@ -396,7 +511,7 @@
                 position: fixed;
                 pointer-events: none;
                 z-index: 50;
-                opacity: 0.85;
+                opacity: 0.9;
                 background: var(--bg-surface);
                 border: 1px solid var(--primary);
                 border-radius: 4px;
@@ -414,6 +529,71 @@
             body.dragging,
             body.dragging * {
                 cursor: grabbing !important;
+            }
+            /* Lists */
+            .entries .entry {
+                display: flex;
+                gap: 8px;
+                padding: 3px 6px;
+                font-size: 13px;
+            }
+            .entries .entry span:first-child {
+                flex: 1;
+            }
+            table.tbl {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 13px;
+            }
+            .tbl th {
+                text-align: left;
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--muted);
+                border-bottom: 1px solid var(--border);
+                padding: 4px 6px;
+            }
+            .tbl td {
+                padding: 4px 6px;
+                border-bottom: 1px solid var(--border);
+            }
+            .tbl .mv {
+                width: 1%;
+                white-space: nowrap;
+            }
+            .mv button {
+                font: inherit;
+                font-size: 12px;
+                width: 22px;
+                height: 22px;
+                border: 1px solid var(--border);
+                background: var(--bg-surface);
+                border-radius: 4px;
+                color: var(--muted);
+                cursor: pointer;
+                padding: 0;
+            }
+            .mv button:disabled {
+                opacity: 0.3;
+                cursor: default;
+            }
+            .mv button:hover:not(:disabled) {
+                color: var(--text);
+                border-color: var(--border-strong);
+            }
+            .grip {
+                color: var(--faint);
+                cursor: grab;
+                padding: 0 4px;
+            }
+            tr.moved td {
+                animation: flash-row 0.6s ease-out;
+            }
+            @keyframes flash-row {
+                from {
+                    background: var(--primary-soft);
+                }
             }
 
             /* Settings */
@@ -455,25 +635,20 @@
                 border-radius: 4px;
                 padding: 4px 6px;
                 min-width: 0;
+                width: 100%;
+            }
+            input[type='checkbox'] {
+                width: auto;
             }
             input:focus,
             select:focus {
                 outline: 2px solid color-mix(in srgb, var(--primary), transparent 60%);
                 border-color: var(--primary);
             }
-            .stack {
-                display: grid;
-                gap: 6px;
-            }
             .line {
                 display: flex;
                 gap: 6px;
                 align-items: center;
-                flex-wrap: wrap;
-            }
-            .line > input,
-            .line > select {
-                flex: 1;
             }
             .small {
                 font-size: 12px;
@@ -492,7 +667,6 @@
                 cursor: help;
                 flex: none;
             }
-            /* Before: one framed card, mostly placeholder-only boxes (FieldEditor.tsx today). */
             .before-card {
                 border: 1px solid var(--border);
                 border-radius: 4px;
@@ -506,15 +680,27 @@
                 gap: 4px;
                 margin-bottom: 8px;
             }
-            /* After */
             .el-head {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                padding: 8px 10px;
+                padding: 6px 10px 8px;
                 border: 1px solid var(--border);
                 border-radius: 6px;
                 margin-bottom: 10px;
+                display: grid;
+                gap: 4px;
+            }
+            .el-head .tools {
+                display: flex;
+                gap: 2px;
+                margin: 0 -4px;
+            }
+            .el-head .tools .sep {
+                flex: 1;
+            }
+            .el-head .who {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 2px 8px;
+                align-items: baseline;
             }
             .chip {
                 font-size: 10px;
@@ -525,19 +711,16 @@
                 background: var(--secondary-soft);
                 border-radius: 3px;
                 padding: 1px 6px;
+                white-space: nowrap;
             }
             .el-head .name {
                 font-weight: 600;
-                margin-right: auto;
-                min-width: 0;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+                overflow-wrap: anywhere;
             }
             .icon-btn {
                 font: inherit;
-                width: 24px;
-                height: 24px;
+                height: 26px;
+                min-width: 26px;
                 border: 1px solid transparent;
                 background: none;
                 border-radius: 4px;
@@ -547,6 +730,9 @@
             .icon-btn:hover {
                 border-color: var(--border);
                 color: var(--text);
+            }
+            .icon-btn.danger:hover {
+                color: var(--error);
             }
             .grp {
                 border-top: 1px solid var(--border);
@@ -615,27 +801,10 @@
                 font-size: 11px;
                 color: var(--muted);
             }
-            .key-box {
-                display: flex;
-                align-items: center;
-                border: 1px solid var(--border);
-                border-radius: 4px;
-                background: var(--bg-input);
+            .setting.bad input {
+                border-color: var(--error);
             }
-            .key-box:focus-within {
-                border-color: var(--primary);
-            }
-            .key-box .pre {
-                font: 12px var(--mono);
-                color: var(--secondary);
-                padding: 0 4px 0 7px;
-            }
-            .key-box input {
-                border: 0;
-                flex: 1;
-                padding-left: 0;
-                outline: none;
-            }
+            .key-box,
             .fx-box {
                 display: flex;
                 align-items: stretch;
@@ -644,8 +813,24 @@
                 background: var(--bg-input);
                 overflow: hidden;
             }
+            .key-box:focus-within,
             .fx-box:focus-within {
                 border-color: var(--primary);
+            }
+            .key-box .pre {
+                font: 12px var(--mono);
+                color: var(--secondary);
+                padding: 0 4px 0 7px;
+                align-self: center;
+            }
+            .key-box input,
+            .fx-box input {
+                border: 0;
+                flex: 1;
+                outline: none;
+            }
+            .key-box input {
+                padding-left: 0;
             }
             .fx-box .fx {
                 font:
@@ -659,11 +844,8 @@
                 padding: 0 7px;
             }
             .fx-box input {
-                border: 0;
-                flex: 1;
                 font-family: var(--mono);
                 font-size: 12px;
-                outline: none;
             }
             .fx-box.bad {
                 border-color: var(--error);
@@ -706,82 +888,136 @@
                 border-color: var(--primary);
                 color: #fff;
             }
+            .kinds {
+                display: grid;
+                gap: 4px;
+            }
+            .kinds label {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 0 8px;
+                align-items: start;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                padding: 6px 8px;
+                cursor: pointer;
+            }
+            .kinds label:has(input:checked) {
+                border-color: var(--primary);
+                background: var(--primary-soft);
+            }
+            .kinds label.off {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+            .kinds input {
+                margin-top: 3px;
+            }
+            .kinds small {
+                grid-column: 2;
+                color: var(--muted);
+                font-size: 11px;
+            }
+            .cols {
+                display: grid;
+                gap: 4px;
+            }
+            .col-row {
+                display: flex;
+                gap: 4px;
+                align-items: center;
+            }
+            .col-row input {
+                flex: 1;
+            }
             .notes {
-                max-width: 1400px;
-                width: 100%;
-                margin: 0 auto;
                 font-size: 12px;
                 color: var(--muted);
+                margin: 0;
+            }
+            .sheet-demo {
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                background: var(--bg-surface);
+                padding: 12px;
+                max-width: 640px;
             }
         </style>
     </head>
     <body>
-        <div class="intro">
-            <h1>Template editor — spec 022 prototype</h1>
-            <p>
-                Drag a trait or a group title on the page: the red line follows the nearest place;
-                hold still for a moment and the page shows it there. <kbd>Esc</kbd> cancels, one
-                <b>Undo</b> takes a move back. Drag the dividers (double-click resets, arrows move
-                them when focused). Select <b>Willpower</b> and compare <b>Before / After</b> in the
-                settings.
-            </p>
-        </div>
+        <div class="wrap">
+            <div class="intro">
+                <h1>Template editor — spec 022 prototype (rev. 2)</h1>
+                <p>
+                    Drag a trait or a block title: the red line follows the nearest place; hold
+                    still and the page shows it there (<kbd>Esc</kbd> cancels, one <b>Undo</b> takes
+                    it back). Drag the dividers. <b>Before / After</b> switches the settings panel
+                    and the save issues. Try <b>Save</b>, <b>+ Add element</b>, the Group kind of
+                    “Advantages”, and the List kind and column order of “Gear”.
+                </p>
+            </div>
 
-        <div class="editor">
-            <div class="editor-head">
-                <strong>Star Wars character — Full sheet</strong>
-                <button class="btn" id="undo" disabled>Undo</button>
-                <button class="btn" id="redo" disabled>Redo</button>
-                <button class="btn" id="reset-widths" title="Forget the remembered widths">
-                    Reset widths
-                </button>
-            </div>
-            <div class="tabs" role="tablist">
-                <button role="tab" data-show="outline">Outline</button>
-                <button role="tab" data-show="page" aria-selected="true">Page</button>
-                <button role="tab" data-show="settings">Settings</button>
-            </div>
-            <div class="areas" id="areas">
-                <section class="area outline-area" data-tab="outline">
-                    <h3>Outline</h3>
-                    <ul class="outline" id="outline"></ul>
-                </section>
-                <div
-                    class="divider"
-                    id="div-left"
-                    role="separator"
-                    aria-orientation="vertical"
-                    aria-label="Resize outline"
-                    tabindex="0"
-                ></div>
-                <section class="area page-area shown" data-tab="page" id="page-area">
-                    <div id="page"></div>
-                </section>
-                <div
-                    class="divider"
-                    id="div-right"
-                    role="separator"
-                    aria-orientation="vertical"
-                    aria-label="Resize settings"
-                    tabindex="0"
-                ></div>
-                <section class="area settings-area" data-tab="settings">
-                    <div class="settings-head">
-                        <h3>Settings</h3>
-                        <div class="seg" role="group" aria-label="Compare">
-                            <button id="mode-before" aria-pressed="false">Before</button>
-                            <button id="mode-after" aria-pressed="true">After</button>
-                        </div>
+            <div class="editor">
+                <div class="editor-head">
+                    <strong>Star Wars character — Full sheet</strong>
+                    <div class="seg" role="group" aria-label="Compare">
+                        <button id="mode-before" aria-pressed="false">Before</button>
+                        <button id="mode-after" aria-pressed="true">After</button>
                     </div>
-                    <div id="settings"></div>
-                </section>
+                    <button class="btn" id="undo" disabled>Undo</button>
+                    <button class="btn" id="redo" disabled>Redo</button>
+                    <button class="btn" id="reset-widths" title="Forget the remembered widths">
+                        Reset widths
+                    </button>
+                    <button class="btn primary" id="save">Save</button>
+                </div>
+                <div class="tabs" role="tablist">
+                    <button role="tab" data-show="outline">Outline</button>
+                    <button role="tab" data-show="page" aria-selected="true">Page</button>
+                    <button role="tab" data-show="settings">Settings</button>
+                </div>
+                <div class="areas" id="areas">
+                    <section class="area outline-area" data-tab="outline">
+                        <h3>Outline</h3>
+                        <ul class="outline" id="outline"></ul>
+                    </section>
+                    <div
+                        class="divider"
+                        id="div-left"
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label="Resize outline"
+                        tabindex="0"
+                    ></div>
+                    <section class="area page-area shown" data-tab="page" id="page-area">
+                        <div id="page"></div>
+                        <div class="add-wrap">
+                            <button class="btn" id="add">+ Add element</button>
+                        </div>
+                    </section>
+                    <div
+                        class="divider"
+                        id="div-right"
+                        role="separator"
+                        aria-orientation="vertical"
+                        aria-label="Resize settings"
+                        tabindex="0"
+                    ></div>
+                    <section class="area settings-area" data-tab="settings">
+                        <div class="settings-head"><h3>Settings</h3></div>
+                        <div id="settings"></div>
+                    </section>
+                </div>
+                <div class="issues" id="issues" aria-live="polite"></div>
             </div>
+            <p class="notes">
+                Prototype only: in the app the page is the real sheet renderer and the rules come
+                from the editor's move commands. Touch dragging in the editor stays out of scope.
+            </p>
+
+            <h2>On the player's sheet</h2>
+            <div class="sheet-demo" id="sheet-demo"></div>
         </div>
-        <p class="notes">
-            Prototype only: in the app the page is the real sheet renderer and the rules come from
-            the editor's move commands. Touch dragging stays out of scope; phones keep the move
-            buttons.
-        </p>
 
         <script>
             // ---------- Model ----------
@@ -800,8 +1036,6 @@
                 'courage',
                 'willpower',
                 'willpower.max',
-                'force-points',
-                'force-points.max',
                 'humanity',
             ];
             const fields = {
@@ -823,30 +1057,38 @@
                     value: 4,
                     max: 10,
                     maxFrom: 'courage + 2',
-                    help: '',
                     flags: ['specialization'],
                 },
                 humanity: { label: 'Humanity', key: 'humanity', value: 7, max: 10 },
             };
+            // Containers: kind 'section' | 'card' (Group) and 'entries' | 'table' (List).
             let model = {
-                sections: [
+                root: [
                     {
                         id: 'attributes',
+                        el: 'group',
+                        kind: 'section',
                         title: 'Attributes',
                         columns: 3,
-                        groups: [
+                        children: [
                             {
                                 id: 'physical',
+                                el: 'group',
+                                kind: 'card',
                                 title: 'Physical',
                                 items: ['strength', 'dexterity', 'stamina'],
                             },
                             {
                                 id: 'social',
+                                el: 'group',
+                                kind: 'card',
                                 title: 'Social',
                                 items: ['charisma', 'manipulation', 'appearance'],
                             },
                             {
                                 id: 'mental',
+                                el: 'group',
+                                kind: 'card',
                                 title: 'Mental',
                                 items: ['perception', 'intelligence', 'wits'],
                             },
@@ -854,18 +1096,50 @@
                     },
                     {
                         id: 'advantages',
+                        el: 'group',
+                        kind: 'section',
                         title: 'Advantages',
                         columns: 2,
-                        groups: [
+                        children: [
                             {
                                 id: 'virtues',
+                                el: 'group',
+                                kind: 'card',
                                 title: 'Virtues',
                                 items: ['conscience', 'selfControl', 'courage'],
                             },
                             {
                                 id: 'resources',
+                                el: 'group',
+                                kind: 'card',
                                 title: 'Willpower & Humanity',
                                 items: ['willpower', 'humanity'],
+                            },
+                            {
+                                id: 'skills',
+                                el: 'list',
+                                kind: 'entries',
+                                title: 'Skills',
+                                key: 'skills',
+                                catalog: false,
+                                entryLabel: '',
+                                entryType: 'Rating',
+                                sample: [
+                                    ['Athletics', 2],
+                                    ['Pilot', 3],
+                                ],
+                            },
+                            {
+                                id: 'gear',
+                                el: 'list',
+                                kind: 'table',
+                                title: 'Gear',
+                                key: 'gear',
+                                columns: ['Item', 'Qty', 'Notes'],
+                                sample: [
+                                    ['Blaster pistol', '1', '3D+1'],
+                                    ['Medpac', '2', ''],
+                                ],
                             },
                         ],
                     },
@@ -873,9 +1147,16 @@
             };
             let selected = 'willpower';
             let mode = 'after';
+            let saveTried = false;
             const undoStack = [];
             const redoStack = [];
             const clone = (value) => JSON.parse(JSON.stringify(value));
+            const KIND_NAMES = {
+                section: 'Section',
+                card: 'Card',
+                entries: 'Entries',
+                table: 'Table',
+            };
 
             function snapshot() {
                 undoStack.push(clone(model));
@@ -899,19 +1180,161 @@
                 renderAll();
             };
 
-            const findGroup = (id) => {
-                for (const section of model.sections) {
-                    const group = section.groups.find((g) => g.id === id);
-                    if (group) return { section, group };
+            /** Every container with its parent list. */
+            function* walk(list = model.root, parent = null) {
+                for (const node of list) {
+                    yield { node, list, parent };
+                    if (node.children) yield* walk(node.children, node);
                 }
-                return null;
+            }
+            const findNode = (id) => [...walk()].find((entry) => entry.node.id === id);
+            const containerOfItem = (item) =>
+                [...walk()].find(({ node }) => node.items?.includes(item))?.node;
+
+            // ---------- Issues ----------
+            function checkFormula(text) {
+                if (!text.trim()) return { ok: true, empty: true };
+                if (!/^[\w.\-+*/()\s]+$/.test(text))
+                    return { ok: false, message: 'This formula does not parse.' };
+                const names = text.match(/[a-z][\w.-]*[\w]|[a-z]/gi) ?? [];
+                const missing = names.filter((n) => !KNOWN.includes(n.toLowerCase()));
+                if (missing.length)
+                    return { ok: false, message: `No value named “${missing[0]}”.` };
+                if (/[+\-*/]\s*$/.test(text))
+                    return { ok: false, message: 'This formula does not parse.' };
+                return { ok: true, message: `Reads ${names.join(', ')}.` };
+            }
+            function collectIssues() {
+                const issues = [];
+                for (const [id, field] of Object.entries(fields)) {
+                    if (!containerOfItem(id)) continue;
+                    if (!field.label.trim())
+                        issues.push({
+                            id,
+                            setting: 'label',
+                            group: 'content',
+                            text: 'A rating has no label.',
+                        });
+                    const check = checkFormula(field.maxFrom ?? '');
+                    if (!check.ok)
+                        issues.push({
+                            id,
+                            setting: 'maxFrom',
+                            group: 'limits',
+                            text: `${field.label}: Maximum from — ${check.message}`,
+                        });
+                }
+                for (const { node } of walk()) {
+                    if (!node.title?.trim())
+                        issues.push({
+                            id: node.id,
+                            setting: 'title',
+                            group: 'content',
+                            text: `A ${node.el} has no title.`,
+                        });
+                    if (node.el === 'list' && node.kind === 'entries' && !node.entryLabel.trim())
+                        issues.push({
+                            id: node.id,
+                            setting: 'entryLabel',
+                            group: 'content',
+                            text: `The entry field of list “${node.title}” has no label.`,
+                        });
+                    if (node.el === 'list' && node.kind === 'table')
+                        node.columns.forEach((c, i) => {
+                            if (!c.trim())
+                                issues.push({
+                                    id: node.id,
+                                    setting: `col-${i}`,
+                                    group: 'content',
+                                    text: `Column ${i + 1} of table “${node.title}” has no label.`,
+                                });
+                        });
+                }
+                return issues;
+            }
+            const RAW = `[ { "code": "too_small", "minimum": 1, "type": "string", "inclusive": true, "exact": false, "message": "String must contain at least 1 character(s)", "path": [ "children", 1, "children", 2, "item", "label" ] } ]`;
+
+            function renderIssues() {
+                const host = document.getElementById('issues');
+                const issues = collectIssues();
+                const listIssue = issues.some((i) => i.setting === 'entryLabel');
+                if (mode === 'before') {
+                    // Today: the draft checks miss the list entry label; the save fails with the schema text.
+                    const known = issues.filter((i) => i.setting !== 'entryLabel');
+                    host.replaceChildren(
+                        known.length
+                            ? el(
+                                  'div',
+                                  {},
+                                  `${known.length} issue(s):`,
+                                  el(
+                                      'ul',
+                                      {},
+                                      known.map((i) =>
+                                          el(
+                                              'li',
+                                              {},
+                                              el('span', { style: 'color:var(--error)' }, i.text)
+                                          )
+                                      )
+                                  )
+                              )
+                            : '',
+                        saveTried && listIssue ? el('pre', { class: 'raw' }, RAW) : '',
+                        !known.length && !(saveTried && listIssue)
+                            ? el('span', { class: 'ok' }, 'No issues.')
+                            : ''
+                    );
+                    return;
+                }
+                host.replaceChildren(
+                    issues.length
+                        ? el(
+                              'div',
+                              {},
+                              el(
+                                  'b',
+                                  {},
+                                  `${issues.length} ${issues.length === 1 ? 'issue blocks' : 'issues block'} saving — click one to go there:`
+                              ),
+                              el(
+                                  'ul',
+                                  {},
+                                  issues.map((issue) =>
+                                      el(
+                                          'li',
+                                          {},
+                                          el(
+                                              'button',
+                                              { onclick: () => jumpTo(issue) },
+                                              '⚠ ' + issue.text
+                                          )
+                                      )
+                                  )
+                              )
+                          )
+                        : el(
+                              'span',
+                              { class: 'ok' },
+                              saveTried ? 'Saved.' : 'No issues — ready to save.'
+                          )
+                );
+            }
+            document.getElementById('save').onclick = () => {
+                saveTried = true;
+                renderIssues();
             };
-            const groupOfItem = (item) => {
-                for (const section of model.sections)
-                    for (const group of section.groups)
-                        if (group.items.includes(item)) return group;
-                return null;
-            };
+            function jumpTo(issue) {
+                selected = issue.id;
+                groupState[issue.group] = true;
+                renderAll();
+                const target = document.querySelector(`#page [data-id="${issue.id}"]`);
+                target?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                const flashEl = target?.matches('.title') ? target.parentElement : target;
+                flashEl?.classList.add('flash');
+                setTimeout(() => flashEl?.classList.remove('flash'), 900);
+                document.querySelector(`[data-setting="${issue.setting}"]`)?.focus();
+            }
 
             // ---------- Rendering ----------
             const el = (tag, attrs = {}, ...children) => {
@@ -923,61 +1346,106 @@
                         node.setAttribute(k, v === true ? '' : v);
                 }
                 for (const child of children.flat()) {
-                    if (child == null || child === false) continue;
+                    if (child == null || child === false || child === '') continue;
                     node.append(child instanceof Node ? child : document.createTextNode(child));
                 }
                 return node;
             };
+            let issueIds = new Set();
 
             function renderPage() {
-                const page = document.getElementById('page');
-                page.replaceChildren(
-                    ...model.sections.map((section) =>
+                issueIds = new Set(mode === 'after' ? collectIssues().map((i) => i.id) : []);
+                document
+                    .getElementById('page')
+                    .replaceChildren(
                         el(
                             'div',
-                            { class: 'sheet-section', 'data-section': section.id },
-                            el('div', { class: 'title' }, section.title),
+                            { class: 'root-list', 'data-container': 'blocks', 'data-id': 'root' },
+                            model.root.map(renderBlock)
+                        )
+                    );
+            }
+            function blockClasses(node) {
+                return [
+                    'block',
+                    'kind-' + node.kind,
+                    selected === node.id && 'selected-el',
+                    issueIds.has(node.id) && 'has-issue',
+                ]
+                    .filter(Boolean)
+                    .join(' ');
+            }
+            function renderBlock(node) {
+                const title = el(
+                    'div',
+                    { class: 'title', 'data-drag': 'block', 'data-id': node.id },
+                    node.kind === 'section' ? el('span', { class: 'chev' }, '▾') : '',
+                    node.title || '(untitled)'
+                );
+                let body;
+                if (node.children) {
+                    body = el(
+                        'div',
+                        {
+                            class: 'grid',
+                            'data-container': 'blocks',
+                            'data-id': node.id,
+                            style: `grid-template-columns: repeat(${node.columns ?? 1}, minmax(0, 1fr))`,
+                        },
+                        node.children.map(renderBlock)
+                    );
+                } else if (node.items) {
+                    body = el(
+                        'div',
+                        { class: 'body', 'data-container': 'items', 'data-id': node.id },
+                        node.items.map(rowFor)
+                    );
+                } else if (node.kind === 'entries') {
+                    body = el(
+                        'div',
+                        { class: 'entries' },
+                        node.sample.map(([name, value]) =>
                             el(
                                 'div',
-                                {
-                                    class: 'section-grid',
-                                    'data-container': 'section',
-                                    'data-id': section.id,
-                                    style: `grid-template-columns: repeat(${section.columns}, minmax(0, 1fr))`,
-                                },
-                                section.groups.map((group) =>
-                                    el(
-                                        'div',
-                                        {
-                                            class:
-                                                'group' +
-                                                (selected === group.id ? ' selected-el' : ''),
-                                            'data-group': group.id,
-                                        },
-                                        el(
-                                            'div',
-                                            {
-                                                class: 'title',
-                                                'data-drag': 'group',
-                                                'data-id': group.id,
-                                            },
-                                            group.title
-                                        ),
-                                        el(
-                                            'div',
-                                            {
-                                                class: 'group-body',
-                                                'data-container': 'group',
-                                                'data-id': group.id,
-                                            },
-                                            group.items.map((item) => rowFor(item))
-                                        )
+                                { class: 'entry' },
+                                el('span', {}, name),
+                                el(
+                                    'span',
+                                    { class: 'dots' },
+                                    Array.from({ length: 5 }, (_, i) =>
+                                        el('span', { class: 'dot' + (i < value ? ' on' : '') })
                                     )
                                 )
                             )
                         )
-                    )
-                );
+                    );
+                } else {
+                    body = el(
+                        'table',
+                        { class: 'tbl' },
+                        el(
+                            'thead',
+                            {},
+                            el(
+                                'tr',
+                                {},
+                                node.columns.map((c) => el('th', { scope: 'col' }, c || '—'))
+                            )
+                        ),
+                        el(
+                            'tbody',
+                            {},
+                            node.sample.map((row) =>
+                                el(
+                                    'tr',
+                                    {},
+                                    node.columns.map((_, i) => el('td', {}, row[i] ?? ''))
+                                )
+                            )
+                        )
+                    );
+                }
+                return el('div', { class: blockClasses(node), 'data-block': node.id }, title, body);
             }
             function rowFor(item) {
                 const field = fields[item];
@@ -985,11 +1453,14 @@
                 return el(
                     'div',
                     {
-                        class: 'row' + (selected === item ? ' selected-el' : ''),
+                        class:
+                            'row' +
+                            (selected === item ? ' selected-el' : '') +
+                            (issueIds.has(item) ? ' has-issue' : ''),
                         'data-drag': 'item',
                         'data-id': item,
                     },
-                    el('span', { class: 'label' }, field.label),
+                    el('span', { class: 'label' }, field.label || '(no label)'),
                     el(
                         'span',
                         { class: 'dots' },
@@ -1000,9 +1471,16 @@
                 );
             }
 
+            function kindLabel(node) {
+                if (mode === 'before')
+                    return { section: 'Section', card: 'Group', entries: 'List', table: 'Table' }[
+                        node.kind
+                    ];
+                return `${node.el === 'group' ? 'Group' : 'List'} · ${KIND_NAMES[node.kind]}`;
+            }
             function renderOutline(drop) {
-                const list = document.getElementById('outline');
                 const rows = [];
+                const ids = new Set(mode === 'after' ? collectIssues().map((i) => i.id) : []);
                 const row = (id, kind, label, depth, extra = '') =>
                     el(
                         'li',
@@ -1011,61 +1489,56 @@
                             style: `padding-left:${6 + depth * 14}px`,
                             onclick: () => select(id),
                         },
+                        ids.has(id) ? el('span', { class: 'warn' }, '⚠') : '',
                         el('span', { class: 'kind' }, kind),
                         label
                     );
                 const dropRow = (depth) =>
                     el('li', { class: 'drop-row', style: `margin-left:${6 + depth * 14}px` });
-                for (const section of model.sections) {
-                    rows.push(
-                        row(
-                            section.id,
-                            'Section',
-                            section.title,
-                            0,
-                            drop?.container === section.id ? 'drop-target' : ''
-                        )
-                    );
-                    section.groups.forEach((group, gi) => {
+                const visit = (list, parentId, depth) => {
+                    list.forEach((node, index) => {
                         if (
-                            drop?.kind === 'section' &&
-                            drop.container === section.id &&
-                            drop.index === gi
+                            drop?.kind === 'blocks' &&
+                            drop.container === parentId &&
+                            drop.index === index
                         )
-                            rows.push(dropRow(1));
+                            rows.push(dropRow(depth));
                         rows.push(
                             row(
-                                group.id,
-                                'Group',
-                                group.title,
-                                1,
-                                drop?.container === group.id ? 'drop-target' : ''
+                                node.id,
+                                kindLabel(node),
+                                node.title,
+                                depth,
+                                drop?.container === node.id ? 'drop-target' : ''
                             )
                         );
-                        group.items.forEach((item, ii) => {
+                        if (node.children) visit(node.children, node.id, depth + 1);
+                        node.items?.forEach((item, ii) => {
                             if (
-                                drop?.kind === 'group' &&
-                                drop.container === group.id &&
+                                drop?.kind === 'items' &&
+                                drop.container === node.id &&
                                 drop.index === ii
                             )
-                                rows.push(dropRow(2));
-                            rows.push(row(item, 'Rating', fields[item].label, 2));
+                                rows.push(dropRow(depth + 1));
+                            rows.push(row(item, 'Rating', fields[item].label, depth + 1));
                         });
                         if (
-                            drop?.kind === 'group' &&
-                            drop.container === group.id &&
-                            drop.index === group.items.length
+                            node.items &&
+                            drop?.kind === 'items' &&
+                            drop.container === node.id &&
+                            drop.index === node.items.length
                         )
-                            rows.push(dropRow(2));
+                            rows.push(dropRow(depth + 1));
                     });
                     if (
-                        drop?.kind === 'section' &&
-                        drop.container === section.id &&
-                        drop.index === section.groups.length
+                        drop?.kind === 'blocks' &&
+                        drop.container === parentId &&
+                        drop.index === list.length
                     )
-                        rows.push(dropRow(1));
-                }
-                list.replaceChildren(...rows);
+                        rows.push(dropRow(depth));
+                };
+                visit(model.root, 'root', 0);
+                document.getElementById('outline').replaceChildren(...rows);
             }
 
             function select(id) {
@@ -1073,9 +1546,183 @@
                 renderAll();
             }
 
-            // ---------- Settings: before ----------
-            function renderBefore(field) {
-                const placeholderOnly = (value, placeholder, mono) =>
+            // ---------- Settings: shared pieces ----------
+            const groupState = {
+                content: true,
+                value: true,
+                limits: true,
+                look: false,
+                visibility: false,
+            };
+
+            function setting(name, control, { help, hint, bad } = {}) {
+                return el(
+                    'div',
+                    { class: 'setting' + (bad ? ' bad' : '') },
+                    el(
+                        'label',
+                        { class: 'name' },
+                        name,
+                        help ? el('span', { class: 'help', title: 'Open the guide' }, '?') : ''
+                    ),
+                    control,
+                    hint ? el('div', { class: 'hint' }, hint) : ''
+                );
+            }
+            function grp(id, title, count, ...children) {
+                const issues = collectIssues().filter(
+                    (i) => i.id === selected && i.group === id
+                ).length;
+                const wrap = el(
+                    'div',
+                    { class: 'grp', 'data-grp': id, 'data-open': String(groupState[id]) },
+                    el(
+                        'button',
+                        {
+                            'aria-expanded': String(groupState[id]),
+                            onclick: () => {
+                                groupState[id] = !groupState[id];
+                                wrap.dataset.open = String(groupState[id]);
+                                wrap.firstChild.setAttribute(
+                                    'aria-expanded',
+                                    String(groupState[id])
+                                );
+                            },
+                        },
+                        el('span', { class: 'chev' }, '▸'),
+                        title,
+                        issues
+                            ? el(
+                                  'span',
+                                  { class: 'issue' },
+                                  `${issues} issue${issues > 1 ? 's' : ''}`
+                              )
+                            : el('span', { class: 'count' }, `${count}`)
+                    ),
+                    el('div', { class: 'grp-body' }, children)
+                );
+                return wrap;
+            }
+            /** Actions first, then kind and full name: a narrow area never hides the name. */
+            function elementHead(kind, name) {
+                return el(
+                    'div',
+                    { class: 'el-head' },
+                    el(
+                        'div',
+                        { class: 'tools' },
+                        el('button', { class: 'icon-btn', title: 'Move up' }, '↑'),
+                        el('button', { class: 'icon-btn', title: 'Move down' }, '↓'),
+                        el('button', { class: 'icon-btn', title: 'Duplicate' }, '⧉'),
+                        el('span', { class: 'sep' }),
+                        el('button', { class: 'icon-btn danger', title: 'Remove' }, '✕')
+                    ),
+                    el(
+                        'div',
+                        { class: 'who' },
+                        el('span', { class: 'chip' }, kind),
+                        el('span', { class: 'name' }, name || '(untitled)')
+                    )
+                );
+            }
+            const toggle = (label, checked) =>
+                el('label', { class: 'toggle' }, el('input', { type: 'checkbox', checked }), label);
+            const textInput = (value, onInput, attrs = {}) =>
+                el('input', {
+                    value,
+                    ...attrs,
+                    oninput: (event) => {
+                        onInput(event.target.value);
+                        refreshLive();
+                    },
+                });
+            /** Page, outline, and issue list follow typing without rebuilding the settings. */
+            function refreshLive() {
+                renderPage();
+                renderOutline();
+                renderIssues();
+                document.querySelectorAll('.grp').forEach((g) => {
+                    const id = g.dataset.grp;
+                    const count = collectIssues().filter(
+                        (i) => i.id === selected && i.group === id
+                    ).length;
+                    const btn = g.firstChild;
+                    btn.querySelector('.issue')?.remove();
+                    const c = btn.querySelector('.count');
+                    if (count) {
+                        if (c) c.hidden = true;
+                        btn.append(
+                            el('span', { class: 'issue' }, `${count} issue${count > 1 ? 's' : ''}`)
+                        );
+                    } else if (c) c.hidden = false;
+                });
+            }
+            function fxSetting(name, field, prop) {
+                const result = checkFormula(field[prop] ?? '');
+                const msg = el(
+                    'div',
+                    { class: 'msg ' + (result.ok ? (result.empty ? '' : 'ok') : 'bad') },
+                    result.empty ? '' : result.message
+                );
+                const box = el(
+                    'div',
+                    { class: 'fx-box' + (result.ok ? '' : ' bad') },
+                    el('span', { class: 'fx', 'aria-hidden': 'true' }, 'fx'),
+                    el('input', {
+                        value: field[prop] ?? '',
+                        placeholder: 'e.g. willpower.max',
+                        'aria-label': name,
+                        'data-setting': prop,
+                        oninput: (event) => {
+                            field[prop] = event.target.value;
+                            const check = checkFormula(event.target.value);
+                            box.classList.toggle('bad', !check.ok);
+                            msg.className = 'msg ' + (check.ok ? (check.empty ? '' : 'ok') : 'bad');
+                            msg.textContent = check.ok
+                                ? check.empty
+                                    ? ''
+                                    : check.message
+                                : check.message;
+                            refreshLive();
+                        },
+                    })
+                );
+                return el(
+                    'div',
+                    { class: 'setting' },
+                    el('label', { class: 'name' }, name, el('span', { class: 'help' }, '?')),
+                    box,
+                    msg
+                );
+            }
+            function kindChoice(name, value, options, onChange) {
+                return setting(
+                    name,
+                    el(
+                        'div',
+                        { class: 'kinds', role: 'radiogroup' },
+                        options.map((option) =>
+                            el(
+                                'label',
+                                { class: option.disabled ? 'off' : '' },
+                                el('input', {
+                                    type: 'radio',
+                                    name: 'kind-' + name,
+                                    checked: value === option.value,
+                                    disabled: option.disabled,
+                                    onchange: () => onChange(option.value),
+                                }),
+                                el('b', {}, option.label),
+                                el('small', {}, option.disabled ?? option.hint)
+                            )
+                        )
+                    )
+                );
+            }
+
+            // ---------- Settings: rating ----------
+            function ratingBefore(field) {
+                const p = (value, placeholder, mono) =>
                     el('input', {
                         value,
                         placeholder,
@@ -1097,15 +1744,15 @@
                         el(
                             'div',
                             { class: 'line' },
-                            placeholderOnly(field.label, 'Field label'),
+                            p(field.label, 'Field label'),
                             el('select', {}, el('option', {}, 'Rating'))
                         ),
-                        placeholderOnly(field.help ?? '', 'Help text (optional)'),
+                        p('', 'Help text (optional)'),
                         el('select', {}, el('option', {}, 'Custom value (this template)')),
                         el(
                             'div',
                             { class: 'line' },
-                            placeholderOnly(
+                            p(
                                 field.key,
                                 'Shared value key (fields with the same key share one value)'
                             ),
@@ -1132,20 +1779,20 @@
                         ),
                         el(
                             'label',
-                            { class: 'stack small' },
+                            { class: 'small', style: 'display:grid;gap:4px' },
                             el(
                                 'span',
                                 { class: 'line' },
                                 'Maximum from value or formula (optional)',
                                 el('span', { class: 'help' }, '?')
                             ),
-                            placeholderOnly(field.maxFrom ?? '', 'e.g. willpower.max', true)
+                            p(field.maxFrom ?? '', 'e.g. willpower.max', true)
                         ),
                         el(
                             'div',
                             { class: 'pair' },
-                            placeholderOnly('0', 'Min'),
-                            placeholderOnly(String(field.max ?? 5), 'Max')
+                            p('0', 'Min'),
+                            p(String(field.max ?? 5), 'Max')
                         ),
                         el(
                             'div',
@@ -1182,190 +1829,36 @@
                         el(
                             'div',
                             { class: 'line' },
-                            placeholderOnly('', 'Value key'),
+                            p('', 'Value key'),
                             el('select', {}, el('option', {}, '=')),
-                            placeholderOnly('', 'Value')
+                            p('', 'Value')
                         )
                     )
                 );
             }
-
-            // ---------- Settings: after ----------
-            const groupState = {
-                content: true,
-                value: true,
-                limits: true,
-                look: false,
-                visibility: false,
-            };
-
-            function checkFormula(text) {
-                if (!text.trim()) return { ok: true, empty: true };
-                if (!/^[\w.\-+*/()\s]+$/.test(text))
-                    return { ok: false, message: 'This formula does not parse.' };
-                const names = text.match(/[a-z][\w.-]*[\w]|[a-z]/gi) ?? [];
-                const missing = names.filter(
-                    (n) => !KNOWN.includes(n.toLowerCase()) && !['min', 'max'].includes(n)
-                );
-                if (missing.length)
-                    return { ok: false, message: `No value named “${missing[0]}”.` };
-                if (/[+\-*/]\s*$/.test(text) || /^\s*[+*/]/.test(text))
-                    return { ok: false, message: 'This formula does not parse.' };
-                return { ok: true, message: `Reads ${names.join(', ')}.` };
-            }
-
-            function setting(name, control, { help, hint } = {}) {
-                return el(
-                    'div',
-                    { class: 'setting' },
-                    el(
-                        'label',
-                        { class: 'name' },
-                        name,
-                        help ? el('span', { class: 'help', title: 'Open the guide' }, '?') : null
-                    ),
-                    control,
-                    hint ? el('div', { class: 'hint' }, hint) : null
-                );
-            }
-
-            function fxSetting(name, field, prop, placeholder, help) {
-                const result = checkFormula(field[prop] ?? '');
-                const box = el(
-                    'div',
-                    { class: 'fx-box' + (result.ok ? '' : ' bad') },
-                    el('span', { class: 'fx', 'aria-hidden': 'true' }, 'fx'),
-                    el('input', {
-                        value: field[prop] ?? '',
-                        placeholder,
-                        'aria-label': name,
-                        oninput: (event) => {
-                            field[prop] = event.target.value;
-                            const check = checkFormula(event.target.value);
-                            box.classList.toggle('bad', !check.ok);
-                            msg.className = 'msg ' + (check.ok ? (check.empty ? '' : 'ok') : 'bad');
-                            msg.textContent = check.ok
-                                ? check.empty
-                                    ? ''
-                                    : check.message
-                                : check.message;
-                            renderIssueBadges();
-                        },
-                    })
-                );
-                const msg = el(
-                    'div',
-                    {
-                        class: 'msg ' + (result.ok ? (result.empty ? '' : 'ok') : 'bad'),
-                        role: result.ok ? undefined : 'alert',
-                    },
-                    result.empty ? '' : result.message
-                );
-                return el(
-                    'div',
-                    { class: 'setting' },
-                    el(
-                        'label',
-                        { class: 'name' },
-                        name,
-                        help ? el('span', { class: 'help' }, '?') : null
-                    ),
-                    box,
-                    msg
-                );
-            }
-
-            function grp(id, title, count, ...children) {
-                const wrap = el(
-                    'div',
-                    { class: 'grp', 'data-grp': id, 'data-open': String(groupState[id]) },
-                    el(
-                        'button',
-                        {
-                            'aria-expanded': String(groupState[id]),
-                            onclick: () => {
-                                groupState[id] = !groupState[id];
-                                wrap.dataset.open = String(groupState[id]);
-                                wrap.firstChild.setAttribute(
-                                    'aria-expanded',
-                                    String(groupState[id])
-                                );
-                            },
-                        },
-                        el('span', { class: 'chev' }, '▸'),
-                        title,
-                        el('span', { class: 'count' }, `${count}`)
-                    ),
-                    el('div', { class: 'grp-body' }, children)
-                );
-                return wrap;
-            }
-
-            function renderIssueBadges() {
-                const field = fields[selected];
-                if (!field) return;
-                const limits = document.querySelector('[data-grp="limits"] > button');
-                if (!limits) return;
-                limits.querySelector('.issue')?.remove();
-                const bad = !checkFormula(field.maxFrom ?? '').ok;
-                limits.querySelector('.count').hidden = bad;
-                if (bad)
-                    limits.append(
-                        el('span', { class: 'issue', title: 'Contains an issue' }, '1 issue')
-                    );
-            }
-
-            function renderAfter(field) {
-                const toggle = (label, checked) =>
-                    el(
-                        'label',
-                        { class: 'toggle' },
-                        el('input', { type: 'checkbox', checked }),
-                        label
-                    );
+            function ratingAfter(field) {
                 return el(
                     'div',
                     {},
-                    el(
-                        'div',
-                        { class: 'el-head' },
-                        el('span', { class: 'chip' }, 'Rating'),
-                        el('span', { class: 'name' }, field.label),
-                        ['↑', '↓', '⧉', '✕'].map((s, i) =>
-                            el(
-                                'button',
-                                {
-                                    class: 'icon-btn',
-                                    title: ['Move up', 'Move down', 'Duplicate', 'Remove'][i],
-                                },
-                                s
-                            )
-                        )
-                    ),
+                    elementHead('Field · Rating', field.label),
                     grp(
                         'content',
                         'Content',
-                        4,
-                        setting('Label', el('input', { value: field.label })),
+                        3,
                         setting(
-                            'Help text',
-                            el('input', {
-                                value: field.help ?? '',
-                                placeholder: 'Shown under the label',
-                            })
+                            'Label',
+                            textInput(field.label, (v) => (field.label = v), {
+                                'data-setting': 'label',
+                            }),
+                            { bad: !field.label.trim() }
                         ),
-                        el(
-                            'div',
-                            { class: 'pair' },
-                            toggle('Show label', true),
-                            toggle('Book name hint', true)
-                        ),
-                        el('div', { class: 'small' }, 'Book term: Willpower')
+                        setting('Help text', el('input', { placeholder: 'Shown under the label' })),
+                        toggle('Show label', true)
                     ),
                     grp(
                         'value',
                         'Value',
-                        3,
+                        2,
                         setting(
                             'Stores value in',
                             el('select', {}, el('option', {}, 'Custom value (this template)'))
@@ -1382,8 +1875,7 @@
                                 help: true,
                                 hint: 'A name for the value. Fields with the same key share one value.',
                             }
-                        ),
-                        toggle('Required (advisory marker)', false)
+                        )
                     ),
                     grp(
                         'limits',
@@ -1398,7 +1890,7 @@
                                 el('input', { type: 'number', value: String(field.max ?? 5) })
                             )
                         ),
-                        fxSetting('Maximum from', field, 'maxFrom', 'e.g. willpower.max', true)
+                        fxSetting('Maximum from', field, 'maxFrom')
                     ),
                     grp(
                         'look',
@@ -1428,9 +1920,6 @@
                                             'aria-pressed': String(
                                                 (field.flags ?? []).length > 0 && i === 0
                                             ),
-                                            title: ['Specialization', 'Practiced', 'Experienced'][
-                                                i
-                                            ],
                                         },
                                         l
                                     )
@@ -1445,7 +1934,9 @@
                     grp(
                         'visibility',
                         'Visibility and help',
-                        2,
+                        5,
+                        toggle('Required (advisory marker)', false),
+                        setting('Book name hint', toggle('Show “Willpower” from the book', true)),
                         setting(
                             'Show only when',
                             el(
@@ -1457,7 +1948,7 @@
                                     el('span', { class: 'pre' }, '#'),
                                     el('input', { placeholder: 'value key' })
                                 ),
-                                el('select', {}, el('option', {}, '=')),
+                                el('select', { style: 'width:auto' }, el('option', {}, '=')),
                                 el('input', { placeholder: 'value', style: 'flex:1' })
                             ),
                             { help: true }
@@ -1471,26 +1962,352 @@
                 );
             }
 
+            // ---------- Settings: Group ----------
+            function groupAfter(node) {
+                return el(
+                    'div',
+                    {},
+                    elementHead('Group · ' + KIND_NAMES[node.kind], node.title),
+                    grp(
+                        'content',
+                        'Content',
+                        2,
+                        setting(
+                            'Title',
+                            textInput(node.title, (v) => (node.title = v), {
+                                'data-setting': 'title',
+                            }),
+                            { bad: !node.title.trim() }
+                        ),
+                        kindChoice(
+                            'Kind',
+                            node.kind,
+                            [
+                                {
+                                    value: 'section',
+                                    label: 'Section',
+                                    hint: 'Large block with a heading and the accent bar; readers can fold it.',
+                                },
+                                {
+                                    value: 'card',
+                                    label: 'Card',
+                                    hint: 'Titled card inside a section; may fold if you allow it.',
+                                },
+                            ],
+                            (kind) => {
+                                snapshot();
+                                node.kind = kind;
+                                renderAll();
+                            }
+                        )
+                    ),
+                    grp(
+                        'look',
+                        'Look',
+                        2,
+                        setting(
+                            'Columns',
+                            el(
+                                'select',
+                                {
+                                    onchange: (e) => {
+                                        snapshot();
+                                        node.columns = Number(e.target.value);
+                                        renderAll();
+                                    },
+                                },
+                                [1, 2, 3, 4].map((n) =>
+                                    el('option', { selected: (node.columns ?? 1) === n }, String(n))
+                                )
+                            )
+                        ),
+                        node.kind === 'card' ? toggle('Show title', true) : ''
+                    ),
+                    grp(
+                        'visibility',
+                        'Visibility and help',
+                        3,
+                        node.kind === 'section'
+                            ? toggle('Starts folded', false)
+                            : toggle('Readers can fold it', false),
+                        setting(
+                            'Show only when',
+                            el('input', { placeholder: 'value key = value' }),
+                            { help: true }
+                        ),
+                        setting(
+                            'Documentation link',
+                            el('input', { placeholder: '/docs/… or https://…' }),
+                            { help: true }
+                        )
+                    )
+                );
+            }
+            function groupBefore(node) {
+                return el(
+                    'div',
+                    {},
+                    el(
+                        'div',
+                        { class: 'actions' },
+                        ['Move up', 'Move down', 'Duplicate', 'Remove'].map((label) =>
+                            el('button', { class: 'btn' }, label)
+                        )
+                    ),
+                    el(
+                        'div',
+                        { class: 'before-card' },
+                        el(
+                            'div',
+                            { class: 'small' },
+                            node.kind === 'section' ? 'Section' : 'Field group'
+                        ),
+                        el('input', {
+                            value: node.title,
+                            placeholder: node.kind === 'section' ? 'Section title' : 'Group title',
+                        }),
+                        el('input', { placeholder: 'Documentation link' }),
+                        el(
+                            'label',
+                            { class: 'toggle small' },
+                            el('input', { type: 'checkbox' }),
+                            node.kind === 'section' ? 'Starts collapsed' : 'Collapsible'
+                        ),
+                        el(
+                            'div',
+                            { class: 'small' },
+                            'No way to turn a section into a group or back: remove it and add the other one.'
+                        )
+                    )
+                );
+            }
+
+            // ---------- Settings: List ----------
+            function listAfter(node) {
+                const tableOff = node.catalog
+                    ? 'Not for lists with catalog suggestions or a game’s own list.'
+                    : undefined;
+                const switchKind = (kind) => {
+                    if (kind === node.kind) return;
+                    if (kind === 'entries' && node.columns.length > 1) {
+                        const dropped = node.columns.slice(1).join(', ');
+                        if (
+                            !window.confirm(
+                                `Entries keep one value per entry. The columns ${dropped} will be removed. Continue?`
+                            )
+                        )
+                            return renderSettings();
+                    }
+                    snapshot();
+                    if (kind === 'table') {
+                        node.columns = [node.entryLabel || 'Value'];
+                        node.sample = node.sample.map(([name]) => [name]);
+                    } else {
+                        node.entryLabel = node.columns[0] ?? '';
+                        node.sample = node.sample.map((row) => [row[0], 1]);
+                    }
+                    node.kind = kind;
+                    renderAll();
+                };
+                const moveCol = (i, d) => {
+                    snapshot();
+                    const [c] = node.columns.splice(i, 1);
+                    node.columns.splice(i + d, 0, c);
+                    for (const row of node.sample) {
+                        const [v] = row.splice(i, 1);
+                        row.splice(i + d, 0, v);
+                    }
+                    renderAll();
+                    document.querySelector(`[data-setting="col-${i + d}"]`)?.focus();
+                };
+                const content =
+                    node.kind === 'table'
+                        ? setting(
+                              'Columns',
+                              el(
+                                  'div',
+                                  { class: 'cols' },
+                                  node.columns.map((c, i) =>
+                                      el(
+                                          'div',
+                                          { class: 'col-row mv' },
+                                          el(
+                                              'span',
+                                              { class: 'grip', title: 'Drag to reorder' },
+                                              '⋮⋮'
+                                          ),
+                                          textInput(c, (v) => (node.columns[i] = v), {
+                                              'data-setting': `col-${i}`,
+                                              'aria-label': `Column ${i + 1} label`,
+                                          }),
+                                          el(
+                                              'button',
+                                              {
+                                                  title: `Move ${c || 'column'} left`,
+                                                  disabled: i === 0,
+                                                  onclick: () => moveCol(i, -1),
+                                              },
+                                              '↑'
+                                          ),
+                                          el(
+                                              'button',
+                                              {
+                                                  title: `Move ${c || 'column'} right`,
+                                                  disabled: i === node.columns.length - 1,
+                                                  onclick: () => moveCol(i, 1),
+                                              },
+                                              '↓'
+                                          )
+                                      )
+                                  ),
+                                  el(
+                                      'button',
+                                      {
+                                          class: 'btn',
+                                          onclick: () => {
+                                              snapshot();
+                                              node.columns.push('Column');
+                                              renderAll();
+                                          },
+                                      },
+                                      '+ Add column'
+                                  )
+                              ),
+                              {
+                                  hint: 'Order here is the order on the page. Filled values stay with their column.',
+                              }
+                          )
+                        : setting(
+                              'Entry field label',
+                              textInput(node.entryLabel, (v) => (node.entryLabel = v), {
+                                  'data-setting': 'entryLabel',
+                                  placeholder: 'e.g. Skill',
+                              }),
+                              {
+                                  bad: !node.entryLabel.trim(),
+                                  hint: 'What one entry is called; shown to readers and screen readers.',
+                              }
+                          );
+                return el(
+                    'div',
+                    {},
+                    elementHead('List · ' + KIND_NAMES[node.kind], node.title),
+                    grp(
+                        'content',
+                        'Content',
+                        3,
+                        setting(
+                            'Title',
+                            textInput(node.title, (v) => (node.title = v), {
+                                'data-setting': 'title',
+                            })
+                        ),
+                        kindChoice(
+                            'Kind',
+                            node.kind,
+                            [
+                                {
+                                    value: 'entries',
+                                    label: 'Entries',
+                                    hint: 'Added one by one, one value each; can suggest catalog entries.',
+                                },
+                                {
+                                    value: 'table',
+                                    label: 'Table',
+                                    hint: 'Rows with the same columns.',
+                                    disabled: tableOff,
+                                },
+                            ],
+                            switchKind
+                        ),
+                        content
+                    ),
+                    grp(
+                        'value',
+                        'Value',
+                        1,
+                        setting(
+                            'Value key',
+                            el(
+                                'div',
+                                { class: 'key-box' },
+                                el('span', { class: 'pre' }, '#'),
+                                el('input', { value: node.key })
+                            ),
+                            { help: true }
+                        )
+                    ),
+                    grp('look', 'Look', 2, toggle('Show title', true), toggle('Framed card', true)),
+                    grp(
+                        'visibility',
+                        'Visibility and help',
+                        1,
+                        setting(
+                            'Show only when',
+                            el('input', { placeholder: 'value key = value' }),
+                            { help: true }
+                        )
+                    )
+                );
+            }
+            function listBefore(node) {
+                return el(
+                    'div',
+                    {},
+                    el(
+                        'div',
+                        { class: 'actions' },
+                        ['Move up', 'Move down', 'Duplicate', 'Remove'].map((label) =>
+                            el('button', { class: 'btn' }, label)
+                        )
+                    ),
+                    el(
+                        'div',
+                        { class: 'before-card' },
+                        el('div', { class: 'small' }, node.kind === 'table' ? 'Table' : 'List'),
+                        el('input', { value: node.title, placeholder: 'Title' }),
+                        node.kind === 'table'
+                            ? el(
+                                  'div',
+                                  { class: 'cols' },
+                                  node.columns.map((c) =>
+                                      el(
+                                          'div',
+                                          { class: 'col-row' },
+                                          el('input', { value: c, placeholder: 'Field label' }),
+                                          el('button', { class: 'btn' }, '✕')
+                                      )
+                                  ),
+                                  el('div', { class: 'small' }, 'Columns cannot be reordered.')
+                              )
+                            : el(
+                                  'details',
+                                  { open: true },
+                                  el('summary', { class: 'small' }, 'Entry'),
+                                  el('input', {
+                                      value: node.entryLabel,
+                                      placeholder: 'Field label',
+                                  })
+                              )
+                    )
+                );
+            }
+
             function renderSettings() {
                 const host = document.getElementById('settings');
-                const field = fields[selected];
-                if (!field) {
-                    const found = findGroup(selected);
-                    const title =
-                        found?.group.title ??
-                        model.sections.find((s) => s.id === selected)?.title ??
-                        '';
-                    host.replaceChildren(
-                        el(
-                            'p',
-                            { class: 'small' },
-                            `“${title}” is selected. Select a trait such as Willpower to compare the field settings.`
-                        )
-                    );
-                    return;
-                }
-                host.replaceChildren(mode === 'after' ? renderAfter(field) : renderBefore(field));
-                if (mode === 'after') renderIssueBadges();
+                const found = findNode(selected);
+                let content;
+                if (fields[selected])
+                    content =
+                        mode === 'after'
+                            ? ratingAfter(fields[selected])
+                            : ratingBefore(fields[selected]);
+                else if (found?.node.el === 'group')
+                    content = mode === 'after' ? groupAfter(found.node) : groupBefore(found.node);
+                else if (found?.node.el === 'list')
+                    content = mode === 'after' ? listAfter(found.node) : listBefore(found.node);
+                else content = el('p', { class: 'small' }, 'Select an element.');
+                host.replaceChildren(content);
             }
             for (const [id, value] of [
                 ['mode-before', 'before'],
@@ -1504,14 +2321,69 @@
                     document
                         .getElementById('mode-after')
                         .setAttribute('aria-pressed', String(mode === 'after'));
-                    renderSettings();
+                    closeMenu();
+                    renderAll();
                 };
             }
+
+            // ---------- Add menu ----------
+            let menu = null;
+            function closeMenu() {
+                menu?.remove();
+                menu = null;
+            }
+            document.getElementById('add').onclick = (event) => {
+                event.stopPropagation();
+                if (menu) return closeMenu();
+                const options =
+                    mode === 'after'
+                        ? [
+                              ['Group', 'A block that gathers elements: a section or a card.'],
+                              ['Field', 'One value: text, number, rating, choice, formula…'],
+                              [
+                                  'List',
+                                  'Entries the player adds: one value each, or a table of columns.',
+                              ],
+                              ['Tracker', 'Boxes to mark by level: health, stress, any burden.'],
+                          ]
+                        : [
+                              ['Section', 'Collapsible page block with a heading'],
+                              ['Field group', 'Titled card that groups elements'],
+                              ['Field', 'One value: text, number, rating, choice, formula…'],
+                              ['Table', 'Rows of values sharing the same columns'],
+                              [
+                                  'List',
+                                  'Entries added one by one: custom, skills, merits, equipment…',
+                              ],
+                              [
+                                  'Tracker',
+                                  'Boxes to mark by level: health, stress, or any other burden',
+                              ],
+                          ];
+                menu = el(
+                    'div',
+                    { class: 'add-menu', role: 'menu' },
+                    options.map(([label, hint]) =>
+                        el(
+                            'button',
+                            { role: 'menuitem', onclick: closeMenu },
+                            el('b', {}, label),
+                            el('small', {}, hint)
+                        )
+                    )
+                );
+                event.currentTarget.parentElement.append(menu);
+            };
+            document.addEventListener('click', (event) => {
+                if (menu && !menu.contains(event.target)) closeMenu();
+            });
 
             function renderAll(drop) {
                 renderPage();
                 renderOutline(drop);
                 renderSettings();
+                renderIssues();
+                renderSheet();
             }
 
             // ---------- Drag with live placement ----------
@@ -1521,24 +2393,24 @@
             document.getElementById('page').addEventListener('pointerdown', (event) => {
                 if (event.button !== 0) return;
                 const handle = event.target.closest('[data-drag]');
-                if (!handle) return;
-                // No text selection or native drag image: the pointer drives the move.
+                if (!handle) {
+                    const block = event.target.closest('.block');
+                    if (block) select(block.dataset.block);
+                    return;
+                }
                 event.preventDefault();
-                const kind = handle.dataset.drag;
-                const id = handle.dataset.id;
                 drag = {
-                    kind,
-                    id,
+                    kind: handle.dataset.drag,
+                    id: handle.dataset.id,
                     startX: event.clientX,
                     startY: event.clientY,
                     started: false,
-                    node: kind === 'item' ? handle : handle.parentElement,
+                    node: handle.dataset.drag === 'item' ? handle : handle.parentElement,
                     target: null,
                     previewed: null,
                     timer: 0,
                 };
             });
-
             window.addEventListener('pointermove', (event) => {
                 if (!drag) return;
                 if (!drag.started) {
@@ -1553,12 +2425,12 @@
                 updateTarget();
                 autoScroll();
             });
-
             window.addEventListener('pointerup', () => {
                 if (!drag) return;
                 if (!drag.started) {
-                    select(drag.id);
+                    const id = drag.id;
                     drag = null;
+                    select(id);
                     return;
                 }
                 finish(true);
@@ -1572,23 +2444,17 @@
             function startDrag() {
                 drag.started = true;
                 document.body.classList.add('dragging');
-                drag.origin = {
-                    parent: drag.node.parentElement,
-                    next: drag.node.nextElementSibling,
-                };
+                drag.origin = { parent: drag.node.parentElement };
                 drag.node.classList.add('origin');
-                drag.ghost = el(
-                    'div',
-                    { class: 'ghost' },
-                    drag.kind === 'item' ? fields[drag.id].label : findGroup(drag.id).group.title
-                );
+                const name =
+                    drag.kind === 'item' ? fields[drag.id].label : findNode(drag.id).node.title;
+                drag.ghost = el('div', { class: 'ghost' }, name);
                 drag.marker = el('div', { class: 'drop-marker' });
+                drag.marker.hidden = true;
                 drag.dwell = dwellRing();
                 document.body.append(drag.ghost, drag.dwell);
                 document.getElementById('page').append(drag.marker);
-                drag.marker.hidden = true;
             }
-
             function dwellRing() {
                 const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                 svg.setAttribute('viewBox', '0 0 20 20');
@@ -1599,8 +2465,13 @@
                 svg.style.display = 'none';
                 return svg;
             }
-
-            /** The nearest allowed position for the dragged element under the pointer. */
+            /** Blocks may not go into themselves or their own content. */
+            function insideDragged(container) {
+                return (
+                    drag.kind === 'block' &&
+                    (container.dataset.id === drag.id || drag.node.contains(container))
+                );
+            }
             function nearestTarget(x, y) {
                 drag.ghost.style.display = 'none';
                 const under = document.elementFromPoint(x, y);
@@ -1608,21 +2479,21 @@
                 if (!under || !document.getElementById('page').contains(under)) return null;
 
                 if (drag.kind === 'item') {
-                    let body = under.closest('[data-container="group"]');
+                    let body = under.closest('[data-container="items"]');
+                    if (!body)
+                        body = under
+                            .closest('.block')
+                            ?.querySelector(':scope > [data-container="items"]');
                     if (!body) {
-                        const group = under.closest('.group');
-                        if (group) body = group.querySelector('[data-container="group"]');
-                    }
-                    if (!body) {
-                        // Between groups: the nearest group of that section.
-                        const grid = under.closest('[data-container="section"]');
+                        const grid = under.closest('[data-container="blocks"]');
                         if (!grid) return null;
                         let best = null;
-                        for (const candidate of grid.querySelectorAll('[data-container="group"]')) {
+                        for (const candidate of grid.querySelectorAll('[data-container="items"]')) {
                             const r = candidate.getBoundingClientRect();
-                            const dx = Math.max(r.left - x, 0, x - r.right);
-                            const dy = Math.max(r.top - y, 0, y - r.bottom);
-                            const d = Math.hypot(dx, dy);
+                            const d = Math.hypot(
+                                Math.max(r.left - x, 0, x - r.right),
+                                Math.max(r.top - y, 0, y - r.bottom)
+                            );
                             if (!best || d < best.d) best = { d, candidate };
                         }
                         body = best?.candidate;
@@ -1639,13 +2510,15 @@
                             break;
                         }
                     }
-                    return { kind: 'group', container: body.dataset.id, index, body, rows };
+                    return { kind: 'items', container: body.dataset.id, index, body, rows };
                 }
 
-                const grid = under.closest('[data-container="section"]');
+                let grid = under.closest('[data-container="blocks"]');
+                while (grid && insideDragged(grid))
+                    grid = grid.parentElement.closest('[data-container="blocks"]');
                 if (!grid) return null;
                 const cards = [...grid.children].filter(
-                    (c) => c.matches('.group:not(.origin-collapsed)') && c.dataset.group !== drag.id
+                    (c) => c.matches('.block:not(.origin-collapsed)') && c.dataset.block !== drag.id
                 );
                 let index = cards.length;
                 let best = null;
@@ -1654,16 +2527,26 @@
                     const d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
                     if (!best || d < best.d) best = { d, i, r };
                 });
-                if (best) index = x < best.r.left + best.r.width / 2 ? best.i : best.i + 1;
+                if (best) {
+                    const vertical =
+                        grid.dataset.id === 'root' ||
+                        getComputedStyle(grid).gridTemplateColumns.split(' ').length === 1;
+                    const before = vertical
+                        ? y < best.r.top + best.r.height / 2
+                        : x < best.r.left + best.r.width / 2;
+                    index = before ? best.i : best.i + 1;
+                }
                 return {
-                    kind: 'section',
+                    kind: 'blocks',
                     container: grid.dataset.id,
                     index,
                     body: grid,
                     rows: cards,
+                    vertical:
+                        grid.dataset.id === 'root' ||
+                        getComputedStyle(grid).gridTemplateColumns.split(' ').length === 1,
                 };
             }
-
             const same = (a, b) => a && b && a.container === b.container && a.index === b.index;
 
             function updateTarget() {
@@ -1686,19 +2569,25 @@
                 startDwell();
                 drag.timer = setTimeout(() => preview(target), DWELL_MS);
             }
-
             function placeMarker(target) {
                 const page = document.getElementById('page').getBoundingClientRect();
-                const { body, rows, index, kind } = target;
+                const { body, rows, index } = target;
                 body.classList.add('drop-container');
                 const marker = drag.marker;
                 marker.hidden = false;
-                if (kind === 'group') {
+                const horizontal = target.kind === 'items' || target.vertical;
+                if (horizontal) {
                     const b = body.getBoundingClientRect();
                     let y;
                     if (rows.length === 0) y = b.top + 12;
-                    else if (index < rows.length) y = rows[index].getBoundingClientRect().top - 1;
-                    else y = rows[rows.length - 1].getBoundingClientRect().bottom + 1;
+                    else if (index < rows.length)
+                        y =
+                            rows[index].getBoundingClientRect().top -
+                            (target.kind === 'items' ? 1 : 7);
+                    else
+                        y =
+                            rows[rows.length - 1].getBoundingClientRect().bottom +
+                            (target.kind === 'items' ? 1 : 7);
                     marker.className = 'drop-marker';
                     marker.style.left = b.left - page.left + 'px';
                     marker.style.width = b.width + 'px';
@@ -1717,7 +2606,6 @@
                     marker.style.width = '';
                 }
             }
-
             function startDwell() {
                 const ring = drag.dwell;
                 ring.style.display = '';
@@ -1731,24 +2619,19 @@
                     arc.style.strokeDashoffset = '0';
                 });
             }
-
-            /** Moves the real element into place so the page lays out as after the drop. */
             function preview(target) {
                 if (!drag || !same(target, drag.target)) return;
-                const { body, rows, index } = target;
                 drag.placeholder = el('div', {
                     class: drag.node.className.replace('selected-el', '') + ' origin-collapsed',
                 });
                 drag.origin.parent.insertBefore(drag.placeholder, drag.node);
                 drag.node.classList.remove('origin');
                 drag.node.classList.add('previewing');
-                const before = rows[index] ?? null;
-                body.insertBefore(drag.node, before);
+                target.body.insertBefore(drag.node, target.rows[target.index] ?? null);
                 drag.previewed = target;
                 drag.marker.hidden = true;
                 drag.dwell.style.display = 'none';
             }
-
             function undoPreview() {
                 if (!drag.previewed) return;
                 drag.placeholder.replaceWith(drag.node);
@@ -1756,7 +2639,6 @@
                 drag.node.classList.add('origin');
                 drag.previewed = null;
             }
-
             function finish(commit) {
                 clearTimeout(drag.timer);
                 cancelAnimationFrame(drag.scroll);
@@ -1770,21 +2652,22 @@
                 if (target) {
                     snapshot();
                     if (kind === 'item') {
-                        const from = groupOfItem(id);
+                        const from = containerOfItem(id);
                         from.items.splice(from.items.indexOf(id), 1);
-                        findGroup(target.container).group.items.splice(target.index, 0, id);
+                        findNode(target.container).node.items.splice(target.index, 0, id);
                     } else {
-                        const from = findGroup(id);
-                        from.section.groups.splice(from.section.groups.indexOf(from.group), 1);
-                        model.sections
-                            .find((s) => s.id === target.container)
-                            .groups.splice(target.index, 0, from.group);
+                        const from = findNode(id);
+                        from.list.splice(from.list.indexOf(from.node), 1);
+                        const into =
+                            target.container === 'root'
+                                ? model.root
+                                : findNode(target.container).node.children;
+                        into.splice(target.index, 0, from.node);
                     }
                     selected = id;
                 }
                 renderAll();
             }
-
             function autoScroll() {
                 cancelAnimationFrame(drag.scroll);
                 const area = document.getElementById('page-area');
@@ -1806,8 +2689,127 @@
                 drag.scroll = requestAnimationFrame(step);
             }
 
+            // ---------- Player sheet: reorder rows ----------
+            let movedRow = -1;
+            function renderSheet() {
+                const gear = findNode('gear')?.node;
+                const host = document.getElementById('sheet-demo');
+                if (!gear)
+                    return host.replaceChildren(
+                        el('p', { class: 'small' }, 'The “Gear” list was removed.')
+                    );
+                if (gear.kind !== 'table')
+                    return host.replaceChildren(
+                        el(
+                            'p',
+                            { class: 'small' },
+                            '“Gear” is a list of entries now; switch it back to Table to see rows.'
+                        )
+                    );
+                const move = (i, d) => {
+                    const [row] = gear.sample.splice(i, 1);
+                    gear.sample.splice(i + d, 0, row);
+                    movedRow = i + d;
+                    renderSheet();
+                    renderPage();
+                    host.querySelector(`[data-row="${i + d}"] button[data-dir="${d}"]`)?.focus() ??
+                        host.querySelector(`[data-row="${i + d}"] button:not(:disabled)`)?.focus();
+                };
+                const before = mode === 'before';
+                host.replaceChildren(
+                    el('div', { style: 'font-weight:600;margin-bottom:6px' }, gear.title),
+                    el(
+                        'table',
+                        { class: 'tbl' },
+                        el(
+                            'thead',
+                            {},
+                            el(
+                                'tr',
+                                {},
+                                before
+                                    ? ''
+                                    : el(
+                                          'th',
+                                          { scope: 'col' },
+                                          el(
+                                              'span',
+                                              { class: 'small', style: 'font-weight:400' },
+                                              'Order'
+                                          )
+                                      ),
+                                gear.columns.map((c) => el('th', { scope: 'col' }, c))
+                            )
+                        ),
+                        el(
+                            'tbody',
+                            {},
+                            gear.sample.map((row, i) =>
+                                el(
+                                    'tr',
+                                    { 'data-row': i, class: movedRow === i ? 'moved' : '' },
+                                    before
+                                        ? ''
+                                        : el(
+                                              'td',
+                                              { class: 'mv' },
+                                              el(
+                                                  'span',
+                                                  { class: 'grip', title: 'Drag to reorder' },
+                                                  '⋮⋮'
+                                              ),
+                                              el(
+                                                  'button',
+                                                  {
+                                                      'data-dir': -1,
+                                                      'aria-label': `Move ${row[0] || 'row'} up`,
+                                                      disabled: i === 0,
+                                                      onclick: () => move(i, -1),
+                                                  },
+                                                  '↑'
+                                              ),
+                                              ' ',
+                                              el(
+                                                  'button',
+                                                  {
+                                                      'data-dir': 1,
+                                                      'aria-label': `Move ${row[0] || 'row'} down`,
+                                                      disabled: i === gear.sample.length - 1,
+                                                      onclick: () => move(i, 1),
+                                                  },
+                                                  '↓'
+                                              )
+                                          ),
+                                    gear.columns.map((_, c) => el('td', {}, row[c] ?? ''))
+                                )
+                            )
+                        )
+                    ),
+                    el(
+                        'div',
+                        { class: 'line', style: 'margin-top:8px' },
+                        el(
+                            'button',
+                            {
+                                class: 'btn',
+                                onclick: () => {
+                                    gear.sample.push([`Item ${gear.sample.length + 1}`, '1', '']);
+                                    renderSheet();
+                                    renderPage();
+                                },
+                            },
+                            '+ Add row'
+                        ),
+                        before
+                            ? el('span', { class: 'small' }, 'Today rows cannot be reordered.')
+                            : ''
+                    )
+                );
+                movedRow = -1;
+            }
+
             // ---------- Resizable areas ----------
-            const LIMITS = { left: [160, 420, 240], right: [260, 520, 320] };
+            const LIMITS = { left: [160, 420, 240], right: [240, 520, 320] };
             const PAGE_MIN = 360;
             const STORE = 'ttgamer-editor-widths-prototype';
             const widths = { left: LIMITS.left[2], right: LIMITS.right[2] };
@@ -1817,7 +2819,6 @@
                 // Storage blocked: defaults.
             }
             const areas = document.getElementById('areas');
-
             function fit(side, value) {
                 const [min, max] = LIMITS[side];
                 const other = side === 'left' ? widths.right : widths.left;

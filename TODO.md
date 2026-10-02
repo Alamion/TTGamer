@@ -186,6 +186,11 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [ ] ⬜ **T-093 — Element context menu and shortcut list in the template editor** (none) — template authors find the editor's actions without knowing the keys: a right click (long press on touch) on an element opens copy, paste, duplicate, delete, and move, each showing its shortcut, and the editor's help lists every shortcut. (task for roadmap path `gm-notes-templates`)
     - 2026-10-02: proposed with the player feedback behind T-089–T-092; shortcuts today are only discoverable in the guide.
 
+- [ ] 🟡 **T-094 — Reorder table columns, rows, and list entries** (none) — template authors reorder a table's columns in the editor, and players reorder the rows of tables and the entries of lists they filled in on the sheet. (task for roadmap path `gm-notes-templates`)
+    - 2026-10-02: player feedback; planned in spec 022 (User Story 5).
+- [ ] 🟡 **T-095 — Fewer template element kinds** (none) — template authors choose from four elements instead of six: Group (kind Section or Card) replaces section and group, List (kind Entries or Table) replaces list and table; stored templates keep their shape. (task for roadmap path `gm-notes-templates`)
+    - 2026-10-02: maintainer proposal after player feedback; planned in spec 022 (User Story 6).
+
 ### Localization
 
 - [x] ✅ **T-020 — YAML i18n foundation** (none) — contributors edit canonical English/Russian YAML sources that generate typed adapters with locale/key/placeholder validation and a status command; the Base-sheet/attribute-name pilot is done.
