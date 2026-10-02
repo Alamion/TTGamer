@@ -340,21 +340,21 @@ stash)`, `switchListKind(node, kind, stash)` returning `{ node, dropped }`, `tab
 
 ## Phase 9: Polish & cross-cutting
 
-- [ ] T036 [P] Guide: update `docs/template-editor/index.mdx` (areas and widths, dragging with the
+- [x] T036 [P] Guide: update `docs/template-editor/index.mdx` (areas and widths, dragging with the
       preview, the issue list) and `docs/template-editor/elements.mdx` (Group and List kinds and
       switching, settings groups, formula fields, column order, row order on the sheet) and their
       Russian mirrors under `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/`, keeping
       the anchors `#sections`, `#groups`, `#tables`, `#lists`; `yarn validate:i18n`.
-- [ ] T037 [P] Notes: `src/sheet_manager/AGENTS.md` (settings parts and groups, issues with settings
+- [x] T037 [P] Notes: `src/sheet_manager/AGENTS.md` (settings parts and groups, issues with settings
       and the schema backstop, pointer drag, element kinds as presentation) and
       `.agents/skills/sheet-templates/SKILL.md`; add historical notes where spec 012/014 describe the
       old drag or panel.
-- [ ] T038 [P] Backlog: close F-007 and F-008 in `TOFIX.md` (remove entries), mark T-091, T-092, T-094,
+- [x] T038 [P] Backlog: close F-007 and F-008 in `TOFIX.md` (remove entries), mark T-091, T-092, T-094,
       T-095 ✅ in `TODO.md` with a dated note; `yarn validate:backlog`.
-- [ ] T039 `CHANGELOG.md` v3.20.0 (minor feat entries per story) and `package.json` 3.20.0;
+- [x] T039 `CHANGELOG.md` v3.20.0 (minor feat entries per story) and `package.json` 3.20.0;
       `yarn check:version`.
-- [ ] T040 Run `yarn verify:full`; fix findings (knip: removed HTML5 helpers and old exports).
-- [ ] T041 Walk `quickstart.md` §2–§7 on the dev server with `playwright-cli` (reuse the running
+- [x] T040 Run `yarn verify:full`; fix findings (knip: removed HTML5 helpers and old exports).
+- [x] T041 Walk `quickstart.md` §2–§7 on the dev server with `playwright-cli` (reuse the running
       server); record results and refinements in `research.md`; leave SC-001/SC-002/SC-008 people
       checks for the maintainer's review.
 

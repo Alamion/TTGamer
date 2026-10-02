@@ -8,7 +8,7 @@ import type { OverlayPlacement } from '../../../features/sheet/declarative/edito
 import type { TemplateNode } from '../../../types/template';
 import { isContainerNode } from '../../../types/template';
 import { useEditorActions, useEditorSelection } from './editorActions';
-import { nodeDisplayName, nodeKindLabel } from './ElementSettings';
+import { nodeDisplayName, nodeKindLabel, nodeKindShort } from './ElementSettings';
 import { slotKey, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -66,8 +66,13 @@ const OutlineItem = memo(function OutlineItem({
                     onClick={() => actions.select(node.id, 'outline')}
                     className="flex min-w-0 flex-1 items-baseline gap-2 py-1 text-left"
                 >
-                    <span className="w-14 shrink-0 truncate text-[10px] uppercase tracking-wide opacity-70">
-                        {nodeKindLabel(node)}
+                    <span
+                        className="w-14 shrink-0 truncate text-[10px] uppercase tracking-wide opacity-70"
+                        title={nodeKindLabel(node)}
+                    >
+                        {/* A narrow column: groups and lists show their kind, read in full. */}
+                        <span aria-hidden="true">{nodeKindShort(node)}</span>
+                        <span className="sr-only">{nodeKindLabel(node)}</span>
                     </span>
                     <span className="truncate">{name}</span>
                 </button>

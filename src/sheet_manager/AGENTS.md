@@ -12,7 +12,8 @@ src/sheet_manager/
 │   ├── controls/             # generic inputs: checkbox, textarea, catalog picker
 │   ├── dialogs/              # create/manage/confirm/import-conflict/library/editor modal flows
 │   │   ├── library/          # library tree, details, move, export and import panels (spec 013)
-│   │   └── template-editor/  # template editor subcomponents + pure draft model
+│   │   └── template-editor/  # template editor subcomponents + pure draft model;
+│   │                         # settings/ holds the grouped settings building blocks
 │   ├── sections/             # collapsible panels, cards, tables
 │   └── stat-fields/          # atomic traits, dots, labels, Force and merit/flaw rows
 ├── context/                  # read-only CharacterContext
@@ -163,6 +164,11 @@ duplicate template facts here. Invariants that must never be broken:
   catalog, broken formula) reports through `diagnostics.ts` `reportSheetIssue`. Silent fallbacks
   are bugs.
 - A template change is not done until the skill reflects it.
+- Editor element kinds (Group · Section/Card, List · Entries/Table, spec 022) are presentation:
+  stored node types stay `section`, `group`, `list`, `table`, and switching never migrates
+  document values (the save asks when values of the earlier kind exist).
+- Every editor setting has a visible label and a `data-setting` key; draft issues point at it.
+  A schema rule a save finds without a specific check reports `template-draft-invalid`.
 
 ## Derived State
 

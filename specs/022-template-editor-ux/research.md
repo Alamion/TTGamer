@@ -193,3 +193,34 @@ settings}` in px, try/catch) and a `PaneDivider` (`role="separator"`, `aria-orie
   (Group and List kinds, column order, row order) in English and Russian, keeping the anchors
   `#sections`, `#groups`, `#tables`, `#lists`. The storybook needs no new element variants (node
   types are unchanged); its editable tables and lists show the new move controls, and its tags stay.
+
+## Implementation results (2026-10-02)
+
+Quickstart walk on the dev server (Chromium through `playwright-cli`, 1600×1000 and 420×900),
+full Star Wars sheet:
+
+- **§2 Settings panel**: actions above "Built-in page part · Willpower"; groups in order; Look and
+  Visibility start folded; Minimum from shows the fx box and "Reads passion, self-control.";
+  `curage + 2` in Maximum from shows "No value named “curage”." under the box, and the folded
+  Limits group reads "1 issue". Found and fixed: a folded group's body stayed visible (`hidden`
+  lost to the grid display class); the outline's kind column truncated "Group · …" (it now shows
+  the kind, with the full name for screen readers).
+- **§3 Save problems**: clicking the issue opened Limits and focused the Maximum from box.
+- **§4 Dragging** (real mouse): Strength dragged from Physical over Social marked the slot at
+  once, previewed after the pause with a dashed place in Physical, committed on release
+  ("Strength moved."), and one Undo restored it; Escape during a drag cancelled it without
+  asking to discard the editor.
+- **§5 Areas**: dragging the settings divider 120 px stored `{"outline":240,"settings":440}`;
+  at 420 px the tabs show and both dividers are hidden.
+- **§6 Order**: row controls show on the sample sheet's game lists; found and fixed: arrows did
+  not line up between the first, middle, and last rows (an absent button now keeps its place).
+  A list switched to Table shows column grips and arrows.
+- **§7 Kinds**: the add menu lists Group, Field, List, Tracker; a new list switched to Table
+  made its entry field the first column; the Merits game list shows Table disabled with its
+  reason.
+- **Timings**: a previewed move costs about what the same committed move costs (jsdom, full
+  sheet, best of two). Before the drag context was made stable, every frame re-rendered on a
+  preview and it cost twice as much.
+
+Left for the maintainer's review: SC-001 (three people find Maximum from), SC-002 (ten drags),
+SC-008 (the reported rating mix-up).

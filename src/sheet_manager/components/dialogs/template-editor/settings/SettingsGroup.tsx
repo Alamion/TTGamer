@@ -52,7 +52,8 @@ export function SettingsGroup({
                     </span>
                 )}
             </button>
-            <div id={bodyId} hidden={!expanded} className="grid gap-3 pb-3">
+            {/* `hidden` alone loses to the grid display class. */}
+            <div id={bodyId} hidden={!expanded} className={expanded ? 'grid gap-3 pb-3' : 'hidden'}>
                 {children}
             </div>
         </div>

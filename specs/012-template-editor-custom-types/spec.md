@@ -1,6 +1,6 @@
 # Feature Specification: Visual template editor and template-defined document types
 
-> **Change record.** Partly superseded by 013 (the library tree replaces the template library's type and setting controls; creating a type or setting no longer creates a page; library files supersede the type-file export). Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
+> **Change record.** Partly superseded by 013 (the library tree replaces the template library's type and setting controls; creating a type or setting no longer creates a page; library files supersede the type-file export) and by 022 (pointer drag with live placement replaces HTML5 drag; the settings panel is grouped; Section/Group and Table/List are kinds of Group and List; the editor areas resize). Current template behavior: `.agents/skills/sheet-templates/SKILL.md`.
 
 **Feature Branch**: `testing`
 

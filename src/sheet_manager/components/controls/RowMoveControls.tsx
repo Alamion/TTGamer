@@ -137,7 +137,9 @@ export function RowMoveControls({
             >
                 <GripVertical className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
-            <span className="grid">
+            {/* An absent button keeps its place, so arrows line up across rows. */}
+            <span className="grid grid-rows-2">
+                {index === 0 && <span aria-hidden="true" />}
                 {index > 0 && (
                     <button
                         type="button"
@@ -172,6 +174,7 @@ export function RowMoveControls({
                         <ChevronDown className="h-3 w-3" aria-hidden="true" />
                     </button>
                 )}
+                {index === count - 1 && <span aria-hidden="true" />}
             </span>
         </span>
     );

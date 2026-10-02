@@ -18,15 +18,33 @@ Every document opens on a page: which blocks it shows, where they sit, and which
 
 ## The three areas \{#areas}
 
-| Area         | What it is for                                                                                                 |
-| ------------ | -------------------------------------------------------------------------------------------------------------- |
-| **Outline**  | The tree of every element on the page. Click a row to select an element; drag the handle to move it.           |
-| **Page**     | The page exactly as a reader sees it, filled with sample data. Click an element to select it.                  |
-| **Settings** | Everything the selected element can do: its label, where its value is stored, layout, conditions, and actions. |
+| Area         | What it is for                                                                                           |
+| ------------ | -------------------------------------------------------------------------------------------------------- |
+| **Outline**  | The tree of every element on the page. Click a row to select an element; drag the handle to move it.     |
+| **Page**     | The page exactly as a reader sees it, filled with sample data. Click an element to select it.            |
+| **Settings** | Everything the selected element can do, in the same groups for every element: see [Settings](#settings). |
+
+Drag the line between two areas to make the outline or the settings wider; the page keeps at least the width of a phone. A focused line also moves with `←` and `→` (`Shift` for bigger steps), and `Home` or a double click puts it back. The widths are remembered on this device for every page you edit.
 
 On a narrow screen the three areas become tabs. Elements hidden by a display condition stay visible in the editor, hatched, so you can still select them.
 
 The sample data is only for looking: dots, boxes, and text you change on the editor's page never reach your documents.
+
+## Settings \{#settings}
+
+The settings of the selected element start with its actions (move up, move down, duplicate, remove), then its kind and full name. Below them the settings come in the same groups, in the same order, for every element; a group the element has nothing for is left out:
+
+| Group                   | What it holds                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------ |
+| **Content**             | What the element shows: its kind, title or label, help text, options, entries. |
+| **Value**               | Where the value is stored: the source, the value key, catalogs.                |
+| **Limits and formulas** | Bounds and every formula: minimum and maximum from values, derived values.     |
+| **Look**                | How it is drawn: columns, presentation, display, tracker look.                 |
+| **Visibility and help** | When it shows and what helps the reader: conditions, documentation, folding.   |
+
+Fold a group with its heading; the editor keeps the groups you opened while you select other elements. A folded group that holds a problem of the element shows how many.
+
+Every setting is named above its box. A formula box carries an **fx** mark and says right under it what the formula reads, or what is wrong with it. A value key starts with **#**: it is a name for the value, not text readers see.
 
 ## Edit and preview \{#preview}
 
@@ -40,8 +58,8 @@ The preview never changes the chosen document.
 
 ## Arranging elements \{#arranging}
 
-- **Add**: every **+** between elements and every empty column inserts a new element there — a section, a field group, a field, a table, a list, or a tracker.
-- **Move**: drag an element by its chip on the page or by its handle in the outline, into another place or another column.
+- **Add**: every **+** between elements and every empty column inserts a new element there — a [group](./elements#sections), a field, a [list](./elements#lists), or a tracker. A group added on the page is a section, inside another group a card.
+- **Move**: drag an element by its chip on the page or by its handle in the outline. A line marks the nearest place it can go — between elements, inside a group, or in an empty column — even while the pointer is over another element. Rest a moment, and the page shows the element in its new place, with a dashed line where it was. Release to move it (one step of **Undo**), or press `Escape` to leave everything as it was. Near the top or bottom edge the page scrolls. On touch screens use the move buttons in the settings.
 - **Keyboard**: the shortcuts work with any keyboard layout.
 
 | Keys                | Action                                           |
@@ -58,7 +76,7 @@ Undo covers every change since the editor opened; typing in one field counts as 
 
 ## Saving and issues \{#saving}
 
-Changes stay in the editor until you press **Save**. Above the button, the editor lists what would make the page break: an empty label, a formula that does not parse, a value it cannot find, a broken documentation link. Click an issue to select the element it belongs to. **Save** stays disabled until the list is empty.
+Changes stay in the editor until you press **Save**. Above the button, the editor lists what would make the page break, in plain words, naming the element: an empty label, a list entry or table column without a name, a formula that does not parse, a value it cannot find, a broken documentation link. Click an issue: the editor selects the element, opens its settings group, and puts the cursor in the setting to fix — inside a table column too. **Save** stays disabled while the list has such issues. If saving still finds a value that is not allowed, it says which element and setting, and nothing is saved.
 
 Closing the editor with unsaved changes asks before throwing them away.
 

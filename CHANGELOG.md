@@ -1,5 +1,16 @@
 # Changelog
 
+## v3.20.0
+
+### Minor feat
+
+- **A settings panel you can read (spec 022, F-007)**: every setting of the template editor has its name above its box, and the settings come in the same groups for every element — Content, Value, Limits and formulas, Look, Visibility and help; formula boxes carry an **fx** mark and say under the box what they read or what is wrong, value keys start with **#**, and the actions sit above the element's kind and full name so a narrow panel never hides it
+- **Every save problem leads to its setting (F-008)**: the issue list names the element in plain words — including a list's entry field and a table's columns — and a click opens the setting and puts the cursor in it; raw error text no longer appears, even for a problem the editor does not check itself
+- **Drag with live placement (T-091)**: dragging an element marks the nearest place it can go, and after a short rest the page shows it there with its old place dashed; release to move (one undo step), Escape to cancel; near the edges the page scrolls
+- **Resizable editor areas (T-092)**: drag the lines between the outline, the page, and the settings, or use the arrow keys; the widths are remembered, and a double click restores them
+- **Reorder columns, rows, and entries (T-094)**: authors move a table's columns in its settings; on the sheet, rows of tables and entries of lists — your own and the game's — move with a grip, arrows, or Alt+↑/↓, and the order is saved with the document
+- **Group and List (T-095)**: the editor offers four elements — Group, Field, List, Tracker; a group is a Section or a Card and a list holds Entries or a Table, and the **Kind** switch converts between them, keeping what fits and asking before it drops columns or hides values documents already hold; saved templates keep their shape
+
 ## v3.19.1
 
 ### Fix

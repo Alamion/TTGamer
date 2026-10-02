@@ -109,6 +109,12 @@ export function nodeKindLabel(node: TemplateNode): string {
     return translate(fieldTypes[node.type]);
 }
 
+/** The kind alone for groups and lists ("Section", "Table"), else the kind label. */
+export function nodeKindShort(node: TemplateNode): string {
+    const kind = elementKind(node);
+    return kind ? translate(KIND_NAMES[kind.kind]) : nodeKindLabel(node);
+}
+
 /** The kind of a group or list (spec 022, US6), a radio group in Content. */
 function KindChoice({
     blocked,

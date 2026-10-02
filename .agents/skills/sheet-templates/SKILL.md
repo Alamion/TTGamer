@@ -516,13 +516,29 @@ preferredViewId })`; creation flows ask `newDocumentPage` (`features/sheet/data/
 ## Editor (`components/dialogs/template-editor/`)
 
 Three areas (spec 012): **Outline** (`OutlineTree.tsx`), **Page** (`EditorPage.tsx`), and
-**Settings** (`ElementSettings.tsx`, the selected element only); below `md` they are tabs. The
-toolbar switches Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
+**Settings** (`ElementSettings.tsx`, the selected element only); below `md` they are tabs. On
+desktop two `PaneDivider`s (`role="separator"`, arrows / Shift / Home / double click) resize the
+side areas; `usePaneWidths` keeps them in localStorage `template-editor-panes` (outline 160–420,
+settings 260–560, page ≥ 360; only a CSS variable moves while dragging). The toolbar switches
+Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
 
 - `draft.ts`: `EditorDraft = CustomTemplate`; pure tree ops with structural sharing (`insertNode`,
   `moveNode`, `updateNode`, `removeNode`, `duplicateNode`, placement helpers `placeNode` /
-  `insertAtPlacement` / `materializeColumns`), node factories, and `collectDraftIssues` (issues
-  carry `nodeId`; two elements on one bridged system coordinate are not duplicates).
+  `insertAtPlacement` / `materializeColumns`), node factories, `moveTableColumn`, and
+  `collectDraftIssues` (spec 022): issues carry `nodeId` and `setting: { group, key }`, where
+  `key` is the control's `data-setting` (`label`, `maxFrom`, `entry.label`,
+  `column:<id>.<key>`, `option:<i>`, `preset:<i>`, `tracker`, …). `checkFieldSettings` runs the
+  same field checks on page fields, table columns, and list entry fields; column and entry
+  issues select their table or list. Formula wording comes from `checkFormulaInput`
+  (`features/sheet/data/formulaCheck.ts`), shared with the inline message under formula boxes.
+  Two elements on one bridged system coordinate are not duplicates.
+- `issues.ts`: `issueLocation(draft, zodPath)` maps a schema path to the nearest node and
+  setting; `useSchemaBackstop` parses the draft with `CustomTemplateSchema` on open and 300 ms
+  after typing pauses (~20 ms on the full sheet) and lists every rule the specific checks miss as
+  "{Setting} has a value that is not allowed". Save is disabled by specific issues only; a refused
+  save maps the Zod error the same way (raw schema text never reaches the author) and
+  `reportUncoveredIssues` reports `template-draft-invalid` — add a specific check for it. Issue
+  buttons call `goToIssue`: select, open the group, open `<details>`, focus `[data-setting]`.
   `duplicateNode` re-issues ids for nodes, table columns, and options, drops custom value keys,
   and keeps bridged coordinates.
 - `history.ts`: every change goes through the dialog's `change` / `applyOp` into a bounded (100)
@@ -545,14 +561,42 @@ toolbar switches Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
   unchanged — this keeps a keystroke on the full sheet ~40 ms in jsdom. One delegated click
   listener selects the innermost frame (value controls edit the sample); hover is one delegated
   `pointerover` setting `data-hover`.
-- `editorActions.ts`: stable `select` / `insertAt` / `moveTo` actions and the selection context;
-  the drag MIME type is `application/x-ttgamer-template-node`.
-- `AddElementMenu.tsx`: Radix popover of Section, Field group, Field, Table, List, Tracker; items
-  are built only while open (hundreds of slots).
-- `ElementSettings.tsx`: move / duplicate / delete actions plus the per-element controls
-  (`SourceControls.tsx`, `FieldEditor.tsx` incl. the reference kind picker,
-  `PrimitiveConfig.tsx`, `LayoutControls.tsx`, `TermHintControl.tsx`). The catalog picker lists
-  the draft system's catalogs only (validation stays global).
+- `editorActions.ts`: stable `select` / `insertAt` / `moveTo` actions and the selection context.
+- **Drag** (`useEditorDrag.ts`, spec 022): pointer events, mouse and pen only (touch uses the move
+  buttons). Grips (`data-drag-handle`, test ids `page-grip-<id>` / `grip-<id>`) start it; past
+  5 px `nearestPlacement` picks the nearest accepted slot of the innermost container under the
+  pointer (page: `[data-insert-slot]` keys `<parent|root>:<index>:<column|->` and frame
+  rectangles; outline: `[data-outline-slot]` rows); `placeNode` on the draft the surface shows
+  refuses own-subtree, depth, and no-op slots. After 320 ms on one target the page and outline
+  render the uncommitted result (`view.preview`; 8 px hysteresis); release commits it as one
+  history step, Escape / blur / pointercancel drop it. Marks are DOM attributes re-applied after
+  renders (`data-drop-target`, `data-origin-slot`, `data-previewing`); the context value is
+  stable so frames never re-render for a pointer move. `dragTransition` and `nearestPlacement`
+  are pure and unit-tested.
+- **Kinds** (`elementKinds.ts`, spec 022): presentation only — `section`/`group` are Group ·
+  Section / Card, `list`/`table` are List · Entries / Table (`nodeKindLabel`). `switchGroupKind`
+  and `switchListKind` convert (entry field ↔ first column; other column types become text) and
+  keep the other kind's settings in a per-dialog `KindStash`; `tableKindBlocked` refuses game and
+  catalog lists; dropping columns asks first; `kindChangeReport` joins the save confirmation
+  when documents hold values of the earlier kind.
+- `AddElementMenu.tsx`: Radix popover of Group (a section at the root, a card inside a
+  container), Field, List (entries), Tracker; items are built only while open.
+- `ElementSettings.tsx` (spec 022): the actions row above the kind chip and the full name, then
+  `mergeGroups` of settings parts in `SettingsGroup`s in the fixed order Content, Value, Limits
+  and formulas, Look, Visibility and help (empty groups skipped; open state per dialog session
+  through `SettingsGroupStateContext`; closed groups show issue counts from
+  `IssueGroupCountsContext`). Parts are plain functions returning `GroupedSettings`
+  (`fieldSettings` in `FieldEditor.tsx`, `primitiveSettings` in `PrimitiveConfig.tsx`, section,
+  group, table, list, and placement parts) — no hooks in them; the components they return may
+  use hooks. A fragment whose children are all nothing counts as empty, so a part must not return
+  a component that renders `null` (check first, as with `hasTermHint`). Building blocks in
+  `settings/`: `SettingField` (visible `<label htmlFor>` = accessible name, help link outside the
+  label, hint, message, `data-setting`), `FormulaField` (fx, monospace, coordinate datalist,
+  inline `checkFormulaInput` message), `KeyField` (`#`), one `inputClasses`. Row editors
+  (options, presets, columns, tracker marks) sit in `[data-setting-list]` and may name inputs by
+  `aria-label`. Table columns render a nested `FieldEditor` with keys prefixed
+  `column:<id>.`, the list entry field with `entry.`. The catalog picker lists the draft system's
+  catalogs only (validation stays global).
 - Editor performance rules: tree ops keep untouched nodes' identity; `localizeTemplate` caches
   localized nodes per locale by identity; `useTemplatePage` returns one memoized object; panels
   read draft-derived data from `EditorModelContext` / `EditorFillTargetsContext`; the coordinate
@@ -573,7 +617,14 @@ toolbar switches Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
   `EDITOR_GUIDE`; `tests/docs/template-editor-guide.test.ts` fails when an anchor disappears
   from either locale. A new or renamed setting worth explaining gets a guide section and a topic.
 - Test helpers: `tests/sheet_manager/helpers/editor.ts` (`resetEditorStores`, `pressShortcut`
-  with `code` + layout `key`, `dragNode`).
+  with `code` + layout `key`, `openSettingsGroups`, and pointer drags `startDrag` / `dragOver`
+  / `releaseDrag` / `dragNode`, which polyfill `PointerEvent` and stub slot rectangles).
+- **Row order on the sheet** (spec 022): `components/controls/RowMoveControls.tsx` (grip,
+  "Move {name} up/down", Alt+↑/↓ through `rowMoveKeys`, focus kept; rows `[data-reorder-row]`
+  inside `[data-reorder-list]`) serves template tables (`moveRow` rewrites row keys `0…n-1` with
+  `moveTableRow`), own lists (`moveItem` on `updateList`), game lists (`CustomTraitList` /
+  `MeritFlawList` `onMove`), system `RowsBody`, and the editor's table columns. Hidden when the
+  document is read-only.
 
 ## User document types and settings (spec 012)
 
@@ -675,7 +726,8 @@ array (ignored on import). Filenames: `ttgamer_template_<id>.json`.
   `template-fallback`, `reference-target-missing`, `reference-target-out-of-scope`,
   `catalog-detail-out-of-range`, `list-entry-unreadable`, `template-value-unreadable`,
   `template-value-hidden`,
-  `template-incompatible`.
+  `template-incompatible`, `library-placement`, `template-draft-invalid` (a save found a schema
+  rule no editor check covers).
 - In development each distinct issue is logged once as `[sheet_manager] <code>: …` in the
   browser console. **A silently ignored edit, an empty section, or a "degraded" card → check
   the console first.**
@@ -774,28 +826,30 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 
 ## Tests map (`tests/sheet_manager/`)
 
-| Concern                           | File                                                                                                                                                     |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Schema, tree guardrails           | `template-schema.test.ts`                                                                                                                                |
-| Value write path, validation      | `template-value-writes.test.ts`, `document-template-values.test.ts`                                                                                      |
-| Renderer, bridging, catalogs      | `declarative-sheet.test.tsx`, `shared-values.test.tsx`                                                                                                   |
-| Primitives, default renders       | `primitives.test.ts`, `primitive-parity.test.tsx`, `primitive-seeding.test.ts`                                                                           |
-| Entity bindings, catalog adapters | `entity-bindings.test.ts`                                                                                                                                |
-| Entity pages, fills, neutrality   | `entity-templates.test.tsx`, `cohort-track.test.tsx`, `reference-controls.test.tsx`                                                                      |
-| Documentation embeds, examples    | `docs-embeds.test.tsx`                                                                                                                                   |
-| Bindings, document source         | `document-bindings.test.ts`, `document-source.test.ts`                                                                                                   |
-| Lists, images                     | `template-lists-images.test.ts`                                                                                                                          |
-| Formulas                          | `template-formulas.test.ts`                                                                                                                              |
-| Defaults, overrides, resolution   | `default-templates.test.ts`, `built-in-templates.test.ts` (views = templates), `view-resolution.test.ts`                                                 |
-| Stores, quarantine                | `template-store.test.ts`, `template-store-migration.test.ts`                                                                                             |
-| Editor                            | `template-editor.test.tsx`, `template-editor-{page,arrange,preview,history,shortcuts,move-targets}.test.*`, `template-editor.perf.test.tsx`              |
-| User types, settings, files       | `user-document-types.test.{ts,tsx}`, `user-settings.test.tsx`, `type-file.test.ts`, `document-type-store.test.ts`                                        |
-| Library tree, moves, files, UI    | `library-{tree,moves,file,import}.test.ts`, `library-dialog.test.tsx`, `document-store-relocate.test.ts`, `systems/registry-rulesets.test.ts`            |
-| User catalogs                     | `user-catalogs.test.ts`, `catalog-edit.test.ts`, `catalog-use-sites.test.tsx`                                                                            |
-| WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                                    |
-| Trackers                          | `tracker-{schema,rules,changes}.test.ts`, `tracker-{field,builtin,parity,brush,from-start}.test.tsx`, `pool-tracker.test.ts(x)`, `cohort-track.test.tsx` |
-| References                        | `template-references.test.ts`, `reference-scope.test.{ts,tsx}` (setting scope, stale targets, imports)                                                   |
-| File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                                      |
+| Concern                           | File                                                                                                                                                       |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Schema, tree guardrails           | `template-schema.test.ts`                                                                                                                                  |
+| Value write path, validation      | `template-value-writes.test.ts`, `document-template-values.test.ts`                                                                                        |
+| Renderer, bridging, catalogs      | `declarative-sheet.test.tsx`, `shared-values.test.tsx`                                                                                                     |
+| Primitives, default renders       | `primitives.test.ts`, `primitive-parity.test.tsx`, `primitive-seeding.test.ts`                                                                             |
+| Entity bindings, catalog adapters | `entity-bindings.test.ts`                                                                                                                                  |
+| Entity pages, fills, neutrality   | `entity-templates.test.tsx`, `cohort-track.test.tsx`, `reference-controls.test.tsx`                                                                        |
+| Documentation embeds, examples    | `docs-embeds.test.tsx`                                                                                                                                     |
+| Bindings, document source         | `document-bindings.test.ts`, `document-source.test.ts`                                                                                                     |
+| Lists, images                     | `template-lists-images.test.ts`                                                                                                                            |
+| Formulas                          | `template-formulas.test.ts`                                                                                                                                |
+| Defaults, overrides, resolution   | `default-templates.test.ts`, `built-in-templates.test.ts` (views = templates), `view-resolution.test.ts`                                                   |
+| Stores, quarantine                | `template-store.test.ts`, `template-store-migration.test.ts`                                                                                               |
+| Editor                            | `template-editor.test.tsx`, `template-editor-{page,arrange,preview,history,shortcuts,move-targets,settings,panes}.test.*`, `template-editor.perf.test.tsx` |
+| Editor issues, drag, kinds        | `draft-issues-coverage.test.ts`, `issue-location.test.ts`, `formula-check.test.ts`, `editor-drag.test.ts`, `element-kinds.test.ts`                         |
+| Row and column order              | `table-list-order.test.tsx`                                                                                                                                |
+| User types, settings, files       | `user-document-types.test.{ts,tsx}`, `user-settings.test.tsx`, `type-file.test.ts`, `document-type-store.test.ts`                                          |
+| Library tree, moves, files, UI    | `library-{tree,moves,file,import}.test.ts`, `library-dialog.test.tsx`, `document-store-relocate.test.ts`, `systems/registry-rulesets.test.ts`              |
+| User catalogs                     | `user-catalogs.test.ts`, `catalog-edit.test.ts`, `catalog-use-sites.test.tsx`                                                                              |
+| WoD 2e ruleset, Star Wars parity  | `systems/wod2e/{star-wars-parity.test.ts,engine.test.tsx}` (fixture `fixtures/star-wars-parity.json`)                                                      |
+| Trackers                          | `tracker-{schema,rules,changes}.test.ts`, `tracker-{field,builtin,parity,brush,from-start}.test.tsx`, `pool-tracker.test.ts(x)`, `cohort-track.test.tsx`   |
+| References                        | `template-references.test.ts`, `reference-scope.test.{ts,tsx}` (setting scope, stale targets, imports)                                                     |
+| File format                       | `template-file.test.ts`, `catalog-bindings.test.ts`                                                                                                        |
 
 ## History (read for rationale only)
 
@@ -809,3 +863,4 @@ Setting-neutral layers (no system identifiers; guarded by `entity-templates.test
 | 008  | V5 ruleset + Hunter module, computed-length tracks, trait row options, plugin catalogs, policies/badges                                 | —                                                     |
 | 012  | Visual editor (outline/page/settings, history, shortcuts), user types and settings, type files, composite override keys, WoD 2e ruleset | Recursive panel editor, view-id override keys         |
 | 013  | Library tree (rules → settings → types → pages), moves, library files, default-page choice, tertiary accent                             | Page-template list, type-file export (→ library file) |
+| 022  | Grouped settings panel, issues with settings and schema backstop, pointer drag with preview, resizable areas, row/column order, kinds   | HTML5 drag, flat settings panel, six-item add menu    |
