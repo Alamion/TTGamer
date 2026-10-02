@@ -204,7 +204,7 @@ showed; one undo puts it back.
 
 ### Tests
 
-- [ ] T018 [P] [US2] Create `tests/sheet_manager/editor-drag.test.ts` for the pure parts:
+- [x] T018 [P] [US2] Create `tests/sheet_manager/editor-drag.test.ts` for the pure parts:
       `nearestPlacement(slots, point, excluded)` with fake rectangles (inside a container, between
       containers, empty column zones, excluded own subtree and no-op neighbours) and the drag state
       machine (pending → dragging after 5 px, previewing after 320 ms on the same target, hysteresis
@@ -212,25 +212,25 @@ showed; one undo puts it back.
 
 ### Implementation
 
-- [ ] T019 [US2] Create `TE/useEditorDrag.ts`: pointer controller per data-model.md `DragState`
+- [x] T019 [US2] Create `TE/useEditorDrag.ts`: pointer controller per data-model.md `DragState`
       (mouse and pen only; pointer capture on the grip; ghost label; timers; Escape, blur,
       pointercancel), `nearestPlacement` reading `[data-insert-slot]` and `[data-drop-zone]`
       rectangles inside the container under the pointer (parsing the existing slot keys), exclusion of
       the dragged subtree via `data-node-id` ancestry and of no-op slots, a dry-run `placeNode` for the
       depth rule, and autoscroll of the page area within 48 px of its edges.
-- [ ] T020 [US2] Wire it in Dialog and `TE/EditorPage.tsx`: while dragging, pass
+- [x] T020 [US2] Wire it in Dialog and `TE/EditorPage.tsx`: while dragging, pass
       `placeNode(draft, id, target)` as the page and outline draft once previewing (never committed),
       `originPlacement` for the old place, `dropTarget` for the marker; on release call
       `actions.moveTo`; announce through the existing live region.
-- [ ] T021 [P] [US2] In `TE/EditorNodeFrame.tsx` replace the native `draggable` grip with a pointer
+- [x] T021 [P] [US2] In `TE/EditorNodeFrame.tsx` replace the native `draggable` grip with a pointer
       handle (`data-drag-handle`, keep `page-grip-<id>`), render the marker line on the target slot
       (`data-drop-target`), the dashed origin slot (`data-origin-slot`), and `data-previewing` on the
       moved frame; remove the HTML5 `onDragOver`/`onDrop` handlers. Extend
       `SHEET/editorOverlay.tsx` with `originPlacement` so the renderer asks for the origin slot.
-- [ ] T022 [P] [US2] In `TE/OutlineTree.tsx` replace HTML5 drag with the same controller (grip
+- [x] T022 [P] [US2] In `TE/OutlineTree.tsx` replace HTML5 drag with the same controller (grip
       `grip-<id>` as handle; outline rows as targets mapped to placements; insertion row while
       dragging).
-- [ ] T023 [US2] Update `tests/sheet_manager/helpers/editor.ts` (`dragNode` drives pointer events with
+- [x] T023 [US2] Update `tests/sheet_manager/helpers/editor.ts` (`dragNode` drives pointer events with
       stubbed rectangles and fake timers instead of HTML5 events; grips found by `data-drag-handle`)
       and the drag tests in `template-editor-arrange.test.tsx`, `template-editor.test.tsx`,
       `template-editor-page.test.tsx`, `template-editor.perf.test.tsx` (select buttons identified

@@ -66,7 +66,11 @@ function openDocument(): UnknownDocumentEnvelope {
 const outlineRow = (nodeId: string) =>
     document.querySelector(`[data-outline-row="${nodeId}"]`) as HTMLElement;
 const selectInOutline = (nodeId: string) =>
-    fireEvent.click([...outlineRow(nodeId).querySelectorAll('button')].find((b) => !b.draggable)!);
+    fireEvent.click(
+        [...outlineRow(nodeId).querySelectorAll('button')].find(
+            (b) => !b.hasAttribute('data-drag-handle')
+        )!
+    );
 const dialog = () => screen.getByRole('dialog');
 const outlineIds = (parentId: string) =>
     [

@@ -2,26 +2,17 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { AlertTriangle, GripVertical, Plus } from 'lucide-react';
-import { memo, type ReactNode, useState } from 'react';
+import { memo, type ReactNode } from 'react';
 
 import type { OverlayPlacement } from '../../../features/sheet/declarative/editorOverlay';
 import type { TemplateNode } from '../../../types/template';
 import { AddElementMenu } from './AddElementMenu';
-import {
-    carriesNode,
-    draggedNodeId,
-    NODE_MIME,
-    useEditorActions,
-    useEditorSelection,
-} from './editorActions';
+import { useEditorActions, useEditorSelection } from './editorActions';
 import { useEditorModel } from './EditorModel';
 import { nodeDisplayName, nodeKindLabel } from './ElementSettings';
+import { slotKey, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;
-
-function slotKey({ parentId, index, column }: OverlayPlacement): string {
-    return `${parentId ?? 'root'}:${index}:${column ?? '-'}`;
-}
 
 /**
  * An insertion point: a thin bar between elements (or a dashed zone for an empty column) that
@@ -36,7 +27,6 @@ export const InsertSlot = memo(function InsertSlot({
     const placement: OverlayPlacement = { parentId, index, column };
     const actions = useEditorActions();
     const { atNodeLimit } = useEditorModel();
-    const [over, setOver] = useState(false);
     const label = emptyColumn
         ? translate(editor.emptyColumn, { column: placement.column ?? 1 })
         : translate(editor.insertHere);
@@ -54,28 +44,14 @@ export const InsertSlot = memo(function InsertSlot({
                     emptyColumn ? `${placement.parentId ?? 'root'}:${placement.column}` : undefined
                 }
                 onClick={(event) => event.stopPropagation()}
-                onDragOver={(event) => {
-                    if (!carriesNode(event)) return;
-                    event.preventDefault();
-                    event.stopPropagation();
-                    event.dataTransfer.dropEffect = 'move';
-                    setOver(true);
-                }}
-                onDragLeave={() => setOver(false)}
-                onDrop={(event) => {
-                    const nodeId = draggedNodeId(event);
-                    if (!nodeId) return;
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setOver(false);
-                    actions.moveTo(nodeId, placement);
-                }}
                 className={clsx(
                     'group/slot flex w-full items-center justify-center rounded transition-colors focus:outline-none focus-visible:bg-primary/20',
                     emptyColumn
                         ? 'min-h-14 border border-dashed border-borderMoreContrast p-2 text-center text-xs text-textSecondary hover:border-primary hover:text-primary'
                         : 'h-2 hover:bg-primary/20',
-                    over && 'bg-primary/40 text-textPrimary'
+                    // A drag's target marker and the dashed place the element left (spec 022).
+                    '[&[data-drop-target]]:bg-primary [&[data-drop-target]]:text-white',
+                    '[&[data-origin-slot]]:h-6 [&[data-origin-slot]]:border [&[data-origin-slot]]:border-dashed [&[data-origin-slot]]:border-primary/60 [&[data-origin-slot]]:bg-transparent'
                 )}
             >
                 {emptyColumn ? (
@@ -130,6 +106,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
     const selected = selectedId === node.id;
     const hasIssue = issueNodeIds.has(node.id);
     const name = nodeDisplayName(node);
+    const drag = useEditorDragContext();
 
     return (
         <div className="grid gap-1">
@@ -145,6 +122,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                         ? 'outline outline-2 outline-primary-muted'
                         : '[&[data-hover]]:outline [&[data-hover]]:outline-1 [&[data-hover]]:outline-secondary',
                     hasIssue && !selected && 'outline outline-1 outline-error',
+                    '[&[data-previewing]]:outline-dashed [&[data-previewing]]:outline-2 [&[data-previewing]]:outline-primary',
                     conditionHidden &&
                         'bg-[repeating-linear-gradient(135deg,transparent_0_8px,rgb(var(--text-secondary)/0.08)_8px_16px)]',
                     '[&[data-hover]>[data-editor-chip]]:flex [&[data-selected]>[data-editor-chip]]:flex'
@@ -156,15 +134,14 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                 >
                     <button
                         type="button"
-                        draggable
-                        onDragStart={(event) => {
+                        data-drag-handle=""
+                        onPointerDown={(event) => {
                             event.stopPropagation();
-                            event.dataTransfer.setData(NODE_MIME, node.id);
-                            event.dataTransfer.effectAllowed = 'move';
+                            drag?.start(node.id, event, 'page');
                         }}
                         aria-label={`${translate(editor.gripHandle)}: ${name}`}
                         data-testid={`page-grip-${node.id}`}
-                        className="cursor-grab rounded bg-white/20 p-0.5 active:cursor-grabbing"
+                        className="cursor-grab touch-none select-none rounded bg-white/20 p-0.5 active:cursor-grabbing"
                     >
                         <GripVertical className="h-3 w-3" aria-hidden="true" />
                     </button>

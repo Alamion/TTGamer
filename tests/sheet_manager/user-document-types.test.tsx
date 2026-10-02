@@ -67,7 +67,7 @@ const selectInOutline = (nodeId: string) =>
     fireEvent.click(
         [
             ...document.querySelector(`[data-outline-row="${nodeId}"]`)!.querySelectorAll('button'),
-        ].find((button) => !button.draggable)!
+        ].find((button) => !button.hasAttribute('data-drag-handle'))!
     );
 
 describe('user document types (spec 012, US4)', () => {

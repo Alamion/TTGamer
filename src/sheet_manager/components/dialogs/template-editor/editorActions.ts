@@ -3,8 +3,6 @@ import { createContext, useContext } from 'react';
 import type { OverlayPlacement } from '../../../features/sheet/declarative/editorOverlay';
 import type { TemplateNode } from '../../../types/template';
 
-export const NODE_MIME = 'application/x-ttgamer-template-node';
-
 /**
  * What the outline, the page frames, and the insertion slots may ask of the dialog. The value
  * is stable for the dialog's lifetime (callbacks read the latest draft from a ref), so frames
@@ -40,14 +38,4 @@ export const EditorSelectionContext = createContext<EditorSelection>({
 
 export function useEditorSelection(): EditorSelection {
     return useContext(EditorSelectionContext);
-}
-
-/** Reads the dragged node id, or `undefined` when the drag carries no template node. */
-export function draggedNodeId(event: { dataTransfer: DataTransfer | null }): string | undefined {
-    const id = event.dataTransfer?.getData(NODE_MIME);
-    return id ? id : undefined;
-}
-
-export function carriesNode(event: { dataTransfer: DataTransfer | null }): boolean {
-    return event.dataTransfer?.types.includes(NODE_MIME) ?? false;
 }

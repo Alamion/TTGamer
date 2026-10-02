@@ -24,6 +24,7 @@ import {
     isCompatibleDocument,
     SAMPLE_DOCUMENT_ID,
 } from './sampleDocuments';
+import { isReleaseClick, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;
 
@@ -92,6 +93,11 @@ export function EditorPage({ draft }: { draft: EditorDraft }) {
     const actions = useEditorActions();
     const scratch = useSampleSource(draft.systemId, draft.documentKind);
     const deferredDraft = useDeferredValue(draft);
+    const drag = useEditorDragContext();
+    // A drag reads slot positions from what the page shows, which follows the draft deferred.
+    useEffect(() => {
+        drag?.pageRendered(deferredDraft);
+    }, [drag, deferredDraft]);
     const hovered = useRef<Element | null>(null);
     const rootRef = useRef<HTMLDivElement | null>(null);
 
@@ -101,6 +107,7 @@ export function EditorPage({ draft }: { draft: EditorDraft }) {
         const root = rootRef.current;
         if (!root) return;
         const onClick = (event: MouseEvent) => {
+            if (isReleaseClick()) return;
             const target = event.target as Element;
             const chip = target.closest('[data-editor-chip]');
             if (!chip && target.closest(VALUE_CONTROLS)) return;

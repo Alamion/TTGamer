@@ -2,48 +2,20 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { AlertTriangle, EyeOff, GripVertical } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 
 import type { OverlayPlacement } from '../../../features/sheet/declarative/editorOverlay';
 import type { TemplateNode } from '../../../types/template';
 import { isContainerNode } from '../../../types/template';
-import {
-    carriesNode,
-    draggedNodeId,
-    NODE_MIME,
-    useEditorActions,
-    useEditorSelection,
-} from './editorActions';
+import { useEditorActions, useEditorSelection } from './editorActions';
 import { nodeDisplayName, nodeKindLabel } from './ElementSettings';
+import { slotKey, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;
 
-/** Drop-target behaviour shared by rows ("before this element") and list ends. */
-function useDropTarget(placement: OverlayPlacement) {
-    const actions = useEditorActions();
-    const [over, setOver] = useState(false);
-    return {
-        over,
-        handlers: {
-            onDragOver: (event: React.DragEvent) => {
-                if (!carriesNode(event)) return;
-                event.preventDefault();
-                event.stopPropagation();
-                event.dataTransfer.dropEffect = 'move';
-                setOver(true);
-            },
-            onDragLeave: () => setOver(false),
-            onDrop: (event: React.DragEvent) => {
-                const nodeId = draggedNodeId(event);
-                if (!nodeId) return;
-                event.preventDefault();
-                event.stopPropagation();
-                setOver(false);
-                actions.moveTo(nodeId, placement);
-            },
-        },
-    };
-}
+/** A row's top border is the insertion line a drag marks (spec 022). */
+const outlineSlot =
+    'border-t-2 border-transparent [&[data-drop-target]]:border-primary [&[data-origin-slot]]:border-dashed [&[data-origin-slot]]:border-primary/60';
 
 const OutlineItem = memo(function OutlineItem({
     depth,
@@ -62,14 +34,11 @@ const OutlineItem = memo(function OutlineItem({
     const { selectedId, issueNodeIds } = useEditorSelection();
     const selected = selectedId === node.id;
     const column = parentColumns > 1 ? (node.column ?? null) : null;
-    const { over, handlers } = useDropTarget({ parentId, index, column });
     const name = nodeDisplayName(node);
+    const drag = useEditorDragContext();
 
     return (
-        <li
-            {...handlers}
-            className={clsx('border-t-2', over ? 'border-primary' : 'border-transparent')}
-        >
+        <li data-outline-slot={slotKey({ parentId, index, column })} className={outlineSlot}>
             <div
                 data-outline-row={node.id}
                 data-node-type={node.type}
@@ -84,14 +53,11 @@ const OutlineItem = memo(function OutlineItem({
             >
                 <button
                     type="button"
-                    draggable
-                    onDragStart={(event) => {
-                        event.dataTransfer.setData(NODE_MIME, node.id);
-                        event.dataTransfer.effectAllowed = 'move';
-                    }}
+                    data-drag-handle=""
+                    onPointerDown={(event) => drag?.start(node.id, event, 'outline')}
                     aria-label={`${translate(editor.gripHandle)}: ${name}`}
                     data-testid={`grip-${node.id}`}
-                    className="cursor-grab rounded p-1 opacity-60 hover:opacity-100 active:cursor-grabbing"
+                    className="cursor-grab touch-none select-none rounded p-1 opacity-60 hover:opacity-100 active:cursor-grabbing"
                 >
                     <GripVertical className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
@@ -131,12 +97,11 @@ const OutlineItem = memo(function OutlineItem({
 });
 
 function OutlineEnd({ placement }: { placement: OverlayPlacement }) {
-    const { over, handlers } = useDropTarget(placement);
     return (
         <li
-            {...handlers}
+            data-outline-slot={slotKey(placement)}
             data-drop-zone={placement.parentId ?? 'root'}
-            className={clsx('min-h-2 border-t-2', over ? 'border-primary' : 'border-transparent')}
+            className={clsx('min-h-2', outlineSlot)}
         />
     );
 }
@@ -175,5 +140,9 @@ export const OutlineTree = memo(function OutlineTree({
 }: {
     nodes: readonly TemplateNode[];
 }) {
-    return <OutlineList depth={0} nodes={nodes} parentColumns={1} parentId={null} />;
+    return (
+        <div data-outline="">
+            <OutlineList depth={0} nodes={nodes} parentColumns={1} parentId={null} />
+        </div>
+    );
 });

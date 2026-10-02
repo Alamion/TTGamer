@@ -57,7 +57,7 @@ const settings = (nodeId: string) =>
 const selectInOutline = (nodeId: string) =>
     fireEvent.click(
         [...outlineRow(nodeId).querySelectorAll('button')].find(
-            (button) => !button.hasAttribute('draggable')
+            (button) => !button.hasAttribute('data-drag-handle')
         )!
     );
 

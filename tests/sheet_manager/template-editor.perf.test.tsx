@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 
+import { PREVIEW_DWELL_MS } from '@site/src/sheet_manager/components/dialogs/template-editor/useEditorDrag';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
-import { cleanup, fireEvent, render, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, within } from '@testing-library/react';
 import { createElement } from 'react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { resetEditorStores } from './helpers/editor';
+import { dragOver, releaseDrag, resetEditorStores, startDrag } from './helpers/editor';
 
 /** SC-002: 100 ms per edit on a mid-range laptop; jsdom runs several times slower. */
 const BROWSER_BUDGET_MS = 100;
@@ -29,7 +30,9 @@ describe('template editor responsiveness (SC-002)', () => {
         );
         const row = document.querySelector('[data-outline-row][data-node-type="section"]')!;
         const sectionId = row.getAttribute('data-outline-row')!;
-        fireEvent.click([...row.querySelectorAll('button')].find((b) => !b.draggable)!);
+        fireEvent.click(
+            [...row.querySelectorAll('button')].find((b) => !b.hasAttribute('data-drag-handle'))!
+        );
         const panel = document.querySelector(`[data-settings-for="${sectionId}"]`) as HTMLElement;
         const title = within(panel).getByLabelText('Title');
 
@@ -49,5 +52,58 @@ describe('template editor responsiveness (SC-002)', () => {
             `editor edit timings: median ${median.toFixed(1)} ms, max ${sorted.at(-1)!.toFixed(1)} ms`
         );
         expect(median).toBeLessThan(BROWSER_BUDGET_MS * JSDOM_FACTOR);
+    }, 120_000);
+
+    it('renders a previewed move on the full sheet within budget (SC-003)', () => {
+        // Real performance.now: only the dwell timer and the clock are faked.
+        vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
+        try {
+            resetEditorStores();
+            const template = systemRegistry
+                .getSystem('star-wars-wod')!
+                .defaultTemplates!.find(({ id }) => id === 'full-sheet')!;
+            render(
+                createElement(TemplateEditorDialog, {
+                    base: { kind: 'edit', template },
+                    onClose: () => {},
+                })
+            );
+            const frames = document.querySelectorAll('[data-editor-frame][data-node-id]');
+            const moved = frames[1]!.getAttribute('data-node-id')!;
+            const lastSlot = () => {
+                const slots = document.querySelectorAll('[data-insert-slot]');
+                return slots[slots.length - 1]!;
+            };
+
+            // The same move committed at once, for reference: shifting root elements re-renders
+            // what follows them (accent colours alternate by position).
+            startDrag(moved);
+            dragOver(lastSlot());
+            let started = performance.now();
+            releaseDrag();
+            const committed = performance.now() - started;
+            fireEvent.click(document.querySelector('button[aria-label="Undo"]')!);
+
+            startDrag(moved);
+            dragOver(lastSlot());
+            started = performance.now();
+            act(() => {
+                vi.advanceTimersByTime(PREVIEW_DWELL_MS);
+            });
+            const previewed = performance.now() - started;
+            expect(document.querySelector('[data-previewing]')).not.toBeNull();
+            started = performance.now();
+            releaseDrag();
+            const released = performance.now() - started;
+            console.info(
+                `editor move: commit ${committed.toFixed(1)} ms, preview ${previewed.toFixed(1)} ms, release after preview ${released.toFixed(1)} ms`
+            );
+            // A preview costs what the move itself costs, measured under the same load; the
+            // browser budget (SC-003) is checked on the dev server (quickstart §4).
+            expect(previewed).toBeLessThan(committed * 1.5);
+            expect(released).toBeLessThan(committed * 1.5);
+        } finally {
+            vi.useRealTimers();
+        }
     }, 120_000);
 });

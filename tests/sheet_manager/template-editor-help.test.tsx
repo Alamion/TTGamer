@@ -31,7 +31,7 @@ const selectInOutline = (nodeId: string) =>
     fireEvent.click(
         [
             ...document.querySelector(`[data-outline-row="${nodeId}"]`)!.querySelectorAll('button'),
-        ].find((button) => !button.draggable)!
+        ].find((button) => !button.hasAttribute('data-drag-handle'))!
     );
 const settingsOf = (nodeId: string) =>
     document.querySelector(`[data-settings-for="${nodeId}"]`) as HTMLElement;

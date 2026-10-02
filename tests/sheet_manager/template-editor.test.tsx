@@ -26,7 +26,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
-import { dragNode, openSettingsGroups } from './helpers/editor';
+import { dragNode, dragOver, openSettingsGroups, startDrag } from './helpers/editor';
 import {
     ASHEN_ID,
     RELICS_ID,
@@ -78,7 +78,7 @@ function outlineRow(nodeId: string): HTMLElement {
 function selectInOutline(nodeId: string): void {
     const row = outlineRow(nodeId);
     const name = [...row.querySelectorAll('button')].find(
-        (button) => !button.hasAttribute('draggable')
+        (button) => !button.hasAttribute('data-drag-handle')
     )!;
     fireEvent.click(name);
     openSettingsGroups();
@@ -732,15 +732,14 @@ describe('editor drag and drop, outline, and rendering health', () => {
         expect(outlineChildIds('page')).toEqual(['identity']);
     });
 
-    it('refuses to move a group inside itself with a clear message', () => {
+    it('never offers a place inside the dragged group', () => {
         openEditor();
-        dragNode('identity', slot('first'));
+        startDrag('identity', 'outline');
+        dragOver(slot('first'));
+        expect(slot('first').hasAttribute('data-drop-target')).toBe(false);
+        fireEvent.keyDown(window, { key: 'Escape' });
         expect(outlineChildIds('page')).toEqual(['identity']);
         expect(outlineChildIds('identity')).toEqual(['first', 'second']);
-        expect(screen.getByRole('alert').textContent).toContain(
-            'An element cannot be moved inside itself.'
-        );
-        expect(screen.getByRole('alert').textContent).not.toContain('Duplicate identifier');
     });
 
     it('names containers in the outline and shows settings only for the selection', () => {
