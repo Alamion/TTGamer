@@ -56,7 +56,8 @@ What must hold:
 1. In the editor, move a table's third column up twice. The page shows it first.
 2. On a sheet, fill three rows and move the last one to the top with the buttons and with Alt+↑. Reload: the order is kept (SC-007).
 3. Move a custom list entry and a merit (a game list). Both orders are kept after a reload.
-4. In a docs embed, no move controls show.
+4. Drag a row by its grip to another position; the order follows the drop.
+5. In a docs embed, no move controls show.
 
 ## 7. Kinds
 

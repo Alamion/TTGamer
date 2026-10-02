@@ -68,7 +68,7 @@ SHEET = `src/sheet_manager/features/sheet/declarative`. Every task that adds UI 
       `src/sheet_manager/features/sheet/data/templateReferences.ts` (`checkCoordinates` now calls the
       shared test). Unit tests in `tests/sheet_manager/formula-check.test.ts` (empty, ok with reads,
       parse error with position, unknown name, dotted coordinates like `willpower.max`).
-- [ ] T004 [P] Create `TE/settings/FormulaField.tsx` on top of `SettingField`: fx mark, `font-mono`,
+- [ ] T004 Create `TE/settings/FormulaField.tsx` on top of `SettingField`: fx mark, `font-mono`,
       the shared coordinate datalist id from `TE/EditorModel.tsx`, inline message from
       `checkFormulaInput` with the T001 strings (error red, ok muted green, empty nothing).
 - [ ] T005 Extend `DraftIssue` in `TE/draft.ts` with `setting?: SettingRef` (`{group, key}` per
@@ -116,14 +116,16 @@ in Value and Limits and formulas; a bad formula shows its message under the box.
 - [ ] T009 [P] [US1] Convert `SectionConfig`, `GroupConfig`, `TableConfig`, `ListConfig`,
       `ListPresetsEditor` in `TE/ElementSettings.tsx` into hooks returning `GroupedSettings` per
       data-model.md (titles via `SettingField` "Title" `data-setting="title"`; docs link → visibility
-      `docsPath`; table rows → limits; table/list value key → value via `KeyField`; table column rows
+      `docsPath`; collapsible / starts collapsed → visibility (as in the prototype: "Readers can fold
+      it", "Starts folded"); show title → look; table rows → limits; table/list value key → value via `KeyField`; table column rows
       and list entry field → content; presets → content `preset:<i>`).
 - [ ] T010 [P] [US1] Convert `TE/FieldEditor.tsx` into a hook returning `GroupedSettings`: label,
       help text, show label, label position, placeholder, options (`option:<i>`) → content; source,
       value key (`KeyField`), catalog binding, reference kinds, multiple → value; min/max/step, formula
       (`FormulaField`, key `formula`), maxFrom (`FormulaField`, key `maxFrom`) → limits;
       presentation, rating switches and flags, multiline, prefix/suffix, resource display → look;
-      required, term hint (`TE/TermHintControl.tsx`), description → visibility. For table columns
+      required, term hint (`TE/TermHintControl.tsx`) → visibility (help text stays in content, as in
+      the prototype). For table columns
       and list entries the keys are prefixed `column:<id>.` / `entry.` and the part renders inside the
       parent's content group.
 - [ ] T011 [P] [US1] Convert `TE/PrimitiveConfig.tsx` (source and edits → value; label override →
@@ -173,9 +175,11 @@ the entry label box.
 - [ ] T016 [US4] Create `TE/issues.ts`: `issueLocation(draft, path)` per data-model.md and
       `schemaIssues(draft, messages, known)` that runs `CustomTemplateSchema.safeParse(draft)`, drops
       Zod issues already covered by a specific issue on the same node and setting, maps the rest to
-      `issueNotAllowed` with a translated setting name where known, and reports each raw issue once
-      through `reportSheetIssue({ code: 'template-draft-invalid', … })`. Append its result in
-      `collectDraftIssues` (deferred with the draft in Dialog, `useDeferredValue`).
+      `issueNotAllowed` with a translated setting name where known, and returns them without reporting.
+      Append its result in `collectDraftIssues` (deferred with the draft in Dialog, `useDeferredValue`).
+      Export `reportUncoveredIssues(draft)` that reports each uncovered raw issue once through
+      `reportSheetIssue({ code: 'template-draft-invalid', … })`; only the save handler calls it
+      (research R4 step 3).
 - [ ] T017 [US4] In Dialog: the save `catch` maps a Zod error through `issueLocation` and the same
       messages (never `error.message`); issue buttons call a new `goToIssue(issue)`: select the node,
       open `issue.setting.group` in the group context, open a closed column `<details>` when the key
@@ -183,7 +187,9 @@ the entry label box.
       `[data-settings-for="<id>"] [data-setting="<key>"]` and scroll the page frame and outline row
       into view; issues without a node stay plain text. Add a test to
       `tests/sheet_manager/template-editor.test.tsx`: clicking the entry-label issue focuses that input;
-      a forced schema failure on save shows a plain message (no `"code"`).
+      a forced schema failure on save shows a plain message (no `"code"`) and reports
+      `template-draft-invalid` (consumed with `takeSheetIssues()`); editing an invalid draft reports
+      nothing. In Dialog's save handler call `reportUncoveredIssues` before refusing the save.
 
 **Checkpoint**: US4 complete; commit.
 
@@ -229,7 +235,8 @@ showed; one undo puts it back.
       and the drag tests in `template-editor-arrange.test.tsx`, `template-editor.test.tsx`,
       `template-editor-page.test.tsx`, `template-editor.perf.test.tsx` (select buttons identified
       without `draggable`); add cases: preview then release equals preview; Escape leaves the draft
-      unchanged; one undo restores. Add a perf case: a previewed move on the full Star Wars sheet
+      unchanged; one undo restores; a drag over a collapsed section offers no position inside it.
+      Add a perf case: a previewed move on the full Star Wars sheet
       stays within the editor budget.
 
 **Checkpoint**: US2 complete; commit.
@@ -272,12 +279,15 @@ reload: order kept.
       entries, and a system list (merits) move with the buttons and Alt+↑/↓, first/last controls are
       absent, focus stays on the moved row, read-only sources show no controls; in the editor,
       `moveTableColumn` reorders the page columns as one undo step and filled values stay with their
-      column.
+      column. Unit-test the grip's pure part `rowIndexAt(rects, y)` with fake rectangles; in
+      `tests/sheet_manager/storybook.test.tsx` assert that the storybook's editable table shows move
+      controls (constitution VI).
 
 ### Implementation
 
 - [ ] T028 [P] [US5] Create `SHEET/rowOrder.ts` (`moveTableRow`, `moveItem`) and
-      `SHEET/RowMoveControls.tsx` (grip with a small pointer reorder hook `useRowReorder`, up/down
+      `SHEET/RowMoveControls.tsx` (grip with a small pointer reorder hook `useRowReorder` built on a
+      pure `rowIndexAt(rects, y)`, up/down
       buttons named from `rows.moveUp/moveDown`, Alt+↑/↓ handler for the row).
 - [ ] T029 [US5] Use them in `SHEET/DeclarativeSheetView.tsx` (`TableBlock`, through a new `moveRow`
       in `SHEET/hooks.ts`), `SHEET/listEntries.tsx` (`updateList` move), and `SHEET/primitives.tsx`
@@ -313,7 +323,8 @@ stash)`, `switchListKind(node, kind, stash)` returning `{ node, dropped }`, `tab
       and the per-dialog `KindStash`.
 - [ ] T033 [US6] Kind choice in settings (content group): a "Kind" radio group in the Group and List
       parts (`TE/ElementSettings.tsx`) applying the switch through `applyOp` (one undo step); dropping
-      columns asks first with `dropColumnsConfirm` through the app's confirmation dialog in Dialog;
+      columns asks first with `dropColumnsConfirm` in a small confirmation dialog added to Dialog
+      (Radix Dialog like the existing save confirmation; `window.confirm` is not used);
       Table disabled with `tableUnavailable`.
 - [ ] T034 [P] [US6] Names everywhere: `nodeKindLabel` returns "{Element} · {Kind}" for containers,
       lists, and tables (outline rows, frame chips, settings header); `TE/AddElementMenu.tsx` offers

@@ -98,8 +98,12 @@ hooks.ts:228-275`). Own-value list entries are an array of `{id, …}` (`updateL
        `children`, table `columns`, list `item`, select `options`, presets, and tracker arrays to the
        nearest named node and the setting key; the message is general ("{setting} has a value that is
        not allowed") with a translated setting name where known.
-    3. The raw issue goes to `reportSheetIssue` with a new code `template-draft-invalid` (developer
-       diagnostics, constitution III); the save catch uses the same mapping and never shows raw text.
+    3. While the author edits, mapped issues are only shown. When a save is attempted, every schema
+       issue the specific checks did not cover is reported once through `reportSheetIssue` with a new
+       code `template-draft-invalid` (developer diagnostics, constitution III): it marks a rule the
+       checks miss. Reporting on every change would fail the test setup on each transiently invalid
+       draft (`tests/setup/sheetIssues.ts`) and flood the console. The save catch uses the same
+       mapping and never shows raw text.
 - **Rationale**: specific checks give the best wording; the backstop guarantees FR-019 for rules
   added later.
 - **Cost**: one schema parse per draft change, deferred like the page; budget checked in the

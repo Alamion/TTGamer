@@ -22,13 +22,13 @@ concatenates the parts per group in part order. A group with no nodes is not ren
 
 **Group membership for fields and primitives**, per the prototype review:
 
-| Group               | Settings                                                                                                                                                                                                                           |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Content             | title or label, help text, kind (Group/List), show label, label position, placeholder text, select options, list entry field, table columns, presets                                                                               |
-| Value               | stores value in / source, value key, current/max edits, catalog binding and fills, reference kinds, multiple                                                                                                                       |
-| Limits and formulas | min/max/step, min/max rows, formula, maxFrom, minFrom, maxMinFrom                                                                                                                                                                  |
-| Look                | presentation, rating switches and flags, display (dots/tracker), compact, columns and widths, column placement and span, multiline, prefix/suffix, show title, framed, collapsible and starts collapsed, tracker and pool settings |
-| Visibility and help | required, book name hint, display condition, documentation link                                                                                                                                                                    |
+| Group               | Settings                                                                                                                                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Content             | title or label, help text, kind (Group/List), show label, label position, placeholder text, select options, list entry field, table columns, presets                                             |
+| Value               | stores value in / source, value key, current/max edits, catalog binding and fills, reference kinds, multiple                                                                                     |
+| Limits and formulas | min/max/step, min/max rows, formula, maxFrom, minFrom, maxMinFrom                                                                                                                                |
+| Look                | presentation, rating switches and flags, display (dots/tracker), compact, columns and widths, column placement and span, multiline, prefix/suffix, show title, framed, tracker and pool settings |
+| Visibility and help | required, book name hint, display condition, documentation link, collapsible and starts collapsed                                                                                                |
 
 ## SettingRef and DraftIssue
 
