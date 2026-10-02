@@ -1,0 +1,1910 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <title>Editor Usability</title>
+        <style>
+            /* Colors follow src/css/custom.css; the editor frame follows TemplateEditorDialog.tsx. */
+            :root {
+                --bg-base: rgb(245 245 249);
+                --bg-surface: rgb(249 249 255);
+                --bg-input: rgb(255 255 255);
+                --text: rgb(15 23 42);
+                --muted: rgb(71 85 105);
+                --faint: rgb(148 163 184);
+                --primary: rgb(220 38 38);
+                --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(249 249 255) 90%);
+                --secondary: rgb(202 138 4);
+                --secondary-soft: color-mix(in srgb, rgb(202 138 4), rgb(249 249 255) 88%);
+                --error: rgb(185 28 28);
+                --success: rgb(21 128 61);
+                --border: rgb(226 232 240);
+                --border-strong: rgb(206 212 220);
+                --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+                --mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+                color-scheme: light;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme='light']) {
+                    --bg-base: rgb(15 23 42);
+                    --bg-surface: rgb(30 41 59);
+                    --bg-input: rgb(15 23 42);
+                    --text: rgb(248 250 252);
+                    --muted: rgb(148 163 184);
+                    --faint: rgb(100 116 139);
+                    --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 72%);
+                    --secondary-soft: color-mix(in srgb, rgb(202 138 4), rgb(30 41 59) 75%);
+                    --error: rgb(248 113 113);
+                    --success: rgb(74 222 128);
+                    --border: rgb(51 65 85);
+                    --border-strong: rgb(71 85 105);
+                    color-scheme: dark;
+                }
+            }
+            :root[data-theme='dark'] {
+                --bg-base: rgb(15 23 42);
+                --bg-surface: rgb(30 41 59);
+                --bg-input: rgb(15 23 42);
+                --text: rgb(248 250 252);
+                --muted: rgb(148 163 184);
+                --faint: rgb(100 116 139);
+                --primary-soft: color-mix(in srgb, rgb(220 38 38), rgb(30 41 59) 72%);
+                --secondary-soft: color-mix(in srgb, rgb(202 138 4), rgb(30 41 59) 75%);
+                --error: rgb(248 113 113);
+                --success: rgb(74 222 128);
+                --border: rgb(51 65 85);
+                --border-strong: rgb(71 85 105);
+                color-scheme: dark;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                height: 100%;
+            }
+            body {
+                margin: 0;
+                background: var(--bg-base);
+                color: var(--text);
+                font: 14px/1.45 var(--font);
+                padding-inline: 16px;
+                padding-block: 12px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .intro {
+                max-width: 1400px;
+                width: 100%;
+                margin: 0 auto;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px 16px;
+                align-items: baseline;
+            }
+            .intro h1 {
+                font-size: 18px;
+                margin: 0;
+            }
+            .intro p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 13px;
+                max-width: 90ch;
+            }
+            kbd {
+                font: 11px var(--mono);
+                border: 1px solid var(--border-strong);
+                border-bottom-width: 2px;
+                border-radius: 4px;
+                padding: 0 4px;
+            }
+
+            /* Editor frame */
+            .editor {
+                flex: 1;
+                min-height: 0;
+                max-width: 1400px;
+                width: 100%;
+                margin: 0 auto;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                background: var(--bg-surface);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .editor-head {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 12px;
+                border-bottom: 1px solid var(--border);
+            }
+            .editor-head strong {
+                margin-right: auto;
+            }
+            .btn {
+                font: inherit;
+                font-size: 12px;
+                color: var(--text);
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                padding: 3px 8px;
+                cursor: pointer;
+            }
+            .btn:disabled {
+                opacity: 0.4;
+                cursor: default;
+            }
+            .btn:hover:not(:disabled) {
+                border-color: var(--border-strong);
+            }
+            .areas {
+                flex: 1;
+                min-height: 0;
+                display: grid;
+                grid-template-columns: var(--left, 240px) 6px minmax(360px, 1fr) 6px var(
+                        --right,
+                        320px
+                    );
+            }
+            .area {
+                min-width: 0;
+                min-height: 0;
+                overflow: auto;
+            }
+            .area h3 {
+                margin: 0 0 6px;
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--muted);
+            }
+            .outline-area,
+            .settings-area {
+                padding: 10px;
+            }
+            .page-area {
+                background: var(--bg-base);
+                padding: 14px;
+                position: relative;
+            }
+            .divider {
+                position: relative;
+                cursor: col-resize;
+                background: var(--border);
+                touch-action: none;
+            }
+            .divider::after {
+                content: '';
+                position: absolute;
+                inset: 0 -4px;
+            }
+            .divider:hover,
+            .divider:focus-visible,
+            .divider.active {
+                background: var(--primary);
+                outline: none;
+            }
+            .tabs {
+                display: none;
+            }
+            @media (max-width: 760px) {
+                .areas {
+                    grid-template-columns: 1fr;
+                }
+                .divider {
+                    display: none;
+                }
+                .tabs {
+                    display: flex;
+                    border-bottom: 1px solid var(--border);
+                }
+                .tabs button {
+                    flex: 1;
+                    font: inherit;
+                    font-size: 13px;
+                    background: none;
+                    border: 0;
+                    border-bottom: 2px solid transparent;
+                    padding: 8px;
+                    color: var(--muted);
+                }
+                .tabs button[aria-selected='true'] {
+                    color: var(--text);
+                    border-color: var(--primary);
+                }
+                .area[data-tab]:not(.shown) {
+                    display: none;
+                }
+            }
+
+            /* Outline */
+            .outline {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                font-size: 13px;
+            }
+            .outline li {
+                padding: 2px 6px;
+                border-radius: 4px;
+                cursor: pointer;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .outline li:hover {
+                background: var(--primary-soft);
+            }
+            .outline li.selected {
+                background: var(--primary);
+                color: #fff;
+            }
+            .outline .kind {
+                color: var(--faint);
+                font-size: 11px;
+                margin-right: 4px;
+            }
+            .outline li.selected .kind {
+                color: rgb(255 255 255 / 0.75);
+            }
+            .outline li.drop-row {
+                height: 0;
+                padding: 0;
+                margin: 2px 0;
+                border-top: 2px solid var(--primary);
+                border-radius: 0;
+            }
+            .outline li.drop-target {
+                box-shadow: inset 2px 0 0 var(--primary);
+            }
+
+            /* Page */
+            #page {
+                user-select: none;
+            }
+            .group.origin-collapsed {
+                display: none;
+            }
+            .sheet-section {
+                background: var(--bg-surface);
+                border: 1px solid var(--border);
+                border-top: 3px solid var(--primary);
+                border-radius: 6px;
+                padding: 10px;
+                margin-bottom: 14px;
+            }
+            .sheet-section > .title {
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+            .section-grid {
+                display: grid;
+                gap: 10px;
+            }
+            .group {
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 8px;
+                background: var(--bg-surface);
+                position: relative;
+            }
+            .group > .title {
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: var(--secondary);
+                margin-bottom: 4px;
+                cursor: grab;
+            }
+            .group-body {
+                min-height: 28px;
+                position: relative;
+            }
+            .row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 4px 6px;
+                border-radius: 4px;
+                cursor: grab;
+                user-select: none;
+                position: relative;
+            }
+            .row:hover,
+            .group:hover > .title {
+                background: var(--primary-soft);
+            }
+            .row .label {
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .dots {
+                display: flex;
+                gap: 3px;
+            }
+            .dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                border: 1.5px solid var(--primary);
+            }
+            .dot.on {
+                background: var(--primary);
+            }
+            .selected-el {
+                box-shadow: 0 0 0 2px var(--primary);
+            }
+            .group.selected-el {
+                box-shadow: 0 0 0 2px var(--primary);
+            }
+            .origin {
+                opacity: 0.35;
+                outline: 1px dashed var(--border-strong);
+            }
+            .origin-collapsed {
+                height: 6px !important;
+                padding: 0 !important;
+                overflow: hidden;
+                opacity: 1;
+                background: none;
+                outline: 1px dashed var(--faint);
+                border: 0 !important;
+            }
+            .origin-collapsed > * {
+                visibility: hidden;
+            }
+            .previewing {
+                background: var(--primary-soft);
+                box-shadow: 0 0 0 2px var(--primary);
+                animation: settle 0.18s ease-out;
+            }
+            @keyframes settle {
+                from {
+                    transform: scale(0.97);
+                }
+            }
+            .drop-marker {
+                position: absolute;
+                height: 3px;
+                background: var(--primary);
+                border-radius: 2px;
+                pointer-events: none;
+                z-index: 5;
+                transition:
+                    top 0.06s,
+                    left 0.06s;
+            }
+            .drop-marker.vertical {
+                width: 3px;
+                height: auto;
+            }
+            .drop-container {
+                outline: 2px dashed color-mix(in srgb, var(--primary), transparent 50%);
+                outline-offset: 2px;
+            }
+            .ghost {
+                position: fixed;
+                pointer-events: none;
+                z-index: 50;
+                opacity: 0.85;
+                background: var(--bg-surface);
+                border: 1px solid var(--primary);
+                border-radius: 4px;
+                box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+                padding: 4px 8px;
+                font-size: 13px;
+            }
+            .dwell {
+                position: fixed;
+                pointer-events: none;
+                z-index: 51;
+                width: 18px;
+                height: 18px;
+            }
+            body.dragging,
+            body.dragging * {
+                cursor: grabbing !important;
+            }
+
+            /* Settings */
+            .settings-head {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+            .settings-head h3 {
+                margin: 0 auto 0 0;
+            }
+            .seg {
+                display: inline-flex;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                overflow: hidden;
+            }
+            .seg button {
+                font: inherit;
+                font-size: 11px;
+                border: 0;
+                background: none;
+                color: var(--muted);
+                padding: 2px 8px;
+                cursor: pointer;
+            }
+            .seg button[aria-pressed='true'] {
+                background: var(--primary);
+                color: #fff;
+            }
+            input,
+            select {
+                font: inherit;
+                font-size: 13px;
+                color: var(--text);
+                background: var(--bg-input);
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                padding: 4px 6px;
+                min-width: 0;
+            }
+            input:focus,
+            select:focus {
+                outline: 2px solid color-mix(in srgb, var(--primary), transparent 60%);
+                border-color: var(--primary);
+            }
+            .stack {
+                display: grid;
+                gap: 6px;
+            }
+            .line {
+                display: flex;
+                gap: 6px;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+            .line > input,
+            .line > select {
+                flex: 1;
+            }
+            .small {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .help {
+                display: inline-grid;
+                place-items: center;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                border: 1px solid var(--faint);
+                color: var(--muted);
+                font-size: 10px;
+                font-weight: 700;
+                cursor: help;
+                flex: none;
+            }
+            /* Before: one framed card, mostly placeholder-only boxes (FieldEditor.tsx today). */
+            .before-card {
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                padding: 10px;
+                display: grid;
+                gap: 8px;
+            }
+            .actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                margin-bottom: 8px;
+            }
+            /* After */
+            .el-head {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 10px;
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                margin-bottom: 10px;
+            }
+            .chip {
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                font-weight: 700;
+                color: var(--secondary);
+                background: var(--secondary-soft);
+                border-radius: 3px;
+                padding: 1px 6px;
+            }
+            .el-head .name {
+                font-weight: 600;
+                margin-right: auto;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .icon-btn {
+                font: inherit;
+                width: 24px;
+                height: 24px;
+                border: 1px solid transparent;
+                background: none;
+                border-radius: 4px;
+                color: var(--muted);
+                cursor: pointer;
+            }
+            .icon-btn:hover {
+                border-color: var(--border);
+                color: var(--text);
+            }
+            .grp {
+                border-top: 1px solid var(--border);
+            }
+            .grp > button {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font: inherit;
+                font-size: 11px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--muted);
+                background: none;
+                border: 0;
+                padding: 8px 2px;
+                cursor: pointer;
+                text-align: left;
+            }
+            .grp > button .chev {
+                transition: transform 0.15s;
+                width: 10px;
+            }
+            .grp[data-open='true'] > button .chev {
+                transform: rotate(90deg);
+            }
+            .grp .count {
+                margin-left: auto;
+                font-weight: 500;
+                text-transform: none;
+                letter-spacing: 0;
+                color: var(--faint);
+            }
+            .grp .issue {
+                margin-left: auto;
+                background: var(--error);
+                color: #fff;
+                border-radius: 9px;
+                padding: 0 6px;
+                font-size: 10px;
+                letter-spacing: 0;
+                text-transform: none;
+            }
+            .grp-body {
+                display: grid;
+                gap: 10px;
+                padding: 0 2px 12px;
+            }
+            .grp[data-open='false'] .grp-body {
+                display: none;
+            }
+            .setting {
+                display: grid;
+                gap: 3px;
+            }
+            .setting > .name {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+            .setting > .hint {
+                font-size: 11px;
+                color: var(--muted);
+            }
+            .key-box {
+                display: flex;
+                align-items: center;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                background: var(--bg-input);
+            }
+            .key-box:focus-within {
+                border-color: var(--primary);
+            }
+            .key-box .pre {
+                font: 12px var(--mono);
+                color: var(--secondary);
+                padding: 0 4px 0 7px;
+            }
+            .key-box input {
+                border: 0;
+                flex: 1;
+                padding-left: 0;
+                outline: none;
+            }
+            .fx-box {
+                display: flex;
+                align-items: stretch;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                background: var(--bg-input);
+                overflow: hidden;
+            }
+            .fx-box:focus-within {
+                border-color: var(--primary);
+            }
+            .fx-box .fx {
+                font:
+                    italic 600 12px Georgia,
+                    'Times New Roman',
+                    serif;
+                color: #fff;
+                background: var(--primary);
+                display: grid;
+                place-items: center;
+                padding: 0 7px;
+            }
+            .fx-box input {
+                border: 0;
+                flex: 1;
+                font-family: var(--mono);
+                font-size: 12px;
+                outline: none;
+            }
+            .fx-box.bad {
+                border-color: var(--error);
+            }
+            .fx-box.bad .fx {
+                background: var(--error);
+            }
+            .msg {
+                font-size: 11px;
+            }
+            .msg.bad {
+                color: var(--error);
+            }
+            .msg.ok {
+                color: var(--success);
+            }
+            .toggle {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 13px;
+            }
+            .pair {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .flags button {
+                font: 600 11px var(--font);
+                width: 24px;
+                height: 22px;
+                border: 1px solid var(--border);
+                border-radius: 4px;
+                background: none;
+                color: var(--muted);
+                cursor: pointer;
+            }
+            .flags button[aria-pressed='true'] {
+                background: var(--primary);
+                border-color: var(--primary);
+                color: #fff;
+            }
+            .notes {
+                max-width: 1400px;
+                width: 100%;
+                margin: 0 auto;
+                font-size: 12px;
+                color: var(--muted);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="intro">
+            <h1>Template editor — spec 022 prototype</h1>
+            <p>
+                Drag a trait or a group title on the page: the red line follows the nearest place;
+                hold still for a moment and the page shows it there. <kbd>Esc</kbd> cancels, one
+                <b>Undo</b> takes a move back. Drag the dividers (double-click resets, arrows move
+                them when focused). Select <b>Willpower</b> and compare <b>Before / After</b> in the
+                settings.
+            </p>
+        </div>
+
+        <div class="editor">
+            <div class="editor-head">
+                <strong>Star Wars character — Full sheet</strong>
+                <button class="btn" id="undo" disabled>Undo</button>
+                <button class="btn" id="redo" disabled>Redo</button>
+                <button class="btn" id="reset-widths" title="Forget the remembered widths">
+                    Reset widths
+                </button>
+            </div>
+            <div class="tabs" role="tablist">
+                <button role="tab" data-show="outline">Outline</button>
+                <button role="tab" data-show="page" aria-selected="true">Page</button>
+                <button role="tab" data-show="settings">Settings</button>
+            </div>
+            <div class="areas" id="areas">
+                <section class="area outline-area" data-tab="outline">
+                    <h3>Outline</h3>
+                    <ul class="outline" id="outline"></ul>
+                </section>
+                <div
+                    class="divider"
+                    id="div-left"
+                    role="separator"
+                    aria-orientation="vertical"
+                    aria-label="Resize outline"
+                    tabindex="0"
+                ></div>
+                <section class="area page-area shown" data-tab="page" id="page-area">
+                    <div id="page"></div>
+                </section>
+                <div
+                    class="divider"
+                    id="div-right"
+                    role="separator"
+                    aria-orientation="vertical"
+                    aria-label="Resize settings"
+                    tabindex="0"
+                ></div>
+                <section class="area settings-area" data-tab="settings">
+                    <div class="settings-head">
+                        <h3>Settings</h3>
+                        <div class="seg" role="group" aria-label="Compare">
+                            <button id="mode-before" aria-pressed="false">Before</button>
+                            <button id="mode-after" aria-pressed="true">After</button>
+                        </div>
+                    </div>
+                    <div id="settings"></div>
+                </section>
+            </div>
+        </div>
+        <p class="notes">
+            Prototype only: in the app the page is the real sheet renderer and the rules come from
+            the editor's move commands. Touch dragging stays out of scope; phones keep the move
+            buttons.
+        </p>
+
+        <script>
+            // ---------- Model ----------
+            const KNOWN = [
+                'strength',
+                'dexterity',
+                'stamina',
+                'charisma',
+                'manipulation',
+                'appearance',
+                'perception',
+                'intelligence',
+                'wits',
+                'conscience',
+                'self-control',
+                'courage',
+                'willpower',
+                'willpower.max',
+                'force-points',
+                'force-points.max',
+                'humanity',
+            ];
+            const fields = {
+                strength: { label: 'Strength', key: 'strength', value: 3 },
+                dexterity: { label: 'Dexterity', key: 'dexterity', value: 2 },
+                stamina: { label: 'Stamina', key: 'stamina', value: 3 },
+                charisma: { label: 'Charisma', key: 'charisma', value: 2 },
+                manipulation: { label: 'Manipulation', key: 'manipulation', value: 1 },
+                appearance: { label: 'Appearance', key: 'appearance', value: 2 },
+                perception: { label: 'Perception', key: 'perception', value: 3 },
+                intelligence: { label: 'Intelligence', key: 'intelligence', value: 2 },
+                wits: { label: 'Wits', key: 'wits', value: 2 },
+                conscience: { label: 'Conscience', key: 'conscience', value: 3 },
+                courage: { label: 'Courage', key: 'courage', value: 2 },
+                selfControl: { label: 'Self-Control', key: 'self-control', value: 3 },
+                willpower: {
+                    label: 'Willpower',
+                    key: 'willpower',
+                    value: 4,
+                    max: 10,
+                    maxFrom: 'courage + 2',
+                    help: '',
+                    flags: ['specialization'],
+                },
+                humanity: { label: 'Humanity', key: 'humanity', value: 7, max: 10 },
+            };
+            let model = {
+                sections: [
+                    {
+                        id: 'attributes',
+                        title: 'Attributes',
+                        columns: 3,
+                        groups: [
+                            {
+                                id: 'physical',
+                                title: 'Physical',
+                                items: ['strength', 'dexterity', 'stamina'],
+                            },
+                            {
+                                id: 'social',
+                                title: 'Social',
+                                items: ['charisma', 'manipulation', 'appearance'],
+                            },
+                            {
+                                id: 'mental',
+                                title: 'Mental',
+                                items: ['perception', 'intelligence', 'wits'],
+                            },
+                        ],
+                    },
+                    {
+                        id: 'advantages',
+                        title: 'Advantages',
+                        columns: 2,
+                        groups: [
+                            {
+                                id: 'virtues',
+                                title: 'Virtues',
+                                items: ['conscience', 'selfControl', 'courage'],
+                            },
+                            {
+                                id: 'resources',
+                                title: 'Willpower & Humanity',
+                                items: ['willpower', 'humanity'],
+                            },
+                        ],
+                    },
+                ],
+            };
+            let selected = 'willpower';
+            let mode = 'after';
+            const undoStack = [];
+            const redoStack = [];
+            const clone = (value) => JSON.parse(JSON.stringify(value));
+
+            function snapshot() {
+                undoStack.push(clone(model));
+                redoStack.length = 0;
+                syncHistory();
+            }
+            function syncHistory() {
+                document.getElementById('undo').disabled = undoStack.length === 0;
+                document.getElementById('redo').disabled = redoStack.length === 0;
+            }
+            document.getElementById('undo').onclick = () => {
+                redoStack.push(clone(model));
+                model = undoStack.pop();
+                syncHistory();
+                renderAll();
+            };
+            document.getElementById('redo').onclick = () => {
+                undoStack.push(clone(model));
+                model = redoStack.pop();
+                syncHistory();
+                renderAll();
+            };
+
+            const findGroup = (id) => {
+                for (const section of model.sections) {
+                    const group = section.groups.find((g) => g.id === id);
+                    if (group) return { section, group };
+                }
+                return null;
+            };
+            const groupOfItem = (item) => {
+                for (const section of model.sections)
+                    for (const group of section.groups)
+                        if (group.items.includes(item)) return group;
+                return null;
+            };
+
+            // ---------- Rendering ----------
+            const el = (tag, attrs = {}, ...children) => {
+                const node = document.createElement(tag);
+                for (const [k, v] of Object.entries(attrs)) {
+                    if (k === 'class') node.className = v;
+                    else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
+                    else if (v !== undefined && v !== false)
+                        node.setAttribute(k, v === true ? '' : v);
+                }
+                for (const child of children.flat()) {
+                    if (child == null || child === false) continue;
+                    node.append(child instanceof Node ? child : document.createTextNode(child));
+                }
+                return node;
+            };
+
+            function renderPage() {
+                const page = document.getElementById('page');
+                page.replaceChildren(
+                    ...model.sections.map((section) =>
+                        el(
+                            'div',
+                            { class: 'sheet-section', 'data-section': section.id },
+                            el('div', { class: 'title' }, section.title),
+                            el(
+                                'div',
+                                {
+                                    class: 'section-grid',
+                                    'data-container': 'section',
+                                    'data-id': section.id,
+                                    style: `grid-template-columns: repeat(${section.columns}, minmax(0, 1fr))`,
+                                },
+                                section.groups.map((group) =>
+                                    el(
+                                        'div',
+                                        {
+                                            class:
+                                                'group' +
+                                                (selected === group.id ? ' selected-el' : ''),
+                                            'data-group': group.id,
+                                        },
+                                        el(
+                                            'div',
+                                            {
+                                                class: 'title',
+                                                'data-drag': 'group',
+                                                'data-id': group.id,
+                                            },
+                                            group.title
+                                        ),
+                                        el(
+                                            'div',
+                                            {
+                                                class: 'group-body',
+                                                'data-container': 'group',
+                                                'data-id': group.id,
+                                            },
+                                            group.items.map((item) => rowFor(item))
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                );
+            }
+            function rowFor(item) {
+                const field = fields[item];
+                const max = field.max ?? 5;
+                return el(
+                    'div',
+                    {
+                        class: 'row' + (selected === item ? ' selected-el' : ''),
+                        'data-drag': 'item',
+                        'data-id': item,
+                    },
+                    el('span', { class: 'label' }, field.label),
+                    el(
+                        'span',
+                        { class: 'dots' },
+                        Array.from({ length: Math.min(max, 10) }, (_, i) =>
+                            el('span', { class: 'dot' + (i < field.value ? ' on' : '') })
+                        )
+                    )
+                );
+            }
+
+            function renderOutline(drop) {
+                const list = document.getElementById('outline');
+                const rows = [];
+                const row = (id, kind, label, depth, extra = '') =>
+                    el(
+                        'li',
+                        {
+                            class: (selected === id ? 'selected ' : '') + extra,
+                            style: `padding-left:${6 + depth * 14}px`,
+                            onclick: () => select(id),
+                        },
+                        el('span', { class: 'kind' }, kind),
+                        label
+                    );
+                const dropRow = (depth) =>
+                    el('li', { class: 'drop-row', style: `margin-left:${6 + depth * 14}px` });
+                for (const section of model.sections) {
+                    rows.push(
+                        row(
+                            section.id,
+                            'Section',
+                            section.title,
+                            0,
+                            drop?.container === section.id ? 'drop-target' : ''
+                        )
+                    );
+                    section.groups.forEach((group, gi) => {
+                        if (
+                            drop?.kind === 'section' &&
+                            drop.container === section.id &&
+                            drop.index === gi
+                        )
+                            rows.push(dropRow(1));
+                        rows.push(
+                            row(
+                                group.id,
+                                'Group',
+                                group.title,
+                                1,
+                                drop?.container === group.id ? 'drop-target' : ''
+                            )
+                        );
+                        group.items.forEach((item, ii) => {
+                            if (
+                                drop?.kind === 'group' &&
+                                drop.container === group.id &&
+                                drop.index === ii
+                            )
+                                rows.push(dropRow(2));
+                            rows.push(row(item, 'Rating', fields[item].label, 2));
+                        });
+                        if (
+                            drop?.kind === 'group' &&
+                            drop.container === group.id &&
+                            drop.index === group.items.length
+                        )
+                            rows.push(dropRow(2));
+                    });
+                    if (
+                        drop?.kind === 'section' &&
+                        drop.container === section.id &&
+                        drop.index === section.groups.length
+                    )
+                        rows.push(dropRow(1));
+                }
+                list.replaceChildren(...rows);
+            }
+
+            function select(id) {
+                selected = id;
+                renderAll();
+            }
+
+            // ---------- Settings: before ----------
+            function renderBefore(field) {
+                const placeholderOnly = (value, placeholder, mono) =>
+                    el('input', {
+                        value,
+                        placeholder,
+                        style: mono ? 'font-family:var(--mono)' : '',
+                    });
+                return el(
+                    'div',
+                    {},
+                    el(
+                        'div',
+                        { class: 'actions' },
+                        ['Move up', 'Move down', 'Duplicate', 'Remove'].map((label) =>
+                            el('button', { class: 'btn' }, label)
+                        )
+                    ),
+                    el(
+                        'div',
+                        { class: 'before-card' },
+                        el(
+                            'div',
+                            { class: 'line' },
+                            placeholderOnly(field.label, 'Field label'),
+                            el('select', {}, el('option', {}, 'Rating'))
+                        ),
+                        placeholderOnly(field.help ?? '', 'Help text (optional)'),
+                        el('select', {}, el('option', {}, 'Custom value (this template)')),
+                        el(
+                            'div',
+                            { class: 'line' },
+                            placeholderOnly(
+                                field.key,
+                                'Shared value key (fields with the same key share one value)'
+                            ),
+                            el('span', { class: 'help' }, '?')
+                        ),
+                        el(
+                            'label',
+                            { class: 'toggle small' },
+                            el('input', { type: 'checkbox' }),
+                            'Required (advisory marker)'
+                        ),
+                        el(
+                            'label',
+                            { class: 'toggle small' },
+                            el('input', { type: 'checkbox', checked: true }),
+                            'Show label'
+                        ),
+                        el('div', { class: 'small' }, 'Book term: Willpower'),
+                        el(
+                            'label',
+                            { class: 'toggle small' },
+                            el('input', { type: 'checkbox', checked: true }),
+                            'Show book name hint'
+                        ),
+                        el(
+                            'label',
+                            { class: 'stack small' },
+                            el(
+                                'span',
+                                { class: 'line' },
+                                'Maximum from value or formula (optional)',
+                                el('span', { class: 'help' }, '?')
+                            ),
+                            placeholderOnly(field.maxFrom ?? '', 'e.g. willpower.max', true)
+                        ),
+                        el(
+                            'div',
+                            { class: 'pair' },
+                            placeholderOnly('0', 'Min'),
+                            placeholderOnly(String(field.max ?? 5), 'Max')
+                        ),
+                        el(
+                            'div',
+                            { class: 'line' },
+                            el('select', {}, el('option', {}, 'Dots')),
+                            el('span', { class: 'help' }, '?')
+                        ),
+                        el(
+                            'label',
+                            { class: 'toggle small' },
+                            el('input', { type: 'checkbox' }),
+                            'Text input'
+                        ),
+                        el(
+                            'label',
+                            { class: 'toggle small' },
+                            el('input', { type: 'checkbox' }),
+                            'Show numbers'
+                        ),
+                        el(
+                            'label',
+                            { class: 'toggle small' },
+                            el('input', { type: 'checkbox', checked: true }),
+                            'Die'
+                        ),
+                        el(
+                            'div',
+                            { class: 'line small flags' },
+                            'Flags:',
+                            ['S', 'P', 'E'].map((l, i) =>
+                                el('button', { 'aria-pressed': String(i === 0) }, l)
+                            )
+                        ),
+                        el(
+                            'div',
+                            { class: 'line' },
+                            placeholderOnly('', 'Value key'),
+                            el('select', {}, el('option', {}, '=')),
+                            placeholderOnly('', 'Value')
+                        )
+                    )
+                );
+            }
+
+            // ---------- Settings: after ----------
+            const groupState = {
+                content: true,
+                value: true,
+                limits: true,
+                look: false,
+                visibility: false,
+            };
+
+            function checkFormula(text) {
+                if (!text.trim()) return { ok: true, empty: true };
+                if (!/^[\w.\-+*/()\s]+$/.test(text))
+                    return { ok: false, message: 'This formula does not parse.' };
+                const names = text.match(/[a-z][\w.-]*[\w]|[a-z]/gi) ?? [];
+                const missing = names.filter(
+                    (n) => !KNOWN.includes(n.toLowerCase()) && !['min', 'max'].includes(n)
+                );
+                if (missing.length)
+                    return { ok: false, message: `No value named “${missing[0]}”.` };
+                if (/[+\-*/]\s*$/.test(text) || /^\s*[+*/]/.test(text))
+                    return { ok: false, message: 'This formula does not parse.' };
+                return { ok: true, message: `Reads ${names.join(', ')}.` };
+            }
+
+            function setting(name, control, { help, hint } = {}) {
+                return el(
+                    'div',
+                    { class: 'setting' },
+                    el(
+                        'label',
+                        { class: 'name' },
+                        name,
+                        help ? el('span', { class: 'help', title: 'Open the guide' }, '?') : null
+                    ),
+                    control,
+                    hint ? el('div', { class: 'hint' }, hint) : null
+                );
+            }
+
+            function fxSetting(name, field, prop, placeholder, help) {
+                const result = checkFormula(field[prop] ?? '');
+                const box = el(
+                    'div',
+                    { class: 'fx-box' + (result.ok ? '' : ' bad') },
+                    el('span', { class: 'fx', 'aria-hidden': 'true' }, 'fx'),
+                    el('input', {
+                        value: field[prop] ?? '',
+                        placeholder,
+                        'aria-label': name,
+                        oninput: (event) => {
+                            field[prop] = event.target.value;
+                            const check = checkFormula(event.target.value);
+                            box.classList.toggle('bad', !check.ok);
+                            msg.className = 'msg ' + (check.ok ? (check.empty ? '' : 'ok') : 'bad');
+                            msg.textContent = check.ok
+                                ? check.empty
+                                    ? ''
+                                    : check.message
+                                : check.message;
+                            renderIssueBadges();
+                        },
+                    })
+                );
+                const msg = el(
+                    'div',
+                    {
+                        class: 'msg ' + (result.ok ? (result.empty ? '' : 'ok') : 'bad'),
+                        role: result.ok ? undefined : 'alert',
+                    },
+                    result.empty ? '' : result.message
+                );
+                return el(
+                    'div',
+                    { class: 'setting' },
+                    el(
+                        'label',
+                        { class: 'name' },
+                        name,
+                        help ? el('span', { class: 'help' }, '?') : null
+                    ),
+                    box,
+                    msg
+                );
+            }
+
+            function grp(id, title, count, ...children) {
+                const wrap = el(
+                    'div',
+                    { class: 'grp', 'data-grp': id, 'data-open': String(groupState[id]) },
+                    el(
+                        'button',
+                        {
+                            'aria-expanded': String(groupState[id]),
+                            onclick: () => {
+                                groupState[id] = !groupState[id];
+                                wrap.dataset.open = String(groupState[id]);
+                                wrap.firstChild.setAttribute(
+                                    'aria-expanded',
+                                    String(groupState[id])
+                                );
+                            },
+                        },
+                        el('span', { class: 'chev' }, '▸'),
+                        title,
+                        el('span', { class: 'count' }, `${count}`)
+                    ),
+                    el('div', { class: 'grp-body' }, children)
+                );
+                return wrap;
+            }
+
+            function renderIssueBadges() {
+                const field = fields[selected];
+                if (!field) return;
+                const limits = document.querySelector('[data-grp="limits"] > button');
+                if (!limits) return;
+                limits.querySelector('.issue')?.remove();
+                const bad = !checkFormula(field.maxFrom ?? '').ok;
+                limits.querySelector('.count').hidden = bad;
+                if (bad)
+                    limits.append(
+                        el('span', { class: 'issue', title: 'Contains an issue' }, '1 issue')
+                    );
+            }
+
+            function renderAfter(field) {
+                const toggle = (label, checked) =>
+                    el(
+                        'label',
+                        { class: 'toggle' },
+                        el('input', { type: 'checkbox', checked }),
+                        label
+                    );
+                return el(
+                    'div',
+                    {},
+                    el(
+                        'div',
+                        { class: 'el-head' },
+                        el('span', { class: 'chip' }, 'Rating'),
+                        el('span', { class: 'name' }, field.label),
+                        ['↑', '↓', '⧉', '✕'].map((s, i) =>
+                            el(
+                                'button',
+                                {
+                                    class: 'icon-btn',
+                                    title: ['Move up', 'Move down', 'Duplicate', 'Remove'][i],
+                                },
+                                s
+                            )
+                        )
+                    ),
+                    grp(
+                        'content',
+                        'Content',
+                        4,
+                        setting('Label', el('input', { value: field.label })),
+                        setting(
+                            'Help text',
+                            el('input', {
+                                value: field.help ?? '',
+                                placeholder: 'Shown under the label',
+                            })
+                        ),
+                        el(
+                            'div',
+                            { class: 'pair' },
+                            toggle('Show label', true),
+                            toggle('Book name hint', true)
+                        ),
+                        el('div', { class: 'small' }, 'Book term: Willpower')
+                    ),
+                    grp(
+                        'value',
+                        'Value',
+                        3,
+                        setting(
+                            'Stores value in',
+                            el('select', {}, el('option', {}, 'Custom value (this template)'))
+                        ),
+                        setting(
+                            'Value key',
+                            el(
+                                'div',
+                                { class: 'key-box' },
+                                el('span', { class: 'pre' }, '#'),
+                                el('input', { value: field.key, 'aria-label': 'Value key' })
+                            ),
+                            {
+                                help: true,
+                                hint: 'A name for the value. Fields with the same key share one value.',
+                            }
+                        ),
+                        toggle('Required (advisory marker)', false)
+                    ),
+                    grp(
+                        'limits',
+                        'Limits and formulas',
+                        3,
+                        el(
+                            'div',
+                            { class: 'pair' },
+                            setting('Minimum', el('input', { type: 'number', value: '0' })),
+                            setting(
+                                'Maximum',
+                                el('input', { type: 'number', value: String(field.max ?? 5) })
+                            )
+                        ),
+                        fxSetting('Maximum from', field, 'maxFrom', 'e.g. willpower.max', true)
+                    ),
+                    grp(
+                        'look',
+                        'Look',
+                        5,
+                        setting(
+                            'Presentation',
+                            el('select', {}, el('option', {}, 'Dots'), el('option', {}, 'Number')),
+                            { help: true }
+                        ),
+                        el(
+                            'div',
+                            { class: 'pair' },
+                            toggle('Text input', false),
+                            toggle('Show numbers', false)
+                        ),
+                        toggle('Die', true),
+                        setting(
+                            'Flags',
+                            el(
+                                'div',
+                                { class: 'line flags' },
+                                ['S', 'P', 'E'].map((l, i) =>
+                                    el(
+                                        'button',
+                                        {
+                                            'aria-pressed': String(
+                                                (field.flags ?? []).length > 0 && i === 0
+                                            ),
+                                            title: ['Specialization', 'Practiced', 'Experienced'][
+                                                i
+                                            ],
+                                        },
+                                        l
+                                    )
+                                )
+                            ),
+                            {
+                                hint: 'S, P, and E change the roll only where the system’s dice rule uses them.',
+                            }
+                        ),
+                        setting('Column in parent', el('select', {}, el('option', {}, 'Auto')))
+                    ),
+                    grp(
+                        'visibility',
+                        'Visibility and help',
+                        2,
+                        setting(
+                            'Show only when',
+                            el(
+                                'div',
+                                { class: 'line' },
+                                el(
+                                    'div',
+                                    { class: 'key-box', style: 'flex:1' },
+                                    el('span', { class: 'pre' }, '#'),
+                                    el('input', { placeholder: 'value key' })
+                                ),
+                                el('select', {}, el('option', {}, '=')),
+                                el('input', { placeholder: 'value', style: 'flex:1' })
+                            ),
+                            { help: true }
+                        ),
+                        setting(
+                            'Documentation link',
+                            el('input', { placeholder: '/docs/… or https://…' }),
+                            { help: true }
+                        )
+                    )
+                );
+            }
+
+            function renderSettings() {
+                const host = document.getElementById('settings');
+                const field = fields[selected];
+                if (!field) {
+                    const found = findGroup(selected);
+                    const title =
+                        found?.group.title ??
+                        model.sections.find((s) => s.id === selected)?.title ??
+                        '';
+                    host.replaceChildren(
+                        el(
+                            'p',
+                            { class: 'small' },
+                            `“${title}” is selected. Select a trait such as Willpower to compare the field settings.`
+                        )
+                    );
+                    return;
+                }
+                host.replaceChildren(mode === 'after' ? renderAfter(field) : renderBefore(field));
+                if (mode === 'after') renderIssueBadges();
+            }
+            for (const [id, value] of [
+                ['mode-before', 'before'],
+                ['mode-after', 'after'],
+            ]) {
+                document.getElementById(id).onclick = () => {
+                    mode = value;
+                    document
+                        .getElementById('mode-before')
+                        .setAttribute('aria-pressed', String(mode === 'before'));
+                    document
+                        .getElementById('mode-after')
+                        .setAttribute('aria-pressed', String(mode === 'after'));
+                    renderSettings();
+                };
+            }
+
+            function renderAll(drop) {
+                renderPage();
+                renderOutline(drop);
+                renderSettings();
+            }
+
+            // ---------- Drag with live placement ----------
+            const DWELL_MS = 320;
+            let drag = null;
+
+            document.getElementById('page').addEventListener('pointerdown', (event) => {
+                if (event.button !== 0) return;
+                const handle = event.target.closest('[data-drag]');
+                if (!handle) return;
+                // No text selection or native drag image: the pointer drives the move.
+                event.preventDefault();
+                const kind = handle.dataset.drag;
+                const id = handle.dataset.id;
+                drag = {
+                    kind,
+                    id,
+                    startX: event.clientX,
+                    startY: event.clientY,
+                    started: false,
+                    node: kind === 'item' ? handle : handle.parentElement,
+                    target: null,
+                    previewed: null,
+                    timer: 0,
+                };
+            });
+
+            window.addEventListener('pointermove', (event) => {
+                if (!drag) return;
+                if (!drag.started) {
+                    if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 5)
+                        return;
+                    startDrag();
+                }
+                drag.x = event.clientX;
+                drag.y = event.clientY;
+                drag.ghost.style.left = event.clientX + 12 + 'px';
+                drag.ghost.style.top = event.clientY + 8 + 'px';
+                updateTarget();
+                autoScroll();
+            });
+
+            window.addEventListener('pointerup', () => {
+                if (!drag) return;
+                if (!drag.started) {
+                    select(drag.id);
+                    drag = null;
+                    return;
+                }
+                finish(true);
+            });
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && drag?.started) finish(false);
+            });
+            window.addEventListener('blur', () => drag?.started && finish(false));
+            window.addEventListener('pointercancel', () => drag?.started && finish(false));
+
+            function startDrag() {
+                drag.started = true;
+                document.body.classList.add('dragging');
+                drag.origin = {
+                    parent: drag.node.parentElement,
+                    next: drag.node.nextElementSibling,
+                };
+                drag.node.classList.add('origin');
+                drag.ghost = el(
+                    'div',
+                    { class: 'ghost' },
+                    drag.kind === 'item' ? fields[drag.id].label : findGroup(drag.id).group.title
+                );
+                drag.marker = el('div', { class: 'drop-marker' });
+                drag.dwell = dwellRing();
+                document.body.append(drag.ghost, drag.dwell);
+                document.getElementById('page').append(drag.marker);
+                drag.marker.hidden = true;
+            }
+
+            function dwellRing() {
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('viewBox', '0 0 20 20');
+                svg.classList.add('dwell');
+                svg.innerHTML =
+                    '<circle cx="10" cy="10" r="8" fill="none" stroke="var(--border-strong)" stroke-width="2"/>' +
+                    '<circle cx="10" cy="10" r="8" fill="none" stroke="var(--primary)" stroke-width="2" stroke-dasharray="50.3" stroke-dashoffset="50.3" transform="rotate(-90 10 10)"/>';
+                svg.style.display = 'none';
+                return svg;
+            }
+
+            /** The nearest allowed position for the dragged element under the pointer. */
+            function nearestTarget(x, y) {
+                drag.ghost.style.display = 'none';
+                const under = document.elementFromPoint(x, y);
+                drag.ghost.style.display = '';
+                if (!under || !document.getElementById('page').contains(under)) return null;
+
+                if (drag.kind === 'item') {
+                    let body = under.closest('[data-container="group"]');
+                    if (!body) {
+                        const group = under.closest('.group');
+                        if (group) body = group.querySelector('[data-container="group"]');
+                    }
+                    if (!body) {
+                        // Between groups: the nearest group of that section.
+                        const grid = under.closest('[data-container="section"]');
+                        if (!grid) return null;
+                        let best = null;
+                        for (const candidate of grid.querySelectorAll('[data-container="group"]')) {
+                            const r = candidate.getBoundingClientRect();
+                            const dx = Math.max(r.left - x, 0, x - r.right);
+                            const dy = Math.max(r.top - y, 0, y - r.bottom);
+                            const d = Math.hypot(dx, dy);
+                            if (!best || d < best.d) best = { d, candidate };
+                        }
+                        body = best?.candidate;
+                        if (!body) return null;
+                    }
+                    const rows = [...body.children].filter(
+                        (c) => c.matches('.row:not(.origin-collapsed)') && c.dataset.id !== drag.id
+                    );
+                    let index = rows.length;
+                    for (let i = 0; i < rows.length; i++) {
+                        const r = rows[i].getBoundingClientRect();
+                        if (y < r.top + r.height / 2) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    return { kind: 'group', container: body.dataset.id, index, body, rows };
+                }
+
+                const grid = under.closest('[data-container="section"]');
+                if (!grid) return null;
+                const cards = [...grid.children].filter(
+                    (c) => c.matches('.group:not(.origin-collapsed)') && c.dataset.group !== drag.id
+                );
+                let index = cards.length;
+                let best = null;
+                cards.forEach((card, i) => {
+                    const r = card.getBoundingClientRect();
+                    const d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
+                    if (!best || d < best.d) best = { d, i, r };
+                });
+                if (best) index = x < best.r.left + best.r.width / 2 ? best.i : best.i + 1;
+                return {
+                    kind: 'section',
+                    container: grid.dataset.id,
+                    index,
+                    body: grid,
+                    rows: cards,
+                };
+            }
+
+            const same = (a, b) => a && b && a.container === b.container && a.index === b.index;
+
+            function updateTarget() {
+                const target = nearestTarget(drag.x, drag.y);
+                if (same(target, drag.target)) return;
+                drag.target = target;
+                clearTimeout(drag.timer);
+                if (drag.previewed && !same(target, drag.previewed)) undoPreview();
+                document
+                    .querySelectorAll('.drop-container')
+                    .forEach((n) => n.classList.remove('drop-container'));
+                renderOutline(target);
+                if (!target) {
+                    drag.marker.hidden = true;
+                    drag.dwell.style.display = 'none';
+                    return;
+                }
+                if (same(target, drag.previewed)) return;
+                placeMarker(target);
+                startDwell();
+                drag.timer = setTimeout(() => preview(target), DWELL_MS);
+            }
+
+            function placeMarker(target) {
+                const page = document.getElementById('page').getBoundingClientRect();
+                const { body, rows, index, kind } = target;
+                body.classList.add('drop-container');
+                const marker = drag.marker;
+                marker.hidden = false;
+                if (kind === 'group') {
+                    const b = body.getBoundingClientRect();
+                    let y;
+                    if (rows.length === 0) y = b.top + 12;
+                    else if (index < rows.length) y = rows[index].getBoundingClientRect().top - 1;
+                    else y = rows[rows.length - 1].getBoundingClientRect().bottom + 1;
+                    marker.className = 'drop-marker';
+                    marker.style.left = b.left - page.left + 'px';
+                    marker.style.width = b.width + 'px';
+                    marker.style.top = y - page.top - 1.5 + 'px';
+                    marker.style.height = '';
+                } else {
+                    const anchor = rows[Math.min(index, rows.length - 1)];
+                    const r = anchor
+                        ? anchor.getBoundingClientRect()
+                        : body.getBoundingClientRect();
+                    const x = index < rows.length ? r.left - 6 : r.right + 4;
+                    marker.className = 'drop-marker vertical';
+                    marker.style.left = x - page.left + 'px';
+                    marker.style.top = r.top - page.top + 'px';
+                    marker.style.height = r.height + 'px';
+                    marker.style.width = '';
+                }
+            }
+
+            function startDwell() {
+                const ring = drag.dwell;
+                ring.style.display = '';
+                ring.style.left = drag.x + 14 + 'px';
+                ring.style.top = drag.y - 22 + 'px';
+                const arc = ring.lastChild;
+                arc.style.transition = 'none';
+                arc.style.strokeDashoffset = '50.3';
+                requestAnimationFrame(() => {
+                    arc.style.transition = `stroke-dashoffset ${DWELL_MS}ms linear`;
+                    arc.style.strokeDashoffset = '0';
+                });
+            }
+
+            /** Moves the real element into place so the page lays out as after the drop. */
+            function preview(target) {
+                if (!drag || !same(target, drag.target)) return;
+                const { body, rows, index } = target;
+                drag.placeholder = el('div', {
+                    class: drag.node.className.replace('selected-el', '') + ' origin-collapsed',
+                });
+                drag.origin.parent.insertBefore(drag.placeholder, drag.node);
+                drag.node.classList.remove('origin');
+                drag.node.classList.add('previewing');
+                const before = rows[index] ?? null;
+                body.insertBefore(drag.node, before);
+                drag.previewed = target;
+                drag.marker.hidden = true;
+                drag.dwell.style.display = 'none';
+            }
+
+            function undoPreview() {
+                if (!drag.previewed) return;
+                drag.placeholder.replaceWith(drag.node);
+                drag.node.classList.remove('previewing');
+                drag.node.classList.add('origin');
+                drag.previewed = null;
+            }
+
+            function finish(commit) {
+                clearTimeout(drag.timer);
+                cancelAnimationFrame(drag.scroll);
+                const target = commit ? drag.target : null;
+                drag.ghost.remove();
+                drag.marker.remove();
+                drag.dwell.remove();
+                document.body.classList.remove('dragging');
+                const { kind, id } = drag;
+                drag = null;
+                if (target) {
+                    snapshot();
+                    if (kind === 'item') {
+                        const from = groupOfItem(id);
+                        from.items.splice(from.items.indexOf(id), 1);
+                        findGroup(target.container).group.items.splice(target.index, 0, id);
+                    } else {
+                        const from = findGroup(id);
+                        from.section.groups.splice(from.section.groups.indexOf(from.group), 1);
+                        model.sections
+                            .find((s) => s.id === target.container)
+                            .groups.splice(target.index, 0, from.group);
+                    }
+                    selected = id;
+                }
+                renderAll();
+            }
+
+            function autoScroll() {
+                cancelAnimationFrame(drag.scroll);
+                const area = document.getElementById('page-area');
+                const r = area.getBoundingClientRect();
+                const edge = 48;
+                const speed =
+                    drag.y < r.top + edge
+                        ? -(r.top + edge - drag.y)
+                        : drag.y > r.bottom - edge
+                          ? drag.y - (r.bottom - edge)
+                          : 0;
+                if (!speed) return;
+                const step = () => {
+                    if (!drag) return;
+                    area.scrollTop += speed / 4;
+                    updateTarget();
+                    drag.scroll = requestAnimationFrame(step);
+                };
+                drag.scroll = requestAnimationFrame(step);
+            }
+
+            // ---------- Resizable areas ----------
+            const LIMITS = { left: [160, 420, 240], right: [260, 520, 320] };
+            const PAGE_MIN = 360;
+            const STORE = 'ttgamer-editor-widths-prototype';
+            const widths = { left: LIMITS.left[2], right: LIMITS.right[2] };
+            try {
+                Object.assign(widths, JSON.parse(localStorage.getItem(STORE) ?? '{}'));
+            } catch {
+                // Storage blocked: defaults.
+            }
+            const areas = document.getElementById('areas');
+
+            function fit(side, value) {
+                const [min, max] = LIMITS[side];
+                const other = side === 'left' ? widths.right : widths.left;
+                const room = areas.clientWidth - other - 12 - PAGE_MIN;
+                return Math.round(Math.max(min, Math.min(max, value, Math.max(min, room))));
+            }
+            function applyWidths(save) {
+                widths.left = fit('left', widths.left);
+                widths.right = fit('right', widths.right);
+                areas.style.setProperty('--left', widths.left + 'px');
+                areas.style.setProperty('--right', widths.right + 'px');
+                for (const [id, side] of [
+                    ['div-left', 'left'],
+                    ['div-right', 'right'],
+                ]) {
+                    const divider = document.getElementById(id);
+                    divider.setAttribute('aria-valuemin', LIMITS[side][0]);
+                    divider.setAttribute('aria-valuemax', LIMITS[side][1]);
+                    divider.setAttribute('aria-valuenow', widths[side]);
+                }
+                if (save) {
+                    try {
+                        localStorage.setItem(STORE, JSON.stringify(widths));
+                    } catch {
+                        // Storage blocked: widths last for this page only.
+                    }
+                }
+            }
+            function resizer(id, side) {
+                const divider = document.getElementById(id);
+                const sign = side === 'left' ? 1 : -1;
+                let start = null;
+                divider.addEventListener('pointerdown', (event) => {
+                    if (event.button !== 0) return;
+                    divider.setPointerCapture(event.pointerId);
+                    divider.classList.add('active');
+                    start = { x: event.clientX, width: widths[side] };
+                });
+                divider.addEventListener('pointermove', (event) => {
+                    if (!start) return;
+                    widths[side] = fit(side, start.width + sign * (event.clientX - start.x));
+                    // During the drag only the CSS variable changes; nothing re-renders.
+                    areas.style.setProperty('--' + side, widths[side] + 'px');
+                });
+                const end = () => {
+                    if (!start) return;
+                    start = null;
+                    divider.classList.remove('active');
+                    applyWidths(true);
+                };
+                divider.addEventListener('pointerup', end);
+                divider.addEventListener('pointercancel', end);
+                divider.addEventListener('dblclick', () => {
+                    widths[side] = LIMITS[side][2];
+                    applyWidths(true);
+                });
+                divider.addEventListener('keydown', (event) => {
+                    const step = event.shiftKey ? 40 : 10;
+                    if (event.key === 'ArrowLeft') widths[side] -= sign * step;
+                    else if (event.key === 'ArrowRight') widths[side] += sign * step;
+                    else if (event.key === 'Home') widths[side] = LIMITS[side][2];
+                    else return;
+                    event.preventDefault();
+                    applyWidths(true);
+                });
+            }
+            resizer('div-left', 'left');
+            resizer('div-right', 'right');
+            window.addEventListener('resize', () => applyWidths(false));
+            document.getElementById('reset-widths').onclick = () => {
+                widths.left = LIMITS.left[2];
+                widths.right = LIMITS.right[2];
+                applyWidths(true);
+            };
+
+            // ---------- Phone tabs ----------
+            for (const tab of document.querySelectorAll('.tabs button')) {
+                tab.onclick = () => {
+                    for (const other of document.querySelectorAll('.tabs button'))
+                        other.setAttribute('aria-selected', String(other === tab));
+                    for (const area of document.querySelectorAll('.area[data-tab]'))
+                        area.classList.toggle('shown', area.dataset.tab === tab.dataset.show);
+                };
+            }
+
+            renderAll();
+            applyWidths(false);
+        </script>
+    </body>
+</html>
