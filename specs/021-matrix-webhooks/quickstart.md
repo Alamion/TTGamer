@@ -50,3 +50,8 @@ the webhook path, `waitForComplete` recommended.
 
 Time the first share from opening the dice settings (SC-001: under one minute). Record the
 result (date, homeserver, outcome per step, SC-001 time) in this file before merging.
+
+### Result
+
+- 2026-10-02 — passed on the homeserver admin's hookshot instance and test room: the maintainer
+  walked §2 and §3 in full (curl checks, steps 1–9, SC-001); no refinements needed.

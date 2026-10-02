@@ -229,7 +229,7 @@ Discord, Matrix (service registry)`), `src/dice_roller/AGENTS.md` (Discord → r
 - [x] T027 Run `yarn verify:full`; fix findings (knip: removed exports, unused static files).
 - [x] T028 Local UI check per quickstart §2 with `playwright-cli` against
       `http://localhost:3000` (reuse the running dev server).
-- [ ] T029 Live hookshot check per quickstart §3 with the admin's address; record date,
+- [x] T029 Live hookshot check per quickstart §3 with the admin's address; record date,
       homeserver, per-step result, and the time from opening the settings to the first roll in
       the room (SC-001) in `quickstart.md`. Only then mark T-087 done in
       `TODO.md` and merge into `testing` (FR-014).
