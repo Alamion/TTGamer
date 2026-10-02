@@ -94,16 +94,12 @@ editor:
     emptyName: Template name is required.
     emptyLabel: Every section and field needs a non-empty label.
     addElement: Add element
-    paletteSection: Section
-    paletteSectionHint: Collapsible page block with a heading
-    paletteGroup: Field group
-    paletteGroupHint: Titled card that groups elements
+    paletteGroup: Group
+    paletteGroupHint: 'A page section, or a card inside another group: it holds other elements.'
     paletteField: Field
     paletteFieldHint: 'One value: text, number, rating, choice, formula…'
-    paletteTable: Table
-    paletteTableHint: Rows of values sharing the same columns
     paletteList: List
-    paletteListHint: 'Entries added one by one: custom, skills, merits, equipment…'
+    paletteListHint: 'Entries added one by one, or rows of a table: custom, skills, merits, equipment…'
     paletteTracker: Tracker
     paletteTrackerHint: 'Boxes to mark by level: health, stress, or any other burden'
     valueSource: Stores value in

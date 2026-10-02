@@ -33,6 +33,7 @@ export const InsertSlot = memo(function InsertSlot({
 
     return (
         <AddElementMenu
+            atRoot={parentId === null}
             disabled={atNodeLimit}
             onInsert={(node) => actions.insertAt(placement, node)}
         >

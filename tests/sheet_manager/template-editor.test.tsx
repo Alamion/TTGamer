@@ -810,26 +810,32 @@ describe('add-element menu and element sources', () => {
         return outlineRow(ids[ids.length - 1]!);
     }
 
-    it('offers exactly the six element kinds with descriptions', () => {
+    it('offers exactly the four element kinds with descriptions', () => {
         openEmpty();
         openRootMenu();
         const options = [...document.querySelectorAll('[data-palette-option]')].map((element) =>
             element.getAttribute('data-palette-option')
         );
-        expect(options).toEqual(['section', 'group', 'field', 'table', 'list', 'tracker']);
+        expect(options).toEqual(['group', 'field', 'list', 'tracker']);
         expect(
             screen.getByText('Boxes to mark by level: health, stress, or any other burden')
         ).not.toBeNull();
-        const menu = document.querySelector('[data-palette-option="section"]')!.parentElement!;
+        const menu = document.querySelector('[data-palette-option="group"]')!.parentElement!;
         expect(menu.textContent).not.toContain('Strength');
     });
 
     it('adds each kind as a valid element and selects it', () => {
         openEmpty();
-        expect(addFromRootMenu('section').getAttribute('data-node-type')).toBe('section');
-        expect(addFromRootMenu('group').getAttribute('data-node-type')).toBe('group');
+        // A group on the page is a section; inside another group it is a card.
+        const section = addFromRootMenu('group');
+        expect(section.getAttribute('data-node-type')).toBe('section');
+        const sectionId = section.getAttribute('data-outline-row')!;
+        fireEvent.click(document.querySelector(`[data-insert-slot^="${sectionId}:"]`)!);
+        fireEvent.click(document.querySelector('[data-palette-option="group"]')!);
+        expect(
+            outlineChildIds(sectionId).map((id) => outlineRow(id).getAttribute('data-node-type'))
+        ).toEqual(['group']);
         expect(addFromRootMenu('field').getAttribute('data-node-type')).toBe('text');
-        expect(addFromRootMenu('table').getAttribute('data-node-type')).toBe('table');
         expect(addFromRootMenu('list').getAttribute('data-node-type')).toBe('list');
         // The tracker is an own-value field; its Source can switch it to a built-in track.
         const tracker = addFromRootMenu('tracker');
@@ -2065,5 +2071,107 @@ describe('save problems lead to their setting (spec 022, US4)', () => {
         const reported = takeSheetIssues();
         expect(reported.map(({ code }) => code)).toEqual(['template-draft-invalid']);
         expect(reported[0]?.details).toMatchObject({ nodeId: 'stats', setting: 'columnWidths' });
+    });
+});
+
+describe('group and list kinds (spec 022, US6)', () => {
+    afterEach(cleanup);
+    beforeEach(() => {
+        useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
+        useDocumentStore.setState({ documents: [], currentDocumentId: null });
+    });
+
+    const kindsKit = () =>
+        CustomTemplateSchema.parse({
+            id: 'kinds-kit',
+            name: 'Kinds Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'adv',
+                    type: 'section',
+                    title: 'Advantages',
+                    children: [{ id: 'luck', type: 'number', label: 'Luck' }],
+                },
+                {
+                    id: 'gear',
+                    type: 'table',
+                    title: 'Gear',
+                    columns: [
+                        { id: 'item', type: 'text', label: 'Item' },
+                        { id: 'qty', type: 'number', label: 'Qty' },
+                    ],
+                },
+            ],
+        });
+
+    /** The confirmation opens over the editor dialog. */
+    const confirmDialog = () =>
+        screen.getAllByRole('dialog').find((dialog) => !dialog.querySelector('[data-outline]'))!;
+
+    const open = () =>
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template: kindsKit() },
+                onClose: () => {},
+            })
+        );
+
+    it('names kinds in the outline and switches a section to a card and back', () => {
+        open();
+        expect(outlineRow('adv').textContent).toContain('Group · Section');
+        expect(outlineRow('gear').textContent).toContain('List · Table');
+        selectInOutline('adv');
+        fireEvent.click(within(settings('adv')).getByRole('radio', { name: /^Card/ }));
+        expect(outlineRow('adv').getAttribute('data-node-type')).toBe('group');
+        expect(outlineChildIds('adv')).toEqual(['luck']);
+        fireEvent.click(within(settings('adv')).getByRole('radio', { name: /^Section/ }));
+        expect(outlineRow('adv').getAttribute('data-node-type')).toBe('section');
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+        expect(outlineRow('adv').getAttribute('data-node-type')).toBe('group');
+    });
+
+    it('asks before a table drops its other columns, naming them', () => {
+        open();
+        selectInOutline('gear');
+        fireEvent.click(within(settings('gear')).getByRole('radio', { name: /^Entries/ }));
+        const confirm = confirmDialog();
+        expect(confirm.textContent).toContain('“Qty”');
+        fireEvent.click(within(confirm).getAllByRole('button', { name: 'Cancel' })[0]!);
+        expect(outlineRow('gear').getAttribute('data-node-type')).toBe('table');
+
+        fireEvent.click(within(settings('gear')).getByRole('radio', { name: /^Entries/ }));
+        fireEvent.click(within(confirmDialog()).getByRole('button', { name: 'Remove columns' }));
+        expect(outlineRow('gear').getAttribute('data-node-type')).toBe('list');
+    });
+
+    it('warns on save when documents hold values of the earlier kind', () => {
+        const template = kindsKit();
+        useTemplateStore.setState({ templates: [template], quarantine: [], defaultOverrides: {} });
+        useDocumentStore.setState({
+            documents: [
+                {
+                    id: 'doc-kinds',
+                    kind: 'character',
+                    systemId: 'star-wars-wod',
+                    definitionId: 'sentient',
+                    schemaVersion: 1,
+                    metadata: { title: 'Mara', tags: [], templateId: 'kinds-kit' },
+                    templateValues: { gear: { '0': { item: 'Rope' } } },
+                    data: {},
+                } as never,
+            ],
+            currentDocumentId: 'doc-kinds',
+        });
+        open();
+        selectInOutline('gear');
+        fireEvent.click(within(settings('gear')).getByRole('radio', { name: /^Entries/ }));
+        fireEvent.click(within(confirmDialog()).getByRole('button', { name: 'Remove columns' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const confirm = confirmDialog();
+        expect(confirm.textContent).toContain('Gear is now shown as Entries');
+        fireEvent.click(within(confirm).getByRole('button', { name: 'Save anyway' }));
+        expect(useTemplateStore.getState().templates[0]?.children[1]?.type).toBe('list');
     });
 });

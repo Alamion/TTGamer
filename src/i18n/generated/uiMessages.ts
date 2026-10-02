@@ -4195,21 +4195,14 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.addElement',
                     message: 'Add element',
                 },
-                paletteSection: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteSection',
-                    message: 'Section',
-                },
-                paletteSectionHint: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteSectionHint',
-                    message: 'Collapsible page block with a heading',
-                },
                 paletteGroup: {
                     id: 'ttgamer.ui.sheet.templates.editor.paletteGroup',
-                    message: 'Field group',
+                    message: 'Group',
                 },
                 paletteGroupHint: {
                     id: 'ttgamer.ui.sheet.templates.editor.paletteGroupHint',
-                    message: 'Titled card that groups elements',
+                    message:
+                        'A page section, or a card inside another group: it holds other elements.',
                 },
                 paletteField: {
                     id: 'ttgamer.ui.sheet.templates.editor.paletteField',
@@ -4219,21 +4212,14 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.paletteFieldHint',
                     message: 'One value: text, number, rating, choice, formula…',
                 },
-                paletteTable: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteTable',
-                    message: 'Table',
-                },
-                paletteTableHint: {
-                    id: 'ttgamer.ui.sheet.templates.editor.paletteTableHint',
-                    message: 'Rows of values sharing the same columns',
-                },
                 paletteList: {
                     id: 'ttgamer.ui.sheet.templates.editor.paletteList',
                     message: 'List',
                 },
                 paletteListHint: {
                     id: 'ttgamer.ui.sheet.templates.editor.paletteListHint',
-                    message: 'Entries added one by one: custom, skills, merits, equipment…',
+                    message:
+                        'Entries added one by one, or rows of a table: custom, skills, merits, equipment…',
                 },
                 paletteTracker: {
                     id: 'ttgamer.ui.sheet.templates.editor.paletteTracker',

@@ -3594,28 +3594,16 @@
         "message": "Одно значение: текст, число, рейтинг, выбор, формула…"
     },
     "ttgamer.ui.sheet.templates.editor.paletteGroup": {
-        "message": "Группа полей"
+        "message": "Группа"
     },
     "ttgamer.ui.sheet.templates.editor.paletteGroupHint": {
-        "message": "Карточка с заголовком, объединяющая элементы"
+        "message": "Раздел страницы или карточка внутри другой группы: в ней лежат другие элементы."
     },
     "ttgamer.ui.sheet.templates.editor.paletteList": {
         "message": "Список"
     },
     "ttgamer.ui.sheet.templates.editor.paletteListHint": {
-        "message": "Записи добавляются по одной: свои, навыки, достоинства, снаряжение…"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteSection": {
-        "message": "Секция"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteSectionHint": {
-        "message": "Сворачиваемый блок страницы с заголовком"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteTable": {
-        "message": "Таблица"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteTableHint": {
-        "message": "Строки значений с общими колонками"
+        "message": "Записи по одной или строки таблицы: свои, навыки, достоинства, снаряжение…"
     },
     "ttgamer.ui.sheet.templates.editor.paletteTracker": {
         "message": "Трекер"

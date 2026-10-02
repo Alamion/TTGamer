@@ -3594,28 +3594,16 @@
         "message": "One value: text, number, rating, choice, formula…"
     },
     "ttgamer.ui.sheet.templates.editor.paletteGroup": {
-        "message": "Field group"
+        "message": "Group"
     },
     "ttgamer.ui.sheet.templates.editor.paletteGroupHint": {
-        "message": "Titled card that groups elements"
+        "message": "A page section, or a card inside another group: it holds other elements."
     },
     "ttgamer.ui.sheet.templates.editor.paletteList": {
         "message": "List"
     },
     "ttgamer.ui.sheet.templates.editor.paletteListHint": {
-        "message": "Entries added one by one: custom, skills, merits, equipment…"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteSection": {
-        "message": "Section"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteSectionHint": {
-        "message": "Collapsible page block with a heading"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteTable": {
-        "message": "Table"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteTableHint": {
-        "message": "Rows of values sharing the same columns"
+        "message": "Entries added one by one, or rows of a table: custom, skills, merits, equipment…"
     },
     "ttgamer.ui.sheet.templates.editor.paletteTracker": {
         "message": "Tracker"

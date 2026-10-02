@@ -24,6 +24,7 @@ import { fallbackRowName, RowMoveControls } from '../../controls/RowMoveControls
 import { ListCatalogPicker } from './CatalogBindingEditor';
 import type { NodeUpdates } from './draft';
 import { EditorFillTargetsContext, useEditorModel } from './EditorModel';
+import { elementKind, type GroupKind, type ListKind, tableKindBlocked } from './elementKinds';
 import { FieldEditor, type FieldEditorCallbacks, fieldSettings } from './FieldEditor';
 import {
     ColumnLayoutControl,
@@ -69,6 +70,8 @@ export interface ElementEditorCallbacks {
     onMoveTableColumn: (tableId: string, from: number, to: number) => void;
     /** Swaps a node for another shape (source changes), keeping its id. */
     onReplace: (nodeId: string, next: TemplateNode) => void;
+    /** Shows a group or list as another kind (spec 022, US6); the stored type changes. */
+    onSwitchKind: (nodeId: string, kind: GroupKind | ListKind) => void;
 }
 
 /** What the outline, chips, and announcements call a node. */
@@ -84,10 +87,83 @@ export function nodeDisplayName(node: TemplateNode): string {
     return name || '—';
 }
 
-/** The translated element kind (Section, Field group, Rating, …). */
+const KIND_NAMES = {
+    group: editor.elementGroup,
+    list: editor.elementList,
+    section: editor.kindSection,
+    card: editor.kindCard,
+    entries: editor.kindEntries,
+    table: editor.kindTable,
+} as const;
+
+/** The translated element kind ("Group · Section", "List · Table", Rating, …). */
 export function nodeKindLabel(node: TemplateNode): string {
     if (node.type === 'primitive') return translate(fieldTypes.builtIn);
+    const kind = elementKind(node);
+    if (kind) {
+        return translate(editor.kindOf, {
+            element: translate(KIND_NAMES[kind.element]),
+            kind: translate(KIND_NAMES[kind.kind]),
+        });
+    }
     return translate(fieldTypes[node.type]);
+}
+
+/** The kind of a group or list (spec 022, US6), a radio group in Content. */
+function KindChoice({
+    blocked,
+    node,
+    onSwitch,
+}: {
+    blocked?: string;
+    node: TemplateNode;
+    onSwitch: (kind: GroupKind | ListKind) => void;
+}) {
+    const current = elementKind(node);
+    if (!current) return null;
+    const options =
+        current.element === 'group'
+            ? ([
+                  ['section', editor.kindSectionHint],
+                  ['card', editor.kindCardHint],
+              ] as const)
+            : ([
+                  ['entries', editor.kindEntriesHint],
+                  ['table', editor.kindTableHint],
+              ] as const);
+    return (
+        <fieldset className="grid gap-1" data-setting="kind" tabIndex={-1}>
+            <legend className="mb-1 text-xs font-semibold text-textPrimary">
+                {t(editor.kind)}
+            </legend>
+            {options.map(([kind, hint]) => {
+                const disabled = kind === 'table' && blocked !== undefined;
+                return (
+                    <label
+                        key={kind}
+                        className={`flex items-start gap-2 rounded border border-border px-2 py-1.5 text-xs has-[:checked]:border-primary ${disabled ? 'opacity-50' : 'cursor-pointer'}`}
+                    >
+                        <input
+                            type="radio"
+                            name={`kind-${node.id}`}
+                            checked={current.kind === kind}
+                            disabled={disabled}
+                            onChange={() => onSwitch(kind)}
+                            className="mt-0.5"
+                        />
+                        <span className="grid">
+                            <span className="font-semibold text-textPrimary">
+                                {t(KIND_NAMES[kind])}
+                            </span>
+                            <span className="text-textSecondary">
+                                {disabled ? blocked : t(hint)}
+                            </span>
+                        </span>
+                    </label>
+                );
+            })}
+        </fieldset>
+    );
 }
 
 export interface ElementActions {
@@ -327,7 +403,15 @@ function DocsLinkSetting({
 function sectionSettings(node: SectionNode, callbacks: ElementEditorCallbacks): GroupedSettings {
     const update = (updates: NodeUpdates) => callbacks.onUpdate(node.id, updates);
     return {
-        content: <TitleSetting node={node} onChange={(title) => update({ title })} />,
+        content: (
+            <>
+                <KindChoice
+                    node={node}
+                    onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
+                />
+                <TitleSetting node={node} onChange={(title) => update({ title })} />
+            </>
+        ),
         look: (
             <ColumnLayoutControl
                 columns={node.columns}
@@ -352,7 +436,15 @@ function sectionSettings(node: SectionNode, callbacks: ElementEditorCallbacks): 
 function groupSettings(node: GroupNode, callbacks: ElementEditorCallbacks): GroupedSettings {
     const update = (updates: NodeUpdates) => callbacks.onUpdate(node.id, updates);
     return {
-        content: <TitleSetting node={node} onChange={(title) => update({ title })} />,
+        content: (
+            <>
+                <KindChoice
+                    node={node}
+                    onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
+                />
+                <TitleSetting node={node} onChange={(title) => update({ title })} />
+            </>
+        ),
         look: (
             <>
                 <ToggleRow
@@ -399,6 +491,10 @@ function tableSettings(node: TableNode, callbacks: ElementEditorCallbacks): Grou
     return {
         content: (
             <>
+                <KindChoice
+                    node={node}
+                    onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
+                />
                 <TitleSetting
                     node={node}
                     onChange={(title) => update({ title: title || undefined })}
@@ -541,6 +637,11 @@ function listSettings(node: ListNode, callbacks: ElementEditorCallbacks): Groupe
     return {
         content: (
             <>
+                <KindChoice
+                    node={node}
+                    blocked={tableKindBlocked(node) ? t(editor.tableUnavailable) : undefined}
+                    onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
+                />
                 <TitleSetting
                     node={node}
                     onChange={(title) => listUpdate({ title: title || undefined })}

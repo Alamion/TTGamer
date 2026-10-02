@@ -310,7 +310,7 @@ Table (entry field becomes first column).
 
 ### Tests
 
-- [ ] T031 [P] [US6] Create `tests/sheet_manager/element-kinds.test.ts`: `elementKind` for each stored
+- [x] T031 [P] [US6] Create `tests/sheet_manager/element-kinds.test.ts`: `elementKind` for each stored
       type; section↔group and list↔table conversions per research R8 (kept settings, stash restore,
       entry field ↔ first column, non-list types become text, extra columns dropped); Table refused
       for `bindingKey` and catalog lists; converted drafts pass `CustomTemplateSchema`; a template
@@ -318,19 +318,19 @@ Table (entry field becomes first column).
 
 ### Implementation
 
-- [ ] T032 [US6] Create `TE/elementKinds.ts`: `elementKind(node)`, `switchGroupKind(node, kind,
+- [x] T032 [US6] Create `TE/elementKinds.ts`: `elementKind(node)`, `switchGroupKind(node, kind,
 stash)`, `switchListKind(node, kind, stash)` returning `{ node, dropped }`, `tableKindBlocked(node)`,
       and the per-dialog `KindStash`.
-- [ ] T033 [US6] Kind choice in settings (content group): a "Kind" radio group in the Group and List
+- [x] T033 [US6] Kind choice in settings (content group): a "Kind" radio group in the Group and List
       parts (`TE/ElementSettings.tsx`) applying the switch through `applyOp` (one undo step); dropping
       columns asks first with `dropColumnsConfirm` in a small confirmation dialog added to Dialog
       (Radix Dialog like the existing save confirmation; `window.confirm` is not used);
       Table disabled with `tableUnavailable`.
-- [ ] T034 [P] [US6] Names everywhere: `nodeKindLabel` returns "{Element} · {Kind}" for containers,
+- [x] T034 [P] [US6] Names everywhere: `nodeKindLabel` returns "{Element} · {Kind}" for containers,
       lists, and tables (outline rows, frame chips, settings header); `TE/AddElementMenu.tsx` offers
       Group, Field, List, Tracker (Group builds a section at the page root and a card inside a
       container; List builds entries).
-- [ ] T035 [US6] Save warning in Dialog: a list or table whose stored type differs from the saved
+- [x] T035 [US6] Save warning in Dialog: a list or table whose stored type differs from the saved
       template and has values in any document joins the existing save confirmation with
       `kindChangeSaveWarning`; test in `tests/sheet_manager/template-editor.test.tsx`.
 

@@ -94,16 +94,12 @@ editor:
     emptyName: Требуется название шаблона.
     emptyLabel: Секции и поля требуют непустого названия.
     addElement: Добавить элемент
-    paletteSection: Секция
-    paletteSectionHint: Сворачиваемый блок страницы с заголовком
-    paletteGroup: Группа полей
-    paletteGroupHint: Карточка с заголовком, объединяющая элементы
+    paletteGroup: Группа
+    paletteGroupHint: 'Раздел страницы или карточка внутри другой группы: в ней лежат другие элементы.'
     paletteField: Поле
     paletteFieldHint: 'Одно значение: текст, число, рейтинг, выбор, формула…'
-    paletteTable: Таблица
-    paletteTableHint: Строки значений с общими колонками
     paletteList: Список
-    paletteListHint: 'Записи добавляются по одной: свои, навыки, достоинства, снаряжение…'
+    paletteListHint: 'Записи по одной или строки таблицы: свои, навыки, достоинства, снаряжение…'
     paletteTracker: Трекер
     paletteTrackerHint: 'Клетки с отметками по уровням: здоровье, стресс или любая другая ноша'
     valueSource: Где хранится значение

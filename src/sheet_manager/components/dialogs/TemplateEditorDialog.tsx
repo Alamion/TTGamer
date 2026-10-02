@@ -89,6 +89,15 @@ import {
 import { EditorPage } from './template-editor/EditorPage';
 import { EditorPreview } from './template-editor/EditorPreview';
 import {
+    type GroupKind,
+    type KindChange,
+    kindChangeReport,
+    type KindStash,
+    type ListKind,
+    switchGroupKind,
+    switchListKind,
+} from './template-editor/elementKinds';
+import {
     type ElementEditorCallbacks,
     ElementSettings,
     nodeDisplayName,
@@ -218,7 +227,15 @@ export function TemplateEditorDialog({
         plan?: RetargetPlan;
         lists: readonly ListItemChange[];
         trackers: readonly TrackerChange[];
+        kinds: readonly KindChange[];
     } | null>(null);
+    /** A switch from Table to Entries waiting for the author to drop the other columns. */
+    const [pendingKind, setPendingKind] = useState<{
+        nodeId: string;
+        kind: ListKind;
+        columns: readonly string[];
+    } | null>(null);
+    const kindStash = useRef<KindStash>(new Map());
     const plural = usePluralMessage();
     const [saveIssues, setSaveIssues] = useState<readonly DraftIssue[]>([]);
     const [announcement, setAnnouncement] = useState('');
@@ -426,6 +443,31 @@ export function TemplateEditorDialog({
     const { view: dragView, drag } = useEditorDrag({ getDraft, nameOf, onCommit: commitDrag });
     const shownDraft = dragView?.preview ?? draft;
 
+    /** One undo step; settings the other kind lacks wait in the session stash. */
+    const switchKind = useCallback(
+        (nodeId: string, kind: GroupKind | ListKind) =>
+            change((current) => {
+                const node = findNode(current, nodeId);
+                if (node?.type === 'section' || node?.type === 'group') {
+                    return replaceNode(
+                        current,
+                        nodeId,
+                        switchGroupKind(node, kind as GroupKind, kindStash.current)
+                    );
+                }
+                if (node?.type === 'list' || node?.type === 'table') {
+                    const { node: next } = switchListKind(
+                        node,
+                        kind as ListKind,
+                        kindStash.current
+                    );
+                    return replaceNode(current, nodeId, next);
+                }
+                return current;
+            }),
+        [change]
+    );
+
     const callbacks = useMemo<ElementEditorCallbacks>(
         () => ({
             onUpdate: (nodeId, updates) =>
@@ -463,8 +505,18 @@ export function TemplateEditorDialog({
             onMoveTableColumn: (tableId, from, to) =>
                 change((current) => moveTableColumn(current, tableId, from, to)),
             onReplace: (nodeId, next) => change((current) => replaceNode(current, nodeId, next)),
+            onSwitchKind: (nodeId, kind) => {
+                const node = findNode(historyRef.current.present.draft, nodeId);
+                if (node?.type === 'table' && kind === 'entries' && node.columns.length > 1) {
+                    setPendingKind({
+                        nodeId,
+                        kind,
+                        columns: node.columns.slice(1).map(({ label }) => label),
+                    });
+                } else switchKind(nodeId, kind);
+            },
         }),
-        [applyOp, change, removeSelected]
+        [applyOp, change, removeSelected, switchKind]
     );
 
     const undoChange = useCallback(() => commit(undo(historyRef.current)), [commit]);
@@ -614,9 +666,15 @@ export function TemplateEditorDialog({
                 parsed,
                 useDocumentStore.getState().documents
             );
-            const asks = lists.length > 0 || trackers.length > 0;
+            // Lists and tables switched to the other kind stop showing stored values (spec 022).
+            const kinds = kindChangeReport(
+                base.kind === 'edit' ? base.template : undefined,
+                parsed,
+                useDocumentStore.getState().documents
+            );
+            const asks = lists.length > 0 || trackers.length > 0 || kinds.length > 0;
             if (editingDefault) {
-                if (asks) setPendingSave({ template: parsed, lists, trackers });
+                if (asks) setPendingSave({ template: parsed, lists, trackers, kinds });
                 else saveDefault(parsed);
                 return;
             }
@@ -629,7 +687,7 @@ export function TemplateEditorDialog({
                 templates: useTemplateStore.getState().templates,
             });
             if (plan.documentIds.length > 0 || asks) {
-                setPendingSave({ template: parsed, plan, lists, trackers });
+                setPendingSave({ template: parsed, plan, lists, trackers, kinds });
             } else saveUserTemplate(parsed, plan);
         } catch (error) {
             // Raw schema text never reaches the author (spec 022, FR-019): each problem is
@@ -661,12 +719,20 @@ export function TemplateEditorDialog({
         plan,
         lists,
         trackers,
+        kinds,
     }: {
         plan?: RetargetPlan;
         lists: readonly ListItemChange[];
         trackers: readonly TrackerChange[];
+        kinds: readonly KindChange[];
     }): string =>
         [
+            ...kinds.map(({ title, kind }) =>
+                translate(editor.kindChangeSaveWarning, {
+                    title,
+                    kind: t(kind === 'table' ? editor.kindTable : editor.kindEntries),
+                })
+            ),
             ...lists.flatMap(({ title, documents, lostValues, hiddenNames }) => [
                 ...(lostValues > 0
                     ? [
@@ -1119,19 +1185,40 @@ export function TemplateEditorDialog({
                     setPendingSave(null);
                 }}
                 title={t(
-                    pendingSave?.lists.length
-                        ? editor.listChangeTitle
-                        : pendingSave?.trackers.length
-                          ? trackerText.changeTitle
-                          : editor.retargetTitle
+                    pendingSave?.kinds.length
+                        ? editor.kindChangeTitle
+                        : pendingSave?.lists.length
+                          ? editor.listChangeTitle
+                          : pendingSave?.trackers.length
+                            ? trackerText.changeTitle
+                            : editor.retargetTitle
                 )}
                 description={pendingSave ? pendingSaveDescription(pendingSave) : ''}
                 confirmLabel={t(
-                    pendingSave?.lists.length || pendingSave?.trackers.length
+                    pendingSave?.lists.length ||
+                        pendingSave?.trackers.length ||
+                        pendingSave?.kinds.length
                         ? editor.listChangeConfirm
                         : editor.retargetConfirm
                 )}
                 cancelLabel={t(editor.cancel)}
+            />
+            <ConfirmDialog
+                open={pendingKind !== null}
+                onOpenChange={(open) => {
+                    if (!open) setPendingKind(null);
+                }}
+                onConfirm={() => {
+                    if (pendingKind) switchKind(pendingKind.nodeId, pendingKind.kind);
+                    setPendingKind(null);
+                }}
+                title={t(editor.dropColumnsTitle)}
+                description={translate(editor.dropColumnsConfirm, {
+                    columns: (pendingKind?.columns ?? []).map((label) => `“${label}”`).join(', '),
+                })}
+                confirmLabel={t(editor.dropColumnsButton)}
+                cancelLabel={t(editor.cancel)}
+                variant="danger"
             />
             <ConfirmDialog
                 open={discardConfirmOpen}
