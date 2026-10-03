@@ -21,24 +21,10 @@
 
 See root `TOFIX.md` — cross-cutting issue, severity owned there. Dice roller owns the UI components (`RollSharingSubscription`, `DiceRollerSettingsModal`, `sessionStorage`) but the fix requires a backend proxy.
 
-### Three.js resource ownership and disposal
-
-`ResourceTracker` does not consistently attach a single geometry/material child to its parent ownership map, and scene removal paths do not always dispose owned GPU resources. Repeated rolls and resizes can therefore retain buffers, materials, or textures.
-
-**Files:** `dice-logic/renderer/resource.ts`, `scene.ts`, and `renderer.ts`
-
-**Fix prerequisites:** define shared-resource ownership/reference counting, route removal through one release operation, add fake disposable-resource tests, then run a manual repeated-roll/resize stress check. Do not blindly dispose shared materials while live dice still reference them.
-
-## 🟢 Medium
-
-### 3D physics artifacts (tracked as root TOFIX F-004 and F-005)
-
-See root `TOFIX.md`. F-004: dice spawn inside each other and scatter at high speed. F-005: show/fade phases are frame-counted, so roll timing depends on the display refresh rate (supersedes the former "High-refresh-rate settling" entry). Both are reproduced first by the display-condition tests (root T-066).
-
----
-
 ## ✅ Done
 
+- Three.js resource ownership and disposal — FIXED: dice templates count their dice and free geometry and atlas once evicted and unused (`releaseDiceGeometry`); the unbounded face texture and atlas caches are gone; resize and `dispose()` free the old lights (shadow maps), desk, and dev shadow helper (`tests/dice_roller/renderer/resources.test.ts`)
+- 3D physics artifacts (root F-004 spawns inside each other, F-005 refresh-rate timing) — FIXED in `808cecd`: simulated-time settle and fade, separated spawns, covered by the display-condition tests (T-066)
 - `buildDiscordHistoryMessage` type hack (`undefined as unknown as string`) — FIXED: `details`/`formatted` made optional
 - `sessionStorage.ts` — empty catch blocks now log warnings
 - `Root.tsx` inline roll toast — extracted to `RollToastContent` component

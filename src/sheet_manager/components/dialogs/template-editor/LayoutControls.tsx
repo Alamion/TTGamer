@@ -2,15 +2,17 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
+import { useEffect, useRef } from 'react';
 
 import type { VisibleWhen } from '../../../types/template';
 import { TEMPLATE_LIMITS } from '../../../types/template';
 import { EditorHelp } from './EditorHelp';
+import { inputClasses } from './settings/inputClasses';
+import { KeyField } from './settings/KeyField';
+import { useMixedSetting } from './settings/mixedSettings';
+import { SettingField } from './settings/SettingField';
 
 const editor = uiMessages.sheet.templates.editor;
-
-const inputClasses =
-    'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
 
 const t = (descriptor: { message: string }, values?: Record<string, string | number>) =>
     translate(descriptor, values);
@@ -22,13 +24,21 @@ export function ToggleRow({
     hint,
     label,
     onChange,
+    setting,
 }: {
     checked: boolean;
     disabled?: boolean;
     hint?: string;
     label: string;
     onChange: (checked: boolean) => void;
+    setting?: string;
 }) {
+    // Several selected elements that differ show the box half-checked (spec 023, US3).
+    const mixed = useMixedSetting(setting);
+    const box = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        if (box.current) box.current.indeterminate = mixed;
+    }, [mixed]);
     return (
         <div className="grid gap-0.5">
             <label
@@ -38,10 +48,13 @@ export function ToggleRow({
                 )}
             >
                 <input
+                    ref={box}
                     type="checkbox"
-                    checked={checked}
+                    checked={mixed ? false : checked}
+                    aria-checked={mixed ? 'mixed' : undefined}
                     disabled={disabled}
                     onChange={(event) => onChange(event.target.checked)}
+                    data-setting={setting}
                     className="h-3.5 w-3.5"
                 />
                 {label}
@@ -69,7 +82,7 @@ export function ColumnSpanControl({
     const current = value ?? 1;
     return (
         <div className="grid gap-1 text-xs text-textSecondary">
-            <span>{t(editor.columnSpan)}</span>
+            <span className="font-semibold text-textPrimary">{t(editor.columnSpan)}</span>
             <div role="radiogroup" aria-label={t(editor.columnSpan)} className="flex gap-1">
                 {Array.from({ length: parentColumns }, (_, index) => index + 1).map((span) => {
                     const selected = span === current;
@@ -121,7 +134,7 @@ export function ColumnPlacementControl({
     ];
     return (
         <div className="grid gap-1 text-xs text-textSecondary">
-            <span>{t(editor.columnPlacement)}</span>
+            <span className="font-semibold text-textPrimary">{t(editor.columnPlacement)}</span>
             <div role="radiogroup" aria-label={t(editor.columnPlacement)} className="flex gap-1">
                 {options.map((option) => {
                     const selected = option.value === value;
@@ -173,31 +186,32 @@ export function ColumnLayoutControl({
 
     return (
         <div className="grid gap-2">
-            <div className="flex items-center gap-2">
-                <select
-                    value={count}
-                    onChange={(event) => {
-                        const next = Number(event.target.value);
-                        // Widths belong to a specific column count; changing it resets them.
-                        onChange({
-                            columns: next === 1 ? undefined : next,
-                            columnWidths: undefined,
-                        });
-                    }}
-                    aria-label={t(editor.columns)}
-                    className={inputClasses}
-                >
-                    {Array.from(
-                        { length: TEMPLATE_LIMITS.columnsMax },
-                        (_, index) => index + 1
-                    ).map((option) => (
-                        <option key={option} value={option}>
-                            {t(editor.columns)}: {option}
-                        </option>
-                    ))}
-                </select>
-                <EditorHelp topic="columns" about={t(editor.columns)} />
-            </div>
+            <SettingField label={t(editor.columns)} help="columns" setting="columns">
+                {(control) => (
+                    <select
+                        {...control}
+                        value={count}
+                        onChange={(event) => {
+                            const next = Number(event.target.value);
+                            // Widths belong to a specific column count; changing it resets them.
+                            onChange({
+                                columns: next === 1 ? undefined : next,
+                                columnWidths: undefined,
+                            });
+                        }}
+                        className={inputClasses}
+                    >
+                        {Array.from(
+                            { length: TEMPLATE_LIMITS.columnsMax },
+                            (_, index) => index + 1
+                        ).map((option) => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </select>
+                )}
+            </SettingField>
             {count > 1 && (
                 <>
                     <ToggleRow
@@ -212,7 +226,7 @@ export function ColumnLayoutControl({
                     />
                     {!equal && (
                         <div className="grid gap-1">
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2" data-setting-list="">
                                 {widths.map((width, index) => (
                                     <NumberInput
                                         key={index}
@@ -267,7 +281,7 @@ export function VisibilityControl({
                 ? Number(raw)
                 : raw;
     return (
-        <div className="grid gap-1">
+        <div className="grid gap-2">
             <div className="flex items-center gap-1">
                 <ToggleRow
                     checked={value !== undefined}
@@ -279,34 +293,45 @@ export function VisibilityControl({
                 <EditorHelp topic="displayConditions" about={t(editor.visibleWhen)} />
             </div>
             {value && (
-                <div className="flex flex-wrap items-center gap-2 pl-5">
-                    <input
+                <div className="grid gap-2 pl-5">
+                    <KeyField
+                        label={t(editor.visibleWhenCoordinate)}
+                        setting="visibleWhen"
                         value={value.coordinate}
-                        onChange={(event) => onChange({ ...value, coordinate: event.target.value })}
-                        aria-label={t(editor.visibleWhenCoordinate)}
-                        placeholder={t(editor.visibleWhenCoordinate)}
-                        className={`${inputClasses} w-40`}
+                        onChange={(coordinate) => onChange({ ...value, coordinate })}
                     />
-                    <select
-                        value={value.not ? 'not' : 'equals'}
-                        onChange={(event) =>
-                            onChange({ ...value, not: event.target.value === 'not' || undefined })
-                        }
-                        aria-label={t(editor.visibleWhenOperator)}
-                        className={inputClasses}
-                    >
-                        <option value="equals">=</option>
-                        <option value="not">≠</option>
-                    </select>
-                    <input
-                        value={String(value.equals)}
-                        onChange={(event) =>
-                            onChange({ ...value, equals: typed(event.target.value) })
-                        }
-                        aria-label={t(editor.visibleWhenValue)}
-                        placeholder={t(editor.visibleWhenValue)}
-                        className={`${inputClasses} w-32`}
-                    />
+                    <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
+                        <SettingField label={t(editor.visibleWhenOperator)}>
+                            {(control) => (
+                                <select
+                                    {...control}
+                                    value={value.not ? 'not' : 'equals'}
+                                    onChange={(event) =>
+                                        onChange({
+                                            ...value,
+                                            not: event.target.value === 'not' || undefined,
+                                        })
+                                    }
+                                    className={inputClasses}
+                                >
+                                    <option value="equals">=</option>
+                                    <option value="not">≠</option>
+                                </select>
+                            )}
+                        </SettingField>
+                        <SettingField label={t(editor.visibleWhenValue)}>
+                            {(control) => (
+                                <input
+                                    {...control}
+                                    value={String(value.equals)}
+                                    onChange={(event) =>
+                                        onChange({ ...value, equals: typed(event.target.value) })
+                                    }
+                                    className={`${inputClasses} w-full`}
+                                />
+                            )}
+                        </SettingField>
+                    </div>
                 </div>
             )}
         </div>

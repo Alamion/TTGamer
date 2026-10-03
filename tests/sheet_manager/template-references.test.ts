@@ -91,8 +91,8 @@ describe('template reference validation', () => {
             ])
         );
         expect(issues).toEqual([
-            { code: 'unknown-coordinate', nodeId: 'total', key: 'mana' },
-            { code: 'unknown-coordinate', nodeId: 'pool', key: 'fate' },
+            { code: 'unknown-coordinate', nodeId: 'total', key: 'mana', setting: 'formula' },
+            { code: 'unknown-coordinate', nodeId: 'pool', key: 'fate', setting: 'maxFrom' },
         ]);
     });
 });
@@ -123,7 +123,12 @@ describe('feature 007 reference targets', () => {
             ],
         });
         expect(validateTemplateReferences(kit)).toEqual([
-            { code: 'unknown-coordinate', nodeId: 'pick', key: 'no-such-value' },
+            {
+                code: 'unknown-coordinate',
+                nodeId: 'pick',
+                key: 'no-such-value',
+                setting: 'visibleWhen',
+            },
             { code: 'unknown-fill-target', nodeId: 'pick', key: 'nowhere' },
         ]);
     });

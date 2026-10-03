@@ -2,8 +2,10 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import { generateId } from '../../../../shared/utils/random';
+import { checkFormulaInput } from '../../../features/sheet/data/formulaCheck';
 import { referenceKindName } from '../../../features/sheet/data/referenceScope';
 import {
+    type CoordinateSetting,
     type TemplateReferenceIssue,
     validateTemplateReferences,
 } from '../../../features/sheet/data/templateReferences';
@@ -11,8 +13,9 @@ import { defaultTrackerSettings } from '../../../features/sheet/data/trackerDefa
 import {
     detectDependencyCycles,
     type FormulaDependencyEntry,
-    parseFormula,
+    renameFormulaCoordinates,
 } from '../../../features/sheet/declarative/formula';
+import { moveItem } from '../../../features/sheet/declarative/rowOrder';
 import { systemRegistry } from '../../../systems';
 import { resolveDataBindingByCoordinate } from '../../../systems/templateBindings';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
@@ -41,6 +44,8 @@ import {
     TEMPLATE_SCHEMA_VERSION,
     walkTemplateNodes,
 } from '../../../types/template';
+import { formulaCheckMessage } from './settings/formulaMessage';
+import type { SettingRef, SettingsGroupId } from './settings/groupedSettings';
 
 /** Type-safe structural updates for a node (type/id/children are managed separately). */
 export type NodeUpdates = {
@@ -299,34 +304,91 @@ function idPrefixFor(node: TemplateNode): string {
     }
 }
 
+export interface CloneOptions {
+    /** The copy lands on the page it came from (Duplicate, or a paste there). */
+    samePage: boolean;
+    /** Coordinates the target page already uses; a kept value key must not collide. */
+    targetCoordinates?: ReadonlySet<string>;
+}
+
+const FORMULA_SETTINGS = ['formula', 'maxFrom', 'minFrom', 'maxMinFrom'] as const;
+
+/** Points the formulas and display conditions of a copy at the copy's own coordinates. */
+function remapCoordinates(node: TemplateNode, renamed: ReadonlyMap<string, string>) {
+    const rename = (coordinate: string) => renamed.get(coordinate);
+    const remap = (carrier: Record<string, unknown>) => {
+        for (const key of FORMULA_SETTINGS) {
+            const formula = carrier[key];
+            if (typeof formula === 'string') {
+                carrier[key] = renameFormulaCoordinates(formula, rename);
+            }
+        }
+        const condition = carrier.visibleWhen as { coordinate?: string } | undefined;
+        if (condition?.coordinate) {
+            const [base, ...part] = condition.coordinate.split('.');
+            const next = rename(base!);
+            if (next) condition.coordinate = [next, ...part].join('.');
+        }
+    };
+    const walk = (current: TemplateNode) => {
+        remap(current as unknown as Record<string, unknown>);
+        if (current.type === 'table') {
+            current.columns.forEach((column) =>
+                remap(column as unknown as Record<string, unknown>)
+            );
+        }
+        if (current.type === 'list' && current.item) {
+            remap(current.item as unknown as Record<string, unknown>);
+        }
+        if (isContainerNode(current)) current.children.forEach(walk);
+    };
+    walk(node);
+}
+
 /**
  * A copy of a subtree with fresh identifiers for every node, table column, and select option.
- * Custom values are not shared with the original: an explicit custom `valueKey` is dropped so
- * the copy's coordinate becomes its new id — except a coordinate that addresses system data,
- * which is kept so a copied trait row still shows the same trait.
+ * On the same page custom values are not shared with the original: an explicit custom `valueKey`
+ * is dropped so the copy's coordinate becomes its new id. On another page (a paste, spec 023) a
+ * custom key is kept unless that page already uses it. A coordinate that addresses system data
+ * is always kept, so a copied trait row still shows the same trait. Formulas and display
+ * conditions inside the copy are pointed at the copy's own coordinates.
  */
-function cloneWithFreshIds(draft: EditorDraft, original: TemplateNode): TemplateNode {
+export function cloneWithFreshIds(
+    draft: EditorDraft,
+    original: TemplateNode,
+    { samePage, targetCoordinates }: CloneOptions = { samePage: true }
+): TemplateNode {
     const copy = structuredClone(original);
-    const keepBridgedCoordinate = (node: { id: string; valueKey?: string }) => {
+    const renamed = new Map<string, string>();
+    const keepCoordinate = (node: { id: string; valueKey?: string }) => {
         const coordinate = node.valueKey ?? node.id;
         if (resolveDataBindingByCoordinate(draft.systemId, draft.documentKind, coordinate)) {
             node.valueKey = coordinate;
+        } else if (!samePage && node.valueKey && !targetCoordinates?.has(node.valueKey)) {
+            // The author's own name for the value, shared by pages of one type.
         } else {
             delete node.valueKey;
         }
     };
+    const renewKeyed = <T extends { id: string; valueKey?: string }>(node: T, prefix: string) => {
+        const before = node.valueKey ?? node.id;
+        keepCoordinate(node);
+        node.id = newId(prefix);
+        const after = node.valueKey ?? node.id;
+        if (after !== before) renamed.set(before, after);
+    };
     const renew = (node: TemplateNode) => {
         if (isTemplateField(node) || node.type === 'table' || node.type === 'list') {
-            keepBridgedCoordinate(node as { id: string; valueKey?: string });
+            renewKeyed(node as { id: string; valueKey?: string }, idPrefixFor(node));
+        } else {
+            node.id = newId(idPrefixFor(node));
         }
-        node.id = newId(idPrefixFor(node));
         if (node.type === 'select') {
             node.options = node.options.map((option) => ({ ...option, id: newId('opt') }));
         }
         if (node.type === 'list' && node.item) {
-            node.item = {
+            const item = {
                 ...node.item,
-                id: newId('f'),
                 ...(node.item.type === 'select'
                     ? {
                           options: node.item.options.map((option) => ({
@@ -336,10 +398,13 @@ function cloneWithFreshIds(draft: EditorDraft, original: TemplateNode): Template
                       }
                     : {}),
             } as ListItemField;
+            renamed.set(item.id, (item.id = newId('f')));
+            node.item = item;
         }
         if (node.type === 'table') {
             node.columns = node.columns.map((column) => {
                 const renewed = { ...column, id: newId('f') };
+                renamed.set(column.valueKey ?? column.id, renewed.id);
                 delete renewed.valueKey;
                 return renewed;
             });
@@ -347,13 +412,16 @@ function cloneWithFreshIds(draft: EditorDraft, original: TemplateNode): Template
         if (isContainerNode(node)) node.children.forEach(renew);
     };
     renew(copy);
+    remapCoordinates(copy, renamed);
 
-    const labelled = copy as TermCarrier & { title?: string; label?: string };
-    const suffixed = (label: string) =>
-        translate(uiMessages.sheet.templates.editor.copySuffix, { label });
-    if (typeof labelled.title === 'string') labelled.title = suffixed(labelled.title);
-    else if (typeof labelled.label === 'string') labelled.label = suffixed(labelled.label);
-    keepTermOnRename(labelled);
+    if (samePage) {
+        const labelled = copy as TermCarrier & { title?: string; label?: string };
+        const suffixed = (label: string) =>
+            translate(uiMessages.sheet.templates.editor.copySuffix, { label });
+        if (typeof labelled.title === 'string') labelled.title = suffixed(labelled.title);
+        else if (typeof labelled.label === 'string') labelled.label = suffixed(labelled.label);
+        keepTermOnRename(labelled);
+    }
     return copy;
 }
 
@@ -623,6 +691,8 @@ export interface DraftIssue {
     message: string;
     /** The element the issue belongs to, so the editor can mark and select it. */
     nodeId?: string;
+    /** The setting to open and focus (spec 022, R3); table columns and list entries included. */
+    setting?: SettingRef;
 }
 
 export interface DraftIssueMessages {
@@ -632,7 +702,6 @@ export interface DraftIssueMessages {
     invalidKey: string;
     limitReached: string;
     invalidBounds: string;
-    invalidFormula: string;
     unknownCoordinate: string;
     circularDependency: string;
     unknownBinding: string;
@@ -646,32 +715,74 @@ export interface DraftIssueMessages {
     trackerCovers: string;
 }
 
-function referenceIssueMessage(
+const at = (group: SettingsGroupId, key: string): SettingRef => ({ group, key });
+
+const COORDINATE_SETTING: Record<CoordinateSetting, SettingRef> = {
+    formula: at('limits', 'formula'),
+    maxFrom: at('limits', 'maxFrom'),
+    minFrom: at('limits', 'minFrom'),
+    maxMinFrom: at('limits', 'maxMinFrom'),
+    visibleWhen: at('visibility', 'visibleWhen'),
+};
+
+/** The message and setting of a reference problem (the element is named by the caller). */
+function referenceIssue(
     issue: TemplateReferenceIssue,
     messages: DraftIssueMessages
-): string {
+): { message: string; setting?: SettingRef; formula?: true } {
     switch (issue.code) {
         case 'unknown-binding':
         case 'binding-kind-mismatch':
-            return interpolate(messages.unknownBinding, { id: issue.key });
+            return {
+                message: interpolate(messages.unknownBinding, { id: issue.key }),
+                setting: at('value', 'source'),
+            };
         case 'unknown-catalog':
         case 'unknown-fill-detail':
-            return interpolate(messages.unknownCatalog, { id: issue.key });
+            return {
+                message: interpolate(messages.unknownCatalog, { id: issue.key }),
+                setting: at('value', 'catalog'),
+            };
         case 'unknown-fill-target':
-            return interpolate(messages.unknownFillTarget, { id: issue.key });
+            return {
+                message: interpolate(messages.unknownFillTarget, { id: issue.key }),
+                setting: at('value', 'catalog'),
+            };
         case 'list-catalog-unnamed':
-            return messages.listCatalogUnnamed;
+            return { message: messages.listCatalogUnnamed, setting: at('value', 'catalog') };
         case 'unknown-coordinate':
-            return interpolate(messages.unknownCoordinate, { id: issue.key });
+            return issue.setting === 'visibleWhen'
+                ? {
+                      message: interpolate(messages.unknownCoordinate, { id: issue.key }),
+                      setting: COORDINATE_SETTING.visibleWhen,
+                  }
+                : {
+                      message: formulaCheckMessage({
+                          kind: 'error',
+                          code: 'unknown',
+                          name: issue.key,
+                      })!.text,
+                      setting: COORDINATE_SETTING[issue.setting],
+                      formula: true,
+                  };
         case 'unknown-label-message':
-            return interpolate(messages.unknownLabelMessage, { id: issue.key });
+            return {
+                message: interpolate(messages.unknownLabelMessage, { id: issue.key }),
+                setting: at('content', 'label'),
+            };
         case 'invalid-docs-link':
-            return interpolate(messages.invalidDocsLink, { id: issue.key });
+            return {
+                message: interpolate(messages.invalidDocsLink, { id: issue.key }),
+                setting: at('visibility', 'docsPath'),
+            };
         case 'reference-target-unavailable':
-            return interpolate(messages.referenceTargetUnavailable, {
-                field: issue.label,
-                type: referenceKindName(systemRegistry, issue.key),
-            });
+            return {
+                message: interpolate(messages.referenceTargetUnavailable, {
+                    field: issue.label,
+                    type: referenceKindName(systemRegistry, issue.key),
+                }),
+                setting: at('value', 'targetKinds'),
+            };
     }
 }
 
@@ -686,10 +797,105 @@ function interpolate(template: string, values: Record<string, string | number>):
     return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
 }
 
+/** The name an issue uses for an element (what the outline shows, or its id). */
+function issueName(node: { id: string; label?: string; title?: string; bindingKey?: string }) {
+    return node.label || node.title || node.bindingKey || node.id;
+}
+
+const inElement = (element: string, problem: string) =>
+    translate(uiMessages.sheet.templates.editor.issueIn, { element, problem });
+
+/** A formula setting that does not parse, worded as under its box. */
+function formulaSyntaxProblem(source: string | undefined): string | undefined {
+    const check = checkFormulaInput(source);
+    return check.kind === 'error' ? formulaCheckMessage(check)?.text : undefined;
+}
+
+/**
+ * The checks of one field's own settings, shared by page fields, table columns, and list entry
+ * fields (spec 022, R4): label, options, bounds, formulas, pool tracker length, tracker names.
+ * `report` receives the problem and the setting inside the field.
+ */
+function checkFieldSettings(
+    field: TemplateField,
+    messages: DraftIssueMessages,
+    /** `named`: the message already names the element (or needs no name, like empty labels). */
+    report: (problem: string, setting: SettingRef, named?: true) => void
+): void {
+    const text = uiMessages.sheet.templates.editor;
+    if (field.label.trim().length === 0) report(messages.emptyLabel, at('content', 'label'), true);
+    if (field.type === 'formula') {
+        if (field.formula.trim().length === 0) {
+            report(translate(text.issueFormulaEmpty), at('limits', 'formula'));
+        } else {
+            const problem = formulaSyntaxProblem(field.formula);
+            if (problem) report(problem, at('limits', 'formula'));
+        }
+    }
+    if (field.type === 'rating' || field.type === 'number') {
+        const problem = formulaSyntaxProblem(field.maxFrom);
+        if (problem) report(problem, at('limits', 'maxFrom'));
+    }
+    if (field.type === 'select') {
+        const seenOptions = new Set<string>();
+        field.options.forEach((option, index) => {
+            if (seenOptions.has(option.id)) {
+                report(
+                    interpolate(messages.duplicateId, { id: option.id }),
+                    at('content', `option:${index}`)
+                );
+            }
+            seenOptions.add(option.id);
+            if (option.label.trim().length === 0) {
+                report(translate(text.issueOptionEmpty), at('content', `option:${index}`));
+            }
+        });
+    }
+    if (field.type === 'number' || field.type === 'rating' || field.type === 'resource') {
+        if (field.min !== undefined && field.max !== undefined && field.min > field.max) {
+            report(messages.invalidBounds, at('limits', 'min'));
+        }
+    }
+    if (
+        field.type === 'resource' &&
+        field.poolTracker &&
+        field.max > TEMPLATE_LIMITS.trackerLevelsMax
+    ) {
+        report(
+            translate(text.issuePoolTooLong, { max: TEMPLATE_LIMITS.trackerLevelsMax }),
+            at('limits', 'max')
+        );
+    }
+    if (field.type === 'tracker') {
+        const tracker = at('look', 'tracker');
+        if ([...field.marks, ...field.levels].some(({ name }) => name.trim().length === 0)) {
+            report(translate(text.issueTrackerNameEmpty), tracker);
+        }
+        const levelIds = new Set(field.levels.map(({ id }) => id));
+        field.lengths.forEach((length, index) => {
+            if (!length.levels.some((id) => levelIds.has(id))) {
+                report(
+                    interpolate(messages.trackerLengthEmpty, { id: field.label, n: index + 1 }),
+                    tracker,
+                    true
+                );
+            }
+        });
+        if (
+            field.columns.some(
+                ({ covers }) => covers !== undefined && covers >= field.levels.length
+            )
+        ) {
+            report(interpolate(messages.trackerCovers, { id: field.label }), tracker, true);
+        }
+    }
+}
+
 /**
  * Live draft integrity feedback. Structural identifiers are generated, but the checks stay
  * defensive (imports/edits could introduce collisions) alongside limits, bounds, and formula
- * validation (parse errors, unknown coordinates, cycles — FR-14).
+ * validation (parse errors, unknown coordinates, cycles — FR-14). Each issue names its element
+ * and, where one exists, the setting that fixes it (spec 022).
  */
 export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessages): DraftIssue[] {
     const issues: DraftIssue[] = [];
@@ -720,17 +926,26 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
         }
     }
 
+    const names = new Map<string, string>();
     const seenEffectiveKeys = new Set<string>();
-    const checkEffectiveKey = (key: string, nodeId: string) => {
+    const checkEffectiveKey = (key: string, nodeId: string, setting: SettingRef) => {
         if (!isValidKey(key)) {
-            issues.push({ message: interpolate(messages.invalidKey, { id: key }), nodeId });
+            issues.push({
+                message: interpolate(messages.invalidKey, { id: key }),
+                nodeId,
+                setting,
+            });
             return;
         }
         // Two elements showing the same system datum (a copied trait row) are two views of
         // one value, not a collision.
         const bridged = resolveDataBindingByCoordinate(draft.systemId, draft.documentKind, key);
         if (seenEffectiveKeys.has(key) && !bridged) {
-            issues.push({ message: interpolate(messages.duplicateId, { id: key }), nodeId });
+            issues.push({
+                message: interpolate(messages.duplicateId, { id: key }),
+                nodeId,
+                setting,
+            });
         }
         seenEffectiveKeys.add(key);
     };
@@ -739,82 +954,84 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
     walkTemplateNodes(draft.children, (node) => {
         if (seenNodeIds.has(node.id)) return;
         seenNodeIds.add(node.id);
-        const issue = (message: string) => issues.push({ message, nodeId: node.id });
+        const name = issueName(node);
+        names.set(node.id, name);
+        const issue = (message: string, setting?: SettingRef) =>
+            issues.push({ message, nodeId: node.id, ...(setting ? { setting } : {}) });
+        const formulaIssue = (source: string | undefined, setting: SettingRef) => {
+            const problem = formulaSyntaxProblem(source);
+            if (problem) issue(inElement(name, problem), setting);
+        };
         if (node.type === 'section' || node.type === 'group') {
-            if (node.title.trim().length === 0) issue(messages.emptyLabel);
+            if (node.title.trim().length === 0) issue(messages.emptyLabel, at('content', 'title'));
+        }
+        if ((node.type === 'table' || node.type === 'list') && node.title?.trim() === '') {
+            issue(messages.emptyLabel, at('content', 'title'));
         }
         if (node.type === 'table') {
-            checkEffectiveKey(node.valueKey ?? node.id, node.id);
-            if (node.minRows > node.maxRows) issue(messages.invalidBounds);
+            checkEffectiveKey(node.valueKey ?? node.id, node.id, at('value', 'valueKey'));
+            if (node.minRows > node.maxRows) issue(messages.invalidBounds, at('limits', 'minRows'));
+            node.columns.forEach((column, index) => {
+                const columnName = column.label.trim() || `#${index + 1}`;
+                checkFieldSettings(column, messages, (problem, setting) =>
+                    issue(
+                        translate(uiMessages.sheet.templates.editor.issueColumn, {
+                            table: name,
+                            column: columnName,
+                            problem,
+                        }),
+                        at('content', `column:${column.id}.${setting.key}`)
+                    )
+                );
+            });
         }
         if (isTemplateField(node)) {
-            if (node.label.trim().length === 0) issue(messages.emptyLabel);
-            checkEffectiveKey(node.valueKey ?? node.id, node.id);
-            if (node.type === 'formula' && node.formula.trim().length > 0) {
-                if (!parseFormula(node.formula).ok) {
-                    issue(interpolate(messages.invalidFormula, { id: node.label }));
-                }
-            }
-        }
-        if (node.type === 'select') {
-            const seenOptions = new Set<string>();
-            for (const option of node.options) {
-                if (seenOptions.has(option.id)) {
-                    issue(interpolate(messages.duplicateId, { id: option.id }));
-                }
-                seenOptions.add(option.id);
-            }
-        }
-        if (node.type === 'number' || node.type === 'rating' || node.type === 'resource') {
-            if (node.min !== undefined && node.max !== undefined && node.min > node.max) {
-                issue(messages.invalidBounds);
-            }
+            checkEffectiveKey(node.valueKey ?? node.id, node.id, at('value', 'valueKey'));
+            checkFieldSettings(node, messages, (problem, setting, named) =>
+                issue(named ? problem : inElement(name, problem), setting)
+            );
         }
         if (node.type === 'primitive') {
-            for (const source of [node.minFrom, node.maxMinFrom]) {
-                if (source && !parseFormula(source).ok) {
-                    issue(interpolate(messages.invalidFormula, { id: node.label ?? node.id }));
-                }
+            formulaIssue(node.minFrom, at('limits', 'minFrom'));
+            formulaIssue(node.maxMinFrom, at('limits', 'maxMinFrom'));
+            formulaIssue(node.maxFrom, at('limits', 'maxFrom'));
+        }
+        if (node.type === 'list') {
+            if ((node.valueKey === undefined) === (node.bindingKey === undefined)) {
+                issue(
+                    inElement(name, translate(uiMessages.sheet.templates.editor.issueListSource)),
+                    at('value', 'source')
+                );
             }
-        }
-        if (
-            (node.type === 'rating' || node.type === 'number' || node.type === 'primitive') &&
-            node.maxFrom
-        ) {
-            if (!parseFormula(node.maxFrom).ok) {
-                issue(interpolate(messages.invalidFormula, { id: node.label ?? node.id }));
-            }
-        }
-        if (node.type === 'list' && node.valueKey !== undefined) {
-            checkEffectiveKey(node.valueKey, node.id);
-        }
-        if (node.type === 'tracker') {
-            const levelIds = new Set(node.levels.map(({ id }) => id));
-            node.lengths.forEach((length, index) => {
-                if (!length.levels.some((id) => levelIds.has(id))) {
+            if (node.valueKey !== undefined) {
+                checkEffectiveKey(node.valueKey, node.id, at('value', 'valueKey'));
+                const item = listItemField(node);
+                checkFieldSettings(item, messages, (problem, setting) =>
                     issue(
-                        interpolate(messages.trackerLengthEmpty, { id: node.label, n: index + 1 })
+                        setting.key === 'label'
+                            ? translate(uiMessages.sheet.templates.editor.issueEntryLabel, {
+                                  list: name,
+                              })
+                            : inElement(name, problem),
+                        at('content', `entry.${setting.key}`)
+                    )
+                );
+            }
+            (node.presets ?? []).forEach((preset, index) => {
+                if (preset.label.trim().length === 0) {
+                    issue(
+                        inElement(
+                            name,
+                            translate(uiMessages.sheet.templates.editor.issuePresetEmpty)
+                        ),
+                        at('content', `preset:${index}`)
                     );
                 }
             });
         }
-        const trackerColumns =
-            node.type === 'tracker'
-                ? node.columns
-                : node.type === 'primitive'
-                  ? (node.tracker?.columns ?? [])
-                  : [];
-        if (
-            node.type === 'tracker' &&
-            trackerColumns.some(
-                ({ covers }) => covers !== undefined && covers >= node.levels.length
-            )
-        ) {
-            issue(interpolate(messages.trackerCovers, { id: node.label }));
-        }
         // A built-in tracker's extra columns keep their values under their own key.
-        if (node.type === 'primitive' && trackerColumns.length > 0) {
-            checkEffectiveKey(node.tracker?.valueKey ?? node.id, node.id);
+        if (node.type === 'primitive' && (node.tracker?.columns ?? []).length > 0) {
+            checkEffectiveKey(node.tracker?.valueKey ?? node.id, node.id, at('look', 'tracker'));
         }
     });
 
@@ -828,13 +1045,40 @@ export function collectDraftIssues(draft: EditorDraft, messages: DraftIssueMessa
             nodeId: cycle[0],
         });
     }
-    for (const issue of validateTemplateReferences(draft)) {
+    for (const reference of validateTemplateReferences(draft)) {
+        const { message, setting, formula } = referenceIssue(reference, messages);
+        const element = names.get(reference.nodeId);
         issues.push({
-            message: referenceIssueMessage(issue, messages),
-            nodeId: issue.nodeId,
+            message: formula && element ? inElement(element, message) : message,
+            nodeId: reference.nodeId,
+            ...(setting ? { setting } : {}),
         });
     }
-    return issues;
+    return issues.map((issue) => ownedByContainer(draft, issue));
+}
+
+/**
+ * Table columns and list entry fields are not tree nodes: their issues select the table or list
+ * and point at the column's or entry's setting inside its Content group (spec 022, R3).
+ */
+function ownedByContainer(draft: EditorDraft, issue: DraftIssue): DraftIssue {
+    if (!issue.nodeId || findNode(draft, issue.nodeId)) return issue;
+    let owner: { nodeId: string; prefix: string } | undefined;
+    walkTemplateNodes(draft.children, (node) => {
+        if (owner) return;
+        if (node.type === 'table' && node.columns.some(({ id }) => id === issue.nodeId)) {
+            owner = { nodeId: node.id, prefix: `column:${issue.nodeId}.` };
+        }
+        if (node.type === 'list' && node.item?.id === issue.nodeId) {
+            owner = { nodeId: node.id, prefix: 'entry.' };
+        }
+    });
+    if (!owner) return issue;
+    return {
+        ...issue,
+        nodeId: owner.nodeId,
+        setting: at('content', `${owner.prefix}${issue.setting?.key ?? 'label'}`),
+    };
 }
 
 // ---------------------------------------------------------------------------
@@ -862,6 +1106,16 @@ export function addTableColumn(draft: EditorDraft, tableId: string): EditorDraft
             ? columns
             : [...columns, newField('text', `Column ${columns.length + 1}`)]
     );
+}
+
+/** Moves a table column (spec 022, US5): cells are keyed by column id, so values stay put. */
+export function moveTableColumn(
+    draft: EditorDraft,
+    tableId: string,
+    from: number,
+    to: number
+): EditorDraft {
+    return mapTableColumns(draft, tableId, (columns) => moveItem(columns, from, to));
 }
 
 export function removeTableColumn(

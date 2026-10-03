@@ -21,50 +21,35 @@ interface ElementOption {
  * resource, a character list, equipment, a condition track) is chosen afterwards in its own
  * settings, so the menu stays short everywhere.
  */
-function useElementOptions(): readonly ElementOption[] {
+function useElementOptions(atRoot: boolean): readonly ElementOption[] {
     const t = (descriptor: { message: string }) => translate(descriptor);
     return [
-        {
-            key: 'section',
-            label: t(editor.paletteSection),
-            hint: t(editor.paletteSectionHint),
-            build: () => ({
-                id: generateDraftId('sec'),
-                type: 'section',
-                title: t(editor.paletteSection),
-                children: [],
-            }),
-        },
         {
             key: 'group',
             label: t(editor.paletteGroup),
             hint: t(editor.paletteGroupHint),
-            build: () => ({
-                id: generateDraftId('grp'),
-                type: 'group',
-                title: t(editor.paletteGroup),
-                collapsible: false,
-                children: [],
-            }),
+            // A group starts as a section on the page and as a card inside another group.
+            build: () =>
+                atRoot
+                    ? {
+                          id: generateDraftId('sec'),
+                          type: 'section',
+                          title: t(editor.paletteGroup),
+                          children: [],
+                      }
+                    : {
+                          id: generateDraftId('grp'),
+                          type: 'group',
+                          title: t(editor.paletteGroup),
+                          collapsible: false,
+                          children: [],
+                      },
         },
         {
             key: 'field',
             label: t(editor.paletteField),
             hint: t(editor.paletteFieldHint),
             build: () => newField('text', t(editor.paletteField)),
-        },
-        {
-            key: 'table',
-            label: t(editor.paletteTable),
-            hint: t(editor.paletteTableHint),
-            build: () => ({
-                id: generateDraftId('blk'),
-                type: 'table',
-                title: t(editor.paletteTable),
-                minRows: 0,
-                maxRows: 100,
-                columns: [newField('text', t(editor.paletteField))],
-            }),
         },
         {
             key: 'list',
@@ -96,13 +81,15 @@ function useElementOptions(): readonly ElementOption[] {
 }
 
 function MenuItems({
+    atRoot,
     disabled,
     onChoose,
 }: {
+    atRoot: boolean;
     disabled: boolean;
     onChoose: (node: TemplateNode) => void;
 }) {
-    const options = useElementOptions();
+    const options = useElementOptions(atRoot);
     return options.map((option) => (
         <button
             key={option.key}
@@ -129,10 +116,13 @@ function MenuItems({
  * only while it is open: a page has hundreds of slots.
  */
 export function AddElementMenu({
+    atRoot,
     children,
     disabled,
     onInsert,
 }: {
+    /** The slot is on the page itself, not inside a group. */
+    atRoot: boolean;
     children: ReactNode;
     disabled: boolean;
     onInsert: (node: TemplateNode) => void;
@@ -149,6 +139,7 @@ export function AddElementMenu({
                     role="menu"
                 >
                     <MenuItems
+                        atRoot={atRoot}
                         disabled={disabled}
                         onChoose={(node) => {
                             onInsert(node);

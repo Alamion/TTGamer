@@ -66,7 +66,11 @@ function openDocument(): UnknownDocumentEnvelope {
 const outlineRow = (nodeId: string) =>
     document.querySelector(`[data-outline-row="${nodeId}"]`) as HTMLElement;
 const selectInOutline = (nodeId: string) =>
-    fireEvent.click([...outlineRow(nodeId).querySelectorAll('button')].find((b) => !b.draggable)!);
+    fireEvent.click(
+        [...outlineRow(nodeId).querySelectorAll('button')].find(
+            (b) => !b.hasAttribute('data-drag-handle')
+        )!
+    );
 const dialog = () => screen.getByRole('dialog');
 const outlineIds = (parentId: string) =>
     [
@@ -169,7 +173,7 @@ describe('quick preview and edit history (spec 012, US3)', () => {
         selectInOutline('origin');
         const label = within(
             document.querySelector('[data-settings-for="origin"]') as HTMLElement
-        ).getByLabelText('Field label');
+        ).getByLabelText('Label');
         pressShortcut(label, 'Delete', { key: 'Delete' });
         expect(outlineRow('origin')).not.toBeNull();
     });
@@ -179,7 +183,7 @@ describe('quick preview and edit history (spec 012, US3)', () => {
         selectInOutline('origin');
         const label = within(
             document.querySelector('[data-settings-for="origin"]') as HTMLElement
-        ).getByLabelText('Field label');
+        ).getByLabelText('Label');
         for (const value of ['H', 'Ho', 'Hom', 'Home']) {
             fireEvent.change(label, { target: { value } });
         }

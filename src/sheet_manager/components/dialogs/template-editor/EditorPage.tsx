@@ -24,6 +24,7 @@ import {
     isCompatibleDocument,
     SAMPLE_DOCUMENT_ID,
 } from './sampleDocuments';
+import { isReleaseClick, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;
 
@@ -92,6 +93,11 @@ export function EditorPage({ draft }: { draft: EditorDraft }) {
     const actions = useEditorActions();
     const scratch = useSampleSource(draft.systemId, draft.documentKind);
     const deferredDraft = useDeferredValue(draft);
+    const drag = useEditorDragContext();
+    // A drag reads slot positions from what the page shows, which follows the draft deferred.
+    useEffect(() => {
+        drag?.pageRendered(deferredDraft);
+    }, [drag, deferredDraft]);
     const hovered = useRef<Element | null>(null);
     const rootRef = useRef<HTMLDivElement | null>(null);
 
@@ -101,14 +107,38 @@ export function EditorPage({ draft }: { draft: EditorDraft }) {
         const root = rootRef.current;
         if (!root) return;
         const onClick = (event: MouseEvent) => {
+            if (isReleaseClick() || root.hasAttribute('data-revealing')) return;
             const target = event.target as Element;
             const chip = target.closest('[data-editor-chip]');
             if (!chip && target.closest(VALUE_CONTROLS)) return;
             const frame = target.closest('[data-editor-frame]');
-            actions.select(frame?.getAttribute('data-node-id') ?? null, 'page');
+            const mode = event.shiftKey
+                ? 'range'
+                : event.ctrlKey || event.metaKey
+                  ? 'toggle'
+                  : 'only';
+            actions.select(
+                frame?.getAttribute('data-node-id') ?? null,
+                'page',
+                frame ? mode : 'only'
+            );
+            // The page takes the focus so copy and paste events reach the editor (spec 023).
+            if (!target.closest('button, a, input, select, textarea')) {
+                root.focus({ preventScroll: true });
+            }
+        };
+        // Shift+click selects a range of elements, not text.
+        const onMouseDown = (event: MouseEvent) => {
+            if (event.shiftKey && !(event.target as Element).closest(VALUE_CONTROLS)) {
+                event.preventDefault();
+            }
         };
         root.addEventListener('click', onClick);
-        return () => root.removeEventListener('click', onClick);
+        root.addEventListener('mousedown', onMouseDown);
+        return () => {
+            root.removeEventListener('click', onClick);
+            root.removeEventListener('mousedown', onMouseDown);
+        };
     }, [actions]);
 
     const setHovered = (next: Element | null) => {
@@ -129,7 +159,8 @@ export function EditorPage({ draft }: { draft: EditorDraft }) {
     return (
         <div
             ref={rootRef}
-            className="min-h-full space-y-3 p-4"
+            tabIndex={-1}
+            className="min-h-full space-y-3 p-4 focus:outline-none"
             onPointerOver={(event) =>
                 setHovered((event.target as Element).closest('[data-editor-frame]'))
             }

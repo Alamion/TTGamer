@@ -1,26 +1,36 @@
 ---
 sidebar_position: 1
 title: Elements
-description: Sections, field groups, fields, tables, lists, and trackers — what each element does and the settings it takes.
+description: Groups (sections and cards), fields, lists (entries and tables), and trackers — what each element does and the settings it takes.
 ---
 
 # Elements
 
 :::tip[In short]
-Sections and field groups arrange the page; fields, tables, lists, and trackers hold values. Containers split into up to four columns, and a section or group can link to a documentation page.
+Groups arrange the page; fields, lists, and trackers hold values. A group is a section or a card, a list holds entries or table rows: its **Kind** switches between them. Groups split into up to four columns and can link to a documentation page.
 :::
+
+## Kinds of groups and lists \{#kinds}
+
+A **Group** holds other elements, as a **Section** or a **Card**. A **List** holds what readers add one by one, as **Entries** or a **Table**. The **Kind** at the top of **Content** switches between them; the outline and the page name both, such as "Group · Section" or "List · Table".
+
+- **Section ↔ Card** keeps the title, the contents, the columns, and the documentation link. A card made from a section can still be folded.
+- **Entries → Table** makes the entry field the first column. **Table → Entries** makes the first column the entry field; other column types become text, and the other columns are removed after you confirm.
+- What one kind has and the other lacks (a card's hidden title, preset entries, row limits) comes back when you switch back before closing the editor.
+- **Table** is not offered for lists the game keeps and for lists that suggest catalog entries.
+- Entries and table rows are stored differently. When documents already hold values of the earlier kind, **Save** names the list and asks first; the values stay stored and show again if you switch back.
 
 ## Sections \{#sections}
 
 A section is a large block with a heading and a colored bar. Readers fold and unfold it; **Starts collapsed** keeps it folded until the reader opens it once (the choice is then remembered). Neighbouring sections alternate the bar's color by themselves.
 
-## Field groups \{#groups}
+## Cards \{#groups}
 
-A field group is a titled card inside a page or section. **Show title** hides the heading while keeping the card; **Collapsible** lets readers fold it (only with a visible title).
+A card is a titled box inside a page or section. **Show title** hides the heading while keeping the card; **Collapsible** lets readers fold it (only with a visible title).
 
 ## Documentation link \{#documentation-link}
 
-Sections and field groups take a **Documentation link**: a **?** next to the heading opens that page in a new tab. Two forms are accepted:
+Sections and cards take a **Documentation link**: a **?** next to the heading opens that page in a new tab. Two forms are accepted:
 
 - **A page of this site's documentation**: the address from the browser after the domain, starting with `/docs/`, for example `/docs/wod-v5/rules/dice-pools#reading-the-dice`. The part after `#` jumps to a heading: open the page, hover a heading, and copy its link. Readers get the page in their own language — write the English address and Russian readers land on the Russian page.
 - **An external page**: a full address starting with `https://`, for example a wiki article.
@@ -29,11 +39,11 @@ Anything else — an address without `/docs/`, `http://`, or another scheme — 
 
 ## Columns \{#columns}
 
-Pages, sections, and groups lay out their elements in 1 to 4 **Columns**. With **Equal column widths** off, each column gets a width: widths are proportional, so 2 and 1 make the first column twice as wide. Without pinned elements, elements fill the columns in order. **Column in parent** pins an element to one column; once any element of a container is pinned, the elements left on **Auto** stack in the first column. **Spans columns** stretches an element over 2 to 4 columns — a wide field beside a narrow one, or a full-width row; spans work while no element of the container is pinned. On a phone every container shows one column. An empty column shows a drop zone in the editor.
+Pages, sections, and cards lay out their elements in 1 to 4 **Columns**. With **Equal column widths** off, each column gets a width: widths are proportional, so 2 and 1 make the first column twice as wide. Without pinned elements, elements fill the columns in order. **Column in parent** pins an element to one column; once any element of a container is pinned, the elements left on **Auto** stack in the first column. **Spans columns** stretches an element over 2 to 4 columns — a wide field beside a narrow one, or a full-width row; spans work while no element of the container is pinned. On a phone every container shows one column. An empty column shows a drop zone in the editor.
 
 ## Fields \{#fields}
 
-A field holds one value. Its **Field label** is shown next to it (**Show label** hides it), **Help text** explains it on hover, and **Required** marks it for the reader without blocking anything. **Label position** puts the label **Above the value** in small grey type, or **Beside the value** in the larger type of the sheet's attribute rows; ratings and derived values start beside, other fields above. An image always keeps its label above: the picture and its upload controls need the whole width.
+A field holds one value. Its **Label** is shown next to it (**Show label** hides it), **Help text** explains it on hover, and **Required** marks it for the reader without blocking anything. **Label position** puts the label **Above the value** in small grey type, or **Beside the value** in the larger type of the sheet's attribute rows; ratings and derived values start beside, other fields above. An image always keeps its label above: the picture and its upload controls need the whole width.
 
 | Type                   | What the reader gets                                                                                                                                                                                     |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -73,11 +83,13 @@ On the sheet, the search offers the reader's documents of those kinds from the s
 
 ## Tables \{#tables}
 
-A table holds rows of values with the same columns; every column is a field. **Min rows** and **Max rows** bound how many rows readers can add.
+A table is a list of rows with the same columns; every column is a field. **Min rows** and **Max rows** bound how many rows readers can add. Reorder the columns with their grip or their up and down arrows: filled values stay with their column.
+
+On the sheet, readers reorder rows and entries of tables and lists: drag a row by its grip, use its up and down arrows, or press `Alt+↑` / `Alt+↓` in the row. The new order is saved with the document. Read-only documents show no move controls.
 
 ## Lists \{#lists}
 
-A list holds entries added one by one: your own entries, or a list the game already keeps for the document (skills, merits and flaws, equipment).
+A list of kind **Entries** holds entries added one by one: your own entries, or a list the game already keeps for the document (skills, merits and flaws, equipment).
 
 A list with its own entries sets up one **Entry**: pick its type — text, number, toggle, choice, rating, resource, document reference, or image — and its settings, as for a field of that type. Every entry the reader adds is a copy of it. A new list starts with the classic trait row: a rating with dots, the S/P/E flags, and a die.
 

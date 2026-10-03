@@ -5,6 +5,7 @@ import { Plus, X } from 'lucide-react';
 
 import type { CatalogEntry } from '../controls/CatalogSuggest.tsx';
 import { CatalogSuggest } from '../controls/CatalogSuggest.tsx';
+import { fallbackRowName, RowMoveControls, rowMoveKeys } from '../controls/RowMoveControls';
 import { SectionCard } from '../sections/SectionCard.tsx';
 
 interface MeritFlawItem {
@@ -32,6 +33,8 @@ interface MeritFlawListProps {
     showTitle?: boolean;
     /** Wrap the list in its own bordered card. */
     framed?: boolean;
+    /** Moves the row at `from` to `to` (spec 022); without it the rows have no order controls. */
+    onMove?: (from: number, to: number) => void;
 }
 
 const meritColumns = {
@@ -56,7 +59,9 @@ export function MeritFlawList({
     columns = 1,
     showTitle = true,
     framed = true,
+    onMove,
 }: MeritFlawListProps) {
+    const movable = onMove !== undefined && !disabled && items.length > 1;
     const messages = uiMessages.sheet.controls.meritFlaw;
     const advantage = positiveTerm === 'advantage';
     const positivePlaceholder = advantage
@@ -68,12 +73,32 @@ export function MeritFlawList({
     const content = (
         <>
             <div
+                data-reorder-list=""
                 className={
                     columns > 1 ? `grid gap-x-4 gap-y-2 ${meritColumns[columns]}` : 'space-y-2'
                 }
             >
-                {items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2">
+                {items.map((item, index) => (
+                    // Alt+↑/↓ from the row's own controls bubble here (spec 022).
+                    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                    <div
+                        key={item.id}
+                        data-reorder-row=""
+                        onKeyDown={
+                            movable
+                                ? rowMoveKeys(index, items.length, (to) => onMove(index, to))
+                                : undefined
+                        }
+                        className="flex items-center gap-2 [&[data-reorder-target]]:shadow-[0_-2px_0_0_rgb(var(--primary))]"
+                    >
+                        {movable && (
+                            <RowMoveControls
+                                count={items.length}
+                                index={index}
+                                name={item.label || fallbackRowName(index)}
+                                onMove={(to) => onMove(index, to)}
+                            />
+                        )}
                         <span className="font-mono font-bold text-md text-textPrimary">
                             {isMerit ? '+' : '-'}
                         </span>

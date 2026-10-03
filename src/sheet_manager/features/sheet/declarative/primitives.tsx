@@ -67,6 +67,7 @@ import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
 import { PoolTracker } from './PoolTracker';
 import { traitRowKind } from './rowKind';
+import { moveItem } from './rowOrder';
 import { EnumField, RowsBody } from './RowsBody';
 
 const page = uiMessages.sheet.templates.page;
@@ -181,6 +182,7 @@ function TraitListBindingView({
     disabled,
     onChange,
     onCatalogSelect,
+    onMove,
     placeholder,
     columns = 1,
 }: {
@@ -189,6 +191,7 @@ function TraitListBindingView({
     disabled: boolean;
     onChange: (items: TraitListEntry[]) => void;
     onCatalogSelect?: (id: string, entry: CatalogEntry) => void;
+    onMove?: (from: number, to: number) => void;
     placeholder?: string;
     columns?: 1 | 2 | 3 | 4;
 }) {
@@ -225,6 +228,7 @@ function TraitListBindingView({
             catalog={listCatalog(binding, locale)}
             onCatalogSelect={onCatalogSelect}
             onDiceRoll={traitDiceRoll}
+            onMove={onMove}
         />
     );
 }
@@ -273,6 +277,7 @@ function SystemListBody({
                 framed={framed}
                 onAdd={() => write([...items, { id: generateId(), points: 1, label: '' }])}
                 onRemove={(id) => write(items.filter((item) => item.id !== id))}
+                onMove={disabled ? undefined : (from, to) => write(moveItem(items, from, to))}
                 onChange={(id, points, label) =>
                     write(items.map((item) => (item.id === id ? { ...item, points, label } : item)))
                 }
@@ -313,6 +318,7 @@ function SystemListBody({
             disabled={disabled}
             columns={columns}
             onChange={(next) => write(next.map(toRaw))}
+            onMove={disabled ? undefined : (from, to) => write(moveItem(rawItems, from, to))}
             onCatalogSelect={(id, entry) =>
                 write(
                     rawItems.map((item) =>

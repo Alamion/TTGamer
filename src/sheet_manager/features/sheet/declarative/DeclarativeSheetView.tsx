@@ -16,6 +16,11 @@ import {
 } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
+import {
+    fallbackRowName,
+    RowMoveControls,
+    rowMoveKeys,
+} from '../../../components/controls/RowMoveControls';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
 import { TermHintProvider } from '../../../components/terms/TermHintProvider';
@@ -55,6 +60,7 @@ import { localizeTemplate } from './localizeTemplate';
 import { PrimitiveNodeView, SystemListView } from './primitives';
 
 const editor = uiMessages.sheet.templates.editor;
+const rowMessages = uiMessages.sheet.documents.rows;
 const page = uiMessages.sheet.templates.page;
 const binding = uiMessages.sheet.templates.binding;
 
@@ -323,6 +329,12 @@ function TableBlock({
             : {};
     const rowEntries = Object.entries(rows).sort(([left], [right]) => Number(left) - Number(right));
     const blockKey = tableValueKey(node);
+    const movable = !pageApi.disabled && rowEntries.length > 1;
+    /** A row is called by its first column when that holds text, else by its position. */
+    const rowName = (row: Record<string, unknown>, position: number) => {
+        const first = node.columns[0] ? row[node.columns[0].id] : undefined;
+        return typeof first === 'string' && first.trim() ? first : fallbackRowName(position);
+    };
     const catalogs = new Map(
         node.columns.flatMap((column) => {
             const runtime = pageApi.resolveCatalogField(column);
@@ -375,6 +387,13 @@ function TableBlock({
             <table className="w-full text-sm">
                 <thead>
                     <tr>
+                        {movable && (
+                            <th
+                                scope="col"
+                                aria-label={translate(rowMessages.reorder)}
+                                className="w-6 border-b border-border px-0 py-2"
+                            />
+                        )}
                         {node.columns.map((column) => (
                             <th
                                 key={column.id}
@@ -391,9 +410,31 @@ function TableBlock({
                         />
                     </tr>
                 </thead>
-                <tbody>
-                    {rowEntries.map(([rowIndex, row]) => (
-                        <tr key={rowIndex} data-row={rowIndex}>
+                <tbody data-reorder-list="">
+                    {rowEntries.map(([rowIndex, row], position) => (
+                        <tr
+                            key={rowIndex}
+                            data-row={rowIndex}
+                            data-reorder-row=""
+                            onKeyDown={
+                                movable
+                                    ? rowMoveKeys(position, rowEntries.length, (to) =>
+                                          pageApi.moveRow(blockKey, position, to)
+                                      )
+                                    : undefined
+                            }
+                            className="[&[data-reorder-target]]:shadow-[inset_0_2px_0_0_rgb(var(--primary))]"
+                        >
+                            {movable && (
+                                <td className="px-0 py-1.5 align-top">
+                                    <RowMoveControls
+                                        count={rowEntries.length}
+                                        index={position}
+                                        name={rowName(row, position)}
+                                        onMove={(to) => pageApi.moveRow(blockKey, position, to)}
+                                    />
+                                </td>
+                            )}
                             {node.columns.map((column) => {
                                 const Control = templateFieldControl(column.type);
                                 const catalog = catalogs.get(column.id);

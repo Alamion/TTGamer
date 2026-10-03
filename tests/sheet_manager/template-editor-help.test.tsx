@@ -31,7 +31,7 @@ const selectInOutline = (nodeId: string) =>
     fireEvent.click(
         [
             ...document.querySelector(`[data-outline-row="${nodeId}"]`)!.querySelectorAll('button'),
-        ].find((button) => !button.draggable)!
+        ].find((button) => !button.hasAttribute('data-drag-handle'))!
     );
 const settingsOf = (nodeId: string) =>
     document.querySelector(`[data-settings-for="${nodeId}"]`) as HTMLElement;
@@ -55,7 +55,7 @@ describe('template editor help and documentation links (T-068)', () => {
 
         selectInOutline('motto');
         const help = within(settingsOf('motto')).getByRole('link', {
-            name: /^Help: Shared value key/,
+            name: /^Help: Value key/,
         });
         expect(help.getAttribute('href')).toBe('/docs/template-editor/values#shared-value-key');
         expect(help.getAttribute('target')).toBe('_blank');

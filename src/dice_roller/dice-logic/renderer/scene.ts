@@ -3,6 +3,7 @@ import {
     AmbientLight,
     CameraHelper,
     DirectionalLight,
+    type Material,
     Mesh,
     PCFShadowMap,
     PerspectiveCamera,
@@ -20,6 +21,7 @@ export class SceneManager {
     ambientLight!: AmbientLight;
     directionalLight!: DirectionalLight;
     desk!: Mesh;
+    shadowCameraHelper: CameraHelper | null = null;
     shadows = true;
 
     display: { [key: string]: number } = {
@@ -116,8 +118,7 @@ export class SceneManager {
     initLighting(): void {
         const maxwidth = Math.max(this.display.containerWidth, this.display.containerHeight);
 
-        if (this.ambientLight) this.scene.remove(this.ambientLight);
-        if (this.directionalLight) this.scene.remove(this.directionalLight);
+        this.disposeLighting();
 
         this.directionalLight = new DirectionalLight(0xffffff, 0.8);
         this.directionalLight.position.set(-maxwidth / 2, maxwidth / 2, maxwidth);
@@ -134,16 +135,40 @@ export class SceneManager {
         this.scene.add(this.directionalLight);
 
         if (isDevelopment()) {
-            const shadowCameraHelper = new CameraHelper(this.directionalLight.shadow.camera);
-            this.scene.add(shadowCameraHelper);
+            this.shadowCameraHelper = new CameraHelper(this.directionalLight.shadow.camera);
+            this.scene.add(this.shadowCameraHelper);
         }
 
         this.ambientLight = new AmbientLight(0xffffff, 0.2);
         this.scene.add(this.ambientLight);
     }
 
+    /** Lights are rebuilt on every resize; each directional light owns a 2048² shadow map. */
+    private disposeLighting(): void {
+        if (this.ambientLight) {
+            this.scene.remove(this.ambientLight);
+            this.ambientLight.dispose();
+        }
+        if (this.directionalLight) {
+            this.scene.remove(this.directionalLight);
+            this.directionalLight.dispose();
+        }
+        if (this.shadowCameraHelper) {
+            this.scene.remove(this.shadowCameraHelper);
+            this.shadowCameraHelper.dispose();
+            this.shadowCameraHelper = null;
+        }
+    }
+
+    private disposeDesk(): void {
+        if (!this.desk) return;
+        this.scene.remove(this.desk);
+        this.desk.geometry.dispose();
+        (this.desk.material as Material).dispose();
+    }
+
     initDesk(): void {
-        if (this.desk) this.scene.remove(this.desk);
+        this.disposeDesk();
         const shadowplane = new ShadowMaterial();
         shadowplane.opacity = 0.3;
         this.desk = new Mesh(
@@ -180,6 +205,8 @@ export class SceneManager {
     }
 
     dispose(): void {
+        this.disposeLighting();
+        this.disposeDesk();
         this.renderer.dispose();
         this.scene.clear();
     }

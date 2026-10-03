@@ -1,19 +1,25 @@
 import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { ChevronDown, ChevronUp, Plus, X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { useMemo } from 'react';
 
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
+import {
+    fallbackRowName,
+    RowMoveControls,
+    rowMoveKeys,
+} from '../../../components/controls/RowMoveControls';
 import type { BindingOption, RowsBinding, RowsColumn } from '../../../systems/templateBindings';
 import { createRowId } from '../../../systems/templateBindings';
 import type { PrimitiveNode } from '../../../types/template';
 import { CATALOG_LOOKUP, readCatalogDetails } from '../data/catalogBindings';
 import { useBoundDocument } from './boundDocument';
+import { moveItem } from './rowOrder';
 import { parentName, type RowSuggestion, rowSuggestions, suggestionsForRow } from './rowsCatalog';
 
 const fields = uiMessages.sheet.documents.fields;
-const tracks = uiMessages.sheet.tracks;
+const rowMessages = uiMessages.sheet.documents.rows;
 
 const inputClasses =
     'w-full rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60';
@@ -115,13 +121,8 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
     const write = (next: Array<Record<string, unknown>>) =>
         bound.update({ [descriptor.dataKey]: next });
     const visibleColumns = descriptor.columns.filter((column) => !column.hidden);
-    const move = (index: number, offset: -1 | 1) => {
-        const target = index + offset;
-        if (target < 0 || target >= rows.length) return;
-        const next = [...rows];
-        [next[index], next[target]] = [next[target]!, next[index]!];
-        write(next);
-    };
+    const movable = !disabled && rows.length > 1;
+    const moveTo = (from: number) => (to: number) => write(moveItem(rows, from, to));
     const setCell = (index: number, key: string, value: string) =>
         write(rows.map((row, rowIndex) => (rowIndex === index ? { ...row, [key]: value } : row)));
     const fillFromCatalog = (index: number, suggestion: RowSuggestion) => {
@@ -161,6 +162,13 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                 <table className="w-full text-sm">
                     <thead>
                         <tr>
+                            {movable && (
+                                <th
+                                    scope="col"
+                                    aria-label={translate(rowMessages.reorder)}
+                                    className="w-6 border-b border-border"
+                                />
+                            )}
                             {visibleColumns.map((column) => (
                                 <th
                                     key={column.key}
@@ -179,9 +187,28 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                             )}
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody data-reorder-list="">
                         {rows.map((row, index) => (
-                            <tr key={String(row.id ?? index)}>
+                            <tr
+                                key={String(row.id ?? index)}
+                                data-reorder-row=""
+                                onKeyDown={
+                                    movable
+                                        ? rowMoveKeys(index, rows.length, moveTo(index))
+                                        : undefined
+                                }
+                                className="[&[data-reorder-target]]:shadow-[inset_0_2px_0_0_rgb(var(--primary))]"
+                            >
+                                {movable && (
+                                    <td className="px-0 py-1 align-top">
+                                        <RowMoveControls
+                                            count={rows.length}
+                                            index={index}
+                                            name={fallbackRowName(index)}
+                                            onMove={moveTo(index)}
+                                        />
+                                    </td>
+                                )}
                                 {visibleColumns.map((column) => {
                                     const cell =
                                         typeof row[column.key] === 'string'
@@ -250,38 +277,6 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                 })}
                                 {!disabled && (
                                     <td className="whitespace-nowrap px-1 py-1 align-top">
-                                        {rows.length > 1 && (
-                                            <>
-                                                <button
-                                                    type="button"
-                                                    disabled={index === 0}
-                                                    onClick={() => move(index, -1)}
-                                                    aria-label={translate(tracks.rows.moveUp, {
-                                                        index: index + 1,
-                                                    })}
-                                                    className="rounded p-1 text-textSecondary hover:bg-bgBase disabled:opacity-30"
-                                                >
-                                                    <ChevronUp
-                                                        className="h-3.5 w-3.5"
-                                                        aria-hidden="true"
-                                                    />
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    disabled={index === rows.length - 1}
-                                                    onClick={() => move(index, 1)}
-                                                    aria-label={translate(tracks.rows.moveDown, {
-                                                        index: index + 1,
-                                                    })}
-                                                    className="rounded p-1 text-textSecondary hover:bg-bgBase disabled:opacity-30"
-                                                >
-                                                    <ChevronDown
-                                                        className="h-3.5 w-3.5"
-                                                        aria-hidden="true"
-                                                    />
-                                                </button>
-                                            </>
-                                        )}
                                         <button
                                             type="button"
                                             disabled={disabled}

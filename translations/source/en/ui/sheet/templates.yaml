@@ -94,16 +94,12 @@ editor:
     emptyName: Template name is required.
     emptyLabel: Every section and field needs a non-empty label.
     addElement: Add element
-    paletteSection: Section
-    paletteSectionHint: Collapsible page block with a heading
-    paletteGroup: Field group
-    paletteGroupHint: Titled card that groups elements
+    paletteGroup: Group
+    paletteGroupHint: 'A page section, or a card inside another group: it holds other elements.'
     paletteField: Field
     paletteFieldHint: 'One value: text, number, rating, choice, formula…'
-    paletteTable: Table
-    paletteTableHint: Rows of values sharing the same columns
     paletteList: List
-    paletteListHint: 'Entries added one by one: custom, skills, merits, equipment…'
+    paletteListHint: 'Entries added one by one, or rows of a table: custom, skills, merits, equipment…'
     paletteTracker: Tracker
     paletteTrackerHint: 'Boxes to mark by level: health, stress, or any other burden'
     valueSource: Stores value in
@@ -185,7 +181,6 @@ editor:
         plural: true
     listChangeNote: The values stay stored; changing the entry back shows them again, except for entries edited in between.
     listChangeConfirm: Save anyway
-    invalidFormula: Invalid formula in "{id}" — check the expression.
     unknownCoordinate: Unknown value "{id}" referenced by a formula.
     circularDependency: 'Circular dependency detected: {id}'
     unknownBinding: Unknown data binding "{id}" for this document kind.
@@ -233,9 +228,109 @@ editor:
     removed: '{label} removed. Press Ctrl+Z to undo.'
     duplicated: '{label} copied.'
     inserted: '{label} added.'
-    shortcutsHint: 'Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo'
     coordinateCurrent: '{label} (current)'
     coordinateMax: '{label} (max)'
+    groupContent: Content
+    groupValue: Value
+    groupLimits: Limits and formulas
+    groupLook: Look
+    groupVisibility: Visibility and help
+    groupIssues:
+        message: '{count} issue|{count} issues'
+        plural: true
+    label: Label
+    helpText: Help text
+    title: Title
+    valueKey: Value key
+    valueKeyHint: A name for the value. Fields with the same key share one value.
+    rowsKeyHint: A name for the entries. Tables and lists with the same key share them.
+    maxFromShort: Maximum from
+    minFromShort: Minimum from
+    currentAtLeast: Current at least
+    maxAtLeast: Maximum at least
+    entryLabel: Entry field label
+    entryLabelHint: What the value of each entry is called.
+    formulaNoParse: 'This formula does not parse (at character {position}).'
+    formulaUnknown: 'No value named “{name}”.'
+    formulaReads: 'Reads {names}.'
+    issueIn: '{element}: {problem}'
+    issueEntryLabel: 'The entry field of list “{list}” has no label.'
+    issueColumn: '{table}, column “{column}”: {problem}'
+    issueNotAllowed: '{setting} has a value that is not allowed.'
+    issueSomething: A setting
+    issueOptionEmpty: An option has no label.
+    issuePresetEmpty: A preset entry has no label.
+    issueTrackerNameEmpty: A mark, level, or column has no name.
+    issuePoolTooLong: 'A tracker draws at most {max} boxes: lower the maximum.'
+    issueFormulaEmpty: The formula is empty.
+    issueListSource: A list takes its entries from one place only.
+    resizeOutline: Resize outline
+    resizeSettings: Resize settings
+    kindOf: '{element} · {kind}'
+    elementGroup: Group
+    elementList: List
+    kind: Kind
+    kindSection: Section
+    kindSectionHint: A page block with an accent bar. Readers can always fold it.
+    kindCard: Card
+    kindCardHint: A titled card. It can hide its title or fold.
+    kindEntries: Entries
+    kindEntriesHint: Entries added one by one, one value each.
+    kindTable: Table
+    kindTableHint: Rows with several columns.
+    tableUnavailable: Not for game lists or lists with catalog suggestions.
+    dropColumnsTitle: Remove columns?
+    dropColumnsConfirm: 'Entries keep one value per entry. Remove the columns {columns}?'
+    dropColumnsButton: Remove columns
+    kindChangeTitle: Change list kinds?
+    kindChangeSaveWarning: '{title} is now shown as {kind}. Values documents stored under its earlier kind are not shown, but they stay stored.'
+    cmdCut: Cut
+    cmdCopy: Copy
+    cmdPaste: Paste
+    cmdPasteAtEnd: Paste at the end of the page
+    cmdColumnPrev: Move to the previous column
+    cmdColumnNext: Move to the next column
+    cmdAddToSelection: Add to selection
+    cmdRemoveFromSelection: Remove from selection
+    cmdToggleSelection: Add or remove an element
+    cmdRangeSelection: Select a range of elements
+    cmdClearSelection: Clear the selection
+    cmdShortcuts: Keyboard shortcuts
+    cmdGroupEdit: Edit
+    cmdGroupSelection: Selection
+    cmdGroupArrange: Arrange
+    cmdGroupHistory: History
+    shortcutKeys: Keys
+    shortcutAction: Action
+    keyClick: click
+    selectedCount:
+        message: '{count} element selected|{count} elements selected'
+        plural: true
+    openSelected: 'Open {name}'
+    selectedElements: Selected elements
+    mixed: Mixed
+    pasted:
+        message: 'Pasted {count} element.|Pasted {count} elements.'
+        plural: true
+    cutDone:
+        message: 'Cut {count} element.|Cut {count} elements.'
+        plural: true
+    removedMany:
+        message: '{count} element removed. Press Ctrl+Z to undo.|{count} elements removed. Press Ctrl+Z to undo.'
+        plural: true
+    duplicatedMany:
+        message: '{count} element duplicated.|{count} elements duplicated.'
+        plural: true
+    movedMany:
+        message: '{count} element moved.|{count} elements moved.'
+        plural: true
+    dragCount:
+        message: '{count} element|{count} elements'
+        plural: true
+    clipboardUnreadable: These copied elements could not be read.
+    clipboardNewer: These elements were copied from a newer version of the editor.
+    closeShortcuts: Close the shortcut list
+    elementMenu: 'Actions: {name}'
 tracker:
     source: Source
     sourceOwn: Own values

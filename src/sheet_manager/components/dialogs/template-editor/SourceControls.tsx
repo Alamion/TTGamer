@@ -9,8 +9,9 @@ import type {
     TemplateNode,
     TrackerField,
 } from '../../../types/template';
-import { EditorHelp } from './EditorHelp';
 import { useEditorModel } from './EditorModel';
+import { inputClasses } from './settings/inputClasses';
+import { SettingField } from './settings/SettingField';
 import {
     currentListSource,
     currentTrackerSource,
@@ -25,9 +26,6 @@ import {
 
 const editor = uiMessages.sheet.templates.editor;
 
-const inputClasses =
-    'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
-
 const t = (descriptor: { message: string }) => translate(descriptor);
 
 /**
@@ -37,9 +35,11 @@ const t = (descriptor: { message: string }) => translate(descriptor);
 export function ValueSourceSelect({
     node,
     onReplace,
+    setting = 'source',
 }: {
     node: TemplateField | PrimitiveNode;
     onReplace: (nodeId: string, next: TemplateNode) => void;
+    setting?: string;
 }) {
     const { bindings } = useEditorModel();
     const sources = bindings.filter(isValueSource);
@@ -51,35 +51,33 @@ export function ValueSourceSelect({
     ] as const;
 
     return (
-        <label className="grid gap-1 text-xs text-textSecondary">
-            <span className="flex items-center gap-1">
-                {t(editor.valueSource)}
-                <EditorHelp topic="valueSource" about={t(editor.valueSource)} />
-            </span>
-            <select
-                value={current}
-                onChange={(event) => {
-                    const source = sources.find(({ key }) => key === event.target.value);
-                    onReplace(node.id, fieldFromSource(node, source));
-                }}
-                aria-label={t(editor.valueSource)}
-                className={inputClasses}
-            >
-                <option value={CUSTOM_SOURCE}>{t(editor.sourceCustom)}</option>
-                {groups.map((group) => {
-                    const options = sources.filter(({ kind }) => kind === group.kind);
-                    return options.length > 0 ? (
-                        <optgroup key={group.kind} label={group.label}>
-                            {options.map((source) => (
-                                <option key={source.key} value={source.key}>
-                                    {source.label}
-                                </option>
-                            ))}
-                        </optgroup>
-                    ) : null;
-                })}
-            </select>
-        </label>
+        <SettingField label={t(editor.valueSource)} help="valueSource" setting={setting}>
+            {(control) => (
+                <select
+                    {...control}
+                    value={current}
+                    onChange={(event) => {
+                        const source = sources.find(({ key }) => key === event.target.value);
+                        onReplace(node.id, fieldFromSource(node, source));
+                    }}
+                    className={`${inputClasses} w-full`}
+                >
+                    <option value={CUSTOM_SOURCE}>{t(editor.sourceCustom)}</option>
+                    {groups.map((group) => {
+                        const options = sources.filter(({ kind }) => kind === group.kind);
+                        return options.length > 0 ? (
+                            <optgroup key={group.kind} label={group.label}>
+                                {options.map((source) => (
+                                    <option key={source.key} value={source.key}>
+                                        {source.label}
+                                    </option>
+                                ))}
+                            </optgroup>
+                        ) : null;
+                    })}
+                </select>
+            )}
+        </SettingField>
     );
 }
 
@@ -87,9 +85,11 @@ export function ValueSourceSelect({
 export function ListSourceSelect({
     node,
     onReplace,
+    setting = 'source',
 }: {
     node: ListNode | PrimitiveNode;
     onReplace: (nodeId: string, next: TemplateNode) => void;
+    setting?: string;
 }) {
     const { bindings } = useEditorModel();
     const sources = bindings.filter(isListSource);
@@ -99,32 +99,33 @@ export function ListSourceSelect({
     ] as const;
 
     return (
-        <label className="grid gap-1 text-xs text-textSecondary">
-            {t(editor.listSource)}
-            <select
-                value={currentListSource(node)}
-                onChange={(event) => {
-                    const source = sources.find(({ key }) => key === event.target.value);
-                    onReplace(node.id, listFromSource(node, source));
-                }}
-                aria-label={t(editor.listSource)}
-                className={inputClasses}
-            >
-                <option value={CUSTOM_SOURCE}>{t(editor.listSourceCustom)}</option>
-                {groups.map((group) => {
-                    const options = sources.filter(({ kind }) => kind === group.kind);
-                    return options.length > 0 ? (
-                        <optgroup key={group.kind} label={group.label}>
-                            {options.map((source) => (
-                                <option key={source.key} value={source.key}>
-                                    {source.label}
-                                </option>
-                            ))}
-                        </optgroup>
-                    ) : null;
-                })}
-            </select>
-        </label>
+        <SettingField label={t(editor.listSource)} setting={setting}>
+            {(control) => (
+                <select
+                    {...control}
+                    value={currentListSource(node)}
+                    onChange={(event) => {
+                        const source = sources.find(({ key }) => key === event.target.value);
+                        onReplace(node.id, listFromSource(node, source));
+                    }}
+                    className={`${inputClasses} w-full`}
+                >
+                    <option value={CUSTOM_SOURCE}>{t(editor.listSourceCustom)}</option>
+                    {groups.map((group) => {
+                        const options = sources.filter(({ kind }) => kind === group.kind);
+                        return options.length > 0 ? (
+                            <optgroup key={group.kind} label={group.label}>
+                                {options.map((source) => (
+                                    <option key={source.key} value={source.key}>
+                                        {source.label}
+                                    </option>
+                                ))}
+                            </optgroup>
+                        ) : null;
+                    })}
+                </select>
+            )}
+        </SettingField>
     );
 }
 
@@ -132,34 +133,37 @@ export function ListSourceSelect({
 export function TrackerSourceSelect({
     node,
     onReplace,
+    setting = 'source',
 }: {
     node: TrackerField | PrimitiveNode;
     onReplace: (nodeId: string, next: TemplateNode) => void;
+    setting?: string;
 }) {
     const { bindings } = useEditorModel();
     const tracks = bindings.filter((binding): binding is TrackBinding => binding.kind === 'track');
     const label = t(uiMessages.sheet.templates.tracker.source);
     return (
-        <label className="grid gap-1 text-xs text-textSecondary">
-            {label}
-            <select
-                value={currentTrackerSource(node)}
-                onChange={(event) => {
-                    const source = tracks.find(({ key }) => key === event.target.value);
-                    onReplace(node.id, trackerFromSource(node, source));
-                }}
-                aria-label={label}
-                className={inputClasses}
-            >
-                <option value={CUSTOM_SOURCE}>
-                    {t(uiMessages.sheet.templates.tracker.sourceOwn)}
-                </option>
-                {tracks.map((track) => (
-                    <option key={track.key} value={track.key}>
-                        {track.label}
+        <SettingField label={label} setting={setting}>
+            {(control) => (
+                <select
+                    {...control}
+                    value={currentTrackerSource(node)}
+                    onChange={(event) => {
+                        const source = tracks.find(({ key }) => key === event.target.value);
+                        onReplace(node.id, trackerFromSource(node, source));
+                    }}
+                    className={`${inputClasses} w-full`}
+                >
+                    <option value={CUSTOM_SOURCE}>
+                        {t(uiMessages.sheet.templates.tracker.sourceOwn)}
                     </option>
-                ))}
-            </select>
-        </label>
+                    {tracks.map((track) => (
+                        <option key={track.key} value={track.key}>
+                            {track.label}
+                        </option>
+                    ))}
+                </select>
+            )}
+        </SettingField>
     );
 }

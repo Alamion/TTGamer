@@ -27,6 +27,10 @@ interface NumberInputProps extends NumberBounds {
     label: string;
     className: string;
     disabled?: boolean;
+    /** Lets a visible `<label htmlFor>` name the input. */
+    id?: string;
+    /** A `data-setting` key, for editors that focus a setting by key. */
+    setting?: string;
     placeholder?: string;
     /** Clearing the input stores `undefined`; otherwise an emptied input restores the value. */
     optional?: boolean;
@@ -40,12 +44,14 @@ interface NumberInputProps extends NumberBounds {
 export function NumberInput({
     className,
     disabled,
+    id,
     label,
     max,
     min,
     onChange,
     optional = true,
     placeholder,
+    setting,
     step,
     value,
 }: NumberInputProps) {
@@ -83,6 +89,8 @@ export function NumberInput({
 
     return (
         <input
+            id={id}
+            data-setting={setting}
             type="text"
             role="spinbutton"
             inputMode={integer ? 'numeric' : 'decimal'}

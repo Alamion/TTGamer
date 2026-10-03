@@ -250,6 +250,30 @@ class FormulaParser {
     }
 }
 
+/**
+ * Rewrites the coordinates a formula reads (`rename` returns the new base name, or undefined to
+ * keep it); pool parts (`.current`, `.max`) and everything else stay as written. A formula that
+ * does not tokenize is returned unchanged.
+ */
+export function renameFormulaCoordinates(
+    source: string,
+    rename: (coordinate: string) => string | undefined
+): string {
+    const tokens = tokenize(source);
+    if (!Array.isArray(tokens)) return source;
+    let result = source;
+    for (const token of [...tokens].reverse()) {
+        if (token.kind !== 'coord') continue;
+        // A coordinate token records where it ends; the name starts `path.length` before.
+        const start = token.position - token.path.length;
+        const base = token.path.split('.')[0]!;
+        const renamed = rename(base);
+        if (renamed === undefined || renamed === base) continue;
+        result = result.slice(0, start) + renamed + result.slice(start + base.length);
+    }
+    return result;
+}
+
 export function parseFormula(source: string): FormulaParseResult {
     const tokens = tokenize(source);
     if (!Array.isArray(tokens)) return { ok: false, error: tokens };

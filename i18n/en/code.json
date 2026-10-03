@@ -1907,6 +1907,18 @@
     "ttgamer.ui.sheet.documents.manager.type": {
         "message": "Type"
     },
+    "ttgamer.ui.sheet.documents.rows.fallbackName": {
+        "message": "row {index}"
+    },
+    "ttgamer.ui.sheet.documents.rows.moveDown": {
+        "message": "Move {name} down"
+    },
+    "ttgamer.ui.sheet.documents.rows.moveUp": {
+        "message": "Move {name} up"
+    },
+    "ttgamer.ui.sheet.documents.rows.reorder": {
+        "message": "Drag to reorder"
+    },
     "ttgamer.ui.sheet.documents.systems.starWarsWod": {
         "message": "Star Wars (World of Darkness 2e)"
     },
@@ -3119,6 +3131,63 @@
     "ttgamer.ui.sheet.templates.editor.circularDependency": {
         "message": "Circular dependency detected: {id}"
     },
+    "ttgamer.ui.sheet.templates.editor.clipboardNewer": {
+        "message": "These elements were copied from a newer version of the editor."
+    },
+    "ttgamer.ui.sheet.templates.editor.clipboardUnreadable": {
+        "message": "These copied elements could not be read."
+    },
+    "ttgamer.ui.sheet.templates.editor.closeShortcuts": {
+        "message": "Close the shortcut list"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdAddToSelection": {
+        "message": "Add to selection"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdClearSelection": {
+        "message": "Clear the selection"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdColumnNext": {
+        "message": "Move to the next column"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdColumnPrev": {
+        "message": "Move to the previous column"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdCopy": {
+        "message": "Copy"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdCut": {
+        "message": "Cut"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdGroupArrange": {
+        "message": "Arrange"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdGroupEdit": {
+        "message": "Edit"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdGroupHistory": {
+        "message": "History"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdGroupSelection": {
+        "message": "Selection"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdPaste": {
+        "message": "Paste"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdPasteAtEnd": {
+        "message": "Paste at the end of the page"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdRangeSelection": {
+        "message": "Select a range of elements"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdRemoveFromSelection": {
+        "message": "Remove from selection"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdShortcuts": {
+        "message": "Keyboard shortcuts"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdToggleSelection": {
+        "message": "Add or remove an element"
+    },
     "ttgamer.ui.sheet.templates.editor.collapse": {
         "message": "Collapse section"
     },
@@ -3164,6 +3233,12 @@
     "ttgamer.ui.sheet.templates.editor.countMessage": {
         "message": "Element limit reached — {limit} elements maximum."
     },
+    "ttgamer.ui.sheet.templates.editor.currentAtLeast": {
+        "message": "Current at least"
+    },
+    "ttgamer.ui.sheet.templates.editor.cutDone": {
+        "message": "Cut {count} element.|Cut {count} elements."
+    },
     "ttgamer.ui.sheet.templates.editor.depthMessage": {
         "message": "Nesting limit reached — {limit} levels maximum."
     },
@@ -3188,17 +3263,41 @@
     "ttgamer.ui.sheet.templates.editor.docsLink": {
         "message": "Documentation link (optional): /docs/… or https://…"
     },
+    "ttgamer.ui.sheet.templates.editor.dragCount": {
+        "message": "{count} element|{count} elements"
+    },
+    "ttgamer.ui.sheet.templates.editor.dropColumnsButton": {
+        "message": "Remove columns"
+    },
+    "ttgamer.ui.sheet.templates.editor.dropColumnsConfirm": {
+        "message": "Entries keep one value per entry. Remove the columns {columns}?"
+    },
+    "ttgamer.ui.sheet.templates.editor.dropColumnsTitle": {
+        "message": "Remove columns?"
+    },
     "ttgamer.ui.sheet.templates.editor.duplicate": {
         "message": "Duplicate"
     },
     "ttgamer.ui.sheet.templates.editor.duplicated": {
         "message": "{label} copied."
     },
+    "ttgamer.ui.sheet.templates.editor.duplicatedMany": {
+        "message": "{count} element duplicated.|{count} elements duplicated."
+    },
     "ttgamer.ui.sheet.templates.editor.duplicateId": {
         "message": "Duplicate identifier \"{id}\" — identifiers must be unique within their scope."
     },
+    "ttgamer.ui.sheet.templates.editor.elementGroup": {
+        "message": "Group"
+    },
     "ttgamer.ui.sheet.templates.editor.elementIssue": {
         "message": "This element has an issue"
+    },
+    "ttgamer.ui.sheet.templates.editor.elementList": {
+        "message": "List"
+    },
+    "ttgamer.ui.sheet.templates.editor.elementMenu": {
+        "message": "Actions: {name}"
     },
     "ttgamer.ui.sheet.templates.editor.emptyColumn": {
         "message": "Column {column} is empty — drop an element here or insert one."
@@ -3208,6 +3307,12 @@
     },
     "ttgamer.ui.sheet.templates.editor.emptyName": {
         "message": "Template name is required."
+    },
+    "ttgamer.ui.sheet.templates.editor.entryLabel": {
+        "message": "Entry field label"
+    },
+    "ttgamer.ui.sheet.templates.editor.entryLabelHint": {
+        "message": "What the value of each entry is called."
     },
     "ttgamer.ui.sheet.templates.editor.equalWidths": {
         "message": "Equal column widths"
@@ -3230,14 +3335,23 @@
     "ttgamer.ui.sheet.templates.editor.formula": {
         "message": "Formula"
     },
+    "ttgamer.ui.sheet.templates.editor.formulaNoParse": {
+        "message": "This formula does not parse (at character {position})."
+    },
     "ttgamer.ui.sheet.templates.editor.formulaPlaceholder": {
         "message": "e.g. passion + self-control"
     },
     "ttgamer.ui.sheet.templates.editor.formulaPrefix": {
         "message": "Before value (e.g. ×)"
     },
+    "ttgamer.ui.sheet.templates.editor.formulaReads": {
+        "message": "Reads {names}."
+    },
     "ttgamer.ui.sheet.templates.editor.formulaSuffix": {
         "message": "After value (e.g. m)"
+    },
+    "ttgamer.ui.sheet.templates.editor.formulaUnknown": {
+        "message": "No value named “{name}”."
     },
     "ttgamer.ui.sheet.templates.editor.gripHandle": {
         "message": "Drag handle — grab to move"
@@ -3245,14 +3359,35 @@
     "ttgamer.ui.sheet.templates.editor.groupCollapsible": {
         "message": "Collapsible (expanded state is remembered)"
     },
+    "ttgamer.ui.sheet.templates.editor.groupContent": {
+        "message": "Content"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupIssues": {
+        "message": "{count} issue|{count} issues"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupLimits": {
+        "message": "Limits and formulas"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupLook": {
+        "message": "Look"
+    },
     "ttgamer.ui.sheet.templates.editor.groupTitle": {
         "message": "Group title"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupValue": {
+        "message": "Value"
+    },
+    "ttgamer.ui.sheet.templates.editor.groupVisibility": {
+        "message": "Visibility and help"
     },
     "ttgamer.ui.sheet.templates.editor.guide": {
         "message": "Template editor guide"
     },
     "ttgamer.ui.sheet.templates.editor.helpAbout": {
         "message": "Help: {setting}"
+    },
+    "ttgamer.ui.sheet.templates.editor.helpText": {
+        "message": "Help text"
     },
     "ttgamer.ui.sheet.templates.editor.hiddenByCondition": {
         "message": "Hidden by a condition: shown only when \"{coordinate}\" is {value}. Readers do not see it now."
@@ -3275,11 +3410,83 @@
     "ttgamer.ui.sheet.templates.editor.invalidDocsLink": {
         "message": "Documentation link \"{id}\" is not a site docs path (/docs/…) or an https:// address."
     },
-    "ttgamer.ui.sheet.templates.editor.invalidFormula": {
-        "message": "Invalid formula in \"{id}\" — check the expression."
-    },
     "ttgamer.ui.sheet.templates.editor.invalidKey": {
         "message": "Invalid key \"{id}\" — use lowercase letters, digits, and dashes."
+    },
+    "ttgamer.ui.sheet.templates.editor.issueColumn": {
+        "message": "{table}, column “{column}”: {problem}"
+    },
+    "ttgamer.ui.sheet.templates.editor.issueEntryLabel": {
+        "message": "The entry field of list “{list}” has no label."
+    },
+    "ttgamer.ui.sheet.templates.editor.issueFormulaEmpty": {
+        "message": "The formula is empty."
+    },
+    "ttgamer.ui.sheet.templates.editor.issueIn": {
+        "message": "{element}: {problem}"
+    },
+    "ttgamer.ui.sheet.templates.editor.issueListSource": {
+        "message": "A list takes its entries from one place only."
+    },
+    "ttgamer.ui.sheet.templates.editor.issueNotAllowed": {
+        "message": "{setting} has a value that is not allowed."
+    },
+    "ttgamer.ui.sheet.templates.editor.issueOptionEmpty": {
+        "message": "An option has no label."
+    },
+    "ttgamer.ui.sheet.templates.editor.issuePoolTooLong": {
+        "message": "A tracker draws at most {max} boxes: lower the maximum."
+    },
+    "ttgamer.ui.sheet.templates.editor.issuePresetEmpty": {
+        "message": "A preset entry has no label."
+    },
+    "ttgamer.ui.sheet.templates.editor.issueSomething": {
+        "message": "A setting"
+    },
+    "ttgamer.ui.sheet.templates.editor.issueTrackerNameEmpty": {
+        "message": "A mark, level, or column has no name."
+    },
+    "ttgamer.ui.sheet.templates.editor.keyClick": {
+        "message": "click"
+    },
+    "ttgamer.ui.sheet.templates.editor.kind": {
+        "message": "Kind"
+    },
+    "ttgamer.ui.sheet.templates.editor.kindCard": {
+        "message": "Card"
+    },
+    "ttgamer.ui.sheet.templates.editor.kindCardHint": {
+        "message": "A titled card. It can hide its title or fold."
+    },
+    "ttgamer.ui.sheet.templates.editor.kindChangeSaveWarning": {
+        "message": "{title} is now shown as {kind}. Values documents stored under its earlier kind are not shown, but they stay stored."
+    },
+    "ttgamer.ui.sheet.templates.editor.kindChangeTitle": {
+        "message": "Change list kinds?"
+    },
+    "ttgamer.ui.sheet.templates.editor.kindEntries": {
+        "message": "Entries"
+    },
+    "ttgamer.ui.sheet.templates.editor.kindEntriesHint": {
+        "message": "Entries added one by one, one value each."
+    },
+    "ttgamer.ui.sheet.templates.editor.kindOf": {
+        "message": "{element} · {kind}"
+    },
+    "ttgamer.ui.sheet.templates.editor.kindSection": {
+        "message": "Section"
+    },
+    "ttgamer.ui.sheet.templates.editor.kindSectionHint": {
+        "message": "A page block with an accent bar. Readers can always fold it."
+    },
+    "ttgamer.ui.sheet.templates.editor.kindTable": {
+        "message": "Table"
+    },
+    "ttgamer.ui.sheet.templates.editor.kindTableHint": {
+        "message": "Rows with several columns."
+    },
+    "ttgamer.ui.sheet.templates.editor.label": {
+        "message": "Label"
     },
     "ttgamer.ui.sheet.templates.editor.labelLeft": {
         "message": "Beside the value"
@@ -3350,11 +3557,17 @@
     "ttgamer.ui.sheet.templates.editor.listTitle": {
         "message": "List title (optional)"
     },
+    "ttgamer.ui.sheet.templates.editor.maxAtLeast": {
+        "message": "Maximum at least"
+    },
     "ttgamer.ui.sheet.templates.editor.maxFrom": {
         "message": "Maximum from value or formula (optional)"
     },
     "ttgamer.ui.sheet.templates.editor.maxFromPlaceholder": {
         "message": "e.g. willpower.max"
+    },
+    "ttgamer.ui.sheet.templates.editor.maxFromShort": {
+        "message": "Maximum from"
     },
     "ttgamer.ui.sheet.templates.editor.maxMinFrom": {
         "message": "Maximum at least, from value or formula (optional)"
@@ -3371,8 +3584,14 @@
     "ttgamer.ui.sheet.templates.editor.minFromPlaceholder": {
         "message": "e.g. self-control"
     },
+    "ttgamer.ui.sheet.templates.editor.minFromShort": {
+        "message": "Minimum from"
+    },
     "ttgamer.ui.sheet.templates.editor.minRows": {
         "message": "Min rows"
+    },
+    "ttgamer.ui.sheet.templates.editor.mixed": {
+        "message": "Mixed"
     },
     "ttgamer.ui.sheet.templates.editor.modeEdit": {
         "message": "Edit"
@@ -3388,6 +3607,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.movedColumn": {
         "message": "{label} moved to column {column}."
+    },
+    "ttgamer.ui.sheet.templates.editor.movedMany": {
+        "message": "{count} element moved.|{count} elements moved."
     },
     "ttgamer.ui.sheet.templates.editor.moveDown": {
         "message": "Move down"
@@ -3437,6 +3659,9 @@
     "ttgamer.ui.sheet.templates.editor.numberStep": {
         "message": "Step"
     },
+    "ttgamer.ui.sheet.templates.editor.openSelected": {
+        "message": "Open {name}"
+    },
     "ttgamer.ui.sheet.templates.editor.optionLabel": {
         "message": "Option label"
     },
@@ -3450,28 +3675,16 @@
         "message": "One value: text, number, rating, choice, formula…"
     },
     "ttgamer.ui.sheet.templates.editor.paletteGroup": {
-        "message": "Field group"
+        "message": "Group"
     },
     "ttgamer.ui.sheet.templates.editor.paletteGroupHint": {
-        "message": "Titled card that groups elements"
+        "message": "A page section, or a card inside another group: it holds other elements."
     },
     "ttgamer.ui.sheet.templates.editor.paletteList": {
         "message": "List"
     },
     "ttgamer.ui.sheet.templates.editor.paletteListHint": {
-        "message": "Entries added one by one: custom, skills, merits, equipment…"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteSection": {
-        "message": "Section"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteSectionHint": {
-        "message": "Collapsible page block with a heading"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteTable": {
-        "message": "Table"
-    },
-    "ttgamer.ui.sheet.templates.editor.paletteTableHint": {
-        "message": "Rows of values sharing the same columns"
+        "message": "Entries added one by one, or rows of a table: custom, skills, merits, equipment…"
     },
     "ttgamer.ui.sheet.templates.editor.paletteTracker": {
         "message": "Tracker"
@@ -3484,6 +3697,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.partMax": {
         "message": "Maximum"
+    },
+    "ttgamer.ui.sheet.templates.editor.pasted": {
+        "message": "Pasted {count} element.|Pasted {count} elements."
     },
     "ttgamer.ui.sheet.templates.editor.placeholderText": {
         "message": "Placeholder text (optional)"
@@ -3578,6 +3794,15 @@
     "ttgamer.ui.sheet.templates.editor.removed": {
         "message": "{label} removed. Press Ctrl+Z to undo."
     },
+    "ttgamer.ui.sheet.templates.editor.removedMany": {
+        "message": "{count} element removed. Press Ctrl+Z to undo.|{count} elements removed. Press Ctrl+Z to undo."
+    },
+    "ttgamer.ui.sheet.templates.editor.resizeOutline": {
+        "message": "Resize outline"
+    },
+    "ttgamer.ui.sheet.templates.editor.resizeSettings": {
+        "message": "Resize settings"
+    },
     "ttgamer.ui.sheet.templates.editor.retargetConfirm": {
         "message": "Move"
     },
@@ -3586,6 +3811,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.retargetTitle": {
         "message": "Move the page?"
+    },
+    "ttgamer.ui.sheet.templates.editor.rowsKeyHint": {
+        "message": "A name for the entries. Tables and lists with the same key share them."
     },
     "ttgamer.ui.sheet.templates.editor.sampleNote": {
         "message": "Sample data — dots, boxes, and text you change here never reach your documents."
@@ -3599,11 +3827,20 @@
     "ttgamer.ui.sheet.templates.editor.sectionTitle": {
         "message": "Section title"
     },
+    "ttgamer.ui.sheet.templates.editor.selectedCount": {
+        "message": "{count} element selected|{count} elements selected"
+    },
+    "ttgamer.ui.sheet.templates.editor.selectedElements": {
+        "message": "Selected elements"
+    },
     "ttgamer.ui.sheet.templates.editor.selectPrompt": {
         "message": "Select an element on the page or in the outline to change its settings."
     },
-    "ttgamer.ui.sheet.templates.editor.shortcutsHint": {
-        "message": "Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo"
+    "ttgamer.ui.sheet.templates.editor.shortcutAction": {
+        "message": "Action"
+    },
+    "ttgamer.ui.sheet.templates.editor.shortcutKeys": {
+        "message": "Keys"
     },
     "ttgamer.ui.sheet.templates.editor.showLabel": {
         "message": "Show label"
@@ -3635,6 +3872,9 @@
     "ttgamer.ui.sheet.templates.editor.tableTitle": {
         "message": "Table title (optional)"
     },
+    "ttgamer.ui.sheet.templates.editor.tableUnavailable": {
+        "message": "Not for game lists or lists with catalog suggestions."
+    },
     "ttgamer.ui.sheet.templates.editor.tableValueKey": {
         "message": "Shared value key (table rows)"
     },
@@ -3643,6 +3883,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.targetLocked": {
         "message": "This page's type and setting are fixed here"
+    },
+    "ttgamer.ui.sheet.templates.editor.title": {
+        "message": "Title"
     },
     "ttgamer.ui.sheet.templates.editor.trackerSource": {
         "message": "Tracks"
@@ -3667,6 +3910,12 @@
     },
     "ttgamer.ui.sheet.templates.editor.untitledName": {
         "message": "Untitled template"
+    },
+    "ttgamer.ui.sheet.templates.editor.valueKey": {
+        "message": "Value key"
+    },
+    "ttgamer.ui.sheet.templates.editor.valueKeyHint": {
+        "message": "A name for the value. Fields with the same key share one value."
     },
     "ttgamer.ui.sheet.templates.editor.valueKeyLabel": {
         "message": "Shared value key (fields with the same key share one value)"
@@ -4444,12 +4693,6 @@
     },
     "ttgamer.ui.sheet.tracks.length.increase": {
         "message": "Extend {track}"
-    },
-    "ttgamer.ui.sheet.tracks.rows.moveDown": {
-        "message": "Move row {index} down"
-    },
-    "ttgamer.ui.sheet.tracks.rows.moveUp": {
-        "message": "Move row {index} up"
     },
     "ttgamer.ui.sheet.tracks.tracker.add": {
         "message": "Add {title}"

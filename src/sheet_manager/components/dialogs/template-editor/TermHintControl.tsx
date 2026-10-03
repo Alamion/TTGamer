@@ -7,6 +7,18 @@ import { ToggleRow } from './LayoutControls';
 
 const editor = uiMessages.sheet.templates.editor;
 
+interface TermNode {
+    labelMessage?: string;
+    termRef?: string;
+    termHint?: false;
+}
+
+/** Whether the node's label is a book term, so the hint switch applies. */
+export function hasTermHint(node: TermNode): boolean {
+    const { termRef } = termLinkOf(node);
+    return termRef !== undefined && bookTerms[termRef] !== undefined;
+}
+
 /**
  * The book term a field or primitive stands for (spec 009, FR-016a) and the switch for its
  * English-name hint; nothing for labels that are not glossary terms.
@@ -14,9 +26,11 @@ const editor = uiMessages.sheet.templates.editor;
 export function TermHintControl({
     node,
     onChange,
+    setting = 'termHint',
 }: {
-    node: { labelMessage?: string; termRef?: string; termHint?: false };
+    node: TermNode;
     onChange: (termHint: false | undefined) => void;
+    setting?: string;
 }) {
     const { termRef } = termLinkOf(node);
     const term = termRef ? bookTerms[termRef] : undefined;
@@ -29,6 +43,7 @@ export function TermHintControl({
             <ToggleRow
                 checked={node.termHint !== false}
                 label={translate(editor.showTermHint)}
+                setting={setting}
                 onChange={(checked) => onChange(checked ? undefined : false)}
             />
         </div>

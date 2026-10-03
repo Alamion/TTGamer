@@ -2,8 +2,9 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { ArrowDown, ArrowUp, Copy, Plus, Trash2 } from 'lucide-react';
-import { memo } from 'react';
+import { Fragment, memo } from 'react';
 
+import type { DocumentBindingDescriptor } from '../../../systems/templateBindings';
 import type {
     GroupNode,
     ListNode,
@@ -19,11 +20,12 @@ import {
     listItemField,
     TEMPLATE_LIMITS,
 } from '../../../types/template';
+import { fallbackRowName, RowMoveControls } from '../../controls/RowMoveControls';
 import { ListCatalogPicker } from './CatalogBindingEditor';
 import type { NodeUpdates } from './draft';
-import { EditorHelp } from './EditorHelp';
-import { EditorFillTargetsContext } from './EditorModel';
-import { FieldEditor, type FieldEditorCallbacks } from './FieldEditor';
+import { EditorFillTargetsContext, useEditorModel } from './EditorModel';
+import { elementKind, type GroupKind, type ListKind, tableKindBlocked } from './elementKinds';
+import { FieldEditor, type FieldEditorCallbacks, fieldSettings } from './FieldEditor';
 import {
     ColumnLayoutControl,
     ColumnPlacementControl,
@@ -31,15 +33,20 @@ import {
     ToggleRow,
     VisibilityControl,
 } from './LayoutControls';
-import { PrimitiveConfig } from './PrimitiveConfig';
+import { primitiveSettings } from './PrimitiveConfig';
+import { type GroupedSettings, mergeGroups } from './settings/groupedSettings';
+import { inputClasses } from './settings/inputClasses';
+import { KeyField } from './settings/KeyField';
+import { SettingField } from './settings/SettingField';
+import { SettingsGroup } from './settings/SettingsGroup';
 import { ListSourceSelect } from './SourceControls';
 
 const editor = uiMessages.sheet.templates.editor;
 const primitives = uiMessages.sheet.templates.primitives;
 const fieldTypes = uiMessages.sheet.templates.fieldTypes;
 
-const inputClasses =
-    'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
+const t = (descriptor: { message: string }, values?: Record<string, string | number>) =>
+    translate(descriptor, values);
 
 export interface ElementEditorCallbacks {
     onUpdate: (nodeId: string, updates: NodeUpdates) => void;
@@ -60,8 +67,11 @@ export interface ElementEditorCallbacks {
     ) => void;
     onAddTableColumn: (tableId: string) => void;
     onRemoveTableColumn: (tableId: string, columnId: string) => void;
+    onMoveTableColumn: (tableId: string, from: number, to: number) => void;
     /** Swaps a node for another shape (source changes), keeping its id. */
     onReplace: (nodeId: string, next: TemplateNode) => void;
+    /** Shows a group or list as another kind (spec 022, US6); the stored type changes. */
+    onSwitchKind: (nodeId: string, kind: GroupKind | ListKind) => void;
 }
 
 /** What the outline, chips, and announcements call a node. */
@@ -77,10 +87,89 @@ export function nodeDisplayName(node: TemplateNode): string {
     return name || '—';
 }
 
-/** The translated element kind (Section, Field group, Rating, …). */
+const KIND_NAMES = {
+    group: editor.elementGroup,
+    list: editor.elementList,
+    section: editor.kindSection,
+    card: editor.kindCard,
+    entries: editor.kindEntries,
+    table: editor.kindTable,
+} as const;
+
+/** The translated element kind ("Group · Section", "List · Table", Rating, …). */
 export function nodeKindLabel(node: TemplateNode): string {
     if (node.type === 'primitive') return translate(fieldTypes.builtIn);
+    const kind = elementKind(node);
+    if (kind) {
+        return translate(editor.kindOf, {
+            element: translate(KIND_NAMES[kind.element]),
+            kind: translate(KIND_NAMES[kind.kind]),
+        });
+    }
     return translate(fieldTypes[node.type]);
+}
+
+/** The kind alone for groups and lists ("Section", "Table"), else the kind label. */
+export function nodeKindShort(node: TemplateNode): string {
+    const kind = elementKind(node);
+    return kind ? translate(KIND_NAMES[kind.kind]) : nodeKindLabel(node);
+}
+
+/** The kind of a group or list (spec 022, US6), a radio group in Content. */
+function KindChoice({
+    blocked,
+    node,
+    onSwitch,
+}: {
+    blocked?: string;
+    node: TemplateNode;
+    onSwitch: (kind: GroupKind | ListKind) => void;
+}) {
+    const current = elementKind(node);
+    if (!current) return null;
+    const options =
+        current.element === 'group'
+            ? ([
+                  ['section', editor.kindSectionHint],
+                  ['card', editor.kindCardHint],
+              ] as const)
+            : ([
+                  ['entries', editor.kindEntriesHint],
+                  ['table', editor.kindTableHint],
+              ] as const);
+    return (
+        <fieldset className="grid gap-1" data-setting="kind" tabIndex={-1}>
+            <legend className="mb-1 text-xs font-semibold text-textPrimary">
+                {t(editor.kind)}
+            </legend>
+            {options.map(([kind, hint]) => {
+                const disabled = kind === 'table' && blocked !== undefined;
+                return (
+                    <label
+                        key={kind}
+                        className={`flex items-start gap-2 rounded border border-border px-2 py-1.5 text-xs has-[:checked]:border-primary ${disabled ? 'opacity-50' : 'cursor-pointer'}`}
+                    >
+                        <input
+                            type="radio"
+                            name={`kind-${node.id}`}
+                            checked={current.kind === kind}
+                            disabled={disabled}
+                            onChange={() => onSwitch(kind)}
+                            className="mt-0.5"
+                        />
+                        <span className="grid">
+                            <span className="font-semibold text-textPrimary">
+                                {t(KIND_NAMES[kind])}
+                            </span>
+                            <span className="text-textSecondary">
+                                {disabled ? blocked : t(hint)}
+                            </span>
+                        </span>
+                    </label>
+                );
+            })}
+        </fieldset>
+    );
 }
 
 export interface ElementActions {
@@ -90,10 +179,6 @@ export interface ElementActions {
     onRemove: () => void;
 }
 
-/**
- * The settings of one element (spec 012): the same controls the recursive panels used, shown for
- * the selected element only. `parentColumns` offers column placement inside multi-column parents.
- */
 /** The field editor's callbacks for one field id (a page field or a table column). */
 function fieldCallbacks(callbacks: ElementEditorCallbacks, fieldId: string): FieldEditorCallbacks {
     return {
@@ -109,6 +194,148 @@ function fieldCallbacks(callbacks: ElementEditorCallbacks, fieldId: string): Fie
     };
 }
 
+const actionButton =
+    'flex h-7 w-7 items-center justify-center rounded border border-transparent text-textSecondary hover:border-border hover:text-textPrimary disabled:opacity-40';
+
+/** Move up, move down, duplicate, and remove: for one element or a selection (spec 023). */
+export function ElementActionsRow({ actions }: { actions: ElementActions }) {
+    return (
+        <div className="flex items-center gap-1">
+            <button
+                type="button"
+                onClick={actions.onMoveUp}
+                disabled={!actions.onMoveUp}
+                aria-label={t(editor.moveUp)}
+                title={t(editor.moveUp)}
+                className={actionButton}
+            >
+                <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+            <button
+                type="button"
+                onClick={actions.onMoveDown}
+                disabled={!actions.onMoveDown}
+                aria-label={t(editor.moveDown)}
+                title={t(editor.moveDown)}
+                className={actionButton}
+            >
+                <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+            <button
+                type="button"
+                onClick={actions.onDuplicate}
+                aria-label={t(editor.duplicate)}
+                title={t(editor.duplicate)}
+                className={actionButton}
+            >
+                <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+            <span className="flex-1" />
+            <button
+                type="button"
+                onClick={actions.onRemove}
+                aria-label={t(editor.remove)}
+                title={t(editor.remove)}
+                className={`${actionButton} hover:text-error`}
+            >
+                <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+        </div>
+    );
+}
+
+/** Actions first, then the kind and the full name: a narrow area never hides the name. */
+function ElementHeader({ actions, node }: { actions: ElementActions; node: TemplateNode }) {
+    return (
+        <div className="grid gap-1.5">
+            <ElementActionsRow actions={actions} />
+            <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5" data-element-name="">
+                <span className="shrink-0 rounded bg-bgBase px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-textSecondary">
+                    {nodeKindLabel(node)}
+                </span>
+                <span className="min-w-0 break-words text-sm font-semibold text-textPrimary">
+                    {nodeDisplayName(node)}
+                </span>
+            </p>
+        </div>
+    );
+}
+
+/** Where the element sits in a multi-column parent (Look) and when it shows (Visibility). */
+function placementSettings({
+    callbacks,
+    node,
+    parentColumns,
+    pinnedSiblings,
+}: {
+    callbacks: ElementEditorCallbacks;
+    node: TemplateNode;
+    parentColumns: number;
+    pinnedSiblings: boolean;
+}): GroupedSettings {
+    return {
+        look:
+            parentColumns > 1 ? (
+                <>
+                    <ColumnPlacementControl
+                        parentColumns={parentColumns}
+                        value={node.column}
+                        onChange={(column) => callbacks.onUpdate(node.id, { column })}
+                    />
+                    <ColumnSpanControl
+                        parentColumns={parentColumns}
+                        pinnedSiblings={pinnedSiblings}
+                        value={node.span}
+                        onChange={(span) => callbacks.onUpdate(node.id, { span })}
+                    />
+                </>
+            ) : null,
+        visibility: (
+            <VisibilityControl
+                value={node.visibleWhen}
+                onChange={(visibleWhen) => callbacks.onUpdate(node.id, { visibleWhen })}
+            />
+        ),
+    };
+}
+
+/** The settings of the element's own kind. */
+function kindSettings(
+    node: TemplateNode,
+    callbacks: ElementEditorCallbacks,
+    bindings: readonly DocumentBindingDescriptor[]
+): GroupedSettings {
+    switch (node.type) {
+        case 'section':
+            return sectionSettings(node, callbacks);
+        case 'group':
+            return groupSettings(node, callbacks);
+        case 'table':
+            return tableSettings(node, callbacks);
+        case 'list':
+            return listSettings(node, callbacks);
+        case 'primitive':
+            return primitiveSettings({
+                bindings,
+                node,
+                onUpdate: callbacks.onUpdate,
+                onReplace: callbacks.onReplace,
+            });
+        default:
+            return isTemplateField(node)
+                ? fieldSettings({
+                      bindings,
+                      callbacks: fieldCallbacks(callbacks, node.id),
+                      field: node,
+                  })
+                : {};
+    }
+}
+
+/**
+ * The settings of one element (spec 012), grouped in a fixed order across kinds (spec 022):
+ * Content, Value, Limits and formulas, Look, Visibility and help. Empty groups are left out.
+ */
 export const ElementSettings = memo(function ElementSettings({
     actions,
     callbacks,
@@ -123,269 +350,240 @@ export const ElementSettings = memo(function ElementSettings({
     /** Some element of the same container is pinned to a column (spans do not apply). */
     pinnedSiblings?: boolean;
 }) {
-    const t = (descriptor: { message: string }) => translate(descriptor);
-    const iconButton =
-        'flex items-center gap-1 rounded border border-border px-2 py-1 text-xs text-textSecondary hover:bg-bgBase hover:text-textPrimary disabled:opacity-40';
+    const { bindings } = useEditorModel();
+    const groups = mergeGroups([
+        kindSettings(node, callbacks, bindings),
+        placementSettings({ callbacks, node, parentColumns, pinnedSiblings }),
+    ]);
     return (
-        <div className="space-y-3" data-settings-for={node.id}>
-            <p className="flex items-baseline gap-2">
-                <span className="truncate text-sm font-semibold text-textPrimary">
-                    {nodeDisplayName(node)}
-                </span>
-                <span className="shrink-0 text-[10px] uppercase tracking-wide text-textSecondary">
-                    {nodeKindLabel(node)}
-                </span>
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-                <button
-                    type="button"
-                    onClick={actions.onMoveUp}
-                    disabled={!actions.onMoveUp}
-                    className={iconButton}
-                >
-                    <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
-                    {t(editor.moveUp)}
-                </button>
-                <button
-                    type="button"
-                    onClick={actions.onMoveDown}
-                    disabled={!actions.onMoveDown}
-                    className={iconButton}
-                >
-                    <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
-                    {t(editor.moveDown)}
-                </button>
-                <button type="button" onClick={actions.onDuplicate} className={iconButton}>
-                    <Copy className="h-3.5 w-3.5" aria-hidden="true" />
-                    {t(editor.duplicate)}
-                </button>
-                <button
-                    type="button"
-                    onClick={actions.onRemove}
-                    className={`${iconButton} hover:text-error`}
-                >
-                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                    {t(editor.remove)}
-                </button>
+        <div className="grid gap-2" data-settings-for={node.id}>
+            <ElementHeader actions={actions} node={node} />
+            <div>
+                {groups.map(({ id, nodes }) => (
+                    <SettingsGroup key={id} id={id} nodeId={node.id}>
+                        {nodes.map((setting, index) => (
+                            <Fragment key={index}>{setting}</Fragment>
+                        ))}
+                    </SettingsGroup>
+                ))}
             </div>
-            {parentColumns > 1 && (
-                <ColumnPlacementControl
-                    parentColumns={parentColumns}
-                    value={node.column}
-                    onChange={(column) => callbacks.onUpdate(node.id, { column })}
-                />
-            )}
-            {parentColumns > 1 && (
-                <ColumnSpanControl
-                    parentColumns={parentColumns}
-                    pinnedSiblings={pinnedSiblings}
-                    value={node.span}
-                    onChange={(span) => callbacks.onUpdate(node.id, { span })}
-                />
-            )}
-            <VisibilityControl
-                value={node.visibleWhen}
-                onChange={(visibleWhen) => callbacks.onUpdate(node.id, { visibleWhen })}
-            />
-            {node.type === 'section' && <SectionConfig callbacks={callbacks} node={node} />}
-            {node.type === 'group' && <GroupConfig callbacks={callbacks} node={node} />}
-            {node.type === 'table' && <TableConfig callbacks={callbacks} node={node} />}
-            {node.type === 'list' && <ListConfig callbacks={callbacks} node={node} />}
-            {node.type === 'primitive' && (
-                <PrimitiveConfig
-                    node={node}
-                    onUpdate={callbacks.onUpdate}
-                    onReplace={callbacks.onReplace}
-                />
-            )}
-            {isTemplateField(node) && (
-                <FieldEditor callbacks={fieldCallbacks(callbacks, node.id)} field={node} />
-            )}
         </div>
     );
 });
 
-function SectionConfig({
-    callbacks,
+function TitleSetting({
     node,
+    onChange,
 }: {
-    callbacks: ElementEditorCallbacks;
-    node: SectionNode;
+    node: { title?: string };
+    onChange: (title: string) => void;
 }) {
-    const t = (descriptor: { message: string }) => translate(descriptor);
     return (
-        <div className="space-y-2">
-            <input
-                value={node.title}
-                onChange={(event) => callbacks.onUpdate(node.id, { title: event.target.value })}
-                aria-label={t(editor.sectionTitle)}
-                className={`${inputClasses} w-full font-medium`}
-            />
-            <div className="flex items-center gap-2">
+        <SettingField label={t(editor.title)} setting="title">
+            {(control) => (
                 <input
-                    value={node.docsPath ?? ''}
-                    onChange={(event) =>
-                        callbacks.onUpdate(node.id, {
-                            docsPath: event.target.value.trim() || undefined,
-                        })
-                    }
-                    placeholder={t(editor.docsLink)}
-                    aria-label={t(editor.docsLink)}
-                    className={`${inputClasses} min-w-0 flex-1`}
+                    {...control}
+                    value={node.title ?? ''}
+                    onChange={(event) => onChange(event.target.value)}
+                    className={`${inputClasses} w-full font-medium`}
                 />
-                <EditorHelp topic="documentationLink" about={t(editor.docsLink)} />
-            </div>
-            <ToggleRow
-                checked={node.defaultCollapsed === true}
-                label={t(editor.startsCollapsed)}
-                onChange={(checked) => callbacks.onUpdate(node.id, { defaultCollapsed: checked })}
-            />
-            <ColumnLayoutControl
-                columns={node.columns}
-                columnWidths={node.columnWidths}
-                onChange={(updates) => callbacks.onUpdate(node.id, updates)}
-            />
-        </div>
+            )}
+        </SettingField>
     );
 }
 
-function GroupConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; node: GroupNode }) {
-    const t = (descriptor: { message: string }) => translate(descriptor);
+function DocsLinkSetting({
+    node,
+    onChange,
+}: {
+    node: { docsPath?: string };
+    onChange: (docsPath: string | undefined) => void;
+}) {
     return (
-        <div className="space-y-2">
-            <input
-                value={node.title}
-                onChange={(event) => callbacks.onUpdate(node.id, { title: event.target.value })}
-                aria-label={t(editor.groupTitle)}
-                className={`${inputClasses} w-full font-medium`}
+        <SettingField label={t(editor.docsLink)} help="documentationLink" setting="docsPath">
+            {(control) => (
+                <input
+                    {...control}
+                    value={node.docsPath ?? ''}
+                    onChange={(event) => onChange(event.target.value.trim() || undefined)}
+                    className={`${inputClasses} w-full`}
+                />
+            )}
+        </SettingField>
+    );
+}
+
+function sectionSettings(node: SectionNode, callbacks: ElementEditorCallbacks): GroupedSettings {
+    const update = (updates: NodeUpdates) => callbacks.onUpdate(node.id, updates);
+    return {
+        content: (
+            <>
+                <KindChoice
+                    node={node}
+                    onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
+                />
+                <TitleSetting node={node} onChange={(title) => update({ title })} />
+            </>
+        ),
+        look: (
+            <ColumnLayoutControl
+                columns={node.columns}
+                columnWidths={node.columnWidths}
+                onChange={update}
             />
-            <ToggleRow
-                checked={!node.hideTitle}
-                label={t(editor.showTitle)}
-                onChange={(checked) => callbacks.onUpdate(node.id, { hideTitle: !checked })}
-            />
-            <ToggleRow
-                checked={node.collapsible && !node.hideTitle}
-                disabled={node.hideTitle === true}
-                hint={node.hideTitle ? t(editor.hiddenTitleHint) : undefined}
-                label={t(editor.groupCollapsible)}
-                onChange={(checked) => callbacks.onUpdate(node.id, { collapsible: checked })}
-            />
-            {node.collapsible && !node.hideTitle && (
+        ),
+        visibility: (
+            <>
                 <ToggleRow
                     checked={node.defaultCollapsed === true}
                     label={t(editor.startsCollapsed)}
-                    onChange={(checked) =>
-                        callbacks.onUpdate(node.id, { defaultCollapsed: checked })
-                    }
+                    setting="defaultCollapsed"
+                    onChange={(checked) => update({ defaultCollapsed: checked })}
                 />
-            )}
-            {!node.hideTitle && (
-                <div className="flex items-center gap-2">
-                    <input
-                        value={node.docsPath ?? ''}
-                        onChange={(event) =>
-                            callbacks.onUpdate(node.id, {
-                                docsPath: event.target.value.trim() || undefined,
-                            })
-                        }
-                        placeholder={t(editor.docsLink)}
-                        aria-label={t(editor.docsLink)}
-                        className={`${inputClasses} min-w-0 flex-1`}
+                <DocsLinkSetting node={node} onChange={(docsPath) => update({ docsPath })} />
+            </>
+        ),
+    };
+}
+
+function groupSettings(node: GroupNode, callbacks: ElementEditorCallbacks): GroupedSettings {
+    const update = (updates: NodeUpdates) => callbacks.onUpdate(node.id, updates);
+    return {
+        content: (
+            <>
+                <KindChoice
+                    node={node}
+                    onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
+                />
+                <TitleSetting node={node} onChange={(title) => update({ title })} />
+            </>
+        ),
+        look: (
+            <>
+                <ToggleRow
+                    checked={!node.hideTitle}
+                    label={t(editor.showTitle)}
+                    setting="hideTitle"
+                    onChange={(checked) => update({ hideTitle: !checked })}
+                />
+                <ColumnLayoutControl
+                    columns={node.columns}
+                    columnWidths={node.columnWidths}
+                    onChange={update}
+                />
+            </>
+        ),
+        visibility: (
+            <>
+                <ToggleRow
+                    checked={node.collapsible && !node.hideTitle}
+                    disabled={node.hideTitle === true}
+                    hint={node.hideTitle ? t(editor.hiddenTitleHint) : undefined}
+                    label={t(editor.groupCollapsible)}
+                    setting="collapsible"
+                    onChange={(checked) => update({ collapsible: checked })}
+                />
+                {node.collapsible && !node.hideTitle && (
+                    <ToggleRow
+                        checked={node.defaultCollapsed === true}
+                        label={t(editor.startsCollapsed)}
+                        setting="defaultCollapsed"
+                        onChange={(checked) => update({ defaultCollapsed: checked })}
                     />
-                    <EditorHelp topic="documentationLink" about={t(editor.docsLink)} />
-                </div>
-            )}
-            <ColumnLayoutControl
-                columns={node.columns}
-                columnWidths={node.columnWidths}
-                onChange={(updates) => callbacks.onUpdate(node.id, updates)}
-            />
-        </div>
-    );
+                )}
+                {!node.hideTitle && (
+                    <DocsLinkSetting node={node} onChange={(docsPath) => update({ docsPath })} />
+                )}
+            </>
+        ),
+    };
 }
 
-function ColumnSelect({
-    onChange,
-    value,
-}: {
-    onChange: (columns: number | undefined) => void;
-    value: number | undefined;
-}) {
-    const t = (descriptor: { message: string }) => translate(descriptor);
-    return (
-        <select
-            value={value ?? 1}
-            onChange={(event) =>
-                onChange(Number(event.target.value) === 1 ? undefined : Number(event.target.value))
-            }
-            aria-label={t(editor.columns)}
-            className={inputClasses}
-        >
-            {Array.from({ length: TEMPLATE_LIMITS.columnsMax }, (_, index) => index + 1).map(
-                (count) => (
-                    <option key={count} value={count}>
-                        {t(editor.columns)}: {count}
-                    </option>
-                )
-            )}
-        </select>
-    );
+function tableSettings(node: TableNode, callbacks: ElementEditorCallbacks): GroupedSettings {
+    const update = (updates: NodeUpdates) => callbacks.onUpdate(node.id, updates);
+    return {
+        content: (
+            <>
+                <KindChoice
+                    node={node}
+                    onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
+                />
+                <TitleSetting
+                    node={node}
+                    onChange={(title) => update({ title: title || undefined })}
+                />
+                <TableColumns callbacks={callbacks} node={node} />
+            </>
+        ),
+        value: (
+            <KeyField
+                label={t(editor.valueKey)}
+                hint={t(editor.rowsKeyHint)}
+                help="sharedValueKey"
+                setting="valueKey"
+                value={node.valueKey ?? ''}
+                onChange={(valueKey) => update({ valueKey })}
+            />
+        ),
+        limits: (
+            <div className="grid grid-cols-2 gap-2">
+                <SettingField label={t(editor.minRows)} setting="minRows">
+                    {({ id, 'data-setting': key }) => (
+                        <NumberInput
+                            id={id}
+                            setting={key}
+                            value={node.minRows}
+                            min={0}
+                            max={node.maxRows}
+                            step={1}
+                            optional={false}
+                            onChange={(minRows) => update({ minRows: minRows ?? node.minRows })}
+                            label={t(editor.minRows)}
+                            className={`${inputClasses} w-full`}
+                        />
+                    )}
+                </SettingField>
+                <SettingField label={t(editor.maxRows)} setting="maxRows">
+                    {({ id, 'data-setting': key }) => (
+                        <NumberInput
+                            id={id}
+                            setting={key}
+                            value={node.maxRows}
+                            min={Math.max(1, node.minRows)}
+                            max={1000}
+                            step={1}
+                            optional={false}
+                            onChange={(maxRows) => update({ maxRows: maxRows ?? node.maxRows })}
+                            label={t(editor.maxRows)}
+                            className={`${inputClasses} w-full`}
+                        />
+                    )}
+                </SettingField>
+            </div>
+        ),
+    };
 }
 
-function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; node: TableNode }) {
-    const t = (descriptor: { message: string }) => translate(descriptor);
+/** A table's columns: a label row each, with the column's own settings folded below it. */
+function TableColumns({ callbacks, node }: { callbacks: ElementEditorCallbacks; node: TableNode }) {
     return (
-        <div className="space-y-2">
-            <input
-                value={node.title ?? ''}
-                onChange={(event) => callbacks.onUpdate(node.id, { title: event.target.value })}
-                placeholder={t(editor.tableTitle)}
-                aria-label={t(editor.tableTitle)}
-                className={`${inputClasses} w-full`}
-            />
-            <div className="flex items-center gap-2">
-                <input
-                    value={node.valueKey ?? ''}
-                    onChange={(event) =>
-                        callbacks.onUpdate(node.id, { valueKey: event.target.value })
-                    }
-                    placeholder={t(editor.tableValueKey)}
-                    aria-label={t(editor.tableValueKey)}
-                    className={`${inputClasses} min-w-0 flex-1`}
-                />
-                <EditorHelp topic="sharedValueKey" about={t(editor.tableValueKey)} />
-            </div>
-            <div className="flex items-center gap-2">
-                <NumberInput
-                    value={node.minRows}
-                    min={0}
-                    max={node.maxRows}
-                    step={1}
-                    optional={false}
-                    onChange={(minRows) =>
-                        callbacks.onUpdate(node.id, { minRows: minRows ?? node.minRows })
-                    }
-                    label={t(editor.minRows)}
-                    className={`${inputClasses} w-20`}
-                />
-                <NumberInput
-                    value={node.maxRows}
-                    min={Math.max(1, node.minRows)}
-                    max={1000}
-                    step={1}
-                    optional={false}
-                    onChange={(maxRows) =>
-                        callbacks.onUpdate(node.id, { maxRows: maxRows ?? node.maxRows })
-                    }
-                    label={t(editor.maxRows)}
-                    className={`${inputClasses} w-20`}
-                />
-            </div>
-            <div className="space-y-1">
-                {node.columns.map((column) => (
-                    <div key={column.id} className="space-y-1">
-                        <div className="flex items-center gap-2">
+        <div className="grid gap-1">
+            <p className="text-xs font-semibold text-textPrimary">{t(editor.columns)}</p>
+            <div className="grid gap-1" data-setting-list="" data-reorder-list="">
+                {node.columns.map((column, index) => (
+                    <div
+                        key={column.id}
+                        className="grid gap-1 [&[data-reorder-target]]:shadow-[0_-2px_0_0_rgb(var(--primary))]"
+                        data-column-id={column.id}
+                        data-reorder-row=""
+                    >
+                        <div className="flex items-center gap-1">
+                            <RowMoveControls
+                                count={node.columns.length}
+                                index={index}
+                                name={column.label || fallbackRowName(index)}
+                                onMove={(to) => callbacks.onMoveTableColumn(node.id, index, to)}
+                            />
                             <input
                                 value={column.label}
                                 onChange={(event) =>
@@ -394,20 +592,22 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
                                     })
                                 }
                                 aria-label={t(editor.fieldLabel)}
-                                className={`${inputClasses} flex-1`}
+                                data-setting={`column:${column.id}.label`}
+                                className={`${inputClasses} min-w-0 flex-1`}
                             />
                             <button
                                 type="button"
                                 onClick={() => callbacks.onRemoveTableColumn(node.id, column.id)}
+                                disabled={node.columns.length <= 1}
                                 aria-label={t(editor.remove)}
-                                className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
+                                className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error disabled:opacity-40"
                             >
                                 <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                             </button>
                         </div>
-                        <details className="pl-2">
+                        <details className="pl-2" data-column-settings={column.id}>
                             <summary className="cursor-pointer text-xs text-textSecondary">
-                                {translate(editor.columnSettings, { label: column.label })}
+                                {t(editor.columnSettings, { label: column.label })}
                             </summary>
                             {/* A column's catalog fills write the other columns of its row. */}
                             <EditorFillTargetsContext.Provider
@@ -419,6 +619,7 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
                                     callbacks={fieldCallbacks(callbacks, column.id)}
                                     field={column}
                                     inTable
+                                    prefix={`column:${column.id}.`}
                                 />
                             </EditorFillTargetsContext.Provider>
                         </details>
@@ -428,7 +629,8 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
             <button
                 type="button"
                 onClick={() => callbacks.onAddTableColumn(node.id)}
-                className="flex items-center gap-1 rounded px-2 py-1 text-xs text-primary hover:bg-bgSurface"
+                disabled={node.columns.length >= TEMPLATE_LIMITS.tableColumnsMax}
+                className="flex items-center gap-1 justify-self-start rounded px-2 py-1 text-xs text-primary hover:bg-bgSurface disabled:opacity-40"
             >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 {t(editor.addField)}
@@ -439,30 +641,33 @@ function TableConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; n
 
 const NO_FILL_TARGETS: readonly never[] = [];
 
-function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; node: ListNode }) {
-    const t = (descriptor: { message: string }) => translate(descriptor);
+function listSettings(node: ListNode, callbacks: ElementEditorCallbacks): GroupedSettings {
     const listUpdate = (updates: Partial<ListNode>) =>
         callbacks.onUpdate(node.id, updates as NodeUpdates);
     const custom = node.valueKey !== undefined;
     const named = !custom || listIsNamed(node);
     const item = listItemField(node);
-    return (
-        <div className="space-y-2">
-            <input
-                value={node.title ?? ''}
-                onChange={(event) => listUpdate({ title: event.target.value || undefined })}
-                placeholder={t(editor.listTitle)}
-                aria-label={t(editor.listTitle)}
-                className={`${inputClasses} w-full`}
-            />
-            <ListSourceSelect node={node} onReplace={callbacks.onReplace} />
-            {custom && (
-                <>
+    return {
+        content: (
+            <>
+                <KindChoice
+                    node={node}
+                    blocked={tableKindBlocked(node) ? t(editor.tableUnavailable) : undefined}
+                    onSwitch={(kind) => callbacks.onSwitchKind(node.id, kind)}
+                />
+                <TitleSetting
+                    node={node}
+                    onChange={(title) => listUpdate({ title: title || undefined })}
+                />
+                {custom && (
                     <ToggleRow
                         checked={named}
                         label={t(editor.listNamed)}
+                        setting="named"
                         onChange={(checked) => listUpdate({ named: checked ? undefined : false })}
                     />
+                )}
+                {custom && (
                     <details open className="rounded border border-border">
                         <summary className="cursor-pointer px-2 py-1 text-xs font-medium text-textSecondary">
                             {t(editor.listEntry)}
@@ -473,34 +678,65 @@ function ListConfig({ callbacks, node }: { callbacks: ElementEditorCallbacks; no
                                 callbacks={fieldCallbacks(callbacks, item.id)}
                                 field={item}
                                 itemOfList
+                                prefix="entry."
                             />
                         </EditorFillTargetsContext.Provider>
                     </details>
+                )}
+                {named && <ListPresetsEditor callbacks={callbacks} node={node} />}
+            </>
+        ),
+        value: (
+            <>
+                <ListSourceSelect node={node} onReplace={callbacks.onReplace} />
+                {custom && (
                     <ListCatalogPicker
                         catalog={node.catalog}
                         itemType={item.type}
                         disabledNote={named ? undefined : t(editor.listCatalogNeedsNames)}
                         onChange={(catalog) => listUpdate({ catalog })}
                     />
-                </>
-            )}
-            <ColumnSelect
-                onChange={(columns) => listUpdate({ columns: columns ?? 1 })}
-                value={node.columns}
-            />
-            <ToggleRow
-                checked={node.showTitle === true}
-                label={t(editor.listShowTitle)}
-                onChange={(checked) => listUpdate({ showTitle: checked || undefined })}
-            />
-            <ToggleRow
-                checked={node.framed === true}
-                label={t(editor.listFramed)}
-                onChange={(checked) => listUpdate({ framed: checked || undefined })}
-            />
-            {named && <ListPresetsEditor callbacks={callbacks} node={node} />}
-        </div>
-    );
+                )}
+            </>
+        ),
+        look: (
+            <>
+                <SettingField label={t(editor.columns)} setting="columns">
+                    {(control) => (
+                        <select
+                            {...control}
+                            value={node.columns ?? 1}
+                            onChange={(event) =>
+                                listUpdate({ columns: Number(event.target.value) })
+                            }
+                            className={inputClasses}
+                        >
+                            {Array.from(
+                                { length: TEMPLATE_LIMITS.columnsMax },
+                                (_, index) => index + 1
+                            ).map((count) => (
+                                <option key={count} value={count}>
+                                    {count}
+                                </option>
+                            ))}
+                        </select>
+                    )}
+                </SettingField>
+                <ToggleRow
+                    checked={node.showTitle === true}
+                    label={t(editor.listShowTitle)}
+                    setting="showTitle"
+                    onChange={(checked) => listUpdate({ showTitle: checked || undefined })}
+                />
+                <ToggleRow
+                    checked={node.framed === true}
+                    label={t(editor.listFramed)}
+                    setting="framed"
+                    onChange={(checked) => listUpdate({ framed: checked || undefined })}
+                />
+            </>
+        ),
+    };
 }
 
 function ListPresetsEditor({
@@ -510,51 +746,56 @@ function ListPresetsEditor({
     callbacks: ElementEditorCallbacks;
     node: ListNode;
 }) {
-    const t = (descriptor: { message: string }) => translate(descriptor);
     const presets = node.presets ?? [];
     const update = (next: typeof presets) =>
         callbacks.onUpdate(node.id, { presets: next } as NodeUpdates);
     return (
-        <div className="grid gap-2">
-            <p className="text-xs font-semibold text-textSecondary">{t(primitives.presets)}</p>
-            {presets.map((preset, index) => (
-                <div key={`${node.id}-preset-${preset.key}`} className="flex items-center gap-2">
-                    <input
-                        value={preset.label}
-                        onChange={(event) => {
-                            const next = [...presets];
-                            next[index] = { ...preset, label: event.target.value };
-                            update(next);
-                        }}
-                        aria-label={t(primitives.presetLabel)}
-                        placeholder={t(primitives.presetLabel)}
-                        className={`${inputClasses} flex-1`}
-                    />
-                    <NumberInput
-                        min={0}
-                        max={20}
-                        step={1}
-                        value={preset.value ?? 0}
-                        onChange={(value) => {
-                            const next = [...presets];
-                            next[index] = { ...preset, value: value ?? 0 };
-                            update(next);
-                        }}
-                        label={t(primitives.presetValue)}
-                        className={`${inputClasses} w-16`}
-                    />
-                    <button
-                        type="button"
-                        onClick={() =>
-                            update(presets.filter((_, candidate) => candidate !== index))
-                        }
-                        aria-label={t(primitives.removePreset)}
-                        className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
+        <div className="grid gap-1">
+            <p className="text-xs font-semibold text-textPrimary">{t(primitives.presets)}</p>
+            <div className="grid gap-1" data-setting-list="">
+                {presets.map((preset, index) => (
+                    <div
+                        key={`${node.id}-preset-${preset.key}`}
+                        className="flex items-center gap-2"
                     >
-                        <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                    </button>
-                </div>
-            ))}
+                        <input
+                            value={preset.label}
+                            onChange={(event) => {
+                                const next = [...presets];
+                                next[index] = { ...preset, label: event.target.value };
+                                update(next);
+                            }}
+                            aria-label={t(primitives.presetLabel)}
+                            placeholder={t(primitives.presetLabel)}
+                            data-setting={`preset:${index}`}
+                            className={`${inputClasses} min-w-0 flex-1`}
+                        />
+                        <NumberInput
+                            min={0}
+                            max={20}
+                            step={1}
+                            value={preset.value ?? 0}
+                            onChange={(value) => {
+                                const next = [...presets];
+                                next[index] = { ...preset, value: value ?? 0 };
+                                update(next);
+                            }}
+                            label={t(primitives.presetValue)}
+                            className={`${inputClasses} w-16`}
+                        />
+                        <button
+                            type="button"
+                            onClick={() =>
+                                update(presets.filter((_, candidate) => candidate !== index))
+                            }
+                            aria-label={t(primitives.removePreset)}
+                            className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
+                        >
+                            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        </button>
+                    </div>
+                ))}
+            </div>
             <button
                 type="button"
                 onClick={() =>
@@ -567,7 +808,7 @@ function ListPresetsEditor({
                         },
                     ])
                 }
-                className="flex items-center gap-1 rounded px-2 py-1 text-xs text-primary hover:bg-bgSurface"
+                className="flex items-center gap-1 justify-self-start rounded px-2 py-1 text-xs text-primary hover:bg-bgSurface"
             >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 {t(primitives.addPreset)}

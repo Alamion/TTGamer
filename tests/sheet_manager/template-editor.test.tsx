@@ -21,11 +21,12 @@ import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import type { ListNode, TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema, TEMPLATE_LIMITS } from '@site/src/sheet_manager/types/template';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { dragNode } from './helpers/editor';
+import { takeSheetIssues } from '../setup/sheetIssues';
+import { dragNode, dragOver, openSettingsGroups, startDrag } from './helpers/editor';
 import {
     ASHEN_ID,
     RELICS_ID,
@@ -34,6 +35,9 @@ import {
     seedReferenceTypes,
 } from './helpers/library';
 
+// Full editor renders are slow under a loaded test run.
+vi.setConfig({ testTimeout: 20_000 });
+
 const ISSUE_MESSAGES = {
     emptyName: 'Template name is required.',
     emptyLabel: 'Every section and field needs a non-empty label.',
@@ -41,7 +45,6 @@ const ISSUE_MESSAGES = {
     invalidKey: 'Invalid key "{id}" — use lowercase letters, digits, and dashes.',
     limitReached: 'Limit reached — {limit} {subject} maximum.',
     invalidBounds: 'Minimum cannot exceed maximum.',
-    invalidFormula: 'Invalid formula in "{id}".',
     unknownCoordinate: 'Unknown value "{id}".',
     circularDependency: 'Circular dependency: {id}',
     unknownBinding: 'Unknown binding "{id}".',
@@ -75,9 +78,10 @@ function outlineRow(nodeId: string): HTMLElement {
 function selectInOutline(nodeId: string): void {
     const row = outlineRow(nodeId);
     const name = [...row.querySelectorAll('button')].find(
-        (button) => !button.hasAttribute('draggable')
+        (button) => !button.hasAttribute('data-drag-handle')
     )!;
     fireEvent.click(name);
+    openSettingsGroups();
 }
 
 function settings(nodeId: string): HTMLElement {
@@ -599,10 +603,9 @@ describe('editor layout and presentation controls', () => {
         fireEvent.change(within(panel('max-fp')).getByLabelText('Edits'), {
             target: { value: 'max' },
         });
-        fireEvent.change(
-            within(panel('max-fp')).getByLabelText('Minimum from value or formula (optional)'),
-            { target: { value: 'self-control' } }
-        );
+        fireEvent.change(within(panel('max-fp')).getByLabelText('Minimum from'), {
+            target: { value: 'self-control' },
+        });
         fireEvent.click(within(panel('powers')).getByLabelText('Show list title'));
         fireEvent.click(within(panel('powers')).getByLabelText('Draw a border around the list'));
         const find = saved();
@@ -615,10 +618,9 @@ describe('editor layout and presentation controls', () => {
         fireEvent.change(within(panel('max-fp')).getByLabelText('Edits'), {
             target: { value: 'max' },
         });
-        fireEvent.change(
-            within(panel('max-fp')).getByLabelText('Minimum from value or formula (optional)'),
-            { target: { value: 'self-control' } }
-        );
+        fireEvent.change(within(panel('max-fp')).getByLabelText('Minimum from'), {
+            target: { value: 'self-control' },
+        });
         const display = () => within(settings('max-fp')).getByRole('group', { name: 'Display' });
         fireEvent.click(within(display()).getByRole('button', { name: 'Tracker' }));
         const pane = settings('max-fp');
@@ -730,15 +732,14 @@ describe('editor drag and drop, outline, and rendering health', () => {
         expect(outlineChildIds('page')).toEqual(['identity']);
     });
 
-    it('refuses to move a group inside itself with a clear message', () => {
+    it('never offers a place inside the dragged group', () => {
         openEditor();
-        dragNode('identity', slot('first'));
+        startDrag('identity', 'outline');
+        dragOver(slot('first'));
+        expect(slot('first').hasAttribute('data-drop-target')).toBe(false);
+        fireEvent.keyDown(window, { key: 'Escape' });
         expect(outlineChildIds('page')).toEqual(['identity']);
         expect(outlineChildIds('identity')).toEqual(['first', 'second']);
-        expect(screen.getByRole('alert').textContent).toContain(
-            'An element cannot be moved inside itself.'
-        );
-        expect(screen.getByRole('alert').textContent).not.toContain('Duplicate identifier');
     });
 
     it('names containers in the outline and shows settings only for the selection', () => {
@@ -809,26 +810,32 @@ describe('add-element menu and element sources', () => {
         return outlineRow(ids[ids.length - 1]!);
     }
 
-    it('offers exactly the six element kinds with descriptions', () => {
+    it('offers exactly the four element kinds with descriptions', () => {
         openEmpty();
         openRootMenu();
         const options = [...document.querySelectorAll('[data-palette-option]')].map((element) =>
             element.getAttribute('data-palette-option')
         );
-        expect(options).toEqual(['section', 'group', 'field', 'table', 'list', 'tracker']);
+        expect(options).toEqual(['group', 'field', 'list', 'tracker']);
         expect(
             screen.getByText('Boxes to mark by level: health, stress, or any other burden')
         ).not.toBeNull();
-        const menu = document.querySelector('[data-palette-option="section"]')!.parentElement!;
+        const menu = document.querySelector('[data-palette-option="group"]')!.parentElement!;
         expect(menu.textContent).not.toContain('Strength');
     });
 
     it('adds each kind as a valid element and selects it', () => {
         openEmpty();
-        expect(addFromRootMenu('section').getAttribute('data-node-type')).toBe('section');
-        expect(addFromRootMenu('group').getAttribute('data-node-type')).toBe('group');
+        // A group on the page is a section; inside another group it is a card.
+        const section = addFromRootMenu('group');
+        expect(section.getAttribute('data-node-type')).toBe('section');
+        const sectionId = section.getAttribute('data-outline-row')!;
+        fireEvent.click(document.querySelector(`[data-insert-slot^="${sectionId}:"]`)!);
+        fireEvent.click(document.querySelector('[data-palette-option="group"]')!);
+        expect(
+            outlineChildIds(sectionId).map((id) => outlineRow(id).getAttribute('data-node-type'))
+        ).toEqual(['group']);
         expect(addFromRootMenu('field').getAttribute('data-node-type')).toBe('text');
-        expect(addFromRootMenu('table').getAttribute('data-node-type')).toBe('table');
         expect(addFromRootMenu('list').getAttribute('data-node-type')).toBe('list');
         // The tracker is an own-value field; its Source can switch it to a built-in track.
         const tracker = addFromRootMenu('tracker');
@@ -855,9 +862,7 @@ describe('add-element menu and element sources', () => {
 
         fireEvent.change(source(), { target: { value: 'resource:willpower' } });
         expect(outlineRow('start').getAttribute('data-node-type')).toBe('primitive');
-        expect(
-            within(panel('start')).getByLabelText('Minimum from value or formula (optional)')
-        ).not.toBeNull();
+        expect(within(panel('start')).getByLabelText('Minimum from')).not.toBeNull();
 
         fireEvent.change(source(), { target: { value: 'field:biography' } });
         expect(outlineRow('start').getAttribute('data-node-type')).toBe('text');
@@ -915,13 +920,9 @@ describe('trait-sourced fields', () => {
             })
         );
         selectInOutline('str');
-        expect(
-            within(settings('str')).queryByLabelText('Maximum from value or formula (optional)')
-        ).toBeNull();
+        expect(within(settings('str')).queryByLabelText('Maximum from')).toBeNull();
         selectInOutline('luck');
-        expect(
-            within(settings('luck')).getByLabelText('Maximum from value or formula (optional)')
-        ).not.toBeNull();
+        expect(within(settings('luck')).getByLabelText('Maximum from')).not.toBeNull();
     });
 
     it('stretches an element over parent columns and warns when a sibling is pinned', () => {
@@ -1088,7 +1089,11 @@ describe('duplicating elements and locating issues', () => {
     it('attaches the node id to element issues', () => {
         const draft = updateField(source(), 'mood', { label: '' });
         const issues = collectDraftIssues(draft, ISSUE_MESSAGES);
-        expect(issues).toContainEqual({ message: ISSUE_MESSAGES.emptyLabel, nodeId: 'mood' });
+        expect(issues).toContainEqual({
+            message: ISSUE_MESSAGES.emptyLabel,
+            nodeId: 'mood',
+            setting: { group: 'content', key: 'label' },
+        });
         const unnamed = collectDraftIssues({ ...draft, name: '' }, ISSUE_MESSAGES);
         expect(unnamed[0]).toEqual({ message: ISSUE_MESSAGES.emptyName });
     });
@@ -1251,7 +1256,7 @@ describe('list entry settings (spec 016)', () => {
             'reference',
             'image',
         ]);
-        expect(within(panel).queryByLabelText(/Shared value key/)).toBeNull();
+        expect(within(panel).queryByLabelText('Value key')).toBeNull();
         expect(within(panel).queryByText('Required (advisory marker)')).toBeNull();
     });
 
@@ -1344,10 +1349,18 @@ describe('derived values in the editor (T-076)', () => {
     it('lists a formula that does not parse, on its element', () => {
         expect(
             issuesOf([{ id: 'total', type: 'formula', label: 'Total', formula: 'base +' }])
-        ).toContainEqual({ message: 'Invalid formula in "Total".', nodeId: 'total' });
+        ).toContainEqual({
+            message: 'Total: This formula does not parse (at character 7).',
+            nodeId: 'total',
+            setting: { group: 'limits', key: 'formula' },
+        });
         expect(
             issuesOf([{ id: 'luck', type: 'rating', label: 'Luck', max: 5, maxFrom: 'min(' }])
-        ).toContainEqual({ message: 'Invalid formula in "Luck".', nodeId: 'luck' });
+        ).toContainEqual({
+            message: expect.stringMatching(/^Luck: This formula does not parse/),
+            nodeId: 'luck',
+            setting: { group: 'limits', key: 'maxFrom' },
+        });
     });
 
     it("lists a pool tracker's maximum formula that does not parse (spec 020)", () => {
@@ -1362,13 +1375,21 @@ describe('derived values in the editor (T-076)', () => {
                     maxMinFrom: 'self-control +',
                 },
             ])
-        ).toContainEqual({ message: 'Invalid formula in "Force".', nodeId: 'force' });
+        ).toContainEqual({
+            message: expect.stringMatching(/^Force: This formula does not parse/),
+            nodeId: 'force',
+            setting: { group: 'limits', key: 'maxMinFrom' },
+        });
     });
 
     it('lists a value the formula reads that the page does not have', () => {
         expect(
             issuesOf([{ id: 'total', type: 'formula', label: 'Total', formula: 'missing + 1' }])
-        ).toContainEqual({ message: 'Unknown value "missing".', nodeId: 'total' });
+        ).toContainEqual({
+            message: 'Total: No value named “missing”.',
+            nodeId: 'total',
+            setting: { group: 'limits', key: 'formula' },
+        });
     });
 
     it('lists a circular dependency', () => {
@@ -1541,6 +1562,7 @@ describe('reference targets (T-075)', () => {
         expect(issues).toContainEqual({
             message: expect.stringMatching(/^"Ally" can point to .*Creature/),
             nodeId: 'ally',
+            setting: { group: 'value', key: 'targetKinds' },
         });
         const [field] = draft.children;
         expect(field?.type === 'reference' && field.targetKinds).toEqual(['character', 'creature']);
@@ -1974,5 +1996,182 @@ describe('tracker settings (spec 018)', () => {
                 within(group).getByRole('button', { name: 'Fill' }).getAttribute('aria-pressed')
             ).toBe('true');
         }
+    });
+});
+
+describe('save problems lead to their setting (spec 022, US4)', () => {
+    afterEach(cleanup);
+
+    const open = (children: unknown[]) =>
+        render(
+            createElement(TemplateEditorDialog, {
+                base: {
+                    kind: 'edit',
+                    // Drafts may hold what the schema refuses; the editor must name it plainly.
+                    template: {
+                        id: 'save-kit',
+                        name: 'Save Kit',
+                        systemId: 'star-wars-wod',
+                        documentKind: 'character',
+                        schemaVersion: 3,
+                        children,
+                    } as unknown as ReturnType<typeof CustomTemplateSchema.parse>,
+                },
+                onClose: () => {},
+            })
+        );
+
+    it('focuses the entry label of a list from its issue', async () => {
+        open([
+            {
+                id: 'notes',
+                type: 'list',
+                title: 'Notes',
+                valueKey: 'notes',
+                columns: 1,
+                item: { id: 'note', type: 'text', label: '', required: false, compact: false },
+            },
+        ]);
+        const alert = screen.getByRole('alert');
+        const issue = within(alert).getByRole('button', {
+            name: 'The entry field of list “Notes” has no label.',
+        });
+        fireEvent.click(issue);
+        await waitFor(() =>
+            expect(document.activeElement?.getAttribute('data-setting')).toBe('entry.label')
+        );
+        expect(
+            document.activeElement
+                ?.closest('[data-settings-for]')
+                ?.getAttribute('data-settings-for')
+        ).toBe('notes');
+        expect(takeSheetIssues()).toEqual([]);
+    });
+
+    it('refuses a save the checks missed in plain words and reports the rule', () => {
+        open([
+            {
+                id: 'stats',
+                type: 'section',
+                title: 'Stats',
+                columns: 2,
+                columnWidths: [0, 1],
+                children: [
+                    { id: 'luck', type: 'number', label: 'Luck', required: false, compact: false },
+                ],
+            },
+        ]);
+        const alert = screen.getByRole('alert');
+        expect(alert.textContent).toContain('Stats: Columns has a value that is not allowed.');
+        // Editing reports nothing: only a refused save does.
+        expect(takeSheetIssues()).toEqual([]);
+
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        expect(alert.textContent).not.toMatch(/"code"|too_small|"path"/);
+        const reported = takeSheetIssues();
+        expect(reported.map(({ code }) => code)).toEqual(['template-draft-invalid']);
+        expect(reported[0]?.details).toMatchObject({ nodeId: 'stats', setting: 'columnWidths' });
+    });
+});
+
+describe('group and list kinds (spec 022, US6)', () => {
+    afterEach(cleanup);
+    beforeEach(() => {
+        useTemplateStore.setState({ templates: [], quarantine: [], defaultOverrides: {} });
+        useDocumentStore.setState({ documents: [], currentDocumentId: null });
+    });
+
+    const kindsKit = () =>
+        CustomTemplateSchema.parse({
+            id: 'kinds-kit',
+            name: 'Kinds Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                {
+                    id: 'adv',
+                    type: 'section',
+                    title: 'Advantages',
+                    children: [{ id: 'luck', type: 'number', label: 'Luck' }],
+                },
+                {
+                    id: 'gear',
+                    type: 'table',
+                    title: 'Gear',
+                    columns: [
+                        { id: 'item', type: 'text', label: 'Item' },
+                        { id: 'qty', type: 'number', label: 'Qty' },
+                    ],
+                },
+            ],
+        });
+
+    /** The confirmation opens over the editor dialog. */
+    const confirmDialog = () =>
+        screen.getAllByRole('dialog').find((dialog) => !dialog.querySelector('[data-outline]'))!;
+
+    const open = () =>
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template: kindsKit() },
+                onClose: () => {},
+            })
+        );
+
+    it('names kinds in the outline and switches a section to a card and back', () => {
+        open();
+        expect(outlineRow('adv').textContent).toContain('Group · Section');
+        expect(outlineRow('gear').textContent).toContain('List · Table');
+        selectInOutline('adv');
+        fireEvent.click(within(settings('adv')).getByRole('radio', { name: /^Card/ }));
+        expect(outlineRow('adv').getAttribute('data-node-type')).toBe('group');
+        expect(outlineChildIds('adv')).toEqual(['luck']);
+        fireEvent.click(within(settings('adv')).getByRole('radio', { name: /^Section/ }));
+        expect(outlineRow('adv').getAttribute('data-node-type')).toBe('section');
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+        expect(outlineRow('adv').getAttribute('data-node-type')).toBe('group');
+    });
+
+    it('asks before a table drops its other columns, naming them', () => {
+        open();
+        selectInOutline('gear');
+        fireEvent.click(within(settings('gear')).getByRole('radio', { name: /^Entries/ }));
+        const confirm = confirmDialog();
+        expect(confirm.textContent).toContain('“Qty”');
+        fireEvent.click(within(confirm).getAllByRole('button', { name: 'Cancel' })[0]!);
+        expect(outlineRow('gear').getAttribute('data-node-type')).toBe('table');
+
+        fireEvent.click(within(settings('gear')).getByRole('radio', { name: /^Entries/ }));
+        fireEvent.click(within(confirmDialog()).getByRole('button', { name: 'Remove columns' }));
+        expect(outlineRow('gear').getAttribute('data-node-type')).toBe('list');
+    });
+
+    it('warns on save when documents hold values of the earlier kind', () => {
+        const template = kindsKit();
+        useTemplateStore.setState({ templates: [template], quarantine: [], defaultOverrides: {} });
+        useDocumentStore.setState({
+            documents: [
+                {
+                    id: 'doc-kinds',
+                    kind: 'character',
+                    systemId: 'star-wars-wod',
+                    definitionId: 'sentient',
+                    schemaVersion: 1,
+                    metadata: { title: 'Mara', tags: [], templateId: 'kinds-kit' },
+                    templateValues: { gear: { '0': { item: 'Rope' } } },
+                    data: {},
+                } as never,
+            ],
+            currentDocumentId: 'doc-kinds',
+        });
+        open();
+        selectInOutline('gear');
+        fireEvent.click(within(settings('gear')).getByRole('radio', { name: /^Entries/ }));
+        fireEvent.click(within(confirmDialog()).getByRole('button', { name: 'Remove columns' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+        const confirm = confirmDialog();
+        expect(confirm.textContent).toContain('Gear is now shown as Entries');
+        fireEvent.click(within(confirm).getByRole('button', { name: 'Save anyway' }));
+        expect(useTemplateStore.getState().templates[0]?.children[1]?.type).toBe('list');
     });
 });

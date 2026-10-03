@@ -179,3 +179,8 @@ fields:
         speeder: Спидер
         character: Персонаж
         vermin: Мелкое существо
+rows:
+    moveUp: 'Переместить {name} выше'
+    moveDown: 'Переместить {name} ниже'
+    reorder: Перетащите, чтобы переставить
+    fallbackName: 'строку {index}'

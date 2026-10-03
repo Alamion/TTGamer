@@ -10,27 +10,31 @@ import {
     select,
     undo,
 } from '@site/src/sheet_manager/components/dialogs/template-editor/history';
+import {
+    EMPTY_SELECTION,
+    selectOnly,
+} from '@site/src/sheet_manager/components/dialogs/template-editor/selection';
 import { describe, expect, it } from 'vitest';
 
 const named = (name: string) => ({ ...createEmptyDraft('character'), name });
 
 describe('template editor history', () => {
     it('undoes and redoes with the recorded selection', () => {
-        let history = createHistory(named('a'), null);
-        history = applyChange(history, named('b'), { selectedId: 'x' });
-        history = applyChange(history, named('c'), { selectedId: 'y' });
+        let history = createHistory(named('a'));
+        history = applyChange(history, named('b'), { selection: selectOnly('x') });
+        history = applyChange(history, named('c'), { selection: selectOnly('y') });
 
         history = undo(history);
         expect(history.present.draft.name).toBe('b');
-        expect(history.present.selectedId).toBe('x');
+        expect(history.present.selection).toEqual(selectOnly('x'));
         history = undo(history);
         expect(history.present.draft.name).toBe('a');
-        expect(history.present.selectedId).toBeNull();
+        expect(history.present.selection).toEqual(EMPTY_SELECTION);
         expect(canUndo(history)).toBe(false);
 
         history = redo(history);
         expect(history.present.draft.name).toBe('b');
-        expect(history.present.selectedId).toBe('x');
+        expect(history.present.selection).toEqual(selectOnly('x'));
         expect(canRedo(history)).toBe(true);
     });
 
@@ -72,10 +76,18 @@ describe('template editor history', () => {
         expect(history.past).toHaveLength(3);
     });
 
+    it('restores a multi-selection on undo', () => {
+        const several = { ids: ['x', 'y'], anchor: 'y' };
+        let history = select(createHistory(named('a')), several);
+        history = applyChange(history, named('b'), { selection: EMPTY_SELECTION });
+        history = undo(history);
+        expect(history.present.selection).toEqual(several);
+    });
+
     it('changes the selection without adding an undo step', () => {
-        let history = createHistory(named('a'), null);
-        history = select(history, 'node');
-        expect(history.present.selectedId).toBe('node');
+        let history = createHistory(named('a'));
+        history = select(history, selectOnly('node'));
+        expect(history.present.selection).toEqual(selectOnly('node'));
         expect(canUndo(history)).toBe(false);
     });
 });

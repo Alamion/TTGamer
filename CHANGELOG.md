@@ -1,5 +1,30 @@
 # Changelog
 
+## v3.21.0
+
+### Minor feat
+
+- **Copy and paste elements (spec 023, T-089)**: Ctrl+C, Ctrl+X, and Ctrl+V copy, cut, and paste elements in the template editor — after the selected element, into a selected group, or at the end of the page, as one undo step; copies reach other pages, other tabs, and other authors as text, keep their own values, and their formulas read the copy's own elements; anything the new page cannot show appears in the issue list, and damaged text is refused with a message
+- **Select several elements (T-090)**: Ctrl/⌘+click and Shift+click on the page or in the outline select several elements; removing, duplicating, copying, the move keys, and dragging act on all of them in one step, Escape clears the selection, and the settings change what they all share at once, with **Mixed** where values differ
+- **Element menu and shortcut list (T-093)**: a right click (a long press on touch screens, or Shift+F10) opens an element's actions with their keys, including **Add to selection** on touch; the toolbar's **Keyboard shortcuts** button or `?` lists every editor shortcut, and the guide's table lists the same ones
+
+## v3.20.0
+
+### Minor feat
+
+- **A settings panel you can read (spec 022, F-007)**: every setting of the template editor has its name above its box, and the settings come in the same groups for every element — Content, Value, Limits and formulas, Look, Visibility and help; formula boxes carry an **fx** mark and say under the box what they read or what is wrong, value keys start with **#**, and the actions sit above the element's kind and full name so a narrow panel never hides it
+- **Every save problem leads to its setting (F-008)**: the issue list names the element in plain words — including a list's entry field and a table's columns — and a click opens the setting and puts the cursor in it; raw error text no longer appears, even for a problem the editor does not check itself
+- **Drag with live placement (T-091)**: dragging an element marks the nearest place it can go, and after a short rest the page shows it there with its old place dashed; release to move (one undo step), Escape to cancel; near the edges the page scrolls
+- **Resizable editor areas (T-092)**: drag the lines between the outline, the page, and the settings, or use the arrow keys; the widths are remembered, and a double click restores them
+- **Reorder columns, rows, and entries (T-094)**: authors move a table's columns in its settings; on the sheet, rows of tables and entries of lists — your own and the game's — move with a grip, arrows, or Alt+↑/↓, and the order is saved with the document
+- **Group and List (T-095)**: the editor offers four elements — Group, Field, List, Tracker; a group is a Section or a Card and a list holds Entries or a Table, and the **Kind** switch converts between them, keeping what fits and asking before it drops columns or hides values documents already hold; saved templates keep their shape
+
+## v3.19.1
+
+### Fix
+
+- **3D dice no longer pile up video memory**: resizing the window frees the old light's shadow map and the dice table instead of keeping them; dice looks dropped from the cache free their shapes and face pictures once no die on screen uses them, and face pictures are no longer kept for every colour ever rolled
+
 ## v3.19.0
 
 ### Minor feat

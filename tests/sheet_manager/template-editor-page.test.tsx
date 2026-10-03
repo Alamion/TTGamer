@@ -57,7 +57,7 @@ const settings = (nodeId: string) =>
 const selectInOutline = (nodeId: string) =>
     fireEvent.click(
         [...outlineRow(nodeId).querySelectorAll('button')].find(
-            (button) => !button.hasAttribute('draggable')
+            (button) => !button.hasAttribute('data-drag-handle')
         )!
     );
 
@@ -82,7 +82,7 @@ describe('template editor page (spec 012, US1)', () => {
         expect(within(frame('origin')).getByText('Origin')).not.toBeNull();
 
         selectInOutline('origin');
-        fireEvent.change(within(settings('origin')).getByLabelText('Field label'), {
+        fireEvent.change(within(settings('origin')).getByLabelText('Label'), {
             target: { value: 'Homeworld' },
         });
         expect(within(frame('origin')).getByText('Homeworld')).not.toBeNull();
