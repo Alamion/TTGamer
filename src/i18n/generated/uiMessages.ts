@@ -5037,10 +5037,6 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.selectedElements',
                     message: 'Selected elements',
                 },
-                noSharedSettings: {
-                    id: 'ttgamer.ui.sheet.templates.editor.noSharedSettings',
-                    message: 'These elements have no settings in common.',
-                },
                 mixed: {
                     id: 'ttgamer.ui.sheet.templates.editor.mixed',
                     message: 'Mixed',

@@ -238,7 +238,7 @@ it; one Undo restores each one's own.
 
 ### Tests
 
-- [ ] T024 [P] [US3] `TESTS/editor-shared-settings.test.tsx`: descriptor `appliesTo` per node kind
+- [x] T024 [P] [US3] `TESTS/editor-shared-settings.test.tsx`: descriptor `appliesTo` per node kind
       (no descriptor for value key, options, columns, entry field, type, kind); field + section
       shows only the intersection; equal values show, different show Mixed (`aria-checked="mixed"`,
       "Mixed" placeholder); one change writes all nodes as one undo step and coalesces typing;
@@ -247,15 +247,15 @@ it; one Undo restores each one's own.
 
 ### Implementation
 
-- [ ] T025 [US3] Create `TE/sharedSettings.tsx`: the `SharedSetting` descriptors of research R6
+- [x] T025 [US3] Create `TE/sharedSettings.tsx`: the `SharedSetting` descriptors of research R6
       (display condition, documentation link, Required, book name hint, column span, compact, hide
       title, columns, start folded, minimum/maximum for same-type numeric fields) with the spec 022
       `data-setting` keys and groups, and `MultiSettings` rendering them with the `TE/settings/`
       building blocks inside `SettingsGroup`s (group state shared with the single panel).
-- [ ] T026 [US3] Mixed-capable controls: indeterminate checkbox and "Mixed" placeholder support in
+- [x] T026 [US3] Mixed-capable controls: indeterminate checkbox and "Mixed" placeholder support in
       `TE/settings/SettingField.tsx` callers used by `MultiSettings` (no change for single-element
       panels); reuse the display-condition and docs-link editors with an optional `mixed` prop.
-- [ ] T027 [US3] Dialog: `onSharedUpdate(key, value)` maps every normalized selected node through
+- [x] T027 [US3] Dialog: `onSharedUpdate(key, value)` maps every normalized selected node through
       the descriptor's `write` in one `change` with `coalesceKey` `multi:<ids>:<key>`; render
       `MultiSettings` under the T023 header.
 

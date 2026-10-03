@@ -3647,9 +3647,6 @@
     "ttgamer.ui.sheet.templates.editor.noSampleDocument": {
         "message": "Тип документа этого шаблона недоступен, поэтому страницу нельзя показать."
     },
-    "ttgamer.ui.sheet.templates.editor.noSharedSettings": {
-        "message": "У этих элементов нет общих настроек."
-    },
     "ttgamer.ui.sheet.templates.editor.numberMax": {
         "message": "Максимум"
     },

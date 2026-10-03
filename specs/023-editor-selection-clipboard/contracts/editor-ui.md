@@ -30,7 +30,7 @@ editors depend on.
 - The shared action row (Move up, Move down, Duplicate, Remove) as for one element.
 - Shared settings in the spec 022 groups, each with its spec 022 `data-setting` key. A mixed
   value: checkbox `aria-checked="mixed"`, text and number boxes empty with the placeholder "Mixed".
-- No shared setting: the text "These elements have no settings in common."
+- Every element has the placement and display condition settings, so the shared list is never empty.
 
 ## Clipboard text
 

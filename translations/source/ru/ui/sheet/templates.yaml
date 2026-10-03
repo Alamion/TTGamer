@@ -309,7 +309,6 @@ editor:
         plural: true
     openSelected: 'Открыть {name}'
     selectedElements: Выбранные элементы
-    noSharedSettings: У этих элементов нет общих настроек.
     mixed: Разные значения
     pasted:
         message: 'Вставлен {count} элемент.|Вставлено {count} элемента.|Вставлено {count} элементов.'

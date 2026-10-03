@@ -309,7 +309,6 @@ editor:
         plural: true
     openSelected: 'Open {name}'
     selectedElements: Selected elements
-    noSharedSettings: These elements have no settings in common.
     mixed: Mixed
     pasted:
         message: 'Pasted {count} element.|Pasted {count} elements.'

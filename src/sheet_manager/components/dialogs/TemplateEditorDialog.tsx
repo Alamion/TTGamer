@@ -147,7 +147,7 @@ import {
     useSettingsGroupSession,
 } from './template-editor/settings/groupState';
 import { inputClasses } from './template-editor/settings/inputClasses';
-import { MultiSettings } from './template-editor/sharedSettings';
+import { MultiSettings, writeShared } from './template-editor/sharedSettings';
 import {
     type EditorShortcutHandlers,
     isTypingTarget,
@@ -575,6 +575,25 @@ export function TemplateEditorDialog({
             },
         }),
         [applyOp, change, removeSelected, switchKind, setPendingKind]
+    );
+
+    /** A shared setting written to every selected element as one step (spec 023, US3). */
+    const updateShared = useCallback(
+        (key: string, value: Parameters<typeof writeShared>[2]) => {
+            const ids = normalizeSelection(
+                historyRef.current.present.draft,
+                historyRef.current.present.selection.ids
+            );
+            change(
+                (current) =>
+                    ids.reduce((next, id) => {
+                        const node = findNode(next, id);
+                        return node ? replaceNode(next, id, writeShared(node, key, value)) : next;
+                    }, current),
+                { coalesceKey: `multi:${ids.join(',')}:${key}` }
+            );
+        },
+        [change]
     );
 
     const undoChange = useCallback(() => commit(undo(historyRef.current)), [commit]);
@@ -1353,6 +1372,7 @@ export function TemplateEditorDialog({
                                                                                     removeSelection,
                                                                             }}
                                                                             nodes={selectedNodes}
+                                                                            onShared={updateShared}
                                                                             onOpen={(nodeId) =>
                                                                                 selectNode(
                                                                                     nodeId,
