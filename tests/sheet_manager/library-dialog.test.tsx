@@ -686,5 +686,6 @@ describe('library dialog — catalogs (spec 015, US1)', () => {
             true
         );
         expect(within(details()).getByText('A catalog holds at most 1000 entries.')).toBeTruthy();
-    });
+        // About 8 s alone; a full parallel run can take several times longer.
+    }, 90_000);
 });
