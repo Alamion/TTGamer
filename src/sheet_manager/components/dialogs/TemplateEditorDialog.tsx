@@ -1472,7 +1472,8 @@ export function TemplateEditorDialog({
                                                                         data-editor-scroll="outline"
                                                                         className={clsx(
                                                                             paneClasses('outline'),
-                                                                            'p-2'
+                                                                            // Deep rows truncate their names; a drag must not scroll sideways.
+                                                                            'overflow-x-hidden p-2'
                                                                         )}
                                                                     >
                                                                         <h3 className="mb-1 hidden px-1 text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">

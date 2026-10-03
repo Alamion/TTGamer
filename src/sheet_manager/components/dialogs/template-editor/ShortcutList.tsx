@@ -62,7 +62,7 @@ export function ShortcutList({
                             const rows = commands.filter((command) => command.group === group);
                             if (rows.length === 0) return null;
                             return (
-                                <table key={group} className="w-full text-sm">
+                                <table key={group} className="table w-full table-fixed text-sm">
                                     <caption className="pb-1 text-left text-[11px] font-bold uppercase tracking-wider text-textSecondary">
                                         {translate(COMMAND_GROUP_LABELS[group])}
                                     </caption>

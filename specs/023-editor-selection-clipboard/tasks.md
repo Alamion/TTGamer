@@ -344,7 +344,7 @@ guide shows the same.
 - [x] T038 `CHANGELOG.md` v3.21.0 (one entry per story) and `package.json` 3.21.0;
       `yarn check:version`.
 - [x] T039 Run `yarn verify:full`; fix findings.
-- [ ] T040 Walk `quickstart.md` §2–§6 on the running dev server with `playwright-cli` (Chromium),
+- [x] T040 Walk `quickstart.md` §2–§6 on the running dev server with `playwright-cli` (Chromium),
       and §2 steps 1–2 and 7 again in WebKit to check the clipboard fallback (research R2); record
       results and refinements in `research.md`; leave SC-007 for the maintainer's review.
 

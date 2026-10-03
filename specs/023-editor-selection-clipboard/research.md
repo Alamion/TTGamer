@@ -163,3 +163,52 @@ string | null }`. `ids` is in click order, deduplicated; `anchor` is the last el
   H1).
 - **Alternatives**: Escape never clears the selection (spec US2 #8 asks for it); a separate key
   (no convention).
+
+## Implementation results
+
+- **Placement of the set operations**: `removeNodes`, `duplicateNodes`, `insertNodesAt`,
+  `placeNodes`, and `moveEachByCommand` live in `multiOps.ts`, not `draft.ts`: they need
+  `resolveMoveTarget`, and `moveTargets.ts` already imports `draft.ts`.
+- **Outline attributes**: the anchor keeps `aria-current="true"` on the outline row (existing
+  tests and the single-selection look rely on it); every selected row's button has
+  `aria-pressed="true"`, and rows and page grips have `aria-haspopup="menu"`.
+- **No "nothing in common" text**: every element has the display condition and the column span,
+  so the shared list is never empty; the planned message was dropped.
+- **Columns are not shared**: changing a container's column count in the single panel moves
+  orphaned children into the last column; a bulk write would skip that, so `columns` has no
+  shared descriptor.
+- **Touch menu keeps the selection**: a long press on an element outside the selection keeps it,
+  so **Add to selection** can grow it; the menu's other actions then act on the pressed element.
+- **Shortcut hint replaced**: the static hint under the settings (a second list of keys) is gone;
+  the toolbar's **Keyboard shortcuts** button and `?` open the list from the registry.
+- **Duplicate improved**: Duplicate shares the paste's reference remap, so a duplicated group's
+  formulas read its own copies instead of the original's elements.
+- **Timings** (jsdom, full Star Wars sheet, every element selected): copy 39 ms, shared setting
+  93 ms, remove 220 ms, paste of the whole sheet onto a blank page 1052 ms (a first render of the
+  sheet); budget 3 s in jsdom.
+
+### Quickstart walk (2026-10-03, dev server, Chromium through `playwright-cli`)
+
+- **§2 Copy and paste**: Ctrl+C on Attributes and Ctrl+V with Other selected put
+  "Attributes (копия)" at the end of Other, selected, with no issues; Ctrl+Z removed it. Copying
+  Experience in one tab and pasting on the Brief page in a second tab used the system clipboard
+  (the per-tab copy is empty there) and kept the name. Found and fixed: the reveal after a paste
+  clicked the first `aria-expanded="false"` button of a folded ancestor, which was a "+" insert
+  menu trigger, and opened the add menu; it now clicks header toggles only and does not select
+  the block it opens.
+- **§3 Multi-selection**: Ctrl+click on two outline rows marked both on the page and showed
+  "Выбрано 2 элемента"; dragging Species (with Name selected) into Appearance previewed both,
+  the ghost read "2 элемента", and both landed in page order with one announcement. Escape
+  closed the menu, then cleared the selection, and the editor stayed open. Found and fixed: the
+  outline's deepest rows are wider than the pane, and a drag scrolled the outline sideways; the
+  outline pane now hides horizontal overflow (names already truncate).
+- **§5 Menu**: a right click on Experience selected it and listed the actions with Ctrl/Alt keys
+  and separators, Remove last.
+- **§6 Shortcut list**: Shift+? opened it with the Russian layout's labels. Found and fixed: the
+  site's table styles made each group's table as wide as its content, so columns did not line
+  up; the tables are now full width with a fixed layout.
+- **WebKit**: not run — the host lacks WebKit's system libraries (installing them needs sudo).
+  The keyboard fallback is covered by `editor-clipboard-ui.test.tsx`.
+
+Left for the maintainer's review: SC-007 (three people find Copy and Paste without being told)
+and a check of the clipboard keys in Safari.
