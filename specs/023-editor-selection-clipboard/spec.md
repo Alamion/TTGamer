@@ -320,7 +320,9 @@ the guide's page shows the same entries.
 - **FR-011**: With several elements selected, the settings area MUST show the count, the list of
   selected elements (each opening it alone), and only the settings every selected element has, in
   the groups of spec 022; differing values MUST show as "Mixed"; settings that identify one element
-  (value key, options, table columns, list entry field) MUST NOT be offered.
+  (name, value source, value key, options, catalog, table columns, list entry field) MUST NOT be
+  offered. Fields that are all of one type MUST offer every other setting of that type, including
+  the type itself (for ratings: look, S/P/E, die, bounds).
 - **FR-012**: Changing a shared setting MUST set it on every selected element as one undo step and
   report problems per element in the issue list.
 

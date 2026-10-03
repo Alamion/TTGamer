@@ -1,7 +1,10 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { type ReactNode, useId } from 'react';
 
 import { EDITOR_GUIDE, EditorHelp } from '../EditorHelp';
+import { useMixedSetting } from './mixedSettings';
 
 /** Attributes the control spreads so its label, key, and message reach it. */
 export interface SettingControlProps {
@@ -39,6 +42,7 @@ export function SettingField({
     setting?: string;
 }) {
     const id = useId();
+    const mixed = useMixedSetting(setting);
     const messageId = `${id}-message`;
     const error = message?.tone === 'error';
     return (
@@ -48,6 +52,11 @@ export function SettingField({
                     {label}
                 </label>
                 {help && <EditorHelp topic={help} about={label} />}
+                {mixed && (
+                    <span data-setting-mixed="" className="text-[11px] text-textSecondary">
+                        · {translate(uiMessages.sheet.templates.editor.mixed)}
+                    </span>
+                )}
             </div>
             {children({
                 id,

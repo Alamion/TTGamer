@@ -31,6 +31,10 @@ editors depend on.
 - Shared settings in the spec 022 groups, each with its spec 022 `data-setting` key. A mixed
   value: checkbox `aria-checked="mixed"`, text and number boxes empty with the placeholder "Mixed".
 - Every element has the placement and display condition settings, so the shared list is never empty.
+- Fields that are all of one type show the settings of that type with the same `data-setting` keys
+  as one field, except the name, source, value key, options, catalog, and book term hint. A mixed
+  value in a labelled setting shows "Mixed" beside its label (`data-setting-mixed`); a mixed S/P/E
+  flag is `aria-pressed="mixed"`.
 
 ## Clipboard text
 

@@ -2,12 +2,14 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
+import { useEffect, useRef } from 'react';
 
 import type { VisibleWhen } from '../../../types/template';
 import { TEMPLATE_LIMITS } from '../../../types/template';
 import { EditorHelp } from './EditorHelp';
 import { inputClasses } from './settings/inputClasses';
 import { KeyField } from './settings/KeyField';
+import { useMixedSetting } from './settings/mixedSettings';
 import { SettingField } from './settings/SettingField';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -31,6 +33,12 @@ export function ToggleRow({
     onChange: (checked: boolean) => void;
     setting?: string;
 }) {
+    // Several selected elements that differ show the box half-checked (spec 023, US3).
+    const mixed = useMixedSetting(setting);
+    const box = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        if (box.current) box.current.indeterminate = mixed;
+    }, [mixed]);
     return (
         <div className="grid gap-0.5">
             <label
@@ -40,8 +48,10 @@ export function ToggleRow({
                 )}
             >
                 <input
+                    ref={box}
                     type="checkbox"
-                    checked={checked}
+                    checked={mixed ? false : checked}
+                    aria-checked={mixed ? 'mixed' : undefined}
                     disabled={disabled}
                     onChange={(event) => onChange(event.target.checked)}
                     data-setting={setting}

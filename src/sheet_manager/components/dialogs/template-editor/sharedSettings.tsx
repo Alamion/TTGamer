@@ -1,19 +1,27 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
-import { type ReactNode, useEffect, useRef } from 'react';
+import { Fragment, type ReactNode, useMemo } from 'react';
 
-import type { TemplateNode, VisibleWhen } from '../../../types/template';
+import type { TemplateField, TemplateNode, VisibleWhen } from '../../../types/template';
 import { isContainerNode, isTemplateField } from '../../../types/template';
+import { useEditorModel } from './EditorModel';
 import {
     type ElementActions,
     ElementActionsRow,
     nodeDisplayName,
     nodeKindLabel,
 } from './ElementSettings';
-import { VisibilityControl } from './LayoutControls';
-import { SETTINGS_GROUP_ORDER, type SettingsGroupId } from './settings/groupedSettings';
+import { type FieldEditorCallbacks, fieldSettings, type SeveralFields } from './FieldEditor';
+import { ToggleRow, VisibilityControl } from './LayoutControls';
+import {
+    type GroupedSettings,
+    mergeGroups,
+    SETTINGS_GROUP_ORDER,
+    type SettingsGroupId,
+} from './settings/groupedSettings';
 import { inputClasses } from './settings/inputClasses';
+import { MixedSettingsContext } from './settings/mixedSettings';
 import { SettingField } from './settings/SettingField';
 import { SettingsGroup } from './settings/SettingsGroup';
 
@@ -138,44 +146,47 @@ export function sharedSettingsFor(nodes: readonly TemplateNode[]): SharedSetting
     return SHARED_SETTINGS.filter((setting) => nodes.every((node) => setting.appliesTo(node)));
 }
 
+/** Settings that name or store one element: never written to several, never "Mixed". */
+const OWN_KEYS = new Set([
+    'id',
+    'type',
+    'label',
+    'labelMessage',
+    'title',
+    'titleMessage',
+    'valueKey',
+    'bindingKey',
+    'binding',
+    'options',
+    'termHint',
+    'column',
+    'children',
+]);
+
+/** The keys whose value differs across the elements, which the panel marks "Mixed". */
+export function mixedSettingKeys(nodes: readonly TemplateNode[]): Set<string> {
+    const keys = new Set(nodes.flatMap((node) => Object.keys(node)));
+    return new Set(
+        [...keys].filter((key) => !OWN_KEYS.has(key) && sharedValue(nodes, key) === MIXED)
+    );
+}
+
+/** The selection when every element is a field of one type, which then shows all its settings. */
+export function sameTypeFields(nodes: readonly TemplateNode[]): TemplateField[] | null {
+    const [first] = nodes;
+    if (!first || !isTemplateField(first)) return null;
+    return nodes.every((node) => node.type === first.type) ? (nodes as TemplateField[]) : null;
+}
+
+/** Shared settings the field's own settings already show. */
+const FIELD_PANEL_KEYS = new Set(['hideLabel', 'required', 'min', 'max']);
+
 /** The node with the setting set (or removed when `undefined`). */
 export function writeShared(node: TemplateNode, key: string, value: SharedValue): TemplateNode {
     const next = { ...node } as Record<string, unknown>;
     if (value === undefined) delete next[key];
     else next[key] = value;
     return next as unknown as TemplateNode;
-}
-
-function MixedToggle({
-    checked,
-    label,
-    onChange,
-    setting,
-}: {
-    checked: boolean | typeof MIXED;
-    label: string;
-    onChange: (checked: boolean) => void;
-    setting: string;
-}) {
-    const box = useRef<HTMLInputElement>(null);
-    const mixed = checked === MIXED;
-    useEffect(() => {
-        if (box.current) box.current.indeterminate = mixed;
-    }, [mixed]);
-    return (
-        <label className="flex items-center gap-2 text-xs text-textSecondary">
-            <input
-                ref={box}
-                type="checkbox"
-                checked={checked === true}
-                aria-checked={mixed ? 'mixed' : checked}
-                onChange={(event) => onChange(event.target.checked)}
-                data-setting={setting}
-                className="h-3.5 w-3.5"
-            />
-            {label}
-        </label>
-    );
 }
 
 function SharedControl({
@@ -192,11 +203,10 @@ function SharedControl({
     const mixedText = translate(editor.mixed);
     switch (setting.control) {
         case 'toggle': {
-            const stored = value === MIXED ? MIXED : Boolean(value);
-            const shown = stored === MIXED ? MIXED : setting.inverted ? !stored : stored;
+            const stored = Boolean(value === MIXED ? false : value);
             return (
-                <MixedToggle
-                    checked={shown}
+                <ToggleRow
+                    checked={setting.inverted ? !stored : stored}
                     label={label}
                     setting={setting.key}
                     onChange={(checked) => {
@@ -253,32 +263,72 @@ function SharedControl({
     }
 }
 
+/** The edits a panel of several fields of one type makes (spec 023, US3). */
+export interface SeveralFieldCallbacks {
+    onUpdate: FieldEditorCallbacks['onUpdate'];
+    onChangeType: FieldEditorCallbacks['onChangeType'];
+    onUpdateEach: SeveralFields['onUpdateEach'];
+}
+
+// Settings that belong to one field (options, catalog, source) are not shown for several.
+const ignore = () => {};
+
 /**
  * The settings area with several elements selected (spec 023, contract "Settings area with several
  * elements"): the count, the selected names (each opens that element alone), the shared actions,
- * and the settings every selected element has.
+ * and the settings every selected element has. Fields of one type show all the settings of their
+ * type, except those that name or store one field.
  */
 export function MultiSettings({
     actions,
+    fieldCallbacks,
     nodes,
     onOpen,
     onShared,
 }: {
     actions: ElementActions;
+    fieldCallbacks: SeveralFieldCallbacks;
     nodes: readonly TemplateNode[];
     onOpen: (nodeId: string) => void;
     onShared: (key: string, value: SharedValue) => void;
 }) {
     const plural = usePluralMessage();
-    const settings = sharedSettingsFor(nodes);
-    const groups = new Map<SettingsGroupId, ReactNode[]>();
-    for (const setting of settings) {
-        const list = groups.get(setting.group) ?? [];
-        list.push(
+    const { bindings } = useEditorModel();
+    const fields = sameTypeFields(nodes);
+    const mixed = useMemo(() => mixedSettingKeys(nodes), [nodes]);
+    const shared: Partial<Record<SettingsGroupId, ReactNode[]>> = {};
+    for (const setting of sharedSettingsFor(nodes)) {
+        if (fields && FIELD_PANEL_KEYS.has(setting.key)) continue;
+        (shared[setting.group] ??= []).push(
             <SharedControl key={setting.key} nodes={nodes} setting={setting} onChange={onShared} />
         );
-        groups.set(setting.group, list);
     }
+    const parts: GroupedSettings[] = [];
+    if (fields) {
+        parts.push(
+            fieldSettings({
+                bindings,
+                field: fields[0]!,
+                several: { fields, onUpdateEach: fieldCallbacks.onUpdateEach },
+                callbacks: {
+                    onUpdate: fieldCallbacks.onUpdate,
+                    onChangeType: fieldCallbacks.onChangeType,
+                    onAddOption: ignore,
+                    onUpdateOption: ignore,
+                    onRemoveOption: ignore,
+                    onAttachCatalog: ignore,
+                    onDetachCatalog: ignore,
+                    onUpdateFill: ignore,
+                    onReplace: ignore,
+                },
+            })
+        );
+    }
+    parts.push(
+        Object.fromEntries(
+            SETTINGS_GROUP_ORDER.filter((id) => shared[id]).map((id) => [id, <>{shared[id]}</>])
+        )
+    );
     return (
         <div data-settings-for="multiple" className="grid gap-3">
             <div className="grid gap-1.5">
@@ -308,13 +358,17 @@ export function MultiSettings({
                     </li>
                 ))}
             </ul>
-            <div>
-                {SETTINGS_GROUP_ORDER.filter((id) => groups.has(id)).map((id) => (
-                    <SettingsGroup key={id} id={id} nodeId="multiple">
-                        {groups.get(id)}
-                    </SettingsGroup>
-                ))}
-            </div>
+            <MixedSettingsContext.Provider value={mixed}>
+                <div>
+                    {mergeGroups(parts).map(({ id, nodes: settings }) => (
+                        <SettingsGroup key={id} id={id} nodeId="multiple">
+                            {settings.map((setting, index) => (
+                                <Fragment key={index}>{setting}</Fragment>
+                            ))}
+                        </SettingsGroup>
+                    ))}
+                </div>
+            </MixedSettingsContext.Provider>
         </div>
     );
 }

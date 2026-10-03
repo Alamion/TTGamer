@@ -556,7 +556,10 @@ Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo and the shortcut list.
   With 2+ selected the settings area is `MultiSettings` (`sharedSettings.tsx`): names, actions,
   and the `SHARED_SETTINGS` descriptors every selected node supports (Mixed = indeterminate /
   placeholder); a change writes every node in one coalesced step. Identity settings (value key,
-  options, columns, entry field, type, kind) never get a descriptor.
+  options, columns, entry field, type, kind) never get a descriptor. Fields all of one type
+  (`sameTypeFields`) instead get `fieldSettings` in its `several` mode: every setting of the type
+  (type included) except name, source, value key, options, catalog, and term hint, written to each
+  field; `MixedSettingsContext` makes `SettingField`/`ToggleRow` show "Mixed".
 - **Clipboard** (`clipboard.ts`, spec 023): `CopiedElements` JSON (format
   `ttgamer-template-elements`, `formatVersion` 1, `source`, `nodes`) through the browser's
   `copy` / `cut` / `paste` events on the dialog content (not in text boxes or over a text

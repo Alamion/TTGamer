@@ -151,3 +151,76 @@ describe('the settings area with several elements (spec 023, US3)', () => {
         ]);
     });
 });
+
+describe('several fields of one type (spec 023, US3)', () => {
+    beforeEach(() => resetEditorStores());
+    afterEach(cleanup);
+
+    const ratings = () =>
+        CustomTemplateSchema.parse({
+            id: 'ratings-kit',
+            name: 'Ratings Kit',
+            documentKind: 'character',
+            schemaVersion: 3,
+            children: [
+                { id: 'mode', type: 'text', label: 'Mode' },
+                {
+                    id: 'sec',
+                    type: 'section',
+                    title: 'Sec',
+                    children: [
+                        { id: 'r1', type: 'rating', label: 'R1', max: 5, flags: ['practiced'] },
+                        { id: 'r2', type: 'rating', label: 'R2', max: 5 },
+                        { id: 'r3', type: 'rating', label: 'R3', max: 10 },
+                    ],
+                },
+            ],
+        });
+
+    function openRatings() {
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template: ratings() },
+                onClose: () => {},
+            })
+        );
+        clickRow('r1');
+        clickRow('r3', { shiftKey: true });
+        openSettingsGroups();
+    }
+    const savedFields = () => saved() as Array<Extract<TemplateNode, { type: 'rating' }>>;
+
+    it('shows every setting of the type except those that name or store one field', () => {
+        openRatings();
+        for (const key of ['type', 'presentation', 'max', 'dice', 'required', 'span']) {
+            expect(panel().querySelector(`[data-setting="${key}"]`), key).not.toBeNull();
+        }
+        for (const key of ['label', 'valueKey', 'source', 'termHint']) {
+            expect(control(key), key).toBeNull();
+        }
+        expect(panel().querySelectorAll('[data-setting="max"]')).toHaveLength(1);
+        const max = control('max')!.closest('.grid')!;
+        expect(max.querySelector('[data-setting-mixed]')).not.toBeNull();
+        expect(screen.getByRole('button', { name: 'Practiced' }).getAttribute('aria-pressed')).toBe(
+            'mixed'
+        );
+    });
+
+    it('turns a flag on for every field and keeps their other flags', () => {
+        openRatings();
+        fireEvent.click(screen.getByRole('button', { name: 'Specialization' }));
+        expect(savedFields().map((field) => field.flags)).toEqual([
+            ['specialization', 'practiced'],
+            ['specialization'],
+            ['specialization'],
+        ]);
+    });
+
+    it('changes the type of every field as one undo step', () => {
+        openRatings();
+        fireEvent.change(control('type')!, { target: { value: 'number' } });
+        expect(panel().querySelector('[data-setting="step"]')).not.toBeNull();
+        fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+        expect(savedFields().map((field) => field.type)).toEqual(['rating', 'rating', 'rating']);
+    });
+});

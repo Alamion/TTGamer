@@ -74,6 +74,17 @@ export interface FieldSettingsOptions {
     itemOfList?: boolean;
     /** Prefix of every `data-setting` key: `column:<id>.` or `entry.` (spec 022, R3). */
     prefix?: string;
+    /**
+     * Several selected fields of one type (spec 023, US3): `field` is the first of them, every
+     * change reaches them all, and settings that belong to one field are left out.
+     */
+    several?: SeveralFields;
+}
+
+export interface SeveralFields {
+    fields: readonly TemplateField[];
+    /** A change worked out for each field, such as one S/P/E flag that keeps the others. */
+    onUpdateEach: (update: (field: TemplateField) => Partial<TemplateField>) => void;
 }
 
 /**
@@ -87,10 +98,12 @@ export function fieldSettings({
     inTable = false,
     itemOfList = false,
     prefix = '',
+    several,
 }: FieldSettingsOptions): GroupedSettings {
     const key = (name: string) => `${prefix}${name}`;
-    const sourceKey = currentValueSource(field, bindings);
-    const isCustom = itemOfList || sourceKey === CUSTOM_SOURCE;
+    const fields = several?.fields ?? [field];
+    const sourceKeys = fields.map((each) => currentValueSource(each, bindings));
+    const isCustom = itemOfList || sourceKeys.every((source) => source === CUSTOM_SOURCE);
     const types = itemOfList
         ? LIST_ITEM_TYPES
         : inTable
@@ -98,13 +111,13 @@ export function fieldSettings({
           : TEMPLATE_FIELD_TYPES;
     // Trait values render with the sheet's own trait row: rating bounds and maxFrom do not apply.
     const isTraitSource = bindings.some(
-        (binding) => binding.key === sourceKey && binding.kind === 'trait'
+        (binding) => sourceKeys.includes(binding.key) && binding.kind === 'trait'
     );
     const update = callbacks.onUpdate;
 
     const content = (
         <>
-            {!inTable && (
+            {!inTable && !several && (
                 <SettingField
                     label={t(itemOfList ? editor.entryLabel : editor.label)}
                     hint={itemOfList ? t(editor.entryLabelHint) : undefined}
@@ -201,7 +214,7 @@ export function fieldSettings({
                     )}
                 </SettingField>
             )}
-            {field.type === 'select' && (
+            {field.type === 'select' && !several && (
                 <SelectOptions callbacks={callbacks} field={field} prefix={prefix} />
             )}
         </>
@@ -209,21 +222,21 @@ export function fieldSettings({
 
     const value = (
         <>
-            {!itemOfList && field.type === 'tracker' && (
+            {!itemOfList && !several && field.type === 'tracker' && (
                 <TrackerSourceSelect
                     node={field}
                     setting={key('source')}
                     onReplace={(_, next) => callbacks.onReplace(next)}
                 />
             )}
-            {!itemOfList && field.type !== 'tracker' && (
+            {!itemOfList && !several && field.type !== 'tracker' && (
                 <ValueSourceSelect
                     node={field}
                     setting={key('source')}
                     onReplace={(_, next) => callbacks.onReplace(next)}
                 />
             )}
-            {isCustom && !itemOfList && (
+            {isCustom && !itemOfList && !several && (
                 <KeyField
                     label={t(editor.valueKey)}
                     hint={t(editor.valueKeyHint)}
@@ -243,21 +256,25 @@ export function fieldSettings({
                 <>
                     <ToggleRow
                         checked={field.multiple}
-                        disabled={field.binding !== undefined}
+                        disabled={fields.some(
+                            (each) => each.type === 'select' && each.binding !== undefined
+                        )}
                         label={t(editor.multiple)}
                         setting={key('multiple')}
                         onChange={(checked) => update({ multiple: checked })}
                     />
-                    <CatalogBindingEditor
-                        callbacks={{
-                            onAttach: callbacks.onAttachCatalog,
-                            onDetach: callbacks.onDetachCatalog,
-                            onUpdateFill: callbacks.onUpdateFill,
-                        }}
-                        field={field}
-                        selfId={field.id}
-                        setting={key('catalog')}
-                    />
+                    {!several && (
+                        <CatalogBindingEditor
+                            callbacks={{
+                                onAttach: callbacks.onAttachCatalog,
+                                onDetach: callbacks.onDetachCatalog,
+                                onUpdateFill: callbacks.onUpdateFill,
+                            }}
+                            field={field}
+                            selfId={field.id}
+                            setting={key('catalog')}
+                        />
+                    )}
                 </>
             )}
             {field.type === 'reference' && (
@@ -386,7 +403,12 @@ export function fieldSettings({
                             </select>
                         )}
                     </SettingField>
-                    <RatingSwitches field={field} onUpdate={update} prefix={prefix} />
+                    <RatingSwitches
+                        field={field}
+                        onUpdate={update}
+                        prefix={prefix}
+                        several={several}
+                    />
                 </>
             )}
             {field.type === 'text' && (
@@ -463,7 +485,7 @@ export function fieldSettings({
                     onChange={(checked) => update({ required: checked })}
                 />
             )}
-            {hasTermHint(field) && (
+            {hasTermHint(field) && !several && (
                 <TermHintControl
                     node={field}
                     setting={key('termHint')}
@@ -658,22 +680,35 @@ function RatingSwitches({
     field,
     onUpdate,
     prefix,
+    several,
 }: {
     field: Extract<TemplateField, { type: 'rating' }>;
     onUpdate: FieldEditorCallbacks['onUpdate'];
     prefix: string;
+    several?: SeveralFields;
 }) {
     const switches = [
         ['textInput', editor.ratingTextInput],
         ['showNumbers', editor.ratingShowNumbers],
         ['dice', editor.ratingDice],
     ] as const;
-    const flags = field.flags ?? [];
-    const toggleFlag = (flag: RatingFlag) => {
+    const fields = several?.fields ?? [field];
+    const flagsOf = (each: TemplateField) => (each.type === 'rating' ? (each.flags ?? []) : []);
+    /** On for every field, off for every field, or mixed across several. */
+    const flagState = (flag: RatingFlag) => {
+        const on = fields.filter((each) => flagsOf(each).includes(flag)).length;
+        return on === 0 ? false : on === fields.length ? true : ('mixed' as const);
+    };
+    const withFlag = (each: TemplateField, flag: RatingFlag, on: boolean) => {
         const next = RATING_FLAGS.filter((candidate) =>
-            candidate === flag ? !flags.includes(flag) : flags.includes(candidate)
+            candidate === flag ? on : flagsOf(each).includes(candidate)
         );
-        onUpdate({ flags: next.length > 0 ? next : undefined });
+        return { flags: next.length > 0 ? next : undefined };
+    };
+    const toggleFlag = (flag: RatingFlag) => {
+        const on = flagState(flag) !== true;
+        if (several) several.onUpdateEach((each) => withFlag(each, flag, on));
+        else onUpdate(withFlag(field, flag, on));
     };
     return (
         <div className="grid gap-1 text-xs text-textSecondary">
@@ -689,24 +724,29 @@ function RatingSwitches({
             {field.presentation === 'dots' && (
                 <div className="flex flex-wrap items-center gap-2">
                     <span>{t(editor.ratingFlags)}</span>
-                    {RATING_FLAGS.map((flag) => (
-                        <button
-                            key={flag}
-                            type="button"
-                            aria-pressed={flags.includes(flag)}
-                            title={t(RATING_FLAG_UI[flag].title)}
-                            aria-label={t(RATING_FLAG_UI[flag].title)}
-                            onClick={() => toggleFlag(flag)}
-                            className={clsx(
-                                'h-6 w-6 rounded border text-xs font-bold transition-colors',
-                                flags.includes(flag)
-                                    ? 'border-primary bg-primary-muted text-textPrimary'
-                                    : 'border-border text-textSecondary hover:border-primary/60'
-                            )}
-                        >
-                            {RATING_FLAG_UI[flag].letter}
-                        </button>
-                    ))}
+                    {RATING_FLAGS.map((flag) => {
+                        const state = flagState(flag);
+                        return (
+                            <button
+                                key={flag}
+                                type="button"
+                                aria-pressed={state}
+                                title={t(RATING_FLAG_UI[flag].title)}
+                                aria-label={t(RATING_FLAG_UI[flag].title)}
+                                onClick={() => toggleFlag(flag)}
+                                className={clsx(
+                                    'h-6 w-6 rounded border text-xs font-bold transition-colors',
+                                    state === true
+                                        ? 'border-primary bg-primary-muted text-textPrimary'
+                                        : state === 'mixed'
+                                          ? 'border-dashed border-primary text-textPrimary'
+                                          : 'border-border text-textSecondary hover:border-primary/60'
+                                )}
+                            >
+                                {RATING_FLAG_UI[flag].letter}
+                            </button>
+                        );
+                    })}
                     <EditorHelp topic="rating" about={t(editor.ratingDice)} />
                     <span className="basis-full text-[11px]">{t(editor.ratingFlagsHint)}</span>
                 </div>

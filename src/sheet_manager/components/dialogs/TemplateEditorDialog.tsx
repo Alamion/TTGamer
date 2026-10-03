@@ -35,7 +35,9 @@ import {
     type CustomTemplate,
     CustomTemplateSchema,
     isContainerNode,
+    isTemplateField,
     TEMPLATE_LIMITS,
+    type TemplateField,
     type TemplateNode,
 } from '../../types/template';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -159,7 +161,11 @@ import {
     useSettingsGroupSession,
 } from './template-editor/settings/groupState';
 import { inputClasses } from './template-editor/settings/inputClasses';
-import { MultiSettings, writeShared } from './template-editor/sharedSettings';
+import {
+    MultiSettings,
+    type SeveralFieldCallbacks,
+    writeShared,
+} from './template-editor/sharedSettings';
 import { ShortcutList } from './template-editor/ShortcutList';
 import {
     type EditorShortcutHandlers,
@@ -609,6 +615,38 @@ export function TemplateEditorDialog({
         },
         [change]
     );
+
+    /** Settings of several fields of one type, written to each as one step (spec 023, US3). */
+    const fieldCallbacks = useMemo<SeveralFieldCallbacks>(() => {
+        const eachField = (
+            update: (draftNow: EditorDraft, field: TemplateField) => EditorDraft,
+            coalesce?: string
+        ) => {
+            const ids = normalizeSelection(
+                historyRef.current.present.draft,
+                historyRef.current.present.selection.ids
+            );
+            change(
+                (current) =>
+                    ids.reduce((next, id) => {
+                        const node = findNode(next, id);
+                        return node && isTemplateField(node) ? update(next, node) : next;
+                    }, current),
+                coalesce ? { coalesceKey: `multi:${ids.join(',')}:${coalesce}` } : undefined
+            );
+        };
+        return {
+            onUpdate: (updates) =>
+                eachField(
+                    (next, field) => updateField(next, field.id, updates),
+                    Object.keys(updates).join(',')
+                ),
+            onChangeType: (type) =>
+                eachField((next, field) => changeFieldType(next, field.id, type)),
+            onUpdateEach: (update) =>
+                eachField((next, field) => updateField(next, field.id, update(field))),
+        };
+    }, [change]);
 
     const undoChange = useCallback(() => commit(undo(historyRef.current)), [commit]);
     const redoChange = useCallback(() => commit(redo(historyRef.current)), [commit]);
@@ -1550,6 +1588,9 @@ export function TemplateEditorDialog({
                                                                                 }}
                                                                                 nodes={
                                                                                     selectedNodes
+                                                                                }
+                                                                                fieldCallbacks={
+                                                                                    fieldCallbacks
                                                                                 }
                                                                                 onShared={
                                                                                     updateShared

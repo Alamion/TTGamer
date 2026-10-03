@@ -183,6 +183,13 @@ string | null }`. `ids` is in click order, deduplicated; `anchor` is the last el
   the toolbar's **Keyboard shortcuts** button and `?` open the list from the registry.
 - **Duplicate improved**: Duplicate shares the paste's reference remap, so a duplicated group's
   formulas read its own copies instead of the original's elements.
+- **Fields of one type show their whole panel** (maintainer request after the walk): with every
+  selected element a field of one type, `MultiSettings` renders `fieldSettings` for the first
+  field in a `several` mode that hides settings of one field (name, source, value key, options,
+  catalog, term hint) and sends each change to every field in one step; S/P/E flags toggle per
+  field so each keeps its others. "Mixed" reaches the shared building blocks (`SettingField`,
+  `ToggleRow`) through `MixedSettingsContext` instead of a control per descriptor. This revises
+  R6: the descriptors still serve selections of different kinds.
 - **Timings** (jsdom, full Star Wars sheet, every element selected): copy 39 ms, shared setting
   93 ms, remove 220 ms, paste of the whole sheet onto a blank page 1052 ms (a first render of the
   sheet); budget 3 s in jsdom.
