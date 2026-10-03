@@ -130,11 +130,12 @@ import {
     useSchemaBackstop,
 } from './template-editor/issues';
 import { type MoveCommand, resolveMoveTarget } from './template-editor/moveTargets';
-import { removeNodes } from './template-editor/multiOps';
+import { duplicateNodes, moveEachByCommand, removeNodes } from './template-editor/multiOps';
 import { OutlineTree } from './template-editor/OutlineTree';
 import { PaneDivider } from './template-editor/PaneDivider';
 import {
-    primaryId,
+    EMPTY_SELECTION,
+    normalizeSelection,
     rangeSelection,
     selectOnly,
     toggleInSelection,
@@ -146,6 +147,7 @@ import {
     useSettingsGroupSession,
 } from './template-editor/settings/groupState';
 import { inputClasses } from './template-editor/settings/inputClasses';
+import { MultiSettings } from './template-editor/sharedSettings';
 import {
     type EditorShortcutHandlers,
     isTypingTarget,
@@ -237,7 +239,6 @@ export function TemplateEditorDialog({
     const [history, setHistory] = useState<EditorHistory>(() => createHistory(initialDraft(base)));
     const draft = history.present.draft;
     const selection = history.present.selection;
-    const selectedId = primaryId(selection);
     const [mode, setMode] = useState<EditorMode>('edit');
     const [area, setArea] = useState<EditorArea>('page');
     const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false);
@@ -455,25 +456,49 @@ export function TemplateEditorDialog({
     );
 
     const getDraft = useCallback(() => historyRef.current.present.draft, []);
+    const draggedWith = useCallback((nodeId: string) => {
+        const { draft: current, selection: chosen } = historyRef.current.present;
+        return chosen.ids.includes(nodeId) ? normalizeSelection(current, chosen.ids) : [nodeId];
+    }, []);
     const nameOf = useCallback(
-        (nodeId: string) => labelIn(historyRef.current.present.draft, nodeId),
-        []
+        (nodeIds: readonly string[]) =>
+            nodeIds.length === 1
+                ? labelIn(historyRef.current.present.draft, nodeIds[0]!)
+                : plural(editor.dragCount, nodeIds.length, { count: nodeIds.length }),
+        [plural]
     );
     const commitDrag = useCallback(
-        (nodeId: string, next: EditorDraft) => {
-            const label = labelIn(historyRef.current.present.draft, nodeId);
-            commit(applyChange(historyRef.current, next, { selection: selectOnly(nodeId) }));
+        (nodeIds: readonly string[], next: EditorDraft) => {
+            const [first] = nodeIds;
+            if (!first) return;
+            const label = labelIn(historyRef.current.present.draft, first);
+            commit(
+                applyChange(historyRef.current, next, {
+                    selection: { ids: [...nodeIds], anchor: nodeIds[nodeIds.length - 1]! },
+                })
+            );
             setSaveIssues([]);
-            const column = findNode(next, nodeId)?.column;
+            if (nodeIds.length > 1) {
+                setAnnouncement(
+                    plural(editor.movedMany, nodeIds.length, { count: nodeIds.length })
+                );
+                return;
+            }
+            const column = findNode(next, first)?.column;
             setAnnouncement(
                 column
                     ? translate(editor.movedColumn, { label, column })
                     : translate(editor.moved, { label })
             );
         },
-        [commit]
+        [commit, plural]
     );
-    const { view: dragView, drag } = useEditorDrag({ getDraft, nameOf, onCommit: commitDrag });
+    const { view: dragView, drag } = useEditorDrag({
+        getDraft,
+        draggedWith,
+        nameOf,
+        onCommit: commitDrag,
+    });
     const shownDraft = dragView?.preview ?? draft;
 
     /** One undo step; settings the other kind lacks wait in the session stash. */
@@ -554,18 +579,66 @@ export function TemplateEditorDialog({
 
     const undoChange = useCallback(() => commit(undo(historyRef.current)), [commit]);
     const redoChange = useCallback(() => commit(redo(historyRef.current)), [commit]);
-    const onSelection = useCallback((run: (nodeId: string) => void) => {
-        const nodeId = primaryId(historyRef.current.present.selection);
-        if (nodeId) run(nodeId);
-    }, []);
+    /**
+     * Commands on the selection (spec 023): one element keeps today's single-element actions and
+     * messages; several act together as one undo step.
+     */
+    const removeSelection = useCallback(() => {
+        const current = historyRef.current;
+        const { ids } = current.present.selection;
+        if (ids.length <= 1) {
+            if (ids[0]) removeSelected(ids[0]);
+            return;
+        }
+        const removed = removeNodes(current.present.draft, ids);
+        change(() => removed.draft, { selection: selectOnly(removed.next) });
+        setAnnouncement(plural(editor.removedMany, removed.count, { count: removed.count }));
+    }, [change, plural, removeSelected]);
+
+    const duplicateSelection = useCallback(() => {
+        const { ids } = historyRef.current.present.selection;
+        if (ids.length <= 1) {
+            if (ids[0]) duplicate(ids[0]);
+            return;
+        }
+        let copies: string[] = [];
+        const done = applyOp((current) => {
+            const result = duplicateNodes(current, ids);
+            if (result.ok) copies = result.ids;
+            return result;
+        });
+        if (!done) return;
+        commit(select(historyRef.current, { ids: copies, anchor: copies[copies.length - 1]! }));
+        setAnnouncement(plural(editor.duplicatedMany, copies.length, { count: copies.length }));
+    }, [applyOp, commit, duplicate, plural]);
+
+    const moveSelection = useCallback(
+        (command: MoveCommand) => {
+            const { ids } = historyRef.current.present.selection;
+            if (ids.length <= 1) {
+                if (ids[0]) moveByCommand(ids[0], command);
+                return;
+            }
+            let moved = 0;
+            applyOp((current) => {
+                const result = moveEachByCommand(current, ids, command);
+                if (result.ok) moved = result.moved ?? 0;
+                return result;
+            });
+            if (moved > 0) {
+                setAnnouncement(plural(editor.movedMany, moved, { count: moved }));
+            }
+        },
+        [applyOp, moveByCommand, plural]
+    );
+
     const shortcutHandlers = useMemo<EditorShortcutHandlers>(() => {
-        const move = (command: MoveCommand) => () =>
-            onSelection((nodeId) => moveByCommand(nodeId, command));
+        const move = (command: MoveCommand) => () => moveSelection(command);
         return {
             undo: undoChange,
             redo: redoChange,
-            duplicate: () => onSelection(duplicate),
-            delete: () => onSelection(removeSelected),
+            duplicate: duplicateSelection,
+            delete: removeSelection,
             'move-up': move('move-up'),
             'move-down': move('move-down'),
             'move-out': move('move-out'),
@@ -573,7 +646,7 @@ export function TemplateEditorDialog({
             'column-prev': move('column-prev'),
             'column-next': move('column-next'),
         };
-    }, [duplicate, moveByCommand, onSelection, redoChange, removeSelected, undoChange]);
+    }, [duplicateSelection, moveSelection, redoChange, removeSelection, undoChange]);
     useEditorShortcuts(contentElement, mode === 'edit' ? shortcutHandlers : {});
 
     /** Opens folded groups around a node, outermost first, then scrolls it into view. */
@@ -997,8 +1070,14 @@ export function TemplateEditorDialog({
     );
     const targetFixed = editingDefault || lockTarget;
 
-    const selectedNode = selectedId ? findNode(draft, selectedId) : undefined;
-    const selectedPosition = selectedId ? findNodePosition(draft, selectedId) : undefined;
+    // A group selected with its own element counts once (the group carries it).
+    const effectiveIds =
+        selection.ids.length > 1 ? normalizeSelection(draft, selection.ids) : selection.ids;
+    const soleId = effectiveIds.length === 1 ? effectiveIds[0]! : null;
+    const selectedNode = soleId ? findNode(draft, soleId) : undefined;
+    const selectedNodes =
+        effectiveIds.length > 1 ? effectiveIds.map((id) => findNode(draft, id)!) : [];
+    const selectedPosition = soleId ? findNodePosition(draft, soleId) : undefined;
     const canMoveUp = selectedPosition !== undefined && selectedPosition.index > 0;
     const canMoveDown =
         selectedPosition !== undefined &&
@@ -1040,6 +1119,19 @@ export function TemplateEditorDialog({
                 <Dialog.Overlay className="fixed inset-0 z-[9998] bg-black/50" />
                 <Dialog.Content
                     ref={setContentElement}
+                    onEscapeKeyDown={(event) => {
+                        // Escape clears a selection first; with none it closes (research R9).
+                        const current = historyRef.current;
+                        if (
+                            mode !== 'edit' ||
+                            current.present.selection.ids.length === 0 ||
+                            isTypingTarget(event.target)
+                        ) {
+                            return;
+                        }
+                        event.preventDefault();
+                        commit(select(current, EMPTY_SELECTION));
+                    }}
                     className="fixed left-1/2 top-1/2 z-[9999] flex h-[calc(100vh-2rem)] max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-[110rem] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-border bg-bgSurface shadow-xl focus:outline-none"
                 >
                     <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
@@ -1244,7 +1336,31 @@ export function TemplateEditorDialog({
                                                                     <h3 className="hidden text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
                                                                         {t(editor.areaSettings)}
                                                                     </h3>
-                                                                    {selectedNode ? (
+                                                                    {selectedNodes.length > 1 ? (
+                                                                        <MultiSettings
+                                                                            actions={{
+                                                                                onMoveUp: () =>
+                                                                                    moveSelection(
+                                                                                        'move-up'
+                                                                                    ),
+                                                                                onMoveDown: () =>
+                                                                                    moveSelection(
+                                                                                        'move-down'
+                                                                                    ),
+                                                                                onDuplicate:
+                                                                                    duplicateSelection,
+                                                                                onRemove:
+                                                                                    removeSelection,
+                                                                            }}
+                                                                            nodes={selectedNodes}
+                                                                            onOpen={(nodeId) =>
+                                                                                selectNode(
+                                                                                    nodeId,
+                                                                                    'outline'
+                                                                                )
+                                                                            }
+                                                                        />
+                                                                    ) : selectedNode ? (
                                                                         <ElementSettings
                                                                             key={selectedNode.id}
                                                                             actions={{

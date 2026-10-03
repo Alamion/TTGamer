@@ -191,7 +191,7 @@ three there in page order; one Undo returns them.
 
 ### Tests
 
-- [ ] T018 [P] [US2] Component tests `TESTS/editor-multi-select.test.tsx`: Ctrl+click and
+- [x] T018 [P] [US2] Component tests `TESTS/editor-multi-select.test.tsx`: Ctrl+click and
       Meta+click toggle on page and outline, marks in both (`data-selected`, `aria-pressed`);
       Shift+click range; a plain click reduces the selection; Escape with a selection clears it and
       the editor stays open (no discard question), Escape with nothing selected asks to close as
@@ -199,29 +199,29 @@ three there in page order; one Undo returns them.
       Ctrl+D / Alt+↓ on the selection are one undo step each and Undo restores the previous
       selection; a group plus its child is duplicated once; after each action the draft parses with
       `CustomTemplateSchema` (SC-006).
-- [ ] T019 [P] [US2] Extend `TESTS/editor-drag.test.ts` and the drag component test: dragging a
+- [x] T019 [P] [US2] Extend `TESTS/editor-drag.test.ts` and the drag component test: dragging a
       selected element moves the whole normalized selection via `placeNodes`; slots inside any
       dragged subtree are refused; the preview draft contains all moved nodes; dragging an
       unselected element moves only it.
 
 ### Implementation
 
-- [ ] T020 [US2] Modifier clicks: in `TE/EditorPage.tsx` the delegated click passes `toggle` for
+- [x] T020 [US2] Modifier clicks: in `TE/EditorPage.tsx` the delegated click passes `toggle` for
       Ctrl/Meta and `range` for Shift (and `preventDefault` on Shift to avoid text selection); in
       `TE/OutlineTree.tsx` the row button does the same. Dialog `selectNode` applies
       `selectOnly`/`toggleInSelection`/`rangeSelection` and announces `selectedCount` when the count
       changes by a modifier click. Escape per research R9: the editor's `Dialog.Content`
       `onEscapeKeyDown` clears a non-empty selection with `preventDefault()` (not from a text box,
       an open menu, or a nested dialog) and otherwise leaves today's `requestClose`.
-- [ ] T021 [US2] Route Dialog commands through the normalized selection: delete → `removeNodes`,
+- [x] T021 [US2] Route Dialog commands through the normalized selection: delete → `removeNodes`,
       duplicate → `duplicateNodes`, move-up/down → `moveEachByCommand`, move-out/in and columns →
       all-or-nothing; announcements use the count for 2+ (existing single messages for 1). Copy and
       cut already use the selection (T016).
-- [ ] T022 [US2] `TE/useEditorDrag.ts`: `start(nodeId, …)` resolves the dragged set (the normalized
+- [x] T022 [US2] `TE/useEditorDrag.ts`: `start(nodeId, …)` resolves the dragged set (the normalized
       selection when `nodeId` is selected, else `[nodeId]`); slot filtering, preview, `sameSpot`,
       origin marks, the ghost label ("{count} elements"), and `onCommit` work on the set through
       `placeNodes`; Dialog `commitDrag` takes ids and selects them.
-- [ ] T023 [US2] Settings area header for 2+ (contract "Settings area with several elements"):
+- [x] T023 [US2] Settings area header for 2+ (contract "Settings area with several elements"):
       `data-settings-for="multiple"`, heading with the count, the list of "Open {name}" buttons, the
       shared action row bound to the multi commands; for now without shared settings (US3).
 

@@ -197,51 +197,58 @@ function fieldCallbacks(callbacks: ElementEditorCallbacks, fieldId: string): Fie
 const actionButton =
     'flex h-7 w-7 items-center justify-center rounded border border-transparent text-textSecondary hover:border-border hover:text-textPrimary disabled:opacity-40';
 
+/** Move up, move down, duplicate, and remove: for one element or a selection (spec 023). */
+export function ElementActionsRow({ actions }: { actions: ElementActions }) {
+    return (
+        <div className="flex items-center gap-1">
+            <button
+                type="button"
+                onClick={actions.onMoveUp}
+                disabled={!actions.onMoveUp}
+                aria-label={t(editor.moveUp)}
+                title={t(editor.moveUp)}
+                className={actionButton}
+            >
+                <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+            <button
+                type="button"
+                onClick={actions.onMoveDown}
+                disabled={!actions.onMoveDown}
+                aria-label={t(editor.moveDown)}
+                title={t(editor.moveDown)}
+                className={actionButton}
+            >
+                <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+            <button
+                type="button"
+                onClick={actions.onDuplicate}
+                aria-label={t(editor.duplicate)}
+                title={t(editor.duplicate)}
+                className={actionButton}
+            >
+                <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+            <span className="flex-1" />
+            <button
+                type="button"
+                onClick={actions.onRemove}
+                aria-label={t(editor.remove)}
+                title={t(editor.remove)}
+                className={`${actionButton} hover:text-error`}
+            >
+                <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+        </div>
+    );
+}
+
 /** Actions first, then the kind and the full name: a narrow area never hides the name. */
 function ElementHeader({ actions, node }: { actions: ElementActions; node: TemplateNode }) {
     return (
         <div className="grid gap-1.5">
-            <div className="flex items-center gap-1">
-                <button
-                    type="button"
-                    onClick={actions.onMoveUp}
-                    disabled={!actions.onMoveUp}
-                    aria-label={t(editor.moveUp)}
-                    title={t(editor.moveUp)}
-                    className={actionButton}
-                >
-                    <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" />
-                </button>
-                <button
-                    type="button"
-                    onClick={actions.onMoveDown}
-                    disabled={!actions.onMoveDown}
-                    aria-label={t(editor.moveDown)}
-                    title={t(editor.moveDown)}
-                    className={actionButton}
-                >
-                    <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" />
-                </button>
-                <button
-                    type="button"
-                    onClick={actions.onDuplicate}
-                    aria-label={t(editor.duplicate)}
-                    title={t(editor.duplicate)}
-                    className={actionButton}
-                >
-                    <Copy className="h-3.5 w-3.5" aria-hidden="true" />
-                </button>
-                <span className="flex-1" />
-                <button
-                    type="button"
-                    onClick={actions.onRemove}
-                    aria-label={t(editor.remove)}
-                    title={t(editor.remove)}
-                    className={`${actionButton} hover:text-error`}
-                >
-                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                </button>
-            </div>
+            <ElementActionsRow actions={actions} />
             <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5" data-element-name="">
                 <span className="shrink-0 rounded bg-bgBase px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-textSecondary">
                     {nodeKindLabel(node)}

@@ -11,6 +11,7 @@ import {
 
 import type { OverlayPlacement } from '../../../features/sheet/declarative/editorOverlay';
 import { type EditorDraft, findNodePosition, placeNode } from './draft';
+import { placeNodes } from './multiOps';
 
 export interface Point {
     x: number;
@@ -298,6 +299,8 @@ function applyMarks(marks: DragMarks) {
 
 export interface EditorDragView {
     nodeId: string;
+    /** Every dragged element: the selection when the grip belongs to it (spec 023). */
+    nodeIds: readonly string[];
     /** The uncommitted draft the page and outline show once previewing (never in history). */
     preview?: EditorDraft;
 }
@@ -324,12 +327,15 @@ export function useEditorDragContext(): EditorDrag | null {
  */
 export function useEditorDrag({
     getDraft,
+    draggedWith,
     nameOf,
     onCommit,
 }: {
     getDraft: () => EditorDraft;
-    nameOf: (nodeId: string) => string;
-    onCommit: (nodeId: string, draft: EditorDraft) => void;
+    /** The elements a grip drags: the selection when it holds the grip's element, else that one. */
+    draggedWith: (nodeId: string) => readonly string[];
+    nameOf: (nodeIds: readonly string[]) => string;
+    onCommit: (nodeIds: readonly string[], draft: EditorDraft) => void;
 }): { view: EditorDragView | null; drag: EditorDrag } {
     const [view, setView] = useState<EditorDragView | null>(null);
     const pageDraft = useRef<EditorDraft | undefined>(undefined);
@@ -355,6 +361,7 @@ export function useEditorDrag({
                 { phase: 'idle' },
                 { type: 'down', nodeId, point: { x: event.clientX, y: event.clientY } }
             );
+            const nodeIds = draggedWith(nodeId);
             let preview: EditorDraft | undefined;
             let last: Point = { x: event.clientX, y: event.clientY };
             let dwell: ReturnType<typeof setTimeout> | undefined;
@@ -376,8 +383,13 @@ export function useEditorDrag({
                 const { slots, containers } = surfaceSlots(surface);
                 let result: DropTarget | undefined;
                 nearestPlacement(slots, point, containers, (slot) => {
-                    const placed = placeNode(current, nodeId, slot.placement);
-                    if (!placed.ok || sameSpot(current, placed.draft, nodeId)) return false;
+                    const placed =
+                        nodeIds.length === 1
+                            ? placeNode(current, nodeId, slot.placement)
+                            : placeNodes(current, nodeIds, slot.placement);
+                    if (!placed.ok || nodeIds.every((id) => sameSpot(current, placed.draft, id))) {
+                        return false;
+                    }
                     result = { key: slot.key, draft: placed.draft };
                     return true;
                 });
@@ -399,18 +411,20 @@ export function useEditorDrag({
                 state = next;
                 if (next.phase === 'previewing' && previous.phase !== 'previewing') {
                     preview = next.target.draft;
-                    const origin = originKey(getDraft(), preview, nodeId);
+                    const origin = originKey(getDraft(), preview, nodeIds[0] ?? nodeId);
                     marks.current.origin = origin
                         ? `[data-insert-slot="${origin}"], [data-outline-slot="${origin}"]`
                         : undefined;
-                    marks.current.previewing = `[data-editor-frame][data-node-id="${nodeId}"]`;
-                    setView({ nodeId, preview });
+                    marks.current.previewing = nodeIds
+                        .map((id) => `[data-editor-frame][data-node-id="${id}"]`)
+                        .join(', ');
+                    setView({ nodeId, nodeIds, preview });
                 }
                 if (next.phase === 'dragging' && previous.phase === 'pending') {
-                    setView({ nodeId });
+                    setView({ nodeId, nodeIds });
                     ghost = document.createElement('div');
                     ghost.setAttribute('data-drag-ghost', '');
-                    ghost.textContent = nameOf(nodeId);
+                    ghost.textContent = nameOf(nodeIds);
                     ghost.className =
                         'pointer-events-none fixed z-[10001] rounded bg-primary-muted px-2 py-0.5 text-xs text-white shadow';
                     document.body.appendChild(ghost);
@@ -464,7 +478,7 @@ export function useEditorDrag({
                         : undefined;
                 const dragged = state.phase !== 'pending';
                 cleanup();
-                if (commit && target) onCommit(nodeId, target.draft);
+                if (commit && target) onCommit(nodeIds, target.draft);
                 if (dragged) lastDragEnd = Date.now();
             };
 
@@ -506,7 +520,7 @@ export function useEditorDrag({
             window.addEventListener('keydown', onKey, true);
             session.current = cleanup;
         },
-        [getDraft, nameOf, onCommit]
+        [draggedWith, getDraft, nameOf, onCommit]
     );
 
     useEffect(() => () => session.current?.(), []);
