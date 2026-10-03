@@ -228,7 +228,6 @@ editor:
     removed: '{label}: удалено. Ctrl+Z — вернуть.'
     duplicated: '{label}: создана копия.'
     inserted: '{label}: добавлено.'
-    shortcutsHint: 'Клавиши: Alt+↑/↓ — переместить · Alt+←/→ — из группы или в группу · Alt+Shift+←/→ — колонка · Ctrl+D — дублировать · Delete — удалить · Ctrl+Z — отменить · Ctrl+Shift+Z — повторить'
     coordinateCurrent: '{label} (текущее)'
     coordinateMax: '{label} (максимум)'
     groupContent: Содержимое
@@ -330,6 +329,7 @@ editor:
         plural: true
     clipboardUnreadable: Скопированные элементы не удалось прочитать.
     clipboardNewer: Эти элементы скопированы в более новой версии редактора.
+    closeShortcuts: Закрыть список клавиш
     elementMenu: 'Действия: {name}'
 tracker:
     source: Источник

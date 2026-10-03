@@ -12,9 +12,14 @@ export type EditorShortcut =
     | 'move-out'
     | 'move-in'
     | 'column-prev'
-    | 'column-next';
+    | 'column-next'
+    | 'shortcuts';
 
-type ShortcutKeyEvent = Pick<KeyboardEvent, 'code' | 'ctrlKey' | 'metaKey' | 'shiftKey' | 'altKey'>;
+type ShortcutKeyEvent = Pick<
+    KeyboardEvent,
+    'code' | 'ctrlKey' | 'metaKey' | 'shiftKey' | 'altKey'
+> &
+    Partial<Pick<KeyboardEvent, 'key'>>;
 
 const SHORTCUT_IDS = new Set<string>([
     'undo',
@@ -27,6 +32,7 @@ const SHORTCUT_IDS = new Set<string>([
     'move-in',
     'column-prev',
     'column-next',
+    'shortcuts',
 ]);
 
 /**
@@ -42,6 +48,15 @@ export function matchEditorShortcut(
     const mod = event.ctrlKey || event.metaKey;
     for (const command of EDITOR_COMMANDS) {
         if (!SHORTCUT_IDS.has(command.id) || (typing && !command.whileTyping)) continue;
+        // A character shortcut follows the layout: "?" is Shift+/ on US keys, Shift+7 on Russian.
+        if (
+            command.character &&
+            !mod &&
+            !event.altKey &&
+            (event.key === command.character || (event.code === 'Slash' && event.shiftKey))
+        ) {
+            return command.id as EditorShortcut;
+        }
         const hit = command.keys?.some(
             (binding) =>
                 (binding.apple === undefined || binding.apple === apple) &&

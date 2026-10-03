@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { clsx } from 'clsx';
-import { Redo2, Undo2 } from 'lucide-react';
+import { Keyboard, Redo2, Undo2 } from 'lucide-react';
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ZodError } from 'zod';
 
@@ -160,6 +160,7 @@ import {
 } from './template-editor/settings/groupState';
 import { inputClasses } from './template-editor/settings/inputClasses';
 import { MultiSettings, writeShared } from './template-editor/sharedSettings';
+import { ShortcutList } from './template-editor/ShortcutList';
 import {
     type EditorShortcutHandlers,
     isTypingTarget,
@@ -254,6 +255,7 @@ export function TemplateEditorDialog({
     const [mode, setMode] = useState<EditorMode>('edit');
     const [area, setArea] = useState<EditorArea>('page');
     const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false);
+    const [shortcutsOpen, setShortcutsOpen] = useState(false);
     /** A save waiting for confirmation: a retarget (T-070) and/or list entry changes (spec 016). */
     const [pendingSave, setPendingSave] = useState<{
         template: CustomTemplate;
@@ -676,6 +678,7 @@ export function TemplateEditorDialog({
             'move-in': move('move-in'),
             'column-prev': move('column-prev'),
             'column-next': move('column-next'),
+            shortcuts: () => setShortcutsOpen(true),
         };
     }, [duplicateSelection, moveSelection, redoChange, removeSelection, undoChange]);
     useEditorShortcuts(contentElement, mode === 'edit' ? shortcutHandlers : {});
@@ -1324,6 +1327,16 @@ export function TemplateEditorDialog({
                         <EditorHelp topic="overview" about={t(editor.guide)} />
                         <button
                             type="button"
+                            onClick={() => setShortcutsOpen(true)}
+                            aria-label={t(editor.cmdShortcuts)}
+                            aria-keyshortcuts="?"
+                            title={t(editor.cmdShortcuts)}
+                            className={toolbarButton}
+                        >
+                            <Keyboard className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                        <button
+                            type="button"
                             onClick={undoChange}
                             disabled={mode !== 'edit' || !canUndo(history)}
                             aria-label={t(editor.undo)}
@@ -1599,11 +1612,6 @@ export function TemplateEditorDialog({
                                                                                 )}
                                                                             </p>
                                                                         )}
-                                                                        <p className="text-xs leading-relaxed text-textSecondary">
-                                                                            {t(
-                                                                                editor.shortcutsHint
-                                                                            )}
-                                                                        </p>
                                                                     </section>
                                                                 </div>
                                                             </>
@@ -1665,6 +1673,7 @@ export function TemplateEditorDialog({
                 </Dialog.Content>
             </Dialog.Portal>
 
+            <ShortcutList open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
             <ConfirmDialog
                 open={pendingSave !== null}
                 onOpenChange={(open) => {

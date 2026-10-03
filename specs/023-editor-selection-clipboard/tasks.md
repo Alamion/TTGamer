@@ -307,7 +307,7 @@ guide shows the same.
 
 ### Tests
 
-- [ ] T031 [P] [US5] `TESTS/editor-commands.test.ts`: the shortcut list renders one row per command
+- [x] T031 [P] [US5] `TESTS/editor-commands.test.ts`: the shortcut list renders one row per command
       with keys or clipboard binding, grouped, `scope="col"` heads; "?" opens it (with `key: '?'`
       and with `code: 'Slash'` + Shift), not while typing; Escape closes and restores focus; parse
       the `#arranging` shortcut table of `docs/template-editor/index.mdx` and of its Russian mirror
@@ -315,11 +315,11 @@ guide shows the same.
 
 ### Implementation
 
-- [ ] T032 [US5] Create `TE/ShortcutList.tsx` (Radix Dialog per contract) and add the `shortcuts`
+- [x] T032 [US5] Create `TE/ShortcutList.tsx` (Radix Dialog per contract) and add the `shortcuts`
       command (`{ key: '?' }`, last in the Edit group, `inMenu: false`) to the registry and
       matcher; Dialog toolbar gets the "Keyboard shortcuts" button
       (`Keyboard` icon, `aria-keyshortcuts="?"`).
-- [ ] T033 [US5] Rewrite the shortcut table in `docs/template-editor/index.mdx` `#arranging` and the
+- [x] T033 [US5] Rewrite the shortcut table in `docs/template-editor/index.mdx` `#arranging` and the
       Russian mirror under `i18n/ru/docusaurus-plugin-content-docs/current/template-editor/index.mdx`
       to the full registry (cut, copy, paste, selection clicks, Escape, "?"); `yarn validate:i18n`.
 

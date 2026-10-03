@@ -3137,6 +3137,9 @@
     "ttgamer.ui.sheet.templates.editor.clipboardUnreadable": {
         "message": "These copied elements could not be read."
     },
+    "ttgamer.ui.sheet.templates.editor.closeShortcuts": {
+        "message": "Close the shortcut list"
+    },
     "ttgamer.ui.sheet.templates.editor.cmdAddToSelection": {
         "message": "Add to selection"
     },
@@ -3838,9 +3841,6 @@
     },
     "ttgamer.ui.sheet.templates.editor.shortcutKeys": {
         "message": "Keys"
-    },
-    "ttgamer.ui.sheet.templates.editor.shortcutsHint": {
-        "message": "Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo"
     },
     "ttgamer.ui.sheet.templates.editor.showLabel": {
         "message": "Show label"

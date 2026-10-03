@@ -62,15 +62,27 @@ The preview never changes the chosen document.
 - **Move**: drag an element by its chip on the page or by its handle in the outline. A line marks the nearest place it can go — between elements, inside a group, or in an empty column — even while the pointer is over another element. Rest a moment, and the page shows the element in its new place, with a dashed line where it was. Release to move it (one step of **Undo**), or press `Escape` to leave everything as it was. Near the top or bottom edge the page scrolls. On touch screens use the move buttons in the settings.
 - **Keyboard**: the shortcuts work with any keyboard layout.
 
-| Keys                | Action                                           |
-| ------------------- | ------------------------------------------------ |
-| `Alt+↑` / `Alt+↓`   | Move the element up or down                      |
-| `Alt+←` / `Alt+→`   | Move it out of its group or into the group above |
-| `Alt+Shift+←` / `→` | Move it to the previous or next column           |
-| `Ctrl+D`            | Duplicate                                        |
-| `Delete`            | Remove                                           |
-| `Ctrl+Z`            | Undo                                             |
-| `Ctrl+Shift+Z`      | Redo                                             |
+| Keys                      | Action                                         |
+| ------------------------- | ---------------------------------------------- |
+| `Ctrl+X`                  | Cut                                            |
+| `Ctrl+C`                  | Copy                                           |
+| `Ctrl+V`                  | Paste                                          |
+| `Ctrl+D`                  | Duplicate                                      |
+| `Delete`                  | Remove                                         |
+| `?`                       | Show this list of shortcuts                    |
+| `Ctrl+click`              | Add an element to the selection or take it out |
+| `Shift+click`             | Select the elements in between                 |
+| `Esc`                     | Clear the selection                            |
+| `Alt+↑`                   | Move up                                        |
+| `Alt+↓`                   | Move down                                      |
+| `Alt+←`                   | Move out of the group                          |
+| `Alt+→`                   | Move into the group above                      |
+| `Alt+Shift+←`             | Move to the previous column                    |
+| `Alt+Shift+→`             | Move to the next column                        |
+| `Ctrl+Z`                  | Undo                                           |
+| `Ctrl+Shift+Z` / `Ctrl+Y` | Redo                                           |
+
+On a Mac, `⌘` stands for `Ctrl` and `⌥` for `Alt`, and `⌫` removes too. The editor's **Keyboard shortcuts** button (or `?`) shows this list in the editor.
 
 Undo covers every change since the editor opened; typing in one field counts as one step.
 

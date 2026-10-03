@@ -228,7 +228,6 @@ editor:
     removed: '{label} removed. Press Ctrl+Z to undo.'
     duplicated: '{label} copied.'
     inserted: '{label} added.'
-    shortcutsHint: 'Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo'
     coordinateCurrent: '{label} (current)'
     coordinateMax: '{label} (max)'
     groupContent: Content
@@ -330,6 +329,7 @@ editor:
         plural: true
     clipboardUnreadable: These copied elements could not be read.
     clipboardNewer: These elements were copied from a newer version of the editor.
+    closeShortcuts: Close the shortcut list
     elementMenu: 'Actions: {name}'
 tracker:
     source: Source

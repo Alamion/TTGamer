@@ -4724,11 +4724,6 @@ export const uiMessages = {
                     id: 'ttgamer.ui.sheet.templates.editor.inserted',
                     message: '{label} added.',
                 },
-                shortcutsHint: {
-                    id: 'ttgamer.ui.sheet.templates.editor.shortcutsHint',
-                    message:
-                        'Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo',
-                },
                 coordinateCurrent: {
                     id: 'ttgamer.ui.sheet.templates.editor.coordinateCurrent',
                     message: '{label} (current)',
@@ -5079,6 +5074,10 @@ export const uiMessages = {
                 clipboardNewer: {
                     id: 'ttgamer.ui.sheet.templates.editor.clipboardNewer',
                     message: 'These elements were copied from a newer version of the editor.',
+                },
+                closeShortcuts: {
+                    id: 'ttgamer.ui.sheet.templates.editor.closeShortcuts',
+                    message: 'Close the shortcut list',
                 },
                 elementMenu: {
                     id: 'ttgamer.ui.sheet.templates.editor.elementMenu',

@@ -3137,6 +3137,9 @@
     "ttgamer.ui.sheet.templates.editor.clipboardUnreadable": {
         "message": "Скопированные элементы не удалось прочитать."
     },
+    "ttgamer.ui.sheet.templates.editor.closeShortcuts": {
+        "message": "Закрыть список клавиш"
+    },
     "ttgamer.ui.sheet.templates.editor.cmdAddToSelection": {
         "message": "Добавить к выбору"
     },
@@ -3838,9 +3841,6 @@
     },
     "ttgamer.ui.sheet.templates.editor.shortcutKeys": {
         "message": "Клавиши"
-    },
-    "ttgamer.ui.sheet.templates.editor.shortcutsHint": {
-        "message": "Клавиши: Alt+↑/↓ — переместить · Alt+←/→ — из группы или в группу · Alt+Shift+←/→ — колонка · Ctrl+D — дублировать · Delete — удалить · Ctrl+Z — отменить · Ctrl+Shift+Z — повторить"
     },
     "ttgamer.ui.sheet.templates.editor.showLabel": {
         "message": "Показывать подпись"
