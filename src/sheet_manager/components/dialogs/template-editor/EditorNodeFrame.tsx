@@ -103,8 +103,8 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
     node,
     parentId,
 }: EditorNodeFrameProps) {
-    const { selectedId, issueNodeIds } = useEditorSelection();
-    const selected = selectedId === node.id;
+    const { selected: selectedIds, anchor, issueNodeIds } = useEditorSelection();
+    const selected = selectedIds.has(node.id);
     const hasIssue = issueNodeIds.has(node.id);
     const name = nodeDisplayName(node);
     const drag = useEditorDragContext();
@@ -116,6 +116,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                 data-editor-frame=""
                 data-node-id={node.id}
                 data-selected={selected ? '' : undefined}
+                data-anchor={selected && anchor === node.id ? '' : undefined}
                 data-condition-hidden={conditionHidden ? '' : undefined}
                 className={clsx(
                     'relative rounded-md outline-offset-2',

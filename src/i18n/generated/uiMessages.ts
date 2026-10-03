@@ -4948,6 +4948,146 @@ export const uiMessages = {
                     message:
                         '{title} is now shown as {kind}. Values documents stored under its earlier kind are not shown, but they stay stored.',
                 },
+                cmdCut: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdCut',
+                    message: 'Cut',
+                },
+                cmdCopy: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdCopy',
+                    message: 'Copy',
+                },
+                cmdPaste: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdPaste',
+                    message: 'Paste',
+                },
+                cmdPasteAtEnd: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdPasteAtEnd',
+                    message: 'Paste at the end of the page',
+                },
+                cmdColumnPrev: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdColumnPrev',
+                    message: 'Move to the previous column',
+                },
+                cmdColumnNext: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdColumnNext',
+                    message: 'Move to the next column',
+                },
+                cmdAddToSelection: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdAddToSelection',
+                    message: 'Add to selection',
+                },
+                cmdRemoveFromSelection: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdRemoveFromSelection',
+                    message: 'Remove from selection',
+                },
+                cmdToggleSelection: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdToggleSelection',
+                    message: 'Add or remove an element',
+                },
+                cmdRangeSelection: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdRangeSelection',
+                    message: 'Select a range of elements',
+                },
+                cmdClearSelection: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdClearSelection',
+                    message: 'Clear the selection',
+                },
+                cmdShortcuts: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdShortcuts',
+                    message: 'Keyboard shortcuts',
+                },
+                cmdGroupEdit: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdGroupEdit',
+                    message: 'Edit',
+                },
+                cmdGroupSelection: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdGroupSelection',
+                    message: 'Selection',
+                },
+                cmdGroupArrange: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdGroupArrange',
+                    message: 'Arrange',
+                },
+                cmdGroupHistory: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cmdGroupHistory',
+                    message: 'History',
+                },
+                shortcutKeys: {
+                    id: 'ttgamer.ui.sheet.templates.editor.shortcutKeys',
+                    message: 'Keys',
+                },
+                shortcutAction: {
+                    id: 'ttgamer.ui.sheet.templates.editor.shortcutAction',
+                    message: 'Action',
+                },
+                keyClick: {
+                    id: 'ttgamer.ui.sheet.templates.editor.keyClick',
+                    message: 'click',
+                },
+                selectedCount: {
+                    id: 'ttgamer.ui.sheet.templates.editor.selectedCount',
+                    message: '{count} element selected|{count} elements selected',
+                    plural: true,
+                },
+                openSelected: {
+                    id: 'ttgamer.ui.sheet.templates.editor.openSelected',
+                    message: 'Open {name}',
+                },
+                selectedElements: {
+                    id: 'ttgamer.ui.sheet.templates.editor.selectedElements',
+                    message: 'Selected elements',
+                },
+                noSharedSettings: {
+                    id: 'ttgamer.ui.sheet.templates.editor.noSharedSettings',
+                    message: 'These elements have no settings in common.',
+                },
+                mixed: {
+                    id: 'ttgamer.ui.sheet.templates.editor.mixed',
+                    message: 'Mixed',
+                },
+                pasted: {
+                    id: 'ttgamer.ui.sheet.templates.editor.pasted',
+                    message: 'Pasted {count} element.|Pasted {count} elements.',
+                    plural: true,
+                },
+                cutDone: {
+                    id: 'ttgamer.ui.sheet.templates.editor.cutDone',
+                    message: 'Cut {count} element.|Cut {count} elements.',
+                    plural: true,
+                },
+                removedMany: {
+                    id: 'ttgamer.ui.sheet.templates.editor.removedMany',
+                    message:
+                        '{count} element removed. Press Ctrl+Z to undo.|{count} elements removed. Press Ctrl+Z to undo.',
+                    plural: true,
+                },
+                duplicatedMany: {
+                    id: 'ttgamer.ui.sheet.templates.editor.duplicatedMany',
+                    message: '{count} element duplicated.|{count} elements duplicated.',
+                    plural: true,
+                },
+                movedMany: {
+                    id: 'ttgamer.ui.sheet.templates.editor.movedMany',
+                    message: '{count} element moved.|{count} elements moved.',
+                    plural: true,
+                },
+                dragCount: {
+                    id: 'ttgamer.ui.sheet.templates.editor.dragCount',
+                    message: '{count} element|{count} elements',
+                    plural: true,
+                },
+                clipboardUnreadable: {
+                    id: 'ttgamer.ui.sheet.templates.editor.clipboardUnreadable',
+                    message: 'These copied elements could not be read.',
+                },
+                clipboardNewer: {
+                    id: 'ttgamer.ui.sheet.templates.editor.clipboardNewer',
+                    message: 'These elements were copied from a newer version of the editor.',
+                },
+                elementMenu: {
+                    id: 'ttgamer.ui.sheet.templates.editor.elementMenu',
+                    message: 'Actions: {name}',
+                },
             },
             tracker: {
                 source: {

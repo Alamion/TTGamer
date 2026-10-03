@@ -31,8 +31,8 @@ const OutlineItem = memo(function OutlineItem({
     parentId: string | null;
 }) {
     const actions = useEditorActions();
-    const { selectedId, issueNodeIds } = useEditorSelection();
-    const selected = selectedId === node.id;
+    const { selected: selectedIds, anchor, issueNodeIds } = useEditorSelection();
+    const selected = selectedIds.has(node.id);
     const column = parentColumns > 1 ? (node.column ?? null) : null;
     const name = nodeDisplayName(node);
     const drag = useEditorDragContext();
@@ -42,7 +42,8 @@ const OutlineItem = memo(function OutlineItem({
             <div
                 data-outline-row={node.id}
                 data-node-type={node.type}
-                aria-current={selected ? 'true' : undefined}
+                aria-current={selected && anchor === node.id ? 'true' : undefined}
+                data-anchor={selected && anchor === node.id ? '' : undefined}
                 className={clsx(
                     'flex items-center gap-1 rounded pr-1 text-sm',
                     selected
@@ -63,6 +64,7 @@ const OutlineItem = memo(function OutlineItem({
                 </button>
                 <button
                     type="button"
+                    aria-pressed={selected}
                     onClick={() => actions.select(node.id, 'outline')}
                     className="flex min-w-0 flex-1 items-baseline gap-2 py-1 text-left"
                 >

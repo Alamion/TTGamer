@@ -285,6 +285,53 @@ editor:
     dropColumnsButton: Remove columns
     kindChangeTitle: Change list kinds?
     kindChangeSaveWarning: '{title} is now shown as {kind}. Values documents stored under its earlier kind are not shown, but they stay stored.'
+    cmdCut: Cut
+    cmdCopy: Copy
+    cmdPaste: Paste
+    cmdPasteAtEnd: Paste at the end of the page
+    cmdColumnPrev: Move to the previous column
+    cmdColumnNext: Move to the next column
+    cmdAddToSelection: Add to selection
+    cmdRemoveFromSelection: Remove from selection
+    cmdToggleSelection: Add or remove an element
+    cmdRangeSelection: Select a range of elements
+    cmdClearSelection: Clear the selection
+    cmdShortcuts: Keyboard shortcuts
+    cmdGroupEdit: Edit
+    cmdGroupSelection: Selection
+    cmdGroupArrange: Arrange
+    cmdGroupHistory: History
+    shortcutKeys: Keys
+    shortcutAction: Action
+    keyClick: click
+    selectedCount:
+        message: '{count} element selected|{count} elements selected'
+        plural: true
+    openSelected: 'Open {name}'
+    selectedElements: Selected elements
+    noSharedSettings: These elements have no settings in common.
+    mixed: Mixed
+    pasted:
+        message: 'Pasted {count} element.|Pasted {count} elements.'
+        plural: true
+    cutDone:
+        message: 'Cut {count} element.|Cut {count} elements.'
+        plural: true
+    removedMany:
+        message: '{count} element removed. Press Ctrl+Z to undo.|{count} elements removed. Press Ctrl+Z to undo.'
+        plural: true
+    duplicatedMany:
+        message: '{count} element duplicated.|{count} elements duplicated.'
+        plural: true
+    movedMany:
+        message: '{count} element moved.|{count} elements moved.'
+        plural: true
+    dragCount:
+        message: '{count} element|{count} elements'
+        plural: true
+    clipboardUnreadable: These copied elements could not be read.
+    clipboardNewer: These elements were copied from a newer version of the editor.
+    elementMenu: 'Actions: {name}'
 tracker:
     source: Source
     sourceOwn: Own values

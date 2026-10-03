@@ -8,9 +8,12 @@ import type { TemplateNode } from '../../../types/template';
  * is stable for the dialog's lifetime (callbacks read the latest draft from a ref), so frames
  * never re-render because an action changed.
  */
+/** A plain click, Ctrl/⌘+click, or Shift+click (spec 023). */
+export type SelectMode = 'only' | 'toggle' | 'range';
+
 export interface EditorActions {
     /** `origin` decides which area scrolls to reveal the selection (the other one). */
-    select(nodeId: string | null, origin?: 'page' | 'outline'): void;
+    select(nodeId: string | null, origin?: 'page' | 'outline', mode?: SelectMode): void;
     /** Inserts a new node before `placement.index` (in `placement.column` when stacked). */
     insertAt(placement: OverlayPlacement, node: TemplateNode): void;
     /** Moves an existing node before `placement.index`; the column follows the placement. */
@@ -26,13 +29,16 @@ export function useEditorActions(): EditorActions {
 }
 
 export interface EditorSelection {
-    selectedId: string | null;
+    selected: ReadonlySet<string>;
+    /** The element a Shift range starts from and a paste goes after. */
+    anchor: string | null;
     /** Nodes with at least one draft issue (marked in the outline and on the page). */
     issueNodeIds: ReadonlySet<string>;
 }
 
 export const EditorSelectionContext = createContext<EditorSelection>({
-    selectedId: null,
+    selected: new Set(),
+    anchor: null,
     issueNodeIds: new Set(),
 });
 

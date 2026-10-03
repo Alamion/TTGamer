@@ -77,6 +77,7 @@ import {
     EditorActionsContext,
     type EditorSelection,
     EditorSelectionContext,
+    type SelectMode,
 } from './template-editor/editorActions';
 import { EditorHelp } from './template-editor/EditorHelp';
 import {
@@ -122,6 +123,12 @@ import {
 import { type MoveCommand, resolveMoveTarget } from './template-editor/moveTargets';
 import { OutlineTree } from './template-editor/OutlineTree';
 import { PaneDivider } from './template-editor/PaneDivider';
+import {
+    primaryId,
+    rangeSelection,
+    selectOnly,
+    toggleInSelection,
+} from './template-editor/selection';
 import type { SettingsGroupId } from './template-editor/settings/groupedSettings';
 import {
     IssueGroupCountsContext,
@@ -213,11 +220,10 @@ export function TemplateEditorDialog({
     const editingDefault =
         base.kind === 'edit' && isDefaultTemplateId(base.template.id, base.template.systemId);
 
-    const [history, setHistory] = useState<EditorHistory>(() =>
-        createHistory(initialDraft(base), null)
-    );
+    const [history, setHistory] = useState<EditorHistory>(() => createHistory(initialDraft(base)));
     const draft = history.present.draft;
-    const selectedId = history.present.selectedId;
+    const selection = history.present.selection;
+    const selectedId = primaryId(selection);
     const [mode, setMode] = useState<EditorMode>('edit');
     const [area, setArea] = useState<EditorArea>('page');
     const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false);
@@ -316,14 +322,27 @@ export function TemplateEditorDialog({
     );
 
     const selectNode = useCallback(
-        (nodeId: string | null, origin?: 'page' | 'outline') => {
-            commit(select(historyRef.current, nodeId));
-            if (!nodeId) return;
+        (nodeId: string | null, origin?: 'page' | 'outline', mode: SelectMode = 'only') => {
+            const current = historyRef.current;
+            const before = current.present.selection;
+            const next =
+                nodeId === null || mode === 'only'
+                    ? selectOnly(nodeId)
+                    : mode === 'toggle'
+                      ? toggleInSelection(before, nodeId)
+                      : rangeSelection(current.present.draft, before, nodeId);
+            commit(select(current, next));
+            if (mode !== 'only' && next.ids.length !== before.ids.length) {
+                setAnnouncement(
+                    plural(editor.selectedCount, next.ids.length, { count: next.ids.length })
+                );
+            }
+            if (!nodeId || !next.ids.includes(nodeId)) return;
             if (origin === 'page') reveal(`[data-outline-row="${nodeId}"]`, 'nearest');
             if (origin === 'outline')
                 reveal(`[data-editor-frame][data-node-id="${nodeId}"]`, 'center');
         },
-        [commit]
+        [commit, plural]
     );
 
     const removeSelected = useCallback(
@@ -336,7 +355,7 @@ export function TemplateEditorDialog({
                 position.siblings[position.index - 1]?.id ??
                 position.parentId;
             const label = labelIn(historyRef.current.present.draft, nodeId);
-            change((draftNow) => removeNode(draftNow, nodeId), { selectedId: next });
+            change((draftNow) => removeNode(draftNow, nodeId), { selection: selectOnly(next) });
             setAnnouncement(translate(editor.removed, { label }));
         },
         // labelOf reads the ref only.
@@ -356,7 +375,7 @@ export function TemplateEditorDialog({
                 },
                 { announce: translate(editor.duplicated, { label }) }
             );
-            if (copyId) commit(select(historyRef.current, copyId));
+            if (copyId) commit(select(historyRef.current, selectOnly(copyId)));
         },
 
         [applyOp, commit]
@@ -401,12 +420,12 @@ export function TemplateEditorDialog({
             select: selectNode,
             insertAt: (placement: OverlayPlacement, node: TemplateNode) =>
                 applyOp((current) => insertAtPlacement(current, placement, node), {
-                    selectedId: node.id,
+                    selection: selectOnly(node.id),
                     announce: translate(editor.inserted, { label: nodeDisplayName(node) }),
                 }),
             moveTo: (nodeId: string, placement: OverlayPlacement) =>
                 applyOp((current) => placeNode(current, nodeId, placement), {
-                    selectedId: nodeId,
+                    selection: selectOnly(nodeId),
                     announce: placement.column
                         ? translate(editor.movedColumn, {
                               label: labelIn(historyRef.current.present.draft, nodeId),
@@ -429,7 +448,7 @@ export function TemplateEditorDialog({
     const commitDrag = useCallback(
         (nodeId: string, next: EditorDraft) => {
             const label = labelIn(historyRef.current.present.draft, nodeId);
-            commit(applyChange(historyRef.current, next, { selectedId: nodeId }));
+            commit(applyChange(historyRef.current, next, { selection: selectOnly(nodeId) }));
             setSaveIssues([]);
             const column = findNode(next, nodeId)?.column;
             setAnnouncement(
@@ -516,13 +535,13 @@ export function TemplateEditorDialog({
                 } else switchKind(nodeId, kind);
             },
         }),
-        [applyOp, change, removeSelected, switchKind]
+        [applyOp, change, removeSelected, switchKind, setPendingKind]
     );
 
     const undoChange = useCallback(() => commit(undo(historyRef.current)), [commit]);
     const redoChange = useCallback(() => commit(redo(historyRef.current)), [commit]);
     const onSelection = useCallback((run: (nodeId: string) => void) => {
-        const nodeId = historyRef.current.present.selectedId;
+        const nodeId = primaryId(historyRef.current.present.selection);
         if (nodeId) run(nodeId);
     }, []);
     const shortcutHandlers = useMemo<EditorShortcutHandlers>(() => {
@@ -625,12 +644,15 @@ export function TemplateEditorDialog({
         .map(({ nodeId }) => nodeId)
         .filter(Boolean)
         .join('|');
-    const selection = useMemo<EditorSelection>(
+    const selectedKey = selection.ids.join('|');
+    const selectionAnchor = selection.anchor;
+    const selectionContext = useMemo<EditorSelection>(
         () => ({
-            selectedId,
+            selected: new Set(selectedKey ? selectedKey.split('|') : []),
+            anchor: selectionAnchor,
             issueNodeIds: new Set(issueNodeKey ? issueNodeKey.split('|') : []),
         }),
-        [selectedId, issueNodeKey]
+        [selectedKey, selectionAnchor, issueNodeKey]
     );
 
     const saveUserTemplate = (template: CustomTemplate, plan: RetargetPlan) => {
@@ -982,7 +1004,9 @@ export function TemplateEditorDialog({
                                     <IssueGroupCountsContext.Provider value={issueGroupCounts}>
                                         <EditorFillTargetsContext.Provider value={fillTargets}>
                                             <EditorActionsContext.Provider value={actions}>
-                                                <EditorSelectionContext.Provider value={selection}>
+                                                <EditorSelectionContext.Provider
+                                                    value={selectionContext}
+                                                >
                                                     {mode === 'preview' ? (
                                                         <div className="min-h-0 flex-1 overflow-y-auto bg-bgBase">
                                                             <EditorPreview draft={draft} />

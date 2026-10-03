@@ -3131,6 +3131,60 @@
     "ttgamer.ui.sheet.templates.editor.circularDependency": {
         "message": "Circular dependency detected: {id}"
     },
+    "ttgamer.ui.sheet.templates.editor.clipboardNewer": {
+        "message": "These elements were copied from a newer version of the editor."
+    },
+    "ttgamer.ui.sheet.templates.editor.clipboardUnreadable": {
+        "message": "These copied elements could not be read."
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdAddToSelection": {
+        "message": "Add to selection"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdClearSelection": {
+        "message": "Clear the selection"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdColumnNext": {
+        "message": "Move to the next column"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdColumnPrev": {
+        "message": "Move to the previous column"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdCopy": {
+        "message": "Copy"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdCut": {
+        "message": "Cut"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdGroupArrange": {
+        "message": "Arrange"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdGroupEdit": {
+        "message": "Edit"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdGroupHistory": {
+        "message": "History"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdGroupSelection": {
+        "message": "Selection"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdPaste": {
+        "message": "Paste"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdPasteAtEnd": {
+        "message": "Paste at the end of the page"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdRangeSelection": {
+        "message": "Select a range of elements"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdRemoveFromSelection": {
+        "message": "Remove from selection"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdShortcuts": {
+        "message": "Keyboard shortcuts"
+    },
+    "ttgamer.ui.sheet.templates.editor.cmdToggleSelection": {
+        "message": "Add or remove an element"
+    },
     "ttgamer.ui.sheet.templates.editor.collapse": {
         "message": "Collapse section"
     },
@@ -3179,6 +3233,9 @@
     "ttgamer.ui.sheet.templates.editor.currentAtLeast": {
         "message": "Current at least"
     },
+    "ttgamer.ui.sheet.templates.editor.cutDone": {
+        "message": "Cut {count} element.|Cut {count} elements."
+    },
     "ttgamer.ui.sheet.templates.editor.depthMessage": {
         "message": "Nesting limit reached — {limit} levels maximum."
     },
@@ -3203,6 +3260,9 @@
     "ttgamer.ui.sheet.templates.editor.docsLink": {
         "message": "Documentation link (optional): /docs/… or https://…"
     },
+    "ttgamer.ui.sheet.templates.editor.dragCount": {
+        "message": "{count} element|{count} elements"
+    },
     "ttgamer.ui.sheet.templates.editor.dropColumnsButton": {
         "message": "Remove columns"
     },
@@ -3218,6 +3278,9 @@
     "ttgamer.ui.sheet.templates.editor.duplicated": {
         "message": "{label} copied."
     },
+    "ttgamer.ui.sheet.templates.editor.duplicatedMany": {
+        "message": "{count} element duplicated.|{count} elements duplicated."
+    },
     "ttgamer.ui.sheet.templates.editor.duplicateId": {
         "message": "Duplicate identifier \"{id}\" — identifiers must be unique within their scope."
     },
@@ -3229,6 +3292,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.elementList": {
         "message": "List"
+    },
+    "ttgamer.ui.sheet.templates.editor.elementMenu": {
+        "message": "Actions: {name}"
     },
     "ttgamer.ui.sheet.templates.editor.emptyColumn": {
         "message": "Column {column} is empty — drop an element here or insert one."
@@ -3377,6 +3443,9 @@
     "ttgamer.ui.sheet.templates.editor.issueTrackerNameEmpty": {
         "message": "A mark, level, or column has no name."
     },
+    "ttgamer.ui.sheet.templates.editor.keyClick": {
+        "message": "click"
+    },
     "ttgamer.ui.sheet.templates.editor.kind": {
         "message": "Kind"
     },
@@ -3518,6 +3587,9 @@
     "ttgamer.ui.sheet.templates.editor.minRows": {
         "message": "Min rows"
     },
+    "ttgamer.ui.sheet.templates.editor.mixed": {
+        "message": "Mixed"
+    },
     "ttgamer.ui.sheet.templates.editor.modeEdit": {
         "message": "Edit"
     },
@@ -3532,6 +3604,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.movedColumn": {
         "message": "{label} moved to column {column}."
+    },
+    "ttgamer.ui.sheet.templates.editor.movedMany": {
+        "message": "{count} element moved.|{count} elements moved."
     },
     "ttgamer.ui.sheet.templates.editor.moveDown": {
         "message": "Move down"
@@ -3572,6 +3647,9 @@
     "ttgamer.ui.sheet.templates.editor.noSampleDocument": {
         "message": "This template's document type is not available, so the page cannot be shown."
     },
+    "ttgamer.ui.sheet.templates.editor.noSharedSettings": {
+        "message": "These elements have no settings in common."
+    },
     "ttgamer.ui.sheet.templates.editor.numberMax": {
         "message": "Max"
     },
@@ -3580,6 +3658,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.numberStep": {
         "message": "Step"
+    },
+    "ttgamer.ui.sheet.templates.editor.openSelected": {
+        "message": "Open {name}"
     },
     "ttgamer.ui.sheet.templates.editor.optionLabel": {
         "message": "Option label"
@@ -3616,6 +3697,9 @@
     },
     "ttgamer.ui.sheet.templates.editor.partMax": {
         "message": "Maximum"
+    },
+    "ttgamer.ui.sheet.templates.editor.pasted": {
+        "message": "Pasted {count} element.|Pasted {count} elements."
     },
     "ttgamer.ui.sheet.templates.editor.placeholderText": {
         "message": "Placeholder text (optional)"
@@ -3710,6 +3794,9 @@
     "ttgamer.ui.sheet.templates.editor.removed": {
         "message": "{label} removed. Press Ctrl+Z to undo."
     },
+    "ttgamer.ui.sheet.templates.editor.removedMany": {
+        "message": "{count} element removed. Press Ctrl+Z to undo.|{count} elements removed. Press Ctrl+Z to undo."
+    },
     "ttgamer.ui.sheet.templates.editor.resizeOutline": {
         "message": "Resize outline"
     },
@@ -3740,8 +3827,20 @@
     "ttgamer.ui.sheet.templates.editor.sectionTitle": {
         "message": "Section title"
     },
+    "ttgamer.ui.sheet.templates.editor.selectedCount": {
+        "message": "{count} element selected|{count} elements selected"
+    },
+    "ttgamer.ui.sheet.templates.editor.selectedElements": {
+        "message": "Selected elements"
+    },
     "ttgamer.ui.sheet.templates.editor.selectPrompt": {
         "message": "Select an element on the page or in the outline to change its settings."
+    },
+    "ttgamer.ui.sheet.templates.editor.shortcutAction": {
+        "message": "Action"
+    },
+    "ttgamer.ui.sheet.templates.editor.shortcutKeys": {
+        "message": "Keys"
     },
     "ttgamer.ui.sheet.templates.editor.shortcutsHint": {
         "message": "Keys: Alt+↑/↓ move · Alt+←/→ out of or into a group · Alt+Shift+←/→ column · Ctrl+D duplicate · Delete remove · Ctrl+Z undo · Ctrl+Shift+Z redo"

@@ -285,6 +285,53 @@ editor:
     dropColumnsButton: Убрать колонки
     kindChangeTitle: Сменить вид списков?
     kindChangeSaveWarning: '{title} теперь показывается как «{kind}». Значения, сохранённые в документах под прежним видом, не показываются, но остаются сохранёнными.'
+    cmdCut: Вырезать
+    cmdCopy: Копировать
+    cmdPaste: Вставить
+    cmdPasteAtEnd: Вставить в конец страницы
+    cmdColumnPrev: В предыдущую колонку
+    cmdColumnNext: В следующую колонку
+    cmdAddToSelection: Добавить к выбору
+    cmdRemoveFromSelection: Убрать из выбора
+    cmdToggleSelection: Добавить элемент к выбору или убрать
+    cmdRangeSelection: Выбрать элементы подряд
+    cmdClearSelection: Снять выбор
+    cmdShortcuts: Клавиши редактора
+    cmdGroupEdit: Правка
+    cmdGroupSelection: Выбор
+    cmdGroupArrange: Расстановка
+    cmdGroupHistory: История
+    shortcutKeys: Клавиши
+    shortcutAction: Действие
+    keyClick: клик
+    selectedCount:
+        message: 'Выбран {count} элемент|Выбрано {count} элемента|Выбрано {count} элементов'
+        plural: true
+    openSelected: 'Открыть {name}'
+    selectedElements: Выбранные элементы
+    noSharedSettings: У этих элементов нет общих настроек.
+    mixed: Разные значения
+    pasted:
+        message: 'Вставлен {count} элемент.|Вставлено {count} элемента.|Вставлено {count} элементов.'
+        plural: true
+    cutDone:
+        message: 'Вырезан {count} элемент.|Вырезано {count} элемента.|Вырезано {count} элементов.'
+        plural: true
+    removedMany:
+        message: 'Удалён {count} элемент. Ctrl+Z отменит.|Удалено {count} элемента. Ctrl+Z отменит.|Удалено {count} элементов. Ctrl+Z отменит.'
+        plural: true
+    duplicatedMany:
+        message: 'Продублирован {count} элемент.|Продублировано {count} элемента.|Продублировано {count} элементов.'
+        plural: true
+    movedMany:
+        message: 'Перемещён {count} элемент.|Перемещено {count} элемента.|Перемещено {count} элементов.'
+        plural: true
+    dragCount:
+        message: '{count} элемент|{count} элемента|{count} элементов'
+        plural: true
+    clipboardUnreadable: Скопированные элементы не удалось прочитать.
+    clipboardNewer: Эти элементы скопированы в более новой версии редактора.
+    elementMenu: 'Действия: {name}'
 tracker:
     source: Источник
     sourceOwn: Свои значения

@@ -1,8 +1,9 @@
 import type { EditorDraft } from './draft';
+import { type EditorSelectionState, EMPTY_SELECTION, sameSelection } from './selection';
 
 export interface EditorSnapshot {
     draft: EditorDraft;
-    selectedId: string | null;
+    selection: EditorSelectionState;
 }
 
 export interface EditorHistory {
@@ -17,14 +18,17 @@ export interface DraftChangeMeta {
     /** `<nodeId>:<property>` — consecutive edits of one property become one undo step. */
     coalesceKey?: string;
     /** Selection to record with the new state; defaults to the current selection. */
-    selectedId?: string | null;
+    selection?: EditorSelectionState;
 }
 
 export const HISTORY_LIMIT = 100;
 export const COALESCE_WINDOW_MS = 800;
 
-export function createHistory(draft: EditorDraft, selectedId: string | null = null): EditorHistory {
-    return { past: [], present: { draft, selectedId }, future: [] };
+export function createHistory(
+    draft: EditorDraft,
+    selection: EditorSelectionState = EMPTY_SELECTION
+): EditorHistory {
+    return { past: [], present: { draft, selection }, future: [] };
 }
 
 /**
@@ -37,11 +41,11 @@ export function applyChange(
     meta: DraftChangeMeta = {},
     now: number = Date.now()
 ): EditorHistory {
-    const selectedId = meta.selectedId === undefined ? history.present.selectedId : meta.selectedId;
-    if (draft === history.present.draft && selectedId === history.present.selectedId) {
+    const selection = meta.selection ?? history.present.selection;
+    if (draft === history.present.draft && sameSelection(selection, history.present.selection)) {
         return history;
     }
-    const next: EditorSnapshot = { draft, selectedId };
+    const next: EditorSnapshot = { draft, selection };
     const coalesce =
         meta.coalesceKey !== undefined &&
         history.lastCoalesce?.key === meta.coalesceKey &&
@@ -54,9 +58,9 @@ export function applyChange(
 }
 
 /** Changes the selection without adding an undo step. */
-export function select(history: EditorHistory, selectedId: string | null): EditorHistory {
-    if (history.present.selectedId === selectedId) return history;
-    return { ...history, present: { ...history.present, selectedId }, lastCoalesce: undefined };
+export function select(history: EditorHistory, selection: EditorSelectionState): EditorHistory {
+    if (sameSelection(history.present.selection, selection)) return history;
+    return { ...history, present: { ...history.present, selection }, lastCoalesce: undefined };
 }
 
 export function canUndo(history: EditorHistory): boolean {

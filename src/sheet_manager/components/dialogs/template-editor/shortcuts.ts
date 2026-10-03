@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 
+import { EDITOR_COMMANDS, isApplePlatform } from './commands';
+
 export type EditorShortcut =
     | 'undo'
     | 'redo'
@@ -14,42 +16,46 @@ export type EditorShortcut =
 
 type ShortcutKeyEvent = Pick<KeyboardEvent, 'code' | 'ctrlKey' | 'metaKey' | 'shiftKey' | 'altKey'>;
 
+const SHORTCUT_IDS = new Set<string>([
+    'undo',
+    'redo',
+    'duplicate',
+    'delete',
+    'move-up',
+    'move-down',
+    'move-out',
+    'move-in',
+    'column-prev',
+    'column-next',
+]);
+
 /**
  * Matches physical keys (`KeyboardEvent.code`), never `key`: with a Cyrillic layout Ctrl+Z
  * produces «я», and shortcuts must not depend on the active layout. While the author types in
  * a field, text-editing keys (undo/redo/delete, word-jumping Alt+arrows) belong to the field.
+ * The bindings come from the command registry (`commands.ts`).
  */
 export function matchEditorShortcut(
     event: ShortcutKeyEvent,
-    { typing }: { typing: boolean }
+    { typing, apple = false }: { typing: boolean; apple?: boolean }
 ): EditorShortcut | null {
     const mod = event.ctrlKey || event.metaKey;
-    if (mod && !event.altKey) {
-        if (event.code === 'KeyZ') return typing ? null : event.shiftKey ? 'redo' : 'undo';
-        if (event.code === 'KeyY') return typing ? null : 'redo';
-        if (event.code === 'KeyD' && !event.shiftKey) return 'duplicate';
-        return null;
+    for (const command of EDITOR_COMMANDS) {
+        if (!SHORTCUT_IDS.has(command.id) || (typing && !command.whileTyping)) continue;
+        const hit = command.keys?.some(
+            (binding) =>
+                (binding.apple === undefined || binding.apple === apple) &&
+                binding.code === event.code &&
+                Boolean(binding.mod) === mod &&
+                Boolean(binding.shift) === event.shiftKey &&
+                Boolean(binding.alt) === event.altKey
+        );
+        if (hit) return command.id as EditorShortcut;
     }
-    if (typing) return null;
-    if (event.altKey && !mod) {
-        switch (event.code) {
-            case 'ArrowUp':
-                return event.shiftKey ? null : 'move-up';
-            case 'ArrowDown':
-                return event.shiftKey ? null : 'move-down';
-            case 'ArrowLeft':
-                return event.shiftKey ? 'column-prev' : 'move-out';
-            case 'ArrowRight':
-                return event.shiftKey ? 'column-next' : 'move-in';
-            default:
-                return null;
-        }
-    }
-    if (!event.altKey && !event.shiftKey && event.code === 'Delete') return 'delete';
     return null;
 }
 
-function isTypingTarget(target: EventTarget | null): boolean {
+export function isTypingTarget(target: EventTarget | null): boolean {
     if (!(target instanceof Element)) return false;
     return target.closest('input, textarea, select, [contenteditable="true"]') !== null;
 }
@@ -73,7 +79,10 @@ export function useEditorShortcuts(
     useEffect(() => {
         if (!element) return;
         const onKeyDown = (event: KeyboardEvent) => {
-            const shortcut = matchEditorShortcut(event, { typing: isTypingTarget(event.target) });
+            const shortcut = matchEditorShortcut(event, {
+                typing: isTypingTarget(event.target),
+                apple: isApplePlatform(),
+            });
             const handler = shortcut ? handlersRef.current[shortcut] : undefined;
             if (!handler) return;
             event.preventDefault();

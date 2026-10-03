@@ -30,12 +30,12 @@ TESTS = `tests/sheet_manager`. Every task that adds UI text adds it to
 
 ## Phase 1: Setup
 
-- [ ] T001 Add `@radix-ui/react-context-menu` (2.x, the version line of the installed Radix
+- [x] T001 Add `@radix-ui/react-context-menu` (2.x, the version line of the installed Radix
       packages) to `package.json` dependencies with `yarn add`; confirm `yarn typecheck` and
       `yarn audit:dead-code` stay clean (the package is used from US4; add a temporary
       `ignoreDependencies` entry in the knip config only if knip fails before US4, and remove it in
       T036).
-- [ ] T002 Add the strings of the whole feature to `translations/source/{en,ru}/ui/sheet/templates.yaml`
+- [x] T002 Add the strings of the whole feature to `translations/source/{en,ru}/ui/sheet/templates.yaml`
       (group `editor.*`), English per [contracts/editor-ui.md](./contracts/editor-ui.md):
     - commands `cmdCut` "Cut", `cmdCopy` "Copy", `cmdPaste` "Paste", `cmdPasteAtEnd` "Paste at the
       end of the page", `cmdDuplicate` "Duplicate", `cmdRemove` "Remove", `cmdMoveUp` "Move up",
@@ -59,39 +59,39 @@ TESTS = `tests/sheet_manager`. Every task that adds UI text adds it to
 
 ## Phase 2: Foundational (blocks all stories)
 
-- [ ] T003 [P] Create `TE/selection.ts` per data-model "Editor selection": `EditorSelectionState`,
+- [x] T003 [P] Create `TE/selection.ts` per data-model "Editor selection": `EditorSelectionState`,
       `EMPTY_SELECTION`, `selectOnly(id)`, `toggleInSelection(state, id)`,
       `rangeSelection(draft, state, id)` (siblings of the anchor, else `[anchor, id]`),
       `normalizeSelection(draft, ids)` (existing ids, ancestors win, page order via a depth-first
       walk of `draft.children`), `primaryId(state)`.
-- [ ] T004 [P] Unit tests `TESTS/editor-selection.test.ts`: toggle adds/removes and moves the
+- [x] T004 [P] Unit tests `TESTS/editor-selection.test.ts`: toggle adds/removes and moves the
       anchor; range within siblings in both directions; range across parents gives two; normalize
       drops missing ids and descendants of selected groups and sorts by page order; `primaryId` is
       null for 0 or 2+.
-- [ ] T005 Change `TE/history.ts`: `EditorSnapshot.selection: EditorSelectionState` replaces
+- [x] T005 Change `TE/history.ts`: `EditorSnapshot.selection: EditorSelectionState` replaces
       `selectedId`; `DraftChangeMeta.selection?` replaces `selectedId?`; `select(history, selection)`
       keeps "no undo step"; `createHistory(draft)` starts empty. Update every reader in
       Dialog (`selectedId` → `primaryId(selection)` for the settings panel, issue focus, reveal;
       single-id metas → `selectOnly(id)`) and `TESTS/template-editor-history.test.ts`. No behavior
       change: the full editor suites pass.
-- [ ] T006 Change `TE/editorActions.ts`: `EditorSelection` becomes `{ selected, anchor, issueNodeIds }`
+- [x] T006 Change `TE/editorActions.ts`: `EditorSelection` becomes `{ selected, anchor, issueNodeIds }`
       (a `ReadonlySet<string>`, the anchor id or null); `EditorActions.select` gets a third
       argument `mode` (`only`, `toggle`, or `range`). Update `TE/EditorNodeFrame.tsx` (`data-selected` from the set,
       `data-anchor`), `TE/OutlineTree.tsx` (`aria-pressed` on every selected row's select button,
       `aria-current` on the anchor), and the Dialog's memoized selection value (stable `Set` keyed by
       the ids string, research R8).
-- [ ] T007 [P] Add multi-node operations to `TE/draft.ts` per data-model: `removeNodes`,
+- [x] T007 [P] Add multi-node operations to `TE/draft.ts` per data-model: `removeNodes`,
       `duplicateNodes` (reusing `duplicateNode`), `insertNodesAt(draft, placement, nodes)` (limits
       checked once for the whole set), `placeNodes(draft, ids, placement)` (refuses placements inside
       the set; index adjusted for removed earlier siblings; column via `materializeColumns`), and
       `moveEachByCommand(draft, ids, command)` (research R7: edge-inwards per parent for up/down,
       all-or-nothing for out/in/column). Each returns `DraftOpResult` plus the new selection ids.
-- [ ] T008 [P] Unit tests `TESTS/editor-multi-ops.test.ts` for T007: removal picks the next
+- [x] T008 [P] Unit tests `TESTS/editor-multi-ops.test.ts` for T007: removal picks the next
       selection; duplicates follow each original; insert as a block keeps order and respects
       `nodesPerTemplate`/`maxDepth`; place refuses inside the set and lands in page order from
       before/after the source; Alt+↓ on two adjacent siblings moves the block, on the first of two
       groups moves both, at the edge leaves that one (clarification Q2), out/in all-or-nothing.
-- [ ] T009 Create `TE/commands.ts` (research R5, data-model "Editor command"): the registry with
+- [x] T009 Create `TE/commands.ts` (research R5, data-model "Editor command"): the registry with
       today's commands only (undo, redo, duplicate, delete, move-up/down/out/in, column-prev/next),
       groups, labels from T002, `formatKeys(command, platform)` and `isApplePlatform()`; rewrite
       `matchEditorShortcut` in `TE/shortcuts.ts` to iterate the registry with identical results.
@@ -100,7 +100,7 @@ TESTS = `tests/sheet_manager`. Every task that adds UI text adds it to
       when not typing (contract). `TESTS/template-editor-shortcuts.test.ts` passes unchanged; add a
       test that every registry key combination matches its own command and no two commands share
       keys.
-- [ ] T010 [P] Add diagnostics code `template-clipboard-invalid` to
+- [x] T010 [P] Add diagnostics code `template-clipboard-invalid` to
       `src/sheet_manager/diagnostics.ts` (details `{ stage: 'version' | 'schema'; error }`).
 
 **Checkpoint**: the editor behaves as before with the new selection state and command registry;
