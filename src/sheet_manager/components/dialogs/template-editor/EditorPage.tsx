@@ -107,7 +107,7 @@ export function EditorPage({ draft }: { draft: EditorDraft }) {
         const root = rootRef.current;
         if (!root) return;
         const onClick = (event: MouseEvent) => {
-            if (isReleaseClick()) return;
+            if (isReleaseClick() || root.hasAttribute('data-revealing')) return;
             const target = event.target as Element;
             const chip = target.closest('[data-editor-chip]');
             if (!chip && target.closest(VALUE_CONTROLS)) return;

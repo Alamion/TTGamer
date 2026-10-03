@@ -3,7 +3,7 @@
 import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -202,6 +202,35 @@ describe('copy and paste in the editor (spec 023, US1)', () => {
         fireClipboard('paste', outlineRow('grace'));
         act(() => vi.runAllTimers());
         expect(childIds('stats')).toHaveLength(4);
+    });
+
+    it('opens a folded section to show what was pasted into it', async () => {
+        const folded = CustomTemplateSchema.parse({
+            ...template('folded-kit'),
+            children: [
+                { id: 'loose', type: 'number', label: 'Loose' },
+                {
+                    id: 'stats',
+                    type: 'section',
+                    title: 'Stats',
+                    defaultCollapsed: true,
+                    children: [{ id: 'might', type: 'number', label: 'Might' }],
+                },
+            ],
+        });
+        openEditor(folded);
+        selectInOutline('loose');
+        const copied = fireClipboard('copy', outlineRow('loose'));
+        selectInOutline('stats');
+        fireClipboard('paste', outlineRow('stats'), copied.text);
+        const pasted = childIds('stats')[1]!;
+        await waitFor(() =>
+            expect(
+                document.querySelector(`[data-editor-frame][data-node-id="${pasted}"]`)
+            ).not.toBeNull()
+        );
+        expect(document.querySelectorAll('[data-palette-option]')).toHaveLength(0);
+        expect(outlineRow(pasted).getAttribute('aria-current')).toBe('true');
     });
 
     it('keeps the template valid after copy, cut, and paste (SC-006)', () => {

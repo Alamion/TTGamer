@@ -137,6 +137,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                     <button
                         type="button"
                         data-drag-handle=""
+                        aria-haspopup="menu"
                         onPointerDown={(event) => {
                             event.stopPropagation();
                             drag?.start(node.id, event, 'page');

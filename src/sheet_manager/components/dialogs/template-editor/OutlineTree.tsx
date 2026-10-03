@@ -65,6 +65,7 @@ const OutlineItem = memo(function OutlineItem({
                 <button
                     type="button"
                     aria-pressed={selected}
+                    aria-haspopup="menu"
                     onClick={(event) =>
                         actions.select(
                             node.id,

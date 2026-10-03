@@ -47,7 +47,13 @@ import {
     rememberedCopy,
     serializeCopied,
 } from './template-editor/clipboard';
-import { clipboardKey } from './template-editor/commands';
+import {
+    clipboardKey,
+    commandById,
+    type EditorCommandId,
+    formatKeys,
+    isApplePlatform,
+} from './template-editor/commands';
 import {
     addOption,
     addTableColumn,
@@ -88,6 +94,12 @@ import {
     EditorSelectionContext,
     type SelectMode,
 } from './template-editor/editorActions';
+import {
+    EditorContextMenu,
+    EditorMenuContext,
+    type EditorMenuSource,
+    type MenuCommand,
+} from './template-editor/EditorContextMenu';
 import { EditorHelp } from './template-editor/EditorHelp';
 import {
     EditorCoordinatesContext,
@@ -679,12 +691,12 @@ export function TemplateEditorDialog({
         ) {
             chain.unshift(parent);
         }
-        const later = (run: () => void) =>
-            typeof window.requestAnimationFrame === 'function'
-                ? window.requestAnimationFrame(run)
-                : setTimeout(run, 0);
+        // The page renders the draft deferred: give it a moment before each level.
+        const later = (run: () => void) => setTimeout(run, 16);
+        const shown = () =>
+            document.querySelector(`[data-editor-frame][data-node-id="${nodeId}"]`) !== null;
         const step = (index: number) => {
-            if (index >= chain.length) {
+            if (index >= chain.length || shown()) {
                 reveal(`[data-editor-frame][data-node-id="${nodeId}"]`, 'center');
                 reveal(`[data-outline-row="${nodeId}"]`, 'nearest');
                 return;
@@ -692,8 +704,17 @@ export function TemplateEditorDialog({
             const frame = document.querySelector(
                 `[data-editor-frame][data-node-id="${chain[index]}"]`
             );
-            const toggle = frame?.querySelector<HTMLElement>('button[aria-expanded="false"]');
-            if (toggle && toggle.closest('[data-editor-frame]') === frame) toggle.click();
+            // A folded block's own header toggle, never a popup trigger (the "+" insert menus).
+            const toggle = frame?.querySelector<HTMLElement>(
+                'button[aria-expanded="false"]:not([aria-haspopup])'
+            );
+            if (toggle && toggle.closest('[data-editor-frame]') === frame) {
+                // Opening the block must not select it: the page skips clicks while revealing.
+                const page = toggle.closest('[data-editor-page]');
+                page?.setAttribute('data-revealing', '');
+                toggle.click();
+                page?.removeAttribute('data-revealing');
+            }
             later(() => step(index + 1));
         };
         later(() => step(0));
@@ -770,6 +791,127 @@ export function TemplateEditorDialog({
         },
         [commit, describeFailure, plural, revealNode, t]
     );
+
+    const draggingRef = useRef(false);
+    useEffect(() => {
+        draggingRef.current = dragView !== null;
+    }, [dragView]);
+
+    /** The element menu's entries for the current selection (spec 023, US4). */
+    const menuSource = useMemo<EditorMenuSource>(() => {
+        const apple = isApplePlatform();
+        const keysOf = (id: EditorCommandId) =>
+            formatKeys(commandById(id), { apple, clickWord: t(editor.keyClick) }).join(', ');
+        const entry = (
+            id: EditorCommandId,
+            group: MenuCommand['group'],
+            label: string,
+            disabled: boolean,
+            run: () => void
+        ): MenuCommand => ({ id, group, label, keys: keysOf(id) || undefined, disabled, run });
+        const canMove = (command: MoveCommand) => {
+            const { draft: current, selection: chosen } = historyRef.current.present;
+            if (chosen.ids.length === 0) return false;
+            const result = moveEachByCommand(current, chosen.ids, command);
+            return result.ok && (result.moved ?? 0) > 0;
+        };
+        return {
+            prepare: (targetId, touch) => {
+                const { selection: chosen } = historyRef.current.present;
+                if (targetId === null) commit(select(historyRef.current, EMPTY_SELECTION));
+                else if (!chosen.ids.includes(targetId) && !(touch && chosen.ids.length > 0)) {
+                    commit(select(historyRef.current, selectOnly(targetId)));
+                }
+            },
+            dragging: () => draggingRef.current,
+            items: (targetId, touch) => {
+                const hasCopy = rememberedCopy() !== undefined;
+                const paste = () => clipboardAction('paste', null);
+                if (targetId === null) {
+                    return [entry('paste', 'edit', t(editor.cmdPasteAtEnd), !hasCopy, paste)];
+                }
+                const { selection: chosen } = historyRef.current.present;
+                const inSelection = chosen.ids.includes(targetId);
+                // A touch menu on an element outside the kept selection acts on that element.
+                const focused = (run: () => void) =>
+                    inSelection
+                        ? run
+                        : () => {
+                              commit(select(historyRef.current, selectOnly(targetId)));
+                              run();
+                          };
+                const canMoveHere = (command: MoveCommand) => {
+                    if (inSelection) return canMove(command);
+                    const result = moveEachByCommand(
+                        historyRef.current.present.draft,
+                        [targetId],
+                        command
+                    );
+                    return result.ok && (result.moved ?? 0) > 0;
+                };
+                const move = (command: MoveCommand, label: string) =>
+                    entry(
+                        command,
+                        'arrange',
+                        label,
+                        !canMoveHere(command),
+                        focused(() => moveSelection(command))
+                    );
+                return [
+                    entry(
+                        'cut',
+                        'edit',
+                        t(editor.cmdCut),
+                        false,
+                        focused(() => clipboardAction('cut', null))
+                    ),
+                    entry(
+                        'copy',
+                        'edit',
+                        t(editor.cmdCopy),
+                        false,
+                        focused(() => clipboardAction('copy', null))
+                    ),
+                    entry('paste', 'edit', t(editor.cmdPaste), !hasCopy, focused(paste)),
+                    entry(
+                        'duplicate',
+                        'edit',
+                        t(editor.duplicate),
+                        false,
+                        focused(duplicateSelection)
+                    ),
+                    ...(touch
+                        ? [
+                              entry(
+                                  'add-to-selection',
+                                  'selection',
+                                  t(
+                                      inSelection && chosen.ids.length > 1
+                                          ? editor.cmdRemoveFromSelection
+                                          : editor.cmdAddToSelection
+                                  ),
+                                  false,
+                                  () => selectNode(targetId, undefined, 'toggle')
+                              ),
+                          ]
+                        : []),
+                    move('move-up', t(editor.moveUp)),
+                    move('move-down', t(editor.moveDown)),
+                    move('move-out', t(editor.moveOut)),
+                    move('move-in', t(editor.moveIn)),
+                    entry('delete', 'remove', t(editor.remove), false, focused(removeSelection)),
+                ];
+            },
+        };
+    }, [
+        clipboardAction,
+        commit,
+        duplicateSelection,
+        moveSelection,
+        removeSelection,
+        selectNode,
+        t,
+    ]);
 
     useEffect(() => {
         if (!contentElement || mode !== 'edit') return;
@@ -1271,166 +1413,202 @@ export function TemplateEditorDialog({
                                                 <EditorSelectionContext.Provider
                                                     value={selectionContext}
                                                 >
-                                                    {mode === 'preview' ? (
-                                                        <div className="min-h-0 flex-1 overflow-y-auto bg-bgBase">
-                                                            <EditorPreview draft={draft} />
-                                                        </div>
-                                                    ) : (
-                                                        <>
-                                                            <div
-                                                                role="tablist"
-                                                                aria-label={t(editor.areaTabs)}
-                                                                className="flex border-b border-border md:hidden"
-                                                            >
-                                                                {areas.map(({ id, label }) => (
-                                                                    <button
-                                                                        key={id}
-                                                                        type="button"
-                                                                        role="tab"
-                                                                        aria-selected={area === id}
-                                                                        onClick={() => setArea(id)}
+                                                    <EditorMenuContext.Provider value={menuSource}>
+                                                        {mode === 'preview' ? (
+                                                            <div className="min-h-0 flex-1 overflow-y-auto bg-bgBase">
+                                                                <EditorPreview draft={draft} />
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <div
+                                                                    role="tablist"
+                                                                    aria-label={t(editor.areaTabs)}
+                                                                    className="flex border-b border-border md:hidden"
+                                                                >
+                                                                    {areas.map(({ id, label }) => (
+                                                                        <button
+                                                                            key={id}
+                                                                            type="button"
+                                                                            role="tab"
+                                                                            aria-selected={
+                                                                                area === id
+                                                                            }
+                                                                            onClick={() =>
+                                                                                setArea(id)
+                                                                            }
+                                                                            className={clsx(
+                                                                                'flex-1 px-3 py-2 text-sm',
+                                                                                area === id
+                                                                                    ? 'border-b-2 border-primary font-medium text-textPrimary'
+                                                                                    : 'text-textSecondary'
+                                                                            )}
+                                                                        >
+                                                                            {label}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                                <div
+                                                                    ref={gridRef}
+                                                                    style={paneStyle}
+                                                                    className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[var(--outline)_6px_minmax(22.5rem,1fr)_6px_var(--settings)]"
+                                                                >
+                                                                    <section
+                                                                        aria-label={t(
+                                                                            editor.areaOutline
+                                                                        )}
+                                                                        data-editor-scroll="outline"
                                                                         className={clsx(
-                                                                            'flex-1 px-3 py-2 text-sm',
-                                                                            area === id
-                                                                                ? 'border-b-2 border-primary font-medium text-textPrimary'
-                                                                                : 'text-textSecondary'
+                                                                            paneClasses('outline'),
+                                                                            'p-2'
                                                                         )}
                                                                     >
-                                                                        {label}
-                                                                    </button>
-                                                                ))}
-                                                            </div>
-                                                            <div
-                                                                ref={gridRef}
-                                                                style={paneStyle}
-                                                                className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[var(--outline)_6px_minmax(22.5rem,1fr)_6px_var(--settings)]"
-                                                            >
-                                                                <section
-                                                                    aria-label={t(
-                                                                        editor.areaOutline
-                                                                    )}
-                                                                    data-editor-scroll="outline"
-                                                                    className={clsx(
-                                                                        paneClasses('outline'),
-                                                                        'p-2'
-                                                                    )}
-                                                                >
-                                                                    <h3 className="mb-1 hidden px-1 text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
-                                                                        {t(editor.areaOutline)}
-                                                                    </h3>
-                                                                    <OutlineTree
-                                                                        nodes={shownDraft.children}
+                                                                        <h3 className="mb-1 hidden px-1 text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
+                                                                            {t(editor.areaOutline)}
+                                                                        </h3>
+                                                                        <EditorContextMenu surface="outline">
+                                                                            <OutlineTree
+                                                                                nodes={
+                                                                                    shownDraft.children
+                                                                                }
+                                                                            />
+                                                                        </EditorContextMenu>
+                                                                    </section>
+                                                                    <PaneDivider
+                                                                        label={t(
+                                                                            editor.resizeOutline
+                                                                        )}
+                                                                        {...dividerProps('outline')}
                                                                     />
-                                                                </section>
-                                                                <PaneDivider
-                                                                    label={t(editor.resizeOutline)}
-                                                                    {...dividerProps('outline')}
-                                                                />
-                                                                <section
-                                                                    aria-label={t(editor.areaPage)}
-                                                                    data-editor-scroll="page"
-                                                                    className={clsx(
-                                                                        paneClasses('page'),
-                                                                        'bg-bgBase'
-                                                                    )}
-                                                                >
-                                                                    <EditorPage
-                                                                        draft={shownDraft}
+                                                                    <section
+                                                                        aria-label={t(
+                                                                            editor.areaPage
+                                                                        )}
+                                                                        data-editor-scroll="page"
+                                                                        className={clsx(
+                                                                            paneClasses('page'),
+                                                                            'bg-bgBase'
+                                                                        )}
+                                                                    >
+                                                                        <EditorContextMenu surface="page">
+                                                                            <EditorPage
+                                                                                draft={shownDraft}
+                                                                            />
+                                                                        </EditorContextMenu>
+                                                                    </section>
+                                                                    <PaneDivider
+                                                                        label={t(
+                                                                            editor.resizeSettings
+                                                                        )}
+                                                                        invert
+                                                                        {...dividerProps(
+                                                                            'settings'
+                                                                        )}
                                                                     />
-                                                                </section>
-                                                                <PaneDivider
-                                                                    label={t(editor.resizeSettings)}
-                                                                    invert
-                                                                    {...dividerProps('settings')}
-                                                                />
-                                                                <section
-                                                                    aria-label={t(
-                                                                        editor.areaSettings
-                                                                    )}
-                                                                    className={clsx(
-                                                                        paneClasses('settings'),
-                                                                        'space-y-4 p-3'
-                                                                    )}
-                                                                >
-                                                                    <h3 className="hidden text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
-                                                                        {t(editor.areaSettings)}
-                                                                    </h3>
-                                                                    {selectedNodes.length > 1 ? (
-                                                                        <MultiSettings
-                                                                            actions={{
-                                                                                onMoveUp: () =>
-                                                                                    moveSelection(
-                                                                                        'move-up'
-                                                                                    ),
-                                                                                onMoveDown: () =>
-                                                                                    moveSelection(
-                                                                                        'move-down'
-                                                                                    ),
-                                                                                onDuplicate:
-                                                                                    duplicateSelection,
-                                                                                onRemove:
-                                                                                    removeSelection,
-                                                                            }}
-                                                                            nodes={selectedNodes}
-                                                                            onShared={updateShared}
-                                                                            onOpen={(nodeId) =>
-                                                                                selectNode(
-                                                                                    nodeId,
-                                                                                    'outline'
-                                                                                )
-                                                                            }
-                                                                        />
-                                                                    ) : selectedNode ? (
-                                                                        <ElementSettings
-                                                                            key={selectedNode.id}
-                                                                            actions={{
-                                                                                onMoveUp: canMoveUp
-                                                                                    ? () =>
-                                                                                          moveByCommand(
-                                                                                              selectedNode.id,
-                                                                                              'move-up'
-                                                                                          )
-                                                                                    : undefined,
-                                                                                onMoveDown:
-                                                                                    canMoveDown
-                                                                                        ? () =>
-                                                                                              moveByCommand(
-                                                                                                  selectedNode.id,
-                                                                                                  'move-down'
-                                                                                              )
-                                                                                        : undefined,
-                                                                                onDuplicate: () =>
-                                                                                    duplicate(
-                                                                                        selectedNode.id
-                                                                                    ),
-                                                                                onRemove: () =>
-                                                                                    removeSelected(
-                                                                                        selectedNode.id
-                                                                                    ),
-                                                                            }}
-                                                                            callbacks={callbacks}
-                                                                            node={selectedNode}
-                                                                            parentColumns={parentColumnsOf(
-                                                                                draft,
-                                                                                selectedNode.id
+                                                                    <section
+                                                                        aria-label={t(
+                                                                            editor.areaSettings
+                                                                        )}
+                                                                        className={clsx(
+                                                                            paneClasses('settings'),
+                                                                            'space-y-4 p-3'
+                                                                        )}
+                                                                    >
+                                                                        <h3 className="hidden text-[11px] font-semibold uppercase tracking-wider text-textSecondary md:block">
+                                                                            {t(editor.areaSettings)}
+                                                                        </h3>
+                                                                        {selectedNodes.length >
+                                                                        1 ? (
+                                                                            <MultiSettings
+                                                                                actions={{
+                                                                                    onMoveUp: () =>
+                                                                                        moveSelection(
+                                                                                            'move-up'
+                                                                                        ),
+                                                                                    onMoveDown:
+                                                                                        () =>
+                                                                                            moveSelection(
+                                                                                                'move-down'
+                                                                                            ),
+                                                                                    onDuplicate:
+                                                                                        duplicateSelection,
+                                                                                    onRemove:
+                                                                                        removeSelection,
+                                                                                }}
+                                                                                nodes={
+                                                                                    selectedNodes
+                                                                                }
+                                                                                onShared={
+                                                                                    updateShared
+                                                                                }
+                                                                                onOpen={(nodeId) =>
+                                                                                    selectNode(
+                                                                                        nodeId,
+                                                                                        'outline'
+                                                                                    )
+                                                                                }
+                                                                            />
+                                                                        ) : selectedNode ? (
+                                                                            <ElementSettings
+                                                                                key={
+                                                                                    selectedNode.id
+                                                                                }
+                                                                                actions={{
+                                                                                    onMoveUp:
+                                                                                        canMoveUp
+                                                                                            ? () =>
+                                                                                                  moveByCommand(
+                                                                                                      selectedNode.id,
+                                                                                                      'move-up'
+                                                                                                  )
+                                                                                            : undefined,
+                                                                                    onMoveDown:
+                                                                                        canMoveDown
+                                                                                            ? () =>
+                                                                                                  moveByCommand(
+                                                                                                      selectedNode.id,
+                                                                                                      'move-down'
+                                                                                                  )
+                                                                                            : undefined,
+                                                                                    onDuplicate:
+                                                                                        () =>
+                                                                                            duplicate(
+                                                                                                selectedNode.id
+                                                                                            ),
+                                                                                    onRemove: () =>
+                                                                                        removeSelected(
+                                                                                            selectedNode.id
+                                                                                        ),
+                                                                                }}
+                                                                                callbacks={
+                                                                                    callbacks
+                                                                                }
+                                                                                node={selectedNode}
+                                                                                parentColumns={parentColumnsOf(
+                                                                                    draft,
+                                                                                    selectedNode.id
+                                                                                )}
+                                                                                pinnedSiblings={hasPinnedSiblings(
+                                                                                    draft,
+                                                                                    selectedNode.id
+                                                                                )}
+                                                                            />
+                                                                        ) : (
+                                                                            <p className="text-sm text-textSecondary">
+                                                                                {t(
+                                                                                    editor.selectPrompt
+                                                                                )}
+                                                                            </p>
+                                                                        )}
+                                                                        <p className="text-xs leading-relaxed text-textSecondary">
+                                                                            {t(
+                                                                                editor.shortcutsHint
                                                                             )}
-                                                                            pinnedSiblings={hasPinnedSiblings(
-                                                                                draft,
-                                                                                selectedNode.id
-                                                                            )}
-                                                                        />
-                                                                    ) : (
-                                                                        <p className="text-sm text-textSecondary">
-                                                                            {t(editor.selectPrompt)}
                                                                         </p>
-                                                                    )}
-                                                                    <p className="text-xs leading-relaxed text-textSecondary">
-                                                                        {t(editor.shortcutsHint)}
-                                                                    </p>
-                                                                </section>
-                                                            </div>
-                                                        </>
-                                                    )}
+                                                                    </section>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </EditorMenuContext.Provider>
                                                 </EditorSelectionContext.Provider>
                                             </EditorActionsContext.Provider>
                                         </EditorFillTargetsContext.Provider>

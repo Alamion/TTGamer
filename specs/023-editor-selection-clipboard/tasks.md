@@ -272,7 +272,7 @@ group, Paste: the copy is inside the group.
 
 ### Tests
 
-- [ ] T028 [P] [US4] `TESTS/editor-context-menu.test.tsx` (fire `contextmenu`; Radix needs
+- [x] T028 [P] [US4] `TESTS/editor-context-menu.test.tsx` (fire `contextmenu`; Radix needs
       `PointerEvent` and `DOMRect` polyfills from `TESTS/helpers/editor.ts`): right click on an
       unselected frame selects it, on a selected one keeps the multi-selection; items in contract
       order with shortcut text (non-Mac and a mocked Mac platform); Paste disabled before copy and
@@ -283,13 +283,13 @@ group, Paste: the copy is inside the group.
 
 ### Implementation
 
-- [ ] T029 [US4] Create `TE/EditorContextMenu.tsx`: a Radix `ContextMenu.Root` wrapping a surface
+- [x] T029 [US4] Create `TE/EditorContextMenu.tsx`: a Radix `ContextMenu.Root` wrapping a surface
       (`surface: 'page' | 'outline'`), a capture `onContextMenu` that resolves the target
       (`closest('[data-editor-frame]')` / `[data-outline-row]`), selects it if not selected,
       ignores events during a drag, and remembers whether the last pointer was touch; items built
       from the registry (`inMenu`, `touchOnly`), grouped with separators, disabled by `available`,
       shortcut text by `formatKeys`; focus returns to the target's grip or row on close.
-- [ ] T030 [US4] Add Add to selection / Remove from selection (`touchOnly`) to the registry and
+- [x] T030 [US4] Add Add to selection / Remove from selection (`touchOnly`) to the registry and
       wire both surfaces: wrap `TE/EditorPage.tsx`'s page area and `TE/OutlineTree.tsx`'s outline in
       `EditorContextMenu`; make outline rows and page grips reachable for Shift+F10 (focusable,
       `aria-haspopup="menu"`); menu Copy/Cut also call `navigator.clipboard.writeText` best effort.
