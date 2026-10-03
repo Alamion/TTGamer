@@ -222,5 +222,5 @@ full Star Wars sheet:
   sheet, best of two). Before the drag context was made stable, every frame re-rendered on a
   preview and it cost twice as much.
 
-Left for the maintainer's review: SC-001 (three people find Maximum from), SC-002 (ten drags),
-SC-008 (the reported rating mix-up).
+Maintainer's review of the quickstart scenarios passed on 2026-10-03, including SC-001 (Maximum
+from), SC-002 (drags), and SC-008 (the reported rating mix-up).

@@ -182,18 +182,22 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [x] ✅ **T-091 — Drag and drop with live placement** (none) — template authors find where an element can go with the mouse: while the pointer rests over a valid position, the element is shown placed there (the page reflows) before the button is released, and the nearest valid position follows the pointer instead of the pointer having to hit a thin insertion slot. (task for roadmap path `gm-notes-templates`)
     - 2026-10-02: player feedback — finding a drop position with the mouse is hard. Today native HTML5 drag targets the per-frame insertion slots (`EditorNodeFrame.tsx`); keyboard arrangement stays as is.
     - 2026-10-02: built in spec 022: pointer drag (mouse and pen) to the nearest legal place of the container under the pointer, a preview after a short rest with the old place dashed, one undo step, Escape cancels, autoscroll; the outline uses the same drag.
+    - 2026-10-03: in-app review of the spec 022 quickstart scenarios passed.
 - [x] ✅ **T-092 — Resizable template editor panes** (none) — on desktop, template authors drag both dividers between the outline, the page, and the settings to resize them; widths stay within limits, survive reloads, and a double click restores the default. (task for roadmap path `gm-notes-templates`)
     - 2026-10-02: player feedback. Model: the maintainer's SillyTavern WorldInfo Workspace extension (`src/ui/Splitter.tsx`, `usePointerResize`) — pointer capture, the width written to the DOM during the drag without re-rendering, one state commit on release, clamped limits, double-click reset. Phones keep the current layout.
     - 2026-10-02: built in spec 022: two separators with arrow keys, Home, and double click; widths in localStorage `template-editor-panes`, the page keeps at least 360 px.
+    - 2026-10-03: in-app review of the spec 022 quickstart scenarios passed.
 - [ ] ⬜ **T-093 — Element context menu and shortcut list in the template editor** (none) — template authors find the editor's actions without knowing the keys: a right click (long press on touch) on an element opens copy, paste, duplicate, delete, and move, each showing its shortcut, and the editor's help lists every shortcut. (task for roadmap path `gm-notes-templates`)
     - 2026-10-02: proposed with the player feedback behind T-089–T-092; shortcuts today are only discoverable in the guide.
 
 - [x] ✅ **T-094 — Reorder table columns, rows, and list entries** (none) — template authors reorder a table's columns in the editor, and players reorder the rows of tables and the entries of lists they filled in on the sheet. (task for roadmap path `gm-notes-templates`)
     - 2026-10-02: player feedback; planned in spec 022 (User Story 5).
     - 2026-10-02: built in spec 022: columns move in the table settings; rows and entries of template tables, own lists, game lists, and system rows move with a grip, arrows, or Alt+↑/↓; table row keys are rewritten in the new order.
+    - 2026-10-03: in-app review of the spec 022 quickstart scenarios passed.
 - [x] ✅ **T-095 — Fewer template element kinds** (none) — template authors choose from four elements instead of six: Group (kind Section or Card) replaces section and group, List (kind Entries or Table) replaces list and table; stored templates keep their shape. (task for roadmap path `gm-notes-templates`)
     - 2026-10-02: maintainer proposal after player feedback; planned in spec 022 (User Story 6).
     - 2026-10-02: built in spec 022: Group (Section, Card) and List (Entries, Table) with a Kind switch that keeps the other kind's settings for the session and asks before dropping columns or hiding stored values; stored types unchanged.
+    - 2026-10-03: in-app review of the spec 022 quickstart scenarios passed.
 
 ### Localization
 
