@@ -95,8 +95,11 @@ TESTS = `tests/sheet_manager`. Every task that adds UI text adds it to
       today's commands only (undo, redo, duplicate, delete, move-up/down/out/in, column-prev/next),
       groups, labels from T002, `formatKeys(command, platform)` and `isApplePlatform()`; rewrite
       `matchEditorShortcut` in `TE/shortcuts.ts` to iterate the registry with identical results.
-      `TESTS/template-editor-shortcuts.test.ts` passes unchanged; add a test that every registry
-      key combination matches its own command and no two commands share keys.
+      Include the `pointer` bindings (Ctrl/⌘+click, Shift+click) and `clear-selection` (Escape) as
+      list-only entries (data-model "Editor command"), and on Apple platforms Backspace for Remove
+      when not typing (contract). `TESTS/template-editor-shortcuts.test.ts` passes unchanged; add a
+      test that every registry key combination matches its own command and no two commands share
+      keys.
 - [ ] T010 [P] Add diagnostics code `template-clipboard-invalid` to
       `src/sheet_manager/diagnostics.ts` (details `{ stage: 'version' | 'schema'; error }`).
 
@@ -137,7 +140,11 @@ document kind, paste: the section and its contents appear without issues; one Un
     - pasting a foreign-system copy keeps the element and lists its issues;
     - refused text shows the message and leaves the draft equal; reports
       `template-clipboard-invalid` for version and schema stages only;
-    - events whose target is a text box are not handled (the default is not prevented).
+    - events whose target is a text box are not handled (the default is not prevented);
+    - WebKit fallback (research R2): Ctrl+C / Ctrl+V keydown with no clipboard event following
+      copies to the memory slot (and calls a mocked `navigator.clipboard.writeText`) and pastes
+      from it; when the clipboard event does follow, the action runs exactly once;
+    - SC-006: after copy, cut, and paste the draft parses with `CustomTemplateSchema`.
 
 ### Implementation
 
@@ -161,9 +168,12 @@ document kind, paste: the section and its contents appear without issues; one Un
       `clipboardData`, remember in memory; cut removes with `removeNodes` in one step; paste parses
       `clipboardData` (falls back to the memory slot when the data is empty), applies `pasteCopied`
       in one step with the new selection, reveals it, announces "Pasted {count}"; refusals set the
-      issue banner message and report diagnostics per contract. Make page frames focusable targets
-      for the events (the page area gets `tabIndex={-1}` and focus on click) so the events reach the
-      content element.
+      issue banner message and report diagnostics per contract. The page area gets `tabIndex={-1}`
+      and receives focus only from a click that selects an element (never from clicks left to
+      `VALUE_CONTROLS`), so the events reach the content element. Add the WebKit keydown fallback of
+      research R2 (one-shot check after `KeyC`/`KeyX`/`KeyV` with the platform modifier, cancelled
+      by the clipboard event). Reveal the pasted selection on the page and in the outline, opening
+      folded ancestors (data-model "Multi-node operations").
 - [ ] T017 [US1] Add Cut, Copy, Paste to the command registry (`clipboard` field, no keydown
       binding) with `available` (selection non-empty; Paste: memory slot set) for US4/US5.
 
@@ -183,9 +193,12 @@ three there in page order; one Undo returns them.
 
 - [ ] T018 [P] [US2] Component tests `TESTS/editor-multi-select.test.tsx`: Ctrl+click and
       Meta+click toggle on page and outline, marks in both (`data-selected`, `aria-pressed`);
-      Shift+click range; Escape and a plain click reduce the selection; the live region announces
-      the count; Delete / Ctrl+D / Alt+↓ on the selection are one undo step each and Undo restores
-      the previous selection; a group plus its child is duplicated once.
+      Shift+click range; a plain click reduces the selection; Escape with a selection clears it and
+      the editor stays open (no discard question), Escape with nothing selected asks to close as
+      today, Escape in a text box does neither; the live region announces the count; Delete /
+      Ctrl+D / Alt+↓ on the selection are one undo step each and Undo restores the previous
+      selection; a group plus its child is duplicated once; after each action the draft parses with
+      `CustomTemplateSchema` (SC-006).
 - [ ] T019 [P] [US2] Extend `TESTS/editor-drag.test.ts` and the drag component test: dragging a
       selected element moves the whole normalized selection via `placeNodes`; slots inside any
       dragged subtree are refused; the preview draft contains all moved nodes; dragging an
@@ -197,7 +210,9 @@ three there in page order; one Undo returns them.
       Ctrl/Meta and `range` for Shift (and `preventDefault` on Shift to avoid text selection); in
       `TE/OutlineTree.tsx` the row button does the same. Dialog `selectNode` applies
       `selectOnly`/`toggleInSelection`/`rangeSelection` and announces `selectedCount` when the count
-      changes by a modifier click; Escape (not typing, no menu open) clears the selection.
+      changes by a modifier click. Escape per research R9: the editor's `Dialog.Content`
+      `onEscapeKeyDown` clears a non-empty selection with `preventDefault()` (not from a text box,
+      an open menu, or a nested dialog) and otherwise leaves today's `requestClose`.
 - [ ] T021 [US2] Route Dialog commands through the normalized selection: delete → `removeNodes`,
       duplicate → `duplicateNodes`, move-up/down → `moveEachByCommand`, move-out/in and columns →
       all-or-nothing; announcements use the count for 2+ (existing single messages for 1). Copy and
@@ -329,7 +344,8 @@ guide shows the same.
 - [ ] T038 `CHANGELOG.md` v3.21.0 (one entry per story) and `package.json` 3.21.0;
       `yarn check:version`.
 - [ ] T039 Run `yarn verify:full`; fix findings.
-- [ ] T040 Walk `quickstart.md` §2–§6 on the running dev server with `playwright-cli`; record
+- [ ] T040 Walk `quickstart.md` §2–§6 on the running dev server with `playwright-cli` (Chromium),
+      and §2 steps 1–2 and 7 again in WebKit to check the clipboard fallback (research R2); record
       results and refinements in `research.md`; leave SC-007 for the maintainer's review.
 
 ---

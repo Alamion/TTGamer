@@ -25,6 +25,15 @@ string | null }`. `ids` is in click order, deduplicated; `anchor` is the last el
   memory slot (`lastCopied`). The context menu's Copy and Cut call `navigator.clipboard.writeText`
   inside the click (best effort; rejection is ignored) plus the memory slot; the menu's Paste uses
   the memory slot only.
+- **Fallback (WebKit)**: Safari does not dispatch `copy`/`cut`/`paste` when the focus is on a
+  non-editable element and no text is selected. The keydown handler therefore also sees
+  Ctrl/⌘+C, X, V (physical `KeyC`, `KeyX`, `KeyV`, not while typing) and arms a one-shot check:
+  if the matching clipboard event has not run by the next task (`setTimeout(0)`), it performs the
+  same action itself — copy and cut through `navigator.clipboard.writeText` (allowed inside the
+  key gesture; rejection ignored) plus the memory slot, paste from the memory slot. A clipboard
+  event that does arrive cancels the check, so the action runs once. On WebKit, pasting a copy made
+  in another tab or by another author therefore needs a browser that dispatches `paste`; the menu
+  and same-tab pastes always work.
 - **Rationale**: clipboard events carry `clipboardData` synchronously with no permission prompt in
   every browser, follow the platform's own key bindings (⌘ on Mac, any layout), and leave text
   boxes untouched. Reading the clipboard from a menu click needs `navigator.clipboard.readText`,
@@ -33,14 +42,16 @@ string | null }`. `ids` is in click order, deduplicated; `anchor` is the last el
 - **Alternatives**: keydown + async Clipboard API (permission prompts on read, Safari refuses
   outside a user-gesture promise chain); a custom MIME type (`web application/…`, Chrome only);
   localStorage (copies would outlive the session and leak across profiles' tabs unexpectedly).
-- **Note**: the content element must contain the focus for the events to reach it; page frames and
-  outline rows are focusable, and a click on the page focuses the content element.
+- **Note**: the content element must contain the focus for the events to reach it. Outline rows
+  and page grips are buttons; a click that selects an element on the page moves the focus to the
+  page area (`tabIndex={-1}`). Clicks the page leaves to sample value controls (`VALUE_CONTROLS`
+  in `EditorPage.tsx`) never move the focus.
 
 ## R3. Envelope, validation, and identity
 
 - **Decision**: the clipboard text is JSON
-  `{ format: "ttgamer-template-elements", formatVersion: 1, source: { templateId, systemId,
-documentKind }, nodes: TemplateNode[] }` (see [data-model.md](./data-model.md)). Parsing:
+  `CopiedElements` (format `ttgamer-template-elements`, `formatVersion` 1, `source`, `nodes`; see
+  [data-model.md](./data-model.md)). Parsing:
   `JSON.parse` → envelope shape check (format, integer version ≤ 1) → nodes parsed with the
   template node schema by wrapping them in a throwaway `CustomTemplateSchema` parse (the same way
   the tests build templates), so every node rule and `TEMPLATE_LIMITS` bound applies → the target's
@@ -139,3 +150,16 @@ documentKind }, nodes: TemplateNode[] }` (see [data-model.md](./data-model.md)).
   cheap headers, as today. Measured in the performance suite with every element selected.
 - **Alternatives**: DOM attributes set imperatively (as the drag marks): unnecessary unless the
   measurement says otherwise.
+
+## R9. Escape: selection before closing
+
+- **Decision**: the editor's Radix `Dialog.Content` gets `onEscapeKeyDown`: when the selection is
+  not empty and the key did not come from a text box or an open menu or dialog, it calls
+  `preventDefault()` and clears the selection; otherwise the dialog closes through
+  `requestClose` as today (asking about unsaved changes). The drag's own Escape (window capture,
+  spec 022) still runs first and cancels a drag without touching the selection.
+- **Rationale**: Escape already closes the editor; letting it also clear a selection without this
+  order would ask "discard changes?" when the author only wanted to deselect (consistency review
+  H1).
+- **Alternatives**: Escape never clears the selection (spec US2 #8 asks for it); a separate key
+  (no convention).

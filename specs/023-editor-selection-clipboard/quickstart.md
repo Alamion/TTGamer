@@ -36,6 +36,8 @@ What must hold:
    nothing happens. Paste it into a label box: the text goes into the box.
 6. Copy in one tab, paste in another tab's editor: the elements arrive.
 7. Ctrl+X on a field: it disappears; paste it elsewhere.
+8. In WebKit (Safari, or `playwright-cli` with WebKit): steps 1–2 and 7 work (keyboard fallback);
+   copying in one tab and pasting in another may need the menu's Paste in the same tab.
 
 ## 3. Multi-selection
 
@@ -47,6 +49,8 @@ What must hold:
 4. Select the first fields of two groups and press Alt+↓: both move down within their groups;
    select the first and press Alt+↑: nothing moves and the menu's Move up is disabled.
 5. Select a group and one of its fields, press Ctrl+D: the group is duplicated once.
+6. With elements selected, press Escape: the selection clears and the editor stays open; press
+   Escape again: the editor asks to close (when there are changes).
 
 ## 4. Shared settings
 

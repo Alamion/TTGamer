@@ -22,8 +22,8 @@ interface EditorSnapshot {
 Rules:
 
 - `anchor` is in `ids` whenever `ids` is not empty.
-- Plain click → `{ ids: [id], anchor: id }`; click on empty page or Escape → `{ ids: [], anchor:
-null }`.
+- Plain click → `{ ids: [id], anchor: id }`.
+- Click on empty page, or Escape with a selection (research R9) → `EMPTY_SELECTION`.
 - Ctrl/⌘+click → toggles `id`; the anchor becomes `id` when added, or the last remaining id when
   removed.
 - Shift+click → when `id` and the anchor share a parent: anchor's siblings from anchor to `id`
@@ -90,7 +90,8 @@ container (case 3), then the end of the page. The count limit refuses the paste.
 | `placeNodes(draft, ids, placement)`      | set moved to the placement in page order; refused inside the set        |
 | `moveEachByCommand(draft, ids, command)` | Alt-arrow rules of research R7; unchanged draft when nothing can move   |
 
-Each is applied with one `applyChange` (one undo step) and the new selection.
+Each is applied with one `applyChange` (one undo step) and the new selection. After a paste or a
+move, the new selection is revealed on the page and in the outline, opening folded ancestors.
 
 ## Shared setting descriptor
 
@@ -113,11 +114,24 @@ Shown when `appliesTo` holds for every normalized selected node; value = common 
 
 ```ts
 interface EditorCommand {
-    id: EditorShortcut | 'cut' | 'copy' | 'paste' | 'add-to-selection' | 'shortcuts';
+    id:
+        | EditorShortcut
+        | 'cut'
+        | 'copy'
+        | 'paste'
+        | 'add-to-selection'
+        | 'toggle-selection'
+        | 'range-selection'
+        | 'clear-selection'
+        | 'shortcuts';
     group: 'edit' | 'selection' | 'arrange' | 'history';
     label: MessageDescriptor;
-    keys?: { code: string; mod?: true; shift?: true; alt?: true }[] | { key: '?' };
+    /** Physical keys; Apple platforms may list their own (e.g. Backspace for Remove). */
+    keys?: { code: string; mod?: true; shift?: true; alt?: true; apple?: boolean }[] | { key: '?' };
+    /** Also bound to the browser clipboard event, with the keydown fallback of research R2. */
     clipboard?: 'copy' | 'cut' | 'paste';
+    /** A mouse binding shown in the list and the guide (Ctrl/⌘+click, Shift+click). */
+    pointer?: 'toggle' | 'range';
     inMenu: boolean;
     touchOnly?: true;
     available(context: CommandContext): boolean;
@@ -133,4 +147,5 @@ interface CommandContext {
 ```
 
 The keyboard matcher, the context menu, the shortcut list, and the guide table test all read the
-same array.
+same array. Escape is the `clear-selection` command (`keys: [{ code: 'Escape' }]`), handled through
+the dialog's `onEscapeKeyDown` (research R9), not the generic matcher.

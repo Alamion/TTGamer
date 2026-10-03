@@ -59,6 +59,9 @@ Out of scope:
 - Q: What do Alt+↑ and Alt+↓ do when the selected elements are in different groups? → A: Each
   moves one place within its own group as one undo step; elements at the edge stay, the others
   move; unavailable only when none can move.
+- Q (consistency review): What does Escape do now that it also clears the selection? → A: With
+  any element selected, Escape (outside a text box, no menu open) clears the selection and keeps
+  the editor open; with nothing selected it closes the editor as today.
 
 ## User Scenarios & Testing _(mandatory)_
 
@@ -85,12 +88,12 @@ shows nothing for it; one Undo removes it.
    selected, **Then** a copy is inserted right after that field, in the same column, and is
    selected.
 2. **Given** a Group (section or card) selected, **When** the author pastes, **Then** the copy goes
-   inside the group at its end; **given** the copy cannot go inside it (for example a section into
-   a card), **Then** it goes right after the group instead.
+   inside the group at its end; **given** the copy cannot go inside it (the nesting depth limit),
+   **Then** it goes right after the group instead.
 3. **Given** nothing selected, **When** the author pastes, **Then** the copy goes at the end of the
    page.
 4. **Given** a paste, **Then** it is one undo step, and the copy and every element inside it have
-   new identities; the copy shares no stored values with the original.
+   new identities; on the same page the copy shares no stored values with the original.
 5. **Given** a copied element pasted into the same page, **Then** its name gets the same "copy"
    mark as Duplicate gives; **given** another page, **Then** the name is kept.
 6. **Given** a copied element that reads a value, list, or catalog the target page does not have
@@ -112,8 +115,8 @@ remove them from the selection, or Shift+clicks to select every element between 
 one and the clicked one among the same siblings. The page and the outline mark every selected
 element; the settings area says how many are selected. Delete removes them all, Ctrl+D duplicates
 each one after itself, Ctrl+C copies them all, and dragging one of them moves all of them together
-to the drop place, in their page order. Each of these is one undo step. Escape or a plain click
-returns to a single selection.
+to the drop place, in their page order. Each of these is one undo step. A plain click returns
+to a single selection; Escape clears it (a second Escape closes the editor, as today).
 
 **Why this priority**: it turns the most repetitive arrangement work into one action and is the
 condition for editing settings together.
@@ -142,8 +145,10 @@ drag them into one group: the three are there, in page order, and one Undo retur
    element moves one place within its own group, as one undo step; an element already first (or
    last) stays, the others move, and the action is unavailable only when none can move. Alt+←/→ and
    column moves act only when every selected element allows them.
-8. **Given** several selected, **When** the author presses Escape or clicks one element without a
-   modifier, **Then** only that element (or none, after Escape) stays selected.
+8. **Given** several selected, **When** the author clicks one element without a modifier, **Then**
+   only that element stays selected; **given** any selection, **When** the author presses Escape
+   (outside a text box, no menu open), **Then** the selection is cleared and the editor stays open;
+   **given** nothing selected, **Then** Escape asks to close the editor, as today.
 9. **Given** a screen reader, **Then** adding to or removing from the selection is announced with
    the count of selected elements.
 
@@ -243,8 +248,10 @@ the guide's page shows the same entries.
 
 - Pasting while the selected element is inside a collapsed section: the copy goes where the rules
   say; the section opens enough to show the new selection.
-- Pasting a section where only cards are allowed is impossible today: the copy goes to the nearest
-  place it may go (after the enclosing section, or at the end of the page), never fails silently.
+- Pasting inside a group whose nesting depth the copy would exceed: the copy goes to the nearest
+  place it may go (after the group, after the enclosing group, or at the end of the page), never
+  fails silently. A copy larger than the page's element limit is refused with today's limit
+  message.
 - Pasting a copy of an element inside itself (copy a group, select an element inside it, paste):
   allowed, since the copy is a new element; nesting limits still apply.
 - Copying an element whose formulas read values of its own children: the pasted copy reads its own
@@ -278,9 +285,11 @@ the guide's page shows the same entries.
   selected Group at its end, or at the end of the page when nothing is selected; when the copy may
   not go there, the nearest place it may go is used. The pasted elements become the selection, as
   one undo step.
-- **FR-003**: Pasted elements and everything inside them MUST get new identities and MUST NOT share
-  stored values with the originals; values that address the game's own data stay, as Duplicate
-  keeps them today. References between elements inside the copy MUST point to the copy.
+- **FR-003**: Pasted elements and everything inside them MUST get new identities. On the page they
+  came from, they MUST NOT share stored values with the originals (custom value keys are dropped,
+  as Duplicate does); on another page, custom value keys are kept unless that page already uses
+  them (a shared value key, as designed for pages of one type). Values that address the game's own
+  data stay. References between elements inside the copy MUST point to the copy.
 - **FR-004**: A copy pasted on the page it came from MUST be named like a Duplicate (the "copy"
   mark); on another page its names MUST be kept.
 - **FR-005**: The copied elements MUST stay available for pasting after the editor is closed, on
@@ -296,8 +305,9 @@ the guide's page shows the same entries.
 
 - **FR-007**: Ctrl+click (⌘-click) on the page or in the outline MUST add an element to the
   selection or remove it; Shift+click MUST select the range between the last selected element and
-  the clicked one among the same siblings. Escape and a plain click MUST return to one or no
-  selected element.
+  the clicked one among the same siblings. A plain click MUST return to one selected element;
+  Escape outside a text box MUST clear a non-empty selection without closing the editor, and
+  close the editor (asking about unsaved changes) only when nothing is selected.
 - **FR-008**: Every selected element MUST be marked on the page and in the outline; the number
   selected MUST be shown and announced to screen readers.
 - **FR-009**: Remove, Duplicate, Copy, Cut, drag, and keyboard moves MUST act on the whole

@@ -11,13 +11,14 @@ editors depend on.
   `aria-current="true"`.
 - Clicks on frames and outline rows:
 
-    | Input                | Effect                                      |
-    | -------------------- | ------------------------------------------- |
-    | click                | select only this element                    |
-    | Ctrl+click / ⌘+click | add or remove this element                  |
-    | Shift+click          | sibling range from the anchor               |
-    | click on empty page  | clear the selection                         |
-    | Escape (not typing)  | clear the selection (when a menu is closed) |
+    | Input                    | Effect                                                  |
+    | ------------------------ | ------------------------------------------------------- |
+    | click                    | select only this element                                |
+    | Ctrl+click / ⌘+click     | add or remove this element                              |
+    | Shift+click              | sibling range from the anchor                           |
+    | click on empty page      | clear the selection                                     |
+    | Escape (not typing)      | clear the selection (when a menu is closed)             |
+    | Escape, nothing selected | close the editor (asks about unsaved changes, as today) |
 
 - The live region announces "{n} elements selected" (plural rules) when the count changes by a
   modifier click or a menu item, and today's messages for single actions.
@@ -47,7 +48,8 @@ editors depend on.
 
 - Surfaces: the page area (`[data-editor-page]`) and the outline (`[data-outline]`). Opens on
   right click, touch long press, the menu key, and Shift+F10.
-- `role="menu"`, items `role="menuitem"`, in this order with separators between groups:
+- `role="menu"`, items `role="menuitem"`, in this order, with a separator between groups and before Remove (destructive, always last; it
+  belongs to the Edit group in the shortcut list):
 
     | Item                                                  | Shortcut shown (non-Mac / Mac) | Group     |
     | ----------------------------------------------------- | ------------------------------ | --------- |
@@ -60,9 +62,10 @@ editors depend on.
     | Move down                                             | Alt+↓ / ⌥↓                     | arrange   |
     | Move out of the group                                 | Alt+← / ⌥←                     | arrange   |
     | Move into the group above                             | Alt+→ / ⌥→                     | arrange   |
-    | Remove                                                | Delete / ⌦                     | edit      |
+    | Remove                                                | Delete / ⌫ or ⌦                | edit      |
 
 - Disabled items have `aria-disabled="true"` and stay in place.
+- On Apple platforms Remove also answers ⌫ (Backspace) outside text boxes; the menu shows ⌫.
 - On no element: only Paste ("Paste at the end of the page").
 - Closing returns focus to the frame's grip or the outline row it opened on.
 
