@@ -128,4 +128,75 @@ describe('template editor responsiveness (SC-002)', () => {
             vi.useRealTimers();
         }
     }, 120_000);
+
+    it('copies, pastes, removes, and changes a shared setting of the whole sheet within budget (spec 023, SC-005)', () => {
+        resetEditorStores();
+        const template = systemRegistry
+            .getSystem('star-wars-wod')!
+            .defaultTemplates!.find(({ id }) => id === 'full-sheet')!;
+        const view = render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'edit', template },
+                onClose: () => {},
+            })
+        );
+        const rootRows = () => [
+            ...document.querySelectorAll('[data-children-of="root"] > li > [data-outline-row]'),
+        ];
+        const rowButton = (row: Element) =>
+            [...row.querySelectorAll('button')].find((b) => !b.hasAttribute('data-drag-handle'))!;
+        // The first and last root element with Shift: every element, once normalized.
+        fireEvent.click(rowButton(rootRows()[0]!));
+        fireEvent.click(rowButton(rootRows().at(-1)!), { shiftKey: true });
+        const timed = (run: () => void) => {
+            const started = performance.now();
+            run();
+            return performance.now() - started;
+        };
+        const clipboard = (type: string, text?: string) => {
+            const store = new Map<string, string>(text ? [['text/plain', text]] : []);
+            const event = new Event(type, { bubbles: true, cancelable: true });
+            Object.defineProperty(event, 'clipboardData', {
+                value: {
+                    getData: (format: string) => store.get(format) ?? '',
+                    setData: (format: string, value: string) => store.set(format, value),
+                },
+            });
+            act(() => {
+                rootRows()[0]!.dispatchEvent(event);
+            });
+            return store.get('text/plain');
+        };
+        let copied: string | undefined;
+        const timings: Record<string, number> = {};
+        timings.copy = timed(() => {
+            copied = clipboard('copy');
+        });
+        const folded = document.querySelector<HTMLInputElement>(
+            '[data-settings-for="multiple"] [data-setting="defaultCollapsed"]'
+        )!;
+        timings.shared = timed(() => fireEvent.click(folded));
+        timings.remove = timed(() =>
+            fireEvent.keyDown(rootRows()[0]!, { code: 'Delete', key: 'Delete' })
+        );
+        view.unmount();
+        resetEditorStores();
+        render(
+            createElement(TemplateEditorDialog, {
+                base: { kind: 'empty' },
+                onClose: () => {},
+            })
+        );
+        const before = rootRows().length;
+        timings.paste = timed(() => clipboard('paste', copied));
+        expect(rootRows().length).toBeGreaterThan(before);
+        console.info(
+            `editor selection actions: ${Object.entries(timings)
+                .map(([name, ms]) => `${name} ${ms.toFixed(0)} ms`)
+                .join(', ')}`
+        );
+        for (const ms of Object.values(timings)) {
+            expect(ms).toBeLessThan(1000 * JSDOM_FACTOR);
+        }
+    }, 120_000);
 });

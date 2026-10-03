@@ -86,6 +86,25 @@ On a Mac, `⌘` stands for `Ctrl` and `⌥` for `Alt`, and `⌫` removes too. Th
 
 Undo covers every change since the editor opened; typing in one field counts as one step.
 
+## Copy and paste \{#copy-paste}
+
+Select an element and press `Ctrl+C` to copy it, `Ctrl+X` to cut it, and `Ctrl+V` to paste. The copy lands right after the selected element, at the end of a selected group, or at the end of the page when nothing is selected; if a group is nested too deep for it, it goes to the nearest place that fits. Each paste is one step of **Undo**, and the pasted elements become the selection.
+
+- **On the same page** a copy is named like a duplicate and keeps its values apart from the original.
+- **On another page** — after closing the editor, in another tab, or from text another author shared — the names stay as they were, and so do value keys the page does not use yet. Formulas and display conditions inside the copy read the copy's own elements.
+- Anything the page cannot show (a value it lacks, a game list of another system) appears in the issue list, pointing at the setting to fix.
+- Text that is damaged or comes from a newer editor is refused with a message; nothing changes. In a text box, copy and paste work on text as usual.
+
+## Several elements at once \{#selection}
+
+`Ctrl+click` an element on the page or in the outline to add it to the selection or take it out; `Shift+click` selects the elements in between. `Delete`, `Ctrl+D`, copying, the move keys, and dragging then act on all of them as one step; an element inside a selected group goes along with the group. `Esc` clears the selection (a second `Esc` closes the editor).
+
+With several elements selected, the settings show how many there are, their names (click one to open it alone), and the settings they all have, such as the display condition, **Required**, or the column span. A setting whose values differ says **Mixed**; changing it sets it on every selected element.
+
+## Element menu \{#menu}
+
+Right-click an element on the page or in the outline — or hold a finger on it on a touch screen — to open its menu: cut, copy, paste, duplicate, the moves, and remove, each with its keys. Actions that do not fit right now are greyed out. On a touch screen the menu also has **Add to selection**. Right-click empty space on the page to paste at its end.
+
 ## Saving and issues \{#saving}
 
 Changes stay in the editor until you press **Save**. Above the button, the editor lists what would make the page break, in plain words, naming the element: an empty label, a list entry or table column without a name, a formula that does not parse, a value it cannot find, a broken documentation link. Click an issue: the editor selects the element, opens its settings group, and puts the cursor in the setting to fix — inside a table column too. **Save** stays disabled while the list has such issues. If saving still finds a value that is not allowed, it says which element and setting, and nothing is saved.

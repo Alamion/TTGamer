@@ -520,7 +520,7 @@ Three areas (spec 012): **Outline** (`OutlineTree.tsx`), **Page** (`EditorPage.t
 desktop two `PaneDivider`s (`role="separator"`, arrows / Shift / Home / double click) resize the
 side areas; `usePaneWidths` keeps them in localStorage `template-editor-panes` (outline 160–420,
 settings 260–560, page ≥ 360; only a CSS variable moves while dragging). The toolbar switches
-Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
+Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo and the shortcut list.
 
 - `draft.ts`: `EditorDraft = CustomTemplate`; pure tree ops with structural sharing (`insertNode`,
   `moveNode`, `updateNode`, `removeNode`, `duplicateNode`, placement helpers `placeNode` /
@@ -539,15 +539,41 @@ Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
   save maps the Zod error the same way (raw schema text never reaches the author) and
   `reportUncoveredIssues` reports `template-draft-invalid` — add a specific check for it. Issue
   buttons call `goToIssue`: select, open the group, open `<details>`, focus `[data-setting]`.
-  `duplicateNode` re-issues ids for nodes, table columns, and options, drops custom value keys,
-  and keeps bridged coordinates.
+  `cloneWithFreshIds` (Duplicate and paste) re-issues ids for nodes, table columns, entry fields,
+  and options, keeps bridged coordinates, drops custom value keys on the same page (keeps them on
+  another page unless taken there), and remaps the copy's formulas and display conditions to the
+  copy's own coordinates (`renameFormulaCoordinates` in `declarative/formula.ts`, token-based).
 - `history.ts`: every change goes through the dialog's `change` / `applyOp` into a bounded (100)
-  history of `{ draft, selectedId }`; edits with the same `coalesceKey` (`<nodeId>:<props>`)
+  history of `{ draft, selection }`; edits with the same `coalesceKey` (`<nodeId>:<props>`)
   within 800 ms are one step.
-- `shortcuts.ts`: `matchEditorShortcut` matches **`KeyboardEvent.code`** (layout-independent:
-  a Russian layout sends `я` with `KeyZ`) — Ctrl/⌘+Z / Shift+Z / Y / D, Delete, Alt+arrows
-  (move among siblings, out of / into a group), Alt+Shift+←/→ (column). Text-editing keys stay
-  with a focused field. `useEditorShortcuts(element, handlers)` listens on the dialog content
+- **Selection** (`selection.ts`, spec 023): `{ ids, anchor }` in each snapshot (undo restores it).
+  Click selects one, Ctrl/⌘+click toggles, Shift+click adds the anchor's sibling range (across
+  parents just the two). Every command uses `normalizeSelection` (existing ids, ancestors win,
+  page order). `multiOps.ts` has the one-step set operations: `removeNodes`, `duplicateNodes`,
+  `insertNodesAt`, `placeNodes` (drag of a set), `moveEachByCommand` (Alt+↑/↓ move each within
+  its parent from the edge inwards, edge elements stay; out / in / columns all or nothing).
+  Escape clears a selection through `Dialog.Content onEscapeKeyDown` before it closes the editor.
+  With 2+ selected the settings area is `MultiSettings` (`sharedSettings.tsx`): names, actions,
+  and the `SHARED_SETTINGS` descriptors every selected node supports (Mixed = indeterminate /
+  placeholder); a change writes every node in one coalesced step. Identity settings (value key,
+  options, columns, entry field, type, kind) never get a descriptor.
+- **Clipboard** (`clipboard.ts`, spec 023): `CopiedElements` JSON (format
+  `ttgamer-template-elements`, `formatVersion` 1, `source`, `nodes`) through the browser's
+  `copy` / `cut` / `paste` events on the dialog content (not in text boxes or over a text
+  selection), plus a per-tab memory slot (`rememberCopied`). A keydown fallback runs the action
+  when no clipboard event follows (WebKit without a text selection). Pasted text is untrusted:
+  `parseCopied` ignores other text, refuses newer versions and nodes the template schema rejects
+  (`template-clipboard-invalid`), and `pasteCopied` inserts with fresh ids after the last
+  selected element, at the end of a selected group, or at the page end, falling back outward when
+  the depth limit refuses. Paste reveals the copy, opening folded ancestors (header toggles only,
+  never `aria-haspopup` triggers).
+- `commands.ts` (spec 023): the one registry of editor commands — keys, clipboard bindings,
+  clicks, the "?" character, label, group, menu flags. `matchEditorShortcut` (`shortcuts.ts`),
+  the element menu, the shortcut list (`ShortcutList.tsx`), and the guide's `#arranging` table
+  (checked by `editor-commands.test.tsx`) all read it; add a command there first.
+  `matchEditorShortcut` matches **`KeyboardEvent.code`** (layout-independent: a Russian layout
+  sends `я` with `KeyZ`); "?" matches the character. Text-editing keys stay with a focused
+  field; Apple platforms also remove with Backspace. `useEditorShortcuts(element, handlers)` listens on the dialog content
   (a callback ref: portalled content mounts after the first render).
 - `moveTargets.ts`: keyboard move targets (`resolveMoveTarget`); column moves in a flowing
   container call `materializeColumns` first so siblings keep their visible columns.
@@ -561,9 +587,15 @@ Edit / Preview (`EditorPreview.tsx`) and has Undo / Redo.
   unchanged — this keeps a keystroke on the full sheet ~40 ms in jsdom. One delegated click
   listener selects the innermost frame (value controls edit the sample); hover is one delegated
   `pointerover` setting `data-hover`.
-- `editorActions.ts`: stable `select` / `insertAt` / `moveTo` actions and the selection context.
+- `editorActions.ts`: stable `select(id, origin, mode)` / `insertAt` / `moveTo` actions and the
+  selection context (`selected` set, `anchor`, issue node ids).
+- **Element menu** (`EditorContextMenu.tsx`, spec 023): one Radix Context Menu per surface (page,
+  outline), opened by right click, touch long press, the menu key, or Shift+F10; the dialog's
+  `EditorMenuSource` selects the target (a touch menu keeps the selection for Add to selection)
+  and builds the items with disabled states from dry runs; focus returns to the grip or row.
 - **Drag** (`useEditorDrag.ts`, spec 022): pointer events, mouse and pen only (touch uses the move
-  buttons). Grips (`data-drag-handle`, test ids `page-grip-<id>` / `grip-<id>`) start it; past
+  buttons). A grip of a selected element drags the whole normalized selection (`draggedWith`,
+  `placeNodes`; spec 023). Grips (`data-drag-handle`, test ids `page-grip-<id>` / `grip-<id>`) start it; past
   5 px `nearestPlacement` picks the nearest accepted slot of the innermost container under the
   pointer (page: `[data-insert-slot]` keys `<parent|root>:<index>:<column|->` and frame
   rectangles; outline: `[data-outline-slot]` rows); `placeNode` on the draft the surface shows

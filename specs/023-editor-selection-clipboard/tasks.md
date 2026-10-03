@@ -329,21 +329,21 @@ guide shows the same.
 
 ## Phase 8: Polish & cross-cutting
 
-- [ ] T034 [P] Guide: in `docs/template-editor/index.mdx` and its Russian mirror describe copy and
+- [x] T034 [P] Guide: in `docs/template-editor/index.mdx` and its Russian mirror describe copy and
       paste (placement, other pages and tabs, names, what the issue list shows, refused text),
       selecting several elements, shared settings with Mixed, and the context menu (long press on
       touch); keep existing anchors, add `#copy-paste` and `#selection`; `yarn validate:i18n`.
-- [ ] T035 [P] Notes: `src/sheet_manager/AGENTS.md` (selection model, command registry as the
+- [x] T035 [P] Notes: `src/sheet_manager/AGENTS.md` (selection model, command registry as the
       single owner of keys, clipboard envelope as untrusted input) and
       `.agents/skills/sheet-templates/SKILL.md` (editor section).
-- [ ] T036 [P] Performance: add a full-sheet case to `TESTS/template-editor.perf.test.tsx` selecting
+- [x] T036 [P] Performance: add a full-sheet case to `TESTS/template-editor.perf.test.tsx` selecting
       every element and timing copy, paste, remove, and a shared-setting change (each < 1 s,
       SC-005); remove any temporary knip entry from T001.
-- [ ] T037 [P] Backlog: mark T-089, T-090, T-093 ✅ in `TODO.md` with a dated "built in spec 023"
+- [x] T037 [P] Backlog: mark T-089, T-090, T-093 ✅ in `TODO.md` with a dated "built in spec 023"
       note; `yarn validate:backlog`.
-- [ ] T038 `CHANGELOG.md` v3.21.0 (one entry per story) and `package.json` 3.21.0;
+- [x] T038 `CHANGELOG.md` v3.21.0 (one entry per story) and `package.json` 3.21.0;
       `yarn check:version`.
-- [ ] T039 Run `yarn verify:full`; fix findings.
+- [x] T039 Run `yarn verify:full`; fix findings.
 - [ ] T040 Walk `quickstart.md` §2–§6 on the running dev server with `playwright-cli` (Chromium),
       and §2 steps 1–2 and 7 again in WebKit to check the clipboard fallback (research R2); record
       results and refinements in `research.md`; leave SC-007 for the maintainer's review.

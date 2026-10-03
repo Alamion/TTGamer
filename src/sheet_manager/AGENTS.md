@@ -169,6 +169,10 @@ duplicate template facts here. Invariants that must never be broken:
   document values (the save asks when values of the earlier kind exist).
 - Every editor setting has a visible label and a `data-setting` key; draft issues point at it.
   A schema rule a save finds without a specific check reports `template-draft-invalid`.
+- Editor commands have one owner, `template-editor/commands.ts`: keys, the element menu, the
+  shortcut list, and the guide's table all come from it. Commands act on the normalized
+  selection as one undo step. Copied elements are clipboard text other editors (and authors)
+  paste: always parse them with the template schema before use (`template-clipboard-invalid`).
 
 ## Derived State
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.21.0
+
+### Minor feat
+
+- **Copy and paste elements (spec 023, T-089)**: Ctrl+C, Ctrl+X, and Ctrl+V copy, cut, and paste elements in the template editor — after the selected element, into a selected group, or at the end of the page, as one undo step; copies reach other pages, other tabs, and other authors as text, keep their own values, and their formulas read the copy's own elements; anything the new page cannot show appears in the issue list, and damaged text is refused with a message
+- **Select several elements (T-090)**: Ctrl/⌘+click and Shift+click on the page or in the outline select several elements; removing, duplicating, copying, the move keys, and dragging act on all of them in one step, Escape clears the selection, and the settings change what they all share at once, with **Mixed** where values differ
+- **Element menu and shortcut list (T-093)**: a right click (a long press on touch screens, or Shift+F10) opens an element's actions with their keys, including **Add to selection** on touch; the toolbar's **Keyboard shortcuts** button or `?` lists every editor shortcut, and the guide's table lists the same ones
+
 ## v3.20.0
 
 ### Minor feat
