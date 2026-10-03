@@ -48,6 +48,18 @@ Out of scope:
 - Touch dragging of elements (unchanged from spec 022).
 - Copying whole pages; the library already duplicates pages.
 
+## Clarifications
+
+### Session 2026-10-03
+
+- Q: Does paste accept elements copied outside this browser (for example a block another author
+  shared as text)? → A: Yes. Any text the editor copied is accepted wherever it comes from; it is
+  checked like an imported template before pasting, and damaged text or text from an incompatible
+  version is refused with a plain message.
+- Q: What do Alt+↑ and Alt+↓ do when the selected elements are in different groups? → A: Each
+  moves one place within its own group as one undo step; elements at the edge stay, the others
+  move; unavailable only when none can move.
+
 ## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Copy and paste elements (Priority: P1)
@@ -126,9 +138,10 @@ drag them into one group: the three are there, in page order, and one Undo retur
    inserted together at the paste place, in page order, and become the new selection.
 6. **Given** a group and one of its own elements both selected, **Then** actions treat the element
    as part of its group (it is moved, copied, or removed with the group, never twice).
-7. **Given** several selected, **When** the author presses Alt+↑ or Alt+↓, **Then** the selected
-   elements that share a parent move together by one place; Alt+←/→ and column moves act only when
-   every selected element allows them.
+7. **Given** several selected, **When** the author presses Alt+↑ or Alt+↓, **Then** each selected
+   element moves one place within its own group, as one undo step; an element already first (or
+   last) stays, the others move, and the action is unavailable only when none can move. Alt+←/→ and
+   column moves act only when every selected element allows them.
 8. **Given** several selected, **When** the author presses Escape or clicks one element without a
    modifier, **Then** only that element (or none, after Escape) stays selected.
 9. **Given** a screen reader, **Then** adding to or removing from the selection is announced with
@@ -240,6 +253,8 @@ the guide's page shows the same entries.
   same system and document kind keeps working; on another system it shows an issue.
 - The clipboard holds something that is not a copied element (text, an image): Ctrl+V on the page
   does nothing to the elements.
+- Pasted text that looks like copied elements but is damaged or comes from an incompatible version:
+  nothing is pasted, and the editor says the copied elements could not be read.
 - Copying in one browser tab and pasting in another with the editor open: the copy is pasted.
 - A multi-selection that includes the only element of a group: removing it leaves the group empty,
   as removing it alone would.
@@ -270,6 +285,10 @@ the guide's page shows the same entries.
   mark); on another page its names MUST be kept.
 - **FR-005**: The copied elements MUST stay available for pasting after the editor is closed, on
   any page opened in the editor in the same browser, including another tab.
+- **FR-005a**: Ctrl+V MUST accept copied elements from any source (another browser, another
+  author's shared text); before pasting, they MUST pass the same checks as an imported template,
+  and text that fails them (damaged, or from an incompatible version) MUST be refused with a
+  plain-language message, leaving the page unchanged.
 - **FR-006**: A pasted element that reads values, lists, or catalogs the target page lacks MUST be
   kept and reported in the issue list, naming the element and the setting (spec 022 rules).
 
@@ -283,7 +302,9 @@ the guide's page shows the same entries.
   selected MUST be shown and announced to screen readers.
 - **FR-009**: Remove, Duplicate, Copy, Cut, drag, and keyboard moves MUST act on the whole
   selection as one undo step each; an element inside a selected Group MUST be treated as part of
-  it; a move MUST be offered only where every selected element may go.
+  it; a drag or a move out of or into a group MUST be offered only where every selected element
+  may go; Alt+↑/↓ MUST move each selected element one place within its own group (elements at the
+  edge stay) and be unavailable only when none can move.
 - **FR-010**: A dragged multi-selection MUST land at the drop place in page order, and the live
   preview MUST show the whole set.
 - **FR-011**: With several elements selected, the settings area MUST show the count, the list of
@@ -325,7 +346,8 @@ the guide's page shows the same entries.
 - **Selection**: the set of selected elements of the page being edited, with the last selected one
   (the anchor for Shift+click and for paste placement); part of each undo step.
 - **Copied elements**: the elements last copied or cut, with the page, document kind, and game
-  system they came from; kept in the browser for later pastes.
+  system they came from; kept in the browser for later pastes and written to the system clipboard
+  as text that another editor (another tab, browser, or author) can paste after checking it.
 - **Shared setting**: a setting every selected element has, with one value or "Mixed".
 - **Editor action**: an action the editor offers (copy, paste, move up, …) with its shortcut, its
   menu item, and whether it applies to the current selection; the single list behind the keys, the
