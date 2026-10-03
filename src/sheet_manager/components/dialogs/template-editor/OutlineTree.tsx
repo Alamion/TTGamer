@@ -65,7 +65,20 @@ const OutlineItem = memo(function OutlineItem({
                 <button
                     type="button"
                     aria-pressed={selected}
-                    onClick={() => actions.select(node.id, 'outline')}
+                    onClick={(event) =>
+                        actions.select(
+                            node.id,
+                            'outline',
+                            event.shiftKey
+                                ? 'range'
+                                : event.ctrlKey || event.metaKey
+                                  ? 'toggle'
+                                  : 'only'
+                        )
+                    }
+                    onMouseDown={(event) => {
+                        if (event.shiftKey) event.preventDefault();
+                    }}
                     className="flex min-w-0 flex-1 items-baseline gap-2 py-1 text-left"
                 >
                     <span

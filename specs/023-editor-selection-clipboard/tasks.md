@@ -117,7 +117,7 @@ document kind, paste: the section and its contents appear without issues; one Un
 
 ### Tests
 
-- [ ] T011 [P] [US1] Unit tests `TESTS/editor-clipboard.test.ts` for T013–T015:
+- [x] T011 [P] [US1] Unit tests `TESTS/editor-clipboard.test.ts` for T013–T015:
     - serialize → parse round trip; not JSON and other `format` → `ignored`; `formatVersion` 2 →
       `version`; a node breaking the schema (empty label, unknown type, too many options) →
       `schema`; extra unknown keys are stripped; `__proto__` keys do not pollute;
@@ -130,7 +130,7 @@ document kind, paste: the section and its contents appear without issues; one Un
     - placement: nothing selected → end of root; a group → end of its children; a field → after it
       in its column; depth refusal falls back after the container, then to the root end; count
       refusal refuses.
-- [ ] T012 [P] [US1] Component tests in `TESTS/editor-clipboard-ui.test.tsx` (render Dialog, fire
+- [x] T012 [P] [US1] Component tests in `TESTS/editor-clipboard-ui.test.tsx` (render Dialog, fire
       `copy`/`cut`/`paste` events with a stub `clipboardData`):
     - copy writes the envelope as `text/plain`; paste after the selected field selects the copy,
       named "… (copy)", one Undo removes it;
@@ -148,21 +148,21 @@ document kind, paste: the section and its contents appear without issues; one Un
 
 ### Implementation
 
-- [ ] T013 [US1] Create `TE/clipboard.ts`: `CopiedElements` type, `serializeCopied(draft, ids)`
+- [x] T013 [US1] Create `TE/clipboard.ts`: `CopiedElements` type, `serializeCopied(draft, ids)`
       (normalized subtrees, `source` from the draft), `parseCopied(text)` →
       `{ ok: true; copied } | { ok: false; stage: 'ignored' | 'version' | 'schema' }` (JSON, envelope,
       nodes parsed by wrapping them in a throwaway `CustomTemplateSchema` parse with the target's
       system and kind), the memory slot `rememberCopied`/`lastCopied`.
-- [ ] T014 [US1] In `TE/draft.ts` extend `cloneWithFreshIds` with options `samePage` and
+- [x] T014 [US1] In `TE/draft.ts` extend `cloneWithFreshIds` with options `samePage` and
       `targetCoordinates` for the value-key rule (research R3) and return the
       `old → new` coordinate map; add `remapCoordinates(node, map)` that rewrites `formula`,
       `maxFrom`, `minFrom`, `maxMinFrom` token by token with the formula lexer of
       `src/sheet_manager/features/sheet/declarative/formula.ts`, and `visibleWhen.coordinate`; apply
       it in `duplicateNode` too. Keep the "copy" name suffix only for `samePage`.
-- [ ] T015 [US1] In `TE/clipboard.ts` add `pastePlacement(draft, selection)` and
+- [x] T015 [US1] In `TE/clipboard.ts` add `pastePlacement(draft, selection)` and
       `pasteCopied(draft, copied, selection)` → `DraftOpResult & { ids }` using T014 and
       `insertNodesAt` with the fallback chain of data-model "Paste placement".
-- [ ] T016 [US1] Wire clipboard events in Dialog: listeners for `copy`, `cut`, `paste` on the
+- [x] T016 [US1] Wire clipboard events in Dialog: listeners for `copy`, `cut`, `paste` on the
       content element (edit mode only), skipped when the target is a text box (reuse
       `isTypingTarget` from `TE/shortcuts.ts`, exported); copy/cut call `preventDefault`, write
       `clipboardData`, remember in memory; cut removes with `removeNodes` in one step; paste parses
@@ -174,7 +174,7 @@ document kind, paste: the section and its contents appear without issues; one Un
       research R2 (one-shot check after `KeyC`/`KeyX`/`KeyV` with the platform modifier, cancelled
       by the clipboard event). Reveal the pasted selection on the page and in the outline, opening
       folded ancestors (data-model "Multi-node operations").
-- [ ] T017 [US1] Add Cut, Copy, Paste to the command registry (`clipboard` field, no keydown
+- [x] T017 [US1] Add Cut, Copy, Paste to the command registry (`clipboard` field, no keydown
       binding) with `available` (selection non-empty; Paste: memory slot set) for US4/US5.
 
 **Checkpoint**: quickstart §2 passes; commit.

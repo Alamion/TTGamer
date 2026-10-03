@@ -40,6 +40,15 @@ import {
 } from '../../types/template';
 import { ConfirmDialog } from './ConfirmDialog';
 import {
+    copySelection,
+    parseCopied,
+    pasteCopied,
+    rememberCopied,
+    rememberedCopy,
+    serializeCopied,
+} from './template-editor/clipboard';
+import { clipboardKey } from './template-editor/commands';
+import {
     addOption,
     addTableColumn,
     attachCatalog,
@@ -121,6 +130,7 @@ import {
     useSchemaBackstop,
 } from './template-editor/issues';
 import { type MoveCommand, resolveMoveTarget } from './template-editor/moveTargets';
+import { removeNodes } from './template-editor/multiOps';
 import { OutlineTree } from './template-editor/OutlineTree';
 import { PaneDivider } from './template-editor/PaneDivider';
 import {
@@ -136,7 +146,11 @@ import {
     useSettingsGroupSession,
 } from './template-editor/settings/groupState';
 import { inputClasses } from './template-editor/settings/inputClasses';
-import { type EditorShortcutHandlers, useEditorShortcuts } from './template-editor/shortcuts';
+import {
+    type EditorShortcutHandlers,
+    isTypingTarget,
+    useEditorShortcuts,
+} from './template-editor/shortcuts';
 import { EditorDragContext, useEditorDrag } from './template-editor/useEditorDrag';
 import { type Pane, PANE_LIMITS, usePaneWidths } from './template-editor/usePaneWidths';
 
@@ -561,6 +575,145 @@ export function TemplateEditorDialog({
         };
     }, [duplicate, moveByCommand, onSelection, redoChange, removeSelected, undoChange]);
     useEditorShortcuts(contentElement, mode === 'edit' ? shortcutHandlers : {});
+
+    /** Opens folded groups around a node, outermost first, then scrolls it into view. */
+    const revealNode = useCallback((nodeId: string) => {
+        const chain: string[] = [];
+        const current = historyRef.current.present.draft;
+        for (
+            let parent = findNodePosition(current, nodeId)?.parentId ?? null;
+            parent !== null;
+            parent = findNodePosition(current, parent)?.parentId ?? null
+        ) {
+            chain.unshift(parent);
+        }
+        const later = (run: () => void) =>
+            typeof window.requestAnimationFrame === 'function'
+                ? window.requestAnimationFrame(run)
+                : setTimeout(run, 0);
+        const step = (index: number) => {
+            if (index >= chain.length) {
+                reveal(`[data-editor-frame][data-node-id="${nodeId}"]`, 'center');
+                reveal(`[data-outline-row="${nodeId}"]`, 'nearest');
+                return;
+            }
+            const frame = document.querySelector(
+                `[data-editor-frame][data-node-id="${chain[index]}"]`
+            );
+            const toggle = frame?.querySelector<HTMLElement>('button[aria-expanded="false"]');
+            if (toggle && toggle.closest('[data-editor-frame]') === frame) toggle.click();
+            later(() => step(index + 1));
+        };
+        later(() => step(0));
+    }, []);
+
+    /**
+     * Copy, cut, and paste of elements (spec 023, research R2). Returns false when there is
+     * nothing for the editor to do, so the browser keeps its own behavior.
+     */
+    const clipboardAction = useCallback(
+        (action: 'copy' | 'cut' | 'paste', data: DataTransfer | null): boolean => {
+            const current = historyRef.current;
+            const { draft: present, selection: chosen } = current.present;
+            if (action !== 'paste') {
+                const copied = copySelection(present, chosen.ids);
+                if (!copied) return false;
+                rememberCopied(copied);
+                const text = serializeCopied(copied);
+                if (data) data.setData('text/plain', text);
+                else void navigator.clipboard?.writeText(text).catch(() => undefined);
+                if (action === 'cut') {
+                    const removed = removeNodes(present, chosen.ids);
+                    commit(
+                        applyChange(current, removed.draft, {
+                            selection: selectOnly(removed.next),
+                        })
+                    );
+                    setSaveIssues([]);
+                    setAnnouncement(
+                        plural(editor.cutDone, removed.count, { count: removed.count })
+                    );
+                }
+                return true;
+            }
+            const text = data?.getData('text/plain') ?? '';
+            let copied = text ? undefined : rememberedCopy();
+            if (text) {
+                const parsed = parseCopied(text, present);
+                if (!parsed.ok) {
+                    if (parsed.stage === 'ignored') return false;
+                    const message = t(
+                        parsed.stage === 'version'
+                            ? editor.clipboardNewer
+                            : editor.clipboardUnreadable
+                    );
+                    reportSheetIssue({
+                        code: 'template-clipboard-invalid',
+                        message: 'Pasted elements were refused',
+                        details: { stage: parsed.stage, error: parsed.error },
+                    });
+                    setSaveIssues([{ message }]);
+                    setAnnouncement(message);
+                    return true;
+                }
+                copied = parsed.copied;
+            }
+            if (!copied) return false;
+            const result = pasteCopied(present, copied, chosen.ids);
+            if (!result.ok) {
+                const message = describeFailure(result);
+                setSaveIssues([{ message }]);
+                setAnnouncement(message);
+                return true;
+            }
+            commit(
+                applyChange(current, result.draft, {
+                    selection: { ids: result.ids, anchor: result.ids[result.ids.length - 1]! },
+                })
+            );
+            setSaveIssues([]);
+            setAnnouncement(plural(editor.pasted, result.ids.length, { count: result.ids.length }));
+            if (result.ids[0]) revealNode(result.ids[0]);
+            return true;
+        },
+        [commit, describeFailure, plural, revealNode, t]
+    );
+
+    useEffect(() => {
+        if (!contentElement || mode !== 'edit') return;
+        const textSelected = () => {
+            const selected = window.getSelection?.();
+            return Boolean(selected && !selected.isCollapsed && selected.toString());
+        };
+        // Safari sends no clipboard events without a text selection: the key acts instead.
+        let pending: 'copy' | 'cut' | 'paste' | null = null;
+        const onKeyDown = (event: KeyboardEvent) => {
+            const action = clipboardKey(event);
+            if (!action || isTypingTarget(event.target) || textSelected()) return;
+            pending = action;
+            setTimeout(() => {
+                if (pending !== action) return;
+                pending = null;
+                clipboardAction(action, null);
+            }, 0);
+        };
+        const onClipboard = (event: ClipboardEvent) => {
+            pending = null;
+            if (isTypingTarget(event.target) || textSelected()) return;
+            const action = event.type as 'copy' | 'cut' | 'paste';
+            if (clipboardAction(action, event.clipboardData)) event.preventDefault();
+        };
+        contentElement.addEventListener('keydown', onKeyDown);
+        for (const type of ['copy', 'cut', 'paste']) {
+            contentElement.addEventListener(type, onClipboard as EventListener);
+        }
+        return () => {
+            contentElement.removeEventListener('keydown', onKeyDown);
+            for (const type of ['copy', 'cut', 'paste']) {
+                contentElement.removeEventListener(type, onClipboard as EventListener);
+            }
+        };
+    }, [clipboardAction, contentElement, mode]);
 
     const issueMessages = useMemo<DraftIssueMessages>(
         () => ({
