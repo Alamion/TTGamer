@@ -206,9 +206,8 @@ duplicate template facts here. Invariants that must never be broken:
   groups, resource tracks, special-power blocks, labels, limits), not copied sheet pages. Reserve
   bespoke React blocks for genuinely different interaction models.
 - An element a setting needs is built as a template element user templates can configure in the
-  editor, preferably as an option on an existing element; it and its variants appear in the
-  draft-only element storybook (constitution VI): a story in `storybook/stories.ts` (built-in parts
-  are generated from bindings) and a tag in `tests/sheet_manager/storybook.test.tsx`.
+  editor, preferably as an option on an existing element; it and its variants appear in the element
+  storybook (constitution VI; how-to in the `sheet-templates` skill).
 - `TraitRowWithInput` is controlled by `specializationText`; parent/store changes must appear
   immediately.
 - Icon-only actions require accessible labels.
@@ -220,7 +219,7 @@ duplicate template facts here. Invariants that must never be broken:
 
 ## Testing
 
-Run schema/import/derived-stat tests for changes to `types/`, persistence, or import/export. Run
-`yarn verify` before handoff. Load `.agents/skills/sheet-manager/SKILL.md` for schema, store, or
-derived-stat changes and `.agents/skills/sheet-templates/SKILL.md` for pages, bindings, or docs
-embeds.
+Run schema/import/derived-stat tests for changes to `types/`, persistence, or import/export, then
+the checks for the change size (`AGENTS.md` §11). Load `.agents/skills/sheet-manager/SKILL.md` for
+schema, store, or derived-stat changes and `.agents/skills/sheet-templates/SKILL.md` for pages,
+bindings, or docs embeds.

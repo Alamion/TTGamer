@@ -77,7 +77,12 @@ description:
 ## Workflow
 
 1. Change mirrored English/Russian YAML (and the glossary when a game term is involved).
-2. `yarn build:translations`, then use the generated descriptor or catalog output in code.
-3. `yarn i18n:verify` (and `yarn i18n:status` for coverage).
-4. `yarn verify:fast` (runs `build:translations --check` and `validate:i18n`); `yarn verify:full`
-   when generated adapters, CSS, or Docusaurus configuration change.
+2. `yarn build:translations` (it also runs before start, test, typecheck, build, and on install),
+   then use the generated descriptor or catalog output in code. Generated files
+   (`src/i18n/generated/`, `i18n/*/code.json`) are not tracked; Docusaurus's own strings live in
+   `translations/source/<locale>/docusaurus.json`.
+3. `yarn validate:i18n`: one check for docs pairs and structure, YAML sources, and coverage
+   (`yarn i18n:verify` for the verifier alone with its report flags, `yarn i18n:status` for
+   coverage).
+4. The commit hook runs `validate:i18n` when translation files are staged; other checks by change
+   size in `AGENTS.md` §11.

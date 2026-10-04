@@ -194,28 +194,28 @@ wrapping of agent-facing markdown.
 - [x] T042 [US4] Add Prettier `overrides` (`proseWrap: "always"`) for `.agents/**/*.md`,
       `**/AGENTS.md`, `specs/**/*.md` in `.prettierrc`, and `specs/**/*.html` to `.prettierignore`;
       reformat those files in a separate commit (`style: wrap agent-facing markdown`)
-- [ ] T043 [US4] Amend `.specify/memory/constitution.md` under the current procedure one last time
+- [x] T043 [US4] Amend `.specify/memory/constitution.md` under the current procedure one last time
       (amendment summary — principles touched, rationale, version 1.5.0 → 1.6.0 — in the commit
       message and the CHANGELOG entry), then: remove the Sync Impact Report, rewrite the amendment
       procedure to record history in git and CHANGELOG, rewrite Verification Workflow around
       commit/push/merge checks and `ci:*` commands, point Governance amendment history to git and
       CHANGELOG, bump to 1.6.0
-- [ ] T044 [US4] Make each cross-cutting rule single-owner (owners per research R11) across
+- [x] T044 [US4] Make each cross-cutting rule single-owner (owners per research R11) across
       `AGENTS.md`, `src/sheet_manager/AGENTS.md`, `src/dice_roller/AGENTS.md`,
       `.agents/skills/*/SKILL.md`, replacing restatements with one-line pointers
-- [ ] T045 [US4] Fix the audit's stale statements: `useCharacter` → `useBoundDocument`
+- [x] T045 [US4] Fix the audit's stale statements: `useCharacter` → `useBoundDocument`
       (`.agents/skills/typescript/SKILL.md`); `verify*` descriptions (`AGENTS.md` §3, skills);
       `docs/wod` and missing doc trees (`AGENTS.md` §6); store `version: 3` → 4 and registered
       plugins (`.agents/skills/sheet-manager/SKILL.md`); Testing tier in
       `src/sheet_manager/AGENTS.md`; merge `.agents/skills/coding-standards` into
       `.agents/skills/typescript` and list skills correctly in `AGENTS.md` §7
-- [ ] T046 [US4] Split `.agents/skills/sheet-templates/SKILL.md` into an index (≤ 300 lines: mental
+- [x] T046 [US4] Split `.agents/skills/sheet-templates/SKILL.md` into an index (≤ 300 lines: mental
       model, invariants, extension checklists, "load X when touching Y") and
       `.agents/skills/sheet-templates/references/{editor,library,trackers,lists-tables,formulas-embeds}.md`;
       drop file lists, the tests map, and test ids
 - [ ] T047 [US4] Retire `src/sheet_manager/TODO.md` into the root `TODO.md` (or delete if fully
       superseded) and run `yarn validate:backlog`
-- [ ] T048 [US4] Commit US4
+- [x] T048 [US4] Commit US4
       (`docs(guidance): one owner per rule, constitution 1.6.0, sheet-templates index (spec 024, US4)`)
 
 ## Phase 8: Polish

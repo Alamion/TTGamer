@@ -1,85 +1,3 @@
-<!--
-SYNC IMPACT REPORT
-==================
-Version change: 1.4.2 -> 1.5.0 (amendment: element storybook and template-editor parity
-  for new elements)
-
-Modified principles:
-  VI. Consistent, Accessible Experience — every template and documentation element, with its
-    variants, and every palette color appear in a draft-only docs storybook; elements a
-    setting needs are built as editor-configurable template elements, extending an existing
-    element in preference to adding a similar one
-
-Runtime guidance updated: AGENTS.md (§8 Module Boundaries), src/sheet_manager/AGENTS.md
-  (UI Rules), .agents/skills/sheet-templates/SKILL.md
-
-Deferred TODOs: none (T-069 built the storybook: `docs/dev/storybook/`)
-
-Previous: 1.4.1 -> 1.4.2 (clarification: the Dark Pack policy covers World of
-  Darkness 5th Edition material only; a policy is declared only where it actually grants rights
-  to the material, so classic World of Darkness engines and conversions built on them, such as
-  the Star Wars WoD 2e hybrid, declare no Dark Pack notice)
-
-Modified principles:
-  VIII. Respectful Use of Third-Party Material — Dark Pack scope corrected in the example list;
-    rule added that policies are declared only where they apply
-
-Runtime guidance updated: src/sheet_manager/systems/policies.ts (policy scope comment),
-  TODO.md (T-037 note)
-
-Deferred TODOs: none
-
-Previous: 1.4.0 -> 1.4.1 (clarification: a policy badge confirms the project accepts
-  the policy; it is placed once in a prominent place per product surface that presents the
-  material, not repeated on every view, and game mechanics alone need no notice)
-
-Modified principles:
-  VIII. Respectful Use of Third-Party Material — badge placement and the mechanics
-    exception made explicit
-
-Runtime guidance updated: AGENTS.md (§8 Module Boundaries, third-party material)
-
-Deferred TODOs: none
-
-Previous: 1.3.1 -> 1.4.0 (amendment: the dead-code audit becomes a Tier 2 gate instead
-  of an advisory report; exemptions are declaration-level with a stated reason)
-
-Modified sections:
-  Verification Workflow — `yarn audit:dead-code` runs inside `yarn verify` (Tier 2) and fails
-    the run on any unused file, export, or dependency; `@knipignore` at the declaration with a
-    stated reason is the only exemption; dependency removal stays human-reviewed
-
-Runtime guidance updated: AGENTS.md (§3 command table, §10 Verification Scope)
-
-Deferred TODOs: none
-
-Previous: 1.3.0 -> 1.3.1 (clarification: VIII notices may be one dedicated page plus
-  badges where material is used, instead of full text on every surface)
-
-Previous: 1.2.0 -> 1.3.0 (amendment: layered game systems, third-party content, library scale)
-
-Modified principles:
-  I. Modular Semi-Autonomy — game systems are layered as ruleset + setting + module; one
-     supernatural module per character by default, crossovers extend sheets through templates
-  II. Explicit Contracts at Boundaries — persisted/imported data is validated by the document
-     envelope and the registered definition schema (BaseCharacterSchema is the legacy import
-     path only); MDX imports use `@site/` so tooling can resolve them
-  VII. Performance as a Shared Budget — entity collections must scale to thousands of documents
-
-Added principles:
-  VIII. Respectful Use of Third-Party Material — own-words rules text, publisher policies
-        tracked as system metadata with notices shown where material is used, free
-        non-commercial distribution of licensed content, honest client-side hiding
-
-Sections:
-  Quality & Standards Matrix — sheet_manager and docs rows updated
-  Verification Workflow — advisory `yarn audit:dead-code`
-
-Runtime guidance updated: AGENTS.md (§8 Module Boundaries), .agents/skills/mdx-documentation/SKILL.md
-
-Deferred TODOs: T-037 (text audit + automatic notices) implements Principle VIII for existing content
--->
-
 # TTGamer Constitution
 
 ## Core Principles
@@ -124,8 +42,8 @@ contract. Rules:
   `tests/docs/mdx-imports.test.ts` enforces this.
 - Catalog and data integrity is enforced by `yarn validate:data`; documentation parity
   (en ↔ ru) by `yarn validate:i18n`; UI/catalog strings come from the YAML canonical
-  sources via `yarn build:translations`. Generated `ttgamer.*` entries MUST NOT be
-  hand-edited.
+  sources via `yarn build:translations`. Generated files (`ttgamer.*` entries, translation
+  modules) MUST NOT be hand-edited and are not tracked; every build path generates them.
 - Machine-readable facts have exactly one owner (version → `package.json`, release
   summaries → `CHANGELOG.md`, UI strings → `translations/source`). Prose MAY summarize
   but MUST NOT duplicate them as a second authority.
@@ -315,37 +233,50 @@ is perceived, the principles govern and this table clarifies application.
 
 ## Verification Workflow
 
-- **Tier 1 — Fast check** (`yarn verify:fast`): lint + typecheck. Required for any small
-  code edit; the default for most branches.
-- **Tier 2 — Logic and schema** (`yarn verify`): lint + typecheck + dead-code audit + full
-  test suite. Required for edits to `dice-logic`, schemas, stores, or persistence.
-- **Tier 3 — Full verification** (`yarn verify:full`): lint + typecheck + tests +
-  production build. Required for config, dependency, route, generated-CSS, or
-  documentation-path changes.
-- **Dead-code gate** (`yarn audit:dead-code`, inside Tier 2): knip fails the run on any
-  unused file, export, or dependency and names the file and symbol. An export that exists
-  deliberately without importers (for example an exhaustiveness guard) is exempted at its
-  declaration with `@knipignore` and a stated reason — never by a broad ignore pattern.
-  Removing a dependency to satisfy the gate stays a human decision.
-- **Specialized validators**: `yarn validate:data` and `yarn validate:i18n` are required
-  gates for their domains and are not substitutes for tests.
-- **Review expectations**: every change states which modules it touches; cross-module
-  changes identify the contract being relied on; UI changes confirm the accessibility
-  floor; PRs that violate a principle must either comply or propose a constitution
-  amendment — silent exceptions are prohibited.
+`AGENTS.md` §11 owns the commands, hooks, and tiers; this section states the rules they serve.
+
+- Checks are project scripts (`ci:*`) that every runner calls the same way: local hooks, hosted
+  CI, Vercel, and later Jenkins. No runner holds check logic of its own.
+- **Commit**: format and lint the staged files only.
+- **Push**: type-check every source, configuration, and test file, and run the tests related to
+  the change.
+- **By blast radius**, before a story is committed:
+  - dice logic, schema, store, or persistence edits run the full unit suite and the dead-code
+    gate;
+  - config, dependency, route, generated-CSS, or documentation-path edits run the full
+    verification, including the build.
+- **Merge into `master`** requires the full verification, including the build and the timing
+  tests.
+- **Dead-code gate**: knip fails on any unused file, export, or dependency. A deliberate export
+  without importers is exempted at its declaration with `@knipignore` and a reason, never by a
+  broad ignore pattern. Removing a dependency to satisfy the gate stays a human decision.
+- **Timing**:
+  - The default test run holds no wall-clock assertions.
+  - Timing tests run alone and compare against a baseline from the same run.
+  - A flaky test is fixed or quarantined, never only given a longer timeout.
+- **Specialized validators**: `yarn validate:data` and `yarn validate:i18n` are required gates
+  for their domains and are not substitutes for tests.
+- **Review expectations**:
+  - Every change states which modules it touches.
+  - Cross-module changes identify the contract they rely on.
+  - UI changes confirm the accessibility floor.
+  - Changes that violate a principle either comply or propose a constitution amendment; silent
+    exceptions are prohibited.
 
 ## Governance
 
 - This constitution supersedes other practices where they conflict. Conflicts are
   resolved in favor of the constitution until it is formally amended.
 - **Amendment procedure**: propose the change (principle text + rationale + affected
-  modules), update this document with a Sync Impact Report, bump the version per the
-  policy below, and mirror material changes into runtime guidance (`AGENTS.md` and the
-  matching `.agents/skills/` documents) so agents and humans read the same rules.
+  modules), update this document, bump the version per the policy below, and record the
+  amendment (principles touched, rationale, old → new version) in the commit message and the
+  release's CHANGELOG entry; git history is the amendment log. Mirror material changes into
+  runtime guidance (`AGENTS.md` and the matching `.agents/skills/` documents) as pointers, so
+  each rule keeps one owner.
 - **Versioning policy**: MAJOR for removal or redefinition of a principle or
   backward-incompatible governance change; MINOR for new principles, sections, or
   materially expanded guidance; PATCH for clarifications and wording. The version line
-  at the bottom of this file MUST always match the latest Sync Impact Report.
+  at the bottom of this file MUST change with every amendment.
 - **Compliance review**: reviews verify principle compliance explicitly; complexity
   beyond the standards here must be justified in the PR description; unverifiable claims
   ("it's fast", "it's tested") are replaced by the concrete gate that proves them.
@@ -358,4 +289,4 @@ is perceived, the principles govern and this table clarifies application.
   guidance file for day-to-day development; it must remain consistent with this
   constitution and defer to it on conflict.
 
-**Version**: 1.5.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-09-25
+**Version**: 1.6.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-10-04

@@ -23,9 +23,9 @@ detail.
 - Plugins (`SystemPlugin`) carry a translated `label`, `policies` (publisher policy ids), `catalogs`
   (declared with `systems/catalogs.ts`), `defaultTemplates`, `templateBindings`, and optional `dice`
   (`traitPool` for stat rolls, `reading` for system dice outcomes; see
-  `src/sheet_manager/AGENTS.md`). Registered plugins: `star-wars-wod` (`systems/star-wars-wod/`) and
-  `v5` (`systems/v5/`). The registry rejects view ids shared by two systems and unknown policy ids,
-  and exposes `listDefinitions()` (create dialog) and `getSystem()`.
+  `src/sheet_manager/AGENTS.md`). Registered plugins: `star-wars-wod` (`systems/star-wars-wod/`),
+  `wod-2e` (`systems/wod2e/`), and `v5` (`systems/v5/`). The registry rejects view ids shared by two
+  systems and unknown policy ids, and exposes `listDefinitions()` (create dialog) and `getSystem()`.
 - **Layering (constitution I).** `v5` is a _ruleset_ plugin: `systems/v5/ruleset/` owns the shared
   V5 mechanics (profile, `V5CoreShape` schema, core bindings, page parts) and
   `systems/v5/modules/<line>/` adds a supernatural module (hunter today). A module extends
@@ -86,7 +86,7 @@ detail.
 
 `store/documentStore.ts` — Zustand 5 + `persist` (async localForage storage, IndexedDB):
 
-- Storage key `'universal-character-storage'`, `version: 3`, `migrate: migrateDocumentStoreState`.
+- Storage key `'universal-character-storage'`, `version: 4`, `migrate: migrateDocumentStoreState`.
 - State: `documents[]`, `currentDocumentId`, bounded `recoveryEntries` (max 100).
 - Envelopes also carry the flat `templateValues` bag; templates, defaults, formulas, and the
   template write path are documented in `.agents/skills/sheet-templates/SKILL.md`.
@@ -158,5 +158,5 @@ are read-only formula fields in its Other section (`systems/star-wars-wod/templa
 - Composition regression coverage: `primitive-parity.test.tsx` and `entity-templates.test.tsx`
   (shipped pages render without degradation), `document-system.test.ts` (registry, migrations, view
   aliases, template-backed views).
-- Run `yarn verify` for schema/persistence/import changes; `yarn verify:fast` plus targeted tests
-  otherwise.
+- Checks by change size: `AGENTS.md` §11 (schema, persistence, and import changes run
+  `yarn verify`).

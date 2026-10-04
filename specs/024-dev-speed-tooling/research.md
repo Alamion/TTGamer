@@ -251,3 +251,40 @@ findings behind the spec are summarized in [spec.md](spec.md#context).
   and `style` commits are left out.
 - `AGENTS.md` §11 owns verification and the flaky-test policy; the new §12 owns the workflow
   (commands, small change path, prototypes, merge).
+
+### US4 — guidance
+
+- Prettier `proseWrap: always` for `.agents/**/*.md`, `**/AGENTS.md`, and `specs/**/*.md`. Specs
+  001–023 are excluded through `excludeFiles`, because existing spec folders are not rewritten. The
+  reformat was its own commit.
+- Constitution 1.5.0 → 1.6.0: the embedded Sync Impact Report was removed. Verification Workflow now
+  states the commit, push, and merge rules and points to `AGENTS.md` §11 for the commands. The
+  amendment procedure records history in the commit message and the CHANGELOG. Generated translation
+  files are marked untracked.
+- One owner per rule:
+    - verification → `AGENTS.md` §11;
+    - workflow → §12;
+    - storybook → constitution VI, with the how-to in the `sheet-templates` skill;
+    - publisher notices → constitution VIII, with the badge location in
+      `src/sheet_manager/AGENTS.md`;
+    - document access → `src/sheet_manager/AGENTS.md`;
+    - translations → the `ui-i18n` skill.
+
+    The restatements in `AGENTS.md` §8, `src/dice_roller/AGENTS.md`, `src/sheet_manager/AGENTS.md`,
+    and the `typescript`, `ui-i18n`, and `sheet-manager` skills are now pointers.
+
+- Stale statements fixed:
+    - `useCharacter()` → `useBoundDocument()` in the `typescript` skill;
+    - the command table (§3);
+    - the docs tree (§6: `docs/wod` gone; `wod-v5`, `roll-sharing`, `dev` added);
+    - the document store `version: 4` and the three registered plugins (`sheet-manager` skill);
+    - the testing tiers in the module notes;
+    - `coding-standards` merged into `typescript` and deleted.
+- `sheet-templates`: an index of 163 lines plus `references/` (`node-tree`, `bindings`, `pages`,
+  `formulas-embeds`, `editor`, `library`). The reference names follow the skill's real sections
+  instead of R11's provisional list. The tests map and history were dropped; the sections moved
+  verbatim.
+- Deferred (T047): `src/sheet_manager/TODO.md` still lists open product ideas (Generic notes, D&D
+  5e, CoD and Cyberpunk RED plugins, a new-character wizard, system badges, derived setting,
+  bulk-import detection). Folding them into the root backlog or closing them is the maintainer's
+  call.

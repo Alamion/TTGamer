@@ -1,7 +1,8 @@
 ---
 name: typescript
 description:
-    Project TypeScript and React rules. Read before editing or reviewing .ts, .tsx, or .mts files.
+    Project TypeScript and React rules plus the review checklist. Read before editing or reviewing
+    .ts, .tsx, or .mts files.
 ---
 
 # TTGamer TypeScript
@@ -29,7 +30,8 @@ existing type/schema before adding a parallel representation.
 - Do not mirror props into state through a synchronization effect unless local draft semantics are
   explicitly required.
 - Use functional state updates when the next state depends on the previous state.
-- Reusable sheet blocks read through `useCharacter()`, not directly from the collection store.
+- Bound sheet elements read through `useBoundDocument()` (`src/sheet_manager/AGENTS.md`, "Character
+  Access"), not directly from the collection store.
 - Hooks must have complete dependency arrays; restructure unstable values instead of disabling the
   rule by default.
 - Native interactive elements come first. Icon-only buttons need `aria-label`; collapsibles need
@@ -46,5 +48,27 @@ existing type/schema before adding a parallel representation.
 
 - Prettier uses four spaces, semicolons, single quotes, 100 columns.
 - Comments explain non-obvious rationale or constraints; avoid narrating straightforward code.
-- Run targeted tests, then `yarn verify:fast`. Use `yarn verify` for logic/schema changes and
-  `yarn verify:full` for config, route, dependency, or generated-style changes.
+- Run targeted tests, then the checks for the change size: `AGENTS.md` §11.
+
+## Review Priorities
+
+1. Correctness and data loss risks.
+2. Runtime-boundary validation and resource limits.
+3. Module ownership and small public APIs: import the owning file, never a directory index (ESLint
+   enforces this in the sheet manager).
+4. Accessibility and responsive interaction.
+5. Tests and executable verification.
+6. Naming, duplication, and cosmetic cleanup.
+
+## Implementation Checklist
+
+- Prefer the smallest coherent change that removes the root cause; avoid unrelated rewrites and
+  preserve user changes in a dirty worktree.
+- Reuse existing schemas and utilities; delete retired representations once compatibility parsing is
+  covered.
+- Give every loop, recursion, input size, external payload, and persisted collection an explicit
+  bound where growth is user-controlled. Catalog data is code but still validated (IDs and
+  cross-references).
+- New dialogs use Radix focus management; keep errors useful without exposing secrets.
+- External-service logs carry only bounded metadata (operation, reason category, status code).
+- Test behavior at public boundaries and add a regression test for each fixed bug.

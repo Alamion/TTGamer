@@ -122,13 +122,15 @@ check fo it existence before killing processes or creating new one.
 │   ├── pages/                 # Docusaurus pages
 │   ├── theme/                 # Theme swizzles (Root, NavbarItem)
 │   └── css/                   # Global CSS + Tailwind
-├── docs/                      # Documentation (MDX)
-│   ├── star-wars-wod-2e/      # 45 files — fully written
-│   └── wod/                   # VtM 2e structure — in progress
-│   └── template-editor/       # Template editor guide (linked from the editor's help)
+├── docs/                      # Documentation (MDX); every tree but dev/ has a ru mirror
+│   ├── star-wars-wod-2e/      # Star Wars WoD 2e rules and catalogs
+│   ├── wod-v5/                # V5 rules (Hunter: the Reckoning 5e)
+│   ├── template-editor/       # Template editor guide (linked from the editor's help)
+│   ├── roll-sharing/          # Discord/Matrix roll sharing setup
+│   └── dev/                   # Draft-only developer pages (storybook), English only
 ├── i18n/                      # Translations (en, ru)
 ├── translations/source/        # Canonical YAML UI/catalog translation sources
-├── scripts/                   # Catalog, i18n, and version validators
+├── scripts/                   # Validators, translation build, release script
 ├── tests/                     # Vitest logic, integration, and component tests
 ├── static/                    # Images, sounds (dice impacts, surfaces)
 └── context/                   # Local, git-ignored reference material (see context/AGENTS.md)
@@ -146,7 +148,7 @@ check fo it existence before killing processes or creating new one.
 | `mdx-documentation`      | Writing MDX docs — admonitions, cross-refs, dice notation              |
 | `ui-i18n`                | Editing YAML UI/catalog translations or generated adapters             |
 | `backlog`                | Editing TODO.md/TOFIX.md or normalizing raw input into backlog entries |
-| `typescript`             | Before writing any `.ts`/`.tsx` — code style & optimization            |
+| `typescript`             | Before writing any `.ts`/`.tsx` — code style, comments, optimization   |
 
 ## 8. Module Boundaries
 
@@ -154,8 +156,8 @@ check fo it existence before killing processes or creating new one.
   import the specific internal file they own.
 - `shared/` contains system-independent UI and utilities only. Cross-feature or external-service
   behavior belongs in `integrations/`.
-- Bound sheet elements read through `useBoundDocument()` (character capability for characters, typed
-  document data for other kinds); pages are shipped templates, not React blocks.
+- Sheet document access and composition: `src/sheet_manager/AGENTS.md` ("Character Access",
+  "Composition Scale"); pages are shipped templates, not React blocks.
 - Imported/persisted documents must pass the envelope schema and their registered definition schema;
   `BaseCharacterSchema` is only the legacy-character import path (Zod strips unknown legacy fields).
 - Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by
@@ -171,27 +173,13 @@ check fo it existence before killing processes or creating new one.
 - Generic sheet code never imports a concrete system folder: one ESLint `no-restricted-imports`
   pattern covers every `systems/<system>/` (allowed importers: `systems/index.ts`, `docsEmbeds.tsx`,
   the legacy path in `store/documentStore.ts`).
-- Third-party material: rules and catalog text in our own words (no verbatim book passages);
-  publisher notices (e.g. Dark Pack, which covers V5 material only) come from `systems/policies.ts`
-  metadata declared by plugins/modules and render as a badge on sheets (`PolicyBadges`, linking to
-  the policy's single docs page with `PolicyStatement`) and `notices` in exports — only where that
-  material is used, once per surface in a prominent place, never repeated on dice, toasts, history,
-  or messages; game mechanics alone need no notice (constitution VIII).
-- Element storybook (constitution VI): every template element variant, documentation widget, and
-  palette color appears in the draft-only docs storybook `docs/dev/storybook/` (stories in
-  `src/sheet_manager/storybook/stories.ts`, guarded by `tests/sheet_manager/storybook.test.tsx`;
-  widgets on `docs-widgets.mdx`; colors from `tailwind.config.cjs` via `shared/components/Palette`);
-  a new or changed element is not done until it does. A setting's new element is an
-  editor-configurable template element, preferably an option on an existing element rather than a
-  similar new one.
-- Data changes must pass `yarn validate:data`. Documentation under `docs/star-wars-wod-2e`,
-  `docs/wod-v5`, and `docs/template-editor` must be mirrored under Russian i18n and pass
-  `yarn validate:i18n`.
-- YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`;
-  do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.
-- `yarn verify:fast` runs the translation coverage verifier (`yarn i18n:verify`): user-facing
-  literals, missing keys, plurals, catalog and docs coverage, glossary consistency. New UI text goes
-  through YAML; exceptions need a reason in `translations/i18n-exceptions.yaml`.
+- Third-party material and publisher notices: constitution VIII (where the badge lives:
+  `src/sheet_manager/AGENTS.md`, "Systems, Modules, and Publisher Notices").
+- Element storybook: constitution VI; how to add a story: the `sheet-templates` skill.
+- Data changes must pass `yarn validate:data`. Every `docs/*` tree except `docs/dev` is mirrored
+  under Russian i18n; `yarn validate:i18n` checks the pairs and their structure.
+- UI and catalog strings: the `ui-i18n` skill (YAML sources; generated files are never edited or
+  tracked; exceptions need a reason in `translations/i18n-exceptions.yaml`).
 
 ## 9. Specs vs Current State
 

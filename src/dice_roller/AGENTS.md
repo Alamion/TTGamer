@@ -168,10 +168,10 @@ owning file directly, so widening the public API is an explicit decision.
 
 ## Testing
 
-Run `yarn test` for parser/evaluator/notation changes and `yarn verify` before handoff. Renderer
-changes must keep `tests/dice_roller/renderer/display-conditions.test.ts` green: its harness runs
-the real renderer headless under simulated refresh rates, stutter, and hidden tabs. Tests using a
-mock random function consume all initial dice first, then values required by modifiers.
+Parser, evaluator, and notation changes run `yarn verify` (`AGENTS.md` §11). Renderer changes must
+keep `tests/dice_roller/renderer/display-conditions.test.ts` green: its harness runs the real
+renderer headless under simulated refresh rates, stutter, and hidden tabs. Tests using a mock random
+function consume all initial dice first, then values required by modifiers.
 
 Load `.agents/skills/dice-logic/SKILL.md` before changing lexer, parser, evaluator, or 3D
 orchestration behavior.
