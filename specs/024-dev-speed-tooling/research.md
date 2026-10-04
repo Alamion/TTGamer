@@ -288,3 +288,17 @@ findings behind the spec are summarized in [spec.md](spec.md#context).
   5e, CoD and Cyberpunk RED plugins, a new-character wizard, system badges, derived setting,
   bulk-import detection). Folding them into the root backlog or closing them is the maintainer's
   call.
+
+### Quickstart results (2026-10-04)
+
+| Step                         | Result                                                                                                                                                                                                         |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Commit check (SC-001)     | Story commits took 3.7–6.8 s (125–139 s before). The `style:` reformat commit and the US4 commit also ran in seconds.                                                                                          |
+| 2. Type coverage (SC-002)    | A type error in `src/pages/` fails `yarn typecheck`. Warm run 1.1 s.                                                                                                                                           |
+| 3. Tests (SC-003, SC-004)    | Unit: 5/5 green, 89–93 s (**misses ≤ 60 s**; see US2). Perf: 5/5 green, ~45 s.                                                                                                                                 |
+| 4. Import weight             | The `rating-row` element test imports in 2.7 s (6.0 s before), with no editor or library.                                                                                                                      |
+| 5. Pre-push                  | Against `origin/master`, the whole branch ran 78 related test files (669 tests) in 83 s, within the 90 s of FR-002a. A single-story push runs fewer.                                                           |
+| 6. CI and Vercel (SC-005)    | A clean clone installs (generating translations), type-checks, tests, and builds with no manual step. GitHub Actions and the Vercel preview run on the first push of this branch, pending the maintainer's go. |
+| 7. Lean spec-kit (SC-006)    | `ttg-speckit-plan` loads from the repository in a fresh session. The full flow is measured on spec 025 (T-097).                                                                                                |
+| 8. Guidance (SC-007, SC-008) | `sheet-templates` index: 163 lines. Each audited rule has one owner. SC-007 is measured on spec 025.                                                                                                           |
+| 9. Translations (SC-009)     | 2 tracked files per new UI string; `validate:i18n` 5.2 s; a broken `{#id}` anchor is reported (unit test).                                                                                                     |
