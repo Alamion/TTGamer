@@ -40,26 +40,27 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 
 ## 3. Development Commands
 
-| Command                             | Purpose                                            |
-| ----------------------------------- | -------------------------------------------------- |
-| `yarn start`                        | Start Docusaurus dev server                        |
-| `yarn build`                        | Production build                                   |
-| `yarn serve`                        | Preview production build                           |
-| `yarn typecheck`                    | TypeScript check                                   |
-| `yarn lint` / `yarn lint:fix`       | ESLint + Prettier (check / auto-fix)               |
-| `yarn format` / `yarn format:check` | Prettier only (write / check)                      |
-| `yarn test`                         | Run Vitest tests                                   |
-| `yarn test:watch`                   | Vitest watch mode                                  |
-| `yarn test:coverage`                | Vitest coverage report                             |
-| `yarn validate:data`                | Validate catalogs and references                   |
-| `yarn audit:dead-code`              | knip: unused files/exports/deps (gate in `verify`) |
-| `yarn validate:i18n`                | Check English/Russian docs parity                  |
-| `yarn check:version`                | Check package/changelog/UI version                 |
-| `yarn verify:fast`                  | Lint and typecheck                                 |
-| `yarn verify`                       | Fast checks, dead-code gate, tests                 |
-| `yarn verify:full`                  | Fast checks, dead-code gate, tests, build          |
-| `yarn deploy`                       | Deploy to GitHub Pages                             |
-| `yarn clear`                        | Clear Docusaurus cache                             |
+| Command                             | Purpose                                                           |
+| ----------------------------------- | ----------------------------------------------------------------- |
+| `yarn start`                        | Start Docusaurus dev server                                       |
+| `yarn build`                        | Production build                                                  |
+| `yarn serve`                        | Preview production build                                          |
+| `yarn typecheck`                    | `tsc -b` over app, node, and test projects (incremental)          |
+| `yarn lint` / `yarn lint:fix`       | ESLint + Prettier with caches (check / auto-fix)                  |
+| `yarn format` / `yarn format:check` | Prettier only (write / check)                                     |
+| `yarn test`                         | Vitest `unit` project (default run, no timing assertions)         |
+| `yarn test:perf`                    | Vitest `perf` project: timing tests, one file at a time           |
+| `yarn test:watch`                   | Vitest watch mode                                                 |
+| `yarn test:coverage`                | Vitest coverage report                                            |
+| `yarn build:translations`           | Generate UI/catalog translations (runs before start/test/build)   |
+| `yarn validate:data`                | Validate catalogs and references                                  |
+| `yarn audit:dead-code`              | knip: unused files/exports/deps                                   |
+| `yarn validate:i18n`                | One check: docs en/ru pairs and structure, YAML sources, coverage |
+| `yarn check:version`                | Check package/changelog/UI version                                |
+| `yarn release <minor\|patch>`       | Bump the version and draft the CHANGELOG entry (at merge)         |
+| `yarn ci:*`                         | The runner-independent checks (§11); `verify:*` compose them      |
+| `yarn deploy`                       | Deploy to GitHub Pages                                            |
+| `yarn clear`                        | Clear Docusaurus cache                                            |
 
 ## 4. Code Conventions
 
@@ -159,10 +160,52 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 - `context/` is git-ignored and excluded from every tool; never import from it, and paraphrase rules text (section 8, third-party material).
 - New reference material goes into the matching folder and is listed in `context/AGENTS.md`.
 
-## 11. Verification Scope
+## 11. Verification
 
-- Small code edit: targeted tests plus `yarn verify:fast`.
-- Dice parser/evaluator or schema/persistence edit: `yarn verify` (includes the knip
-  dead-code gate; a deliberate export without importers needs `@knipignore` and a reason).
-- Config, dependency, route, generated CSS, or documentation-path edit: `yarn verify:full`.
-- The pre-commit hook runs the full verifier on `main`/`master` and the fast verifier on other branches.
+This section owns the verification rules; other guidance links here.
+
+- **Checks** are `package.json` scripts, the only entry points any runner calls (local hooks,
+  GitHub Actions in `.github/workflows/ci.yml`, Vercel's `yarn build`, a later Jenkins pipeline):
+  `ci:lint`, `ci:typecheck`, `ci:test`, `ci:test:perf`, `ci:deadcode`, `ci:validate`, `ci:build`.
+  `verify:fast` = lint + typecheck + validate; `verify` adds dead code and unit tests;
+  `verify:full` adds the perf tests and the build.
+- **Commit** (`pre-commit`): lint-staged formats and lints the staged files only (seconds); staged
+  backlog or translation files also run their validator.
+- **Push** (`pre-push`): the type check and the unit tests related to the pushed changes.
+- **By change size**, before committing a story:
+    - a small code edit runs its targeted tests;
+    - dice parser or evaluator, schema, store, or persistence edits run `yarn verify`;
+    - config, dependency, route, generated CSS, or documentation-path edits run `yarn verify:full`.
+- **Merge into `master`** requires `yarn verify:full` (§12).
+- **CI** runs every `ci:*` command on push and pull requests. Perf tests there are reported, not
+  blocking, because shared runners are noisy.
+- **Dead code**: knip fails on unused files, exports, or dependencies. A deliberate export
+  without importers needs `@knipignore` and a reason.
+- **Flaky tests**: a test that fails without a code cause is fixed or quarantined within a day.
+  Quarantine means moving it to the `perf` project (for timing) or skipping it with a `TOFIX`
+  entry. A longer timeout alone is never the fix.
+    - Timing assertions belong only in `*.perf.test.*` files.
+    - Perf tests compare against a baseline measured in the same run, or take the best of several
+      warm runs.
+
+## 12. Workflow
+
+- **Features** go through the project's lean spec-kit commands: `/ttg-speckit-specify` →
+  `/ttg-speckit-clarify` → `/ttg-speckit-plan` (one `design.md`) → `/ttg-speckit-tasks` (one
+  planning commit) → `/ttg-speckit-analyze` (four or more stories, or on request) →
+  `/ttg-speckit-implement` (one commit per story). The personal `/speckit-*` commands are the
+  stock spec-kit and are not used here.
+- **Small change path**: a change that has one story, changes no schema, persistence, or
+  contract between modules, and stays within ~300 lines of code (tests and docs excluded) skips
+  the spec. The steps are: backlog entry → code and tests → guidance update → one commit. If it
+  grows past that, escalate to a spec.
+- **Prototypes** only when a UI layout is genuinely unknown: one screen, outside `specs/`.
+- **Merge** (only when the maintainer says so):
+    1. `yarn verify:full`.
+    2. `yarn release <minor|patch>`, then rewrite the drafted CHANGELOG entry for readers and
+       commit.
+    3. Fast-forward `testing` to the feature branch.
+    4. `git merge --no-ff testing` into `master`.
+    5. Push `testing` and `master`.
+
+    Feature branches do not bump the version.

@@ -227,3 +227,25 @@ TemplateEditorDialog` and `hooks/index → useCharacter → systems/index` makes
   hand list had only `star-wars-wod-2e` and `wod-v5`. It now also checks `template-editor` and
   `roll-sharing` (docs coverage 68 → 74 pages, no new findings).
 - Structural parity (heading levels, `{#id}` anchors, admonitions, components): all 77 pairs pass.
+
+### US3 — lean, project-local spec-kit
+
+- Precedence, tested with `claude -p` invoking the skill and reporting its base directory:
+    - Without settings, `speckit-plan` loads from the personal directory (as documented).
+    - `skillOverrides: { "speckit-plan": "off" }` in the project `.claude/settings.json` hides the
+      skill by name from every source, the project copy included ("NOT AVAILABLE").
+    - Fallback taken (R8): the project commands are `ttg-speckit-{specify,clarify,plan,tasks,analyze,implement}`
+      in `.claude/skills/`, and `ttg-speckit-plan` loads from the repository. The personal
+      `speckit-*` stay untouched for other projects; checklist, converge, constitution, and
+      taskstoissues were not copied.
+- The six commands were rewritten as short repository-specific skills. They drop the
+  extension-hook sections (`.specify/extensions.yml` does not exist) and the prerequisite
+  scripts that require `plan.md`. Clarify is kept as stock text (clarification 5).
+- `spec-template.md` is shortened, `design-template.md` is new, and `tasks-template.md` has no
+  parallel or strategy sections. `plan-template.md` stays so the stock commands still work if
+  someone runs them.
+- `yarn release <major|minor|patch>` bumps `package.json` and prepends a CHANGELOG skeleton from
+  the `feat`/`fix`/maintenance subjects since the last version change (`git log -G '"version"'`).
+  `docs` and `style` commits are left out.
+- `AGENTS.md` §11 owns verification and the flaky-test policy; the new §12 owns the workflow
+  (commands, small change path, prototypes, merge).

@@ -35,6 +35,7 @@
         "i18n:status": "node --import tsx scripts/translation-status.ts",
         "i18n:verify": "node --import tsx scripts/verify-i18n.ts",
         "check:version": "node --import tsx scripts/check-version.ts",
+        "release": "node --import tsx scripts/release.ts",
         "test:perf": "vitest run --project perf",
         "ci:lint": "eslint --cache --cache-location node_modules/.cache/eslint/ . && prettier --check --cache .",
         "ci:typecheck": "yarn typecheck",
