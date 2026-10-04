@@ -15,13 +15,13 @@ logic (i18n check rules, release script, lint rule).
 
 ## Phase 1: Setup
 
-- [ ] T001 Add `.nvmrc` with `22` (the local Node major) so CI and local runs match; keep `engines.node` `>=20.0` in `package.json`
-- [ ] T002 Add `lint-staged` as a devDependency in `package.json` (`yarn add -D lint-staged`)
+- [x] T001 Add `.nvmrc` with `22` (the local Node major) so CI and local runs match; keep `engines.node` `>=20.0` in `package.json`
+- [x] T002 Add `lint-staged` as a devDependency in `package.json` (`yarn add -D lint-staged`)
 
 ## Phase 2: Foundational
 
-- [ ] T003 Give each TypeScript project incremental build info: `incremental: true` and its own `tsBuildInfoFile` under `node_modules/.tmp/` in `tsconfig.app.json`, `tsconfig.node.json`, `tsconfig.test.json`; add `tsconfig.test.json` to the `references` of the root `tsconfig.json`
-- [ ] T004 Switch `typecheck` in `package.json` to `tsc -b`; confirm it fails on a deliberate error in `src/pages/index.tsx` (then revert) and a warm rerun takes seconds (research R2)
+- [x] T003 Give each TypeScript project incremental build info: `incremental: true` and its own `tsBuildInfoFile` under `node_modules/.tmp/` in `tsconfig.app.json`, `tsconfig.node.json`, `tsconfig.test.json`; add `tsconfig.test.json` to the `references` of the root `tsconfig.json`
+- [x] T004 Switch `typecheck` in `package.json` to `tsc -b`; confirm it fails on a deliberate error in `src/pages/index.tsx` (then revert) and a warm rerun takes seconds (research R2)
 
 **Checkpoint**: `yarn typecheck` covers app, node, and test projects.
 
@@ -32,15 +32,15 @@ everything else runs through `ci:*` commands on any runner.
 
 **Independent Test**: quickstart steps 1, 2, 5, 6.
 
-- [ ] T005 [US1] Add the `ci:*` scripts and recompose `verify:fast`, `verify`, `verify:full` from them in `package.json` exactly as in `contracts/check-commands.md` (`ci:lint` uses `eslint --cache .` and `prettier --check --cache .`; `ci:test:perf` may temporarily alias the existing perf files until US2 adds the project)
-- [ ] T006 [US1] Add `.eslintcache` to `.gitignore`; confirm `node_modules/.cache/prettier` and `node_modules/.tmp/` are ignored via `node_modules`
-- [ ] T007 [US1] Configure `lint-staged` in `package.json`: `*.{ts,tsx,js,mjs,cjs}` → `eslint --cache --fix` + `prettier --write --cache`; `*.{md,mdx,json,yaml,yml,css,scss}` → `prettier --write --cache`; `{TODO,TOFIX}.md` and `**/{TODO,TOFIX}.md` → `yarn -s validate:backlog`; `translations/**` → the translation check (until US5: `node --import tsx scripts/build-translations.ts --check`)
-- [ ] T008 [US1] Rewrite `.husky/pre-commit` to run `npx lint-staged` only (drop the master/`verify:full` branch)
-- [ ] T009 [US1] Add `.husky/pre-push`: compute changed files against the upstream (`git rev-parse --abbrev-ref @{push}` fallback `origin/master`), run `yarn -s typecheck`, then `yarn -s vitest related --run --project unit` on changed `src/`/`tests/` files when any; skip tests for docs/spec/backlog-only pushes
-- [ ] T010 [US1] Add `.github/workflows/ci.yml`: on push and pull_request; Node from `node-version-file: .nvmrc` with yarn cache; `yarn install --frozen-lockfile`; jobs `lint`, `typecheck`, `test`, `deadcode`, `validate`, `build`, `perf` (`continue-on-error: true`), each calling one `ci:*` script; cache `.eslintcache`, `node_modules/.cache/prettier`, `node_modules/.tmp`
-- [ ] T011 [US1] Make `prepare` safe on runners without git hooks (husky 9 no-op when `.git` is missing or `HUSKY=0`); verify `yarn install` succeeds in a temporary copy without `.git`
+- [x] T005 [US1] Add the `ci:*` scripts and recompose `verify:fast`, `verify`, `verify:full` from them in `package.json` exactly as in `contracts/check-commands.md` (`ci:lint` uses `eslint --cache .` and `prettier --check --cache .`; `ci:test:perf` may temporarily alias the existing perf files until US2 adds the project)
+- [x] T006 [US1] Add `.eslintcache` to `.gitignore`; confirm `node_modules/.cache/prettier` and `node_modules/.tmp/` are ignored via `node_modules`
+- [x] T007 [US1] Configure `lint-staged` in `package.json`: `*.{ts,tsx,js,mjs,cjs}` → `eslint --cache --fix` + `prettier --write --cache`; `*.{md,mdx,json,yaml,yml,css,scss}` → `prettier --write --cache`; `{TODO,TOFIX}.md` and `**/{TODO,TOFIX}.md` → `yarn -s validate:backlog`; `translations/**` → the translation check (until US5: `node --import tsx scripts/build-translations.ts --check`)
+- [x] T008 [US1] Rewrite `.husky/pre-commit` to run `npx lint-staged` only (drop the master/`verify:full` branch)
+- [x] T009 [US1] Add `.husky/pre-push`: compute changed files against the upstream (`git rev-parse --abbrev-ref @{push}` fallback `origin/master`), run `yarn -s typecheck`, then `yarn -s vitest related --run --project unit` on changed `src/`/`tests/` files when any; skip tests for docs/spec/backlog-only pushes
+- [x] T010 [US1] Add `.github/workflows/ci.yml`: on push and pull_request; Node from `node-version-file: .nvmrc` with yarn cache; `yarn install --frozen-lockfile`; jobs `lint`, `typecheck`, `test`, `deadcode`, `validate`, `build`, `perf` (`continue-on-error: true`), each calling one `ci:*` script; cache `.eslintcache`, `node_modules/.cache/prettier`, `node_modules/.tmp`
+- [x] T011 [US1] Make `prepare` safe on runners without git hooks (husky 9 no-op when `.git` is missing or `HUSKY=0`); verify `yarn install` succeeds in a temporary copy without `.git`
 - [ ] T012 [US1] Measure quickstart step 1 (five commits, median) and step 5 (pre-push), record in research.md § Implementation results
-- [ ] T013 [US1] Run `yarn verify:full` (constitution Tier 3 still applies until T043: config and dependency changes), then commit US1 (`chore(tooling): staged commit check, pre-push, ci:* commands, GitHub Actions (spec 024, US1)`)
+- [x] T013 [US1] Run `yarn verify:full` (constitution Tier 3 still applies until T043: config and dependency changes), then commit US1 (`chore(tooling): staged commit check, pre-push, ci:* commands, GitHub Actions (spec 024, US1)`)
 
 **Checkpoint**: commits take seconds; CI workflow exists (it runs on the first push).
 
