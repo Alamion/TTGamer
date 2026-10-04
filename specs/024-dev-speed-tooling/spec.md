@@ -31,6 +31,29 @@ the product code as much as in it:
 
 The site deploys on Vercel today; a Jenkins pipeline follows once the backend exists.
 
+## Clarifications
+
+### Session 2026-10-04
+
+- Q: How does the lean process reach the spec-kit commands, which live in the user's personal
+  skill directory? → A: Install the spec-kit commands project-locally (`.claude/skills/` in the
+  repository) and change only those. Claude Code documents that a personal skill overrides a
+  project skill with the same name, so the override must be proven by a test: first a project
+  setting that turns the personal skills off for this repository, otherwise distinct project
+  command names. The personal skills stay untouched.
+- Q: Where do the timing (perf) tests run, given shared CI machines are noisy? → A: They are a
+  required part of the local pre-merge full check; in hosted CI they run and report but do not
+  block.
+- Q: What runs before a push, given pushes go straight to `testing`/`master` and Vercel deploys
+  `master`? → A: A pre-push check runs the cached type check and the tests related to the changed
+  files (about a minute); the full check is a required step of merging into `master`.
+- Q: What threshold sends a task down the small change path instead of a full spec? → A: One
+  story, no change to schemas, persistence, or contracts between modules, and an expected ≤ ~300
+  lines of code (tests and docs excluded); a change that grows past this escalates to a spec.
+- Q: Which review steps stay in the lean process? → A: Clarification always; the consistency
+  analysis only for specs with four or more stories (or on request); no separate spec-quality
+  checklist file.
+
 ## User Scenarios & Testing _(mandatory)_
 
 The actors are the **maintainer** and the **coding agent** working on the repository, and the
@@ -56,7 +79,8 @@ fails; run the full check command locally and on the hosted CI service and compa
 2. **Given** a type error in any source file, configuration file, or test, **When** the type check
    runs, **Then** it fails and names the file.
 3. **Given** a commit on the main branch, **When** it is created, **Then** the commit check is no
-   slower than on a feature branch; the full check runs on push instead.
+   slower than on a feature branch; a push runs the type check and related tests, and the full
+   check is part of the merge into the main branch.
 4. **Given** a push or merge request, **When** the hosted CI service runs, **Then** it runs the same
    named check commands a maintainer runs locally and a later Jenkins pipeline would run, and
    reports which check failed.
@@ -113,9 +137,10 @@ change path to one backlog item.
 2. **Given** the planning step, **When** it runs, **Then** it produces one design note (decisions
    with rejected alternatives, changed types and data, the test list, and the manual walk steps)
    and a task list, and no separate research, data-model, contract, or quickstart documents.
-3. **Given** a change with one story, no schema or persistence change, and a modest size, **When**
-   the maintainer chooses the small change path, **Then** the work goes backlog entry → code and
-   tests → guidance update → one commit, without spec documents.
+3. **Given** a change with one story, no schema, persistence, or module-contract change, and about
+   300 lines of code or less, **When** the maintainer chooses the small change path, **Then** the
+   work goes backlog entry → code and tests → guidance update → one commit, without spec
+   documents.
 4. **Given** an implemented user story, **When** it is committed, **Then** there is one commit per
    story (plus one for the planning documents), not one per process phase.
 5. **Given** a merge into the main branch, **When** the release step runs, **Then** the version
@@ -196,8 +221,9 @@ Russian page and confirm the check fails.
 - **Several features merged at once**: one release entry lists all of them.
 - **A perf test on a slow runner**: ratio-based comparisons keep it meaningful; absolute budgets
   belong to browser tests (spec 026).
-- **User-level spec-kit skills vs project templates**: the lean process must take effect for this
-  repository even though the spec-kit command skills live outside it.
+- **Personal spec-kit skills with the same names**: they win over project skills by default; the
+  repository must switch them off for itself (or use distinct names), and other projects keep
+  using the personal versions unchanged.
 - **Hidden type errors**: switching the type check to cover all files may surface existing errors;
   they are fixed in this feature, not suppressed.
 
@@ -210,6 +236,9 @@ Russian page and confirm the check fails.
 - **FR-001**: The commit check MUST format and lint only staged files, use caches, and skip code
   checks for commits that touch only documentation, specs, or backlog files.
 - **FR-002**: The commit check MUST NOT run the full verification on the main branch.
+- **FR-002a**: A pre-push check MUST run the cached type check and the tests related to the
+  changed files, finishing in about a minute for a typical feature push; the full check (including
+  build and timing tests) MUST be a required, documented step of merging into the main branch.
 - **FR-003**: The type check MUST cover every source file, configuration file, and test, and MUST
   fail on any type error in them; any errors it surfaces are fixed in this feature.
 - **FR-004**: The project MUST expose named check commands (lint, type check, unit tests, perf
@@ -225,7 +254,9 @@ Russian page and confirm the check fails.
 - **FR-007**: The largest editor and library test files MUST be split so that no test file takes
   more than 25% of the default run's wall time.
 - **FR-008**: Timing tests MUST run in a separate test group, one at a time, with ratio or
-  same-run baseline assertions; the default run MUST NOT contain wall-clock assertions.
+  same-run baseline assertions; the default run MUST NOT contain wall-clock assertions. The group
+  MUST be part of the local pre-merge full check; in hosted CI it MUST run as a non-blocking,
+  reported check.
 - **FR-009**: Aggregate re-export modules that make element tests load the editor, the library, or
   every game system MUST be removed or narrowed, and a lint rule MUST prevent reintroducing such
   imports.
@@ -243,14 +274,21 @@ Russian page and confirm the check fails.
   short list of principles at risk.
 - **FR-014**: The task template MUST drop sections a single sequential agent does not use
   (parallel execution examples, delivery strategy).
-- **FR-015**: A documented small change path MUST define its trigger (one story, no schema or
-  persistence change, modest size) and its steps, and when to escalate to a spec.
+- **FR-014a**: The clarification step MUST stay for every spec; the consistency analysis MUST run
+  only for specs with four or more stories or on request; the specification step MUST NOT produce
+  a separate spec-quality checklist file.
+- **FR-015**: A documented small change path MUST apply when a task has one story, changes no
+  schema, persistence, or contract between modules, and is expected to stay within ~300 lines of
+  code (tests and docs excluded); its steps are backlog entry → code and tests → guidance update →
+  one commit, and a change that grows past the threshold MUST escalate to a spec.
 - **FR-016**: Commits MUST follow user stories (plus one planning commit), not process phases.
 - **FR-017**: Version bump and changelog MUST be written at merge to the main branch, once per
   release; the version check MUST still pass on every branch.
 - **FR-018**: Prototypes MUST be built only for unknown layouts, outside `specs/`.
-- **FR-019**: The process changes MUST apply to this repository's spec runs, including where the
-  spec-kit command definitions live outside the repository.
+- **FR-019**: The spec-kit commands MUST be installed in the repository and carry the process
+  changes there; the personal spec-kit skills MUST NOT be edited. A test MUST show that invoking a
+  spec-kit command in this repository runs the project version (by a project setting that turns
+  the personal versions off here, or else by distinct project command names).
 
 **Guidance**
 
@@ -313,8 +351,8 @@ Russian page and confirm the check fails.
 - Vercel keeps building with the project's build command, so generation inside that command
   covers it.
 - The maintainer machine (20 cores) is the reference for time-based success criteria.
-- Spec-kit command skills live in the user's skill directory; the lean process is achieved through
-  this repository's templates plus whatever user-level adjustments the maintainer approves.
+- Spec-kit command skills are copied into the repository and changed there; personal skills are
+  not edited (see Clarifications).
 - Existing spec folders stay unchanged; historical banners are added only where a later spec
   actually contradicts an earlier one.
 - Editor architecture (including the source-switch settings loss), Playwright smoke tests, and
