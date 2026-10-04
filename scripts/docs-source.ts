@@ -1,13 +1,20 @@
+import { readdirSync } from 'node:fs';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 
-/** Documentation trees whose English pages must have Russian counterparts. */
-export const DOCUMENT_ROOTS = [
-    'star-wars-wod-2e',
-    'wod-v5',
-    'template-editor',
-    'roll-sharing',
-] as const;
+/** Developer pages: draft-only and English-only (constitution VI). */
+const UNMIRRORED_ROOTS = new Set(['dev']);
+
+/**
+ * Documentation trees whose English pages must have Russian counterparts: every folder under
+ * `docs/` except the developer pages, so a new tree needs no registration (spec 024).
+ */
+export function documentRoots(docsRoot = 'docs'): string[] {
+    return readdirSync(docsRoot, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory() && !UNMIRRORED_ROOTS.has(entry.name))
+        .map((entry) => entry.name)
+        .sort();
+}
 /** Top-level pages outside the trees (the docs landing page). */
 export const ROOT_DOCUMENTS = ['index.mdx'] as const;
 export const TRANSLATION_DOCS_ROOT = 'i18n/ru/docusaurus-plugin-content-docs/current';

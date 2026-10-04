@@ -1,3 +1,4 @@
+import { documentRoots } from '../docs-source.ts';
 import type { GateLevel, RuleId, TraitRowKind } from './types.ts';
 
 export interface VerifierConfig {
@@ -61,7 +62,7 @@ export const DEFAULT_CONFIG: VerifierConfig = {
         docs: 'docs',
         translatedDocs: { ru: 'i18n/ru/docusaurus-plugin-content-docs/current' },
     },
-    docRoots: ['star-wars-wod-2e', 'wod-v5'],
+    docRoots: documentRoots(),
     rootDocuments: ['index.mdx'],
     scan: {
         include: ['src/**/*.ts', 'src/**/*.tsx'],

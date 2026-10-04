@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import {
     collectDocuments,
-    DOCUMENT_ROOTS,
+    documentRoots,
     ROOT_DOCUMENTS,
     TRANSLATION_DOCS_ROOT,
 } from './docs-source.ts';
@@ -63,6 +63,56 @@ async function validateTranslationCatalog(relativePath: string, errors: string[]
     }
 }
 
+/** Lines outside fenced code blocks, where headings and admonitions live. */
+function proseLines(content: string): string[] {
+    let fenced = false;
+    return content.split('\n').filter((line) => {
+        if (/^\s*(```|~~~)/.test(line)) {
+            fenced = !fenced;
+            return false;
+        }
+        return !fenced;
+    });
+}
+
+/** The shape a translation must keep: heading anchors and levels, admonitions, components. */
+function documentStructure(content: string) {
+    const lines = proseLines(content);
+    const headings = lines.filter((line) => /^#{1,6}\s/.test(line));
+    return {
+        headings: headings.map((line) => line.match(/^#+/)![0].length).join(','),
+        anchors: headings.map((line) => line.match(/\{#([\w-]+)\}\s*$/)?.[1] ?? '').join(','),
+        admonitions: lines
+            .map((line) => line.match(/^\s*:::(\w+)/)?.[1])
+            .filter(Boolean)
+            .join(','),
+        components: lines
+            .flatMap((line) => [...line.matchAll(/<([A-Z]\w*)/g)].map((match) => match[1]))
+            .join(','),
+    };
+}
+
+/**
+ * Structural differences between an English page and its Russian mirror (spec 024): the
+ * Russian page may word everything its own way but keeps the headings, anchors, admonitions,
+ * and embedded components in the same order.
+ */
+export function structureDifferences(source: string, translation: string): string[] {
+    const english = documentStructure(source);
+    const russian = documentStructure(translation);
+    const names = {
+        headings: 'heading levels',
+        anchors: 'heading anchors',
+        admonitions: 'admonitions',
+        components: 'embedded components',
+    } as const;
+    return (Object.keys(names) as (keyof typeof names)[])
+        .filter((key) => english[key] !== russian[key])
+        .map(
+            (key) => `${names[key]} differ (${english[key] || 'none'} / ${russian[key] || 'none'})`
+        );
+}
+
 async function exists(target: string) {
     try {
         await access(target);
@@ -111,14 +161,18 @@ async function validateDocumentRoot(root: string, errors: string[]): Promise<num
         if (JSON.stringify(sourceImports) !== JSON.stringify(translationImports)) {
             errors.push(`${label}: MDX component imports differ between locales`);
         }
+        errors.push(
+            ...structureDifferences(source, translation).map((problem) => `${label}: ${problem}`)
+        );
     }
     return sourceDocuments.length;
 }
 
-async function main() {
+/** English/Russian docs pairs and the Docusaurus translation catalogs. */
+export async function validateDocsParity() {
     const errors: string[] = [];
     let documentCount = 0;
-    for (const root of DOCUMENT_ROOTS) {
+    for (const root of documentRoots()) {
         documentCount += await validateDocumentRoot(root, errors);
     }
     for (const document of ROOT_DOCUMENTS) {
@@ -139,5 +193,3 @@ async function main() {
         );
     }
 }
-
-void main();

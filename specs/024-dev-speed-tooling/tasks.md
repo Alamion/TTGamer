@@ -72,14 +72,14 @@ structural parity.
 
 **Independent Test**: quickstart step 9.
 
-- [ ] T025 [US5] Extract the Docusaurus-owned (non-`ttgamer.*`) keys of `i18n/{en,ru}/code.json` into `translations/source/{en,ru}/docusaurus.json`; make `scripts/translation-build.ts` merge them into the generated `code.json`, and stop formatting generated output with Prettier
-- [ ] T026 [US5] Untrack generated files: add `src/i18n/generated/` and `i18n/*/code.json` to `.gitignore`, `git rm --cached` them; add generation to `prepare`, `pretypecheck`, `pretest` (keep `prestart`, `prebuild`) in `package.json`; `ci:typecheck`/`ci:test` call `yarn typecheck`/`yarn test` so the pre-scripts generate once; update knip and ESLint ignores if they reference the files
+- [x] T025 [US5] Extract the Docusaurus-owned (non-`ttgamer.*`) keys of `i18n/{en,ru}/code.json` into `translations/source/{en,ru}/docusaurus.json`; make `scripts/translation-build.ts` merge them into the generated `code.json`, and stop formatting generated output with Prettier
+- [x] T026 [US5] Untrack generated files: add `src/i18n/generated/` and `i18n/*/code.json` to `.gitignore`, `git rm --cached` them; add generation to `prepare`, `pretypecheck`, `pretest` (keep `prestart`, `prebuild`) in `package.json`; `ci:typecheck`/`ci:test` call `yarn typecheck`/`yarn test` so the pre-scripts generate once; update knip and ESLint ignores if they reference the files
 - [ ] T027 [US5] Verify a clean clone works: `git clone` the branch into a temp dir, `yarn install`, then `yarn typecheck`, `yarn test --passWithNoTests -t nothing`, and `yarn build` succeed with no manual step (stands in for Vercel/Jenkins)
-- [ ] T028 [US5] Make `scripts/docs-source.ts` derive the mirrored roots from `docs/*` (excluding `dev/` and draft pages) instead of `DOCUMENT_ROOTS`; keep the existing results
-- [ ] T029 [US5] Create `scripts/i18n-check.ts` running the rules of `validate-i18n.ts`, `validate-translations.ts`, and `verify-i18n.ts` in one process (sources and `systemRegistry` loaded once; the en↔ru key mirror, missing ru page, and `code.json` parity checks kept once); keep messages; point `validate:i18n` and `ci:validate` at it and delete the superseded entry scripts (keep their modules if the check imports them)
-- [ ] T030 [US5] Add the structural parity rule (heading `{#id}` anchors, heading count, admonitions, component tags per en page vs ru mirror) in the i18n verifier, with unit tests in `tests/scripts/` for a matching and a mismatching page pair
-- [ ] T031 [US5] Time `yarn validate:i18n` (target < 20 s) and add a UI string to both YAML files to confirm two changed tracked files; record in research.md
-- [ ] T032 [US5] Update the lint-staged translation entry (T007) to the new check; run `yarn verify:full` (Tier 3: build scripts and ignores changed); commit US5 (`chore(i18n): untracked generated translations, one i18n check, structural docs parity (spec 024, US5)`)
+- [x] T028 [US5] Make `scripts/docs-source.ts` derive the mirrored roots from `docs/*` (excluding `dev/` and draft pages) instead of `DOCUMENT_ROOTS`; keep the existing results
+- [x] T029 [US5] Create `scripts/i18n-check.ts` running the rules of `validate-i18n.ts`, `validate-translations.ts`, and `verify-i18n.ts` in one process (sources and `systemRegistry` loaded once; the en↔ru key mirror, missing ru page, and `code.json` parity checks kept once); keep messages; point `validate:i18n` and `ci:validate` at it and delete the superseded entry scripts (keep their modules if the check imports them)
+- [x] T030 [US5] Add the structural parity rule (heading `{#id}` anchors, heading count, admonitions, component tags per en page vs ru mirror) in the i18n verifier, with unit tests in `tests/scripts/` for a matching and a mismatching page pair
+- [x] T031 [US5] Time `yarn validate:i18n` (target < 20 s) and add a UI string to both YAML files to confirm two changed tracked files; record in research.md
+- [x] T032 [US5] Update the lint-staged translation entry (T007) to the new check; run `yarn verify:full` (Tier 3: build scripts and ignores changed); commit US5 (`chore(i18n): untracked generated translations, one i18n check, structural docs parity (spec 024, US5)`)
 
 ## Phase 6: User Story 3 — Lean, project-local spec-kit (P2)
 

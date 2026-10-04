@@ -211,3 +211,19 @@ TemplateEditorDialog` and `hooks/index → useCharacter → systems/index` makes
 - `mountSheet` replaces three identical sheet `mount` copies. The other nine seed different
   documents, values, or read-only state and stay local. `renderEditor` replaces 21 inline editor
   renders.
+
+### US5 — translations and docs checks
+
+- Generated files untracked: `src/i18n/generated/` and `i18n/{en,ru}/code.json`. The 82
+  Docusaurus-owned keys per locale moved to `translations/source/{en,ru}/docusaurus.json`. The
+  regenerated `code.json` is identical to the previously tracked one (1804 keys per locale).
+- Generation dropped its Prettier pass: 1.7 s, against 15.7 s for the old `--check`. It runs in
+  `prepare`, `pretypecheck`, `pretest`, `prestart`, and `prebuild`.
+- A new UI string changes two tracked files (probe in `abilities.yaml`, reverted).
+- One check: `scripts/i18n-check.ts` runs the docs pairs (`i18n-docs-parity.ts`), the YAML sources
+  (`i18n-sources.ts`), and the coverage verifier in one process, 5.2 s. Overlapping rules were
+  kept. With the whole check at 5 s, removing a duplicate saves nothing and risks a lost finding.
+- Derived roots: `documentRoots()` lists every `docs/*` folder except `dev`. The verifier's own
+  hand list had only `star-wars-wod-2e` and `wod-v5`. It now also checks `template-editor` and
+  `roll-sharing` (docs coverage 68 → 74 pages, no new findings).
+- Structural parity (heading levels, `{#id}` anchors, admonitions, components): all 77 pairs pass.

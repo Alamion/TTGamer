@@ -33,7 +33,8 @@ function validateMirror(
     }
 }
 
-async function main() {
+/** The YAML sources: locale mirrors, placeholders, and catalog ids against the code. */
+export async function validateTranslationSources() {
     const sources = await loadTranslationSources();
     const errors: string[] = [];
     const englishUi = flattenUiMessages(sources.ui.en);
@@ -98,5 +99,3 @@ async function main() {
             ' catalog fields per locale.'
     );
 }
-
-void main();

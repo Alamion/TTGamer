@@ -7,5 +7,5 @@ export default {
     '*.{ts,tsx,js,mjs,cjs}': [eslint, prettier],
     '*.{md,mdx,json,yaml,yml,css,scss,html}': prettier,
     '**/{TODO,TOFIX}.md': () => 'yarn -s validate:backlog',
-    'translations/**': () => 'node --import tsx scripts/build-translations.ts --check',
+    'translations/**': () => 'yarn -s validate:i18n',
 };
