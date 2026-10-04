@@ -237,7 +237,7 @@ Russian page and confirm the check fails.
   checks for commits that touch only documentation, specs, or backlog files.
 - **FR-002**: The commit check MUST NOT run the full verification on the main branch.
 - **FR-002a**: A pre-push check MUST run the cached type check and the tests related to the
-  changed files, finishing in about a minute for a typical feature push; the full check (including
+  changed files, finishing within 90 seconds for a typical feature push; the full check (including
   build and timing tests) MUST be a required, documented step of merging into the main branch.
 - **FR-003**: The type check MUST cover every source file, configuration file, and test, and MUST
   fail on any type error in them; any errors it surfaces are fixed in this feature.

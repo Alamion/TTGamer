@@ -30,7 +30,7 @@ findings behind the spec are summarized in [spec.md](spec.md#context).
 
 ## R3. Pre-push check
 
-- **Decision**: husky `pre-push` runs `yarn typecheck` and `vitest related --run` on the source and
+- **Decision**: husky `pre-push` runs `yarn typecheck` and `vitest related --run --project unit` on the source and
   test files changed between the upstream and `HEAD` (fallback: `origin/master`). A push with only
   docs, specs, or backlog changes runs the type check alone.
 - **Rationale**: clarification 3; pushes go straight to `testing`/`master` and Vercel deploys
@@ -42,7 +42,7 @@ findings behind the spec are summarized in [spec.md](spec.md#context).
 - **Decision**: runner-independent scripts are the only entry points (contract:
   [contracts/check-commands.md](contracts/check-commands.md)). `verify:*` compose them for local
   use. A GitHub Actions workflow (`.github/workflows/ci.yml`) runs on every push and pull request
-  with one job per command, Node 20, the yarn cache, and caches for `.eslintcache`,
+  with one job per command, Node from `.nvmrc` (22, the local major), the yarn cache, and caches for `.eslintcache`,
   `node_modules/.cache/prettier`, and `node_modules/.tmp`; the perf job is `continue-on-error`.
   Vercel keeps `yarn build` (its `prebuild` generates translations). A Jenkins pipeline later calls
   the same scripts; no Jenkins file is written now.
@@ -112,7 +112,7 @@ TemplateEditorDialog` and `hooks/index → useCharacter → systems/index` makes
       move to tracked `translations/source/{en,ru}/docusaurus.json`, which the generator merges
       into `code.json`.
     - Generation runs in `prepare` (install), `prestart`, `prebuild`, `pretypecheck`, and `pretest`.
-      It also runs first in every `ci:*` command that needs it. It stops running Prettier on its
+      The `ci:*` commands reach it through those pre-scripts. It stops running Prettier on its
       output (−12 s; the output is no longer reviewed).
     - One entry `scripts/i18n-check.ts` runs the four validators' rules in one process: sources and
       `systemRegistry` load once, and duplicated rules (key mirror, missing ru page, `code.json`

@@ -4,15 +4,15 @@ The project scripts below are the only entry points any runner calls (local hook
 Vercel, a future Jenkins pipeline). Runners never inline tool flags; a change to a check happens
 in `package.json` (or the script it calls) once.
 
-| Command             | Runs                                                             | Blocking in CI |
-| ------------------- | ---------------------------------------------------------------- | -------------- |
-| `yarn ci:lint`      | `eslint --cache .` and `prettier --check --cache .`              | yes            |
-| `yarn ci:typecheck` | translation generation, then `tsc -b` (app, node, test projects) | yes            |
-| `yarn ci:test`      | translation generation, then the `unit` Vitest project           | yes            |
-| `yarn ci:test:perf` | the `perf` Vitest project, files one at a time                   | no (reported)  |
-| `yarn ci:deadcode`  | knip                                                             | yes            |
-| `yarn ci:validate`  | backlog, data, the single i18n check, version check              | yes            |
-| `yarn ci:build`     | `yarn build` (its `prebuild` generates styles and translations)  | yes            |
+| Command             | Runs                                                                                         | Blocking in CI |
+| ------------------- | -------------------------------------------------------------------------------------------- | -------------- |
+| `yarn ci:lint`      | `eslint --cache .` and `prettier --check --cache .`                                          | yes            |
+| `yarn ci:typecheck` | `yarn typecheck` (`pretypecheck` generates translations, then `tsc -b` over app, node, test) | yes            |
+| `yarn ci:test`      | `yarn test` (`pretest` generates translations, then the `unit` Vitest project)               | yes            |
+| `yarn ci:test:perf` | the `perf` Vitest project, files one at a time                                               | no (reported)  |
+| `yarn ci:deadcode`  | knip                                                                                         | yes            |
+| `yarn ci:validate`  | backlog, data, the single i18n check, version check                                          | yes            |
+| `yarn ci:build`     | `yarn build` (its `prebuild` generates styles and translations)                              | yes            |
 
 Local compositions (documented in `AGENTS.md` §3 and §11):
 
