@@ -213,7 +213,7 @@ wrapping of agent-facing markdown.
       model, invariants, extension checklists, "load X when touching Y") and
       `.agents/skills/sheet-templates/references/{editor,library,trackers,lists-tables,formulas-embeds}.md`;
       drop file lists, the tests map, and test ids
-- [ ] T047 [US4] Retire `src/sheet_manager/TODO.md` into the root `TODO.md` (or delete if fully
+- [x] T047 [US4] Retire `src/sheet_manager/TODO.md` into the root `TODO.md` (or delete if fully
       superseded) and run `yarn validate:backlog`
 - [x] T048 [US4] Commit US4
       (`docs(guidance): one owner per rule, constitution 1.6.0, sheet-templates index (spec 024, US4)`)

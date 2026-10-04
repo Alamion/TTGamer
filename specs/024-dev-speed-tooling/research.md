@@ -284,10 +284,13 @@ findings behind the spec are summarized in [spec.md](spec.md#context).
   `formulas-embeds`, `editor`, `library`). The reference names follow the skill's real sections
   instead of R11's provisional list. The tests map and history were dropped; the sections moved
   verbatim.
-- Deferred (T047): `src/sheet_manager/TODO.md` still lists open product ideas (Generic notes, D&D
-  5e, CoD and Cyberpunk RED plugins, a new-character wizard, system badges, derived setting,
-  bulk-import detection). Folding them into the root backlog or closing them is the maintainer's
-  call.
+- T047: `src/sheet_manager/TODO.md` is retired. Its open ideas became root entries T-098 (Star Wars
+  shape into its plugin, in progress), T-099–T-101 (D&D 5e, CoD, Cyberpunk RED plugins), T-102
+  (system badges), and T-103 (bulk import detection, in progress). Three ideas were closed as
+  superseded:
+    - the generic notes system, by user document types (spec 012);
+    - the new-character wizard, by the create dialog and T-053;
+    - the free-text `setting`, by `settingId` (spec 012).
 
 ### Quickstart results (2026-10-04)
 
