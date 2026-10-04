@@ -7,7 +7,7 @@ import { RANGED_WEAPONS } from '@site/src/data/rangedWeaponsData';
 import { TOOLS_GEAR } from '@site/src/data/toolsGearData';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import type { CatalogEntry } from '../../../components';
+import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
 import {
     bookNameLabel,
     catalogEntryText,

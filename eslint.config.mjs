@@ -81,6 +81,25 @@ export default defineConfig([
         },
     },
     {
+        // No aggregate re-export modules in the sheet manager (spec 024): a component or hook
+        // index made every element test load the editor, the library, and every system.
+        files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
+        rules: {
+            '@typescript-eslint/no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            regex: '(^@site/src/sheet_manager/|^(?:\\.\\./)+)(?:components|hooks)(?:/index(?:\\.tsx?)?)?$',
+                            message:
+                                'Import the module itself (e.g. components/controls/CatalogSuggest), not a directory index.',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
+    {
         files: ['scripts/**/*.ts', '*.config.{js,mjs,ts}', 'sidebars.ts'],
         languageOptions: {
             globals: globals.node,

@@ -4,7 +4,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useMemo } from 'react';
 
 import { generateId } from '../../../../shared/utils/random';
-import type { CatalogEntry } from '../../../components';
+import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
 import { SectionCard } from '../../../components/sections/SectionCard';
 import {
     CompactRating,

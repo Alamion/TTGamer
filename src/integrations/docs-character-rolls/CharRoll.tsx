@@ -1,7 +1,8 @@
 import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
-import { useCharacter } from '@site/src/sheet_manager/hooks';
 import type { BaseCharacter } from '@site/src/sheet_manager/types/character';
 import type { ReactNode } from 'react';
+
+import { useCharacter } from '../../sheet_manager/hooks/useCharacter';
 
 function resolveCharValue(character: BaseCharacter, path: string): number {
     let current: unknown = character;

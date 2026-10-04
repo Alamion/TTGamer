@@ -2,9 +2,11 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Plus } from 'lucide-react';
 
-import type { CatalogEntry } from '../../../components';
-import { CatalogSuggest, Checkbox, CollapsibleItem } from '../../../components';
-import { AutoResizeTextarea } from '../../../components';
+import { AutoResizeTextarea } from '../../../components/controls/AutoResizeTextarea';
+import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
+import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
+import { Checkbox } from '../../../components/controls/Checkbox';
+import { CollapsibleItem } from '../../../components/sections/CollapsibleItem';
 import type { Item } from '../../../types/character';
 import { useItemName } from '../data/itemDisplay';
 

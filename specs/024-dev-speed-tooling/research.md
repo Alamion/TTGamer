@@ -172,3 +172,42 @@ TemplateEditorDialog` and `hooks/index → useCharacter → systems/index` makes
 | Translation checks          | ~50 s (4 processes)      | < 20 s           |
 | Files per new UI string     | 5                        | 2                |
 | `sheet-templates` skill     | 901 lines                | index ≤ 300      |
+
+## Implementation results
+
+### US1 — checks and CI
+
+- Commit check: the US1 commit itself took 4.3 s (lint-staged on 12 staged files), against
+  125–139 s for the old hook.
+- Type check: `tsc -b` over app, node, and test projects, 47 s cold and 1.1 s warm; a type error
+  in `src/pages/` now fails (it passed unnoticed before). The test project had inherited the app's
+  build-info path; each project now has its own.
+- The ESLint cache lives in `node_modules/.cache/eslint/` instead of `.eslintcache`, so no new
+  ignore entry is needed.
+- Hook commands call `npx lint-staged` and `npx vitest related`: knip reads `yarn -s <bin>` in
+  hooks as an unknown binary and the dependency as unused.
+- `yarn install` without `.git` (Vercel, Jenkins) runs `prepare` and exits 0; husky prints a note.
+
+### US2 — tests
+
+- Projects: `unit` (threads pool) and `perf` (one file at a time, forks pool). 2167 unit and 8
+  perf tests (2175: the squadron render timing became its own perf test).
+- Default run, five in a row: 90.6, 92.6, 89.1, 89.4, 89.4 s, all green (was 119–139 s with
+  timing flakes). **SC-003 (≤ 60 s) is not met.** The run is CPU-bound: summed test time 745 s,
+  jsdom environments 255 s, and imports 385 s over 19 workers come to ~73 s even with perfect
+  packing. The worker count does not help (10 workers: 111 s; 14: 103 s). Threads instead of forks
+  save ~15 %. A transform cache (`experimental.fsModuleCache`) cut transform from 98 s to 16 s but
+  wall time by only ~2 s, so it was left out. Reaching 60 s needs less work per jsdom file. The
+  candidate is a lighter DOM environment, to evaluate with the jsdom upgrade in spec 026.
+- Perf group, five in a row: 45.7, 45.5, 45.6, 45.2, 45.5 s, all green.
+- Barrels: removing `components/index.ts` and `hooks/index.ts` cut a sheet element test's imports
+  from 6.0 s to 2.7 s; it no longer loads the editor or the library.
+- Largest files after the split: `template-editor.trackers` 44 s, `template-editor.dialog` 29 s,
+  `list-items` 29 s of a 99 s span (all below 25 % of the run's summed time).
+- Recalibrated guard: the "previewed move" perf test (spec 022) compared a preview against a cold
+  commit. Warm, a preview costs 2.2–2.3× the commit on `master` as on this branch, so the old 2×
+  bound held only while first-render costs inflated the commit. It now takes one warm-up run, the
+  best of four, and a 3× bound.
+- `mountSheet` replaces three identical sheet `mount` copies. The other nine seed different
+  documents, values, or read-only state and stay local. `renderEditor` replaces 21 inline editor
+  renders.

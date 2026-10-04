@@ -1,12 +1,10 @@
 // @vitest-environment jsdom
 
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { createElement } from 'react';
+import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { resetEditorStores } from './helpers/editor';
+import { renderEditor, resetEditorStores } from './helpers/editor';
 
 // Full editor renders are slow under a loaded test run.
 vi.setConfig({ testTimeout: 20_000 });
@@ -39,12 +37,7 @@ const settingsOf = (nodeId: string) =>
 describe('template editor help and documentation links (T-068)', () => {
     beforeEach(() => {
         resetEditorStores();
-        render(
-            createElement(TemplateEditorDialog, {
-                base: { kind: 'edit', template: template() },
-                onClose: () => {},
-            })
-        );
+        renderEditor(template());
     });
     afterEach(cleanup);
 

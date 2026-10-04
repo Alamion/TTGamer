@@ -1,3 +1,7 @@
+import {
+    countDocuments,
+    type LibraryInput,
+} from '@site/src/sheet_manager/features/sheet/data/libraryTree';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
@@ -224,4 +228,21 @@ export function seedReferenceTypes(): void {
             }),
         },
     });
+}
+
+/** The library tree's input from the current stores, with overrides. */
+export function libraryInput(overrides: Partial<LibraryInput> = {}): LibraryInput {
+    const { types, settings, defaultPages, catalogs } = useDocumentTypeStore.getState();
+    const { templates, defaultOverrides } = useTemplateStore.getState();
+    return {
+        registry: systemRegistry,
+        types,
+        settings,
+        catalogs,
+        templates,
+        defaultOverrides,
+        defaultPages,
+        counts: countDocuments(useDocumentStore.getState().documents),
+        ...overrides,
+    };
 }

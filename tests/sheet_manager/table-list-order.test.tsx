@@ -4,7 +4,6 @@ import {
     createDraftFromTemplate,
     moveTableColumn,
 } from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { CharacterContext } from '@site/src/sheet_manager/context/CharacterContext';
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import {
@@ -18,7 +17,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { createElement } from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { resetEditorStores } from './helpers/editor';
+import { renderEditor, resetEditorStores } from './helpers/editor';
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -188,12 +187,7 @@ describe('reordering table columns in the editor (spec 022, US5)', () => {
         ]);
 
         resetEditorStores();
-        render(
-            createElement(TemplateEditorDialog, {
-                base: { kind: 'edit', template: template() },
-                onClose: () => {},
-            })
-        );
+        renderEditor(template());
         fireEvent.click(
             [
                 ...document.querySelector('[data-outline-row="gear"]')!.querySelectorAll('button'),

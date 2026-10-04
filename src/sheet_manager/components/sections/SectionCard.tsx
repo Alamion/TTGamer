@@ -1,10 +1,10 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
+import { useLocalStorageState } from '@site/src/shared/hooks/useLocalStorageState';
 import { clsx } from 'clsx';
 import { ChevronDown } from 'lucide-react';
 
-import { useLocalStorageState } from '../../hooks';
 import { documentationFor } from '../controls/documentationFor';
 
 interface SectionCardProps {

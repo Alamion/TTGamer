@@ -1,14 +1,12 @@
 // @vitest-environment jsdom
 
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { createElement } from 'react';
+import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
-import { pressShortcut, resetEditorStores } from './helpers/editor';
+import { pressShortcut, renderEditor, resetEditorStores } from './helpers/editor';
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -34,12 +32,7 @@ const template = (id = 'clip-kit', systemId = 'wod-v5') =>
 
 let unmount: () => void = () => {};
 function openEditor(page = template()) {
-    unmount = render(
-        createElement(TemplateEditorDialog, {
-            base: { kind: 'edit', template: page },
-            onClose: () => {},
-        })
-    ).unmount;
+    unmount = renderEditor(page).unmount;
 }
 
 const outlineRow = (nodeId: string) =>

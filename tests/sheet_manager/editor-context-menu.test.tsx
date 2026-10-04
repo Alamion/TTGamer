@@ -1,12 +1,10 @@
 // @vitest-environment jsdom
 
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { createElement } from 'react';
+import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { resetEditorStores, startDrag } from './helpers/editor';
+import { renderEditor, resetEditorStores, startDrag } from './helpers/editor';
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -25,12 +23,7 @@ const template = () =>
     });
 
 function openEditor() {
-    render(
-        createElement(TemplateEditorDialog, {
-            base: { kind: 'edit', template: template() },
-            onClose: () => {},
-        })
-    );
+    renderEditor(template());
 }
 
 const outlineRow = (nodeId: string) =>

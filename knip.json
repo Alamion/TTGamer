@@ -9,6 +9,9 @@
     ],
     "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "tests/**/*.{ts,tsx}"],
     "ignore": ["src/@types/**"],
+    "vitest": {
+        "entry": ["tests/**/*.test.{ts,tsx}", "vitest.config.ts"]
+    },
     "ignoreExportsUsedInFile": true,
     "tags": ["-knipignore"]
 }

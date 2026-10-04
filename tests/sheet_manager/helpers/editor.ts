@@ -1,6 +1,9 @@
+import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
-import { fireEvent } from '@testing-library/react';
+import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
+import { fireEvent, render } from '@testing-library/react';
+import { createElement } from 'react';
 
 /** Empties every store the editor reads, so a test starts from a known library. */
 export function resetEditorStores(): void {
@@ -112,4 +115,11 @@ export function openSettingsGroups(): void {
     )) {
         fireEvent.click(button);
     }
+}
+
+/** Opens the template editor on a template, as the library's Edit does. */
+export function renderEditor(template: CustomTemplate) {
+    return render(
+        createElement(TemplateEditorDialog, { base: { kind: 'edit', template }, onClose: () => {} })
+    );
 }

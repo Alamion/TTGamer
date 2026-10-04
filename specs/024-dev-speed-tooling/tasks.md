@@ -39,7 +39,7 @@ everything else runs through `ci:*` commands on any runner.
 - [x] T009 [US1] Add `.husky/pre-push`: compute changed files against the upstream (`git rev-parse --abbrev-ref @{push}` fallback `origin/master`), run `yarn -s typecheck`, then `yarn -s vitest related --run --project unit` on changed `src/`/`tests/` files when any; skip tests for docs/spec/backlog-only pushes
 - [x] T010 [US1] Add `.github/workflows/ci.yml`: on push and pull_request; Node from `node-version-file: .nvmrc` with yarn cache; `yarn install --frozen-lockfile`; jobs `lint`, `typecheck`, `test`, `deadcode`, `validate`, `build`, `perf` (`continue-on-error: true`), each calling one `ci:*` script; cache `.eslintcache`, `node_modules/.cache/prettier`, `node_modules/.tmp`
 - [x] T011 [US1] Make `prepare` safe on runners without git hooks (husky 9 no-op when `.git` is missing or `HUSKY=0`); verify `yarn install` succeeds in a temporary copy without `.git`
-- [ ] T012 [US1] Measure quickstart step 1 (five commits, median) and step 5 (pre-push), record in research.md § Implementation results
+- [x] T012 [US1] Measure quickstart step 1 (five commits, median) and step 5 (pre-push), record in research.md § Implementation results
 - [x] T013 [US1] Run `yarn verify:full` (constitution Tier 3 still applies until T043: config and dependency changes), then commit US1 (`chore(tooling): staged commit check, pre-push, ci:* commands, GitHub Actions (spec 024, US1)`)
 
 **Checkpoint**: commits take seconds; CI workflow exists (it runs on the first push).
@@ -51,17 +51,17 @@ project; element tests no longer import the editor and library.
 
 **Independent Test**: quickstart steps 3 and 4.
 
-- [ ] T014 [US2] Define Vitest `test.projects` in `vitest.config.ts`: `unit` (all tests except `**/*.perf.test.{ts,tsx}`) and `perf` (`**/*.perf.test.{ts,tsx}`, `fileParallelism: false`), sharing aliases and setup; `test` → `vitest run --project unit`, `test:perf` → `vitest run --project perf`; point `ci:test`/`ci:test:perf` at them in `package.json`
-- [ ] T015 [US2] Move the "renders a 1000-entry catalog" case from `tests/sheet_manager/library-dialog.test.tsx` into `tests/sheet_manager/library-dialog.perf.test.tsx` (drop its local 90 s timeout comment once in the sequential project)
-- [ ] T016 [US2] Find wall-clock assertions outside perf files (`grep -rn "performance.now\|Date.now" tests`); move each timing case into a `*.perf.test.tsx` file or convert it to a same-run ratio
-- [ ] T017 [US2] Delete `src/sheet_manager/components/index.ts` and `src/sheet_manager/hooks/index.ts`; rewrite their importers to direct paths (`ArmorSection.tsx`, `ImplantsSection.tsx`, `bodyEquipmentCatalogs.ts`, `SectionCard.tsx`, `CollapsibleBlock.tsx`, `useBodyHandlers.ts`, and every other importer found by grep in `src/` and `tests/`)
-- [ ] T018 [US2] Add an ESLint `no-restricted-imports` rule in `eslint.config.mjs` forbidding directory-index imports inside `src/sheet_manager` (patterns for `**/components`, `**/hooks`, and `index` paths), allowing `systems/index.ts`; confirm `yarn ci:lint` passes and a reintroduced barrel import fails
-- [ ] T019 [US2] Add `renderEditor(template, options?)` and `mountSheet(...)` helpers in `tests/sheet_manager/helpers/editor.ts` and `tests/sheet_manager/helpers/sheet.ts`; replace the per-file `mount`/`openEditor` copies in `tests/sheet_manager/*.test.tsx`
-- [ ] T020 [US2] Split `tests/sheet_manager/template-editor.test.tsx` along its top-level `describe` groups into `tests/sheet_manager/template-editor.<area>.test.tsx` files (about six) without changing assertions; test count before and after must match
-- [ ] T021 [US2] Split the remaining `tests/sheet_manager/library-dialog.test.tsx` along its `describe` groups into `library-dialog.<area>.test.tsx` files; test count unchanged
-- [ ] T022 [US2] Check the per-file durations of the default run (`--reporter=json`); split any file above 25% of the run's wall time; record the slowest three in research.md
-- [ ] T023 [US2] Run `yarn test` five times and `yarn test:perf` five times; record wall times and failures in research.md § Implementation results (SC-003, SC-004)
-- [ ] T024 [US2] Run `yarn verify:full` (Tier 3: Vitest and ESLint config changed), then commit US2 (`test: unit/perf projects, split editor and library suites, no barrel imports (spec 024, US2)`)
+- [x] T014 [US2] Define Vitest `test.projects` in `vitest.config.ts`: `unit` (all tests except `**/*.perf.test.{ts,tsx}`) and `perf` (`**/*.perf.test.{ts,tsx}`, `fileParallelism: false`), sharing aliases and setup; `test` → `vitest run --project unit`, `test:perf` → `vitest run --project perf`; point `ci:test`/`ci:test:perf` at them in `package.json`
+- [x] T015 [US2] Move the "renders a 1000-entry catalog" case from `tests/sheet_manager/library-dialog.test.tsx` into `tests/sheet_manager/library-dialog.perf.test.tsx` (drop its local 90 s timeout comment once in the sequential project)
+- [x] T016 [US2] Find wall-clock assertions outside perf files (`grep -rn "performance.now\|Date.now" tests`); move each timing case into a `*.perf.test.tsx` file or convert it to a same-run ratio
+- [x] T017 [US2] Delete `src/sheet_manager/components/index.ts` and `src/sheet_manager/hooks/index.ts`; rewrite their importers to direct paths (`ArmorSection.tsx`, `ImplantsSection.tsx`, `bodyEquipmentCatalogs.ts`, `SectionCard.tsx`, `CollapsibleBlock.tsx`, `useBodyHandlers.ts`, and every other importer found by grep in `src/` and `tests/`)
+- [x] T018 [US2] Add an ESLint `no-restricted-imports` rule in `eslint.config.mjs` forbidding directory-index imports inside `src/sheet_manager` (patterns for `**/components`, `**/hooks`, and `index` paths), allowing `systems/index.ts`; confirm `yarn ci:lint` passes and a reintroduced barrel import fails
+- [x] T019 [US2] Add `renderEditor(template, options?)` and `mountSheet(...)` helpers in `tests/sheet_manager/helpers/editor.ts` and `tests/sheet_manager/helpers/sheet.ts`; replace the per-file `mount`/`openEditor` copies in `tests/sheet_manager/*.test.tsx`
+- [x] T020 [US2] Split `tests/sheet_manager/template-editor.test.tsx` along its top-level `describe` groups into `tests/sheet_manager/template-editor.<area>.test.tsx` files (about six) without changing assertions; test count before and after must match
+- [x] T021 [US2] Split the remaining `tests/sheet_manager/library-dialog.test.tsx` along its `describe` groups into `library-dialog.<area>.test.tsx` files; test count unchanged
+- [x] T022 [US2] Check the per-file durations of the default run (`--reporter=json`); split any file above 25% of the run's wall time; record the slowest three in research.md
+- [x] T023 [US2] Run `yarn test` five times and `yarn test:perf` five times; record wall times and failures in research.md § Implementation results (SC-003, SC-004)
+- [x] T024 [US2] Run `yarn verify:full` (Tier 3: Vitest and ESLint config changed), then commit US2 (`test: unit/perf projects, split editor and library suites, no barrel imports (spec 024, US2)`)
 
 **Checkpoint**: default run ≤ 60 s, five green runs.
 

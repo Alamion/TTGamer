@@ -6,13 +6,11 @@ import { generateId } from '@site/src/shared/utils/random';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
-import {
-    ConfirmDialog,
-    DocumentCreateDialog,
-    DocumentManagerDialog,
-    ImportConflictDialog,
-    LibraryDialog,
-} from '../../../components';
+import { ConfirmDialog } from '../../../components/dialogs/ConfirmDialog';
+import { DocumentCreateDialog } from '../../../components/dialogs/DocumentCreateDialog';
+import { DocumentManagerDialog } from '../../../components/dialogs/DocumentManagerDialog';
+import { ImportConflictDialog } from '../../../components/dialogs/ImportConflictDialog';
+import { LibraryDialog } from '../../../components/dialogs/LibraryDialog';
 import { useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
