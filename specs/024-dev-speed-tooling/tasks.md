@@ -223,9 +223,9 @@ wrapping of agent-facing markdown.
 - [x] T049 Update `TODO.md` (spec 024 entry, T-033/T-088 noted as spec 026, and a note on the spec
       025 entry to measure SC-006/SC-007 of spec 024 there) and run quickstart steps 1–9; record
       results in research.md § Implementation results
-- [ ] T050 Run `yarn verify:full`; push the branch; confirm GitHub Actions results (SC-005) and a
+- [x] T050 Run `yarn verify:full`; push the branch; confirm GitHub Actions results (SC-005) and a
       Vercel preview build; record
-- [ ] T051 Commit polish (`docs: spec 024 results`); merge with the new procedure
+- [x] T051 Commit polish (`docs: spec 024 results`); merge with the new procedure
       (`yarn release minor`, fast-forward `testing`, `merge --no-ff` into `master`, push) only when
       the maintainer says so
 

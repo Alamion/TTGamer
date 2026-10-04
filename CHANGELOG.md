@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.22.0
+
+### Minor feat
+
+- **Settings of several fields of one type (spec 023)**: with several fields of the same type selected — several ratings, for example — the settings show everything that type has, including the type itself, S/P/E, the look, and the bounds, and change them on every selected field at once; only the name and where each value is stored stay per field, and values that differ say **Mixed**
+
+### Fix
+
+- **Template editor polish (spec 023)**: the keyboard shortcut tables line up, the outline no longer scrolls sideways while dragging, and pasting into a folded section opens it instead of the add menu
+
+### Chore
+
+- **Faster checks (spec 024, T-096)**: a commit checks only its staged files (seconds instead of about two minutes), a push runs the type check and the related tests, and the same `ci:*` commands run locally, in GitHub Actions (new), on Vercel, and later in Jenkins; the type check now covers every file
+- **Faster, steadier tests (spec 024)**: timing tests run on their own, the large editor and library suites are split, and element tests no longer load the editor and the library; the unit run takes about 90 s instead of about 2 min, without timing flakes
+- **Translations without generated files in git (spec 024)**: generated translations are built on install, start, test, and build; a new UI string touches two files; one check covers the docs pairs and their structure, the YAML sources, and coverage in about 5 s
+- **Lean process and guidance (spec 024)**: the project's own spec-kit commands (`/ttg-speckit-*`) with one design note per feature, a small change path, and `yarn release` at merge; guidance states each rule once. Constitution 1.5.0 → 1.6.0: generated translation files are untracked (II), the Verification Workflow is rewritten around commit, push, and merge checks over the `ci:*` commands, and amendments are recorded in git and this changelog instead of an embedded report
+
 ## v3.21.0
 
 ### Minor feat
