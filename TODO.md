@@ -57,6 +57,12 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [ ] 🚫 **T-042 — Shared entity library with tags and links** (T-041) — closed: superseded by T-052; entity organization returns to a file-system structure rather than a tag-sliced link graph.
     - The scale requirement carries over to T-052: thousands of entities, indexed IndexedDB queries instead of loading everything into memory, virtualized lists, and search/filter-first navigation.
 - [ ] ⬜ **T-043 — Classic World of Darkness lines** (T-041) — players use sheets for the remaining classic WoD lines (VtM, W:tA, C:tD, Wraith, H:tR classic) as ruleset modules, after the V5 lines. (task for roadmap path `multi-system-sheets`)
+- [ ] ⬜ **T-099 — D&D 5e system plugin** (T-041) — players keep D&D 5e characters: six abilities, skills, HP/AC/initiative, class features, spell slots, equipment, and level, on a new ruleset plugin. (task for roadmap path `multi-system-sheets`)
+    - 2026-10-04: moved from the retired `src/sheet_manager/TODO.md` (spec 024).
+- [ ] ⬜ **T-100 — Chronicles of Darkness system plugin** (T-041) — players keep CoD characters: nine attributes, skills, Virtue/Vice and Integrity, Willpower, a seven-level health track, and merits, on a new ruleset plugin. (task for roadmap path `multi-system-sheets`)
+    - 2026-10-04: moved from the retired `src/sheet_manager/TODO.md` (spec 024).
+- [ ] ⬜ **T-101 — Cyberpunk RED system plugin** (T-041) — players keep Cyberpunk RED characters: stats, skills, HP, Humanity/Empathy, armor SP, cyberware, and gear, on a new ruleset plugin. (task for roadmap path `multi-system-sheets`)
+    - 2026-10-04: moved from the retired `src/sheet_manager/TODO.md` (spec 024).
 - [ ] ⬜ **T-044 — Personas and audience-restricted views** (T-012, T-052) — GMs give one document several faces (e.g. a vampire's mortal facade) and choose which face each player sees; until multiplayer exists, hiding sections through templates is sufficient. (task for roadmap path `multiplayer-groups`)
     - Real secrecy requires server-side projection (`project(document, persona)`); client-side hiding is presentation only and must not be presented as protection. No client-side encryption.
 - [ ] ⬜ **T-048 — Free-form markdown document element** (none) — template authors place a large free-text element that renders markdown, inline HTML, and image embeds, with a side-by-side rendered preview on desktop. (task for roadmap path `gm-notes-templates`)
@@ -161,6 +167,12 @@ estimates, open questions. Priority ordering lives only in the section grouping.
     - 2026-10-01: done in spec 018. A Tracker field with its own values (levels with values, up to five mark kinds with symbols and colors, marks or text columns with reader copies, lengths, total row, out) and the same settings on built-in trackers (extra columns stored with the page); one display setting (table, strip, one line) replaces compact and track view; the fodder group is rebuilt from the field alone in the storybook, with a parity test.
 - [ ] ⬜ **T-083 — Formulas read a tracker** (T-078) — template authors use a tracker's total in formulas (for example a wound penalty subtracted from a dice pool): the total value of a copy becomes a numeric coordinate, as spec 018 FR-030 keeps possible. (task for roadmap path `gm-notes-templates`)
 - [ ] ⬜ **T-084 — Square toggle look** (none) — template authors choose how a toggle field looks: today's round dot or a square box like a tracker mark. (task for roadmap path `gm-notes-templates`)
+- [ ] 🟡 **T-098 — Star Wars character shape inside its plugin** (T-041) — maintainers find every Star Wars character field, `createDefaultCharacter()`, and derived stat in `systems/star-wars-wod/` instead of the generic `types/character.ts`, with no behavior change. (task for roadmap path `multi-system-sheets`)
+    - 2026-10-04: moved from the retired `src/sheet_manager/TODO.md` (spec 024); the plugin, its bindings, and the WoD 2e ruleset exist (T-041), but `types/character.ts` still holds the legacy shape and its defaults.
+- [ ] ⬜ **T-102 — System badges in the document manager** (none) — players see each document's system as a badge in the manager and the loaded-document indicator, and filter the list by system. (task for roadmap path `multi-system-sheets`)
+    - 2026-10-04: moved from the retired `src/sheet_manager/TODO.md` (spec 024).
+- [ ] 🟡 **T-103 — Bulk import with system detection** (none) — players import several files at once and each lands in its system: current envelopes and the untagged legacy character already do, other legacy shapes and a recovery export of rejected files remain. (task for roadmap path `multi-system-sheets`)
+    - 2026-10-04: moved from the retired `src/sheet_manager/TODO.md` (spec 024).
 - [x] ✅ **T-086 — Tracker brush and two layers** (T-078) — sheet users pick a mark in a tracker's legend and put it straight on boxes instead of clicking through the marks, and template authors give each mark a layer, fill or outline, so one box can hold one of each (for example a point and its maximum). (task for roadmap path `gm-notes-templates`)
 - [x] ✅ **T-085 — Point trackers and Force Points** (T-086) — template authors build point pools as trackers: a box can fill every box before it as well, like a rating's dots, and the total row can count the filled boxes ("2 of 5" with the outline layer as the maximum); the Star Wars Force Points and their maximum become a built-in tracker on these terms. (task for roadmap path `gm-notes-templates`)
     - Deferred from spec 019: its total row and "out" read the deepest filled level, which suits wound tracks, not pools.
@@ -239,8 +251,18 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 
 ### Verification Backlog
 
+- [x] ✅ **T-096 — Development speed: checks, tests, process, guidance** (none) — maintainers and the coding agent commit in seconds, push behind a type check and the related tests, and run the same `ci:*` checks locally, in GitHub Actions, on Vercel, and later in Jenkins; features go through a lean project-local spec-kit, and guidance states each rule once.
+    - 2026-10-04: proposed after specs 022–023 ran long; a four-part audit found the cost in hooks, tests, spec volume, duplicated guidance, and committed generated files.
+    - 2026-10-04: built in spec 024.
+        - The commit check takes 4–7 s (it took 125–139 s), and `tsc -b` now covers every file.
+        - Unit tests take ~90 s (they took 119–139 s), with timing tests in their own project. The ≤ 60 s target needs a lighter DOM environment (spec 026).
+        - Generated translations are untracked, and one i18n check takes 5 s.
+        - The project uses the `ttg-speckit-*` commands, constitution 1.6.0, and a 163-line `sheet-templates` index.
+- [ ] ⬜ **T-097 — Template editor architecture** (T-096) — template authors get editor features faster: the editor's state and operations, its settings, and its element kinds each have one owner (a session store with pure operations, a setting registry, an element-editor registry) instead of being listed by hand across the dialog and its panels.
+    - 2026-10-04: planned as spec 025 from the 2026-10-04 audit; includes fixing the source switch that drops `span` and `visibleWhen` (`sourceNodes.ts` `carried()`), and measuring spec 024's SC-006/SC-007 (spec ≤ 800 lines, implementation within 2 h; ≤ 2 guidance files per feature) on this feature.
 - [ ] ⬜ **T-088 — Major dependency upgrades** (none) — maintainers start the backend work on current majors, one migration at a time with `yarn verify:full` after each: Tailwind 4 (CSS-first config and the Docusaurus integration), Zod 4 (schema and error API across every schema), TypeScript 7 (with typescript-eslint support), Vitest 5 with jsdom 30 and coverage, knip 6, lucide-react 1 (renamed icons), @tanstack/react-table 9, three 0.186 with its types (3D dice), and eslint-plugin-simple-import-sort 14 (may re-sort imports project-wide).
     - 2026-10-02: Docusaurus 3.10.2 and every in-range update are already in (`2d503e7`); only the majors above remain.
+    - 2026-10-04: planned as spec 026 with T-033, after T-097: small majors, Vitest 5 and jsdom 30 (with a lighter DOM environment to bring the unit run under 60 s), Zod 4, lucide and react-table, TypeScript 7, Tailwind 4 last.
 - [ ] ⬜ **T-028 — Boundary check** (the integration-module convention settles) — module boundaries are enforced automatically: `shared` cannot import feature modules and direct feature-to-feature imports are flagged.
 - [ ] ⬜ **T-029 — Bundle-budget report** (T-013) — bundle-size regressions are caught against meaningful per-chunk limits once the 3D renderer is lazy-loaded.
 - [x] ✅ **T-030 — Dead-code/export audit** (none) — unused exports and dead code surface with explicit MDX and Docusaurus entry-point configuration; dependency removal stays human-reviewed.
@@ -250,6 +272,7 @@ estimates, open questions. Priority ordering lives only in the section grouping.
 - [ ] ⬜ **T-031 — AI-context validator reconsideration** (none) — decide whether the AI-context validator returns once the AGENTS/skill structure stabilizes; intentionally stalled for now.
 - [ ] ⬜ **T-032 — Store persistence tests** (none) — character data is protected by store hydration/migration fixtures, import-conflict component tests, rendering tests for every shipped template page, and persistence failure/recovery tests.
 - [ ] ⬜ **T-033 — Playwright smoke tests** (none) — homepage, docs, sheet, and dice routes plus keyboard flows get smoke coverage.
+    - 2026-10-04: planned as spec 026 (before the T-088 upgrades): `@playwright/test` as a project dependency, run by `ci:*` on the built site.
 - [ ] ⬜ **T-034 — Axe accessibility checks** (none) — dialogs, tables, sheet controls, and the dice panel get automated accessibility checks.
 - [x] ✅ **T-066 — Display-condition 3D dice tests** (none) — 3D roll regressions that only show on some machines are caught in CI: the renderer loop runs headless (real cannon-es, stubbed WebGL) under a fake clock simulating 30/60/144/165/240 Hz and irregular frame times (stutter, background-tab throttling), asserting no interpenetration after spawn, bounded body speeds, settle only when bodies are at rest, and the same wall-clock show/fade durations at every rate; the cases reproduce F-004 and F-005 before they are fixed.
 - [ ] ⬜ **T-035 — Property/fuzz tests** (none) — parser/evaluator limits and catalog filter URL round-trips get property-based coverage.

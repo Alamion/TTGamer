@@ -1,7 +1,7 @@
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { useEffect, useMemo } from 'react';
 
-import type { CatalogEntry } from '../../../components';
+import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
 import { reportSheetIssue } from '../../../diagnostics';
 import { getCatalogBinding } from '../data/catalogBindings';
 

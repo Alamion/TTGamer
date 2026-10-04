@@ -6,7 +6,7 @@ import { Plus, X } from 'lucide-react';
 import { createElement, memo, useCallback, useEffect, useMemo } from 'react';
 
 import { generateId } from '../../../../shared/utils/random';
-import type { CatalogEntry } from '../../../components';
+import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { RowMoveControls, rowMoveKeys } from '../../../components/controls/RowMoveControls';
 import { SectionCard } from '../../../components/sections/SectionCard';

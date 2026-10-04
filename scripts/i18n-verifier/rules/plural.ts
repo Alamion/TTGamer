@@ -2,7 +2,7 @@ import type { Finding, Rule } from '../types.ts';
 
 /**
  * FR-004: plural form counts per locale and `(s)` in English messages. Placeholder parity of
- * the whole message is checked by validate-translations.
+ * the whole message is checked by i18n-sources.ts (yarn validate:i18n).
  */
 export const pluralRule: Rule = {
     id: 'plural',

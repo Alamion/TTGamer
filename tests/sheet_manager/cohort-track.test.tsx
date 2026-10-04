@@ -11,55 +11,16 @@ import {
 } from '@site/src/sheet_manager/features/sheet/declarative/cohort';
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { systemRegistry } from '@site/src/sheet_manager/systems';
 import {
     createDefaultFodderData,
     createDefaultVehicleData,
-    type FodderData,
 } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import type { ConditionMark } from '@site/src/sheet_manager/types/character';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 
-const EMPTY: ConditionMark[] = ['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'];
-
-function template(id: string) {
-    return systemRegistry.getSystem('star-wars-wod')!.defaultTemplates!.find((t) => t.id === id)!;
-}
-
-function seed(data: unknown, kind: string, definitionId: string) {
-    useDocumentStore.setState({
-        documents: [
-            {
-                id: 'doc-cohort',
-                kind,
-                systemId: 'star-wars-wod',
-                definitionId,
-                schemaVersion: 1,
-                metadata: { title: 'Squad', tags: [] },
-                templateValues: {},
-                data,
-            } as never,
-        ],
-        currentDocumentId: 'doc-cohort',
-    });
-}
-
-const storedData = () => useDocumentStore.getState().documents[0]!.data as FodderData;
-
-function trackOnly(id: string, node = 'damage-track') {
-    const source = template(id);
-    const found: typeof source.children = [];
-    const walk = (nodes: typeof source.children) => {
-        for (const child of nodes) {
-            if (child.id === node) found.push(child);
-            if (child.type === 'section' || child.type === 'group') walk(child.children);
-        }
-    };
-    walk(source.children);
-    return { ...source, children: found };
-}
+import { EMPTY, seed, storedData, trackOnly } from './helpers/cohort';
 
 describe('member track rules (feature 007)', () => {
     it('letters members, skipping used letters', () => {
@@ -188,7 +149,7 @@ describe('member track element (feature 007)', () => {
     });
 });
 
-describe('member track performance (feature 007)', () => {
+describe('member track with a full squadron (feature 007)', () => {
     afterEach(cleanup);
 
     it('renders a 24-member squadron and applies one mark as a single store update', () => {
@@ -199,9 +160,7 @@ describe('member track performance (feature 007)', () => {
             damage: { levels: [...EMPTY] },
         }));
         seed(data, 'vehicle', 'vehicle');
-        const started = performance.now();
         render(createElement(DeclarativeSheetView, { template: trackOnly('vehicle-sheet') }));
-        const renderMs = performance.now() - started;
 
         let updates = 0;
         const unsubscribe = useDocumentStore.subscribe(() => {
@@ -215,7 +174,5 @@ describe('member track performance (feature 007)', () => {
             members: Array<{ damage: { levels: string[] } }>;
         };
         expect(stored.members[23]?.damage.levels[1]).toBe('slash');
-        // Generous budget for jsdom under a parallel suite; catches accidental quadratic work.
-        expect(renderMs).toBeLessThan(5_000);
     });
 });

@@ -14,6 +14,7 @@ import {
     dragOver,
     pressShortcut,
     releaseDrag,
+    renderEditor,
     resetEditorStores,
     startDrag,
 } from './helpers/editor';
@@ -86,12 +87,7 @@ function childIds(parentId: string): string[] {
 }
 
 function openEditor() {
-    render(
-        createElement(TemplateEditorDialog, {
-            base: { kind: 'edit', template: template() },
-            onClose: () => {},
-        })
-    );
+    renderEditor(template());
 }
 
 describe('arranging elements on the page (spec 012, US2)', () => {

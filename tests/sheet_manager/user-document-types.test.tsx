@@ -2,7 +2,6 @@
 
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
 import { LibraryDialog } from '@site/src/sheet_manager/components/dialogs/LibraryDialog';
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
 import {
     migrateDocumentStoreState,
@@ -18,7 +17,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
-import { resetEditorStores } from './helpers/editor';
+import { renderEditor, resetEditorStores } from './helpers/editor';
 
 // Full editor renders (outline, live page, settings) are slow under a loaded test run.
 vi.setConfig({ testTimeout: 20_000 });
@@ -197,12 +196,7 @@ describe('user document types (spec 012, US4)', () => {
 
     it('limits a type page to custom values, its system catalogs, and a kind picker', () => {
         installType();
-        render(
-            createElement(TemplateEditorDialog, {
-                base: { kind: 'edit', template: orgPage() },
-                onClose: () => {},
-            })
-        );
+        renderEditor(orgPage());
         selectInOutline('motto');
         const source = within(settingsOf('motto')).getByLabelText(
             'Stores value in'

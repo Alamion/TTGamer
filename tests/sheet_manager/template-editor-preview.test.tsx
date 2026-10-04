@@ -1,17 +1,15 @@
 // @vitest-environment jsdom
 
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
 import type { UnknownDocumentEnvelope } from '@site/src/sheet_manager/types/document';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { createElement } from 'react';
+import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { pressShortcut, resetEditorStores } from './helpers/editor';
+import { pressShortcut, renderEditor, resetEditorStores } from './helpers/editor';
 
 // Full editor renders (outline, live page, settings) are slow under a loaded test run.
 vi.setConfig({ testTimeout: 20_000 });
@@ -78,12 +76,7 @@ const outlineIds = (parentId: string) =>
     ].map((row) => row.getAttribute('data-outline-row'));
 
 function openEditor() {
-    render(
-        createElement(TemplateEditorDialog, {
-            base: { kind: 'edit', template: template() },
-            onClose: () => {},
-        })
-    );
+    renderEditor(template());
 }
 
 function savedChildren(): readonly TemplateNode[] {

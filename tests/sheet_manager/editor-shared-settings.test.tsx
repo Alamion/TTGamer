@@ -6,14 +6,12 @@ import {
     sharedSettingsFor,
     sharedValue,
 } from '@site/src/sheet_manager/components/dialogs/template-editor/sharedSettings';
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { CustomTemplateSchema, type TemplateNode } from '@site/src/sheet_manager/types/template';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { createElement } from 'react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { openSettingsGroups, resetEditorStores } from './helpers/editor';
+import { openSettingsGroups, renderEditor, resetEditorStores } from './helpers/editor';
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -94,12 +92,7 @@ describe('the settings area with several elements (spec 023, US3)', () => {
     afterEach(cleanup);
 
     function openWithThree() {
-        render(
-            createElement(TemplateEditorDialog, {
-                base: { kind: 'edit', template: template() },
-                onClose: () => {},
-            })
-        );
+        renderEditor(template());
         clickRow('f1');
         clickRow('f2', { ctrlKey: true });
         clickRow('f3', { ctrlKey: true });
@@ -178,12 +171,7 @@ describe('several fields of one type (spec 023, US3)', () => {
         });
 
     function openRatings() {
-        render(
-            createElement(TemplateEditorDialog, {
-                base: { kind: 'edit', template: ratings() },
-                onClose: () => {},
-            })
-        );
+        renderEditor(ratings());
         clickRow('r1');
         clickRow('r3', { shiftKey: true });
         openSettingsGroups();

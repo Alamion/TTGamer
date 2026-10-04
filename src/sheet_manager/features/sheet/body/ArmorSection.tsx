@@ -2,8 +2,9 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Plus } from 'lucide-react';
 
-import type { CatalogEntry } from '../../../components';
-import { CatalogSuggest, CollapsibleItem } from '../../../components';
+import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
+import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
+import { CollapsibleItem } from '../../../components/sections/CollapsibleItem';
 import type { ArmorItem } from '../../../types/character';
 import { useItemName } from '../data/itemDisplay';
 

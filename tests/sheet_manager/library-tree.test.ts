@@ -2,17 +2,14 @@ import { newDocumentPage } from '@site/src/sheet_manager/features/sheet/data/lib
 import {
     buildLibraryTree,
     containerKeys,
-    countDocuments,
     filterTree,
     findNode,
     flattenVisible,
-    type LibraryInput,
     type PageNode,
     type RulesetNode,
     type SettingNode,
     type TypeNode,
 } from '@site/src/sheet_manager/features/sheet/data/libraryTree';
-import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
@@ -26,6 +23,7 @@ import {
     CULT_ID,
     CULT_PAGE_ID,
     FIREARMS_ID,
+    libraryInput as input,
     libraryPage,
     ORG_ID,
     RELICS_ID,
@@ -35,22 +33,6 @@ import {
     userSetting,
     userType,
 } from './helpers/library';
-
-function input(overrides: Partial<LibraryInput> = {}): LibraryInput {
-    const { types, settings, defaultPages, catalogs } = useDocumentTypeStore.getState();
-    const { templates, defaultOverrides } = useTemplateStore.getState();
-    return {
-        registry: systemRegistry,
-        types,
-        settings,
-        catalogs,
-        templates,
-        defaultOverrides,
-        defaultPages,
-        counts: countDocuments(useDocumentStore.getState().documents),
-        ...overrides,
-    };
-}
 
 const names = (nodes: readonly { name: string }[]) => nodes.map(({ name }) => name);
 const node = (tree: RulesetNode[], key: string) => findNode(tree, key)?.node;
@@ -205,21 +187,6 @@ describe('library tree (spec 013)', () => {
         expect(names(unavailable.settings)).toContain('Far Future');
         expect(node(tree, 't:user:user-lost0001')).toMatchObject({ unavailable: true });
         expect(takeSheetIssues().map(({ code }) => code)).toContain('library-placement');
-    });
-
-    it('builds 300 pages quickly (SC-007 guard)', () => {
-        const pages = Array.from({ length: 300 }, (_, index) =>
-            libraryPage(`tpl-bulk${String(index).padStart(4, '0')}`, {
-                systemId: 'wod-v5',
-                documentKind: CULT_ID,
-                settingId: ASHEN_ID,
-            })
-        );
-        const started = performance.now();
-        buildLibraryTree(
-            input({ templates: [...useTemplateStore.getState().templates, ...pages] })
-        );
-        expect(performance.now() - started).toBeLessThan(100);
     });
 
     it('picks the page of new documents', () => {

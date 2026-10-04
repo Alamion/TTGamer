@@ -14,6 +14,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
 import { setTestLocale } from '../stubs/testLocale';
+import { mountSheet } from './helpers/sheet';
 
 function field(id: string, label: string, type: string, extra: Record<string, unknown> = {}) {
     return { id, label, type, required: false, compact: false, ...extra };
@@ -84,11 +85,6 @@ function seedDocument(templateValues?: unknown) {
  * Renders a template with the owning store seeded — the write path resolves the template
  * through the template library, so the store must know it before any interaction.
  */
-function mount(template: ReturnType<typeof buildTemplate>) {
-    useTemplateStore.setState({ templates: [template], quarantine: [] });
-    return render(createElement(DeclarativeSheetView, { template }));
-}
-
 function buildCatalogTemplate(catalogId = 'melee-weapons') {
     return CustomTemplateSchema.parse({
         id: 'catalog-kit',
@@ -131,7 +127,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
     });
 
     it('renders sections, fields, and tables in template order', () => {
-        mount(buildTemplate());
+        mountSheet(buildTemplate());
 
         expect(screen.getByText('Identity')).not.toBeNull();
         expect(screen.getByText('Origin')).not.toBeNull();
@@ -148,7 +144,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
             schemaVersion: 3,
             children: [field('origin', 'Origin', 'text', { required: true })],
         });
-        mount(template);
+        mountSheet(template);
         fireEvent.change(screen.getByLabelText('Origin'), { target: { value: 'Corellia' } });
         expect(useDocumentStore.getState().documents[0]!.templateValues?.origin).toBe('Corellia');
     });
@@ -176,7 +172,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
                 },
             ],
         });
-        mount(template);
+        mountSheet(template);
 
         const outerToggle = screen.getByRole('button', { name: /Outer/ });
         const groupToggle = screen.getByRole('button', { name: /Toggle Inner/ });
@@ -231,7 +227,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
                 },
             ],
         });
-        mount(template);
+        mountSheet(template);
         fireEvent.click(screen.getByRole('button', { name: 'Add row' }));
         fireEvent.change(screen.getAllByLabelText('Item')[0]!, { target: { value: 'Vibroblade' } });
         const values = useDocumentStore.getState().documents[0]!.templateValues;
@@ -270,7 +266,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
             ],
             currentDocumentId: 'doc-render',
         });
-        mount(template);
+        mountSheet(template);
 
         fireEvent.change(screen.getByLabelText('Note'), { target: { value: 'kept in bag' } });
         const document = useDocumentStore.getState().documents[0]!;
@@ -296,7 +292,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
                 },
             ],
         });
-        mount(template);
+        mountSheet(template);
         expect(screen.getAllByRole('alert').length).toBe(1);
         expect(takeSheetIssues()).toContainEqual(
             expect.objectContaining({
@@ -307,7 +303,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
     });
 
     it('writes text values into the document value bag', () => {
-        mount(buildTemplate());
+        mountSheet(buildTemplate());
 
         fireEvent.change(screen.getByLabelText('Origin'), { target: { value: 'Corellia' } });
 
@@ -316,7 +312,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
     });
 
     it('supports number, toggle, and select controls', () => {
-        mount(buildTemplate());
+        mountSheet(buildTemplate());
 
         fireEvent.change(screen.getByLabelText('Charge'), { target: { value: '6' } });
         fireEvent.click(screen.getByLabelText('Trained'));
@@ -329,7 +325,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
     });
 
     it('bounds a typed number to the field limits on blur, writing in-range values at once', () => {
-        mount(buildTemplate());
+        mountSheet(buildTemplate());
         const charge = screen.getByLabelText('Charge') as HTMLInputElement;
         const stored = () => useDocumentStore.getState().documents[0]!.templateValues?.charge;
 
@@ -357,7 +353,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
     });
 
     it('draws one rating dot per point, so the first dot is 1', () => {
-        mount(buildTemplate());
+        mountSheet(buildTemplate());
         const dots = screen.getAllByRole('radio', { name: /^Force rating: / });
         expect(dots.map((dot) => dot.getAttribute('aria-label'))).toEqual([
             'Force rating: 1',
@@ -381,13 +377,13 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
         const identity = template.children[0] as { children: Array<Record<string, unknown>> };
         const rating = identity.children.find(({ id }) => id === 'force-rating')!;
         rating.min = 2;
-        mount(template);
+        mountSheet(template);
         fireEvent.click(screen.getByRole('radio', { name: 'Force rating: 1' }));
         expect(useDocumentStore.getState().documents[0]!.templateValues?.['force-rating']).toBe(2);
     });
 
     it('shows a toggle as a dot switch', () => {
-        mount(buildTemplate());
+        mountSheet(buildTemplate());
         const trained = screen.getByRole('checkbox', { name: 'Trained' });
         expect(trained.tagName).toBe('BUTTON');
         fireEvent.click(trained);
@@ -411,7 +407,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
                 }),
             ],
         });
-        mount(template);
+        mountSheet(template);
         fireEvent.click(screen.getByRole('button', { name: 'Binary' }));
         fireEvent.click(screen.getByRole('button', { name: 'Basic' }));
         expect(useDocumentStore.getState().documents[0]!.templateValues?.langs).toEqual([
@@ -444,7 +440,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
                 }),
             ],
         });
-        mount(template);
+        mountSheet(template);
         expect(screen.queryByRole('button', { name: 'Basic' })).toBeNull();
         expect(screen.getByRole('button', { name: 'Huttese' })).toBeTruthy();
 
@@ -461,7 +457,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
     });
 
     it('adds table rows and fills cells', () => {
-        mount(buildTemplate());
+        mountSheet(buildTemplate());
 
         fireEvent.click(screen.getByRole('button', { name: 'Add row' }));
         fireEvent.change(screen.getAllByLabelText('Item')[0]!, {
@@ -474,7 +470,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
 
     it('keeps orphaned values in the bag when absent from the template', () => {
         seedDocument({ removedField: 'legacy-data' });
-        mount(buildTemplate());
+        mountSheet(buildTemplate());
 
         fireEvent.change(screen.getByLabelText('Origin'), { target: { value: 'Corellia' } });
 
@@ -504,7 +500,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
 
     it('shows localized catalog options and copies fills on selection', () => {
         const template = buildCatalogTemplate();
-        mount(template);
+        mountSheet(template);
 
         const picker = screen.getByLabelText('Weapon') as HTMLSelectElement;
         const optionLabels = Array.from(picker.options).map((option) => option.text);
@@ -520,7 +516,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
 
     it('re-copying on replace and leaving values on clear (copy-on-select semantics)', () => {
         const template = buildCatalogTemplate();
-        mount(template);
+        mountSheet(template);
         const picker = screen.getByLabelText('Weapon') as HTMLSelectElement;
 
         fireEvent.change(picker, { target: { value: 'knife' } });
@@ -541,7 +537,7 @@ describe('DeclarativeSheetView (recursive composition, US1)', () => {
 
     it('degrades a catalog-backed field when the catalog is unavailable', () => {
         const template = buildCatalogTemplate('no-such-catalog');
-        mount(template);
+        mountSheet(template);
 
         expect(screen.getByRole('alert').textContent).toContain('unavailable on this device');
         // Manual fallback keeps the static options.
@@ -607,7 +603,7 @@ describe('presentation mapping (US3)', () => {
     }
 
     it('alternates section accents by sibling parity and never stores them', () => {
-        const { container } = mount(presentationTemplate());
+        const { container } = mountSheet(presentationTemplate());
         const stripes = container.querySelectorAll('span[class*="h-6"]');
         const accents = Array.from(stripes).map((stripe) =>
             stripe.className.includes('bg-primary') ? 'primary' : 'secondary'
@@ -617,7 +613,7 @@ describe('presentation mapping (US3)', () => {
     });
 
     it('renders a docs link inside the section header that does not toggle the block', () => {
-        mount(presentationTemplate());
+        mountSheet(presentationTemplate());
         const toggle = screen.getByRole('button', { name: /Section A/ });
         const link = screen.getByLabelText('Documentation for Section A');
         expect(link).not.toBeNull();
@@ -645,13 +641,13 @@ describe('presentation mapping (US3)', () => {
             });
         const href = () => screen.getByLabelText('Documentation for Linked').getAttribute('href');
 
-        mount(withLinks('/docs/wod-v5/rules/dice-pools#reading-the-dice'));
+        mountSheet(withLinks('/docs/wod-v5/rules/dice-pools#reading-the-dice'));
         expect(href()).toBe('/docs/wod-v5/rules/dice-pools#reading-the-dice');
         cleanup();
 
         setTestLocale('ru');
         try {
-            mount(withLinks('/docs/wod-v5/rules/dice-pools#reading-the-dice'));
+            mountSheet(withLinks('/docs/wod-v5/rules/dice-pools#reading-the-dice'));
             expect(
                 screen.getByLabelText('Документация: Linked', { exact: false }).getAttribute('href')
             ).toBe('/ru/docs/wod-v5/rules/dice-pools#reading-the-dice');
@@ -660,7 +656,7 @@ describe('presentation mapping (US3)', () => {
             setTestLocale('en');
         }
 
-        mount(withLinks('https://example.org/wiki/Hunter'));
+        mountSheet(withLinks('https://example.org/wiki/Hunter'));
         expect(href()).toBe('https://example.org/wiki/Hunter');
     });
 
@@ -680,7 +676,7 @@ describe('presentation mapping (US3)', () => {
                 },
             ],
         });
-        mount(template);
+        mountSheet(template);
         expect(screen.queryByLabelText('Documentation for Unsafe')).toBeNull();
         expect(takeSheetIssues()).toContainEqual(
             expect.objectContaining({
@@ -710,7 +706,7 @@ describe('presentation mapping (US3)', () => {
                 },
             ],
         });
-        mount(template);
+        mountSheet(template);
         const cell = (label: string) => screen.getByLabelText(label).closest('.md\\:col-span-2');
         expect(cell('Wide')?.className).toBe('md:col-span-2');
         expect(cell('Full')?.className).toBe('md:col-span-2 xl:col-span-3');
@@ -718,12 +714,12 @@ describe('presentation mapping (US3)', () => {
     });
 
     it('lays out direct section children in a column grid', () => {
-        const { container } = mount(presentationTemplate());
+        const { container } = mountSheet(presentationTemplate());
         expect(container.innerHTML).toContain('md:grid-cols-2');
     });
 
     it('renders groups as titled cards: always-visible title, opt-in collapse only', () => {
-        mount(presentationTemplate());
+        mountSheet(presentationTemplate());
         expect(screen.getByText('Plain Group')).not.toBeNull();
         expect(screen.getByText('Collapsible Group')).not.toBeNull();
         // Non-collapsible group: no toggle button of its own.
@@ -761,7 +757,7 @@ describe('derived fields and clamps (US4)', () => {
             field('base', 'Base', 'number'),
             field('derived', 'Derived', 'formula', { formula: 'base * 2' }),
         ]);
-        mount(template);
+        mountSheet(template);
 
         fireEvent.change(screen.getByLabelText('Base'), { target: { value: '21' } });
         expect(screen.getByText('42')).not.toBeNull();
@@ -773,7 +769,7 @@ describe('derived fields and clamps (US4)', () => {
         const template = formulaTemplate([
             field('derived', 'Derived', 'formula', { formula: '1 + 1' }),
         ]);
-        mount(template);
+        mountSheet(template);
         expect(screen.queryByRole('textbox', { name: 'Derived' })).toBeNull();
         expect(screen.getByText('2')).not.toBeNull();
     });
@@ -783,7 +779,7 @@ describe('derived fields and clamps (US4)', () => {
             field('divisor', 'Divisor', 'number'),
             field('derived', 'Derived', 'formula', { formula: '10 / divisor' }),
         ]);
-        mount(template);
+        mountSheet(template);
         fireEvent.change(screen.getByLabelText('Divisor'), { target: { value: '0' } });
         expect(screen.getByRole('alert').textContent).toContain('zero');
     });
@@ -797,7 +793,7 @@ describe('derived fields and clamps (US4)', () => {
                 maxFrom: 'no-such-value',
             }),
         ]);
-        mount(template);
+        mountSheet(template);
         expect(screen.getByRole('alert')).not.toBeNull();
     });
 
@@ -811,7 +807,7 @@ describe('derived fields and clamps (US4)', () => {
                 maxFrom: 'cap',
             }),
         ]);
-        mount(template);
+        mountSheet(template);
 
         // Raise the cap, store 8, then lower the cap to 3.
         fireEvent.change(screen.getByLabelText('Cap'), { target: { value: '10' } });
@@ -833,7 +829,7 @@ describe('derived fields and clamps (US4)', () => {
             field('left', 'Left', 'formula', { formula: 'right + 1' }),
             field('right', 'Right', 'formula', { formula: 'left + 1' }),
         ]);
-        mount(template);
+        mountSheet(template);
         const alerts = screen.getAllByRole('alert');
         expect(alerts.map(({ textContent }) => textContent)).toEqual([
             'circular dependency',

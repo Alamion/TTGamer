@@ -5,13 +5,11 @@ import {
     PANE_STORAGE_KEY,
     readPaneWidths,
 } from '@site/src/sheet_manager/components/dialogs/template-editor/usePaneWidths';
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { createElement } from 'react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { resetEditorStores } from './helpers/editor';
+import { renderEditor, resetEditorStores } from './helpers/editor';
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -24,13 +22,7 @@ const template = () =>
         children: [{ id: 'motto', type: 'text', label: 'Motto' }],
     });
 
-const open = () =>
-    render(
-        createElement(TemplateEditorDialog, {
-            base: { kind: 'edit', template: template() },
-            onClose: () => {},
-        })
-    );
+const open = () => renderEditor(template());
 
 const divider = (name: string) => screen.getByRole('separator', { name });
 const stored = () => JSON.parse(localStorage.getItem(PANE_STORAGE_KEY) ?? 'null');

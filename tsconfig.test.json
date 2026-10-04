@@ -2,6 +2,8 @@
     "extends": "./tsconfig.app.json",
     "compilerOptions": {
         "composite": false,
+        "incremental": true,
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
         "types": ["@docusaurus/module-type-aliases", "node", "vitest/globals"]
     },
     "include": ["scripts", "tests", "vitest.config.ts", "src/@types/tailwind-config.d.ts"]

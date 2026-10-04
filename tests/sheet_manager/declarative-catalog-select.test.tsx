@@ -2,11 +2,12 @@
 
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+
+import { mountSheet } from './helpers/sheet';
 
 /** `species` holds 32 entries (over the threshold); `melee-weapons` holds 9 (under it). */
 function buildTemplate(catalogId: string, multiple = false) {
@@ -62,11 +63,6 @@ function seedDocument(templateValues?: unknown) {
     });
 }
 
-function mount(template: ReturnType<typeof buildTemplate>) {
-    useTemplateStore.setState({ templates: [template], quarantine: [] });
-    return render(createElement(DeclarativeSheetView, { template }));
-}
-
 function storedValues() {
     return useDocumentStore.getState().documents[0]!.templateValues;
 }
@@ -85,13 +81,13 @@ afterEach(() => cleanup());
 
 describe('catalog-bound select control', () => {
     it('keeps the plain select for a catalog at or under the threshold', () => {
-        mount(buildTemplate('melee-weapons'));
+        mountSheet(buildTemplate('melee-weapons'));
 
         expect((screen.getByLabelText('Pick') as HTMLElement).tagName).toBe('SELECT');
     });
 
     it('uses the searchable control for a catalog over the threshold', () => {
-        mount(buildTemplate('species'));
+        mountSheet(buildTemplate('species'));
 
         const control = screen.getByLabelText('Pick') as HTMLInputElement;
         expect(control.tagName).toBe('INPUT');
@@ -103,7 +99,7 @@ describe('catalog-bound select control', () => {
     });
 
     it('narrows suggestions by typed text and stores the entry id, not its label', () => {
-        mount(buildTemplate('species'));
+        mountSheet(buildTemplate('species'));
         const control = screen.getByLabelText('Pick') as HTMLInputElement;
 
         fireEvent.change(control, { target: { value: 'wooki' } });
@@ -116,7 +112,7 @@ describe('catalog-bound select control', () => {
     });
 
     it('selects an entry with the keyboard alone', () => {
-        mount(buildTemplate('species'));
+        mountSheet(buildTemplate('species'));
         const control = screen.getByLabelText('Pick') as HTMLInputElement;
 
         control.focus();
@@ -130,7 +126,7 @@ describe('catalog-bound select control', () => {
 
     it('keeps a stored value that the catalog no longer offers', () => {
         seedDocument({ pick: 'retired-species' });
-        mount(buildTemplate('species'));
+        mountSheet(buildTemplate('species'));
 
         expect((screen.getByLabelText('Pick') as HTMLInputElement).value).toBe('retired-species');
         expect(storedValues()?.['pick']).toBe('retired-species');
@@ -138,7 +134,7 @@ describe('catalog-bound select control', () => {
 
     it('clears the field when the input is emptied', () => {
         seedDocument({ pick: 'wookiee-slavery' });
-        mount(buildTemplate('species'));
+        mountSheet(buildTemplate('species'));
         const control = screen.getByLabelText('Pick') as HTMLInputElement;
 
         fireEvent.change(control, { target: { value: '' } });
@@ -147,7 +143,7 @@ describe('catalog-bound select control', () => {
     });
 
     it('does not swap the control when the option list changes under the user', () => {
-        const view = mount(buildTemplate('species'));
+        const view = mountSheet(buildTemplate('species'));
         const control = screen.getByLabelText('Pick') as HTMLInputElement;
         fireEvent.change(control, { target: { value: 'wook' } });
 

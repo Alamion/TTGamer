@@ -1,0 +1,9 @@
+# Push check (spec 024): type check, then the unit tests related to the pushed changes.
+base="$(git rev-parse --abbrev-ref --symbolic-full-name '@{push}' 2>/dev/null || echo origin/master)"
+changed="$(git diff --name-only --diff-filter=ACMR "$base"...HEAD -- src tests 2>/dev/null | grep -E '\.(ts|tsx|js|mjs)$' || true)"
+
+yarn typecheck || exit 1
+if [ -n "$changed" ]; then
+    # shellcheck disable=SC2086
+    npx vitest related --run --project unit $changed || exit 1
+fi

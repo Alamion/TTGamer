@@ -33,9 +33,13 @@ tests/dice_roller/
 
 ## Key Testing Patterns
 
-- **`evaluate(notation, ...mockValues)`** — pass fractional values (0.0–1.0) for deterministic `Math.random()` mocking
-- **MockRandom consumption order:** ALL dice initialized first, THEN modifiers run (see dice-logic skill for exact order)
+- **`evaluate(notation, ...mockValues)`** — pass fractional values (0.0–1.0) for deterministic
+  `Math.random()` mocking
+- **MockRandom consumption order:** ALL dice initialized first, THEN modifiers run (see dice-logic
+  skill for exact order)
 - **Use `parseToAST()` + `evaluateDiceAST()`** for unit-level parser/evaluator tests
 - **Use `rollDices()`** for full pipeline tests (includes `onRollResult` formatting)
 - **No SillyTavern mocks needed** — dice-logic is pure TS with no external dependencies
-- **3D harness** — `installDisplay(seed)` then `traceRoll(sides, timing)`; the seed is re-applied after geometry creation because three.js consumes `Math.random` for texture UUIDs, so a seed names the same throw whatever ran before
+- **3D harness** — `installDisplay(seed)` then `traceRoll(sides, timing)`; the seed is re-applied
+  after geometry creation because three.js consumes `Math.random` for texture UUIDs, so a seed names
+  the same throw whatever ran before

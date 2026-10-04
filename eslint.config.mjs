@@ -8,7 +8,16 @@ import tseslint from 'typescript-eslint';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-    globalIgnores(['dist', 'build', '.docusaurus', 'coverage', 'tmp', 'context', '.claude']),
+    globalIgnores([
+        'dist',
+        'build',
+        '.docusaurus',
+        'coverage',
+        'tmp',
+        'context',
+        '.claude',
+        'src/i18n/generated',
+    ]),
     {
         files: ['**/*.{ts,tsx}'],
         extends: [
@@ -74,6 +83,25 @@ export default defineConfig([
                             caseSensitive: true,
                             regex: '^\\.\\./(?!(?:index|registry|types|view|capabilities|catalogs|policies|templateBindings)(?:/|$))[a-z0-9-]+(?:/|$)',
                             message: 'WoD-family helpers must not import a concrete system.',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
+    {
+        // No aggregate re-export modules in the sheet manager (spec 024): a component or hook
+        // index made every element test load the editor, the library, and every system.
+        files: ['src/**/*.{ts,tsx}', 'tests/**/*.{ts,tsx}'],
+        rules: {
+            '@typescript-eslint/no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            regex: '(^@site/src/sheet_manager/|^(?:\\.\\./)+)(?:components|hooks)(?:/index(?:\\.tsx?)?)?$',
+                            message:
+                                'Import the module itself (e.g. components/controls/CatalogSuggest), not a directory index.',
                         },
                     ],
                 },

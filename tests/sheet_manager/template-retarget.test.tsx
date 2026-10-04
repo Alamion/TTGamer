@@ -14,7 +14,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { resetEditorStores } from './helpers/editor';
+import { renderEditor, resetEditorStores } from './helpers/editor';
 
 // Full editor renders are slow under a loaded test run (the shipped Star Wars page took >20 s).
 vi.setConfig({ testTimeout: 60_000 });
@@ -171,12 +171,7 @@ describe('moving a template in the editor (T-070)', () => {
             documents: [orgDocument('doc-assigned', 'tpl-orgpage1') as never],
             currentDocumentId: 'doc-assigned',
         });
-        render(
-            createElement(TemplateEditorDialog, {
-                base: { kind: 'edit', template: pages[0]! },
-                onClose: () => {},
-            })
-        );
+        renderEditor(pages[0]!);
         fireEvent.change(targetSelect(), { target: { value: 'star-wars-wod/character' } });
         fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
@@ -197,12 +192,7 @@ describe('moving a template in the editor (T-070)', () => {
             { id: 'name', type: 'primitive', bindingKey: 'field:name', compact: false },
         ]);
         install([bound]);
-        render(
-            createElement(TemplateEditorDialog, {
-                base: { kind: 'edit', template: bound },
-                onClose: () => {},
-            })
-        );
+        renderEditor(bound);
         expect(screen.getByRole('button', { name: 'Save' })).toHaveProperty('disabled', false);
         fireEvent.change(targetSelect(), { target: { value: `star-wars-wod/${TYPE_ID}` } });
         expect(screen.getByText(/Unknown data binding "field:name"/)).toBeTruthy();
@@ -211,12 +201,7 @@ describe('moving a template in the editor (T-070)', () => {
 
     it('keeps shipped pages and caller-owned pages where they are', () => {
         const shipped = systemRegistry.getSystem('star-wars-wod')!.defaultTemplates![0]!;
-        render(
-            createElement(TemplateEditorDialog, {
-                base: { kind: 'edit', template: shipped },
-                onClose: () => {},
-            })
-        );
+        renderEditor(shipped);
         expect(targetSelect().disabled).toBe(true);
         cleanup();
 

@@ -1,0 +1,49 @@
+# Thin runner config (spec 024): every job calls one `yarn ci:*` command from package.json,
+# so a later Jenkins pipeline runs the same checks.
+name: CI
+
+on:
+    push:
+    pull_request:
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    check:
+        name: ${{ matrix.check }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                check: [lint, typecheck, test, deadcode, validate, build]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: yarn
+            - uses: actions/cache@v4
+              with:
+                  path: |
+                      node_modules/.cache
+                      node_modules/.tmp
+                  key: ci-${{ matrix.check }}-${{ runner.os }}-${{ github.sha }}
+                  restore-keys: ci-${{ matrix.check }}-${{ runner.os }}-
+            - run: yarn install --frozen-lockfile
+            - run: yarn ci:${{ matrix.check }}
+
+    perf:
+        # Timing tests are noisy on shared runners: reported, never blocking (spec 024).
+        name: perf (non-blocking)
+        runs-on: ubuntu-latest
+        continue-on-error: true
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: yarn
+            - run: yarn install --frozen-lockfile
+            - run: yarn ci:test:perf

@@ -7,7 +7,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { resetEditorStores } from './helpers/editor';
+import { renderEditor, resetEditorStores } from './helpers/editor';
 
 // Full editor renders (outline, live page, settings) are slow under a loaded test run.
 vi.setConfig({ testTimeout: 20_000 });
@@ -62,12 +62,7 @@ const selectInOutline = (nodeId: string) =>
     );
 
 function openEditor() {
-    render(
-        createElement(TemplateEditorDialog, {
-            base: { kind: 'edit', template: template() },
-            onClose: () => {},
-        })
-    );
+    renderEditor(template());
 }
 
 describe('template editor page (spec 012, US1)', () => {

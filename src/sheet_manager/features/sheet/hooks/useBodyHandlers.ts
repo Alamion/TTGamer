@@ -2,8 +2,8 @@ import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import type { CatalogEntry } from '../../../components';
-import { useCharacter } from '../../../hooks';
+import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
+import { useCharacter } from '../../../hooks/useCharacter';
 import { catalogEntryText, entryEnumLabel } from '../../../systems/catalogs';
 import type { EquipmentSectionId } from '../../../systems/templateBindings';
 import {

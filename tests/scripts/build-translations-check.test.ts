@@ -16,7 +16,9 @@ async function fixturePaths() {
         'translations/source/ru/ui/sheet.yaml': 'title: Заголовок\n',
         'translations/glossary/v5.yaml':
             '- id: title\n  en: Title\n  ru: Заголовок\n  ruShort: Загл.\n  refs: [ttgamer.ui.sheet.title]\n',
-        'i18n/ru/code.json': JSON.stringify({ 'theme.keep': { message: 'Оставить' } }),
+        'translations/source/ru/docusaurus.json': JSON.stringify({
+            'theme.keep': { message: 'Оставить' },
+        }),
     });
     return {
         root,
@@ -55,7 +57,7 @@ describe('build-translations --check', () => {
             path.join(root, 'src/i18n/generated/bookTerms.ts'),
             'utf8'
         );
-        expect(bookTerms).toContain("'ttgamer.ui.sheet.title': {");
-        expect(bookTerms).toContain("ruShort: 'Загл.'");
+        expect(bookTerms).toContain('"ttgamer.ui.sheet.title": {');
+        expect(bookTerms).toContain('"ruShort": "Загл."');
     });
 });

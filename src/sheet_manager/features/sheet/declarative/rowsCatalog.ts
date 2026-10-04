@@ -1,6 +1,6 @@
 import { normalizeSearchText } from '@site/src/shared/utils/normalizeSearchText';
 
-import type { CatalogEntry } from '../../../components';
+import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
 import { bookNameOf, type CatalogBindingEntry } from '../../../systems';
 import type { RowsBinding, RowsCatalogParent } from '../../../systems/templateBindings';
 import { readDetailValue } from '../data/catalogBindings';

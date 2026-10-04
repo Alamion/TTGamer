@@ -1,12 +1,10 @@
 // @vitest-environment jsdom
 
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { cleanup, fireEvent, render, within } from '@testing-library/react';
-import { createElement } from 'react';
+import { cleanup, fireEvent, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { openSettingsGroups, resetEditorStores } from './helpers/editor';
+import { openSettingsGroups, renderEditor, resetEditorStores } from './helpers/editor';
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -90,12 +88,7 @@ const header = (nodeId: string, group: string) =>
 describe('readable settings panel (spec 022, US1)', () => {
     beforeEach(() => {
         resetEditorStores();
-        render(
-            createElement(TemplateEditorDialog, {
-                base: { kind: 'edit', template: template() },
-                onClose: () => {},
-            })
-        );
+        renderEditor(template());
     });
     afterEach(cleanup);
 

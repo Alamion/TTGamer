@@ -59,10 +59,4 @@ describe('verifierMain', () => {
         expect(Object.keys(parsed)).toEqual(['findings', 'excepted', 'summary']);
         expect(code).toBe(0);
     }, 60_000);
-
-    it('scans the whole repository in under 30 seconds (SC-008)', async () => {
-        const started = performance.now();
-        await runVerifier();
-        expect(performance.now() - started).toBeLessThan(30_000);
-    }, 60_000);
 });
