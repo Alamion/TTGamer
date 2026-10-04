@@ -1,8 +1,8 @@
 # Contract: Check commands
 
 The project scripts below are the only entry points any runner calls (local hooks, GitHub Actions,
-Vercel, a future Jenkins pipeline). Runners never inline tool flags; a change to a check happens
-in `package.json` (or the script it calls) once.
+Vercel, a future Jenkins pipeline). Runners never inline tool flags; a change to a check happens in
+`package.json` (or the script it calls) once.
 
 | Command             | Runs                                                                                         | Blocking in CI |
 | ------------------- | -------------------------------------------------------------------------------------------- | -------------- |
@@ -29,6 +29,6 @@ Hooks:
 | `pre-commit` | `lint-staged` (staged files only; backlog and translation checks when those are staged) |
 | `pre-push`   | `yarn typecheck` and `vitest related --run` on files changed since the upstream         |
 
-Exit codes: 0 on success, non-zero on any finding; each command prints which check failed.
-Caches live in `.eslintcache`, `node_modules/.cache/prettier`, and `node_modules/.tmp/`;
-runners may persist them between runs, and a missing cache only costs time.
+Exit codes: 0 on success, non-zero on any finding; each command prints which check failed. Caches
+live in `.eslintcache`, `node_modules/.cache/prettier`, and `node_modules/.tmp/`; runners may
+persist them between runs, and a missing cache only costs time.

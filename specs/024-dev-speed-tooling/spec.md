@@ -16,10 +16,10 @@ architecture is spec 025; Playwright smoke tests and dependency upgrades are spe
 Specs 018–023 took far longer than planned. A four-part audit (2026-10-04) found the cost outside
 the product code as much as in it:
 
-- Every commit waits 2–4 minutes for a "fast" check; a feature with ~15 commits spends 45–60
-  minutes in hooks. There is no CI; the commit hook is the only gate.
-- The type check reports success while checking 0 files from the root project; 34 source files
-  are never type-checked.
+- Every commit waits 2–4 minutes for a "fast" check; a feature with ~15 commits spends 45–60 minutes
+  in hooks. There is no CI; the commit hook is the only gate.
+- The type check reports success while checking 0 files from the root project; 34 source files are
+  never type-checked.
 - The full test run takes ~2–2.3 minutes, dominated by one 2177-line test file and by every page
   test loading nearly the whole application. Timing-based tests fail under load.
 - A feature's spec documents run to 1.5k–4.5k lines (≈40% of its diff); most are never read again.
@@ -35,21 +35,21 @@ The site deploys on Vercel today; a Jenkins pipeline follows once the backend ex
 
 ### Session 2026-10-04
 
-- Q: How does the lean process reach the spec-kit commands, which live in the user's personal
-  skill directory? → A: Install the spec-kit commands project-locally (`.claude/skills/` in the
-  repository) and change only those. Claude Code documents that a personal skill overrides a
-  project skill with the same name, so the override must be proven by a test: first a project
-  setting that turns the personal skills off for this repository, otherwise distinct project
-  command names. The personal skills stay untouched.
+- Q: How does the lean process reach the spec-kit commands, which live in the user's personal skill
+  directory? → A: Install the spec-kit commands project-locally (`.claude/skills/` in the
+  repository) and change only those. Claude Code documents that a personal skill overrides a project
+  skill with the same name, so the override must be proven by a test: first a project setting that
+  turns the personal skills off for this repository, otherwise distinct project command names. The
+  personal skills stay untouched.
 - Q: Where do the timing (perf) tests run, given shared CI machines are noisy? → A: They are a
   required part of the local pre-merge full check; in hosted CI they run and report but do not
   block.
 - Q: What runs before a push, given pushes go straight to `testing`/`master` and Vercel deploys
   `master`? → A: A pre-push check runs the cached type check and the tests related to the changed
   files (about a minute); the full check is a required step of merging into `master`.
-- Q: What threshold sends a task down the small change path instead of a full spec? → A: One
-  story, no change to schemas, persistence, or contracts between modules, and an expected ≤ ~300
-  lines of code (tests and docs excluded); a change that grows past this escalates to a spec.
+- Q: What threshold sends a task down the small change path instead of a full spec? → A: One story,
+  no change to schemas, persistence, or contracts between modules, and an expected ≤ ~300 lines of
+  code (tests and docs excluded); a change that grows past this escalates to a spec.
 - Q: Which review steps stay in the lean process? → A: Clarification always; the consistency
   analysis only for specs with four or more stories (or on request); no separate spec-quality
   checklist file.
@@ -62,8 +62,8 @@ The actors are the **maintainer** and the **coding agent** working on the reposi
 ### User Story 1 - Commit checks that are fast and actually check everything (Priority: P1)
 
 The maintainer or agent commits work in progress without waiting minutes, while the type check
-covers every source file and the complete set of checks runs where it belongs: once before a
-feature is merged and on every push, through the same commands on any runner.
+covers every source file and the complete set of checks runs where it belongs: once before a feature
+is merged and on every push, through the same commands on any runner.
 
 **Why this priority**: the commit check is paid on every commit of every feature; it is the largest
 recurring cost and its type-check gap hides real errors.
@@ -79,8 +79,8 @@ fails; run the full check command locally and on the hosted CI service and compa
 2. **Given** a type error in any source file, configuration file, or test, **When** the type check
    runs, **Then** it fails and names the file.
 3. **Given** a commit on the main branch, **When** it is created, **Then** the commit check is no
-   slower than on a feature branch; a push runs the type check and related tests, and the full
-   check is part of the merge into the main branch.
+   slower than on a feature branch; a push runs the type check and related tests, and the full check
+   is part of the merge into the main branch.
 4. **Given** a push or merge request, **When** the hosted CI service runs, **Then** it runs the same
    named check commands a maintainer runs locally and a later Jenkins pipeline would run, and
    reports which check failed.
@@ -91,14 +91,14 @@ fails; run the full check command locally and on the hosted CI service and compa
 
 ### User Story 2 - A fast, stable test suite (Priority: P1)
 
-The maintainer or agent runs the whole test suite in about a minute and trusts a red result: no
-test fails because the machine was busy.
+The maintainer or agent runs the whole test suite in about a minute and trusts a red result: no test
+fails because the machine was busy.
 
 **Why this priority**: the suite runs before every merge and after every refactor (spec 025 relies
 on it as its safety net); flaky timing failures cost investigation time and erode trust.
 
-**Independent Test**: run the full suite five times in a row on the maintainer machine; record
-wall time and failures; run the timing tests separately.
+**Independent Test**: run the full suite five times in a row on the maintainer machine; record wall
+time and failures; run the timing tests separately.
 
 **Acceptance Scenarios**:
 
@@ -120,8 +120,8 @@ wall time and failures; run the timing tests separately.
 ### User Story 3 - A lean feature process (Priority: P2)
 
 The maintainer starts a feature and gets a short specification and one design note instead of six
-planning documents; small changes skip the spec process entirely; commits follow user stories;
-the version and changelog change once per release.
+planning documents; small changes skip the spec process entirely; commits follow user stories; the
+version and changelog change once per release.
 
 **Why this priority**: planning documents outweigh the work they describe and are written once and
 never read; but this only pays off on the next feature, after Stories 1–2 already save time.
@@ -135,20 +135,19 @@ change path to one backlog item.
 1. **Given** a new feature, **When** the specification step runs, **Then** it produces a spec of
    stories, requirements, and success criteria, with edge cases only where not obvious.
 2. **Given** the planning step, **When** it runs, **Then** it produces one design note (decisions
-   with rejected alternatives, changed types and data, the test list, and the manual walk steps)
-   and a task list, and no separate research, data-model, contract, or quickstart documents.
+   with rejected alternatives, changed types and data, the test list, and the manual walk steps) and
+   a task list, and no separate research, data-model, contract, or quickstart documents.
 3. **Given** a change with one story, no schema, persistence, or module-contract change, and about
    300 lines of code or less, **When** the maintainer chooses the small change path, **Then** the
-   work goes backlog entry → code and tests → guidance update → one commit, without spec
-   documents.
+   work goes backlog entry → code and tests → guidance update → one commit, without spec documents.
 4. **Given** an implemented user story, **When** it is committed, **Then** there is one commit per
    story (plus one for the planning documents), not one per process phase.
-5. **Given** a merge into the main branch, **When** the release step runs, **Then** the version
-   bump and the changelog entry are written once for everything merged, not per feature.
+5. **Given** a merge into the main branch, **When** the release step runs, **Then** the version bump
+   and the changelog entry are written once for everything merged, not per feature.
 6. **Given** a UI layout that is already known, **When** planning runs, **Then** no prototype is
    built; a prototype for an unknown layout lives outside `specs/` and is limited to one screen.
-7. **Given** the specs written before this feature, **When** the process changes, **Then** they
-   stay as they are; nothing is rewritten.
+7. **Given** the specs written before this feature, **When** the process changes, **Then** they stay
+   as they are; nothing is rewritten.
 
 ---
 
@@ -183,9 +182,9 @@ reformat agent-facing markdown and confirm no manual reflow remains.
 
 ### User Story 5 - Cheaper translation and docs work (Priority: P3)
 
-A new UI string is two edits (English and Russian source) and nothing generated appears in the
-diff; one translation check runs instead of four; a new mirrored docs section needs no
-registration; the Russian mirror is checked for structure, not only existence.
+A new UI string is two edits (English and Russian source) and nothing generated appears in the diff;
+one translation check runs instead of four; a new mirrored docs section needs no registration; the
+Russian mirror is checked for structure, not only existence.
 
 **Why this priority**: valuable but smaller savings; depends on Story 1 deciding where generation
 runs.
@@ -203,9 +202,8 @@ Russian page and confirm the check fails.
    without a manual step.
 3. **Given** the translation checks, **When** they run, **Then** they run as one process that loads
    the sources once and reports every finding the four previous checks reported.
-4. **Given** a new documentation section in English, **When** it has no Russian mirror, **Then**
-   the check reports it without a hand-maintained list of sections (draft and developer pages
-   excepted).
+4. **Given** a new documentation section in English, **When** it has no Russian mirror, **Then** the
+   check reports it without a hand-maintained list of sections (draft and developer pages excepted).
 5. **Given** a Russian page whose heading anchors, headings, admonitions, or embeds differ from its
    English page, **When** the check runs, **Then** it reports the difference.
 
@@ -222,8 +220,8 @@ Russian page and confirm the check fails.
 - **A perf test on a slow runner**: ratio-based comparisons keep it meaningful; absolute budgets
   belong to browser tests (spec 026).
 - **Personal spec-kit skills with the same names**: they win over project skills by default; the
-  repository must switch them off for itself (or use distinct names), and other projects keep
-  using the personal versions unchanged.
+  repository must switch them off for itself (or use distinct names), and other projects keep using
+  the personal versions unchanged.
 - **Hidden type errors**: switching the type check to cover all files may surface existing errors;
   they are fixed in this feature, not suppressed.
 
@@ -236,14 +234,14 @@ Russian page and confirm the check fails.
 - **FR-001**: The commit check MUST format and lint only staged files, use caches, and skip code
   checks for commits that touch only documentation, specs, or backlog files.
 - **FR-002**: The commit check MUST NOT run the full verification on the main branch.
-- **FR-002a**: A pre-push check MUST run the cached type check and the tests related to the
-  changed files, finishing within 90 seconds for a typical feature push; the full check (including
-  build and timing tests) MUST be a required, documented step of merging into the main branch.
+- **FR-002a**: A pre-push check MUST run the cached type check and the tests related to the changed
+  files, finishing within 90 seconds for a typical feature push; the full check (including build and
+  timing tests) MUST be a required, documented step of merging into the main branch.
 - **FR-003**: The type check MUST cover every source file, configuration file, and test, and MUST
   fail on any type error in them; any errors it surfaces are fixed in this feature.
 - **FR-004**: The project MUST expose named check commands (lint, type check, unit tests, perf
-  tests, dead-code audit, translations and data validation, build) that are the only entry points
-  a runner calls; hosted CI, Vercel, and a future Jenkins pipeline call the same commands.
+  tests, dead-code audit, translations and data validation, build) that are the only entry points a
+  runner calls; hosted CI, Vercel, and a future Jenkins pipeline call the same commands.
 - **FR-005**: A hosted CI workflow MUST run those commands on every push and merge request and
   report each as a separate result.
 - **FR-006**: Lint and format checks MUST use persistent caches locally and in CI where the runner
@@ -253,10 +251,10 @@ Russian page and confirm the check fails.
 
 - **FR-007**: The largest editor and library test files MUST be split so that no test file takes
   more than 25% of the default run's wall time.
-- **FR-008**: Timing tests MUST run in a separate test group, one at a time, with ratio or
-  same-run baseline assertions; the default run MUST NOT contain wall-clock assertions. The group
-  MUST be part of the local pre-merge full check; in hosted CI it MUST run as a non-blocking,
-  reported check.
+- **FR-008**: Timing tests MUST run in a separate test group, one at a time, with ratio or same-run
+  baseline assertions; the default run MUST NOT contain wall-clock assertions. The group MUST be
+  part of the local pre-merge full check; in hosted CI it MUST run as a non-blocking, reported
+  check.
 - **FR-009**: Aggregate re-export modules that make element tests load the editor, the library, or
   every game system MUST be removed or narrowed, and a lint rule MUST prevent reintroducing such
   imports.
@@ -272,11 +270,11 @@ Russian page and confirm the check fails.
 - **FR-013**: Planning MUST produce one design note and a task list; the research, data-model,
   contract, and quickstart documents MUST no longer be produced. The constitution check MUST be a
   short list of principles at risk.
-- **FR-014**: The task template MUST drop sections a single sequential agent does not use
-  (parallel execution examples, delivery strategy).
+- **FR-014**: The task template MUST drop sections a single sequential agent does not use (parallel
+  execution examples, delivery strategy).
 - **FR-014a**: The clarification step MUST stay for every spec; the consistency analysis MUST run
-  only for specs with four or more stories or on request; the specification step MUST NOT produce
-  a separate spec-quality checklist file.
+  only for specs with four or more stories or on request; the specification step MUST NOT produce a
+  separate spec-quality checklist file.
 - **FR-015**: A documented small change path MUST apply when a task has one story, changes no
   schema, persistence, or contract between modules, and is expected to stay within ~300 lines of
   code (tests and docs excluded); its steps are backlog entry → code and tests → guidance update →
@@ -287,8 +285,8 @@ Russian page and confirm the check fails.
 - **FR-018**: Prototypes MUST be built only for unknown layouts, outside `specs/`.
 - **FR-019**: The spec-kit commands MUST be installed in the repository and carry the process
   changes there; the personal spec-kit skills MUST NOT be edited. A test MUST show that invoking a
-  spec-kit command in this repository runs the project version (by a project setting that turns
-  the personal versions off here, or else by distinct project command names).
+  spec-kit command in this repository runs the project version (by a project setting that turns the
+  personal versions off here, or else by distinct project command names).
 
 **Guidance**
 
@@ -299,8 +297,8 @@ Russian page and confirm the check fails.
   references, without code-level detail that a search finds (file lists, test maps, test ids).
 - **FR-023**: Agent-facing markdown (skills, module notes, specs) MUST be wrapped automatically by
   the formatter; user docs, changelog, and backlog keep one line per paragraph.
-- **FR-024**: The constitution MUST drop its embedded amendment history and its verification
-  section MUST match the new commit, push, and merge checks.
+- **FR-024**: The constitution MUST drop its embedded amendment history and its verification section
+  MUST match the new commit, push, and merge checks.
 
 **Translations and docs**
 
@@ -319,8 +317,8 @@ Russian page and confirm the check fails.
 
 - **Check command**: a named, runner-independent command (lint, type check, tests, perf tests,
   dead-code, validators, build) with one owner in the project scripts.
-- **Commit check / push check**: what runs on commit (staged files, seconds) versus on push or
-  merge request (everything).
+- **Commit check / push check**: what runs on commit (staged files, seconds) versus on push or merge
+  request (everything).
 - **Design note**: the single planning document of a feature.
 - **Small change path**: the documented route for changes below the spec threshold.
 - **Guidance owner**: the one file that states a rule.
@@ -331,14 +329,15 @@ Russian page and confirm the check fails.
 
 - **SC-001**: A commit of a typical small change (≤ 5 staged files) finishes its check in under 15
   seconds (median of 5), down from 2–4 minutes.
-- **SC-002**: The type check covers 100% of source files (359 of 359 at the time of writing, up from 325) plus configuration and tests.
+- **SC-002**: The type check covers 100% of source files (359 of 359 at the time of writing, up
+  from 325) plus configuration and tests.
 - **SC-003**: The default test run finishes in at most 60 seconds on the maintainer machine (down
   from ~120–140 s) and passes five consecutive runs with zero failures.
 - **SC-004**: The timing tests pass five consecutive runs on the maintainer machine.
 - **SC-005**: The same check commands pass locally and on the hosted CI service for the merge of
   this feature, and a Vercel deployment of a clean checkout succeeds with no manual step.
-- **SC-006**: The next feature specified after this one has a spec folder of at most 800 lines
-  (down from 1.5k–4.5k) and reaches implementation within 2 hours of starting the specification.
+- **SC-006**: The next feature specified after this one has a spec folder of at most 800 lines (down
+  from 1.5k–4.5k) and reaches implementation within 2 hours of starting the specification.
 - **SC-007**: Finishing a feature updates at most two guidance files besides the user docs.
 - **SC-008**: The template skill index is at most 300 lines (down from 901).
 - **SC-009**: Adding a UI string changes two tracked files (down from five), and the translation
@@ -348,11 +347,11 @@ Russian page and confirm the check fails.
 
 - GitHub Actions is the hosted CI service for now (the repository lives on GitHub); Jenkins comes
   later and only needs to call the same commands, so no Jenkins configuration is written here.
-- Vercel keeps building with the project's build command, so generation inside that command
-  covers it.
+- Vercel keeps building with the project's build command, so generation inside that command covers
+  it.
 - The maintainer machine (20 cores) is the reference for time-based success criteria.
-- Spec-kit command skills are copied into the repository and changed there; personal skills are
-  not edited (see Clarifications).
+- Spec-kit command skills are copied into the repository and changed there; personal skills are not
+  edited (see Clarifications).
 - Existing spec folders stay unchanged; historical banners are added only where a later spec
   actually contradicts an earlier one.
 - Editor architecture (including the source-switch settings loss), Playwright smoke tests, and

@@ -2,15 +2,25 @@
 
 ## 1. Overview
 
-Docusaurus site hosting documentation and modular React tools for tabletop roleplaying games. The current production content and character sheet target a Star Wars WEG/WoD hybrid; future systems should integrate through explicit system boundaries instead of adding system conditionals throughout shared code.
+Docusaurus site hosting documentation and modular React tools for tabletop roleplaying games. The
+current production content and character sheet target a Star Wars WEG/WoD hybrid; future systems
+should integrate through explicit system boundaries instead of adding system conditionals throughout
+shared code.
 
-**Canonical deployment:** `https://ttgamer.vercel.app`. GitHub Pages settings remain only for repository links and the optional manual deploy command.
+**Canonical deployment:** `https://ttgamer.vercel.app`. GitHub Pages settings remain only for
+repository links and the optional manual deploy command.
 
-**Version source:** `package.json`. Docusaurus exposes it through `customFields.version`; do not hard-code the current version in UI code.
+**Version source:** `package.json`. Docusaurus exposes it through `customFields.version`; do not
+hard-code the current version in UI code.
 
-**Source-of-truth pattern:** keep machine-readable facts with one owner. Package version lives in `package.json`, release summaries in the first `CHANGELOG.md` entry, UI/catalog translation sources in `translations/source`, documentation parity in `validate:i18n`, and catalog integrity in `validate:data`. Prose may summarize those facts but must not become a second authoritative source. Roadmap intent remains human-written in TODO files.
+**Source-of-truth pattern:** keep machine-readable facts with one owner. Package version lives in
+`package.json`, release summaries in the first `CHANGELOG.md` entry, UI/catalog translation sources
+in `translations/source`, documentation parity in `validate:i18n`, and catalog integrity in
+`validate:data`. Prose may summarize those facts but must not become a second authoritative source.
+Roadmap intent remains human-written in TODO files.
 
-**Running server:** Usually user is already running dev server of app on http://localhost:3000/, so check fo it existence before killing processes or creating new one.
+**Running server:** Usually user is already running dev server of app on http://localhost:3000/, so
+check fo it existence before killing processes or creating new one.
 
 **Routes:**
 
@@ -71,8 +81,11 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 - **Comments:** keep them uncommon; use them for non-obvious constraints or rationale, not narration
 - **Imports:** separate `import type { ... }` from value imports; let ESLint sort groups
 - **Types:** Prefer `interface` for object shapes, `type` for unions/intersections; avoid `any`
-- **Config files:** `tailwind.config.cjs` and `postcss.config.js` must be CommonJS (`module.exports`) for Docusaurus webpack
-- **Language:** repository-level documents and code (specs, TODO/TOFIX, code comments) are English-only; Russian is a localization mirror for user-facing surfaces only (UI strings via `translations/source`, docs locales via i18n)
+- **Config files:** `tailwind.config.cjs` and `postcss.config.js` must be CommonJS
+  (`module.exports`) for Docusaurus webpack
+- **Language:** repository-level documents and code (specs, TODO/TOFIX, code comments) are
+  English-only; Russian is a localization mirror for user-facing surfaces only (UI strings via
+  `translations/source`, docs locales via i18n)
 
 ## 5. Accessibility Rules
 
@@ -137,38 +150,74 @@ Docusaurus site hosting documentation and modular React tools for tabletop rolep
 
 ## 8. Module Boundaries
 
-- `dice_roller/dice-logic/index.ts` is the small public API. Internal dice code and tests should import the specific internal file they own.
-- `shared/` contains system-independent UI and utilities only. Cross-feature or external-service behavior belongs in `integrations/`.
-- Bound sheet elements read through `useBoundDocument()` (character capability for characters, typed document data for other kinds); pages are shipped templates, not React blocks.
-- Imported/persisted documents must pass the envelope schema and their registered definition schema; `BaseCharacterSchema` is only the legacy-character import path (Zod strips unknown legacy fields).
-- Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by several lines (e.g. V5) are one ruleset. In code: `systems/v5/ruleset/` + `systems/v5/modules/<line>/`, and `systems/wod2e/ruleset/` under the Star Wars setting (`systems/star-wars-wod/`, identities frozen); every plugin declares its `catalogs`, `policies`, `defaultTemplates`, `templateBindings`, `dice`, and optional `coreDefinitions` (engine characters user settings reuse) on `SystemPlugin`; a setting system also names its `ruleset` (Star Wars: `wod-2e`), which the library tree groups by. User document types, settings, and catalogs live in `documentTypeStore` and reach generic code only through the registry overlay (`systems/userTypes.ts`, `systems/userCatalogs.ts`); template code looks every catalog up with `getCatalogBinding`.
-- Generic sheet code never imports a concrete system folder: one ESLint `no-restricted-imports` pattern covers every `systems/<system>/` (allowed importers: `systems/index.ts`, `docsEmbeds.tsx`, the legacy path in `store/documentStore.ts`).
-- Third-party material: rules and catalog text in our own words (no verbatim book passages); publisher notices (e.g. Dark Pack, which covers V5 material only) come from `systems/policies.ts` metadata declared by plugins/modules and render as a badge on sheets (`PolicyBadges`, linking to the policy's single docs page with `PolicyStatement`) and `notices` in exports — only where that material is used, once per surface in a prominent place, never repeated on dice, toasts, history, or messages; game mechanics alone need no notice (constitution VIII).
-- Element storybook (constitution VI): every template element variant, documentation widget, and palette color appears in the draft-only docs storybook `docs/dev/storybook/` (stories in `src/sheet_manager/storybook/stories.ts`, guarded by `tests/sheet_manager/storybook.test.tsx`; widgets on `docs-widgets.mdx`; colors from `tailwind.config.cjs` via `shared/components/Palette`); a new or changed element is not done until it does. A setting's new element is an editor-configurable template element, preferably an option on an existing element rather than a similar new one.
-- Data changes must pass `yarn validate:data`. Documentation under `docs/star-wars-wod-2e`, `docs/wod-v5`, and `docs/template-editor` must be mirrored under Russian i18n and pass `yarn validate:i18n`.
-- YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`; do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.
-- `yarn verify:fast` runs the translation coverage verifier (`yarn i18n:verify`): user-facing literals, missing keys, plurals, catalog and docs coverage, glossary consistency. New UI text goes through YAML; exceptions need a reason in `translations/i18n-exceptions.yaml`.
+- `dice_roller/dice-logic/index.ts` is the small public API. Internal dice code and tests should
+  import the specific internal file they own.
+- `shared/` contains system-independent UI and utilities only. Cross-feature or external-service
+  behavior belongs in `integrations/`.
+- Bound sheet elements read through `useBoundDocument()` (character capability for characters, typed
+  document data for other kinds); pages are shipped templates, not React blocks.
+- Imported/persisted documents must pass the envelope schema and their registered definition schema;
+  `BaseCharacterSchema` is only the legacy-character import path (Zod strips unknown legacy fields).
+- Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by
+  several lines (e.g. V5) are one ruleset. In code: `systems/v5/ruleset/` +
+  `systems/v5/modules/<line>/`, and `systems/wod2e/ruleset/` under the Star Wars setting
+  (`systems/star-wars-wod/`, identities frozen); every plugin declares its `catalogs`, `policies`,
+  `defaultTemplates`, `templateBindings`, `dice`, and optional `coreDefinitions` (engine characters
+  user settings reuse) on `SystemPlugin`; a setting system also names its `ruleset` (Star Wars:
+  `wod-2e`), which the library tree groups by. User document types, settings, and catalogs live in
+  `documentTypeStore` and reach generic code only through the registry overlay
+  (`systems/userTypes.ts`, `systems/userCatalogs.ts`); template code looks every catalog up with
+  `getCatalogBinding`.
+- Generic sheet code never imports a concrete system folder: one ESLint `no-restricted-imports`
+  pattern covers every `systems/<system>/` (allowed importers: `systems/index.ts`, `docsEmbeds.tsx`,
+  the legacy path in `store/documentStore.ts`).
+- Third-party material: rules and catalog text in our own words (no verbatim book passages);
+  publisher notices (e.g. Dark Pack, which covers V5 material only) come from `systems/policies.ts`
+  metadata declared by plugins/modules and render as a badge on sheets (`PolicyBadges`, linking to
+  the policy's single docs page with `PolicyStatement`) and `notices` in exports — only where that
+  material is used, once per surface in a prominent place, never repeated on dice, toasts, history,
+  or messages; game mechanics alone need no notice (constitution VIII).
+- Element storybook (constitution VI): every template element variant, documentation widget, and
+  palette color appears in the draft-only docs storybook `docs/dev/storybook/` (stories in
+  `src/sheet_manager/storybook/stories.ts`, guarded by `tests/sheet_manager/storybook.test.tsx`;
+  widgets on `docs-widgets.mdx`; colors from `tailwind.config.cjs` via `shared/components/Palette`);
+  a new or changed element is not done until it does. A setting's new element is an
+  editor-configurable template element, preferably an option on an existing element rather than a
+  similar new one.
+- Data changes must pass `yarn validate:data`. Documentation under `docs/star-wars-wod-2e`,
+  `docs/wod-v5`, and `docs/template-editor` must be mirrored under Russian i18n and pass
+  `yarn validate:i18n`.
+- YAML UI/catalog translation changes must pass `yarn build:translations` and `yarn validate:i18n`;
+  do not edit generated `ttgamer.*` entries in `i18n/*/code.json` or `src/i18n/generated/`.
+- `yarn verify:fast` runs the translation coverage verifier (`yarn i18n:verify`): user-facing
+  literals, missing keys, plurals, catalog and docs coverage, glossary consistency. New UI text goes
+  through YAML; exceptions need a reason in `translations/i18n-exceptions.yaml`.
 
 ## 9. Specs vs Current State
 
-- `specs/NNN-*` are change records: they explain why a feature was built, and later specs amend earlier ones. Never reconstruct current behavior from a spec chain.
-- Current behavior lives in module `AGENTS.md` files and `.agents/skills/`. A feature is complete only when those are updated and superseded specs carry a historical banner.
+- `specs/NNN-*` are change records: they explain why a feature was built, and later specs amend
+  earlier ones. Never reconstruct current behavior from a spec chain.
+- Current behavior lives in module `AGENTS.md` files and `.agents/skills/`. A feature is complete
+  only when those are updated and superseded specs carry a historical banner.
 
 ## 10. Reference Material (`context/`)
 
-- Before designing a feature, check `context/AGENTS.md` for references: `context/corebooks/` holds rulebooks for every system; `context/<module>/` holds material for that module (e.g. `context/dice-roller/` has the notation libraries our dice syntax follows).
-- `context/` is git-ignored and excluded from every tool; never import from it, and paraphrase rules text (section 8, third-party material).
+- Before designing a feature, check `context/AGENTS.md` for references: `context/corebooks/` holds
+  rulebooks for every system; `context/<module>/` holds material for that module (e.g.
+  `context/dice-roller/` has the notation libraries our dice syntax follows).
+- `context/` is git-ignored and excluded from every tool; never import from it, and paraphrase rules
+  text (section 8, third-party material).
 - New reference material goes into the matching folder and is listed in `context/AGENTS.md`.
 
 ## 11. Verification
 
 This section owns the verification rules; other guidance links here.
 
-- **Checks** are `package.json` scripts, the only entry points any runner calls (local hooks,
-  GitHub Actions in `.github/workflows/ci.yml`, Vercel's `yarn build`, a later Jenkins pipeline):
+- **Checks** are `package.json` scripts, the only entry points any runner calls (local hooks, GitHub
+  Actions in `.github/workflows/ci.yml`, Vercel's `yarn build`, a later Jenkins pipeline):
   `ci:lint`, `ci:typecheck`, `ci:test`, `ci:test:perf`, `ci:deadcode`, `ci:validate`, `ci:build`.
-  `verify:fast` = lint + typecheck + validate; `verify` adds dead code and unit tests;
-  `verify:full` adds the perf tests and the build.
+  `verify:fast` = lint + typecheck + validate; `verify` adds dead code and unit tests; `verify:full`
+  adds the perf tests and the build.
 - **Commit** (`pre-commit`): lint-staged formats and lints the staged files only (seconds); staged
   backlog or translation files also run their validator.
 - **Push** (`pre-push`): the type check and the unit tests related to the pushed changes.
@@ -179,11 +228,11 @@ This section owns the verification rules; other guidance links here.
 - **Merge into `master`** requires `yarn verify:full` (§12).
 - **CI** runs every `ci:*` command on push and pull requests. Perf tests there are reported, not
   blocking, because shared runners are noisy.
-- **Dead code**: knip fails on unused files, exports, or dependencies. A deliberate export
-  without importers needs `@knipignore` and a reason.
+- **Dead code**: knip fails on unused files, exports, or dependencies. A deliberate export without
+  importers needs `@knipignore` and a reason.
 - **Flaky tests**: a test that fails without a code cause is fixed or quarantined within a day.
-  Quarantine means moving it to the `perf` project (for timing) or skipping it with a `TOFIX`
-  entry. A longer timeout alone is never the fix.
+  Quarantine means moving it to the `perf` project (for timing) or skipping it with a `TOFIX` entry.
+  A longer timeout alone is never the fix.
     - Timing assertions belong only in `*.perf.test.*` files.
     - Perf tests compare against a baseline measured in the same run, or take the best of several
       warm runs.
@@ -193,12 +242,12 @@ This section owns the verification rules; other guidance links here.
 - **Features** go through the project's lean spec-kit commands: `/ttg-speckit-specify` →
   `/ttg-speckit-clarify` → `/ttg-speckit-plan` (one `design.md`) → `/ttg-speckit-tasks` (one
   planning commit) → `/ttg-speckit-analyze` (four or more stories, or on request) →
-  `/ttg-speckit-implement` (one commit per story). The personal `/speckit-*` commands are the
-  stock spec-kit and are not used here.
-- **Small change path**: a change that has one story, changes no schema, persistence, or
-  contract between modules, and stays within ~300 lines of code (tests and docs excluded) skips
-  the spec. The steps are: backlog entry → code and tests → guidance update → one commit. If it
-  grows past that, escalate to a spec.
+  `/ttg-speckit-implement` (one commit per story). The personal `/speckit-*` commands are the stock
+  spec-kit and are not used here.
+- **Small change path**: a change that has one story, changes no schema, persistence, or contract
+  between modules, and stays within ~300 lines of code (tests and docs excluded) skips the spec. The
+  steps are: backlog entry → code and tests → guidance update → one commit. If it grows past that,
+  escalate to a spec.
 - **Prototypes** only when a UI layout is genuinely unknown: one screen, outside `specs/`.
 - **Merge** (only when the maintainer says so):
     1. `yarn verify:full`.

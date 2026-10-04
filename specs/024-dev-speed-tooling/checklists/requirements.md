@@ -1,8 +1,7 @@
 # Specification Quality Checklist: Development Speed — Process and Tooling
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-10-04
-**Feature**: [spec.md](../spec.md)
+**Created**: 2026-10-04 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality
 
@@ -33,6 +32,6 @@
 
 - The feature is developer tooling, so its "users" are the maintainer, the coding agent, and build
   runners. Named runners (Vercel, GitHub Actions, Jenkins) are deployment constraints given by the
-  maintainer, not implementation choices; tools for the commit check, caches, and test grouping
-  are left to planning.
+  maintainer, not implementation choices; tools for the commit check, caches, and test grouping are
+  left to planning.
 - Time-based criteria use the maintainer machine (20 cores) as the reference.

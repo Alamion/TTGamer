@@ -28,7 +28,8 @@ Run on the maintainer machine from the repository root unless noted.
     3. A Vercel preview of the branch builds from a clean checkout without manual steps.
 7. **Lean spec-kit (SC-006)**
     1. In a new session in this repository, run `/speckit-plan` on a scratch spec.
-    2. The project version runs: its marker is visible, and it produces `design.md` with no research, data-model, contracts, or quickstart files.
+    2. The project version runs: its marker is visible, and it produces `design.md` with no
+       research, data-model, contracts, or quickstart files.
     3. Delete the scratch spec.
 8. **Guidance (SC-007, SC-008)**
     1. `wc -l .agents/skills/sheet-templates/SKILL.md` is at most 300.

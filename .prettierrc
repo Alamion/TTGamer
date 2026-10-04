@@ -3,5 +3,21 @@
     "singleQuote": true,
     "tabWidth": 4,
     "trailingComma": "es5",
-    "printWidth": 100
+    "printWidth": 100,
+    "overrides": [
+        {
+            "files": [
+                ".agents/**/*.md",
+                "**/AGENTS.md",
+                "specs/**/*.md"
+            ],
+            "excludeFiles": [
+                "specs/0[01][0-9]-*/**",
+                "specs/02[0-3]-*/**"
+            ],
+            "options": {
+                "proseWrap": "always"
+            }
+        }
+    ]
 }

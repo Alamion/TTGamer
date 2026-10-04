@@ -5,3 +5,4 @@ context/
 .claude/
 src/i18n/generated/
 i18n/*/code.json
+specs/**/*.html

@@ -1,32 +1,34 @@
 # Modifiers
 
-Modifiers are special flags that can change the value of dice rolls, their appearance, order, and more.
+Modifiers are special flags that can change the value of dice rolls, their appearance, order, and
+more.
 
 You can generally combine multiple modifiers of different types, and they'll work together.
 
-For example, This will both [Explode](#exploding) any maximum rolls, and [Keep](#keep) only the highest 2 rolls:
+For example, This will both [Explode](#exploding) any maximum rolls, and [Keep](#keep) only the
+highest 2 rolls:
 
 ```
 5d10!k2
 ```
 
-::: tip Missing a modifier?
-We have tried to cover all the commonly used modifiers. [Let us know](https://github.com/dice-roller/rpg-dice-roller/issues) if we've missed one that you use!
-:::
+::: tip Missing a modifier? We have tried to cover all the commonly used modifiers.
+[Let us know](https://github.com/dice-roller/rpg-dice-roller/issues) if we've missed one that you
+use! :::
 
-::: warning Modifier order
-Modifiers always run in a specific order, regardless of the order you specify them in the notation.
-This is determined by the modifier's `order` property, and works in ascending order.
+::: warning Modifier order Modifiers always run in a specific order, regardless of the order you
+specify them in the notation. This is determined by the modifier's `order` property, and works in
+ascending order.
 
-These two are equivalent and, by default, the [explode modifier](#exploding) will always run before the [drop modifier](#drop):
+These two are equivalent and, by default, the [explode modifier](#exploding) will always run before
+the [drop modifier](#drop):
 
 ```
 4d6!d1
 4d6d1!
 ```
 
-You can change the modifier execution order.
-:::
+You can change the modifier execution order. :::
 
 ## Min
 
@@ -34,7 +36,8 @@ You can change the modifier execution order.
 
 **Order:** 1
 
-The min modifier causes any dice rolls below the minimum value to be treated as the minimum value. It's the opposite of the [Max modifier](#max)
+The min modifier causes any dice rolls below the minimum value to be treated as the minimum value.
+It's the opposite of the [Max modifier](#max)
 
 To specify a minimum value, use the word `min` followed by the minimum value: `4d6min3`
 
@@ -50,11 +53,11 @@ For example:
 
 ::: roller 4d6min3 :::
 
-::: tip Statistic probability
-It's worth noting that it is statistically more likely to roll the minimum value than any others.
+::: tip Statistic probability It's worth noting that it is statistically more likely to roll the
+minimum value than any others.
 
-e.g. `d6min3` 4, 5, and 6 only have a _1 in 6 (16.66%)_ chance of being rolled, but 3 has a _3 in 6 (50%)_ chance.
-:::
+e.g. `d6min3` 4, 5, and 6 only have a _1 in 6 (16.66%)_ chance of being rolled, but 3 has a _3 in 6
+(50%)_ chance. :::
 
 ## Max
 
@@ -62,7 +65,8 @@ e.g. `d6min3` 4, 5, and 6 only have a _1 in 6 (16.66%)_ chance of being rolled, 
 
 **Order:** 2
 
-The max modifier causes any dice rolls above the maximum value to be treated as the maximum value. It's the opposite of the [Min modifier](#min)
+The max modifier causes any dice rolls above the maximum value to be treated as the maximum value.
+It's the opposite of the [Min modifier](#min)
 
 To specify a maximum value, use the word `max` followed by the maximum value: `4d6max3`
 
@@ -78,11 +82,11 @@ For example:
 
 ::: roller 4d6max3 :::
 
-::: tip Statistic probability
-It's worth noting that it is statistically more likely to roll the maximum value than any others.
+::: tip Statistic probability It's worth noting that it is statistically more likely to roll the
+maximum value than any others.
 
-e.g. `d6max3` 1 and 2 only have a _1 in 6 (16.66%)_ chance of being rolled, but 3 has a _4 in 6 (66.66%)_ chance.
-:::
+e.g. `d6max3` 1 and 2 only have a _1 in 6 (16.66%)_ chance of being rolled, but 3 has a _4 in 6
+(66.66%)_ chance. :::
 
 ## Exploding
 
@@ -90,7 +94,8 @@ e.g. `d6max3` 1 and 2 only have a _1 in 6 (16.66%)_ chance of being rolled, but 
 
 **Order:** 3
 
-The exploding dice mechanic allows one or more dice to be re-rolled (Usually when it rolls the highest possible number on the die), with each successive roll being added to the total.
+The exploding dice mechanic allows one or more dice to be re-rolled (Usually when it rolls the
+highest possible number on the die), with each successive roll being added to the total.
 
 To explode a die, add an exclamation mark after the die notation: `4d10!`
 
@@ -100,9 +105,11 @@ Each exploded die shows as a separate roll in the list, like so:
 2d6!: [4, 6!, 6!, 2] = 18
 ```
 
-The second die rolled the highest value, and so it exploded - we roll again. The re-rolled die also exploded, so we roll a fourth time. The fourth roll, however, did not explode, so we stop rolling.
+The second die rolled the highest value, and so it exploded - we roll again. The re-rolled die also
+exploded, so we roll a fourth time. The fourth roll, however, did not explode, so we stop rolling.
 
-If you want to change the number that a die will explode on, you can use a [Compare Point](#compare-point):
+If you want to change the number that a die will explode on, you can use a
+[Compare Point](#compare-point):
 
 ```
 2d6!=5   // explode on any rolls equal to 5
@@ -114,8 +121,9 @@ Read more about [Compare Points below](#compare-point).
 
 ::: roller 4d10!<=3 :::
 
-::: warning `!=` (Not equal) compare point with exploding dice
-If you want a die that only explodes on a specific value, the `!=` (Not equal) operator will **not** work here, and you must use the alternative ["not equal to" operator](#not-equal-to) instead, `<>`:
+::: warning `!=` (Not equal) compare point with exploding dice If you want a die that only explodes
+on a specific value, the `!=` (Not equal) operator will **not** work here, and you must use the
+alternative ["not equal to" operator](#not-equal-to) instead, `<>`:
 
 ```
 // Wrong! Creates a compound roll if you roll a 4.
@@ -127,20 +135,21 @@ If you want a die that only explodes on a specific value, the `!=` (Not equal) o
 
 :::
 
-::: tip Iteration limit
-To stop infinite loops, when running something like `d10!>0`, modifiers are limited to 100 iterations per die:
+::: tip Iteration limit To stop infinite loops, when running something like `d10!>0`, modifiers are
+limited to 100 iterations per die:
 
 - `1d10!>0` returns at most 101 rolls: the initial roll and 100 exploded rolls.
 - `2d10!>0` would return 2002 rolls; the initial 2 rolls, and 100 exploded rolls per initial roll.
 
-This also applies to [Compounding](#compounding), [Penetrating](#penetrating), [Re-roll](#re-roll), and [Unique](#unique) modifiers.
-:::
+This also applies to [Compounding](#compounding), [Penetrating](#penetrating), [Re-roll](#re-roll),
+and [Unique](#unique) modifiers. :::
 
 ### Compounding
 
 **Notation:** `!!` / `!!{cp}`
 
-Sometimes, you may want the exploded dice rolls to be combined into a single roll. In this situation, you can compound the dice by using two exclamation marks: `4d10!!`
+Sometimes, you may want the exploded dice rolls to be combined into a single roll. In this
+situation, you can compound the dice by using two exclamation marks: `4d10!!`
 
 For example:
 
@@ -170,17 +179,14 @@ Some exploding dice system use a penetrating rule.
 
 Taken from the HackMaster Basic rules:
 
-> Should you roll the maximum value
-> on this particular die, you may re-roll and add the result of
-> the extra die, less one point, to the total (penetration can
-> actually result in simply the maximum die value if a 1 is subsequently
-> rolled, since any fool knows that 1-1=0). This
-> process continues indefinitely as long as the die in question
-> continues to come up maximum (but there’s always only a
-> –1 subtracted from the extra die, even if it’s, say, the third
-> die of penetration)
+> Should you roll the maximum value on this particular die, you may re-roll and add the result of
+> the extra die, less one point, to the total (penetration can actually result in simply the maximum
+> die value if a 1 is subsequently rolled, since any fool knows that 1-1=0). This process continues
+> indefinitely as long as the die in question continues to come up maximum (but there’s always only
+> a –1 subtracted from the extra die, even if it’s, say, the third die of penetration)
 
-So, if I rolled `1d6` (penetrating), and got a 6, I would roll another `d6`, subtracting 1 from the result. If that die rolled a 6 (before the -1) it would also penetrate, and so on.
+So, if I rolled `1d6` (penetrating), and got a 6, I would roll another `d6`, subtracting 1 from the
+result. If that die rolled a 6 (before the -1) it would also penetrate, and so on.
 
 The syntax for penetrating is very similar to exploding, but with a lowercase 'p' appended: `2d6!p`.
 
@@ -191,9 +197,12 @@ For example:
 2d6!p: [6!p, 5!p, 5!p, 3, 1] = 20
 ```
 
-The first roll exploded (Rolled the highest number on the die), so we rolled again and subtracted 1 from the re-roll. The second and third rolls also exploded and were re-rolled, so we subtract 1 from each.
+The first roll exploded (Rolled the highest number on the die), so we rolled again and subtracted 1
+from the re-roll. The second and third rolls also exploded and were re-rolled, so we subtract 1 from
+each.
 
-Remember that we subtract 1 from penetrated rolls, which is why we see `5`, `5`, `3` instead of `6`, `6`, `4`.
+Remember that we subtract 1 from penetrated rolls, which is why we see `5`, `5`, `3` instead of `6`,
+`6`, `4`.
 
 You can also compound penetrating dice, like so: `2d6!!p`
 
@@ -213,9 +222,12 @@ You can also use [Compare Points](#compare-point) to change when a die will pene
 
 **Order:** 4
 
-This will re-roll a die that rolls the lowest possible number on a die (Usually a 1). It will keep re-rolling until a number greater than the minimum is rolled, disregarding any of the previous rolls.
+This will re-roll a die that rolls the lowest possible number on a die (Usually a 1). It will keep
+re-rolling until a number greater than the minimum is rolled, disregarding any of the previous
+rolls.
 
-This is similar to [Exploding](#exploding), but explode will keep the previous rolls and add them together.
+This is similar to [Exploding](#exploding), but explode will keep the previous rolls and add them
+together.
 
 To re-roll, add an `r` after the dice notation:
 
@@ -224,14 +236,16 @@ To re-roll, add an `r` after the dice notation:
 d6r;
 ```
 
-If you only want to re-roll once, even if the second roll also rolls the minimum value, you can use the `ro` notation:
+If you only want to re-roll once, even if the second roll also rolls the minimum value, you can use
+the `ro` notation:
 
 ```
 // roll 1 d6 and re-roll if the result is 1. Don't re-roll again, even if the second roll is also a 1
 d6ro;
 ```
 
-If you want to change the number that a die will re-roll on, you can use a [Compare Point](#compare-point):
+If you want to change the number that a die will re-roll on, you can use a
+[Compare Point](#compare-point):
 
 ```
 2d6r=5    // re-roll on any rolls equal to 5
@@ -243,14 +257,14 @@ Read more about [Compare Points below](#compare-point).
 
 ::: roller 4d10r<=3 :::
 
-::: tip Iteration limit
-To stop infinite loops, when running something like `d10r>0`, modifiers are limited to 100 iterations per die:
+::: tip Iteration limit To stop infinite loops, when running something like `d10r>0`, modifiers are
+limited to 100 iterations per die:
 
 - `1d10r>0` rerolls at most 100 times.
 - `2d10r>0` rerolls at most 200 times: 100 for each initial roll.
 
-This also applies to [Exploding](#exploding), [Compounding](#compounding), [Penetrating](#penetrating), and [Unique](#unique) modifiers.
-:::
+This also applies to [Exploding](#exploding), [Compounding](#compounding),
+[Penetrating](#penetrating), and [Unique](#unique) modifiers. :::
 
 ## Unique
 
@@ -258,7 +272,8 @@ This also applies to [Exploding](#exploding), [Compounding](#compounding), [Pene
 
 **Order:** 5
 
-The unique modifier wil re-roll any dice where the value is not unique. It will keep rolling until a unique value is rolled, disregarding any of the previous rolls.
+The unique modifier wil re-roll any dice where the value is not unique. It will keep rolling until a
+unique value is rolled, disregarding any of the previous rolls.
 
 You can keep rolls unique by adding a `u` after the die notation:
 
@@ -276,7 +291,8 @@ If you only want to roll a duplicate die once, the use `uo`:
 
 This could end up with duplicates, if the re-roll also rolls a duplicate.
 
-If you only want to re-roll duplicates if they match certain criteria (i.e. below a certain threshold, or equal a certain value), you can use a [Compare Point](#compare-point):
+If you only want to re-roll duplicates if they match certain criteria (i.e. below a certain
+threshold, or equal a certain value), you can use a [Compare Point](#compare-point):
 
 ```
 4d6u=5    // Only re-roll duplicates that roll a 5
@@ -288,17 +304,18 @@ Read more about [Compare Points below](#compare-point).
 
 ::: roller 5d4u :::
 
-::: tip Iteration limit
-When using the unique modifier on a die set that has more rolls than the number of sides on the die, it is impossible for all the rolls to be unique.
+::: tip Iteration limit When using the unique modifier on a die set that has more rolls than the
+number of sides on the die, it is impossible for all the rolls to be unique.
 
-For example, `5d3u` will produce more results than possible unique values, and could result in an infinite re-roll loop.
+For example, `5d3u` will produce more results than possible unique values, and could result in an
+infinite re-roll loop.
 
 To stop infinite loops, modifiers are limited to 100 iterations per die:
 
 - `5d3u` rerolls at most 400 times: 100 for each die after the first.
 
-This also applies to [Exploding](#exploding), [Compounding](#compounding), [Penetrating](#penetrating), and [Re-roll](#re-roll) modifiers.
-:::
+This also applies to [Exploding](#exploding), [Compounding](#compounding),
+[Penetrating](#penetrating), and [Re-roll](#re-roll) modifiers. :::
 
 ## Keep
 
@@ -306,10 +323,11 @@ This also applies to [Exploding](#exploding), [Compounding](#compounding), [Pene
 
 **Order:** 6
 
-The keep modifier allows you to roll a collection of dice but to disregard all except for the highest or lowest result(s).
-It is the opposite of the [Drop modifier](#drop).
+The keep modifier allows you to roll a collection of dice but to disregard all except for the
+highest or lowest result(s). It is the opposite of the [Drop modifier](#drop).
 
-The notation of the keep modifier is a lowercase `k`, followed by the end that should be dropped ("h" = "highest", "l" = "lowest"), and the number of dice to drop.
+The notation of the keep modifier is a lowercase `k`, followed by the end that should be dropped
+("h" = "highest", "l" = "lowest"), and the number of dice to drop.
 
 The "end" is optional and, if omitted, will default to _highest_.
 
@@ -321,7 +339,8 @@ For example:
 4d10kl1 // roll a d10 4 times and keep the lowest roll
 ```
 
-When outputting the roll, the kept rolls aren't modified, but the dropped rolls are given the "d" flag:
+When outputting the roll, the kept rolls aren't modified, but the dropped rolls are given the "d"
+flag:
 
 ```
 6d8k3: [3d, 6, 7, 2d, 5, 4d] = 18
@@ -329,9 +348,9 @@ When outputting the roll, the kept rolls aren't modified, but the dropped rolls 
 
 ::: roller 6d8k3 :::
 
-::: tip Using Drop and Keep modifiers together
-The keep and [drop](#drop) modifiers work really well together, but there are some caveats.
-They both look at the entire dice pool. So if a roll has been dropped, it will be still be included in the list of possible rolls to drop.
+::: tip Using Drop and Keep modifiers together The keep and [drop](#drop) modifiers work really well
+together, but there are some caveats. They both look at the entire dice pool. So if a roll has been
+dropped, it will be still be included in the list of possible rolls to drop.
 
 This means that using keep and drop modifiers together can override each other.
 
@@ -349,8 +368,7 @@ This (perhaps more expectedly) will only keep the highest dice:
 3d10k1d1: [6d, 1d, 9] = 9
 ```
 
-The `k1` will drop the `6` and `1`, and the `d1` will also drop the `6`.
-:::
+The `k1` will drop the `6` and `1`, and the `d1` will also drop the `6`. :::
 
 ## Drop
 
@@ -358,10 +376,11 @@ The `k1` will drop the `6` and `1`, and the `d1` will also drop the `6`.
 
 **Order:** 7
 
-Sometimes you may want to roll a certain number of dice, but "drop" or remove high or low rolls from the results.
-It is the opposite of the [Keep modifier](#keep).
+Sometimes you may want to roll a certain number of dice, but "drop" or remove high or low rolls from
+the results. It is the opposite of the [Keep modifier](#keep).
 
-The notation of the drop modifier is a lowercase `d`, followed by the end that should be dropped (`h` = "highest", `l` = "lowest"), and the number of dice to drop.
+The notation of the drop modifier is a lowercase `d`, followed by the end that should be dropped
+(`h` = "highest", `l` = "lowest"), and the number of dice to drop.
 
 The "end" is optional and, if omitted, will default to _lowest_.
 
@@ -388,9 +407,8 @@ You can also use "drop lowest" and "drop highest" modifiers together:
 
 ::: roller 4d10dh1dl2 :::
 
-::: tip Using Drop and Keep modifiers together
-See the note in the [Keep modifier section](#keep) regarding using the two together
-:::
+::: tip Using Drop and Keep modifiers together See the note in the [Keep modifier section](#keep)
+regarding using the two together :::
 
 ## Target success / Dice pool
 
@@ -398,11 +416,14 @@ See the note in the [Keep modifier section](#keep) regarding using the two toget
 
 **Order:** 8
 
-Some systems use dice pool, or success counts, whereby the total is equal to the quantity of dice rolled that meet a fixed condition, rather than the total value of the rolls.
+Some systems use dice pool, or success counts, whereby the total is equal to the quantity of dice
+rolled that meet a fixed condition, rather than the total value of the rolls.
 
-This can be achieved by adding a [Compare Point](#compare-point) notation directly after the die notation.
+This can be achieved by adding a [Compare Point](#compare-point) notation directly after the die
+notation.
 
-For example; a "pool" of 10 sided dice where you count the number of dice that roll an 8, or higher, as "successes":
+For example; a "pool" of 10 sided dice where you count the number of dice that roll an 8, or higher,
+as "successes":
 
 ```
 5d10>=8
@@ -420,8 +441,9 @@ Examples:
 6d10<=4: [7, 2*, 10, 3*, 3*, 4*] = 4 // less than or equal to 4 is a success
 ```
 
-::: warning `!=` (Not equal) compare point with exploding dice
-If you want to count success for any number that is _not_ equal to a specific value, the `!=` (Not equal) operator will **not** work here, and you must use the alternative ["not equal to" operator](#not-equal-to) instead, `<>`:
+::: warning `!=` (Not equal) compare point with exploding dice If you want to count success for any
+number that is _not_ equal to a specific value, the `!=` (Not equal) operator will **not** work
+here, and you must use the alternative ["not equal to" operator](#not-equal-to) instead, `<>`:
 
 ```
 // Wrong! Creates an exploding roll if you roll a 4.
@@ -433,9 +455,9 @@ If you want to count success for any number that is _not_ equal to a specific va
 
 :::
 
-::: warning Modifiers with compare points
-The target modifier cannot directly follow any modifier that uses [Compare Points](#compare-point),
-otherwise the Target modifier will be instead be used as the [Compare Point](#compare-point) for the modifier:
+::: warning Modifiers with compare points The target modifier cannot directly follow any modifier
+that uses [Compare Points](#compare-point), otherwise the Target modifier will be instead be used as
+the [Compare Point](#compare-point) for the modifier:
 
 ```
 2d6!>3   // explode on any roll greater than 3
@@ -464,7 +486,8 @@ A failure modifier _must_ directly follow a Success modifier, and works in much 
 
 For each failure counted, it will _subtract 1_ from the total number of successes counted.
 
-The Failure modifier is a [Compare Point](#compare-point), preceded with the lowercase letter "f". A bare `f` without a compare point is an error:
+The Failure modifier is a [Compare Point](#compare-point), preceded with the lowercase letter "f". A
+bare `f` without a compare point is an error:
 
 ```
 // greater than 4 is success, less than 3 is failure
@@ -479,11 +502,11 @@ The Failure modifier is a [Compare Point](#compare-point), preceded with the low
 
 **Order:** 9
 
-::: tip
-This is purely aesthetic and makes no functional difference to the rolls or their values.
+::: tip This is purely aesthetic and makes no functional difference to the rolls or their values.
 :::
 
-Typically, when a die rolls the highest possible value, such as rolling a `20` on a d20, this is called a critical success.
+Typically, when a die rolls the highest possible value, such as rolling a `20` on a d20, this is
+called a critical success.
 
 You can highlight a critical success roll by adding `cs` after the die notation: `2d20cs`
 
@@ -512,11 +535,11 @@ To specify what is considered as a critical success, use a [Compare Point](#comp
 
 **Order:** 10
 
-::: tip
-This is purely aesthetic and makes no functional difference to the rolls or their values.
+::: tip This is purely aesthetic and makes no functional difference to the rolls or their values.
 :::
 
-Typically, when a die rolls the lowest possible value, such as rolling a `1` on a d20, this is called a critical failure.
+Typically, when a die rolls the lowest possible value, such as rolling a `1` on a d20, this is
+called a critical failure.
 
 You can highlight a critical failure roll by adding `cf` after the die notation: `2d20cf`
 
@@ -545,9 +568,11 @@ To specify what is considered as a critical failure, use a [Compare Point](#comp
 
 **Order:** 11
 
-You can sort the dice rolls, so that they are displayed in numerical order by appending the `s` flag after the dice notation.
+You can sort the dice rolls, so that they are displayed in numerical order by appending the `s` flag
+after the dice notation.
 
-The default order is ascending, but you can specify the sort order using `sa` and `sd` for ascending and descending respectively:
+The default order is ascending, but you can specify the sort order using `sa` and `sd` for ascending
+and descending respectively:
 
 ```
 4d6: [4, 3, 5, 1]   // no sorting
@@ -564,16 +589,16 @@ The default order is ascending, but you can specify the sort order using `sa` an
 
 **Order:** 12 (after sorting)
 
-Not part of rpg-dice-roller. For every complete set of `N` kept dice that match the compare
-point, add `K` successes (`K` defaults to `N`). It needs a success target in the same scope.
+Not part of rpg-dice-roller. For every complete set of `N` kept dice that match the compare point,
+add `K` successes (`K` defaults to `N`). It needs a success target in the same scope.
 
 ```
 6d10>=6x2=10: [6*, 7*, 10*x, 10*x, 4, 2] = 6   // one pair of 10s adds 2 (V5 critical)
 6d6>=5x3.1>=5: [5*x, 5*x, 5*x, 6*x, 6*x, 6*x] = 8
 ```
 
-After a parenthesized pool, the bonus covers every term inside and is **not** copied onto
-each term, so a set can mix dice from different terms:
+After a parenthesized pool, the bonus covers every term inside and is **not** copied onto each term,
+so a set can mix dice from different terms:
 
 ```
 (4d10+2d10:h)>=6x2=10   // a regular 10 and a labelled 10 form one set
@@ -583,10 +608,10 @@ each term, so a set can mix dice from different terms:
 
 **Notation:** `:h`, directly after the dice
 
-Marks a term's dice as the pool's special subset (e.g. V5 Hunger or Desperation dice). It
-changes no value; the dice keep the label through explosions and rerolls, are drawn in the
-special dice colour in 3D, and are listed separately in history and shared roll messages (Discord, Matrix). A
-system reading (such as V5) decides what they mean.
+Marks a term's dice as the pool's special subset (e.g. V5 Hunger or Desperation dice). It changes no
+value; the dice keep the label through explosions and rerolls, are drawn in the special dice colour
+in 3D, and are listed separately in history and shared roll messages (Discord, Matrix). A system
+reading (such as V5) decides what they mean.
 
 ```
 3d10>=6 + 2d10:h>=6
@@ -597,7 +622,9 @@ A label anywhere else (`2d10>=6:h`, `(2d10):h`, `5:h`) is an error.
 
 ## Compare point
 
-Many modifiers perform an action when the die rolls either the highest or lowest possible number. Sometimes you may want the modifier to execute on different values, and this is what Compare Points are for.
+Many modifiers perform an action when the die rolls either the highest or lowest possible number.
+Sometimes you may want the modifier to execute on different values, and this is what Compare Points
+are for.
 
 A compare point is a comparative operator, followed by the number to match against (e.g. `=8`)
 
@@ -613,7 +640,8 @@ The following are valid comparative operators:
 >=  // greater than or equal to
 ```
 
-Wherever you can use compare points, the notation is the same. So if you wanted to check if a number is _"greater than or equal to 5"_, the notation would look like:
+Wherever you can use compare points, the notation is the same. So if you wanted to check if a number
+is _"greater than or equal to 5"_, the notation would look like:
 
 ```
 >=5
@@ -637,13 +665,13 @@ d4r<3    // roll a d4 and re-roll anything less than 3
 
 There are two different operators for "not equal to"; `!=` and `<>`.
 
-These operators both function exactly the same, and are interchangeable.
-Typically, throughout the documentation, you'll see the former used for consistency.
+These operators both function exactly the same, and are interchangeable. Typically, throughout the
+documentation, you'll see the former used for consistency.
 
-The second form `<>` was introduced as a way of being able to use "not equal" checks in combination with exploding dice.
+The second form `<>` was introduced as a way of being able to use "not equal" checks in combination
+with exploding dice.
 
-::: tip Example
-If we wanted to explode any dice that do **not** roll a `4`.
+::: tip Example If we wanted to explode any dice that do **not** roll a `4`.
 
 This will not work, and will instead create a [compound roll](#compounding) if you roll a `4`:
 

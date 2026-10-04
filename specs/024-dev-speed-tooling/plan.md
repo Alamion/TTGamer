@@ -30,8 +30,7 @@ Decisions and measurements are in [research.md](research.md), and the command co
 
 **Storage**: N/A (no persisted data changes)
 
-**Testing**: Vitest projects `unit` (default) and `perf` (sequential), plus the existing
-validators.
+**Testing**: Vitest projects `unit` (default) and `perf` (sequential), plus the existing validators.
 
 **Target Platform**:
 
@@ -67,21 +66,21 @@ validators.
 
 Principles at risk and how the plan keeps them:
 
-- **II Explicit contracts**: generated `ttgamer.*` entries stay generated and are never
-  hand-edited. They stop being tracked, so the "not hand-edited" rule becomes structural. Facts
-  keep exactly one owner (R11).
+- **II Explicit contracts**: generated `ttgamer.*` entries stay generated and are never hand-edited.
+  They stop being tracked, so the "not hand-edited" rule becomes structural. Facts keep exactly one
+  owner (R11).
 - **V Risk-proportional testing**: no test is deleted. Splits and the `perf` group keep every
   assertion. Wall-clock assertions move to `perf` or become same-run ratios. `verify:full`
   (including perf) stays required before merging into `master`.
-- **VI Storybook**: unchanged requirement; its owner is the constitution and the other files
-  point to it.
+- **VI Storybook**: unchanged requirement; its owner is the constitution and the other files point
+  to it.
 - **Verification Workflow / Governance (amended here)**: tiers are redefined as commit, push and
-  merge checks over the `ci:*` commands. The embedded Sync Impact Report is removed: the
-  amendment history lives in git and CHANGELOG, and the version line remains. The amendment
-  bumps the constitution to 1.6.0 (MINOR: materially changed guidance, no principle removed).
+  merge checks over the `ci:*` commands. The embedded Sync Impact Report is removed: the amendment
+  history lives in git and CHANGELOG, and the version line remains. The amendment bumps the
+  constitution to 1.6.0 (MINOR: materially changed guidance, no principle removed).
 
-No violation needs justification. **Post-design re-check**: still passes. R2 surfaced no hidden
-type errors, so FR-003 needs no product fix.
+No violation needs justification. **Post-design re-check**: still passes. R2 surfaced no hidden type
+errors, so FR-003 needs no product fix.
 
 ## Project Structure
 
@@ -140,8 +139,8 @@ barrel removals and direct imports.
 4. **US3 lean process**: R8, R10.
 5. **US4 guidance**: R11, last. It documents the final state of everything above.
 
-Commits go one per story. This spec still uses the old spec-kit phases up to this point; the
-lean process applies from spec 025.
+Commits go one per story. This spec still uses the old spec-kit phases up to this point; the lean
+process applies from spec 025.
 
 ## Complexity Tracking
 
