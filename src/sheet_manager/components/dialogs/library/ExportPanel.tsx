@@ -22,7 +22,7 @@ import {
     tickState,
     toggleTick,
 } from '../../../features/sheet/shell/libraryFile';
-import { EditorHelp } from '../../../features/template-editor/EditorHelp';
+import { EditorHelp } from '../../../features/template-editor/components/EditorHelp';
 import { systemRegistry } from '../../../systems';
 import type { RowExtras } from './LibraryTree';
 import { TickBox } from './TickBox';

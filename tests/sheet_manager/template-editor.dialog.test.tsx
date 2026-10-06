@@ -4,7 +4,7 @@ import {
     createEmptyDraft,
     newGroupNode,
     newSectionNode,
-} from '@site/src/sheet_manager/features/template-editor/draft';
+} from '@site/src/sheet_manager/features/template-editor/model/factories';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';

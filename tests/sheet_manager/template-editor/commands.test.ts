@@ -4,7 +4,7 @@ import {
     EDITOR_COMMANDS,
 } from '@site/src/sheet_manager/features/template-editor/commands/list';
 import { createMenuSource } from '@site/src/sheet_manager/features/template-editor/commands/menu';
-import { selectOnly } from '@site/src/sheet_manager/features/template-editor/selection';
+import { selectOnly } from '@site/src/sheet_manager/features/template-editor/model/selection';
 import { createEditorSession } from '@site/src/sheet_manager/features/template-editor/session/store';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';

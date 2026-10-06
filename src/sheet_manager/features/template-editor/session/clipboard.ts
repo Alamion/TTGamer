@@ -3,6 +3,8 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useEffect } from 'react';
 
 import { reportSheetIssue } from '../../../diagnostics';
+import { isTypingTarget } from '../commands/keys';
+import { clipboardKey } from '../commands/list';
 import {
     copySelection,
     parseCopied,
@@ -10,11 +12,9 @@ import {
     rememberCopied,
     rememberedCopy,
     serializeCopied,
-} from '../clipboard';
-import { isTypingTarget } from '../commands/keys';
-import { clipboardKey } from '../commands/list';
+} from '../model/clipboard';
+import { selectOnly } from '../model/selection';
 import { removeNodes } from '../operations/multi';
-import { selectOnly } from '../selection';
 import { revealNode } from './actions';
 import type { EditorSession } from './store';
 

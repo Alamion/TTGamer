@@ -1,8 +1,8 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import type { TemplateNode } from '../../../types/template';
-import { findNode, replaceNode } from '../draft';
-import { type GroupKind, type ListKind, switchGroupKind, switchListKind } from '../elementKinds';
+import { type GroupKind, type ListKind, switchGroupKind, switchListKind } from '../elements/kinds';
+import { findNode, replaceNode } from '../model/tree';
 import { droppedSettings, switchElement, type SwitchStash } from '../settings/keepSettings';
 import { settingDescription, type SettingKey } from '../settings/registry';
 import type { Announcement, MessageDescriptor, Operation } from './types';

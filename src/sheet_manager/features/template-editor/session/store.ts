@@ -2,7 +2,11 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { createStore, type StoreApi } from 'zustand/vanilla';
 
-import type { DraftIssue, EditorDraft } from '../draft';
+import type { DraftIssue } from '../issues/draftIssues';
+import type { EditorSelectionState } from '../model/selection';
+import type { EditorDraft } from '../model/types';
+import type { Announcement, MessageDescriptor, Operation, OpRefusal } from '../operations/types';
+import type { SwitchStash } from '../settings/keepSettings';
 import {
     applyChange,
     createHistory,
@@ -11,10 +15,7 @@ import {
     redo,
     select,
     undo,
-} from '../history';
-import type { Announcement, MessageDescriptor, Operation, OpRefusal } from '../operations/types';
-import type { EditorSelectionState } from '../selection';
-import type { SwitchStash } from '../settings/keepSettings';
+} from './history';
 
 const editor = uiMessages.sheet.templates.editor;
 

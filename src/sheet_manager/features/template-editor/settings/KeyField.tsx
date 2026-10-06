@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react';
 
-import type { EDITOR_GUIDE } from '../EditorHelp';
+import type { EDITOR_GUIDE } from '../components/EditorHelp';
 import { SettingField } from './SettingField';
 
 /** A value key: `#` marks it as a name, not text shown to readers. */

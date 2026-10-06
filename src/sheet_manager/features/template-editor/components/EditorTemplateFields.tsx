@@ -6,10 +6,11 @@ import {
     parseTemplateTargetValue,
     templateTargetValue,
 } from '../../sheet/data/documentLabels';
-import { describeDraft, type EditorDraft, setDraftTarget } from '../draft';
-import { EditorHelp } from '../EditorHelp';
+import { describeDraft, setDraftTarget } from '../model/page';
+import { type EditorDraft } from '../model/types';
 import { useEditorSession } from '../session/context';
 import { inputClasses } from '../settings/inputClasses';
+import { EditorHelp } from './EditorHelp';
 
 const editor = uiMessages.sheet.templates.editor;
 

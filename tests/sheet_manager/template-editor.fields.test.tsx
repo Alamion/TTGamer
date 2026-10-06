@@ -1,11 +1,9 @@
 // @vitest-environment jsdom
 
-import {
-    collectDraftIssues,
-    createDraftFromTemplate,
-    duplicateNode,
-    updateField,
-} from '@site/src/sheet_manager/features/template-editor/draft';
+import { collectDraftIssues } from '@site/src/sheet_manager/features/template-editor/issues/draftIssues';
+import { duplicateNode } from '@site/src/sheet_manager/features/template-editor/model/clone';
+import { createDraftFromTemplate } from '@site/src/sheet_manager/features/template-editor/model/factories';
+import { updateField } from '@site/src/sheet_manager/features/template-editor/model/fields';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';

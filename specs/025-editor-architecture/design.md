@@ -205,3 +205,14 @@ only these:
       kind picker to `elements/KindChoice.tsx`.
     - `elements/registry.tsx` replaced `elements/names.ts`; display names and type labels are
       registry lookups.
+- **US5:**
+    - `draft.ts` (1,289 lines) became
+      `model/{types,tree,clone,factories,fields,tables,catalogs, page}.ts` and
+      `issues/draftIssues.ts`. The largest is 423 lines (issues), then `model/tree.ts` with 326.
+      `issues.ts` became `issues/schemaIssues.ts`.
+    - The settings panels went to `panels/` rather than into `components/`, so that `components/`
+      holds the editor's frame: menus, outline, page, preview, help, and drag.
+    - Pure helpers moved to `model/` (`selection`, `moveTargets`, `clipboard`); element kinds and
+      sources to `elements/`; history, panel contexts, and save checks to `session/`.
+    - Only `TemplateEditorDialog.tsx`, `model/ids.ts`, `components/EditorHelp.tsx`, and
+      `sampleDocuments.ts` are imported from outside.

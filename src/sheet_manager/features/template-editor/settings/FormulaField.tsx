@@ -2,8 +2,8 @@ import { clsx } from 'clsx';
 import { type ReactNode } from 'react';
 
 import { checkFormulaInput } from '../../sheet/data/formulaCheck';
-import type { EDITOR_GUIDE } from '../EditorHelp';
-import { useEditorCoordinates, useEditorModel } from '../EditorModel';
+import type { EDITOR_GUIDE } from '../components/EditorHelp';
+import { useEditorCoordinates, useEditorModel } from '../session/EditorModel';
 import { formulaCheckMessage } from './formulaMessage';
 import { SettingField } from './SettingField';
 

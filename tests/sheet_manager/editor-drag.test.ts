@@ -8,7 +8,7 @@ import {
     PREVIEW_DWELL_MS,
     type Rect,
     slotKey,
-} from '@site/src/sheet_manager/features/template-editor/useEditorDrag';
+} from '@site/src/sheet_manager/features/template-editor/components/useEditorDrag';
 import { describe, expect, it } from 'vitest';
 
 const rect = (left: number, top: number, right: number, bottom: number): Rect => ({

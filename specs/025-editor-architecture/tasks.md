@@ -147,7 +147,7 @@ no other change.
 **Check**: no file over 600 lines among those split from `draft.ts`; no import of editor internals
 from outside.
 
-- [ ] T029 [US5] Split `F/draft.ts` into:
+- [x] T029 [US5] Split `F/draft.ts` into:
     - `F/model/tree.ts` (locate, insert, remove, move, replace, find, placement, columns);
     - `F/model/clone.ts`;
     - `F/model/factories.ts`;
@@ -158,13 +158,13 @@ from outside.
 
     Merge `F/issues.ts` into `F/issues/schemaIssues.ts`. Delete `F/draft.ts`.
 
-- [ ] T030 [US5] Group the remaining components under `F/components/` (panels, outline, page, menus,
+- [x] T030 [US5] Group the remaining components under `F/components/` (panels, outline, page, menus,
       help), keeping `sampleDocuments.ts` and `TemplateEditorDialog.tsx` at the root, and update
       imports
-- [ ] T031 [US5] Check that outside code imports only `F/TemplateEditorDialog.tsx`,
+- [x] T031 [US5] Check that outside code imports only `F/TemplateEditorDialog.tsx`,
       `F/model/ids.ts`, `F/components/EditorHelp.tsx`, and `F/sampleDocuments.ts`
       (`grep -rn "features/template-editor/" src --include=*.ts*`). Fix any other
-- [ ] T032 [US5] Run `yarn verify`, then commit US5
+- [x] T032 [US5] Run `yarn verify`, then commit US5
 
 ## Finish
 

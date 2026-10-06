@@ -8,15 +8,15 @@ import {
     type TemplateNode,
     type TemplateNodeType,
 } from '../../../types/template';
-import { newField } from '../draft';
-import { elementKind } from '../elementKinds';
-import { fieldSettings } from '../FieldEditor';
+import { newField } from '../model/factories';
 import { generateDraftId } from '../model/ids';
-import { primitiveSettings } from '../PrimitiveConfig';
+import { fieldSettings } from '../panels/FieldEditor';
+import { primitiveSettings } from '../panels/PrimitiveConfig';
 import { fieldEditsFor, type NodeEdits } from '../session/useNodeEdits';
 import type { GroupedSettings } from '../settings/groupedSettings';
 import { listSettings, tableSettings } from './collections';
 import { groupSettings, sectionSettings } from './containers';
+import { elementKind } from './kinds';
 
 const editor = uiMessages.sheet.templates.editor;
 const fieldTypes = uiMessages.sheet.templates.fieldTypes;

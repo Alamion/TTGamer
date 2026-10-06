@@ -1,9 +1,10 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { type EditorDraft, findNode } from '../draft';
 import { elementName } from '../elements/registry';
-import type { MoveCommand } from '../moveTargets';
-import { normalizeSelection, selectOnly } from '../selection';
+import type { MoveCommand } from '../model/moveTargets';
+import { normalizeSelection, selectOnly } from '../model/selection';
+import { findNode } from '../model/tree';
+import { type EditorDraft } from '../model/types';
 import { duplicateNodes, moveEachByCommand, removeNodes } from './multi';
 import type { Announcement, Operation, OpResult } from './types';
 

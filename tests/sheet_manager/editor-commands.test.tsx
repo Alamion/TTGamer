@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 
 import { matchEditorShortcut } from '@site/src/sheet_manager/features/template-editor/commands/keys';
 import { formatKeys } from '@site/src/sheet_manager/features/template-editor/commands/list';
-import { listedCommands } from '@site/src/sheet_manager/features/template-editor/ShortcutList';
+import { listedCommands } from '@site/src/sheet_manager/features/template-editor/components/ShortcutList';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';

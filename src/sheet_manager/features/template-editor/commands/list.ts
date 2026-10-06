@@ -1,15 +1,15 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { rememberedCopy } from '../clipboard';
-import { canRedo, canUndo } from '../history';
-import type { MoveCommand } from '../moveTargets';
+import { rememberedCopy } from '../model/clipboard';
+import type { MoveCommand } from '../model/moveTargets';
+import { EMPTY_SELECTION } from '../model/selection';
 import {
     canMoveSelection,
     duplicateSelection,
     moveSelection,
     removeSelection,
 } from '../operations/selection';
-import { EMPTY_SELECTION } from '../selection';
+import { canRedo, canUndo } from '../session/history';
 import type { EditorSession } from '../session/store';
 import type { EditorShortcut } from './keys';
 

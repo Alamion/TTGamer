@@ -6,9 +6,9 @@ import {
     collectDraftIssues,
     type DraftIssue,
     type DraftIssueMessages,
-    type EditorDraft,
-} from '../draft';
-import { useSchemaBackstop } from '../issues';
+} from '../issues/draftIssues';
+import { useSchemaBackstop } from '../issues/schemaIssues';
+import { type EditorDraft } from '../model/types';
 import type { SettingsGroupId } from '../settings/groupedSettings';
 
 const editor = uiMessages.sheet.templates.editor;

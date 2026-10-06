@@ -3,7 +3,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { clsx } from 'clsx';
 import { type ReactNode, useId } from 'react';
 
-import { EDITOR_GUIDE, EditorHelp } from '../EditorHelp';
+import { EDITOR_GUIDE, EditorHelp } from '../components/EditorHelp';
 import { useMixedSetting } from './mixedSettings';
 
 /** Attributes the control spreads so its label, key, and message reach it. */

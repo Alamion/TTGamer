@@ -2,9 +2,10 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import type { TemplateNode } from '../../../types/template';
 import type { OverlayPlacement } from '../../sheet/declarative/editorOverlay';
-import { type EditorDraft, findNode, insertAtPlacement, placeNode } from '../draft';
 import { elementName } from '../elements/registry';
-import { selectOnly } from '../selection';
+import { selectOnly } from '../model/selection';
+import { findNode, insertAtPlacement, placeNode } from '../model/tree';
+import { type EditorDraft } from '../model/types';
 import { labelIn } from './selection';
 import type { Announcement, Operation } from './types';
 

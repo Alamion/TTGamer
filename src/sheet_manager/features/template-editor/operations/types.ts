@@ -1,5 +1,5 @@
-import type { DraftOpResult, EditorDraft } from '../draft';
-import type { EditorSelectionState } from '../selection';
+import type { EditorSelectionState } from '../model/selection';
+import type { DraftOpResult, EditorDraft } from '../model/types';
 
 export interface MessageDescriptor {
     id: string;

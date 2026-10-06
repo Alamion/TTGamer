@@ -7,20 +7,21 @@ import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState }
 import { isContainerNode } from '../../../types/template';
 import { type CommandContext } from '../commands/list';
 import { createMenuSource } from '../commands/menu';
-import { type EditorDraft, findNode, findNodePosition } from '../draft';
-import { EditorContextMenu, EditorMenuContext, type EditorMenuSource } from '../EditorContextMenu';
-import { EditorPage } from '../EditorPage';
-import { ElementSettings } from '../ElementSettings';
+import { normalizeSelection } from '../model/selection';
+import { findNode, findNodePosition } from '../model/tree';
+import { type EditorDraft } from '../model/types';
 import { labelIn } from '../operations/selection';
 import { commitDrag } from '../operations/structure';
-import { OutlineTree } from '../OutlineTree';
-import { PaneDivider } from '../PaneDivider';
-import { normalizeSelection } from '../selection';
+import { ElementSettings } from '../panels/ElementSettings';
+import { MultiSettings } from '../panels/sharedSettings';
 import { selectNode } from '../session/actions';
 import { useEditorSession, useEditorState } from '../session/context';
-import { MultiSettings } from '../sharedSettings';
-import { EditorDragContext, useEditorDrag } from '../useEditorDrag';
-import { type Pane, PANE_LIMITS, usePaneWidths } from '../usePaneWidths';
+import { EditorContextMenu, EditorMenuContext, type EditorMenuSource } from './EditorContextMenu';
+import { EditorPage } from './EditorPage';
+import { OutlineTree } from './OutlineTree';
+import { PaneDivider } from './PaneDivider';
+import { EditorDragContext, useEditorDrag } from './useEditorDrag';
+import { type Pane, PANE_LIMITS, usePaneWidths } from './usePaneWidths';
 
 const editor = uiMessages.sheet.templates.editor;
 

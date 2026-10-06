@@ -1,20 +1,24 @@
 // @vitest-environment jsdom
 
+import { collectDraftIssues } from '@site/src/sheet_manager/features/template-editor/issues/draftIssues';
 import {
-    changeFieldType,
-    collectDraftIssues,
     createDraftFromTemplate,
     createEmptyDraft,
-    insertNode,
-    moveNode,
     newField,
     newGroupNode,
     newSectionNode,
     newTableNode,
-    removeNode,
+} from '@site/src/sheet_manager/features/template-editor/model/factories';
+import {
+    changeFieldType,
     updateField,
+} from '@site/src/sheet_manager/features/template-editor/model/fields';
+import {
+    insertNode,
+    moveNode,
+    removeNode,
     updateNode,
-} from '@site/src/sheet_manager/features/template-editor/draft';
+} from '@site/src/sheet_manager/features/template-editor/model/tree';
 import { CustomTemplateSchema, TEMPLATE_LIMITS } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it, vi } from 'vitest';
 

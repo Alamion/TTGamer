@@ -10,9 +10,10 @@ import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
 import { type CustomTemplate, CustomTemplateSchema } from '../../../types/template';
 import { planTemplateRetarget, type RetargetPlan } from '../../sheet/data/templateRetarget';
-import type { DraftIssue, EditorDraft } from '../draft';
-import { describeLocation, issueLocation, reportUncoveredIssues } from '../issues';
-import { saveEffects } from '../saveChecks';
+import type { DraftIssue } from '../issues/draftIssues';
+import { describeLocation, issueLocation, reportUncoveredIssues } from '../issues/schemaIssues';
+import type { EditorDraft } from '../model/types';
+import { saveEffects } from './saveChecks';
 import type { EditorSession } from './store';
 
 const editor = uiMessages.sheet.templates.editor;

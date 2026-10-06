@@ -1,7 +1,7 @@
-import { findNode, updateNode } from '@site/src/sheet_manager/features/template-editor/draft';
+import { selectOnly } from '@site/src/sheet_manager/features/template-editor/model/selection';
+import { findNode, updateNode } from '@site/src/sheet_manager/features/template-editor/model/tree';
 import { removeSelection } from '@site/src/sheet_manager/features/template-editor/operations/selection';
 import { switchKind } from '@site/src/sheet_manager/features/template-editor/operations/switches';
-import { selectOnly } from '@site/src/sheet_manager/features/template-editor/selection';
 import { createEditorSession } from '@site/src/sheet_manager/features/template-editor/session/store';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it, vi } from 'vitest';

@@ -3,7 +3,8 @@ import {
     isKnownLabelMessage,
     localizeTemplate,
 } from '@site/src/sheet_manager/features/sheet/declarative/localizeTemplate';
-import { updateField, updateNode } from '@site/src/sheet_manager/features/template-editor/draft';
+import { updateField } from '@site/src/sheet_manager/features/template-editor/model/fields';
+import { updateNode } from '@site/src/sheet_manager/features/template-editor/model/tree';
 import { starWarsWodDefaultTemplates } from '@site/src/sheet_manager/systems/star-wars-wod/defaultTemplates';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema, walkTemplateNodes } from '@site/src/sheet_manager/types/template';

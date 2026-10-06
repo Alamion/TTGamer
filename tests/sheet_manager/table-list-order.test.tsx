@@ -6,10 +6,8 @@ import {
     moveItem,
     moveTableRow,
 } from '@site/src/sheet_manager/features/sheet/declarative/rowOrder';
-import {
-    createDraftFromTemplate,
-    moveTableColumn,
-} from '@site/src/sheet_manager/features/template-editor/draft';
+import { createDraftFromTemplate } from '@site/src/sheet_manager/features/template-editor/model/factories';
+import { moveTableColumn } from '@site/src/sheet_manager/features/template-editor/model/tables';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { type CustomTemplate, CustomTemplateSchema } from '@site/src/sheet_manager/types/template';

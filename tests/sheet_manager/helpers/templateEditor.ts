@@ -1,7 +1,5 @@
-import {
-    createEmptyDraft,
-    insertNode,
-} from '@site/src/sheet_manager/features/template-editor/draft';
+import { createEmptyDraft } from '@site/src/sheet_manager/features/template-editor/model/factories';
+import { insertNode } from '@site/src/sheet_manager/features/template-editor/model/tree';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { fireEvent } from '@testing-library/react';

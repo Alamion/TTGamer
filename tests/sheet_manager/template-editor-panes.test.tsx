@@ -4,7 +4,7 @@ import {
     fitPaneWidths,
     PANE_STORAGE_KEY,
     readPaneWidths,
-} from '@site/src/sheet_manager/features/template-editor/usePaneWidths';
+} from '@site/src/sheet_manager/features/template-editor/components/usePaneWidths';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

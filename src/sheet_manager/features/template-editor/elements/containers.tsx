@@ -2,8 +2,8 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import type { GroupNode, SectionNode } from '../../../types/template';
-import type { NodeUpdates } from '../draft';
-import { ColumnLayoutControl, ToggleRow } from '../LayoutControls';
+import type { NodeUpdates } from '../model/types';
+import { ColumnLayoutControl, ToggleRow } from '../panels/LayoutControls';
 import { type NodeEdits } from '../session/useNodeEdits';
 import { type GroupedSettings } from '../settings/groupedSettings';
 import { inputClasses } from '../settings/inputClasses';

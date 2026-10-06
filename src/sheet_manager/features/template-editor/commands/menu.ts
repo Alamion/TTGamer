@@ -1,8 +1,8 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import type { EditorMenuSource, MenuCommand } from '../EditorContextMenu';
-import { EMPTY_SELECTION, selectOnly } from '../selection';
+import type { EditorMenuSource, MenuCommand } from '../components/EditorContextMenu';
+import { EMPTY_SELECTION, selectOnly } from '../model/selection';
 import { selectNode } from '../session/actions';
 import {
     commandById,

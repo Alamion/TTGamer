@@ -24,7 +24,7 @@ import {
     setChoice,
     togglePick,
 } from '../../../features/sheet/shell/libraryImport';
-import { EditorHelp } from '../../../features/template-editor/EditorHelp';
+import { EditorHelp } from '../../../features/template-editor/components/EditorHelp';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
 import { systemRegistry } from '../../../systems';

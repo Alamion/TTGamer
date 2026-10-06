@@ -3,7 +3,13 @@
 import {
     switchGroupKind,
     switchListKind,
-} from '@site/src/sheet_manager/features/template-editor/elementKinds';
+} from '@site/src/sheet_manager/features/template-editor/elements/kinds';
+import {
+    fieldFromSource,
+    listFromSource,
+    trackerFromSource,
+    type ValueSourceBinding,
+} from '@site/src/sheet_manager/features/template-editor/elements/sources';
 import {
     droppedSettings,
     keepSettings,
@@ -17,12 +23,6 @@ import {
     settingGroup,
     settingLabel,
 } from '@site/src/sheet_manager/features/template-editor/settings/registry';
-import {
-    fieldFromSource,
-    listFromSource,
-    trackerFromSource,
-    type ValueSourceBinding,
-} from '@site/src/sheet_manager/features/template-editor/sourceNodes';
 import { listElementStories } from '@site/src/sheet_manager/storybook/stories';
 import { starWarsWodSystem } from '@site/src/sheet_manager/systems';
 import {

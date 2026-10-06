@@ -43,7 +43,7 @@ import {
     type PageNode,
     type TypeNode,
 } from '../../features/sheet/data/libraryTree';
-import { EDITOR_GUIDE } from '../../features/template-editor/EditorHelp';
+import { EDITOR_GUIDE } from '../../features/template-editor/components/EditorHelp';
 import { generateDraftId } from '../../features/template-editor/model/ids';
 import {
     TemplateEditorDialog,

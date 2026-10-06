@@ -1,9 +1,9 @@
 import type { TemplateNode } from '../../../types/template';
 import { isContainerNode } from '../../../types/template';
+import { duplicateNode } from '../model/clone';
+import { type MoveCommand, resolveMoveTarget } from '../model/moveTargets';
+import { normalizeSelection } from '../model/selection';
 import {
-    type DraftOpResult,
-    duplicateNode,
-    type EditorDraft,
     findNode,
     findNodePosition,
     insertAtPlacement,
@@ -12,9 +12,8 @@ import {
     type NodePlacement,
     removeNode,
     updateNode,
-} from '../draft';
-import { type MoveCommand, resolveMoveTarget } from '../moveTargets';
-import { normalizeSelection } from '../selection';
+} from '../model/tree';
+import { type DraftOpResult, type EditorDraft } from '../model/types';
 
 /**
  * Structural operations on several elements at once (spec 023). Each takes the selected ids,

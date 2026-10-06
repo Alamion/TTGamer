@@ -5,8 +5,8 @@ import { clsx } from 'clsx';
 import { Keyboard, Redo2, Undo2 } from 'lucide-react';
 
 import { commandById, type CommandContext } from '../commands/list';
-import { EditorHelp } from '../EditorHelp';
 import { useEditorState } from '../session/context';
+import { EditorHelp } from './EditorHelp';
 
 const editor = uiMessages.sheet.templates.editor;
 

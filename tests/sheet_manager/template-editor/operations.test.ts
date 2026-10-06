@@ -1,4 +1,9 @@
-import { type EditorDraft, findNode } from '@site/src/sheet_manager/features/template-editor/draft';
+import {
+    type EditorSelectionState,
+    selectOnly,
+} from '@site/src/sheet_manager/features/template-editor/model/selection';
+import { findNode } from '@site/src/sheet_manager/features/template-editor/model/tree';
+import { type EditorDraft } from '@site/src/sheet_manager/features/template-editor/model/types';
 import {
     canMoveSelection,
     duplicateSelection,
@@ -15,10 +20,6 @@ import {
     switchSource,
 } from '@site/src/sheet_manager/features/template-editor/operations/switches';
 import type { OpResult } from '@site/src/sheet_manager/features/template-editor/operations/types';
-import {
-    type EditorSelectionState,
-    selectOnly,
-} from '@site/src/sheet_manager/features/template-editor/selection';
 import { CustomTemplateSchema, TEMPLATE_LIMITS } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 

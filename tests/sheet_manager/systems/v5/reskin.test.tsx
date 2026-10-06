@@ -7,11 +7,11 @@ import {
     parseTemplateFile,
     serializeTemplateFile,
 } from '@site/src/sheet_manager/features/sheet/shell/templateFile';
+import { createDraftFromTemplate } from '@site/src/sheet_manager/features/template-editor/model/factories';
 import {
-    createDraftFromTemplate,
     removeNode,
     updateNode,
-} from '@site/src/sheet_manager/features/template-editor/draft';
+} from '@site/src/sheet_manager/features/template-editor/model/tree';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';

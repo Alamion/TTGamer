@@ -12,17 +12,15 @@ import { commandById, type CommandContext } from './commands/list';
 import { EditorConfirms } from './components/EditorConfirms';
 import { EditorFooter } from './components/EditorFooter';
 import { type EditorArea, EditorPanes } from './components/EditorPanes';
+import { EditorPreview } from './components/EditorPreview';
 import { EditorProviders } from './components/EditorProviders';
 import { EditorTemplateFields } from './components/EditorTemplateFields';
 import { type EditorMode, EditorToolbar } from './components/EditorToolbar';
-import {
-    createDraftFromTemplate,
-    createEmptyDraft,
-    type DraftIssue,
-    type EditorDraft,
-} from './draft';
-import { EditorPreview } from './EditorPreview';
+import { ShortcutList } from './components/ShortcutList';
+import { type DraftIssue } from './issues/draftIssues';
+import { createDraftFromTemplate, createEmptyDraft } from './model/factories';
 import { generateDraftId } from './model/ids';
+import { type EditorDraft } from './model/types';
 import { reveal, selectNode } from './session/actions';
 import { clipboardAction, useClipboardEvents } from './session/clipboard';
 import { createEditorSession, type EditorSession } from './session/store';
@@ -30,7 +28,6 @@ import { useDraftIssues } from './session/useDraftIssues';
 import type { DropColumnsRequest } from './session/useNodeEdits';
 import { useTemplateSave } from './session/useTemplateSave';
 import { useSettingsGroupSession } from './settings/groupState';
-import { ShortcutList } from './ShortcutList';
 
 const library = uiMessages.sheet.templates.library;
 

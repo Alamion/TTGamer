@@ -5,7 +5,7 @@ import {
     SAVE_CHECKS,
     type SaveCheck,
     saveEffects,
-} from '@site/src/sheet_manager/features/template-editor/saveChecks';
+} from '@site/src/sheet_manager/features/template-editor/session/saveChecks';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 

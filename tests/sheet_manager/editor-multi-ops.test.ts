@@ -1,5 +1,5 @@
-import type { EditorDraft } from '@site/src/sheet_manager/features/template-editor/draft';
-import { findNode } from '@site/src/sheet_manager/features/template-editor/draft';
+import { findNode } from '@site/src/sheet_manager/features/template-editor/model/tree';
+import type { EditorDraft } from '@site/src/sheet_manager/features/template-editor/model/types';
 import {
     duplicateNodes,
     insertNodesAt,

@@ -7,20 +7,20 @@ import {
     TEMPLATE_LIMITS,
 } from '../../../types/template';
 import { listTemplateNumericCoordinates } from '../../sheet/data/templateReferences';
-import type { EditorDraft } from '../draft';
-import {
-    EditorCoordinatesContext,
-    EditorFillTargetsContext,
-    type EditorModel,
-    EditorModelContext,
-    type FillTarget,
-} from '../EditorModel';
+import type { EditorDraft } from '../model/types';
 import { createEditorActions } from '../session/actions';
 import {
     EditorActionsContext,
     EditorIssueNodesContext,
     EditorSessionContext,
 } from '../session/context';
+import {
+    EditorCoordinatesContext,
+    EditorFillTargetsContext,
+    type EditorModel,
+    EditorModelContext,
+    type FillTarget,
+} from '../session/EditorModel';
 import type { EditorSession } from '../session/store';
 import type { DraftIssues } from '../session/useDraftIssues';
 import {

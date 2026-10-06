@@ -1,8 +1,8 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { findNodePosition } from '../draft';
+import { rangeSelection, selectOnly, toggleInSelection } from '../model/selection';
+import { findNodePosition } from '../model/tree';
 import { insertAt, placeAt } from '../operations/structure';
-import { rangeSelection, selectOnly, toggleInSelection } from '../selection';
 import type { EditorActions, SelectMode } from './context';
 import type { EditorSession } from './store';
 

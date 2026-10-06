@@ -2,32 +2,24 @@ import { createContext, useContext } from 'react';
 
 import type { TemplateField, TemplateNode } from '../../../types/template';
 import { isTemplateField } from '../../../types/template';
+import type { GroupKind, ListKind } from '../elements/kinds';
+import { attachCatalog, detachCatalog, updateFill } from '../model/catalogs';
 import {
     addOption,
-    addTableColumn,
-    attachCatalog,
     changeFieldType,
-    detachCatalog,
-    type EditorDraft,
-    findNode,
-    findNodePosition,
-    moveTableColumn,
-    type NodeUpdates,
     removeOption,
-    removeTableColumn,
-    replaceNode,
     updateField,
-    updateFill,
-    updateNode,
     updateOption,
-} from '../draft';
-import type { GroupKind, ListKind } from '../elementKinds';
-import type { ElementActions } from '../ElementSettings';
-import type { FieldEditorCallbacks } from '../FieldEditor';
+} from '../model/fields';
+import { normalizeSelection } from '../model/selection';
+import { addTableColumn, moveTableColumn, removeTableColumn } from '../model/tables';
+import { findNode, findNodePosition, replaceNode, updateNode } from '../model/tree';
+import { type EditorDraft, type NodeUpdates } from '../model/types';
 import { duplicateSelection, moveSelection, removeSelection } from '../operations/selection';
 import { switchKind, switchSource } from '../operations/switches';
-import { normalizeSelection } from '../selection';
-import type { SeveralFieldCallbacks, SharedValue } from '../sharedSettings';
+import type { ElementActions } from '../panels/ElementSettings';
+import type { FieldEditorCallbacks } from '../panels/FieldEditor';
+import type { SeveralFieldCallbacks, SharedValue } from '../panels/sharedSettings';
 import { useEditorSession, useEditorState } from './context';
 import type { EditorSession } from './store';
 

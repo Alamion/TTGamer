@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import type { DraftIssue } from '../draft';
+import type { DraftIssue } from '../issues/draftIssues';
 import { useEditorState } from '../session/context';
 
 const editor = uiMessages.sheet.templates.editor;

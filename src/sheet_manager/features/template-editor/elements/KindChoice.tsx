@@ -2,7 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import type { TemplateNode } from '../../../types/template';
-import { elementKind, type GroupKind, type ListKind } from '../elementKinds';
+import { elementKind, type GroupKind, type ListKind } from './kinds';
 import { KIND_NAMES } from './registry';
 
 const editor = uiMessages.sheet.templates.editor;
