@@ -65,7 +65,7 @@ Current versions (2026-10-07):
       (SC-004), recorded with no budget.
 
     Each is the best of 5 warm runs, attached as an annotation, printed next to its budget, and
-    written to `test-results/timings.json`. They are never asserted. _Why_: the spec makes timings
+    written to `test-results/timings.jsonl`. They are never asserted. _Why_: the spec makes timings
     non-blocking (clarification Q2), and best-of-warm follows §11. _Rejected_: Playwright's expect
     with a soft budget, which still marks the run failed.
 
@@ -143,3 +143,41 @@ Current versions (2026-10-07):
 4. After US4: sort and filter a catalog table on the dev server, and look over icons in the toolbar,
    editor, and dice panel → unchanged.
 5. After US3: `yarn test` → the same test count, timing printed; compare with about 108 s.
+
+## Implementation notes
+
+- **US1:**
+    - **The fixture also fails on logged errors.** The first browser run found React hydration error
+      #418 on every page of the build: `src/theme/Root.tsx` rendered the toast container only when
+      `window` existed, so the client tree never matched the server HTML and React re-rendered each
+      page from scratch. Fixed with `BrowserOnly`. React reports such errors through
+      `console.error`, not as uncaught errors, and so does an error boundary (the SC-001 sheet break
+      showed up only that way). FR-004 is therefore stricter in the fixture: a logged error fails
+      the test too.
+    - **The preview timing reads a mark from the editor.** Timing from the last pointer move proved
+      unreliable: the preview can start at a pause on the way, after which it follows the pointer
+      without a new dwell. `useEditorDrag` now sets the User Timing mark `template-editor:preview`
+      when the dwell ends, and the timing runs from that mark to the frame after it.
+    - **Timings go to `test-results/timings.jsonl`.** Each test appends one line. Parallel workers
+      cannot safely rewrite one JSON file.
+    - **Opening the sheet** runs from the navigation start until the first text field of the sheet
+      appears. The server HTML already holds the toolbar's file input, so that input does not count.
+    - **The dev server's `merits-flaws` page crashed during the exploration** (`DocItem` reading
+      `id` of undefined). The production build serves the page correctly, so this was a stale dev
+      server, not a code fault.
+
+## Results
+
+- **T001 baseline (2026-10-07):**
+    - Unit run, best of three: 103.0 s by Vitest's count (107.6 s wall), 2218 tests. The other two
+      runs took 104.6 s and 105.5 s.
+    - Versions: Vitest 4.1.11, jsdom 26.1.0, knip 5.88.1, simple-import-sort 12.1.1, three 0.184.0,
+      lucide-react 0.468.0, @tanstack/react-table 8.21.3, Playwright 1.63 (new).
+- **US1 baseline timings** (one local run): editor edit 35 ms and move preview 32 ms against a 100
+  ms budget each, opening the sheet 273 ms, sheet JS and CSS 3,638,638 bytes (SC-004 baseline).
+- **SC-001:** each deliberate break failed its test and was then reverted.
+    - A thrown error in `CharacterSheet` failed `sheet.spec` with the logged error.
+    - A deleted `assets/css/styles.*.css` failed `site.spec` with HTTP 404 on two pages.
+    - A deleted `docs/.../attributes-abilities/index.html` failed `site.spec` with HTTP 404.
+- **SC-002:** `yarn test:e2e` on an existing build took 38 s for 10 tests. The dev server on 3000
+  kept answering 200.

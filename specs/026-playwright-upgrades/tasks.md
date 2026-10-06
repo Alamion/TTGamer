@@ -8,7 +8,7 @@ tests from US1 on.
 
 ## Foundation
 
-- [ ] T001 Record the baselines in design.md "Results":
+- [x] T001 Record the baselines in design.md "Results":
     - the unit run, best of three (`yarn test`);
     - the current versions.
 
@@ -17,14 +17,14 @@ tests from US1 on.
 **Check**: a thrown error in the sheet page makes `yarn ci:e2e` fail with the route named and a
 screenshot and trace kept (SC-001).
 
-- [ ] T002 [US1] Set up Playwright:
+- [x] T002 [US1] Set up Playwright:
     - add `@playwright/test` as a dev dependency;
     - add the scripts `test:e2e` (`playwright test`), `e2e:install` (`playwright install chromium`),
       and `ci:e2e` (`yarn ci:build && yarn test:e2e`) in `package.json`;
     - change `verify:full` to `yarn verify && yarn ci:test:perf && yarn ci:e2e`;
     - ignore `playwright-report/` and `test-results/` in `.gitignore` and in `.prettierignore` if
       needed.
-- [ ] T003 [US1] Write `playwright.config.ts` (D2, D5, D7):
+- [x] T003 [US1] Write `playwright.config.ts` (D2, D5, D7):
     - fail at once with "run `yarn build` first" when `build/` is missing;
     - `webServer` is `docusaurus serve --port 3100 --no-open` with `reuseExistingServer: false`;
     - `baseURL` is `http://localhost:3100`, Chromium only;
@@ -32,29 +32,29 @@ screenshot and trace kept (SC-001).
     - an HTML reporter that never opens, plus `list`;
     - projects `smoke` (`tests-e2e/smoke`) and `timings` (`tests-e2e/timings`);
     - every test starts with an empty storage state.
-- [ ] T004 [US1] Write `tests-e2e/fixtures.ts`. It extends `test` with a page that records
+- [x] T004 [US1] Write `tests-e2e/fixtures.ts`. It extends `test` with a page that records
       `pageerror` events and failed same-origin requests (status ≥ 400 or request failed) and fails
       the test after its body if any were recorded (FR-004).
-- [ ] T005 [US1] Make the new folder part of every tool:
+- [x] T005 [US1] Make the new folder part of every tool:
     - a `tsconfig` project for `tests-e2e/` and `playwright.config.ts`, referenced from the root so
       `tsc -b` checks it;
     - the test globs in `eslint.config` cover `tests-e2e/`;
     - `knip.json` entries for `playwright.config.ts` and `tests-e2e/**`;
     - `yarn verify:fast` and `yarn ci:deadcode` pass.
-- [ ] T006 [US1] Write `tests-e2e/smoke/site.spec.ts`. The homepage, an English docs page, and its
+- [x] T006 [US1] Write `tests-e2e/smoke/site.spec.ts`. The homepage, an English docs page, and its
       `/ru/` mirror load, show their main heading, and load their stylesheet.
-- [ ] T007 [US1] Write `tests-e2e/smoke/sheet.spec.ts`. From an empty profile on `/universal_sheet`,
+- [x] T007 [US1] Write `tests-e2e/smoke/sheet.spec.ts`. From an empty profile on `/universal_sheet`,
       create a character, change its name, reload, and the name is still there (IndexedDB
       persistence).
-- [ ] T008 [US1] Write `tests-e2e/smoke/dice.spec.ts`. With the keyboard only, focus the dice input,
+- [x] T008 [US1] Write `tests-e2e/smoke/dice.spec.ts`. With the keyboard only, focus the dice input,
       type a pool, press Enter, and a result appears in the history.
-- [ ] T009 [US1] Write `tests-e2e/smoke/editor.spec.ts`. Open the shipped sheet in the template
+- [x] T009 [US1] Write `tests-e2e/smoke/editor.spec.ts`. Open the shipped sheet in the template
       editor, select an element in the outline, press Alt+↓, and the order changes in the outline
       and on the page; undo restores both.
-- [ ] T010 [US1] Write `tests-e2e/smoke/catalog.spec.ts`. On a catalog docs page, sort a column,
+- [x] T010 [US1] Write `tests-e2e/smoke/catalog.spec.ts`. On a catalog docs page, sort a column,
       type a filter, and go to the next page; each step shows known rows of the shipped catalog
       (named in the test), so the test also compares the table before and after US4.
-- [ ] T011 [US1] Write `tests-e2e/timings/editor.spec.ts` and `tests-e2e/timings/sheet.spec.ts` (D7,
+- [x] T011 [US1] Write `tests-e2e/timings/editor.spec.ts` and `tests-e2e/timings/sheet.spec.ts` (D7,
       FR-011):
     - an edit on the shipped full sheet: from the input event to the next frame, budget 100 ms;
     - the move preview: from the dwell to the preview frame, budget 100 ms;
@@ -64,12 +64,12 @@ screenshot and trace kept (SC-001).
       this US1 run is the baseline, recorded in design.md "Results").
 
     Each is the best of 5 warm runs, attached as an annotation, printed next to its budget, and
-    written to `test-results/timings.json`; none is asserted.
+    written to `test-results/timings.jsonl`; none is asserted.
 
-- [ ] T012 [US1] Add an `e2e` job to `.github/workflows/ci.yml` (D9). It installs Chromium with
+- [x] T012 [US1] Add an `e2e` job to `.github/workflows/ci.yml` (D9). It installs Chromium with
       `npx playwright install --with-deps chromium`, runs `yarn ci:e2e` as a blocking step, and
       uploads `playwright-report/` and `test-results/` when it fails.
-- [ ] T013 [US1] Prove SC-001 locally and record the results in design.md:
+- [x] T013 [US1] Prove SC-001 locally and record the results in design.md:
     - a thrown error in the sheet page fails `sheet.spec`;
     - a deleted built CSS asset fails `site.spec`;
     - a broken docs link target fails `site.spec`.
@@ -77,7 +77,7 @@ screenshot and trace kept (SC-001).
     Revert each break. Also time `yarn test:e2e` on an existing build (SC-002) and confirm that the
     dev server on 3000 is untouched.
 
-- [ ] T014 [US1] Run `yarn verify:full` and commit the story,
+- [x] T014 [US1] Run `yarn verify:full` and commit the story,
       `test(e2e): browser smoke tests and timings on the built site (spec 026, US1)`.
 
 ## User Story 2 - Small majors land without notice (P2)

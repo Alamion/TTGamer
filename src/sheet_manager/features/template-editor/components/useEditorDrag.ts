@@ -37,6 +37,8 @@ export interface DropSlot {
 export const DRAG_THRESHOLD_PX = 5;
 /** How long the pointer rests on one target before the page shows the move. */
 export const PREVIEW_DWELL_MS = 320;
+/** A User Timing mark when the dwell ends, so browser timings measure the preview (spec 026). */
+export const PREVIEW_MARK = 'template-editor:preview';
 /** While previewing, the target changes only after the pointer travels this far. */
 export const PREVIEW_HYSTERESIS_PX = 8;
 const AUTOSCROLL_EDGE_PX = 48;
@@ -435,10 +437,10 @@ export function useEditorDrag({
                     (previous.phase !== 'dragging' || previous.since !== next.since)
                 ) {
                     clearTimeout(dwell);
-                    dwell = setTimeout(
-                        () => apply(dragTransition(state, { type: 'tick', now: Date.now() })),
-                        PREVIEW_DWELL_MS
-                    );
+                    dwell = setTimeout(() => {
+                        performance.mark(PREVIEW_MARK);
+                        apply(dragTransition(state, { type: 'tick', now: Date.now() }));
+                    }, PREVIEW_DWELL_MS);
                 }
                 markTarget();
             };

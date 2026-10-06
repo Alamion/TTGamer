@@ -51,3 +51,7 @@ tmp/
 # Generated from translations/source by `yarn build:translations` (spec 024)
 src/i18n/generated/
 i18n/*/code.json
+
+# Playwright reports (spec 026)
+playwright-report/
+test-results/

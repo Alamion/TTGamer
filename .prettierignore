@@ -6,3 +6,5 @@ context/
 src/i18n/generated/
 i18n/*/code.json
 specs/**/*.html
+playwright-report/
+test-results/

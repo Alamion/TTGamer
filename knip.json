@@ -7,8 +7,12 @@
         "src/theme/**/*.{ts,tsx}",
         "scripts/*.ts"
     ],
-    "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "tests/**/*.{ts,tsx}"],
+    "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "tests/**/*.{ts,tsx}", "tests-e2e/**/*.ts"],
     "ignore": ["src/@types/**"],
+    "playwright": {
+        "config": ["playwright.config.ts"],
+        "entry": ["tests-e2e/**/*.spec.ts"]
+    },
     "vitest": {
         "entry": ["tests/**/*.test.{ts,tsx}", "vitest.config.ts"]
     },
