@@ -6,7 +6,7 @@ import { Fragment, type ReactNode, useMemo } from 'react';
 import type { TemplateField, TemplateNode, VisibleWhen } from '../../types/template';
 import { isTemplateField } from '../../types/template';
 import { useEditorModel } from './EditorModel';
-import { nodeDisplayName, nodeKindLabel } from './elements/names';
+import { elementName, elementTypeLabel } from './elements/registry';
 import { ElementActionsRow } from './ElementSettings';
 import { type FieldEditorCallbacks, fieldSettings, type SeveralFields } from './FieldEditor';
 import { ToggleRow, VisibilityControl } from './LayoutControls';
@@ -250,15 +250,15 @@ export function MultiSettings({
                             type="button"
                             onClick={() => onOpen(node.id)}
                             aria-label={translate(editor.openSelected, {
-                                name: nodeDisplayName(node),
+                                name: elementName(node),
                             })}
                             className="flex w-full items-baseline gap-2 rounded px-1 py-0.5 text-left text-sm hover:bg-secondary/15"
                         >
                             <span className="shrink-0 text-[10px] uppercase tracking-wide text-textSecondary">
-                                {nodeKindLabel(node)}
+                                {elementTypeLabel(node)}
                             </span>
                             <span className="min-w-0 truncate text-textPrimary">
-                                {nodeDisplayName(node)}
+                                {elementName(node)}
                             </span>
                         </button>
                     </li>

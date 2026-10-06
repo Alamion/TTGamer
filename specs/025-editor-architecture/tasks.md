@@ -113,17 +113,17 @@ is at most 400 lines.
 **Check**: deleting one entry fails `yarn typecheck`; labels, add menu, outline, and settings are
 unchanged.
 
-- [ ] T022 [US3] Write `tests/sheet_manager/template-editor/element-registry.test.ts`:
+- [x] T022 [US3] Write `tests/sheet_manager/template-editor/element-registry.test.ts`:
     - `kindLabel` and `displayName` equal today's `nodeKindLabel` and `nodeDisplayName` for one node
       of every `TemplateNodeType`;
     - a `// @ts-expect-error` case that a registry missing a type does not type-check.
-- [ ] T023 [US3] Create `F/elements/registry.ts` as a mapped type over `TemplateNodeType`. Each
+- [x] T023 [US3] Create `F/elements/registry.ts` as a mapped type over `TemplateNodeType`. Each
       entry has `kindLabel`, `displayName`, `settings(node, ctx)`, `create?`, and `kinds?`. Move the
       `kindSettings` switch and `section`/`group`/`table`/`list` settings out of
       `F/ElementSettings.tsx` and the `baseField` switch out of `F/draft.ts`
-- [ ] T024 [US3] Make `F/AddElementMenu.tsx`, `F/OutlineTree.tsx`, `nodeKindLabel`/`nodeKindShort`,
+- [x] T024 [US3] Make `F/AddElementMenu.tsx`, `F/OutlineTree.tsx`, `nodeKindLabel`/`nodeKindShort`,
       and `ElementSettings` read the registry
-- [ ] T025 [US3] Run the editor tests and `yarn verify:fast`, then commit US3
+- [x] T025 [US3] Run the editor tests and `yarn verify:fast`, then commit US3
 
 ## User Story 4 - Save warnings come from one list (P2)
 

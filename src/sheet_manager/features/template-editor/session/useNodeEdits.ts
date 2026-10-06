@@ -23,6 +23,7 @@ import {
 } from '../draft';
 import type { GroupKind, ListKind } from '../elementKinds';
 import type { ElementActions } from '../ElementSettings';
+import type { FieldEditorCallbacks } from '../FieldEditor';
 import { duplicateSelection, moveSelection, removeSelection } from '../operations/selection';
 import { switchKind, switchSource } from '../operations/switches';
 import { normalizeSelection } from '../selection';
@@ -109,6 +110,21 @@ export function createNodeEdits(
                 });
             } else session.run(switchKind(nodeId, kind, session.stash));
         },
+    };
+}
+
+/** The field editor's callbacks for one field id (a page field or a table column). */
+export function fieldEditsFor(callbacks: NodeEdits, fieldId: string): FieldEditorCallbacks {
+    return {
+        onUpdate: (updates) => callbacks.onFieldUpdate(fieldId, updates),
+        onChangeType: (type) => callbacks.onFieldTypeChange(fieldId, type),
+        onAddOption: () => callbacks.onAddOption(fieldId),
+        onUpdateOption: (optionId, label) => callbacks.onUpdateOption(fieldId, optionId, label),
+        onRemoveOption: (optionId) => callbacks.onRemoveOption(fieldId, optionId),
+        onAttachCatalog: (catalogId) => callbacks.onAttachCatalog(fieldId, catalogId),
+        onDetachCatalog: () => callbacks.onDetachCatalog(fieldId),
+        onUpdateFill: (detailKey, rule) => callbacks.onUpdateFill(fieldId, detailKey, rule),
+        onReplace: (next) => callbacks.onReplace(fieldId, next),
     };
 }
 

@@ -8,7 +8,7 @@ import type { TemplateNode } from '../../types/template';
 import type { OverlayPlacement } from '../sheet/declarative/editorOverlay';
 import { AddElementMenu } from './AddElementMenu';
 import { useEditorModel } from './EditorModel';
-import { nodeDisplayName, nodeKindLabel } from './elements/names';
+import { elementName, elementTypeLabel } from './elements/registry';
 import { useEditorActions, useNodeSelection } from './session/context';
 import { slotKey, useEditorDragContext } from './useEditorDrag';
 
@@ -104,7 +104,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
     parentId,
 }: EditorNodeFrameProps) {
     const { selected, anchor, hasIssue } = useNodeSelection(node.id);
-    const name = nodeDisplayName(node);
+    const name = elementName(node);
     const drag = useEditorDragContext();
 
     return (
@@ -148,7 +148,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                     </button>
                     {hasIssue && <AlertTriangle className="h-3 w-3" aria-hidden="true" />}
                     <span className="truncate">
-                        {nodeKindLabel(node)} · {name}
+                        {elementTypeLabel(node)} · {name}
                     </span>
                 </span>
                 {content}

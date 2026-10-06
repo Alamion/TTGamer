@@ -7,7 +7,7 @@ import { memo } from 'react';
 import type { TemplateNode } from '../../types/template';
 import { isContainerNode } from '../../types/template';
 import type { OverlayPlacement } from '../sheet/declarative/editorOverlay';
-import { nodeDisplayName, nodeKindLabel, nodeKindShort } from './elements/names';
+import { elementName, elementTypeLabel, elementTypeShort } from './elements/registry';
 import { useEditorActions, useNodeSelection } from './session/context';
 import { slotKey, useEditorDragContext } from './useEditorDrag';
 
@@ -33,7 +33,7 @@ const OutlineItem = memo(function OutlineItem({
     const actions = useEditorActions();
     const { selected, anchor, hasIssue } = useNodeSelection(node.id);
     const column = parentColumns > 1 ? (node.column ?? null) : null;
-    const name = nodeDisplayName(node);
+    const name = elementName(node);
     const drag = useEditorDragContext();
 
     return (
@@ -83,11 +83,11 @@ const OutlineItem = memo(function OutlineItem({
                 >
                     <span
                         className="w-14 shrink-0 truncate text-[10px] uppercase tracking-wide opacity-70"
-                        title={nodeKindLabel(node)}
+                        title={elementTypeLabel(node)}
                     >
                         {/* A narrow column: groups and lists show their kind, read in full. */}
-                        <span aria-hidden="true">{nodeKindShort(node)}</span>
-                        <span className="sr-only">{nodeKindLabel(node)}</span>
+                        <span aria-hidden="true">{elementTypeShort(node)}</span>
+                        <span className="sr-only">{elementTypeLabel(node)}</span>
                     </span>
                     <span className="truncate">{name}</span>
                 </button>

@@ -3,7 +3,7 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import type { TemplateNode } from '../../../types/template';
 import type { OverlayPlacement } from '../../sheet/declarative/editorOverlay';
 import { type EditorDraft, findNode, insertAtPlacement, placeNode } from '../draft';
-import { nodeDisplayName } from '../elements/names';
+import { elementName } from '../elements/registry';
 import { selectOnly } from '../selection';
 import { labelIn } from './selection';
 import type { Announcement, Operation } from './types';
@@ -25,7 +25,7 @@ export function insertAt(placement: OverlayPlacement, node: TemplateNode): Opera
             ok: true,
             draft: result.draft,
             selection: selectOnly(node.id),
-            announce: { message: editor.inserted, values: { label: nodeDisplayName(node) } },
+            announce: { message: editor.inserted, values: { label: elementName(node) } },
         };
     };
 }

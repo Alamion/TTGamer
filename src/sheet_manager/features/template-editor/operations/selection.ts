@@ -1,7 +1,7 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import { type EditorDraft, findNode } from '../draft';
-import { nodeDisplayName } from '../elements/names';
+import { elementName } from '../elements/registry';
 import type { MoveCommand } from '../moveTargets';
 import { normalizeSelection, selectOnly } from '../selection';
 import { duplicateNodes, moveEachByCommand, removeNodes } from './multi';
@@ -11,7 +11,7 @@ const editor = uiMessages.sheet.templates.editor;
 
 export function labelIn(draft: EditorDraft, nodeId: string): string {
     const node = findNode(draft, nodeId);
-    return node ? nodeDisplayName(node) : nodeId;
+    return node ? elementName(node) : nodeId;
 }
 
 /**

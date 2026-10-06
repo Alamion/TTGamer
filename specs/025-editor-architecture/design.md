@@ -196,3 +196,12 @@ only these:
       announced. Before, a group plus its child was announced as "2 elements".
     - Copy, cut, and paste moved to `session/clipboard.ts`; saving moved to
       `session/useTemplateSave.ts`, which US4 turns into the save-check list.
+- **US3:**
+    - Field factories stay in the page model (`newField` in `draft.ts`, then `model/`), because the
+      model must not import editor UI. Its type switch is already checked for completeness by the
+      compiler. Registry entries call it.
+    - The per-type settings builders moved out of `ElementSettings.tsx` (818 → 172 lines): sections
+      and cards to `elements/containers.tsx`, lists and tables to `elements/collections.tsx`, the
+      kind picker to `elements/KindChoice.tsx`.
+    - `elements/registry.tsx` replaced `elements/names.ts`; display names and type labels are
+      registry lookups.
