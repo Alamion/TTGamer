@@ -31,6 +31,7 @@ import { FormulaField } from './settings/FormulaField';
 import { type GroupedSettings, mergeGroups } from './settings/groupedSettings';
 import { inputClasses } from './settings/inputClasses';
 import { KeyField } from './settings/KeyField';
+import { settingLabel } from './settings/registry';
 import { SettingField } from './settings/SettingField';
 import { TrackerSourceSelect, ValueSourceSelect } from './SourceControls';
 import { currentValueSource, CUSTOM_SOURCE } from './sourceNodes';
@@ -134,7 +135,7 @@ export function fieldSettings({
                 </SettingField>
             )}
             <SettingField
-                label={t(editor.fieldType)}
+                label={settingLabel('type')}
                 setting={key('type')}
                 hint={isCustom ? undefined : t(editor.sourceTypeLocked)}
             >
@@ -156,7 +157,7 @@ export function fieldSettings({
                     </select>
                 )}
             </SettingField>
-            <SettingField label={t(editor.helpText)} setting={key('description')}>
+            <SettingField label={settingLabel('description')} setting={key('description')}>
                 {(control) => (
                     <input
                         {...control}
@@ -170,12 +171,12 @@ export function fieldSettings({
             </SettingField>
             <ToggleRow
                 checked={!field.hideLabel}
-                label={t(editor.showLabel)}
+                label={settingLabel('hideLabel')}
                 setting={key('hideLabel')}
                 onChange={(checked) => update({ hideLabel: checked ? undefined : true })}
             />
             {hasLabelPositionChoice(field.type) && (
-                <SettingField label={t(editor.labelPosition)} setting={key('labelPosition')}>
+                <SettingField label={settingLabel('labelPosition')} setting={key('labelPosition')}>
                     {(control) => (
                         <select
                             {...control}
@@ -198,7 +199,7 @@ export function fieldSettings({
                 </SettingField>
             )}
             {field.type === 'text' && (
-                <SettingField label={t(editor.placeholderText)} setting={key('placeholder')}>
+                <SettingField label={settingLabel('placeholder')} setting={key('placeholder')}>
                     {(control) => (
                         <input
                             {...control}
@@ -238,7 +239,7 @@ export function fieldSettings({
             )}
             {isCustom && !itemOfList && !several && (
                 <KeyField
-                    label={t(editor.valueKey)}
+                    label={settingLabel('valueKey')}
                     hint={t(editor.valueKeyHint)}
                     help="sharedValueKey"
                     setting={key('valueKey')}
@@ -259,7 +260,7 @@ export function fieldSettings({
                         disabled={fields.some(
                             (each) => each.type === 'select' && each.binding !== undefined
                         )}
-                        label={t(editor.multiple)}
+                        label={settingLabel('multiple')}
                         setting={key('multiple')}
                         onChange={(checked) => update({ multiple: checked })}
                     />
@@ -288,7 +289,7 @@ export function fieldSettings({
                     />
                     <ToggleRow
                         checked={field.multiple}
-                        label={t(editor.multiple)}
+                        label={settingLabel('multiple')}
                         setting={key('multiple')}
                         onChange={(checked) => update({ multiple: checked })}
                     />
@@ -301,21 +302,21 @@ export function fieldSettings({
         field.type === 'number' ? (
             <div className="grid grid-cols-3 gap-2">
                 <NumberSetting
-                    label={t(editor.numberMin)}
+                    label={settingLabel('min')}
                     setting={key('min')}
                     value={field.min}
                     max={field.max}
                     onChange={(min) => update({ min })}
                 />
                 <NumberSetting
-                    label={t(editor.numberMax)}
+                    label={settingLabel('max')}
                     setting={key('max')}
                     value={field.max}
                     min={field.min}
                     onChange={(max) => update({ max })}
                 />
                 <NumberSetting
-                    label={t(editor.numberStep)}
+                    label={settingLabel('step')}
                     setting={key('step')}
                     value={field.step}
                     min={0}
@@ -325,7 +326,7 @@ export function fieldSettings({
         ) : (field.type === 'rating' && !isTraitSource) || field.type === 'resource' ? (
             <div className="grid grid-cols-2 gap-2">
                 <NumberSetting
-                    label={t(editor.numberMin)}
+                    label={settingLabel('min')}
                     setting={key('min')}
                     value={field.min}
                     min={0}
@@ -335,7 +336,7 @@ export function fieldSettings({
                     onChange={(min) => update({ min: min ?? 0 })}
                 />
                 <NumberSetting
-                    label={t(editor.numberMax)}
+                    label={settingLabel('max')}
                     setting={key('max')}
                     value={field.max}
                     min={Math.max(1, field.min)}
@@ -358,7 +359,7 @@ export function fieldSettings({
             {bounds}
             {field.type === 'formula' && (
                 <FormulaField
-                    label={t(editor.formula)}
+                    label={settingLabel('formula')}
                     help="formulas"
                     setting={key('formula')}
                     placeholder={t(editor.formulaPlaceholder)}
@@ -368,7 +369,7 @@ export function fieldSettings({
             )}
             {!isTraitSource && (field.type === 'number' || field.type === 'rating') && (
                 <FormulaField
-                    label={t(editor.maxFromShort)}
+                    label={settingLabel('maxFrom')}
                     setting={key('maxFrom')}
                     placeholder={t(editor.maxFromPlaceholder)}
                     value={field.maxFrom}
@@ -383,7 +384,7 @@ export function fieldSettings({
             {!isTraitSource && field.type === 'rating' && (
                 <>
                     <SettingField
-                        label={t(editor.presentation)}
+                        label={settingLabel('presentation')}
                         help="rating"
                         setting={key('presentation')}
                     >
@@ -414,7 +415,7 @@ export function fieldSettings({
             {field.type === 'text' && (
                 <ToggleRow
                     checked={field.multiline}
-                    label={t(editor.multiline)}
+                    label={settingLabel('multiline')}
                     setting={key('multiline')}
                     onChange={(checked) => update({ multiline: checked })}
                 />
@@ -422,14 +423,14 @@ export function fieldSettings({
             {field.type === 'select' && field.multiple && (
                 <ToggleRow
                     checked={field.hideUnselected === true}
-                    label={t(editor.hideUnselected)}
+                    label={settingLabel('hideUnselected')}
                     setting={key('hideUnselected')}
                     onChange={(checked) => update({ hideUnselected: checked || undefined })}
                 />
             )}
             {field.type === 'formula' && (
                 <div className="grid grid-cols-2 gap-2">
-                    <SettingField label={t(editor.formulaPrefix)} setting={key('prefix')}>
+                    <SettingField label={settingLabel('prefix')} setting={key('prefix')}>
                         {(control) => (
                             <input
                                 {...control}
@@ -442,7 +443,7 @@ export function fieldSettings({
                             />
                         )}
                     </SettingField>
-                    <SettingField label={t(editor.formulaSuffix)} setting={key('suffix')}>
+                    <SettingField label={settingLabel('suffix')} setting={key('suffix')}>
                         {(control) => (
                             <input
                                 {...control}
@@ -480,7 +481,7 @@ export function fieldSettings({
             {!itemOfList && (
                 <ToggleRow
                     checked={field.required}
-                    label={t(editor.fieldRequired)}
+                    label={settingLabel('required')}
                     setting={key('required')}
                     onChange={(checked) => update({ required: checked })}
                 />

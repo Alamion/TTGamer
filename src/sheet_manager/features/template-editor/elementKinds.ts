@@ -16,6 +16,7 @@ import {
     tableValueKey,
     walkTemplateNodes,
 } from '../../types/template';
+import { switchElement, type SwitchStash } from './settings/keepSettings';
 
 /** How the editor names container and list elements (spec 022, R8); stored types are kept. */
 export type ElementKind =
@@ -39,11 +40,8 @@ export function elementKind(node: TemplateNode): ElementKind | undefined {
     }
 }
 
-/**
- * Settings one kind has and the other lacks, kept per element for the editor session so that
- * switching back restores them (never stored in the template).
- */
-export type KindStash = Map<string, Record<string, unknown>>;
+/** Settings one kind has and the other lacks, kept for the session (`SwitchStash`). */
+export type KindStash = SwitchStash;
 
 function stashOf(stash: KindStash, nodeId: string): Record<string, unknown> {
     return stash.get(nodeId) ?? {};
@@ -93,8 +91,6 @@ export function tableKindBlocked(node: ListNode | TableNode): boolean {
     return node.type === 'list' && (node.bindingKey !== undefined || node.catalog !== undefined);
 }
 
-const LIST_ONLY_KEYS = ['named', 'presets', 'showTitle', 'framed'] as const;
-
 /** A column as the entry field of a list: entry types only, other types become text. */
 function entryFromColumn(column: TemplateField): ListItemField {
     if ((LIST_ITEM_TYPES as readonly string[]).includes(column.type)) {
@@ -124,48 +120,33 @@ export function switchListKind(
     if (kind === 'table') {
         if (node.type === 'table' || tableKindBlocked(node)) return { node, dropped: [] };
         const item = listItemField(node);
-        keep(stash, node.id, {
-            ...Object.fromEntries(LIST_ONLY_KEYS.map((key) => [key, node[key]])),
-            listColumns: node.columns,
-        });
+        keep(stash, node.id, { listColumns: node.columns });
         const extra = take<TemplateField[]>(stash, node.id, 'extraColumns') ?? [];
         const table: TableNode = {
             id: node.id,
             type: 'table',
             ...(node.title !== undefined ? { title: node.title } : {}),
             ...(node.labelMessage !== undefined ? { labelMessage: node.labelMessage } : {}),
-            ...(node.column !== undefined ? { column: node.column } : {}),
-            ...(node.span !== undefined ? { span: node.span } : {}),
-            ...(node.visibleWhen !== undefined ? { visibleWhen: node.visibleWhen } : {}),
             ...(node.valueKey !== undefined ? { valueKey: node.valueKey } : {}),
             minRows: take<number>(stash, node.id, 'minRows') ?? 0,
             maxRows: take<number>(stash, node.id, 'maxRows') ?? 100,
             columns: [item as TemplateField, ...extra.filter(({ id }) => id !== item.id)],
         };
-        return { node: table, dropped: [] };
+        return { node: switchElement(node, table, stash).node as TableNode, dropped: [] };
     }
     if (node.type === 'list') return { node, dropped: [] };
     const [first, ...rest] = node.columns;
     keep(stash, node.id, { minRows: node.minRows, maxRows: node.maxRows, extraColumns: rest });
-    const restored = Object.fromEntries(
-        LIST_ONLY_KEYS.map((key) => [key, take(stash, node.id, key)]).filter(
-            ([, value]) => value !== undefined
-        )
-    ) as Partial<Pick<ListNode, (typeof LIST_ONLY_KEYS)[number]>>;
     const list: ListNode = {
         id: node.id,
         type: 'list',
         ...(node.title !== undefined ? { title: node.title } : {}),
         ...(node.labelMessage !== undefined ? { labelMessage: node.labelMessage } : {}),
-        ...(node.column !== undefined ? { column: node.column } : {}),
-        ...(node.span !== undefined ? { span: node.span } : {}),
-        ...(node.visibleWhen !== undefined ? { visibleWhen: node.visibleWhen } : {}),
         valueKey: node.valueKey ?? node.id,
         columns: take<number>(stash, node.id, 'listColumns') ?? 1,
         ...(first ? { item: entryFromColumn(first) } : {}),
-        ...restored,
     };
-    return { node: list, dropped: rest };
+    return { node: switchElement(node, list, stash).node as ListNode, dropped: rest };
 }
 
 /** A list or table whose kind a save changes while documents hold values of the old kind. */

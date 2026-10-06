@@ -37,6 +37,7 @@ import { primitiveSettings } from './PrimitiveConfig';
 import { type GroupedSettings, mergeGroups } from './settings/groupedSettings';
 import { inputClasses } from './settings/inputClasses';
 import { KeyField } from './settings/KeyField';
+import { settingLabel } from './settings/registry';
 import { SettingField } from './settings/SettingField';
 import { SettingsGroup } from './settings/SettingsGroup';
 import { ListSourceSelect } from './SourceControls';
@@ -379,7 +380,7 @@ function TitleSetting({
     onChange: (title: string) => void;
 }) {
     return (
-        <SettingField label={t(editor.title)} setting="title">
+        <SettingField label={settingLabel('title')} setting="title">
             {(control) => (
                 <input
                     {...control}
@@ -400,7 +401,7 @@ function DocsLinkSetting({
     onChange: (docsPath: string | undefined) => void;
 }) {
     return (
-        <SettingField label={t(editor.docsLink)} help="documentationLink" setting="docsPath">
+        <SettingField label={settingLabel('docsPath')} help="documentationLink" setting="docsPath">
             {(control) => (
                 <input
                     {...control}
@@ -436,7 +437,7 @@ function sectionSettings(node: SectionNode, callbacks: ElementEditorCallbacks): 
             <>
                 <ToggleRow
                     checked={node.defaultCollapsed === true}
-                    label={t(editor.startsCollapsed)}
+                    label={settingLabel('defaultCollapsed')}
                     setting="defaultCollapsed"
                     onChange={(checked) => update({ defaultCollapsed: checked })}
                 />
@@ -462,7 +463,7 @@ function groupSettings(node: GroupNode, callbacks: ElementEditorCallbacks): Grou
             <>
                 <ToggleRow
                     checked={!node.hideTitle}
-                    label={t(editor.showTitle)}
+                    label={settingLabel('hideTitle')}
                     setting="hideTitle"
                     onChange={(checked) => update({ hideTitle: !checked })}
                 />
@@ -479,14 +480,14 @@ function groupSettings(node: GroupNode, callbacks: ElementEditorCallbacks): Grou
                     checked={node.collapsible && !node.hideTitle}
                     disabled={node.hideTitle === true}
                     hint={node.hideTitle ? t(editor.hiddenTitleHint) : undefined}
-                    label={t(editor.groupCollapsible)}
+                    label={settingLabel('collapsible')}
                     setting="collapsible"
                     onChange={(checked) => update({ collapsible: checked })}
                 />
                 {node.collapsible && !node.hideTitle && (
                     <ToggleRow
                         checked={node.defaultCollapsed === true}
-                        label={t(editor.startsCollapsed)}
+                        label={settingLabel('defaultCollapsed')}
                         setting="defaultCollapsed"
                         onChange={(checked) => update({ defaultCollapsed: checked })}
                     />
@@ -517,7 +518,7 @@ function tableSettings(node: TableNode, callbacks: ElementEditorCallbacks): Grou
         ),
         value: (
             <KeyField
-                label={t(editor.valueKey)}
+                label={settingLabel('valueKey')}
                 hint={t(editor.rowsKeyHint)}
                 help="sharedValueKey"
                 setting="valueKey"
@@ -527,7 +528,7 @@ function tableSettings(node: TableNode, callbacks: ElementEditorCallbacks): Grou
         ),
         limits: (
             <div className="grid grid-cols-2 gap-2">
-                <SettingField label={t(editor.minRows)} setting="minRows">
+                <SettingField label={settingLabel('minRows')} setting="minRows">
                     {({ id, 'data-setting': key }) => (
                         <NumberInput
                             id={id}
@@ -543,7 +544,7 @@ function tableSettings(node: TableNode, callbacks: ElementEditorCallbacks): Grou
                         />
                     )}
                 </SettingField>
-                <SettingField label={t(editor.maxRows)} setting="maxRows">
+                <SettingField label={settingLabel('maxRows')} setting="maxRows">
                     {({ id, 'data-setting': key }) => (
                         <NumberInput
                             id={id}
@@ -662,7 +663,7 @@ function listSettings(node: ListNode, callbacks: ElementEditorCallbacks): Groupe
                 {custom && (
                     <ToggleRow
                         checked={named}
-                        label={t(editor.listNamed)}
+                        label={settingLabel('named')}
                         setting="named"
                         onChange={(checked) => listUpdate({ named: checked ? undefined : false })}
                     />
@@ -701,7 +702,7 @@ function listSettings(node: ListNode, callbacks: ElementEditorCallbacks): Groupe
         ),
         look: (
             <>
-                <SettingField label={t(editor.columns)} setting="columns">
+                <SettingField label={settingLabel('columns')} setting="columns">
                     {(control) => (
                         <select
                             {...control}
@@ -724,13 +725,13 @@ function listSettings(node: ListNode, callbacks: ElementEditorCallbacks): Groupe
                 </SettingField>
                 <ToggleRow
                     checked={node.showTitle === true}
-                    label={t(editor.listShowTitle)}
+                    label={settingLabel('showTitle')}
                     setting="showTitle"
                     onChange={(checked) => listUpdate({ showTitle: checked || undefined })}
                 />
                 <ToggleRow
                     checked={node.framed === true}
-                    label={t(editor.listFramed)}
+                    label={settingLabel('framed')}
                     setting="framed"
                     onChange={(checked) => listUpdate({ framed: checked || undefined })}
                 />

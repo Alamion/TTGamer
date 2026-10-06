@@ -4,7 +4,7 @@ import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { Fragment, type ReactNode, useMemo } from 'react';
 
 import type { TemplateField, TemplateNode, VisibleWhen } from '../../types/template';
-import { isContainerNode, isTemplateField } from '../../types/template';
+import { isTemplateField } from '../../types/template';
 import { useEditorModel } from './EditorModel';
 import {
     type ElementActions,
@@ -22,18 +22,17 @@ import {
 } from './settings/groupedSettings';
 import { inputClasses } from './settings/inputClasses';
 import { MixedSettingsContext } from './settings/mixedSettings';
+import { SETTING_ENTRIES, settingDescription, settingGroup } from './settings/registry';
 import { SettingField } from './settings/SettingField';
 import { SettingsGroup } from './settings/SettingsGroup';
 
 const editor = uiMessages.sheet.templates.editor;
-const primitives = uiMessages.sheet.templates.primitives;
 
 type SharedValue = boolean | number | string | VisibleWhen | undefined;
 
 /**
- * A setting several selected elements can change together (spec 023, research R6). Only
- * settings whose meaning is the same for every kind they apply to have a descriptor; settings
- * that identify one element (value key, options, columns, entry field, type, kind) never do.
+ * A setting several selected elements can change together (spec 023, research R6): the shared
+ * entries of the setting registry. Settings that identify one element never are.
  */
 export interface SharedSetting {
     key: string;
@@ -45,87 +44,17 @@ export interface SharedSetting {
     appliesTo(node: TemplateNode): boolean;
 }
 
-const field = (node: TemplateNode) => isTemplateField(node);
-/** Fields and the game's own values placed on the page share their label and brief settings. */
-const valueElement = (node: TemplateNode) => field(node) || node.type === 'primitive';
-const card = (node: TemplateNode) => node.type === 'group';
-const container = (node: TemplateNode) => isContainerNode(node);
-const numberField = (node: TemplateNode) => node.type === 'number';
+function sharedSetting(key: string, nodes: readonly TemplateNode[]): SharedSetting | undefined {
+    const description = settingDescription(key);
+    const { shared, appliesTo, label } = description ?? {};
+    if (!shared || !appliesTo || !label) return undefined;
+    return { key, group: settingGroup(key, nodes[0]), label, appliesTo, ...shared };
+}
 
-export const SHARED_SETTINGS: readonly SharedSetting[] = [
-    {
-        key: 'hideLabel',
-        group: 'content',
-        label: editor.showLabel,
-        control: 'toggle',
-        inverted: true,
-        appliesTo: valueElement,
-    },
-    {
-        key: 'min',
-        group: 'limits',
-        label: editor.numberMin,
-        control: 'number',
-        appliesTo: numberField,
-    },
-    {
-        key: 'max',
-        group: 'limits',
-        label: editor.numberMax,
-        control: 'number',
-        appliesTo: numberField,
-    },
-    {
-        key: 'compact',
-        group: 'look',
-        label: primitives.compact,
-        control: 'toggle',
-        appliesTo: valueElement,
-    },
-    {
-        key: 'hideTitle',
-        group: 'look',
-        label: editor.showTitle,
-        control: 'toggle',
-        inverted: true,
-        appliesTo: card,
-    },
-    {
-        key: 'span',
-        group: 'look',
-        label: editor.columnSpan,
-        control: 'number',
-        appliesTo: () => true,
-    },
-    {
-        key: 'required',
-        group: 'visibility',
-        label: editor.fieldRequired,
-        control: 'toggle',
-        appliesTo: field,
-    },
-    {
-        key: 'defaultCollapsed',
-        group: 'visibility',
-        label: editor.startsCollapsed,
-        control: 'toggle',
-        appliesTo: container,
-    },
-    {
-        key: 'docsPath',
-        group: 'visibility',
-        label: editor.docsLink,
-        control: 'text',
-        appliesTo: container,
-    },
-    {
-        key: 'visibleWhen',
-        group: 'visibility',
-        label: editor.visibleWhen,
-        control: 'condition',
-        appliesTo: () => true,
-    },
-];
+export const SHARED_SETTINGS: readonly SharedSetting[] = SETTING_ENTRIES.flatMap(([key]) => {
+    const setting = sharedSetting(key, []);
+    return setting ? [setting] : [];
+});
 
 export const MIXED = Symbol('mixed');
 
@@ -143,25 +72,15 @@ export function sharedValue(
 }
 
 export function sharedSettingsFor(nodes: readonly TemplateNode[]): SharedSetting[] {
-    return SHARED_SETTINGS.filter((setting) => nodes.every((node) => setting.appliesTo(node)));
+    return SHARED_SETTINGS.filter((setting) => nodes.every((node) => setting.appliesTo(node))).map(
+        (setting) => ({ ...setting, group: settingGroup(setting.key, nodes[0]) })
+    );
 }
 
 /** Settings that name or store one element: never written to several, never "Mixed". */
-const OWN_KEYS = new Set([
-    'id',
-    'type',
-    'label',
-    'labelMessage',
-    'title',
-    'titleMessage',
-    'valueKey',
-    'bindingKey',
-    'binding',
-    'options',
-    'termHint',
-    'column',
-    'children',
-]);
+const OWN_KEYS = new Set<string>(
+    SETTING_ENTRIES.filter(([, setting]) => setting.identity).map(([key]) => key)
+);
 
 /** The keys whose value differs across the elements, which the panel marks "Mixed". */
 export function mixedSettingKeys(nodes: readonly TemplateNode[]): Set<string> {
@@ -179,7 +98,9 @@ export function sameTypeFields(nodes: readonly TemplateNode[]): TemplateField[] 
 }
 
 /** Shared settings the field's own settings already show. */
-const FIELD_PANEL_KEYS = new Set(['hideLabel', 'required', 'min', 'max']);
+const FIELD_PANEL_KEYS = new Set<string>(
+    SETTING_ENTRIES.filter(([, setting]) => setting.fieldPanel).map(([key]) => key)
+);
 
 /** The node with the setting set (or removed when `undefined`). */
 export function writeShared(node: TemplateNode, key: string, value: SharedValue): TemplateNode {

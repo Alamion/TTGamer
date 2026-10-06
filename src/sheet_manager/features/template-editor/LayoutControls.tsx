@@ -10,6 +10,7 @@ import { EditorHelp } from './EditorHelp';
 import { inputClasses } from './settings/inputClasses';
 import { KeyField } from './settings/KeyField';
 import { useMixedSetting } from './settings/mixedSettings';
+import { settingLabel } from './settings/registry';
 import { SettingField } from './settings/SettingField';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -186,7 +187,7 @@ export function ColumnLayoutControl({
 
     return (
         <div className="grid gap-2">
-            <SettingField label={t(editor.columns)} help="columns" setting="columns">
+            <SettingField label={settingLabel('columns')} help="columns" setting="columns">
                 {(control) => (
                     <select
                         {...control}

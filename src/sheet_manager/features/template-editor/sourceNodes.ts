@@ -19,6 +19,7 @@ import type {
 } from '../../types/template';
 import { fieldValueKey } from '../../types/template';
 import { defaultTrackerSettings } from '../sheet/data/trackerDefaults';
+import { keepSettings } from './settings/keepSettings';
 
 /**
  * Where an element's value lives, as the editor presents it: a custom value in the template, or
@@ -34,13 +35,9 @@ export type ListSourceBinding = ListBinding | EquipmentBinding;
 type FieldLike = TemplateField | PrimitiveNode;
 type ListLike = ListNode | PrimitiveNode;
 
+/** The element's id; its carried settings are added by `keepSettings` (spec 025). */
 function carried(node: TemplateNode) {
-    return {
-        id: node.id,
-        ...('compact' in node && node.compact ? { compact: true } : {}),
-        ...(node.column !== undefined ? { column: node.column } : {}),
-        ...('hideLabel' in node && node.hideLabel ? { hideLabel: true } : {}),
-    };
+    return { id: node.id };
 }
 
 export function isValueSource(binding: DocumentBindingDescriptor): binding is ValueSourceBinding {
@@ -70,6 +67,10 @@ export function fieldFromSource(
     node: FieldLike,
     source: ValueSourceBinding | undefined
 ): TemplateNode {
+    return keepSettings(node, buildField(node, source));
+}
+
+function buildField(node: FieldLike, source: ValueSourceBinding | undefined): TemplateNode {
     const base = carried(node);
     const label =
         source?.label ??
@@ -78,7 +79,7 @@ export function fieldFromSource(
             : translate(uiMessages.sheet.templates.editor.newField));
     if (!source) {
         return node.type === 'primitive'
-            ? { ...base, type: 'number', label, required: false, compact: base.compact ?? false }
+            ? { ...base, type: 'number', label, required: false, compact: false }
             : {
                   ...node,
                   ...base,
@@ -95,7 +96,7 @@ export function fieldFromSource(
                 type: 'rating',
                 label,
                 required: false,
-                compact: base.compact ?? false,
+                compact: false,
                 min: 0,
                 max: source.maximum,
                 presentation: 'dots',
@@ -107,7 +108,7 @@ export function fieldFromSource(
                 type: 'primitive',
                 bindingKey: source.key,
                 label,
-                compact: base.compact ?? false,
+                compact: false,
                 // A resource drawn as a tracker keeps its look on the game's pool (spec 020).
                 ...(node.type === 'resource' && node.poolTracker
                     ? { poolTracker: node.poolTracker }
@@ -118,7 +119,7 @@ export function fieldFromSource(
                 ...base,
                 label,
                 required: false,
-                compact: base.compact ?? false,
+                compact: false,
                 valueKey: source.coordinate,
             };
             if (source.valueType === 'number') return { ...shared, type: 'number', min: 0 };
@@ -138,6 +139,15 @@ export function listFromSource(
     node: ListLike,
     source: ListSourceBinding | undefined
 ): TemplateNode {
+    // Equipment sections decide their own look.
+    return keepSettings(
+        node,
+        buildList(node, source),
+        source?.kind === 'equipment' ? ['compact'] : []
+    );
+}
+
+function buildList(node: ListLike, source: ListSourceBinding | undefined): TemplateNode {
     const base = carried(node);
     const title = node.type === 'list' ? node.title : node.label;
     if (source?.kind === 'equipment') {
@@ -186,6 +196,11 @@ export function trackerFromSource(
     node: TrackerLike,
     source: TrackBinding | undefined
 ): TemplateNode {
+    // A tracker's look is its display setting; `compact` stays off.
+    return keepSettings(node, buildTracker(node, source), ['compact']);
+}
+
+function buildTracker(node: TrackerLike, source: TrackBinding | undefined): TemplateNode {
     const base = carried(node);
     if (source) {
         const own = node.type === 'tracker' ? node : undefined;

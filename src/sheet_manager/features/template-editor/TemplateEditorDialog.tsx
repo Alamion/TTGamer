@@ -151,6 +151,8 @@ import {
     useSettingsGroupSession,
 } from './settings/groupState';
 import { inputClasses } from './settings/inputClasses';
+import { droppedSettings, switchElement } from './settings/keepSettings';
+import { settingDescription } from './settings/registry';
 import { MultiSettings, type SeveralFieldCallbacks, writeShared } from './sharedSettings';
 import { ShortcutList } from './ShortcutList';
 import { type EditorShortcutHandlers, isTypingTarget, useEditorShortcuts } from './shortcuts';
@@ -503,29 +505,51 @@ export function TemplateEditorDialog({
     });
     const shownDraft = dragView?.preview ?? draft;
 
+    /** Names the settings a switch dropped (spec 025, FR-002); switching back restores them. */
+    const announceDropped = useCallback((dropped: readonly string[]) => {
+        if (dropped.length === 0) return;
+        const names = dropped.map((key) => {
+            const label = settingDescription(key)?.label;
+            return label ? translate(label) : key;
+        });
+        setAnnouncement(translate(editor.settingsDropped, { settings: names.join(', ') }));
+    }, []);
+
     /** One undo step; settings the other kind lacks wait in the session stash. */
     const switchKind = useCallback(
-        (nodeId: string, kind: GroupKind | ListKind) =>
+        (nodeId: string, kind: GroupKind | ListKind) => {
+            let dropped: readonly string[] = [];
             change((current) => {
                 const node = findNode(current, nodeId);
+                let next: TemplateNode | undefined;
                 if (node?.type === 'section' || node?.type === 'group') {
-                    return replaceNode(
-                        current,
-                        nodeId,
-                        switchGroupKind(node, kind as GroupKind, kindStash.current)
-                    );
+                    next = switchGroupKind(node, kind as GroupKind, kindStash.current);
+                } else if (node?.type === 'list' || node?.type === 'table') {
+                    next = switchListKind(node, kind as ListKind, kindStash.current).node;
                 }
-                if (node?.type === 'list' || node?.type === 'table') {
-                    const { node: next } = switchListKind(
-                        node,
-                        kind as ListKind,
-                        kindStash.current
-                    );
-                    return replaceNode(current, nodeId, next);
-                }
-                return current;
-            }),
-        [change]
+                if (!node || !next) return current;
+                dropped = droppedSettings(node, next);
+                return replaceNode(current, nodeId, next);
+            });
+            announceDropped(dropped);
+        },
+        [announceDropped, change]
+    );
+
+    /** A source switch (spec 025, US1): carried settings stay, the others wait in the stash. */
+    const replaceElement = useCallback(
+        (nodeId: string, built: TemplateNode) => {
+            let dropped: readonly string[] = [];
+            change((current) => {
+                const node = findNode(current, nodeId);
+                if (!node) return current;
+                const result = switchElement(node, built, kindStash.current);
+                dropped = result.dropped;
+                return replaceNode(current, nodeId, result.node);
+            });
+            announceDropped(dropped);
+        },
+        [announceDropped, change]
     );
 
     const callbacks = useMemo<ElementEditorCallbacks>(
@@ -564,7 +588,7 @@ export function TemplateEditorDialog({
                 change((current) => removeTableColumn(current, tableId, columnId)),
             onMoveTableColumn: (tableId, from, to) =>
                 change((current) => moveTableColumn(current, tableId, from, to)),
-            onReplace: (nodeId, next) => change((current) => replaceNode(current, nodeId, next)),
+            onReplace: replaceElement,
             onSwitchKind: (nodeId, kind) => {
                 const node = findNode(historyRef.current.present.draft, nodeId);
                 if (node?.type === 'table' && kind === 'entries' && node.columns.length > 1) {
@@ -576,7 +600,7 @@ export function TemplateEditorDialog({
                 } else switchKind(nodeId, kind);
             },
         }),
-        [applyOp, change, removeSelected, switchKind, setPendingKind]
+        [applyOp, change, removeSelected, replaceElement, switchKind, setPendingKind]
     );
 
     /** A shared setting written to every selected element as one step (spec 023, US3). */

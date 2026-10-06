@@ -24,7 +24,7 @@ D1), then US1–US5 in priority order.
 **Check**: switching the source of a field with span, display condition, compact, and hidden label
 keeps all four; every rendered `data-setting` has a registry entry.
 
-- [ ] T005 [US1] Write `tests/sheet_manager/template-editor/settings-registry.test.tsx`. It covers:
+- [x] T005 [US1] Write `tests/sheet_manager/template-editor/settings-registry.test.tsx`. It covers:
     - every `data-setting` rendered for each storybook element (`listElementStories`) has a registry
       entry (prefixes such as `item.` and `option:N` stripped);
     - each `carry` setting survives each source switch (`sourceNodes.ts`) and kind switch
@@ -36,7 +36,7 @@ keeps all four; every rendered `data-setting` has a registry entry.
 
     The test fails first.
 
-- [ ] T006 [US1] Create `F/settings/registry.ts` with `SettingDescription`:
+- [x] T006 [US1] Create `F/settings/registry.ts` with `SettingDescription`:
     - `group`, `label`;
     - `appliesTo`;
     - `shared?: { control, inverted? }`;
@@ -48,20 +48,20 @@ keeps all four; every rendered `data-setting` has a registry entry.
     (`F/sourceNodes.ts`); `LIST_ONLY_KEYS` (`F/elementKinds.ts`). Then add every other
     `data-setting` key the panels render.
 
-- [ ] T007 [US1] Derive `SHARED_SETTINGS`, `OWN_KEYS`, and `FIELD_PANEL_KEYS` in
+- [x] T007 [US1] Derive `SHARED_SETTINGS`, `OWN_KEYS`, and `FIELD_PANEL_KEYS` in
       `F/sharedSettings.tsx` and the group and name lookups in `F/issues.ts` from the registry;
       delete the hand lists
-- [ ] T008 [US1] Add `keepSettings(from, to)` in `F/settings/keepSettings.ts`. It returns the node
+- [x] T008 [US1] Add `keepSettings(from, to)` in `F/settings/keepSettings.ts`. It returns the node
       with every applicable `carry` key copied, plus the dropped keys and labels. Replace
       `carried()` in `F/sourceNodes.ts` and the `LIST_ONLY_KEYS` handling in `F/elementKinds.ts`
       with it, and generalize `KindStash` so that source switches stash dropped settings too
-- [ ] T009 [US1] Add `sheet.templates.editor.settingsDropped` ("Not applicable to the new element:
+- [x] T009 [US1] Add `sheet.templates.editor.settingsDropped` ("Not applicable to the new element:
       {settings}") to the en and ru YAML under `translations/source/`. Announce it from the source
       and kind switch paths in `F/TemplateEditorDialog.tsx`
-- [ ] T010 [US1] Make panel labels and `setting=` keys read the registry where a panel repeats them
+- [x] T010 [US1] Make panel labels and `setting=` keys read the registry where a panel repeats them
       (`F/FieldEditor.tsx`, `F/ElementSettings.tsx`, `F/PrimitiveConfig.tsx`,
       `F/LayoutControls.tsx`)
-- [ ] T011 [US1] Run the editor tests and `yarn verify:fast`, then commit US1
+- [x] T011 [US1] Run the editor tests and `yarn verify:fast`, then commit US1
 
 ## User Story 2 - One editing session owns state, operations, and commands (P1)
 

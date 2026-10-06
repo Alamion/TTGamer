@@ -11,6 +11,7 @@ import { PoolTrackerSettings } from './PoolTrackerSettings';
 import { FormulaField } from './settings/FormulaField';
 import type { GroupedSettings } from './settings/groupedSettings';
 import { inputClasses } from './settings/inputClasses';
+import { settingLabel } from './settings/registry';
 import { SettingField } from './settings/SettingField';
 import { ListSourceSelect, TrackerSourceSelect, ValueSourceSelect } from './SourceControls';
 import { hasTermHint, TermHintControl } from './TermHintControl';
@@ -68,7 +69,7 @@ export function primitiveSettings({
 
     const content = (
         <SettingField
-            label={t(editor.label)}
+            label={settingLabel('label')}
             hint={t(primitives.labelOverridePlaceholder)}
             setting="label"
         >
@@ -121,7 +122,7 @@ export function primitiveSettings({
                 <ValueSourceSelect node={node} onReplace={onReplace} />
             )}
             {pool && !asTracker && (
-                <SettingField label={t(editor.primitivePart)} setting="part">
+                <SettingField label={settingLabel('part')} setting="part">
                     {(control) => (
                         <select
                             {...control}
@@ -151,7 +152,7 @@ export function primitiveSettings({
             />
             {asTracker && (
                 <FormulaField
-                    label={t(editor.maxAtLeast)}
+                    label={settingLabel('maxMinFrom')}
                     setting="maxMinFrom"
                     placeholder={t(editor.minFromPlaceholder)}
                     value={node.maxMinFrom}
@@ -159,7 +160,7 @@ export function primitiveSettings({
                 />
             )}
             <FormulaField
-                label={t(editor.maxFromShort)}
+                label={settingLabel('maxFrom')}
                 setting="maxFrom"
                 placeholder={t(editor.maxFromPlaceholder)}
                 value={node.maxFrom}
@@ -202,14 +203,14 @@ export function primitiveSettings({
             {descriptor?.kind !== 'track' && !asTracker && (
                 <ToggleRow
                     checked={node.compact}
-                    label={t(primitives.compact)}
+                    label={settingLabel('compact')}
                     setting="compact"
                     onChange={(compact) => update({ compact })}
                 />
             )}
             <ToggleRow
                 checked={!node.hideLabel}
-                label={t(editor.showLabel)}
+                label={settingLabel('hideLabel')}
                 setting="hideLabel"
                 onChange={(checked) => update({ hideLabel: checked ? undefined : true })}
             />

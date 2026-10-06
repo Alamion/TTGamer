@@ -6,91 +6,15 @@ import type { ZodIssue } from 'zod';
 import { reportSheetIssue } from '../../diagnostics';
 import { CustomTemplateSchema, type TemplateNode } from '../../types/template';
 import type { DraftIssue, EditorDraft } from './draft';
-import type { SettingRef, SettingsGroupId } from './settings/groupedSettings';
+import type { SettingRef } from './settings/groupedSettings';
+import { settingDescription, settingGroup } from './settings/registry';
 
 const editor = uiMessages.sheet.templates.editor;
-const primitives = uiMessages.sheet.templates.primitives;
 
 export interface IssueLocation {
     nodeId?: string;
     setting?: SettingRef;
 }
-
-/** The group each setting key lives in; unlisted keys are in Look. */
-const GROUP_KEYS: Partial<Record<SettingsGroupId, readonly string[]>> = {
-    content: [
-        'label',
-        'title',
-        'description',
-        'placeholder',
-        'options',
-        'type',
-        'named',
-        'item',
-        'hideLabel',
-        'labelPosition',
-    ],
-    value: [
-        'valueKey',
-        'bindingKey',
-        'source',
-        'binding',
-        'catalog',
-        'targetKinds',
-        'multiple',
-        'part',
-    ],
-    limits: [
-        'min',
-        'max',
-        'step',
-        'minRows',
-        'maxRows',
-        'formula',
-        'maxFrom',
-        'minFrom',
-        'maxMinFrom',
-    ],
-    visibility: [
-        'required',
-        'termHint',
-        'visibleWhen',
-        'docsPath',
-        'collapsible',
-        'defaultCollapsed',
-    ],
-};
-
-const KEY_GROUPS = new Map(
-    Object.entries(GROUP_KEYS).flatMap(([group, keys]) =>
-        keys.map((key) => [key, group as SettingsGroupId] as const)
-    )
-);
-
-/** The settings whose names the backstop message uses; others read "A setting". */
-const SETTING_NAMES: Record<string, { message: string }> = {
-    label: editor.label,
-    title: editor.title,
-    description: editor.helpText,
-    placeholder: editor.placeholderText,
-    valueKey: editor.valueKey,
-    formula: editor.formula,
-    maxFrom: editor.maxFromShort,
-    minFrom: editor.minFromShort,
-    maxMinFrom: editor.maxAtLeast,
-    docsPath: editor.docsLink,
-    visibleWhen: editor.visibleWhen,
-    option: editor.optionLabel,
-    options: editor.options,
-    preset: primitives.presetLabel,
-    min: editor.numberMin,
-    max: editor.numberMax,
-    minRows: editor.minRows,
-    maxRows: editor.maxRows,
-    columns: editor.columns,
-    columnWidths: editor.columns,
-    name: editor.name,
-};
 
 /** Arrays inside a node whose items are settings rows, keyed `<row>:<index>`. */
 const ROW_KEYS: Record<string, string> = { options: 'option', presets: 'preset' };
@@ -147,7 +71,12 @@ export function issueLocation(
     }
     const key = settingKey(rest);
     if (!key) return { nodeId: node.id };
-    const group = KEY_GROUPS.get(key.split(':')[0]!) ?? (key.includes(':') ? 'content' : 'look');
+    const base = key.split(':')[0]!;
+    const group = settingDescription(base)
+        ? settingGroup(base, node)
+        : key.includes(':')
+          ? 'content'
+          : 'look';
     return { nodeId: node.id, setting: { group, key } };
 }
 
@@ -171,7 +100,7 @@ function nodeName(draft: EditorDraft, nodeId: string): string | undefined {
 /** The setting's name in a message: the last key part, translated where known. */
 function settingName(key: string | undefined): string {
     const last = key?.split('.').at(-1)?.split(':')[0];
-    const name = last ? SETTING_NAMES[last] : undefined;
+    const name = last ? settingDescription(last)?.label : undefined;
     return translate(name ?? editor.issueSomething);
 }
 

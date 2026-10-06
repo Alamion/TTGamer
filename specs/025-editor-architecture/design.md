@@ -169,3 +169,18 @@ only these:
 5. Save a page that drops tracker marks and switches a list with entries → one confirmation names
    both.
 6. Open, edit, and save from the library on a phone-width window → the layout is unchanged.
+
+## Implementation notes
+
+- **US1:**
+    - The registry test found that the game's own values show "Show label" in Look, while fields
+      show it in Content. The registry records this with a per-element group instead of moving the
+      control (FR-012).
+    - Issue messages now name every setting that has a label. Before, a fixed list of 22 names was
+      used and every other setting read "A setting".
+    - T010 replaced 41 panel labels that repeat the registry label with `settingLabel(key)`. Labels
+      that differ on purpose (for example the source pickers) stay in the panels.
+    - A setting's `unset` value (for example `compact: false`, or `named: true`) is not announced or
+      stashed as dropped.
+    - The storybook pass renders one page per system and kind, with one element per distinct panel:
+      5.9 s alone, instead of 9.5 s with one page per story.
