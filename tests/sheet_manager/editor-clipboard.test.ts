@@ -3,12 +3,12 @@ import {
     parseCopied,
     pasteCopied,
     serializeCopied,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/clipboard';
+} from '@site/src/sheet_manager/features/template-editor/clipboard';
 import {
     duplicateNode,
     type EditorDraft,
     findNode,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
+} from '@site/src/sheet_manager/features/template-editor/draft';
 import {
     collectTemplateNodes,
     CustomTemplateSchema,

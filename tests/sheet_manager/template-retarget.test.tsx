@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
 import { listTemplateTargetGroups } from '@site/src/sheet_manager/features/sheet/data/documentLabels';
 import { planTemplateRetarget } from '@site/src/sheet_manager/features/sheet/data/templateRetarget';
+import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';

@@ -1,12 +1,12 @@
-import type { EditorDraft } from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
-import { findNode } from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
+import type { EditorDraft } from '@site/src/sheet_manager/features/template-editor/draft';
+import { findNode } from '@site/src/sheet_manager/features/template-editor/draft';
 import {
     duplicateNodes,
     insertNodesAt,
     moveEachByCommand,
     placeNodes,
     removeNodes,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/multiOps';
+} from '@site/src/sheet_manager/features/template-editor/multiOps';
 import {
     CustomTemplateSchema,
     TEMPLATE_LIMITS,

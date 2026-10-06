@@ -1,15 +1,15 @@
 // @vitest-environment jsdom
 import { rowIndexAt } from '@site/src/sheet_manager/components/controls/RowMoveControls';
-import {
-    createDraftFromTemplate,
-    moveTableColumn,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
 import { CharacterContext } from '@site/src/sheet_manager/context/CharacterContext';
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import {
     moveItem,
     moveTableRow,
 } from '@site/src/sheet_manager/features/sheet/declarative/rowOrder';
+import {
+    createDraftFromTemplate,
+    moveTableColumn,
+} from '@site/src/sheet_manager/features/template-editor/draft';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { type CustomTemplate, CustomTemplateSchema } from '@site/src/sheet_manager/types/template';

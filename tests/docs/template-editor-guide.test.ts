@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { EDITOR_GUIDE } from '@site/src/sheet_manager/components/dialogs/template-editor/EditorHelp';
+import { EDITOR_GUIDE } from '@site/src/sheet_manager/features/template-editor/EditorHelp';
 import { describe, expect, it } from 'vitest';
 
 const ROOTS = ['docs', 'i18n/ru/docusaurus-plugin-content-docs/current'];

@@ -4,8 +4,8 @@ import {
     createEmptyDraft,
     newGroupNode,
     newSectionNode,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
+} from '@site/src/sheet_manager/features/template-editor/draft';
+import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';

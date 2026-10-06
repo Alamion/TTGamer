@@ -5,8 +5,8 @@ import {
     createDraftFromTemplate,
     duplicateNode,
     updateField,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
+} from '@site/src/sheet_manager/features/template-editor/draft';
+import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import type { ListNode } from '@site/src/sheet_manager/types/template';

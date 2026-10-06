@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { PREVIEW_DWELL_MS } from '@site/src/sheet_manager/components/dialogs/template-editor/useEditorDrag';
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
+import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
+import { PREVIEW_DWELL_MS } from '@site/src/sheet_manager/features/template-editor/useEditorDrag';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { act, cleanup, fireEvent, render, within } from '@testing-library/react';
 import { createElement } from 'react';

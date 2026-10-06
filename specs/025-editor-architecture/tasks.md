@@ -7,16 +7,16 @@ D1), then US1–US5 in priority order.
 
 ## Foundation
 
-- [ ] T001 Move `src/sheet_manager/components/dialogs/template-editor/**` to `F/` (keeping
+- [x] T001 Move `src/sheet_manager/components/dialogs/template-editor/**` to `F/` (keeping
       `settings/`) and `src/sheet_manager/components/dialogs/TemplateEditorDialog.tsx` to
       `F/TemplateEditorDialog.tsx` with `git mv`; fix relative imports inside the moved files only
-- [ ] T002 Update the outside importers: `components/dialogs/LibraryDialog.tsx`,
+- [x] T002 Update the outside importers: `components/dialogs/LibraryDialog.tsx`,
       `components/dialogs/library/{ExportPanel,ImportPreview,MovePanel}.tsx`,
       `features/sheet/shell/{typeFile,libraryImport}.ts`, `features/docs/ElementStorybook.tsx`, and
       every editor test under `tests/sheet_manager/` (import paths only)
-- [ ] T003 Move `generateDraftId` from `F/draft.ts` to `F/model/ids.ts` and point its three outside
+- [x] T003 Move `generateDraftId` from `F/draft.ts` to `F/model/ids.ts` and point its three outside
       importers and the tests that import it at it
-- [ ] T004 Run `yarn verify` and commit the move alone
+- [x] T004 Run `yarn verify` and commit the move alone
       (`refactor(editor): move the template editor to features/ (spec 025)`)
 
 ## User Story 1 - Settings survive a source or kind switch (P1)

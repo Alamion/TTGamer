@@ -24,10 +24,10 @@ import {
     setChoice,
     togglePick,
 } from '../../../features/sheet/shell/libraryImport';
+import { EditorHelp } from '../../../features/template-editor/EditorHelp';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
 import { systemRegistry } from '../../../systems';
-import { EditorHelp } from '../template-editor/EditorHelp';
 import { TickBox } from './TickBox';
 
 const labels = uiMessages.sheet.library;

@@ -1,12 +1,9 @@
-import {
-    updateField,
-    updateNode,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
 import { validateTemplateReferences } from '@site/src/sheet_manager/features/sheet/data/templateReferences';
 import {
     isKnownLabelMessage,
     localizeTemplate,
 } from '@site/src/sheet_manager/features/sheet/declarative/localizeTemplate';
+import { updateField, updateNode } from '@site/src/sheet_manager/features/template-editor/draft';
 import { starWarsWodDefaultTemplates } from '@site/src/sheet_manager/systems/star-wars-wod/defaultTemplates';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema, walkTemplateNodes } from '@site/src/sheet_manager/types/template';

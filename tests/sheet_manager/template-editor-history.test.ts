@@ -1,4 +1,4 @@
-import { createEmptyDraft } from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
+import { createEmptyDraft } from '@site/src/sheet_manager/features/template-editor/draft';
 import {
     applyChange,
     canRedo,
@@ -9,11 +9,11 @@ import {
     redo,
     select,
     undo,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/history';
+} from '@site/src/sheet_manager/features/template-editor/history';
 import {
     EMPTY_SELECTION,
     selectOnly,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/selection';
+} from '@site/src/sheet_manager/features/template-editor/selection';
 import { describe, expect, it } from 'vitest';
 
 const named = (name: string) => ({ ...createEmptyDraft('character'), name });

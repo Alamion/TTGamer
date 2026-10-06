@@ -1,7 +1,7 @@
 import {
     createEmptyDraft,
     insertNode,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
+} from '@site/src/sheet_manager/features/template-editor/draft';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { fireEvent } from '@testing-library/react';

@@ -1,4 +1,4 @@
-import type { EditorDraft } from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
+import type { EditorDraft } from '@site/src/sheet_manager/features/template-editor/draft';
 import {
     EMPTY_SELECTION,
     normalizeSelection,
@@ -6,7 +6,7 @@ import {
     rangeSelection,
     selectOnly,
     toggleInSelection,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/selection';
+} from '@site/src/sheet_manager/features/template-editor/selection';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 

@@ -14,7 +14,7 @@ import {
     removeNode,
     updateField,
     updateNode,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
+} from '@site/src/sheet_manager/features/template-editor/draft';
 import { CustomTemplateSchema, TEMPLATE_LIMITS } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it, vi } from 'vitest';
 

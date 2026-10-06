@@ -1,12 +1,6 @@
 import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
 import { type ReactNode, useMemo, useState } from 'react';
 
-import {
-    blankDocument,
-    definitionExamples,
-    findTemplateDefinition,
-    SAMPLE_DOCUMENT_ID,
-} from '../../components/dialogs/template-editor/sampleDocuments';
 import { reportSheetIssue } from '../../diagnostics';
 import {
     createScratchDocumentSource,
@@ -23,6 +17,12 @@ import {
 import type { TemplateField } from '../../types/template';
 import { DeclarativeSheetView } from '../sheet/declarative/DeclarativeSheetView';
 import { ReferenceFieldControl } from '../sheet/declarative/fieldControls';
+import {
+    blankDocument,
+    definitionExamples,
+    findTemplateDefinition,
+    SAMPLE_DOCUMENT_ID,
+} from '../template-editor/sampleDocuments';
 
 /** A story's sandbox: the definition's first example (else a blank document), never stored. */
 function useStorySource(systemId: string, documentKind: string) {

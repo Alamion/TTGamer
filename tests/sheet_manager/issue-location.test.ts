@@ -1,4 +1,4 @@
-import { issueLocation } from '@site/src/sheet_manager/components/dialogs/template-editor/issues';
+import { issueLocation } from '@site/src/sheet_manager/features/template-editor/issues';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
 

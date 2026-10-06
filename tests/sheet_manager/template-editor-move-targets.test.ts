@@ -1,4 +1,4 @@
-import { resolveMoveTarget } from '@site/src/sheet_manager/components/dialogs/template-editor/moveTargets';
+import { resolveMoveTarget } from '@site/src/sheet_manager/features/template-editor/moveTargets';
 import type { CustomTemplate } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { describe, expect, it } from 'vitest';
