@@ -9,24 +9,19 @@ import { useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
 import { type CustomTemplate, CustomTemplateSchema } from '../../../types/template';
-import { type ListItemChange, listItemChangeReport } from '../../sheet/data/listItemChanges';
 import { planTemplateRetarget, type RetargetPlan } from '../../sheet/data/templateRetarget';
-import { type TrackerChange, trackerChangeReport } from '../../sheet/data/trackerChanges';
 import type { DraftIssue, EditorDraft } from '../draft';
-import { type KindChange, kindChangeReport } from '../elementKinds';
 import { describeLocation, issueLocation, reportUncoveredIssues } from '../issues';
+import { saveEffects } from '../saveChecks';
 import type { EditorSession } from './store';
 
 const editor = uiMessages.sheet.templates.editor;
-const tracker = uiMessages.sheet.templates.tracker;
 
 /** A save waiting for confirmation: a retarget (T-070) and/or values a save stops showing. */
 interface PendingSave {
     template: CustomTemplate;
     plan?: RetargetPlan;
-    lists: readonly ListItemChange[];
-    trackers: readonly TrackerChange[];
-    kinds: readonly KindChange[];
+    effects: { title?: string; lines: readonly string[] };
 }
 
 /** The confirmation of a pending save, ready to show. */
@@ -84,15 +79,11 @@ export function useTemplateSave({
         try {
             const parsed = CustomTemplateSchema.parse(draft);
             const { documents } = useDocumentStore.getState();
-            // Entries a changed list stops showing are confirmed first; nothing is deleted.
-            const lists = listItemChangeReport(base, parsed, documents);
-            // Tracker marks, notes, and copies a save stops showing (spec 018, FR-026).
-            const trackers = trackerChangeReport(base, parsed, documents);
-            // Lists and tables switched to the other kind stop showing stored values (spec 022).
-            const kinds = kindChangeReport(base, parsed, documents);
-            const asks = lists.length > 0 || trackers.length > 0 || kinds.length > 0;
+            // Values a save stops showing are confirmed first; nothing is deleted (saveChecks.ts).
+            const effects = saveEffects(base, parsed, documents, plural);
+            const asks = effects.lines.length > 0;
             if (editingDefault) {
-                if (asks) setPending({ template: parsed, lists, trackers, kinds });
+                if (asks) setPending({ template: parsed, effects });
                 else saveDefault(parsed);
                 return;
             }
@@ -105,7 +96,7 @@ export function useTemplateSave({
                 templates: useTemplateStore.getState().templates,
             });
             if (plan.documentIds.length > 0 || asks) {
-                setPending({ template: parsed, plan, lists, trackers, kinds });
+                setPending({ template: parsed, plan, effects });
             } else saveUserTemplate(parsed, plan);
         } catch (error) {
             // Raw schema text never reaches the author (spec 022, FR-019): each problem is
@@ -132,57 +123,16 @@ export function useTemplateSave({
         }
     };
 
-    const describe = ({ plan, lists, trackers, kinds }: PendingSave): string =>
-        [
-            ...kinds.map(({ title, kind }) =>
-                translate(editor.kindChangeSaveWarning, {
-                    title,
-                    kind: translate(kind === 'table' ? editor.kindTable : editor.kindEntries),
-                })
-            ),
-            ...lists.flatMap(({ title, documents, lostValues, hiddenNames }) => [
-                ...(lostValues > 0
-                    ? [
-                          plural(editor.listChangeValues, lostValues, {
-                              title,
-                              documents: plural(editor.listChangeSheets, documents),
-                          }),
-                      ]
-                    : []),
-                ...(hiddenNames > 0
-                    ? [plural(editor.listChangeNames, hiddenNames, { title })]
-                    : []),
-            ]),
-            ...(lists.length > 0 ? [translate(editor.listChangeNote)] : []),
-            ...trackers.flatMap(({ title, documents, lostMarks, lostTexts, lostCopies }) => {
-                const where = { title, documents: plural(editor.listChangeSheets, documents) };
-                return [
-                    ...(lostMarks > 0 ? [plural(tracker.changeMarks, lostMarks, where)] : []),
-                    ...(lostTexts > 0 ? [plural(tracker.changeTexts, lostTexts, where)] : []),
-                    ...(lostCopies > 0 ? [plural(tracker.changeCopies, lostCopies, where)] : []),
-                ];
-            }),
-            ...(trackers.length > 0 ? [translate(tracker.changeNote)] : []),
-            ...(plan && plan.documentIds.length > 0
-                ? [plural(editor.retargetDescription, plan.documentIds.length)]
-                : []),
-        ].join('\n');
-
     const confirmation: SaveConfirmation | null = pending && {
-        title: translate(
-            pending.kinds.length
-                ? editor.kindChangeTitle
-                : pending.lists.length
-                  ? editor.listChangeTitle
-                  : pending.trackers.length
-                    ? tracker.changeTitle
-                    : editor.retargetTitle
-        ),
-        description: describe(pending),
+        title: pending.effects.title ?? translate(editor.retargetTitle),
+        description: [
+            ...pending.effects.lines,
+            ...(pending.plan && pending.plan.documentIds.length > 0
+                ? [plural(editor.retargetDescription, pending.plan.documentIds.length)]
+                : []),
+        ].join('\n'),
         confirmLabel: translate(
-            pending.lists.length || pending.trackers.length || pending.kinds.length
-                ? editor.listChangeConfirm
-                : editor.retargetConfirm
+            pending.effects.lines.length > 0 ? editor.listChangeConfirm : editor.retargetConfirm
         ),
         confirm: () => {
             if (pending.plan) saveUserTemplate(pending.template, pending.plan);

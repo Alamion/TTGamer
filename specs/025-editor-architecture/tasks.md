@@ -130,17 +130,17 @@ unchanged.
 **Check**: a save that triggers every check shows today's confirmation; an added check appears with
 no other change.
 
-- [ ] T026 [US4] Write `tests/sheet_manager/template-editor/save-checks.test.ts`:
+- [x] T026 [US4] Write `tests/sheet_manager/template-editor/save-checks.test.ts`:
     - for kind, list, and tracker effects together, the title, lines, and confirm label equal
       today's;
     - no effects means no confirmation;
     - a test-only check shows its lines.
-- [ ] T027 [US4] Create `F/saveChecks.ts` with
+- [x] T027 [US4] Create `F/saveChecks.ts` with
       `SaveCheck { id, title, confirm, run(before, after,     state) }`. Its list wraps
       `kindChangeReport`, `listItemChangeReport`, and `trackerChangeReport` in today's order.
       Replace `pendingSaveDescription`, the title and confirm chains, and the three report calls in
       `F/TemplateEditorDialog.tsx`. The retarget plan stays a separate step
-- [ ] T028 [US4] Run the editor tests and `yarn verify:fast`, then commit US4
+- [x] T028 [US4] Run the editor tests and `yarn verify:fast`, then commit US4
 
 ## User Story 5 - The editor is one feature module (P3)
 
