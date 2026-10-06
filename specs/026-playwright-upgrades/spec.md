@@ -78,8 +78,8 @@ verification passes after each one.
 
 **Why this priority**: these are quick and make the later, larger steps easier to isolate.
 
-**Independent Test**: after each commit the full verification and the browser checks pass. A diff of
-rolled 3D dice shows the same behavior (the display-condition dice tests pass).
+**Independent Test**: after each commit the full verification and the browser checks pass. The
+display-condition 3D dice tests pass unchanged.
 
 **Acceptance Scenarios**:
 
@@ -142,7 +142,7 @@ the build when an icon import no longer exists.
 ### Functional Requirements
 
 - **FR-001**: The project MUST include browser tests as a project dependency, run by one project
-  script (`ci:*`) that local hooks, CI, and later runners call the same way.
+  script (`ci:*`) that local runs, CI, and later runners call the same way.
 - **FR-002**: The browser tests MUST run against the production build served locally, never the dev
   server.
 - **FR-003**: The browser tests MUST cover the homepage, a docs page in each language, the sheet
@@ -161,8 +161,9 @@ the build when an icon import no longer exists.
   environment only if it passes there without changes to the test; the files that stay on the full
   DOM are listed once with their reasons in the design's results, and a test moved to another
   project says why.
-- **FR-010**: An upgrade blocked by a missing ecosystem release MUST be deferred with a backlog note
-  instead of forced with overrides or forks.
+- **FR-010**: An upgrade blocked by a missing ecosystem release, or one that cannot be fixed within
+  its story, MUST be reverted and deferred with a backlog note instead of forced with overrides or
+  forks.
 - **FR-011**: A separate, non-blocking set of browser timings MUST measure an editor edit on the
   full shipped sheet (budget 100 ms), the move preview after the pointer rests (budget 100 ms), and
   opening the sheet (no budget yet; the first measurement is recorded as the baseline), each the
@@ -174,12 +175,15 @@ the build when an icon import no longer exists.
 
 - **SC-001**: A deliberately broken route, a script error, or a missing stylesheet is caught by the
   browser checks in 100% of tried cases (one of each tried).
-- **SC-002**: The browser checks finish in 3 minutes or less locally, including serving the build.
+- **SC-002**: The browser checks finish in 3 minutes or less locally on an existing build, including
+  serving it.
 - **SC-003**: The default unit run takes 60 s or less on the maintainer machine (best of three), or
   the remaining gap is measured and recorded with its cause.
-- **SC-004**: Total downloaded JavaScript and CSS for the sheet page grows by no more than 5%.
+- **SC-004**: Total JavaScript and CSS the browser downloads to open the sheet page, lazy chunks
+  included, grows by no more than 5%.
 - **SC-005**: After the spec, every dependency is on its current major except the schema library,
-  the type checker, and the CSS framework (later specs) and any deferred with a backlog note.
+  the type checker, and the CSS framework (later specs), the site framework and React (Assumptions),
+  the Node type definitions (they follow Node), and any deferred with a backlog note.
 - **SC-006**: The browser timings report all three measurements on every full verification and CI
   run; none of them can fail the run.
 
@@ -188,8 +192,8 @@ the build when an icon import no longer exists.
 - One browser engine (Chromium) locally and in CI; other engines are out of scope for now.
 - Browser tests run in the full verification and CI, not on commit or push: they need a build.
 - Out of scope, in later specs: Zod 4, TypeScript 7, Tailwind 4 (T-088 keeps them open).
-- The Node version stays as pinned (`.nvmrc`); Node type definitions follow it, not the latest
-  major.
+- Node stays on major 22; its floor rises to 22.22.2 because the new simulated DOM needs it. The
+  Node type definitions stay on their current line (24), not the latest major.
 - The upgrades stay inside the current framework major (Docusaurus 3, React 19); moving those is a
   separate decision.
 - Axe accessibility checks (T-034) are out of scope, though the browser test setup should allow them

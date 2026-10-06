@@ -60,7 +60,9 @@ Current versions (2026-10-07):
   measured inside the page:
     - an input event to the next frame for an editor edit on the shipped full sheet;
     - the dwell timer firing to the preview frame for a move;
-    - navigation to the sheet's first interactive control for opening the sheet.
+    - navigation to the sheet's first interactive control for opening the sheet;
+    - the bytes of JS and CSS the browser downloads to open the sheet, lazy chunks included
+      (SC-004), recorded with no budget.
 
     Each is the best of 5 warm runs, attached as an annotation, printed next to its budget, and
     written to `test-results/timings.json`. They are never asserted. _Why_: the spec makes timings
@@ -72,7 +74,8 @@ Current versions (2026-10-07):
     - `sheet.spec.ts`: a fresh profile, create a character, change a value, reload, still there;
     - `dice.spec.ts`: focus the dice input, type a pool, press Enter, see a history entry;
     - `editor.spec.ts`: open the shipped sheet in the editor, select an element, Alt+↓, then undo;
-    - `catalog.spec.ts`: a catalog docs page, sort a column, filter, check the rows change.
+    - `catalog.spec.ts`: a catalog docs page, sort a column, filter, page, and check known rows of
+      the shipped catalog, so the same test compares before and after the table upgrade.
 
     Each test starts with an empty storage state. _Why_: these are the flows unit tests cannot prove
     in a real browser.
@@ -90,8 +93,8 @@ Current versions (2026-10-07):
   list stays readable. _Rejected_: a global switch with per-file opt-outs, which would put every
   untried file on the lighter DOM at once.
 - **D12 — Node**: jsdom 30 needs Node ≥ 22.22.2. `.nvmrc` becomes `22.22`, and `package.json` gains
-  `engines.node: ">=22.22.2"`. _Why_: CI and Vercel resolve `22` to the latest 22.x today, but the
-  floor should be explicit.
+  `engines.node: ">=22.22.2"`; `@types/node` stays on its 24 line. _Why_: CI and Vercel resolve `22`
+  to the latest 22.x today, but the floor should be explicit.
 - **D13 — Table upgrade boundary**: react-table 9 is migrated in `DataCatalog.tsx`, with the
   `ColumnDef` type imports in the catalog configs. If v9 needs more than ~300 changed lines outside
   `DataCatalog`, it moves to its own small change with a T-088 note, and lucide stays in US4. _Why_:
@@ -112,9 +115,9 @@ Current versions (2026-10-07):
 
 - **IV / V (testing)**: the browser tests add a layer, not a substitute. Unit tests stay
   authoritative for logic. No unit test is deleted or weakened by happy-dom (FR-009).
-- **VII (performance)**: dependency changes run `verify:full` and a bundle check. Before US2 and
-  after US4, the sheet page's JS and CSS sizes are recorded from `build/assets` and compared
-  (SC-004).
+- **VII (performance)**: dependency changes run `verify:full` and a bundle check. The timings
+  project records the JS and CSS the browser downloads to open the sheet; the US1 run is the
+  baseline, compared after US4 (SC-004).
 - **Verification Workflow (timing)**: browser timings make no wall-clock assertion, so the rule that
   the default run holds none still holds. The merge gate gains blocking smoke tests only.
 - **VI (accessibility)**: the tests locate controls by role and label, so an unlabeled control fails

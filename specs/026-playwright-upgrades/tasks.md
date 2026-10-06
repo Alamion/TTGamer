@@ -10,8 +10,6 @@ tests from US1 on.
 
 - [ ] T001 Record the baselines in design.md "Results":
     - the unit run, best of three (`yarn test`);
-    - the sheet page's JS and CSS bytes from `build/assets` after `yarn build` (the files
-      `build/universal_sheet/index.html` loads);
     - the current versions.
 
 ## User Story 1 - The built site is checked in a real browser (P1)
@@ -51,16 +49,19 @@ screenshot and trace kept (SC-001).
 - [ ] T008 [US1] Write `tests-e2e/smoke/dice.spec.ts`. With the keyboard only, focus the dice input,
       type a pool, press Enter, and a result appears in the history.
 - [ ] T009 [US1] Write `tests-e2e/smoke/editor.spec.ts`. Open the shipped sheet in the template
-      editor, select an element in the outline, press Alt+↓, and the outline order changes; undo
-      restores it.
-- [ ] T010 [US1] Write `tests-e2e/smoke/catalog.spec.ts`. On a catalog docs page, sort a column and
-      type a filter, and the visible rows change accordingly.
+      editor, select an element in the outline, press Alt+↓, and the order changes in the outline
+      and on the page; undo restores both.
+- [ ] T010 [US1] Write `tests-e2e/smoke/catalog.spec.ts`. On a catalog docs page, sort a column,
+      type a filter, and go to the next page; each step shows known rows of the shipped catalog
+      (named in the test), so the test also compares the table before and after US4.
 - [ ] T011 [US1] Write `tests-e2e/timings/editor.spec.ts` and `tests-e2e/timings/sheet.spec.ts` (D7,
       FR-011):
     - an edit on the shipped full sheet: from the input event to the next frame, budget 100 ms;
     - the move preview: from the dwell to the preview frame, budget 100 ms;
     - opening the sheet: from navigation to its first interactive control, no budget yet (this first
-      measurement becomes the baseline).
+      measurement becomes the baseline);
+    - the JS and CSS bytes the browser downloads to open the sheet, lazy chunks included (SC-004;
+      this US1 run is the baseline, recorded in design.md "Results").
 
     Each is the best of 5 warm runs, attached as an annotation, printed next to its budget, and
     written to `test-results/timings.json`; none is asserted.
@@ -73,8 +74,8 @@ screenshot and trace kept (SC-001).
     - a deleted built CSS asset fails `site.spec`;
     - a broken docs link target fails `site.spec`.
 
-    Revert each break. Also time `yarn ci:e2e` (SC-002) and confirm that the dev server on 3000 is
-    untouched.
+    Revert each break. Also time `yarn test:e2e` on an existing build (SC-002) and confirm that the
+    dev server on 3000 is untouched.
 
 - [ ] T014 [US1] Run `yarn verify:full` and commit the story,
       `test(e2e): browser smoke tests and timings on the built site (spec 026, US1)`.
@@ -149,7 +150,8 @@ look-over shows no change.
     - the `typescript` or `sheet-templates` skill only where it names a changed version or test
       environment.
 
-    The user guide is not affected (no visible change).
+    Constitution principle V is left as is; recording the browser layer there would be a separate
+    amendment the maintainer asks for. The user guide is not affected (no visible change).
 
 - [ ] T029 Update `TODO.md`:
     - T-033 done, with a note;
@@ -158,9 +160,10 @@ look-over shows no change.
 
     Run `yarn validate:backlog`.
 
-- [ ] T030 Record the sheet page's JS and CSS bytes after the upgrades and compare them with T001
-      (SC-004). Confirm that every dependency except Zod, TypeScript, and Tailwind is on its current
-      major with `yarn outdated` (SC-005). Note the timings report from a full run (SC-006).
+- [ ] T030 Compare the sheet's downloaded JS and CSS bytes from the timings report with the US1
+      baseline (SC-004). Confirm with `yarn outdated` that every dependency is on its current major
+      except Zod, TypeScript, Tailwind, Docusaurus and React, and `@types/node` (SC-005). Note the
+      timings report from a full run (SC-006).
 - [ ] T031 Run `yarn verify:full`, walk design.md "Manual walk", record the results in design.md,
       and commit, `docs: guidance, backlog, and results for browser tests and upgrades (spec 026)`.
 
@@ -183,6 +186,6 @@ look-over shows no change.
 | SC-001      | T013                                   |
 | SC-002      | T013                                   |
 | SC-003      | T001, T024                             |
-| SC-004      | T001, T030                             |
+| SC-004      | T011, T030                             |
 | SC-005      | T030                                   |
 | SC-006      | T011, T030                             |
