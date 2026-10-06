@@ -186,5 +186,5 @@ from outside.
     - panel sizes before and after;
     - the unit run, best of two, against the 113 s baseline (SC-005);
     - the planning document lines (SC-006).
-- [ ] T036 Run `yarn verify:full`; walk design.md "Manual walk" on the dev server and record the
+- [x] T036 Run `yarn verify:full`; walk design.md "Manual walk" on the dev server and record the
       results in design.md

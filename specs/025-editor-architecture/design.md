@@ -237,5 +237,7 @@ only these:
   the settings area did not move the preview cost.
 - `yarn verify:full` passes. One earlier run failed with a 5-second timeout in
   `primitive-parity.test.tsx` (droid default render, 1 s alone, 5.5 s under the full run). That file
-  does not use the editor, and the next two runs passed.
-- Manual walk: the dev server serves the sheet; the steps above are left for the maintainer.
+  does not use the editor. Fixed in `089f878`: every bound sheet element re-parsed the whole
+  document (123 parses per droid render); the parse is now cached per stored document, and the
+  file's four full-sheet renders share the 20 s timeout only the first one had.
+- Manual walk: all six steps passed on the dev server (maintainer, 2026-10-07).
