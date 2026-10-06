@@ -50,9 +50,9 @@ only these:
   message descriptor with values or a count; the session translates it, so operations import no
   React and no `translate`. Selection operations always take `ids`. The announcement picks the
   element's name for one and the plural count for several, which keeps today's messages (FR-007).
-  `multiOps.ts` and the single-node callbacks merge into `operations/selection.ts`, `structure.ts`,
-  `fields.ts`, and `switches.ts`. _Rejected_: keeping single and multi versions behind one
-  dispatcher, since the duplication remains.
+  `multiOps.ts` and the single-node callbacks merge into `operations/types.ts` (`OpResult`),
+  `selection.ts`, `structure.ts`, `fields.ts`, and `switches.ts`. _Rejected_: keeping single and
+  multi versions behind one dispatcher, since the duplication remains.
 - **D4 — Panels edit through `useNodeEdits()`, a hook that binds operations to the session.** It
   replaces the 17-member `ElementEditorCallbacks` prop; the three members no panel calls
   (`onInsert`, `onRemove`, `onMove`) disappear. `SeveralFieldCallbacks` becomes the same hook

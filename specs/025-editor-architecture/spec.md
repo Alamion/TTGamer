@@ -218,8 +218,9 @@ the new paths and the documentation checks pass.
 
 - **SC-001**: For every setting of every element type, a source or kind switch keeps 100% of the
   settings the new element can have (checked by one test over all settings).
-- **SC-002**: Adding a setting, an element kind, a command, or a save check needs one code location
-  plus translations and tests; the type check or a test fails if a required part is missing.
+- **SC-002**: Adding an element kind, a command, or a save check needs one code location plus
+  translations and tests; adding a setting needs its description and its control in the element's
+  panel. The type check or a test fails if a required part is missing.
 - **SC-003**: The editor dialog component is at most 400 lines, and each file split out of the page
   model is at most 600 lines. The settings panels are measured before and after; a panel still over
   600 lines gets a backlog entry rather than failing this criterion.

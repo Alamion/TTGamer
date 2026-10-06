@@ -15,7 +15,7 @@ D1), then US1–US5 in priority order.
       `features/sheet/shell/{typeFile,libraryImport}.ts`, `features/docs/ElementStorybook.tsx`, and
       every editor test under `tests/sheet_manager/` (import paths only)
 - [ ] T003 Move `generateDraftId` from `F/draft.ts` to `F/model/ids.ts` and point its three outside
-      importers at it
+      importers and the tests that import it at it
 - [ ] T004 Run `yarn verify` and commit the move alone
       (`refactor(editor): move the template editor to features/ (spec 025)`)
 
@@ -29,7 +29,10 @@ keeps all four; every rendered `data-setting` has a registry entry.
       entry (prefixes such as `item.` and `option:N` stripped);
     - each `carry` setting survives each source switch (`sourceNodes.ts`) and kind switch
       (`elementKinds.ts`) whose target it applies to;
-    - US1 scenarios 1–3, including dropped labels and restore on switching back.
+    - the multi-selection panel (several fields of one type) and the tracker and pool-tracker
+      variants are rendered too, so controls shown only in those states are covered;
+    - US1 scenarios 1–3, including dropped labels and restore on switching back;
+    - a display condition that refers to the switched element's own old value key keeps it.
 
     The test fails first.
 
@@ -82,7 +85,8 @@ is at most 400 lines.
       into them, then delete `F/multiOps.ts`
 - [ ] T015 [US2] Create `F/session/store.ts` (`createEditorSession`, built with `createStore` from
       `zustand/vanilla`). It holds history, selection, save issues, announcement, and stash, with
-      `run(op, meta)`, `change(update, meta)`, `select`, `undo`, and `redo`. Also create
+      `run(op, meta)`, `change(update, meta)`, `select`, `undo`, and `redo`; the dropped-settings
+      announcement from T009 goes through the session's `announce`. Also create
       `F/session/context.tsx` (provider, `useEditorSession(selector)`, `useEditorStore()`)
 - [ ] T016 [US2] Create `F/session/useNodeEdits.ts`, the edits bound to the session for a node and
       for the selection. Replace `ElementEditorCallbacks` (`F/ElementSettings.tsx`) and
@@ -94,15 +98,15 @@ is at most 400 lines.
 - [ ] T018 [US2] Write `tests/sheet_manager/template-editor/commands.test.ts`. A command's `enabled`
       must agree between the key handler and the menu, and a disabled command's keys do nothing (for
       example "move up" on the first element, "move out" at the root)
-- [ ] T019 [US2] Add `run(session)` and `enabled?(state)` to `EditorCommand` in `F/commands.ts`.
-      Then:
+- [ ] T019 [US2] Move `F/commands.ts` to `F/commands/list.ts` and add `run(session)` and
+      `enabled?(state)` to `EditorCommand`. Then:
     - move the menu building (`menuSource`) out of the dialog to `F/commands/menu.ts`;
     - make `F/shortcuts.ts` (moved to `F/commands/keys.ts`) and the toolbar undo/redo read `run` and
       `enabled`.
 - [ ] T020 [US2] Shrink `F/TemplateEditorDialog.tsx` to at most 400 lines: layout, the session
       provider, save, and close. Extract `F/components/EditorToolbar.tsx`,
       `F/components/EditorPanes.tsx`, and `F/components/EditorConfirms.tsx` as needed
-- [ ] T021 [US2] Run `yarn verify` and `yarn test:perf -- template-editor`, then commit US2
+- [ ] T021 [US2] Run `yarn verify` and `yarn test:perf template-editor`, then commit US2
 
 ## User Story 3 - Element kinds register once for the editor (P2)
 
@@ -167,6 +171,7 @@ from outside.
 - [ ] T033 Update the guidance. Each place names one location for a setting, an element kind, a
       command, and a save check; remove the superseded text:
     - `src/sheet_manager/AGENTS.md`: structure tree and the editor rules;
+    - root `AGENTS.md` §6: the structure tree gets `features/template-editor/`;
     - `.agents/skills/sheet-templates/references/editor.md`;
     - `.agents/skills/sheet-templates/SKILL.md`: the "New field type" checklist and the `draft.ts`
       debt.
