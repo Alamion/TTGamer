@@ -5,6 +5,7 @@ import { useCharacterContext } from '../../../context/CharacterContext';
 import { describeError, reportSheetIssue } from '../../../diagnostics';
 import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import { systemRegistry } from '../../../systems';
+import { readCharacter } from '../../../systems/capabilities';
 import type { BaseCharacter } from '../../../types/character';
 
 export interface BoundDocument {
@@ -40,7 +41,7 @@ export function useBoundDocument(): BoundDocument | undefined {
         if (contextCharacter) return contextCharacter;
         if (!document || !capability) return undefined;
         try {
-            return capability.read(document.id, document.data);
+            return readCharacter(capability, document);
         } catch {
             // Bound elements that need the data report their own degraded state.
             return undefined;

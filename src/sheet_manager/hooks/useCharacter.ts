@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useCharacterContext } from '../context/CharacterContext';
 import { systemRegistry } from '../systems';
+import { readCharacter } from '../systems/capabilities';
 import type { BaseCharacter } from '../types/character';
 import { useDocumentSource } from './useDocumentSource';
 
@@ -17,7 +18,8 @@ export function useCharacter() {
             document.systemId,
             document.definitionId
         );
-        return definition?.capabilities?.character?.read(document.id, document.data) ?? null;
+        const capability = definition?.capabilities?.character;
+        return capability ? readCharacter(capability, document) : null;
     }, [document]);
     const character = contextChar ?? storedCharacter;
 
