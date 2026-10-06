@@ -106,6 +106,7 @@ check fo it existence before killing processes or creating new one.
 │   ├── sheet_manager/         # Character sheet manager
 │   │   ├── components/        #   Modal, StatDot, TraitRow, collapsibles
 │   │   ├── features/sheet/    #   Workspace shell + declarative template renderer
+│   │   ├── features/template-editor/ # Template editor (session, operations, panels)
 │   │   ├── store/             #   Zustand + IndexedDB persistence
 │   │   ├── types/             #   Zod schemas + TS types
 │   │   └── context/           #   CharacterContext (multi-character)

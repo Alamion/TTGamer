@@ -170,7 +170,7 @@ invariants are in the skill index.
   renders `localizeTemplate(template, locale)` (`features/sheet/declarative/localizeTemplate.ts`);
   the stored `label`/`title` is the fallback. Editing a label or title in the editor drops the
   reference; on fields and primitives it is kept as `termRef` (spec 009) so the book-term hint
-  survives renaming (`keepTermOnRename` in `template-editor/draft.ts`); switching a field to a
+  survives renaming (`keepTermOnRename` in `template-editor/model/tree.ts`); switching a field to a
   custom source clears both. `termHint: false` turns the hint off (editor: "Show book name hint" via
   `TermHintControl`). Character/droid defaults attach references in one pass (`withLabelMessages` in
   `templates/character.ts`: attributes, abilities, Force skills, and virtues point at their data

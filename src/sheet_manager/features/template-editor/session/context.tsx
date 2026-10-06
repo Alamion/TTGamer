@@ -24,12 +24,12 @@ export const EditorIssueNodesContext = createContext<ReadonlySet<string>>(new Se
 
 /** One element's selection marks: selected, the anchor, and whether it has an issue. */
 export function useNodeSelection(nodeId: string) {
-    const selected = useEditorState((state) =>
-        state.history.present.selection.ids.includes(nodeId)
+    // One subscription per element: 0 not selected, 1 selected, 2 selected and the anchor.
+    const mark = useEditorState(({ history: { present } }) =>
+        present.selection.ids.includes(nodeId) ? (present.selection.anchor === nodeId ? 2 : 1) : 0
     );
-    const anchor = useEditorState((state) => state.history.present.selection.anchor === nodeId);
     const hasIssue = useContext(EditorIssueNodesContext).has(nodeId);
-    return { selected, anchor: selected && anchor, hasIssue };
+    return { selected: mark > 0, anchor: mark === 2, hasIssue };
 }
 
 /** A plain click, Ctrl/⌘+click, or Shift+click (spec 023). */

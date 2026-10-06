@@ -168,7 +168,7 @@ from outside.
 
 ## Finish
 
-- [ ] T033 Update the guidance. Each place names one location for a setting, an element kind, a
+- [x] T033 Update the guidance. Each place names one location for a setting, an element kind, a
       command, and a save check; remove the superseded text:
     - `src/sheet_manager/AGENTS.md`: structure tree and the editor rules;
     - root `AGENTS.md` §6: the structure tree gets `features/template-editor/`;
@@ -178,10 +178,10 @@ from outside.
 
     Count the guidance files changed for SC-006.
 
-- [ ] T034 Check the user guide `docs/template-editor/` and its ru mirror for text about switching a
+- [x] T034 Check the user guide `docs/template-editor/` and its ru mirror for text about switching a
       source or kind. If it says settings are lost, correct both locales. Update T-097 in `TODO.md`,
       and add backlog entries for any settings panel still over 600 lines (SC-003)
-- [ ] T035 Measure and record in design.md "Results":
+- [x] T035 Measure and record in design.md "Results":
     - dialog and new file line counts;
     - panel sizes before and after;
     - the unit run, best of two, against the 113 s baseline (SC-005);

@@ -16,7 +16,7 @@ Reference for the `sheet-templates` skill: the formula language and sheet embeds
   not a number, `parse` for a formula that does not parse, which also reports `formula-error`). A
   missing value is final for the render pass, never a cycle. Behavior tests:
   `template-formulas.test.ts` (grammar), `derived-values.test.tsx` (sheet), the "derived values"
-  block of `template-editor.test.tsx` (draft issues and live preview).
+  block of `template-editor.references.test.tsx` (draft issues and live preview).
 - Cycles are rejected at authoring (`collectDraftIssues`); at render the evaluator in
   `useTemplatePage` re-orders by dependency with its own cycle guard.
 - `collectFormulaDependencies` in `types/template.ts` uses a regex, not the parser (import cycle

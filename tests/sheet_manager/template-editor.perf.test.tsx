@@ -119,11 +119,12 @@ describe('template editor responsiveness (SC-002)', () => {
             console.info(
                 `editor move: commit ${commit.toFixed(1)} ms, preview ${preview.toFixed(1)} ms, release after preview ${release.toFixed(1)} ms`
             );
-            // Warm, a preview costs about 2.3× the committed move (it renders the moved element
+            // Warm, a preview costs about 2.7× the committed move (it renders the moved element
             // and the slot it leaves); the bound leaves room for jsdom noise. The browser budget
-            // (SC-003) is checked on the dev server (quickstart §4). Calibrated in spec 024:
-            // the earlier 2× held only while cold first-render costs inflated the commit.
-            expect(preview).toBeLessThan(commit * 3);
+            // (SC-003) is checked on the dev server (quickstart §4). Calibrated in spec 024 (the
+            // earlier 2× held only while cold first-render costs inflated the commit) and spec 025:
+            // per-element selection marks made the commit ~20% cheaper, the preview stayed put.
+            expect(preview).toBeLessThan(commit * 3.5);
             expect(release).toBeLessThan(commit * 2);
         } finally {
             vi.useRealTimers();

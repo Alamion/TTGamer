@@ -200,7 +200,7 @@ only these:
     - Field factories stay in the page model (`newField` in `draft.ts`, then `model/`), because the
       model must not import editor UI. Its type switch is already checked for completeness by the
       compiler. Registry entries call it.
-    - The per-type settings builders moved out of `ElementSettings.tsx` (818 → 172 lines): sections
+    - The per-type settings builders moved out of `ElementSettings.tsx` (818 → 166 lines): sections
       and cards to `elements/containers.tsx`, lists and tables to `elements/collections.tsx`, the
       kind picker to `elements/KindChoice.tsx`.
     - `elements/registry.tsx` replaced `elements/names.ts`; display names and type labels are
@@ -216,3 +216,26 @@ only these:
       sources to `elements/`; history, panel contexts, and save checks to `session/`.
     - Only `TemplateEditorDialog.tsx`, `model/ids.ts`, `components/EditorHelp.tsx`, and
       `sampleDocuments.ts` are imported from outside.
+
+## Results
+
+| Criterion | Measured                                                                                                                                                                                                           |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| SC-001    | `settings-registry.test.tsx` checks every carried setting across six source switches and both kind switches                                                                                                        |
+| SC-002    | One location each for an element type, command, or save check; a setting is a registry entry plus its control. Missing parts fail `tsc` (element types) or a test (settings, commands, save checks)                |
+| SC-003    | Dialog 241 lines (was 1,786); the largest file split from `draft.ts` is 423. Panels, before → after: `ElementSettings` 818 → 166, `FieldEditor` 813 → 814, `TrackerSettings` 839 → 839 (T-104)                     |
+| SC-004    | Every existing editor test passes; only import paths changed, apart from the one perf bound below                                                                                                                  |
+| SC-005    | Unit run, best of two with the dev server running: 108.4 s against the 113 s baseline (202 files, 2,217 tests, 46 more than the baseline). Editor perf tests pass; the move-preview bound was recalibrated (below) |
+| SC-006    | Planning documents: 601 lines at the planning commit (spec, design, tasks), about 690 with these results. Guidance files changed: 6 (root and module `AGENTS.md`, the skill index, and three references)           |
+
+- **Move-preview bound:** the perf test bounded a drag preview by 3× the committed move. On
+  `testing`, the commit takes 114–144 ms and the preview about 255 ms (ratio about 2.1). On this
+  branch, in the same worktree, the commit takes about 100 ms and the preview about 270 ms (ratio
+  2.6–2.8). The commit got cheaper because a selection change now re-renders only the frames whose
+  marks change. The ratio test therefore failed about one run in five at 3×. The bound is now 3.5×,
+  with the reason in the test. Merging the frame's two store subscriptions into one and memoizing
+  the settings area did not move the preview cost.
+- `yarn verify:full` passes. One earlier run failed with a 5-second timeout in
+  `primitive-parity.test.tsx` (droid default render, 1 s alone, 5.5 s under the full run). That file
+  does not use the editor, and the next two runs passed.
+- Manual walk: the dev server serves the sheet; the steps above are left for the maintainer.
