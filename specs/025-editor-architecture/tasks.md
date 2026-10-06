@@ -68,45 +68,45 @@ keeps all four; every rendered `data-setting` has a registry entry.
 **Check**: existing editor tests pass unchanged; operations are tested without rendering; the dialog
 is at most 400 lines.
 
-- [ ] T012 [US2] Write `tests/sheet_manager/template-editor/operations.test.ts`. For remove,
+- [x] T012 [US2] Write `tests/sheet_manager/template-editor/operations.test.ts`. For remove,
       duplicate, move by command, place, insert, update, switch kind, and switch source, one id and
       several ids must match today's single and multi results and refusals (depth, count, move into
       itself). Each operation also returns the right announcement descriptor (name for one, count
       for several)
-- [ ] T013 [US2] Write `tests/sheet_manager/template-editor/session.test.ts`:
+- [x] T013 [US2] Write `tests/sheet_manager/template-editor/session.test.ts`:
     - change, undo, and redo are each one step;
     - coalescing works;
     - a refused operation sets the issue and the announcement;
     - the stash restores dropped settings;
     - selection reveal is not part of the store.
-- [ ] T014 [US2] Create `F/operations/{types,structure,selection,fields,switches}.ts`. `OpResult` is
+- [x] T014 [US2] Create `F/operations/{types,structure,selection,fields,switches}.ts`. `OpResult` is
       `{ ok, draft, selection?, announce? }` or a refusal. Fold `F/multiOps.ts` and the dialog's
       single-node bodies (`removeSelected`, `duplicate`, `moveByCommand`, `switchKind`, `actions`)
       into them, then delete `F/multiOps.ts`
-- [ ] T015 [US2] Create `F/session/store.ts` (`createEditorSession`, built with `createStore` from
+- [x] T015 [US2] Create `F/session/store.ts` (`createEditorSession`, built with `createStore` from
       `zustand/vanilla`). It holds history, selection, save issues, announcement, and stash, with
       `run(op, meta)`, `change(update, meta)`, `select`, `undo`, and `redo`; the dropped-settings
       announcement from T009 goes through the session's `announce`. Also create
       `F/session/context.tsx` (provider, `useEditorSession(selector)`, `useEditorStore()`)
-- [ ] T016 [US2] Create `F/session/useNodeEdits.ts`, the edits bound to the session for a node and
+- [x] T016 [US2] Create `F/session/useNodeEdits.ts`, the edits bound to the session for a node and
       for the selection. Replace `ElementEditorCallbacks` (`F/ElementSettings.tsx`) and
       `SeveralFieldCallbacks` (`F/sharedSettings.tsx`) in every panel. Drop the unused `onInsert`,
       `onRemove`, and `onMove`
-- [ ] T017 [US2] Replace `EditorActionsContext` and `EditorSelectionContext` (`F/editorActions.ts`)
+- [x] T017 [US2] Replace `EditorActionsContext` and `EditorSelectionContext` (`F/editorActions.ts`)
       with session selectors in `F/EditorNodeFrame.tsx`, `F/OutlineTree.tsx`, `F/EditorPage.tsx`,
       and `F/useEditorDrag.ts`. Delete `F/editorActions.ts`
-- [ ] T018 [US2] Write `tests/sheet_manager/template-editor/commands.test.ts`. A command's `enabled`
+- [x] T018 [US2] Write `tests/sheet_manager/template-editor/commands.test.ts`. A command's `enabled`
       must agree between the key handler and the menu, and a disabled command's keys do nothing (for
       example "move up" on the first element, "move out" at the root)
-- [ ] T019 [US2] Move `F/commands.ts` to `F/commands/list.ts` and add `run(session)` and
+- [x] T019 [US2] Move `F/commands.ts` to `F/commands/list.ts` and add `run(session)` and
       `enabled?(state)` to `EditorCommand`. Then:
     - move the menu building (`menuSource`) out of the dialog to `F/commands/menu.ts`;
     - make `F/shortcuts.ts` (moved to `F/commands/keys.ts`) and the toolbar undo/redo read `run` and
       `enabled`.
-- [ ] T020 [US2] Shrink `F/TemplateEditorDialog.tsx` to at most 400 lines: layout, the session
+- [x] T020 [US2] Shrink `F/TemplateEditorDialog.tsx` to at most 400 lines: layout, the session
       provider, save, and close. Extract `F/components/EditorToolbar.tsx`,
       `F/components/EditorPanes.tsx`, and `F/components/EditorConfirms.tsx` as needed
-- [ ] T021 [US2] Run `yarn verify` and `yarn test:perf template-editor`, then commit US2
+- [x] T021 [US2] Run `yarn verify` and `yarn test:perf template-editor`, then commit US2
 
 ## User Story 3 - Element kinds register once for the editor (P2)
 

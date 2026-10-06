@@ -9,7 +9,7 @@ const editor = uiMessages.sheet.templates.editor;
 const primitives = uiMessages.sheet.templates.primitives;
 const bindings = uiMessages.sheet.templates.binding;
 
-type Message = { message: string };
+type Message = { id: string; message: string };
 
 /**
  * One editor setting, described once (spec 025, FR-003). The panels render the controls; the

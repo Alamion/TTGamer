@@ -7,8 +7,8 @@ import { memo } from 'react';
 import type { TemplateNode } from '../../types/template';
 import { isContainerNode } from '../../types/template';
 import type { OverlayPlacement } from '../sheet/declarative/editorOverlay';
-import { useEditorActions, useEditorSelection } from './editorActions';
-import { nodeDisplayName, nodeKindLabel, nodeKindShort } from './ElementSettings';
+import { nodeDisplayName, nodeKindLabel, nodeKindShort } from './elements/names';
+import { useEditorActions, useNodeSelection } from './session/context';
 import { slotKey, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -31,8 +31,7 @@ const OutlineItem = memo(function OutlineItem({
     parentId: string | null;
 }) {
     const actions = useEditorActions();
-    const { selected: selectedIds, anchor, issueNodeIds } = useEditorSelection();
-    const selected = selectedIds.has(node.id);
+    const { selected, anchor, hasIssue } = useNodeSelection(node.id);
     const column = parentColumns > 1 ? (node.column ?? null) : null;
     const name = nodeDisplayName(node);
     const drag = useEditorDragContext();
@@ -42,8 +41,8 @@ const OutlineItem = memo(function OutlineItem({
             <div
                 data-outline-row={node.id}
                 data-node-type={node.type}
-                aria-current={selected && anchor === node.id ? 'true' : undefined}
-                data-anchor={selected && anchor === node.id ? '' : undefined}
+                aria-current={anchor ? 'true' : undefined}
+                data-anchor={anchor ? '' : undefined}
                 className={clsx(
                     'flex items-center gap-1 rounded pr-1 text-sm',
                     selected
@@ -98,7 +97,7 @@ const OutlineItem = memo(function OutlineItem({
                         aria-label={translate(editor.visibleWhen)}
                     />
                 )}
-                {issueNodeIds.has(node.id) && (
+                {hasIssue && (
                     <AlertTriangle
                         className={clsx('h-3.5 w-3.5 shrink-0', !selected && 'text-error')}
                         aria-label={translate(editor.elementIssue)}

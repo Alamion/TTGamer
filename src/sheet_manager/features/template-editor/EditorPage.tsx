@@ -15,7 +15,6 @@ import {
     TemplateEditorOverlayContext,
 } from '../sheet/declarative/editorOverlay';
 import type { EditorDraft } from './draft';
-import { useEditorActions } from './editorActions';
 import { EditorNodeFrame, InsertSlot } from './EditorNodeFrame';
 import {
     blankDocument,
@@ -24,6 +23,7 @@ import {
     isCompatibleDocument,
     SAMPLE_DOCUMENT_ID,
 } from './sampleDocuments';
+import { useEditorActions } from './session/context';
 import { isReleaseClick, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;

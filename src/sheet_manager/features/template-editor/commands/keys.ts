@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { EDITOR_COMMANDS, isApplePlatform } from './commands';
+import { type CommandContext, EDITOR_COMMANDS, isApplePlatform } from './list';
 
 export type EditorShortcut =
     | 'undo'
@@ -106,4 +106,20 @@ export function useEditorShortcuts(
         element.addEventListener('keydown', onKeyDown);
         return () => element.removeEventListener('keydown', onKeyDown);
     }, [element]);
+}
+
+/** The key handlers of every command with keys: a disabled command's keys do nothing (US2). */
+export function shortcutHandlers(context: CommandContext): EditorShortcutHandlers {
+    return Object.fromEntries(
+        EDITOR_COMMANDS.filter((command) => SHORTCUT_IDS.has(command.id) && command.run).map(
+            (command) => [
+                command.id,
+                () => {
+                    const { ids } = context.session.selection();
+                    if (command.enabled && !command.enabled(context, ids)) return;
+                    command.run!(context);
+                },
+            ]
+        )
+    );
 }

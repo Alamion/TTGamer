@@ -1,8 +1,8 @@
+import { matchEditorShortcut } from '@site/src/sheet_manager/features/template-editor/commands/keys';
 import {
     EDITOR_COMMANDS,
     formatKeys,
-} from '@site/src/sheet_manager/features/template-editor/commands';
-import { matchEditorShortcut } from '@site/src/sheet_manager/features/template-editor/shortcuts';
+} from '@site/src/sheet_manager/features/template-editor/commands/list';
 import { describe, expect, it } from 'vitest';
 
 const press = (

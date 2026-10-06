@@ -11,20 +11,14 @@ import type {
     ListNode,
     SectionNode,
     TableNode,
-    TemplateField,
     TemplateNode,
 } from '../../types/template';
-import {
-    isContainerNode,
-    isTemplateField,
-    listIsNamed,
-    listItemField,
-    TEMPLATE_LIMITS,
-} from '../../types/template';
+import { isTemplateField, listIsNamed, listItemField, TEMPLATE_LIMITS } from '../../types/template';
 import { ListCatalogPicker } from './CatalogBindingEditor';
 import type { NodeUpdates } from './draft';
 import { EditorFillTargetsContext, useEditorModel } from './EditorModel';
 import { elementKind, type GroupKind, type ListKind, tableKindBlocked } from './elementKinds';
+import { KIND_NAMES, nodeDisplayName, nodeKindLabel } from './elements/names';
 import { FieldEditor, type FieldEditorCallbacks, fieldSettings } from './FieldEditor';
 import {
     ColumnLayoutControl,
@@ -34,6 +28,7 @@ import {
     VisibilityControl,
 } from './LayoutControls';
 import { primitiveSettings } from './PrimitiveConfig';
+import { type NodeEdits, useNodeEdits, useSelectionActions } from './session/useNodeEdits';
 import { type GroupedSettings, mergeGroups } from './settings/groupedSettings';
 import { inputClasses } from './settings/inputClasses';
 import { KeyField } from './settings/KeyField';
@@ -44,77 +39,9 @@ import { ListSourceSelect } from './SourceControls';
 
 const editor = uiMessages.sheet.templates.editor;
 const primitives = uiMessages.sheet.templates.primitives;
-const fieldTypes = uiMessages.sheet.templates.fieldTypes;
 
 const t = (descriptor: { message: string }, values?: Record<string, string | number>) =>
     translate(descriptor, values);
-
-export interface ElementEditorCallbacks {
-    onUpdate: (nodeId: string, updates: NodeUpdates) => void;
-    onInsert: (parentId: string | null, index: number, node: TemplateNode) => void;
-    onRemove: (nodeId: string) => void;
-    onMove: (nodeId: string, targetParentId: string | null, index: number) => void;
-    onFieldUpdate: (fieldId: string, updates: Partial<TemplateField>) => void;
-    onFieldTypeChange: (fieldId: string, type: TemplateField['type']) => void;
-    onAddOption: (fieldId: string) => void;
-    onUpdateOption: (fieldId: string, optionId: string, label: string) => void;
-    onRemoveOption: (fieldId: string, optionId: string) => void;
-    onAttachCatalog: (fieldId: string, catalogId: string) => void;
-    onDetachCatalog: (fieldId: string) => void;
-    onUpdateFill: (
-        fieldId: string,
-        detailKey: string,
-        rule: { targetFieldId: string; disabled?: boolean } | undefined
-    ) => void;
-    onAddTableColumn: (tableId: string) => void;
-    onRemoveTableColumn: (tableId: string, columnId: string) => void;
-    onMoveTableColumn: (tableId: string, from: number, to: number) => void;
-    /** Swaps a node for another shape (source changes), keeping its id. */
-    onReplace: (nodeId: string, next: TemplateNode) => void;
-    /** Shows a group or list as another kind (spec 022, US6); the stored type changes. */
-    onSwitchKind: (nodeId: string, kind: GroupKind | ListKind) => void;
-}
-
-/** What the outline, chips, and announcements call a node. */
-export function nodeDisplayName(node: TemplateNode): string {
-    const name =
-        node.type === 'primitive'
-            ? (node.label ?? node.bindingKey)
-            : node.type === 'list'
-              ? (node.title ?? node.bindingKey ?? node.valueKey)
-              : node.type === 'table' || isContainerNode(node)
-                ? node.title
-                : node.label;
-    return name || '—';
-}
-
-const KIND_NAMES = {
-    group: editor.elementGroup,
-    list: editor.elementList,
-    section: editor.kindSection,
-    card: editor.kindCard,
-    entries: editor.kindEntries,
-    table: editor.kindTable,
-} as const;
-
-/** The translated element kind ("Group · Section", "List · Table", Rating, …). */
-export function nodeKindLabel(node: TemplateNode): string {
-    if (node.type === 'primitive') return translate(fieldTypes.builtIn);
-    const kind = elementKind(node);
-    if (kind) {
-        return translate(editor.kindOf, {
-            element: translate(KIND_NAMES[kind.element]),
-            kind: translate(KIND_NAMES[kind.kind]),
-        });
-    }
-    return translate(fieldTypes[node.type]);
-}
-
-/** The kind alone for groups and lists ("Section", "Table"), else the kind label. */
-export function nodeKindShort(node: TemplateNode): string {
-    const kind = elementKind(node);
-    return kind ? translate(KIND_NAMES[kind.kind]) : nodeKindLabel(node);
-}
 
 /** The kind of a group or list (spec 022, US6), a radio group in Content. */
 function KindChoice({
@@ -181,7 +108,7 @@ export interface ElementActions {
 }
 
 /** The field editor's callbacks for one field id (a page field or a table column). */
-function fieldCallbacks(callbacks: ElementEditorCallbacks, fieldId: string): FieldEditorCallbacks {
+function fieldCallbacks(callbacks: NodeEdits, fieldId: string): FieldEditorCallbacks {
     return {
         onUpdate: (updates) => callbacks.onFieldUpdate(fieldId, updates),
         onChangeType: (type) => callbacks.onFieldTypeChange(fieldId, type),
@@ -269,7 +196,7 @@ function placementSettings({
     parentColumns,
     pinnedSiblings,
 }: {
-    callbacks: ElementEditorCallbacks;
+    callbacks: NodeEdits;
     node: TemplateNode;
     parentColumns: number;
     pinnedSiblings: boolean;
@@ -303,7 +230,7 @@ function placementSettings({
 /** The settings of the element's own kind. */
 function kindSettings(
     node: TemplateNode,
-    callbacks: ElementEditorCallbacks,
+    callbacks: NodeEdits,
     bindings: readonly DocumentBindingDescriptor[]
 ): GroupedSettings {
     switch (node.type) {
@@ -338,20 +265,18 @@ function kindSettings(
  * Content, Value, Limits and formulas, Look, Visibility and help. Empty groups are left out.
  */
 export const ElementSettings = memo(function ElementSettings({
-    actions,
-    callbacks,
     node,
     parentColumns = 1,
     pinnedSiblings = false,
 }: {
-    actions: ElementActions;
-    callbacks: ElementEditorCallbacks;
     node: TemplateNode;
     parentColumns?: number;
     /** Some element of the same container is pinned to a column (spans do not apply). */
     pinnedSiblings?: boolean;
 }) {
     const { bindings } = useEditorModel();
+    const callbacks = useNodeEdits();
+    const actions = useSelectionActions(node.id);
     const groups = mergeGroups([
         kindSettings(node, callbacks, bindings),
         placementSettings({ callbacks, node, parentColumns, pinnedSiblings }),
@@ -414,7 +339,7 @@ function DocsLinkSetting({
     );
 }
 
-function sectionSettings(node: SectionNode, callbacks: ElementEditorCallbacks): GroupedSettings {
+function sectionSettings(node: SectionNode, callbacks: NodeEdits): GroupedSettings {
     const update = (updates: NodeUpdates) => callbacks.onUpdate(node.id, updates);
     return {
         content: (
@@ -447,7 +372,7 @@ function sectionSettings(node: SectionNode, callbacks: ElementEditorCallbacks): 
     };
 }
 
-function groupSettings(node: GroupNode, callbacks: ElementEditorCallbacks): GroupedSettings {
+function groupSettings(node: GroupNode, callbacks: NodeEdits): GroupedSettings {
     const update = (updates: NodeUpdates) => callbacks.onUpdate(node.id, updates);
     return {
         content: (
@@ -500,7 +425,7 @@ function groupSettings(node: GroupNode, callbacks: ElementEditorCallbacks): Grou
     };
 }
 
-function tableSettings(node: TableNode, callbacks: ElementEditorCallbacks): GroupedSettings {
+function tableSettings(node: TableNode, callbacks: NodeEdits): GroupedSettings {
     const update = (updates: NodeUpdates) => callbacks.onUpdate(node.id, updates);
     return {
         content: (
@@ -566,7 +491,7 @@ function tableSettings(node: TableNode, callbacks: ElementEditorCallbacks): Grou
 }
 
 /** A table's columns: a label row each, with the column's own settings folded below it. */
-function TableColumns({ callbacks, node }: { callbacks: ElementEditorCallbacks; node: TableNode }) {
+function TableColumns({ callbacks, node }: { callbacks: NodeEdits; node: TableNode }) {
     return (
         <div className="grid gap-1">
             <p className="text-xs font-semibold text-textPrimary">{t(editor.columns)}</p>
@@ -642,7 +567,7 @@ function TableColumns({ callbacks, node }: { callbacks: ElementEditorCallbacks; 
 
 const NO_FILL_TARGETS: readonly never[] = [];
 
-function listSettings(node: ListNode, callbacks: ElementEditorCallbacks): GroupedSettings {
+function listSettings(node: ListNode, callbacks: NodeEdits): GroupedSettings {
     const listUpdate = (updates: Partial<ListNode>) =>
         callbacks.onUpdate(node.id, updates as NodeUpdates);
     const custom = node.valueKey !== undefined;
@@ -740,13 +665,7 @@ function listSettings(node: ListNode, callbacks: ElementEditorCallbacks): Groupe
     };
 }
 
-function ListPresetsEditor({
-    callbacks,
-    node,
-}: {
-    callbacks: ElementEditorCallbacks;
-    node: ListNode;
-}) {
+function ListPresetsEditor({ callbacks, node }: { callbacks: NodeEdits; node: ListNode }) {
     const presets = node.presets ?? [];
     const update = (next: typeof presets) =>
         callbacks.onUpdate(node.id, { presets: next } as NodeUpdates);

@@ -11,7 +11,7 @@ import {
 
 import type { OverlayPlacement } from '../sheet/declarative/editorOverlay';
 import { type EditorDraft, findNodePosition, placeNode } from './draft';
-import { placeNodes } from './multiOps';
+import { placeNodes } from './operations/multi';
 
 export interface Point {
     x: number;

@@ -7,9 +7,9 @@ import { memo, type ReactNode } from 'react';
 import type { TemplateNode } from '../../types/template';
 import type { OverlayPlacement } from '../sheet/declarative/editorOverlay';
 import { AddElementMenu } from './AddElementMenu';
-import { useEditorActions, useEditorSelection } from './editorActions';
 import { useEditorModel } from './EditorModel';
-import { nodeDisplayName, nodeKindLabel } from './ElementSettings';
+import { nodeDisplayName, nodeKindLabel } from './elements/names';
+import { useEditorActions, useNodeSelection } from './session/context';
 import { slotKey, useEditorDragContext } from './useEditorDrag';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -103,9 +103,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
     node,
     parentId,
 }: EditorNodeFrameProps) {
-    const { selected: selectedIds, anchor, issueNodeIds } = useEditorSelection();
-    const selected = selectedIds.has(node.id);
-    const hasIssue = issueNodeIds.has(node.id);
+    const { selected, anchor, hasIssue } = useNodeSelection(node.id);
     const name = nodeDisplayName(node);
     const drag = useEditorDragContext();
 
@@ -116,7 +114,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                 data-editor-frame=""
                 data-node-id={node.id}
                 data-selected={selected ? '' : undefined}
-                data-anchor={selected && anchor === node.id ? '' : undefined}
+                data-anchor={anchor ? '' : undefined}
                 data-condition-hidden={conditionHidden ? '' : undefined}
                 className={clsx(
                     'relative rounded-md outline-offset-2',

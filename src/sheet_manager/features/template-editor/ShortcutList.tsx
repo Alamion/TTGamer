@@ -10,7 +10,7 @@ import {
     type EditorCommand,
     formatKeys,
     isApplePlatform,
-} from './commands';
+} from './commands/list';
 
 const editor = uiMessages.sheet.templates.editor;
 

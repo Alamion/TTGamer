@@ -1,7 +1,7 @@
 import type { TemplateNode } from '../../types/template';
 import { isContainerNode } from '../../types/template';
+import type { EditorShortcut } from './commands/keys';
 import type { EditorDraft } from './draft';
-import type { EditorShortcut } from './shortcuts';
 
 export type MoveCommand = Extract<
     EditorShortcut,

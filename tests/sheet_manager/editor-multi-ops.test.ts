@@ -6,7 +6,7 @@ import {
     moveEachByCommand,
     placeNodes,
     removeNodes,
-} from '@site/src/sheet_manager/features/template-editor/multiOps';
+} from '@site/src/sheet_manager/features/template-editor/operations/multi';
 import {
     CustomTemplateSchema,
     TEMPLATE_LIMITS,

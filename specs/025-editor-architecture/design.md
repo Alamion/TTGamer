@@ -184,3 +184,15 @@ only these:
       stashed as dropped.
     - The storybook pass renders one page per system and kind, with one element per distinct panel:
       5.9 s alone, instead of 9.5 s with one page per story.
+- **US2:**
+    - The dialog shrank from 1,786 to 241 lines.
+    - Field edits stay draft functions in `draft.ts`. `createNodeEdits` binds them to the session,
+      so there is no `operations/fields.ts`. Operations exist where a change selects, announces, or
+      can be refused (`selection`, `structure`, `switches`).
+    - `EditorActions` (select, insert, move to a slot) is still a context, built once from the
+      session (`session/actions.ts`). The selection context gave way to per-element selectors
+      (`useNodeSelection`): a frame re-renders only when its own marks change.
+    - One element or a group selected with its own element is named; otherwise the count is
+      announced. Before, a group plus its child was announced as "2 elements".
+    - Copy, cut, and paste moved to `session/clipboard.ts`; saving moved to
+      `session/useTemplateSave.ts`, which US4 turns into the save-check list.

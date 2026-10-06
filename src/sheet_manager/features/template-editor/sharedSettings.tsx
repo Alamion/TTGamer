@@ -6,14 +6,11 @@ import { Fragment, type ReactNode, useMemo } from 'react';
 import type { TemplateField, TemplateNode, VisibleWhen } from '../../types/template';
 import { isTemplateField } from '../../types/template';
 import { useEditorModel } from './EditorModel';
-import {
-    type ElementActions,
-    ElementActionsRow,
-    nodeDisplayName,
-    nodeKindLabel,
-} from './ElementSettings';
+import { nodeDisplayName, nodeKindLabel } from './elements/names';
+import { ElementActionsRow } from './ElementSettings';
 import { type FieldEditorCallbacks, fieldSettings, type SeveralFields } from './FieldEditor';
 import { ToggleRow, VisibilityControl } from './LayoutControls';
+import { useSelectionActions, useSelectionEdits } from './session/useNodeEdits';
 import {
     type GroupedSettings,
     mergeGroups,
@@ -28,7 +25,7 @@ import { SettingsGroup } from './settings/SettingsGroup';
 
 const editor = uiMessages.sheet.templates.editor;
 
-type SharedValue = boolean | number | string | VisibleWhen | undefined;
+export type SharedValue = boolean | number | string | VisibleWhen | undefined;
 
 /**
  * A setting several selected elements can change together (spec 023, research R6): the shared
@@ -101,14 +98,6 @@ export function sameTypeFields(nodes: readonly TemplateNode[]): TemplateField[] 
 const FIELD_PANEL_KEYS = new Set<string>(
     SETTING_ENTRIES.filter(([, setting]) => setting.fieldPanel).map(([key]) => key)
 );
-
-/** The node with the setting set (or removed when `undefined`). */
-export function writeShared(node: TemplateNode, key: string, value: SharedValue): TemplateNode {
-    const next = { ...node } as Record<string, unknown>;
-    if (value === undefined) delete next[key];
-    else next[key] = value;
-    return next as unknown as TemplateNode;
-}
 
 function SharedControl({
     nodes,
@@ -201,18 +190,14 @@ const ignore = () => {};
  * type, except those that name or store one field.
  */
 export function MultiSettings({
-    actions,
-    fieldCallbacks,
     nodes,
     onOpen,
-    onShared,
 }: {
-    actions: ElementActions;
-    fieldCallbacks: SeveralFieldCallbacks;
     nodes: readonly TemplateNode[];
     onOpen: (nodeId: string) => void;
-    onShared: (key: string, value: SharedValue) => void;
 }) {
+    const { fields: fieldCallbacks, onShared } = useSelectionEdits();
+    const actions = useSelectionActions(null);
     const plural = usePluralMessage();
     const { bindings } = useEditorModel();
     const fields = sameTypeFields(nodes);

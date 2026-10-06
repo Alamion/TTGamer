@@ -3,9 +3,9 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { formatKeys } from '@site/src/sheet_manager/features/template-editor/commands';
+import { matchEditorShortcut } from '@site/src/sheet_manager/features/template-editor/commands/keys';
+import { formatKeys } from '@site/src/sheet_manager/features/template-editor/commands/list';
 import { listedCommands } from '@site/src/sheet_manager/features/template-editor/ShortcutList';
-import { matchEditorShortcut } from '@site/src/sheet_manager/features/template-editor/shortcuts';
 import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';

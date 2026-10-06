@@ -7,7 +7,7 @@ import {
     findNodePosition,
     type NodePlacement,
 } from './draft';
-import { insertNodesAt, type MultiOpResult } from './multiOps';
+import { insertNodesAt, type MultiOpResult } from './operations/multi';
 import { normalizeSelection } from './selection';
 
 /**

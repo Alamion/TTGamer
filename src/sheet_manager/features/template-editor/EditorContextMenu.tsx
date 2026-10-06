@@ -2,7 +2,7 @@ import * as ContextMenu from '@radix-ui/react-context-menu';
 import { clsx } from 'clsx';
 import { createContext, Fragment, type ReactNode, useContext, useRef, useState } from 'react';
 
-import type { CommandGroup, EditorCommandId } from './commands';
+import type { CommandGroup, EditorCommandId } from './commands/list';
 
 /** One menu entry, built when the menu opens from the current selection. */
 export interface MenuCommand {

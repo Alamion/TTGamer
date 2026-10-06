@@ -1,5 +1,5 @@
-import type { TemplateNode } from '../../types/template';
-import { isContainerNode } from '../../types/template';
+import type { TemplateNode } from '../../../types/template';
+import { isContainerNode } from '../../../types/template';
 import {
     type DraftOpResult,
     duplicateNode,
@@ -12,9 +12,9 @@ import {
     type NodePlacement,
     removeNode,
     updateNode,
-} from './draft';
-import { type MoveCommand, resolveMoveTarget } from './moveTargets';
-import { normalizeSelection } from './selection';
+} from '../draft';
+import { type MoveCommand, resolveMoveTarget } from '../moveTargets';
+import { normalizeSelection } from '../selection';
 
 /**
  * Structural operations on several elements at once (spec 023). Each takes the selected ids,

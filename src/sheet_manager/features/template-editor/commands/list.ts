@@ -1,6 +1,17 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import type { EditorShortcut } from './shortcuts';
+import { rememberedCopy } from '../clipboard';
+import { canRedo, canUndo } from '../history';
+import type { MoveCommand } from '../moveTargets';
+import {
+    canMoveSelection,
+    duplicateSelection,
+    moveSelection,
+    removeSelection,
+} from '../operations/selection';
+import { EMPTY_SELECTION } from '../selection';
+import type { EditorSession } from '../session/store';
+import type { EditorShortcut } from './keys';
 
 const editor = uiMessages.sheet.templates.editor;
 
@@ -47,6 +58,27 @@ export interface EditorCommand {
     whileTyping?: boolean;
     inMenu?: boolean;
     touchOnly?: boolean;
+    /** What the command does (spec 025, D7); pointer and touch commands act through clicks. */
+    run?(context: CommandContext): void;
+    /** Whether it can act on `ids` now; keys skip it and menus disable it otherwise. */
+    enabled?(context: CommandContext, ids: readonly string[]): boolean;
+}
+
+/** What commands act on: the session and the editor's clipboard and shortcut list. */
+export interface CommandContext {
+    session: EditorSession;
+    /** Copy, cut, or paste elements; false when there is nothing to do. */
+    clipboard(action: 'copy' | 'cut' | 'paste'): boolean;
+    openShortcuts(): void;
+}
+
+const anySelected = (_: CommandContext, ids: readonly string[]) => ids.length > 0;
+
+function move(command: MoveCommand): Pick<EditorCommand, 'run' | 'enabled'> {
+    return {
+        run: ({ session }) => session.run(moveSelection(command)),
+        enabled: ({ session }, ids) => canMoveSelection(session.draft(), ids, command),
+    };
 }
 
 /**
@@ -54,9 +86,33 @@ export interface EditorCommand {
  * guide's table all read this list (spec 023, FR-016).
  */
 export const EDITOR_COMMANDS: readonly EditorCommand[] = [
-    { id: 'cut', group: 'edit', label: editor.cmdCut, clipboard: 'cut', inMenu: true },
-    { id: 'copy', group: 'edit', label: editor.cmdCopy, clipboard: 'copy', inMenu: true },
-    { id: 'paste', group: 'edit', label: editor.cmdPaste, clipboard: 'paste', inMenu: true },
+    {
+        id: 'cut',
+        group: 'edit',
+        label: editor.cmdCut,
+        clipboard: 'cut',
+        inMenu: true,
+        run: (context) => context.clipboard('cut'),
+        enabled: anySelected,
+    },
+    {
+        id: 'copy',
+        group: 'edit',
+        label: editor.cmdCopy,
+        clipboard: 'copy',
+        inMenu: true,
+        run: (context) => context.clipboard('copy'),
+        enabled: anySelected,
+    },
+    {
+        id: 'paste',
+        group: 'edit',
+        label: editor.cmdPaste,
+        clipboard: 'paste',
+        inMenu: true,
+        run: (context) => context.clipboard('paste'),
+        enabled: () => rememberedCopy() !== undefined,
+    },
     {
         id: 'duplicate',
         group: 'edit',
@@ -64,6 +120,8 @@ export const EDITOR_COMMANDS: readonly EditorCommand[] = [
         keys: [{ code: 'KeyD', mod: true }],
         whileTyping: true,
         inMenu: true,
+        run: ({ session }) => session.run(duplicateSelection),
+        enabled: anySelected,
     },
     {
         id: 'delete',
@@ -71,8 +129,16 @@ export const EDITOR_COMMANDS: readonly EditorCommand[] = [
         label: editor.remove,
         keys: [{ code: 'Delete' }, { code: 'Backspace', apple: true }],
         inMenu: true,
+        run: ({ session }) => session.run(removeSelection),
+        enabled: anySelected,
     },
-    { id: 'shortcuts', group: 'edit', label: editor.cmdShortcuts, character: '?' },
+    {
+        id: 'shortcuts',
+        group: 'edit',
+        label: editor.cmdShortcuts,
+        character: '?',
+        run: (context) => context.openShortcuts(),
+    },
     {
         id: 'toggle-selection',
         group: 'selection',
@@ -97,6 +163,8 @@ export const EDITOR_COMMANDS: readonly EditorCommand[] = [
         group: 'selection',
         label: editor.cmdClearSelection,
         keys: [{ code: 'Escape' }],
+        run: ({ session }) => session.select(EMPTY_SELECTION),
+        enabled: anySelected,
     },
     {
         id: 'move-up',
@@ -104,6 +172,7 @@ export const EDITOR_COMMANDS: readonly EditorCommand[] = [
         label: editor.moveUp,
         keys: [{ code: 'ArrowUp', alt: true }],
         inMenu: true,
+        ...move('move-up'),
     },
     {
         id: 'move-down',
@@ -111,6 +180,7 @@ export const EDITOR_COMMANDS: readonly EditorCommand[] = [
         label: editor.moveDown,
         keys: [{ code: 'ArrowDown', alt: true }],
         inMenu: true,
+        ...move('move-down'),
     },
     {
         id: 'move-out',
@@ -118,6 +188,7 @@ export const EDITOR_COMMANDS: readonly EditorCommand[] = [
         label: editor.moveOut,
         keys: [{ code: 'ArrowLeft', alt: true }],
         inMenu: true,
+        ...move('move-out'),
     },
     {
         id: 'move-in',
@@ -125,24 +196,29 @@ export const EDITOR_COMMANDS: readonly EditorCommand[] = [
         label: editor.moveIn,
         keys: [{ code: 'ArrowRight', alt: true }],
         inMenu: true,
+        ...move('move-in'),
     },
     {
         id: 'column-prev',
         group: 'arrange',
         label: editor.cmdColumnPrev,
         keys: [{ code: 'ArrowLeft', alt: true, shift: true }],
+        ...move('column-prev'),
     },
     {
         id: 'column-next',
         group: 'arrange',
         label: editor.cmdColumnNext,
         keys: [{ code: 'ArrowRight', alt: true, shift: true }],
+        ...move('column-next'),
     },
     {
         id: 'undo',
         group: 'history',
         label: editor.undo,
         keys: [{ code: 'KeyZ', mod: true }],
+        run: ({ session }) => session.undo(),
+        enabled: ({ session }) => canUndo(session.store.getState().history),
     },
     {
         id: 'redo',
@@ -152,6 +228,8 @@ export const EDITOR_COMMANDS: readonly EditorCommand[] = [
             { code: 'KeyZ', mod: true, shift: true },
             { code: 'KeyY', mod: true },
         ],
+        run: ({ session }) => session.redo(),
+        enabled: ({ session }) => canRedo(session.store.getState().history),
     },
 ];
 
