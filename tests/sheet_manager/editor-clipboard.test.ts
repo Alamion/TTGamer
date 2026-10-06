@@ -3,12 +3,10 @@ import {
     parseCopied,
     pasteCopied,
     serializeCopied,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/clipboard';
-import {
-    duplicateNode,
-    type EditorDraft,
-    findNode,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
+} from '@site/src/sheet_manager/features/template-editor/model/clipboard';
+import { duplicateNode } from '@site/src/sheet_manager/features/template-editor/model/clone';
+import { findNode } from '@site/src/sheet_manager/features/template-editor/model/tree';
+import { type EditorDraft } from '@site/src/sheet_manager/features/template-editor/model/types';
 import {
     collectTemplateNodes,
     CustomTemplateSchema,

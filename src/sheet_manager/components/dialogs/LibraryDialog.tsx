@@ -43,6 +43,12 @@ import {
     type PageNode,
     type TypeNode,
 } from '../../features/sheet/data/libraryTree';
+import { EDITOR_GUIDE } from '../../features/template-editor/components/EditorHelp';
+import { generateDraftId } from '../../features/template-editor/model/ids';
+import {
+    TemplateEditorDialog,
+    type TemplateEditorDialogProps,
+} from '../../features/template-editor/TemplateEditorDialog';
 import { useDocumentStore } from '../../store/documentStore';
 import { useDocumentTypeStore } from '../../store/documentTypeStore';
 import { useTemplateStore } from '../../store/templateStore';
@@ -58,9 +64,6 @@ import { useExportMode } from './library/ExportPanel';
 import { useImportMode } from './library/ImportPreview';
 import { LibraryTree, type RowExtras } from './library/LibraryTree';
 import { MovePanel } from './library/MovePanel';
-import { generateDraftId } from './template-editor/draft';
-import { EDITOR_GUIDE } from './template-editor/EditorHelp';
-import { TemplateEditorDialog, type TemplateEditorDialogProps } from './TemplateEditorDialog';
 
 const labels = uiMessages.sheet.library;
 const LIBRARY_MIME = 'application/x-ttgamer-library-node';

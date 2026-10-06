@@ -228,6 +228,7 @@ editor:
     removed: '{label} removed. Press Ctrl+Z to undo.'
     duplicated: '{label} copied.'
     inserted: '{label} added.'
+    settingsDropped: 'Not available for the new element: {settings}. Switch back to restore them.'
     coordinateCurrent: '{label} (current)'
     coordinateMax: '{label} (max)'
     groupContent: Content

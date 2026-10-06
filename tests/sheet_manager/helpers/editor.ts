@@ -1,4 +1,4 @@
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
+import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import type { CustomTemplate } from '@site/src/sheet_manager/types/template';

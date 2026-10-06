@@ -1,12 +1,10 @@
 import {
-    updateField,
-    updateNode,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
-import { fieldFromSource } from '@site/src/sheet_manager/components/dialogs/template-editor/sourceNodes';
-import {
     parseTemplateFile,
     serializeTemplateFile,
 } from '@site/src/sheet_manager/features/sheet/shell/templateFile';
+import { fieldFromSource } from '@site/src/sheet_manager/features/template-editor/elements/sources';
+import { updateField } from '@site/src/sheet_manager/features/template-editor/model/fields';
+import { updateNode } from '@site/src/sheet_manager/features/template-editor/model/tree';
 import { starWarsWodDefaultTemplates } from '@site/src/sheet_manager/systems/star-wars-wod/defaultTemplates';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema, walkTemplateNodes } from '@site/src/sheet_manager/types/template';

@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
 
+import { collectDraftIssues } from '@site/src/sheet_manager/features/template-editor/issues/draftIssues';
 import {
-    changeFieldType,
-    collectDraftIssues,
     createDraftFromTemplate,
     createEmptyDraft,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
+} from '@site/src/sheet_manager/features/template-editor/model/factories';
+import { changeFieldType } from '@site/src/sheet_manager/features/template-editor/model/fields';
+import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
+import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';

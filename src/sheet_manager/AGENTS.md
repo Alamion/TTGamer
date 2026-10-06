@@ -13,14 +13,14 @@ and named views; do not fold kind-specific state into the shared document envelo
 src/sheet_manager/
 ├── components/               # reusable UI, grouped by visual responsibility
 │   ├── controls/             # generic inputs: checkbox, textarea, catalog picker
-│   ├── dialogs/              # create/manage/confirm/import-conflict/library/editor modal flows
-│   │   ├── library/          # library tree, details, move, export and import panels (spec 013)
-│   │   └── template-editor/  # template editor subcomponents + pure draft model;
-│   │                         # settings/ holds the grouped settings building blocks
+│   ├── dialogs/              # create/manage/confirm/import-conflict/library modal flows
+│   │   └── library/          # library tree, details, move, export and import panels (spec 013)
 │   ├── sections/             # collapsible panels, cards, tables
 │   └── stat-fields/          # atomic traits, dots, labels, Force and merit/flaw rows
 ├── context/                  # read-only CharacterContext
 ├── data/                     # bundled character presets
+├── features/template-editor/ # template editor (spec 025): session/, operations/, commands/,
+│                             # model/, issues/, elements/, settings/, panels/, components/
 ├── features/sheet/           # the assembled interactive sheet
 │   ├── shell/                # toolbar, view selector, workspace-level import/export state,
 │   │                         # library entry, template/type/library file transfer modules
@@ -180,10 +180,13 @@ duplicate template facts here. Invariants that must never be broken:
   values (the save asks when values of the earlier kind exist).
 - Every editor setting has a visible label and a `data-setting` key; draft issues point at it. A
   schema rule a save finds without a specific check reports `template-draft-invalid`.
-- Editor commands have one owner, `template-editor/commands.ts`: keys, the element menu, the
-  shortcut list, and the guide's table all come from it. Commands act on the normalized selection as
-  one undo step. Copied elements are clipboard text other editors (and authors) paste: always parse
-  them with the template schema before use (`template-clipboard-invalid`).
+- The editor has one owner per extension point (spec 025): settings in
+  `template-editor/settings/registry.ts`, element types in `elements/registry.tsx`, commands in
+  `commands/list.ts` (keys, the element menu, the shortcut list, and the guide's table come from
+  it), save warnings in `session/saveChecks.ts`. Every change goes through the editing session
+  (`session/store.ts`); commands act on the normalized selection as one undo step. Copied elements
+  are clipboard text other editors (and authors) paste: always parse them with the template schema
+  before use (`template-clipboard-invalid`).
 
 ## Derived State
 

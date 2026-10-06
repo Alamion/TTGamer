@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
-import { PREVIEW_DWELL_MS } from '@site/src/sheet_manager/components/dialogs/template-editor/useEditorDrag';
-import { TemplateEditorDialog } from '@site/src/sheet_manager/components/dialogs/TemplateEditorDialog';
+import { PREVIEW_DWELL_MS } from '@site/src/sheet_manager/features/template-editor/components/useEditorDrag';
+import { TemplateEditorDialog } from '@site/src/sheet_manager/features/template-editor/TemplateEditorDialog';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import type { TemplateNode } from '@site/src/sheet_manager/types/template';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';

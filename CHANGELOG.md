@@ -1,5 +1,16 @@
 # Changelog
 
+## v3.22.1
+
+### Fix
+
+- **Switching a field's source keeps its settings (spec 025)**: binding a field to a trait or catalog — or back — keeps its width, display condition, look, and hint; settings the new element cannot have are kept for the rest of the editing session and come back when you switch back, and screen readers hear which settings were set aside
+- **Sheets react faster**: a sheet reads its character data once per change instead of once for every bound element on the page
+
+### Chore
+
+- **Template editor architecture (spec 025, T-097)**: the editor lives in one feature folder with an editing session, pure edit operations, and one registry each for settings, element types, commands, and save checks; adding one of them is one entry, and a missing part fails the type check or a test. The editor dialog is 241 lines instead of 1,786
+
 ## v3.22.0
 
 ### Minor feat

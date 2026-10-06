@@ -108,11 +108,13 @@ primitive rather than a similar new one.
 **New field type** (e.g. `date`): object schema, `fieldObjectSchemas`, the node discriminated union,
 `TEMPLATE_FIELD_TYPES`, and `refineField` in `types/template.ts`; the value switches in
 `types/templateValues.ts`; a control in `fieldControls.tsx` + the entry in
-`registry/declarativeFieldRegistry.ts`; the `baseField` factory in `draft.ts`; a config branch in
-`FieldEditor.tsx`; the `fieldTypes.<type>` label in en/ru YAML + `yarn build:translations`; tests.
-The compiler flags every missing piece except the `FieldEditor` branch and tests (exhaustive
-switches and `Record<TemplateField['type'], …>` maps; the editor type picker and all leaf predicates
-derive from the canonical list).
+`registry/declarativeFieldRegistry.ts`; the factory case in `template-editor/model/factories.ts`;
+the entry in `template-editor/elements/registry.tsx`; a config branch in `panels/FieldEditor.tsx`
+with its settings in `settings/registry.ts`; the `fieldTypes.<type>` label in en/ru YAML +
+`yarn build:translations`; tests. The compiler flags every missing piece except the `FieldEditor`
+branch and tests (exhaustive switches, `Record<TemplateField['type'], …>` maps, and the editor's
+element registry; the type picker and all leaf predicates derive from the canonical list). Where to
+add an editor setting, command, or save warning: `references/editor.md`.
 
 **New binding kind**: descriptor interface + union in `systems/templateBindings.ts` (plus
 `resolveDataBindingByCoordinate` / `listNumericCoordinates` / `readBoundNumber` if it is bridgeable
@@ -158,7 +160,7 @@ template module under the system's `templates/` built with the neutral builders,
 - Binding keys are not literal types (bindings are built at runtime per system); integrity relies on
   `validateTemplateReferences` rather than the compiler.
 - `useTemplatePage` (`hooks.ts`) mixes store wiring, formula evaluation, list/catalog runtime, and
-  preset seeding; `draft.ts` is similarly overloaded.
+  preset seeding.
 - `NodeView` is memoized, but a template change still re-renders every node of the real sheet (the
   page API changes with the template); only the editor frames skip unchanged nodes.
 - Retired pre-template blocks, viewers, views, and `DocumentSheetSections` are archived (reference

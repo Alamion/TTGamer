@@ -1,5 +1,5 @@
-import { collectDraftIssues } from '@site/src/sheet_manager/components/dialogs/template-editor/draft';
-import { schemaIssues } from '@site/src/sheet_manager/components/dialogs/template-editor/issues';
+import { collectDraftIssues } from '@site/src/sheet_manager/features/template-editor/issues/draftIssues';
+import { schemaIssues } from '@site/src/sheet_manager/features/template-editor/issues/schemaIssues';
 import { listElementStories } from '@site/src/sheet_manager/storybook/stories';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { type CustomTemplate, CustomTemplateSchema } from '@site/src/sheet_manager/types/template';

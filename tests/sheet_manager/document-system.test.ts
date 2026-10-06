@@ -15,6 +15,7 @@ import {
     starWarsWodSystem,
     SystemRegistry,
 } from '@site/src/sheet_manager/systems';
+import { readCharacter } from '@site/src/sheet_manager/systems/capabilities';
 import { DroidDataSchema } from '@site/src/sheet_manager/systems/star-wars-wod';
 import { createDefaultCharacter } from '@site/src/sheet_manager/types/character';
 import {
@@ -24,7 +25,7 @@ import {
     SystemIdSchema,
 } from '@site/src/sheet_manager/types/document';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
@@ -223,6 +224,24 @@ describe('system registry', () => {
         );
 
         expect(view?.id).toBe('brief');
+    });
+
+    it('reads a stored document once until it is replaced, failures included', () => {
+        const read = vi.fn((id: string, data: unknown) =>
+            starWarsDroidDefinition.capabilities!.character!.read(id, data)
+        );
+        const capability = { read, applyUpdates: (data: unknown) => data };
+        const document = { id: 'droid-1', data: starWarsDroidDefinition.createDefault() };
+        const first = readCharacter(capability, document);
+        expect(readCharacter(capability, document)).toBe(first);
+        expect(read).toHaveBeenCalledTimes(1);
+        expect(readCharacter(capability, { ...document })).not.toBe(first);
+        expect(read).toHaveBeenCalledTimes(2);
+
+        const broken = { id: 'droid-2', data: { damage: 'not a track' } };
+        expect(() => readCharacter(capability, broken)).toThrow();
+        expect(() => readCharacter(capability, broken)).toThrow();
+        expect(read).toHaveBeenCalledTimes(3);
     });
 
     it('adapts droid damage and built-in equipment through the character capability', () => {

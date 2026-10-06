@@ -6,7 +6,7 @@ import { AlertTriangle, ArrowRightLeft } from 'lucide-react';
 
 import type { MovePlan, MoveTarget } from '../../../features/sheet/data/libraryMoves';
 import type { LibraryNode } from '../../../features/sheet/data/libraryTree';
-import { EditorHelp } from '../template-editor/EditorHelp';
+import { EditorHelp } from '../../../features/template-editor/components/EditorHelp';
 
 const labels = uiMessages.sheet.library;
 

@@ -1,7 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { generateDraftId } from '../../../components/dialogs/template-editor/draft';
 import { useTemplateStore } from '../../../store/templateStore';
 import type { SystemRegistry } from '../../../systems/registry';
 import type { DocumentDefinition } from '../../../systems/types';
@@ -21,6 +20,7 @@ import {
     type TemplateNode,
 } from '../../../types/template';
 import { TEMPLATE_LIMITS } from '../../../types/templateLimits';
+import { generateDraftId } from '../../template-editor/model/ids';
 import { applyLibraryWrites } from '../data/libraryActions';
 import type { LibraryLevel } from '../data/libraryTree';
 import { type LibraryPayload, overrideRecordId } from './libraryFile';

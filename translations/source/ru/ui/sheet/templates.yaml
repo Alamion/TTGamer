@@ -228,6 +228,7 @@ editor:
     removed: '{label}: удалено. Ctrl+Z — вернуть.'
     duplicated: '{label}: создана копия.'
     inserted: '{label}: добавлено.'
+    settingsDropped: 'Недоступно для нового элемента: {settings}. Верните прежний вариант, чтобы восстановить.'
     coordinateCurrent: '{label} (текущее)'
     coordinateMax: '{label} (максимум)'
     groupContent: Содержимое

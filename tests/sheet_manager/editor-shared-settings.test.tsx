@@ -5,7 +5,7 @@ import {
     SHARED_SETTINGS,
     sharedSettingsFor,
     sharedValue,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/sharedSettings';
+} from '@site/src/sheet_manager/features/template-editor/panels/sharedSettings';
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { CustomTemplateSchema, type TemplateNode } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, screen } from '@testing-library/react';

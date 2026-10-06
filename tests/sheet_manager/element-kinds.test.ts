@@ -4,7 +4,7 @@ import {
     switchGroupKind,
     switchListKind,
     tableKindBlocked,
-} from '@site/src/sheet_manager/components/dialogs/template-editor/elementKinds';
+} from '@site/src/sheet_manager/features/template-editor/elements/kinds';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import {
     CustomTemplateSchema,

@@ -1,4 +1,3 @@
-import { generateDraftId } from '../../../components/dialogs/template-editor/draft';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
 import { exportNotices, resolveDocumentPolicies, systemRegistry } from '../../../systems';
@@ -13,6 +12,7 @@ import {
 } from '../../../systems/userTypes';
 import type { CustomTemplate } from '../../../types/template';
 import { CustomTemplateSchema } from '../../../types/template';
+import { generateDraftId } from '../../template-editor/model/ids';
 import { resolveImportedTemplate } from './templateFile';
 
 /**
