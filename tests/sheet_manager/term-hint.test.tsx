@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement, Fragment } from 'react';

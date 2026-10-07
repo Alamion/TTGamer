@@ -246,15 +246,21 @@ function sameSpot(before: EditorDraft, after: EditorDraft, nodeId: string): bool
     );
 }
 
+/**
+ * Elements each marker attribute was put on. Clearing them by memory instead of searching the
+ * whole page for the attribute keeps a mark refresh to one selector query (marks are reapplied
+ * after every page render while dragging).
+ */
+const markedElements = new Map<string, readonly Element[]>();
+
 function setMarker(attribute: string, selector: string | undefined) {
-    for (const element of document.querySelectorAll(`[${attribute}]`)) {
-        if (!selector || !element.matches(selector)) element.removeAttribute(attribute);
+    const next = selector ? [...document.querySelectorAll(selector)] : [];
+    const keep = new Set(next);
+    for (const element of markedElements.get(attribute) ?? []) {
+        if (!keep.has(element)) element.removeAttribute(attribute);
     }
-    if (selector) {
-        for (const element of document.querySelectorAll(selector)) {
-            element.setAttribute(attribute, '');
-        }
-    }
+    for (const element of next) element.setAttribute(attribute, '');
+    markedElements.set(attribute, next);
 }
 
 /** Where the dragged element stood, as a slot key of the preview draft (its dashed place). */

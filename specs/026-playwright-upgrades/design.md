@@ -165,6 +165,20 @@ Current versions (2026-10-07):
     - **The dev server's `merits-flaws` page crashed during the exploration** (`DocItem` reading
       `id` of undefined). The production build serves the page correctly, so this was a stale dev
       server, not a code fault.
+- **US3:**
+    - **happy-dom came before jsdom 30.** On jsdom 30 the move-preview perf test failed every run,
+      at 5.7× the commit against a 3.5× bound. jsdom 27 replaced its selector engine with
+      `@asamuzakjp/dom-selector`, and on the full sheet each attribute query takes about 85 ms. The
+      browser timing stayed at 32–84 ms, so this cost belongs to jsdom only.
+        - `setMarker` (`useEditorDrag.ts`) now remembers the elements it marked instead of searching
+          the page for its attribute. Commit and release got about twice as fast; the preview was
+          still slow.
+        - The perf file passes on happy-dom unchanged (preview about 2× the commit), so the
+          happy-dom switch (T022–T023) ran first. jsdom 30 (T021) now applies only to the files that
+          stay on jsdom.
+    - **Vitest 5 reports errors thrown after a test file ends.** The editor's `revealNode` kept
+      stepping on timers after the dialog closed. The steps now stop when no editor page is left.
+    - **Vitest 5 makes Vite a peer dependency**, so `vite` 8 is now a direct dev dependency.
 
 ## Results
 
@@ -181,3 +195,8 @@ Current versions (2026-10-07):
     - A deleted `docs/.../attributes-abilities/index.html` failed `site.spec` with HTTP 404.
 - **SC-002:** `yarn test:e2e` on an existing build took 38 s for 10 tests. The dev server on 3000
   kept answering 200.
+- **happy-dom (T022–T023):** each of the 99 jsdom files ran three times under happy-dom; 97 passed
+  all three runs unchanged and moved. The files that stay on jsdom:
+    - `tests/sheet_manager/tracker-field.test.tsx` and `tracker-builtin.test.tsx`: color. They read
+      an inline color back from the style, which jsdom serializes as `rgb(...)` and happy-dom keeps
+      as written (`#0e7490`).

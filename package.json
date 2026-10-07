@@ -97,6 +97,7 @@
         "eslint-plugin-react-hooks": "^7.1.1",
         "eslint-plugin-simple-import-sort": "^14",
         "globals": "^17.6.0",
+        "happy-dom": "^20.14.5",
         "husky": "^9.1.7",
         "jsdom": "^26.1.0",
         "knip": "^6",

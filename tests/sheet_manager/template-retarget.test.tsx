@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { listTemplateTargetGroups } from '@site/src/sheet_manager/features/sheet/data/documentLabels';
 import { planTemplateRetarget } from '@site/src/sheet_manager/features/sheet/data/templateRetarget';

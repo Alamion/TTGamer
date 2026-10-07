@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { MERITS_FLAWS_COLUMNS, MERITS_FLAWS_FILTERS } from '@site/src/data/meritsFlawsConfig';
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';

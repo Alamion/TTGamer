@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import WodTab from '@site/src/dice_roller/components/dice_pool/DiceTabWod';
 import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';

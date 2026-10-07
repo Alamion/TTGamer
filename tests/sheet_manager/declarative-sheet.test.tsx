@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { boundNumber } from '@site/src/shared/components/NumberInput';
 import { CharacterContext } from '@site/src/sheet_manager/context/CharacterContext';

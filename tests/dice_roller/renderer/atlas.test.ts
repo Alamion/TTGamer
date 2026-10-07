@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { prepareDiceGeometries } from '@site/src/dice_roller/dice-logic/renderer/factory';
 import type { MeshPhongMaterial } from 'three';

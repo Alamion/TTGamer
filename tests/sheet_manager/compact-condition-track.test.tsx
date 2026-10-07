@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { CompactConditionTrack } from '@site/src/sheet_manager/components/stat-fields/CompactSheetFields';
 import { fireEvent, render, screen } from '@testing-library/react';

@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { diceScaleFor } from '@site/src/dice_roller/dice-logic/roll-orchestrator';
 import {

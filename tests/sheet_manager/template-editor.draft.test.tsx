@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { collectDraftIssues } from '@site/src/sheet_manager/features/template-editor/issues/draftIssues';
 import {

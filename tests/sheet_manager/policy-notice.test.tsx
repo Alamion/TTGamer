@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
 import {

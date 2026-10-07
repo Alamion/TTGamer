@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { ArmorSection } from '@site/src/sheet_manager/features/sheet/body/ArmorSection';

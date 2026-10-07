@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import RollHistory from '@site/src/dice_roller/components/RollHistory';
 import type { RollResult } from '@site/src/dice_roller/dice-logic/types';

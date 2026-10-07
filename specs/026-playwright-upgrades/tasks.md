@@ -113,10 +113,10 @@ baseline (SC-003).
     - run `yarn verify:full` and commit.
 - [ ] T021 [US3] Upgrade `jsdom` to 30 in `package.json`, fix any test failures in the code or the
       test setup without weakening an assertion, run `yarn verify:full`, and commit.
-- [ ] T022 [US3] Add `happy-dom` as a dev dependency. With a scratchpad script (not committed), run
+- [x] T022 [US3] Add `happy-dom` as a dev dependency. With a scratchpad script (not committed), run
       each `@vitest-environment jsdom` test file under happy-dom alone, three times, and list the
       files that pass every time without changes.
-- [ ] T023 [US3] Switch the passing files to `// @vitest-environment happy-dom`. Run `yarn test`
+- [x] T023 [US3] Switch the passing files to `// @vitest-environment happy-dom`. Run `yarn test`
       twice; move back any file that fails. List the files kept on jsdom, with their reasons grouped
       (focus, pointer events, layout, clipboard, other), in design.md "Results" (FR-009).
 - [ ] T024 [US3] Measure the unit run (best of three) against the T001 baseline. If it is over 60 s,
