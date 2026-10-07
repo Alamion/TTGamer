@@ -59,7 +59,7 @@
         "@radix-ui/react-context-menu": "^2.2.16",
         "@radix-ui/react-dialog": "^1.1.15",
         "@radix-ui/react-popover": "^1.1.16",
-        "@tanstack/react-table": "^8.21.3",
+        "@tanstack/react-table": "^9.2.6",
         "cannon-es": "^0.20.0",
         "clsx": "^2.0.0",
         "cmdk": "^1.1.1",

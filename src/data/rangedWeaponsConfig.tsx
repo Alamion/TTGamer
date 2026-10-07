@@ -1,6 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { ReactNode } from 'react';
 
 import { columnHeader, localizedTextMeta, useCatalogText } from './catalogI18n';
@@ -9,7 +9,7 @@ import type { RangedWeaponEntry } from './rangedWeaponsData';
 const CATALOG_ID = 'ranged-weapons';
 const messages = uiMessages.catalogs.rangedWeapons;
 
-export const RANGED_WEAPONS_COLUMNS: ColumnDef<RangedWeaponEntry>[] = [
+export const RANGED_WEAPONS_COLUMNS: CatalogColumnDef<RangedWeaponEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),

@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { FilterConfig } from '@site/src/shared/components/DataCatalog';
-import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
 import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from './catalogI18n';
@@ -10,7 +10,7 @@ import type { ToolGearEntry } from './toolsGearData';
 const CATALOG_ID = 'tools-gear';
 const messages = uiMessages.catalogs.toolsGear;
 
-export const TOOLS_GEAR_COLUMNS: ColumnDef<ToolGearEntry>[] = [
+export const TOOLS_GEAR_COLUMNS: CatalogColumnDef<ToolGearEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),

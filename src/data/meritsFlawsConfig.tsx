@@ -1,8 +1,8 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { FilterConfig } from '@site/src/shared/components/DataCatalog';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
-import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
 import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from './catalogI18n';
@@ -33,7 +33,7 @@ function TypeLabel({ type }: { type: MeritFlawEntry['type'] }) {
     );
 }
 
-export const MERITS_FLAWS_COLUMNS: ColumnDef<MeritFlawEntry>[] = [
+export const MERITS_FLAWS_COLUMNS: CatalogColumnDef<MeritFlawEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),
@@ -65,7 +65,6 @@ export const MERITS_FLAWS_COLUMNS: ColumnDef<MeritFlawEntry>[] = [
         header: columnHeader(messages.columns.shortDescription),
         accessorKey: 'shortDescription',
         enableSorting: false,
-        size: 300,
         meta: localizedTextMeta(CATALOG_ID, 'shortDescription'),
     },
     {

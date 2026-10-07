@@ -1,6 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { ReactNode } from 'react';
 
 import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from './catalogI18n';
@@ -26,7 +26,7 @@ function ScaleLabel({ scale }: { scale: string }) {
     );
 }
 
-export const CREATURE_COLUMNS: ColumnDef<CreatureEntry>[] = [
+export const CREATURE_COLUMNS: CatalogColumnDef<CreatureEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),

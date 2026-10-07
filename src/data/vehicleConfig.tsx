@@ -1,8 +1,8 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { FilterConfig } from '@site/src/shared/components/DataCatalog';
 import { EraTags } from '@site/src/shared/components/EraTags';
-import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
 import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from './catalogI18n';
@@ -51,7 +51,7 @@ function Stat({ value }: { value: number | string | null | undefined }) {
     return <span className="font-mono">{value}</span>;
 }
 
-export const VEHICLE_COLUMNS: ColumnDef<VehicleEntry>[] = [
+export const VEHICLE_COLUMNS: CatalogColumnDef<VehicleEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),

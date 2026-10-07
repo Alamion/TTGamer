@@ -131,11 +131,11 @@ look-over shows no change.
 - [x] T025 [US4] Upgrade `lucide-react` to 1 in `package.json`. Rename the icons that
       `yarn     typecheck` reports missing, choosing the same glyphs, across `src/`. Run
       `yarn verify:full` and commit.
-- [ ] T026 [US4] Upgrade `@tanstack/react-table` to 9 in `package.json` and migrate
+- [x] T026 [US4] Upgrade `@tanstack/react-table` to 9 in `package.json` and migrate
       `src/shared/components/DataCatalog.tsx` and the `ColumnDef` / `ColumnMeta` / `Row` imports in
       the catalog configs under `src/data/`. If the change outside `DataCatalog.tsx` exceeds ~300
       lines, revert it and add a T-088 note instead (D13).
-- [ ] T027 [US4] Run the catalog tests (`tests/` covering `DataCatalog`) and `catalog.spec.ts`, then
+- [x] T027 [US4] Run the catalog tests (`tests/` covering `DataCatalog`) and `catalog.spec.ts`, then
       `yarn verify:full`, and commit.
 
 ## Finish

@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { FilterConfig } from '@site/src/shared/components/DataCatalog';
-import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
 import { columnHeader, enumLabelMeta, useCatalogText } from './catalogI18n';
@@ -10,7 +10,7 @@ import type { TerminologyEntry } from './terminologyData';
 const CATALOG_ID = 'terminology';
 const messages = uiMessages.catalogs.terminology;
 
-export const TERMINOLOGY_COLUMNS: ColumnDef<TerminologyEntry>[] = [
+export const TERMINOLOGY_COLUMNS: CatalogColumnDef<TerminologyEntry>[] = [
     {
         id: 'english',
         header: columnHeader(messages.columns.english),

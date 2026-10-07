@@ -1,8 +1,8 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { FilterConfig } from '@site/src/shared/components/DataCatalog';
 import { ScaleList } from '@site/src/shared/components/DetailSections';
-import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
 import type { BackgroundEntry } from './backgroundsData';
@@ -11,7 +11,7 @@ import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from '
 const CATALOG_ID = 'backgrounds';
 const messages = uiMessages.catalogs.backgrounds;
 
-export const BACKGROUND_COLUMNS: ColumnDef<BackgroundEntry>[] = [
+export const BACKGROUND_COLUMNS: CatalogColumnDef<BackgroundEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),
@@ -24,7 +24,6 @@ export const BACKGROUND_COLUMNS: ColumnDef<BackgroundEntry>[] = [
         header: columnHeader(messages.columns.shortDescription),
         accessorKey: 'shortDescription',
         enableSorting: true,
-        size: 350,
         meta: localizedTextMeta(CATALOG_ID, 'shortDescription'),
     },
     {

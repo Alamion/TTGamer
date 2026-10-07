@@ -1,8 +1,9 @@
+import type { CatalogRow } from '@site/src/shared/components/catalogTable';
 import { deserializeStringList } from '@site/src/shared/utils/stringList';
-import type { Row } from '@tanstack/react-table';
+import type { RowData } from '@tanstack/react-table';
 
-export function arrayIncludesAnyFilterFn<T>(
-    row: Row<T>,
+export function arrayIncludesAnyFilterFn<T extends RowData>(
+    row: CatalogRow<T>,
     columnId: string,
     filterValue: string
 ): boolean {
@@ -14,7 +15,11 @@ export function arrayIncludesAnyFilterFn<T>(
     return selected.some((s) => value.includes(s));
 }
 
-export function booleanFilterFn<T>(row: Row<T>, columnId: string, filterValue: string): boolean {
+export function booleanFilterFn<T extends RowData>(
+    row: CatalogRow<T>,
+    columnId: string,
+    filterValue: string
+): boolean {
     if (!filterValue) return true;
     const value = row.getValue<boolean>(columnId);
     return filterValue === 'true' ? value === true : value === false;
