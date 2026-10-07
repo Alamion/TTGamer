@@ -140,7 +140,7 @@ look-over shows no change.
 
 ## Finish
 
-- [ ] T028 Update the guidance:
+- [x] T028 Update the guidance:
     - root `AGENTS.md`:
         - §2: Playwright, Vitest 5, jsdom/happy-dom;
         - §3: `test:e2e`, `e2e:install`, `ci:e2e`;
@@ -153,18 +153,18 @@ look-over shows no change.
     Constitution principle V is left as is; recording the browser layer there would be a separate
     amendment the maintainer asks for. The user guide is not affected (no visible change).
 
-- [ ] T029 Update `TODO.md`:
+- [x] T029 Update `TODO.md`:
     - T-033 done, with a note;
     - T-088: the remaining Zod 4, TypeScript 7, and Tailwind 4, and any deferral from T026 or a
       blocked upgrade.
 
     Run `yarn validate:backlog`.
 
-- [ ] T030 Compare the sheet's downloaded JS and CSS bytes from the timings report with the US1
+- [x] T030 Compare the sheet's downloaded JS and CSS bytes from the timings report with the US1
       baseline (SC-004). Confirm with `yarn outdated` that every dependency is on its current major
       except Zod, TypeScript, Tailwind, Docusaurus and React, and `@types/node` (SC-005). Note the
       timings report from a full run (SC-006).
-- [ ] T031 Run `yarn verify:full`, walk design.md "Manual walk", record the results in design.md,
+- [x] T031 Run `yarn verify:full`, walk design.md "Manual walk", record the results in design.md,
       and commit, `docs: guidance, backlog, and results for browser tests and upgrades (spec 026)`.
 
 ## Coverage

@@ -210,3 +210,34 @@ Current versions (2026-10-07):
     The DOM environment is no longer the main cost. Reaching 60 s needs fewer full-sheet renders per
     test or shared module state across files (`isolate: false`). Both change tests, so neither fits
     this spec.
+
+- **US4:**
+    - lucide-react 1 kept every icon the site imports, so no renames were needed.
+    - React Table 9 now declares its features in `src/shared/components/catalogTable.ts`, and the
+      configs type their columns with `CatalogColumnDef`. The change took 98 lines added and 81
+      removed across 20 files, within the D13 bound.
+    - The six `size` column options went away; `DataCatalog` never read them.
+    - Under `useTable`, the React Compiler lint now checks `DataCatalog`. It flagged the URL read in
+      a layout effect, which is kept, with its reason: the server renders without the query string.
+- **Type check gap:** after the React Table upgrade, `yarn typecheck` (`tsc -b`) passed while 78
+  errors were waiting. `tsc -b` decides what is up to date from the project's own files, not
+  node_modules. Fixed in `9462d4a`:
+    - `scripts/typecheck.ts` forces a full build after a `yarn.lock` change;
+    - the CI cache key includes the lockfile hash.
+
+    A forced check confirmed that the earlier upgrade commits had no hidden errors.
+
+- **Flaky under load:** with the machine at load 20–30 (editor, browser, dev server), two unit tests
+  over every shipped template crossed the 5 s timeout, and the move-preview perf ratio failed. All
+  passed when rerun at lower load. After US3 the perf file runs on happy-dom, where the preview is
+  about 2× the commit, not about 3×.
+- **SC-004:** sheet JS and CSS grew from 3,638,638 to 3,663,519 bytes, or 0.68%.
+- **SC-005:** `yarn outdated` lists only Zod, TypeScript, Tailwind (later specs), and `@types/node`
+  (follows Node 22).
+- **SC-006:** every `verify:full` run printed all four browser timings, and none failed a run.
+- **Manual walk:**
+    - Steps 1–3 and 5 passed. `ci:e2e` ran with the dev server on 3000, which stayed up. `test:e2e`
+      without a build stops at once with "run `yarn build` first". A failure keeps a screenshot and
+      a trace. The unit run kept 2218 tests.
+    - Step 4 (look over icons and a catalog table) is left to the maintainer. The catalog smoke test
+      covers the table's behavior.
