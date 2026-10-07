@@ -1,11 +1,4 @@
-import { existsSync } from 'node:fs';
-
 import { defineConfig, devices } from '@playwright/test';
-
-// Browser tests run against the production build, never the dev server (spec 026, D2).
-if (!existsSync('build/index.html')) {
-    throw new Error('No production build in build/: run `yarn build` first, or `yarn ci:e2e`.');
-}
 
 const PORT = 3100;
 
@@ -26,7 +19,7 @@ export default defineConfig({
         { name: 'timings', testDir: 'tests-e2e/timings', use: { ...devices['Desktop Chrome'] } },
     ],
     webServer: {
-        command: `docusaurus serve --port ${PORT} --no-open`,
+        command: `node --import tsx tests-e2e/require-build.ts && docusaurus serve --port ${PORT} --no-open`,
         url: `http://localhost:${PORT}`,
         // Port 3000 is the maintainer's dev server; this one is always our own.
         reuseExistingServer: false,
