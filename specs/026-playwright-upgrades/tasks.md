@@ -119,7 +119,7 @@ baseline (SC-003).
 - [x] T023 [US3] Switch the passing files to `// @vitest-environment happy-dom`. Run `yarn test`
       twice; move back any file that fails. List the files kept on jsdom, with their reasons grouped
       (focus, pointer events, layout, clipboard, other), in design.md "Results" (FR-009).
-- [ ] T024 [US3] Measure the unit run (best of three) against the T001 baseline. If it is over 60 s,
+- [x] T024 [US3] Measure the unit run (best of three) against the T001 baseline. If it is over 60 s,
       record the remaining cost and its cause in design.md (SC-003). Run `yarn verify:full` and
       commit, `test: lighter DOM for the tests that allow it (spec 026, US3)`.
 

@@ -200,3 +200,13 @@ Current versions (2026-10-07):
     - `tests/sheet_manager/tracker-field.test.tsx` and `tracker-builtin.test.tsx`: color. They read
       an inline color back from the style, which jsdom serializes as `rgb(...)` and happy-dom keeps
       as written (`#0e7490`).
+- **SC-003 (T024):** the unit run is now 79.7 s (best of three: 84.1, 79.7, 80.2 s, 2218 tests)
+  against the 103.0 s baseline, 23% less, but above the 60 s target. The remaining cost, summed over
+  the workers:
+    - test bodies, 46%: mostly full shipped-sheet renders in editor and sheet tests;
+    - module imports, 24%: each isolated worker loads the sheet module graph again;
+    - environment setup and transform, 14% each.
+
+    The DOM environment is no longer the main cost. Reaching 60 s needs fewer full-sheet renders per
+    test or shared module state across files (`isolate: false`). Both change tests, so neither fits
+    this spec.
