@@ -29,8 +29,10 @@ jobs:
                   path: |
                       node_modules/.cache
                       node_modules/.tmp
-                  key: ci-${{ matrix.check }}-${{ runner.os }}-${{ github.sha }}
-                  restore-keys: ci-${{ matrix.check }}-${{ runner.os }}-
+                  # A lockfile change starts cold: tsc -b and the lint cache do not notice
+                  # changed dependencies (spec 026).
+                  key: ci-${{ matrix.check }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}-${{ github.sha }}
+                  restore-keys: ci-${{ matrix.check }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}-
             - run: yarn install --frozen-lockfile
             - run: yarn ci:${{ matrix.check }}
 

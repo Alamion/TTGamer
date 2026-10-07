@@ -18,7 +18,7 @@
         "write-translations": "docusaurus write-translations",
         "write-heading-ids": "docusaurus write-heading-ids",
         "pretypecheck": "yarn -s build:translations",
-        "typecheck": "tsc -b",
+        "typecheck": "node --import tsx scripts/typecheck.ts",
         "lint": "yarn ci:lint",
         "lint:fix": "eslint . --fix && prettier --write .",
         "format": "prettier --write .",
