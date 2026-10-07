@@ -1,5 +1,18 @@
 # Changelog
 
+## v3.23.0
+
+### Fix
+
+- **Pages no longer redraw on load**: every page of the site was drawn twice when it opened, because the notification area existed only in the browser; it is now added after the page loads, so the page stays as the server sent it
+
+### Chore
+
+- **Browser tests (spec 026, T-033)**: a real browser checks the built site before a merge — the home page, English and Russian docs, a sheet that keeps its name after a reload, a dice roll from the keyboard, a move and undo in the template editor, and a catalog table's sort, pages, and search; a test fails on any error the page logs and any failed request. Timings for opening the sheet, an editor edit, and a drag preview are printed next to their budgets and never fail a run
+- **Dependency upgrades (spec 026, T-088)**: Vitest 5, happy-dom for almost every component test (jsdom 30 for two), knip 6, three 0.186, lucide-react 1, React Table 9, and in-range updates; Node 22.22 or newer. The unit run takes about 80 s instead of about 103 s, and the icons and catalog tables look and work as before
+- **Faster drag in the template editor**: marking the drop target touches only the marked elements instead of searching the whole page
+- **Type check after an upgrade**: `yarn typecheck` and CI check every file when `yarn.lock` changes, so errors in new type definitions are no longer missed
+
 ## v3.22.1
 
 ### Fix
