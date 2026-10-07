@@ -104,9 +104,9 @@ screenshot and trace kept (SC-001).
 **Check**: the same test count passes; the unit run (best of three) is compared with the T001
 baseline (SC-003).
 
-- [ ] T019 [US3] Pin Node (D12): set `.nvmrc` to `22.22` and `engines.node` to `>=22.22.2` in
+- [x] T019 [US3] Pin Node (D12): set `.nvmrc` to `22.22` and `engines.node` to `>=22.22.2` in
       `package.json`. Commit with T020.
-- [ ] T020 [US3] Upgrade `vitest` and `@vitest/coverage-v8` to 5 in `package.json` and adapt
+- [x] T020 [US3] Upgrade `vitest` and `@vitest/coverage-v8` to 5 in `package.json` and adapt
       `vitest.config.ts` to the changed options:
     - the projects, pool, and per-file `vi.setConfig` must work;
     - `yarn test`, `yarn test:perf`, and `yarn test:coverage` must pass;

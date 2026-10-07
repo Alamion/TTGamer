@@ -89,7 +89,7 @@
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.2.3",
         "@types/three": "^0.186.0",
-        "@vitest/coverage-v8": "4.1.11",
+        "@vitest/coverage-v8": "^5.0.3",
         "autoprefixer": "^10.4.23",
         "eslint": "^10.3.0",
         "eslint-config-prettier": "^10.0.1",
@@ -108,7 +108,8 @@
         "tsx": "^4.20.0",
         "typescript": "~6.0.2",
         "typescript-eslint": "^8.59.2",
-        "vitest": "^4.1.8",
+        "vite": "^8.3.3",
+        "vitest": "^5.0.3",
         "yaml": "^2.9.0"
     },
     "browserslist": {
@@ -124,6 +125,6 @@
         ]
     },
     "engines": {
-        "node": ">=20.0"
+        "node": ">=22.22.2"
     }
 }
