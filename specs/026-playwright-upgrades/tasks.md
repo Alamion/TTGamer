@@ -111,7 +111,7 @@ baseline (SC-003).
     - the projects, pool, and per-file `vi.setConfig` must work;
     - `yarn test`, `yarn test:perf`, and `yarn test:coverage` must pass;
     - run `yarn verify:full` and commit.
-- [ ] T021 [US3] Upgrade `jsdom` to 30 in `package.json`, fix any test failures in the code or the
+- [x] T021 [US3] Upgrade `jsdom` to 30 in `package.json`, fix any test failures in the code or the
       test setup without weakening an assertion, run `yarn verify:full`, and commit.
 - [x] T022 [US3] Add `happy-dom` as a dev dependency. With a scratchpad script (not committed), run
       each `@vitest-environment jsdom` test file under happy-dom alone, three times, and list the

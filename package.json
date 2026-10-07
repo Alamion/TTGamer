@@ -99,7 +99,7 @@
         "globals": "^17.6.0",
         "happy-dom": "^20.14.5",
         "husky": "^9.1.7",
-        "jsdom": "^26.1.0",
+        "jsdom": "^30.1.2",
         "knip": "^6",
         "lint-staged": "^17.6.0",
         "postcss": "^8.5.6",
