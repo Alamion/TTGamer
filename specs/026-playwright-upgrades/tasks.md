@@ -90,7 +90,7 @@ screenshot and trace kept (SC-001).
 - [x] T016 [US2] Upgrade knip to 6 in `package.json`. Fix any new finding, or exempt it with
       `@knipignore` and a reason at its declaration. Adjust `knip.json` to the new schema if needed.
       Run `yarn verify:full` and commit.
-- [ ] T017 [US2] Upgrade eslint-plugin-simple-import-sort to 14 in `package.json`:
+- [x] T017 [US2] Upgrade eslint-plugin-simple-import-sort to 14 in `package.json`:
     - commit the version change with any config change;
     - run `yarn lint:fix` and commit the re-sort alone, as
       `style: re-sort imports (simple-import-sort 14)`;
