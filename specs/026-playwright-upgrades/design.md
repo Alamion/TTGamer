@@ -236,8 +236,10 @@ Current versions (2026-10-07):
   (follows Node 22).
 - **SC-006:** every `verify:full` run printed all four browser timings, and none failed a run.
 - **Manual walk:**
-    - Steps 1–3 and 5 passed. `ci:e2e` ran with the dev server on 3000, which stayed up. `test:e2e`
+    - All five steps passed. `ci:e2e` ran with the dev server on 3000, which stayed up. `test:e2e`
       without a build stops at once with "run `yarn build` first". A failure keeps a screenshot and
       a trace. The unit run kept 2218 tests.
-    - Step 4 (look over icons and a catalog table) is left to the maintainer. The catalog smoke test
-      covers the table's behavior.
+    - Step 4 was walked by the maintainer on the restarted dev server (2026-10-07): icons and the
+      catalog tables look and work as before.
+    - Load flakes (two template sweeps over 5 s, the editor preview ratio) are accepted as they are:
+      tests are judged on an idle machine.
