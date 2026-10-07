@@ -128,7 +128,7 @@ baseline (SC-003).
 **Check**: the catalog smoke test passes; `tsc` finds no missing icon export; the manual icon
 look-over shows no change.
 
-- [ ] T025 [US4] Upgrade `lucide-react` to 1 in `package.json`. Rename the icons that
+- [x] T025 [US4] Upgrade `lucide-react` to 1 in `package.json`. Rename the icons that
       `yarn     typecheck` reports missing, choosing the same glyphs, across `src/`. Run
       `yarn verify:full` and commit.
 - [ ] T026 [US4] Upgrade `@tanstack/react-table` to 9 in `package.json` and migrate
