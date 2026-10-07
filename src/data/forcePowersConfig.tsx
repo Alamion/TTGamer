@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { FilterConfig } from '@site/src/shared/components/DataCatalog';
-import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
 import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from './catalogI18n';
@@ -34,7 +34,7 @@ const SkillDots = ({ skills }: { skills: string[] }) => {
     );
 };
 
-export const FORCE_POWER_COLUMNS: ColumnDef<ForcePowerEntry>[] = [
+export const FORCE_POWER_COLUMNS: CatalogColumnDef<ForcePowerEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),
@@ -51,7 +51,6 @@ export const FORCE_POWER_COLUMNS: ColumnDef<ForcePowerEntry>[] = [
         header: columnHeader(messages.columns.shortDescription),
         accessorKey: 'shortDescription',
         enableSorting: false,
-        size: 280,
         meta: localizedTextMeta(CATALOG_ID, 'shortDescription'),
     },
     {
@@ -60,7 +59,6 @@ export const FORCE_POWER_COLUMNS: ColumnDef<ForcePowerEntry>[] = [
         accessorKey: 'skills',
         enableSorting: false,
         filterFn: arrayIncludesAnyFilterFn,
-        size: 300,
         meta: enumLabelMeta(CATALOG_ID, 'skills'),
         cell: ({ getValue }) => {
             const skills = getValue<string[]>();
@@ -73,7 +71,6 @@ export const FORCE_POWER_COLUMNS: ColumnDef<ForcePowerEntry>[] = [
         accessorKey: 'forcePointCost',
         enableSorting: true,
         filterFn: booleanFilterFn,
-        size: 50,
         cell: ({ getValue }) => {
             const cost = getValue<boolean>();
             return cost ? (

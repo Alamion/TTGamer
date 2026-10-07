@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
 import { LibraryDialog } from '@site/src/sheet_manager/components/dialogs/LibraryDialog';

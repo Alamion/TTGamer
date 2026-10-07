@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { ReferenceFieldControl } from '@site/src/sheet_manager/features/sheet/declarative/fieldControls';
 import type { TemplateField } from '@site/src/sheet_manager/types/template';

@@ -2,23 +2,14 @@ import { useHistory, useLocation } from '@docusaurus/router';
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import type {
-    ColumnDef,
+    CellData,
     ColumnFiltersState,
-    FilterFn,
     PaginationState,
     RowData,
     SortingState,
+    TableFeatures,
 } from '@tanstack/react-table';
-import {
-    flexRender,
-    getCoreRowModel,
-    getFacetedRowModel,
-    getFacetedUniqueValues,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
-} from '@tanstack/react-table';
+import { flexRender, useTable } from '@tanstack/react-table';
 import { clsx } from 'clsx';
 import {
     ChevronDown,
@@ -38,12 +29,18 @@ import { usePluralMessage } from '../hooks/usePluralMessage';
 import { matchesSearch } from '../utils/normalizeSearchText';
 import { deserializeStringList, serializeStringList } from '../utils/stringList';
 import { BottomSheet } from './BottomSheet';
+import { type CatalogColumnDef, catalogFeatures, type CatalogFilterFn } from './catalogTable';
 import { SlidePanel } from './SlidePanel';
 
 declare module '@tanstack/react-table' {
-    // `TValue` is required by the declaration merge.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    interface ColumnMeta<TData extends RowData, TValue> {
+    // `TFeatures` and `TValue` are required by the declaration merge.
+    /* eslint-disable @typescript-eslint/no-unused-vars */
+    interface ColumnMeta<
+        TFeatures extends TableFeatures,
+        TData extends RowData,
+        TValue extends CellData,
+    > {
+        /* eslint-enable @typescript-eslint/no-unused-vars */
         /**
          * Text of the cell in the reader's locale (e.g. through `catalogEntryText`). The table
          * displays, sorts, and searches it instead of the raw property.
@@ -85,7 +82,10 @@ function resolveText(text: CatalogText): string {
 }
 
 /** Applies `meta.localizedText` / `meta.valueLabel` of a column for `locale`. */
-function localizeColumn<T>(column: ColumnDef<T>, locale: string): ColumnDef<T> {
+function localizeColumn<T extends RowData>(
+    column: CatalogColumnDef<T>,
+    locale: string
+): CatalogColumnDef<T> {
     const text = column.meta?.localizedText;
     if (text) {
         const localized = { ...column } as Record<string, unknown>;
@@ -94,7 +94,7 @@ function localizeColumn<T>(column: ColumnDef<T>, locale: string): ColumnDef<T> {
             ...localized,
             id: column.id,
             accessorFn: (row: T) => text(row, locale) ?? '',
-        } as ColumnDef<T>;
+        } as CatalogColumnDef<T>;
     }
     const valueLabel = column.meta?.valueLabel;
     if (valueLabel && !column.cell) {
@@ -109,9 +109,9 @@ function localizeColumn<T>(column: ColumnDef<T>, locale: string): ColumnDef<T> {
     return column;
 }
 
-export interface DataCatalogProps<T> {
+export interface DataCatalogProps<T extends RowData> {
     data: T[];
-    columns: ColumnDef<T>[];
+    columns: CatalogColumnDef<T>[];
     renderDetail: (item: T) => ReactNode;
     getRowId?: (item: T) => string;
     searchPlaceholder?: string;
@@ -273,7 +273,7 @@ export function DataCatalog<T extends { id: string }>({
     );
 
     /** Matches the shown text, value labels, and the raw (English) value of a cell. */
-    const globalFilterFn = useCallback<FilterFn<T>>(
+    const globalFilterFn = useCallback<CatalogFilterFn<T>>(
         (row, columnId, query: string) => {
             const value = row.getValue<unknown>(columnId);
             const text = value === null || value === undefined ? '' : String(value);
@@ -288,8 +288,8 @@ export function DataCatalog<T extends { id: string }>({
         [valueLabels, locale]
     );
 
-    // eslint-disable-next-line react-hooks/incompatible-library
-    const table = useReactTable({
+    const table = useTable({
+        features: catalogFeatures,
         data,
         columns: localizedColumns,
         state: { sorting, columnFilters, globalFilter, pagination, columnVisibility },
@@ -298,12 +298,6 @@ export function DataCatalog<T extends { id: string }>({
         onGlobalFilterChange: setGlobalFilter,
         onPaginationChange: setPagination,
         onColumnVisibilityChange: setColumnVisibility,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getFacetedRowModel: getFacetedRowModel(),
-        getFacetedUniqueValues: getFacetedUniqueValues(),
         globalFilterFn,
         autoResetPageIndex: false,
     });
@@ -467,6 +461,9 @@ export function DataCatalog<T extends { id: string }>({
     }
 
     useLayoutEffect(() => {
+        // The server renders without the query string, so the state can only take it from the
+        // URL after hydration; reading it during render would not match the server HTML.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         applyUrlParams(location.search);
         firstRender.current = false;
         // eslint-disable-next-line react-hooks/exhaustive-deps

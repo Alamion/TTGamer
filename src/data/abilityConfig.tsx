@@ -1,7 +1,7 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { FilterConfig } from '@site/src/shared/components/DataCatalog';
 import { ScaleList, SpecialtiesList } from '@site/src/shared/components/DetailSections';
-import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
 import type { AbilityEntry } from './abilities';
@@ -10,7 +10,7 @@ import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from '
 const CATALOG_ID = 'abilities';
 const messages = uiMessages.catalogs.abilities;
 
-export const ABILITY_COLUMNS: ColumnDef<AbilityEntry>[] = [
+export const ABILITY_COLUMNS: CatalogColumnDef<AbilityEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),
@@ -23,7 +23,6 @@ export const ABILITY_COLUMNS: ColumnDef<AbilityEntry>[] = [
         header: columnHeader(messages.columns.shortDescription),
         accessorKey: 'shortDescription',
         enableSorting: true,
-        size: 300,
         meta: localizedTextMeta(CATALOG_ID, 'shortDescription'),
     },
     {

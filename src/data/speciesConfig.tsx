@@ -1,9 +1,9 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { FilterConfig } from '@site/src/shared/components/DataCatalog';
 import { EraTags } from '@site/src/shared/components/EraTags';
 import { catalogEntryText } from '@site/src/sheet_manager/systems/catalogs';
-import type { ColumnDef } from '@tanstack/react-table';
 import type { ReactNode } from 'react';
 
 import { columnHeader, enumLabelMeta, localizedTextMeta, useCatalogText } from './catalogI18n';
@@ -45,7 +45,7 @@ function FirstEra({ eras }: { eras: string[] }) {
     );
 }
 
-export const SPECIES_COLUMNS: ColumnDef<SpeciesEntry>[] = [
+export const SPECIES_COLUMNS: CatalogColumnDef<SpeciesEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),

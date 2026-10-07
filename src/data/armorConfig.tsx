@@ -1,6 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { ReactNode } from 'react';
 
 import type { ArmorEntry } from './armorData';
@@ -9,7 +9,7 @@ import { columnHeader, localizedTextMeta, useCatalogText } from './catalogI18n';
 const CATALOG_ID = 'armor';
 const messages = uiMessages.catalogs.armor;
 
-export const ARMOR_COLUMNS: ColumnDef<ArmorEntry>[] = [
+export const ARMOR_COLUMNS: CatalogColumnDef<ArmorEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),

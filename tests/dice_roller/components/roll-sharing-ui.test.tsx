@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import RollControls from '@site/src/dice_roller/components/dice_pool/RollControls';
 import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';

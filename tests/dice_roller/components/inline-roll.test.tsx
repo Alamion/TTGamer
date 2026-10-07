@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { InlineRoll } from '@site/src/dice_roller/components/InlineRoll';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';

@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';

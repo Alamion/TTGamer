@@ -45,7 +45,7 @@ check fo it existence before killing processes or creating new one.
 | Components      | Radix UI primitives                 |
 | Dice Logic      | moo lexer + hand-written AST parser |
 | 3D Rendering    | Three.js + cannon-es                |
-| Testing         | Vitest                              |
+| Testing         | Vitest (happy-dom), Playwright      |
 | i18n            | Docusaurus i18n (en, ru)            |
 
 ## 3. Development Commands
@@ -55,13 +55,15 @@ check fo it existence before killing processes or creating new one.
 | `yarn start`                        | Start Docusaurus dev server                                       |
 | `yarn build`                        | Production build                                                  |
 | `yarn serve`                        | Preview production build                                          |
-| `yarn typecheck`                    | `tsc -b` over app, node, and test projects (incremental)          |
+| `yarn typecheck`                    | `tsc -b` over every project; full after a `yarn.lock` change      |
 | `yarn lint` / `yarn lint:fix`       | ESLint + Prettier with caches (check / auto-fix)                  |
 | `yarn format` / `yarn format:check` | Prettier only (write / check)                                     |
 | `yarn test`                         | Vitest `unit` project (default run, no timing assertions)         |
 | `yarn test:perf`                    | Vitest `perf` project: timing tests, one file at a time           |
 | `yarn test:watch`                   | Vitest watch mode                                                 |
 | `yarn test:coverage`                | Vitest coverage report                                            |
+| `yarn test:e2e`                     | Playwright on the built site: smoke tests, then browser timings   |
+| `yarn e2e:install`                  | Install the Chromium build Playwright uses (once per machine)     |
 | `yarn build:translations`           | Generate UI/catalog translations (runs before start/test/build)   |
 | `yarn validate:data`                | Validate catalogs and references                                  |
 | `yarn audit:dead-code`              | knip: unused files/exports/deps                                   |
@@ -133,6 +135,7 @@ check fo it existence before killing processes or creating new one.
 ├── translations/source/        # Canonical YAML UI/catalog translation sources
 ├── scripts/                   # Validators, translation build, release script
 ├── tests/                     # Vitest logic, integration, and component tests
+├── tests-e2e/                 # Playwright: smoke/ (blocking) and timings/ (reported) on the build
 ├── static/                    # Images, sounds (dice impacts, surfaces)
 └── context/                   # Local, git-ignored reference material (see context/AGENTS.md)
 ```
@@ -204,9 +207,9 @@ This section owns the verification rules; other guidance links here.
 
 - **Checks** are `package.json` scripts, the only entry points any runner calls (local hooks, GitHub
   Actions in `.github/workflows/ci.yml`, Vercel's `yarn build`, a later Jenkins pipeline):
-  `ci:lint`, `ci:typecheck`, `ci:test`, `ci:test:perf`, `ci:deadcode`, `ci:validate`, `ci:build`.
-  `verify:fast` = lint + typecheck + validate; `verify` adds dead code and unit tests; `verify:full`
-  adds the perf tests and the build.
+  `ci:lint`, `ci:typecheck`, `ci:test`, `ci:test:perf`, `ci:deadcode`, `ci:validate`, `ci:build`,
+  `ci:e2e` (build, then the browser tests). `verify:fast` = lint + typecheck + validate; `verify`
+  adds dead code and unit tests; `verify:full` adds the perf tests and `ci:e2e`.
 - **Commit** (`pre-commit`): lint-staged formats and lints the staged files only (seconds); staged
   backlog or translation files also run their validator.
 - **Push** (`pre-push`): the type check and the unit tests related to the pushed changes.
@@ -217,6 +220,13 @@ This section owns the verification rules; other guidance links here.
 - **Merge into `master`** requires `yarn verify:full` (§12).
 - **CI** runs every `ci:*` command on push and pull requests. Perf tests there are reported, not
   blocking, because shared runners are noisy.
+- **Browser tests** (`tests-e2e/`) serve `build/` on port 3100, never the dev server. A smoke test
+  fails on any uncaught or logged error and any failed request to the site. Browser timings print
+  next to their budgets and never fail a run. Locate controls by role and label, and wait for
+  states, never for fixed delays.
+- **Test DOM**: component tests use `// @vitest-environment happy-dom`. A file uses `jsdom` only
+  where happy-dom differs, and says why in the docblock (today: style colors read back as
+  `rgb(...)`).
 - **Dead code**: knip fails on unused files, exports, or dependencies. A deliberate export without
   importers needs `@knipignore` and a reason.
 - **Flaky tests**: a test that fails without a code cause is fixed or quarantined within a day.

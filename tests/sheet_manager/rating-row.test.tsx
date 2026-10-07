@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import type { RatingFlag } from '@site/src/sheet_manager/types/template';

@@ -33,6 +33,10 @@ export function revealNode(session: EditorSession, nodeId: string) {
     const shown = () =>
         document.querySelector(`[data-editor-frame][data-node-id="${nodeId}"]`) !== null;
     const step = (index: number) => {
+        // The editor may have closed (or the page gone) before this frame.
+        if (typeof document === 'undefined' || !document.querySelector('[data-editor-page]')) {
+            return;
+        }
         if (index >= chain.length || shown()) {
             reveal(`[data-editor-frame][data-node-id="${nodeId}"]`, 'center');
             reveal(`[data-outline-row="${nodeId}"]`, 'nearest');

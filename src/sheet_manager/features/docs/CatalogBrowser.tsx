@@ -1,8 +1,8 @@
 import { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
-import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
 import { reportSheetIssue } from '../../diagnostics';
@@ -75,7 +75,7 @@ export function CatalogBrowser({ catalogId }: { catalogId: string }) {
         return null;
     }
 
-    const columns: ColumnDef<BrowserRow>[] = [
+    const columns: CatalogColumnDef<BrowserRow>[] = [
         {
             // Shows the localized name; the column id points search at the English book name
             // too (DataCatalog also matches the row's own value under the column id).
@@ -86,7 +86,7 @@ export function CatalogBrowser({ catalogId }: { catalogId: string }) {
         },
         ...browse.columns
             .filter((column) => !column.detailOnly)
-            .map((column): ColumnDef<BrowserRow> => ({
+            .map((column): CatalogColumnDef<BrowserRow> => ({
                 id: column.key,
                 header: translate(column.header),
                 accessorKey: column.key,

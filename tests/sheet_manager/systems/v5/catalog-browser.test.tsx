@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { catalogTranslations } from '@site/src/i18n/generated/catalogTranslations';
 import { CatalogBrowser } from '@site/src/sheet_manager/docsEmbeds';

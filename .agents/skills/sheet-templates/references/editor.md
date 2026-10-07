@@ -116,8 +116,9 @@ Reference for the `sheet-templates` skill: the template editor (`features/templa
   element drags the normalized selection. Past 5 px `nearestPlacement` picks the nearest accepted
   slot (`[data-insert-slot]` / `[data-outline-slot]`); after 320 ms on one target the page and
   outline render the uncommitted result (8 px hysteresis); release commits one step, Escape / blur /
-  pointercancel drop it. Marks are DOM attributes; `dragTransition` and `nearestPlacement` are pure
-  and unit-tested.
+  pointercancel drop it. Marks are DOM attributes (the module remembers the marked elements); the
+  dwell end sets the User Timing mark `template-editor:preview`, which the browser timings read.
+  `dragTransition` and `nearestPlacement` are pure and unit-tested.
 - **Add menu** (`components/AddElementMenu.tsx`): the registry's `PALETTE` — Group (a section at the
   root, a card inside a container), Field, List, Tracker; built only while open.
 - Performance rules: tree operations keep untouched nodes' identity; `localizeTemplate` caches per

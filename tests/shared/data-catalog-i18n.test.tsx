@@ -1,9 +1,9 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { MERITS_FLAWS_COLUMNS, MERITS_FLAWS_FILTERS } from '@site/src/data/meritsFlawsConfig';
 import { MERITS_FLAWS } from '@site/src/data/meritsFlawsData';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import { DataCatalog } from '@site/src/shared/components/DataCatalog';
-import type { ColumnDef } from '@tanstack/react-table';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
@@ -22,7 +22,7 @@ const ROWS: Row[] = Array.from({ length: 20 }, (_, index) => ({
     tags: [`tag-${index % 4}`],
 }));
 
-const COLUMNS: ColumnDef<Row>[] = [
+const COLUMNS: CatalogColumnDef<Row>[] = [
     { id: 'name', header: 'Name', accessorKey: 'name', enableSorting: false },
     { id: 'tags', header: 'Tags', accessorKey: 'tags', enableSorting: false },
 ];

@@ -37,6 +37,8 @@ export interface DropSlot {
 export const DRAG_THRESHOLD_PX = 5;
 /** How long the pointer rests on one target before the page shows the move. */
 export const PREVIEW_DWELL_MS = 320;
+/** A User Timing mark when the dwell ends, so browser timings measure the preview (spec 026). */
+export const PREVIEW_MARK = 'template-editor:preview';
 /** While previewing, the target changes only after the pointer travels this far. */
 export const PREVIEW_HYSTERESIS_PX = 8;
 const AUTOSCROLL_EDGE_PX = 48;
@@ -244,15 +246,21 @@ function sameSpot(before: EditorDraft, after: EditorDraft, nodeId: string): bool
     );
 }
 
+/**
+ * Elements each marker attribute was put on. Clearing them by memory instead of searching the
+ * whole page for the attribute keeps a mark refresh to one selector query (marks are reapplied
+ * after every page render while dragging).
+ */
+const markedElements = new Map<string, readonly Element[]>();
+
 function setMarker(attribute: string, selector: string | undefined) {
-    for (const element of document.querySelectorAll(`[${attribute}]`)) {
-        if (!selector || !element.matches(selector)) element.removeAttribute(attribute);
+    const next = selector ? [...document.querySelectorAll(selector)] : [];
+    const keep = new Set(next);
+    for (const element of markedElements.get(attribute) ?? []) {
+        if (!keep.has(element)) element.removeAttribute(attribute);
     }
-    if (selector) {
-        for (const element of document.querySelectorAll(selector)) {
-            element.setAttribute(attribute, '');
-        }
-    }
+    for (const element of next) element.setAttribute(attribute, '');
+    markedElements.set(attribute, next);
 }
 
 /** Where the dragged element stood, as a slot key of the preview draft (its dashed place). */
@@ -435,10 +443,10 @@ export function useEditorDrag({
                     (previous.phase !== 'dragging' || previous.since !== next.since)
                 ) {
                     clearTimeout(dwell);
-                    dwell = setTimeout(
-                        () => apply(dragTransition(state, { type: 'tick', now: Date.now() })),
-                        PREVIEW_DWELL_MS
-                    );
+                    dwell = setTimeout(() => {
+                        performance.mark(PREVIEW_MARK);
+                        apply(dragTransition(state, { type: 'tick', now: Date.now() }));
+                    }, PREVIEW_DWELL_MS);
                 }
                 markTarget();
             };

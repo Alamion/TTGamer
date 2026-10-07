@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 import { TrackerParity } from '@site/src/sheet_manager/features/docs/ElementStorybook';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';

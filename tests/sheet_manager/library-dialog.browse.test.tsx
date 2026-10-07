@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { LibraryDialog } from '@site/src/sheet_manager/components/dialogs/LibraryDialog';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';

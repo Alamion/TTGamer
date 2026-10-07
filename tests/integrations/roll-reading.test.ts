@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { onRollResult } from '@site/src/dice_roller/dice-logic';
 import type { RollResult } from '@site/src/dice_roller/dice-logic/types';

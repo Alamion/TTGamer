@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import NotationInput from '@site/src/dice_roller/components/dice_pool/NotationInput';
 import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';

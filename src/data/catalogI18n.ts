@@ -1,4 +1,5 @@
 import { translate } from '@docusaurus/Translate';
+import type { CatalogColumnMeta } from '@site/src/shared/components/catalogTable';
 import type { CatalogMessageDescriptor } from '@site/src/shared/components/DataCatalog';
 import { useLocale } from '@site/src/shared/hooks/useLocale';
 import {
@@ -7,7 +8,7 @@ import {
     type CatalogLike,
     entryEnumLabel,
 } from '@site/src/sheet_manager/systems/catalogs';
-import type { ColumnMeta } from '@tanstack/react-table';
+import type { RowData } from '@tanstack/react-table';
 import { useMemo } from 'react';
 
 /**
@@ -22,7 +23,10 @@ export function columnHeader(message: CatalogMessageDescriptor): () => string {
 }
 
 /** Column meta: the table shows, sorts, and searches `key` in the reader's locale. */
-export function localizedTextMeta<T>(catalogId: string, key: string): ColumnMeta<T, unknown> {
+export function localizedTextMeta<T extends RowData>(
+    catalogId: string,
+    key: string
+): CatalogColumnMeta<T> {
     return {
         localizedText: (row, locale) =>
             catalogEntryText(catalogId, row as unknown as CatalogLike, key, locale),
@@ -30,7 +34,10 @@ export function localizedTextMeta<T>(catalogId: string, key: string): ColumnMeta
 }
 
 /** Column meta: enumerated values (`_labels.<field>`) are shown, filtered, and searched by label. */
-export function enumLabelMeta<T>(catalogId: string, field: string): ColumnMeta<T, unknown> {
+export function enumLabelMeta<T extends RowData>(
+    catalogId: string,
+    field: string
+): CatalogColumnMeta<T> {
     return { valueLabel: (value, locale) => entryEnumLabel(catalogId, field, value, locale) };
 }
 

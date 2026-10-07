@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';

@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { useTemplateStore } from '@site/src/sheet_manager/store/templateStore';
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';

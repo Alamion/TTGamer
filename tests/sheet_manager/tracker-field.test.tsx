@@ -1,4 +1,6 @@
 // @vitest-environment jsdom
+// jsdom, not happy-dom: these tests read style colors back as `rgb(...)`, which happy-dom keeps as
+// written (AGENTS.md §11).
 import { CharacterContext } from '@site/src/sheet_manager/context/CharacterContext';
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';

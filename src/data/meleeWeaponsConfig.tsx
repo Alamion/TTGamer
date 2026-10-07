@@ -1,6 +1,6 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import type { ColumnDef } from '@tanstack/react-table';
+import type { CatalogColumnDef } from '@site/src/shared/components/catalogTable';
 import type { ReactNode } from 'react';
 
 import { columnHeader, localizedTextMeta, useCatalogText } from './catalogI18n';
@@ -9,7 +9,7 @@ import type { MeleeWeaponEntry } from './meleeWeaponsData';
 const CATALOG_ID = 'melee-weapons';
 const messages = uiMessages.catalogs.meleeWeapons;
 
-export const MELEE_WEAPONS_COLUMNS: ColumnDef<MeleeWeaponEntry>[] = [
+export const MELEE_WEAPONS_COLUMNS: CatalogColumnDef<MeleeWeaponEntry>[] = [
     {
         id: 'name',
         header: columnHeader(messages.columns.name),

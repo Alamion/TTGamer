@@ -1,3 +1,4 @@
+import BrowserOnly from '@docusaurus/BrowserOnly';
 import DiceRollerPanel from '@site/src/dice_roller/components/DiceRollerPanel';
 import Renderer3DFallbackNotice from '@site/src/dice_roller/components/Renderer3DFallbackNotice';
 import RollSharingSubscription from '@site/src/dice_roller/components/RollSharingSubscription';
@@ -11,8 +12,6 @@ import toast, { Toaster } from 'react-hot-toast';
 interface RootProps {
     children: ReactNode;
 }
-
-const isBrowser = typeof window !== 'undefined';
 
 const toastStyle = {
     background: 'rgb(30 41 59)',
@@ -39,19 +38,22 @@ export default function Root({ children }: RootProps): ReactNode {
             <RollSharingSubscription />
             <Renderer3DFallbackNotice />
             <div id="modal-root" className="tailwind-root"></div>
-            {isBrowser && (
-                <Toaster
-                    position="top-center"
-                    toastOptions={{
-                        style: {
-                            background: 'rgb(30 41 59)',
-                            color: 'rgb(248 250 252)',
-                            border: '1px solid rgb(51 65 85)',
-                            fontSize: '13px',
-                        },
-                    }}
-                />
-            )}
+            {/* After hydration: the server renders no toaster, so hydrating one would mismatch. */}
+            <BrowserOnly>
+                {() => (
+                    <Toaster
+                        position="top-center"
+                        toastOptions={{
+                            style: {
+                                background: 'rgb(30 41 59)',
+                                color: 'rgb(248 250 252)',
+                                border: '1px solid rgb(51 65 85)',
+                                fontSize: '13px',
+                            },
+                        }}
+                    />
+                )}
+            </BrowserOnly>
             <div className="tailwind-root">
                 <DiceRollerPanel />
             </div>

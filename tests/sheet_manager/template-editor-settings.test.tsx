@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import { cleanup, fireEvent, within } from '@testing-library/react';

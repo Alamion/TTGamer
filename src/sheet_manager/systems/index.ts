@@ -21,19 +21,16 @@ syncUserDocumentTypes();
 useDocumentTypeStore.subscribe(syncUserDocumentTypes);
 useTemplateStore.subscribe(syncUserDocumentTypes);
 
-export type { CharacterDocumentCapability, DocumentCapabilities } from './capabilities';
 export type {
     CatalogBindingEntry,
-    CatalogBrowse,
     CatalogBrowseColumn,
-    CatalogDetailRow,
     CatalogDetailValue,
     CatalogFillableDetail,
     CatalogFillKind,
     CatalogLike,
     CatalogMessage,
 } from './catalogs';
-export { anyCatalog, bookNameLabel, bookNameOf, defineCatalog } from './catalogs';
+export { anyCatalog, bookNameOf, defineCatalog } from './catalogs';
 export type { PolicyId, PublisherPolicy } from './policies';
 export {
     exportNotices,
@@ -42,13 +39,6 @@ export {
     resolveSystemPolicies,
 } from './policies';
 export { documentSettingLabel, SystemRegistry } from './registry';
-export type {
-    CreatureData,
-    DroidData,
-    FodderData,
-    StarWarsCharacterData,
-    VehicleData,
-} from './star-wars-wod';
 export {
     starWarsCharacterDefinition,
     starWarsCreatureDefinition,
@@ -58,45 +48,6 @@ export {
     starWarsWodProfile,
     starWarsWodSystem,
 } from './star-wars-wod';
-export type {
-    DocumentBindingDescriptor,
-    DocumentBindingKind,
-    EquipmentBinding,
-    FieldBinding,
-    ListBinding,
-    ResourceBinding,
-    SystemListShape,
-    TrackBinding,
-    TraitBinding,
-} from './templateBindings';
-export type {
-    DeclarativeDocumentLayout,
-    DiceOutcome,
-    DiceReadingLine,
-    DocumentDefinition,
-    DocumentLayout,
-    DocumentModule,
-    DocumentViewDefinition,
-    DocumentViewLabel,
-    ParsedRegisteredDocument,
-    RollReadingRules,
-    SystemDiceRules,
-    SystemPlugin,
-    TraitPoolFlags,
-} from './types';
-export type {
-    CatalogColumn,
-    CatalogColumnType,
-    CatalogEntry,
-    CatalogScope,
-    UserCatalog,
-    UserCatalogOwner,
-} from './userCatalogs';
-export type { EffectiveTemplate, ResolvedCustomTemplate } from './view';
-export {
-    isTemplateCompatible,
-    resolveCustomTemplate,
-    resolveDocumentView,
-    resolveEffectiveTemplate,
-} from './view';
+export type { DocumentDefinition, RollReadingRules, SystemPlugin } from './types';
+export { resolveCustomTemplate, resolveDocumentView, resolveEffectiveTemplate } from './view';
 export * from './wod-like';

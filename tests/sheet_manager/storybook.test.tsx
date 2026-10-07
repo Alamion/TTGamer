@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { tailwindColors } from '@site/src/shared/components/Palette';
 import {

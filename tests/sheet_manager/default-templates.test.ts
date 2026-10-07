@@ -357,7 +357,7 @@ describe('effective template resolution (feature 004/006)', () => {
     });
 });
 
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';

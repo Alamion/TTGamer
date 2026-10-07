@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { StatDot } from '@site/src/sheet_manager/components/stat-fields/StatDot';
 import { cleanup, render, screen } from '@testing-library/react';

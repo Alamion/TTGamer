@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';

@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+// @vitest-environment happy-dom
 
 import { TraitRowWithInput } from '@site/src/sheet_manager/components/stat-fields/TraitRow';
 import { fireEvent, render, screen } from '@testing-library/react';
