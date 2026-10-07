@@ -84,7 +84,7 @@ screenshot and trace kept (SC-001).
 
 **Check**: `yarn verify:full` passes after each commit; knip reports no findings.
 
-- [ ] T015 [US2] Upgrade the in-range minors (Radix context menu, dialog, and popover; eslint;
+- [x] T015 [US2] Upgrade the in-range minors (Radix context menu, dialog, and popover; eslint;
       typescript-eslint; postcss; @types/node within 24) in `package.json` and `yarn.lock`, then run
       `yarn verify:full` and commit.
 - [ ] T016 [US2] Upgrade knip to 6 in `package.json`. Fix any new finding, or exempt it with
