@@ -70,7 +70,7 @@
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-hot-toast": "^2.6.0",
-        "three": "^0.184.0",
+        "three": "^0.186.1",
         "zod": "^3.24.0",
         "zustand": "^5.0.0"
     },
@@ -88,7 +88,7 @@
         "@types/node": "^24.12.3",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.2.3",
-        "@types/three": "^0.184.1",
+        "@types/three": "^0.186.0",
         "@vitest/coverage-v8": "4.1.11",
         "autoprefixer": "^10.4.23",
         "eslint": "^10.3.0",

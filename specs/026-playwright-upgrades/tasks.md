@@ -95,7 +95,7 @@ screenshot and trace kept (SC-001).
     - run `yarn lint:fix` and commit the re-sort alone, as
       `style: re-sort imports (simple-import-sort 14)`;
     - run `yarn verify:full`.
-- [ ] T018 [US2] Upgrade `three` and `@types/three` to 0.186 in `package.json` and fix the type or
+- [x] T018 [US2] Upgrade `three` and `@types/three` to 0.186 in `package.json` and fix the type or
       API changes in `src/dice_roller/`. The display-condition dice tests
       (`tests/dice_roller/renderer/`) must pass unchanged. Run `yarn verify:full` and commit.
 
