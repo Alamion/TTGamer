@@ -25,7 +25,6 @@ import {
 
 export type {
     CatalogBindingEntry,
-    CatalogDetailRow,
     CatalogDetailValue,
     CatalogFillableDetail,
     CatalogFillKind,

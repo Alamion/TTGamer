@@ -9,4 +9,3 @@ export {
     DiceD100,
     DiceDF,
 } from './DiceSvg';
-export { SvgImage, useDiceColors } from './utils';

@@ -87,7 +87,7 @@ screenshot and trace kept (SC-001).
 - [x] T015 [US2] Upgrade the in-range minors (Radix context menu, dialog, and popover; eslint;
       typescript-eslint; postcss; @types/node within 24) in `package.json` and `yarn.lock`, then run
       `yarn verify:full` and commit.
-- [ ] T016 [US2] Upgrade knip to 6 in `package.json`. Fix any new finding, or exempt it with
+- [x] T016 [US2] Upgrade knip to 6 in `package.json`. Fix any new finding, or exempt it with
       `@knipignore` and a reason at its declaration. Adjust `knip.json` to the new schema if needed.
       Run `yarn verify:full` and commit.
 - [ ] T017 [US2] Upgrade eslint-plugin-simple-import-sort to 14 in `package.json`:

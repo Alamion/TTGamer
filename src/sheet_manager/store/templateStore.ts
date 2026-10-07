@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { describeError, reportSheetIssue } from '../diagnostics';
-import type { SystemId } from '../types/document';
 import type { CustomTemplate } from '../types/template';
 import { CustomTemplateSchema } from '../types/template';
 
@@ -190,5 +189,3 @@ export const useTemplateStore = isBrowser
           })
       )
     : create<TemplateStoreState>()(stateCreator);
-
-export type { SystemId };
