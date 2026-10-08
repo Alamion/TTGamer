@@ -112,7 +112,7 @@ function RollHistory() {
     const renderItemRow = (item: ListItem) => (
         <div
             key={item.key}
-            className={`px-3 py-2 rounded ${item.isExpanded ? 'bg-primary/25' : 'bg-bgBase/40'}`}
+            className={`px-3 py-2 rounded-sm ${item.isExpanded ? 'bg-primary/25' : 'bg-bgBase/40'}`}
         >
             <div className="flex items-center gap-1.5 min-w-0">
                 {item.onToggleStar ? (
@@ -122,7 +122,7 @@ function RollHistory() {
                             e.stopPropagation();
                             item.onToggleStar!();
                         }}
-                        className="flex-shrink-0 w-5 h-5 flex items-center justify-center cursor-pointer
+                        className="shrink-0 w-5 h-5 flex items-center justify-center cursor-pointer
                             hover:scale-110 transition-transform"
                         title={translate(
                             item.isStarred
@@ -147,12 +147,12 @@ function RollHistory() {
                         {item.notation}
                     </span>
                     {item.total != null && (
-                        <span className="font-bold text-base text-textPrimary flex-shrink-0">
+                        <span className="font-bold text-base text-textPrimary shrink-0">
                             = {item.total}
                         </span>
                     )}
                     {item.verdict && !item.isExpanded && (
-                        <span className="text-xs font-semibold text-textPrimary flex-shrink-0">
+                        <span className="text-xs font-semibold text-textPrimary shrink-0">
                             {translate(
                                 item.verdict.succeeded
                                     ? uiMessages.dice.history.verdictShort.success
@@ -187,8 +187,8 @@ function RollHistory() {
                         roll(item.notation, { origin: currentPanelOrigin('history') });
                     }}
                     className={clsx(
-                        'flex-shrink-0 w-6 h-6 flex items-center justify-center',
-                        'border border-transparent rounded cursor-pointer',
+                        'shrink-0 w-6 h-6 flex items-center justify-center',
+                        'border border-transparent rounded-sm cursor-pointer',
                         'opacity-60 hover:opacity-100 hover:bg-bgBase/50 transition-all'
                     )}
                     title={translate(uiMessages.dice.history.setNotationTitle)}
@@ -240,7 +240,7 @@ function RollHistory() {
                         <>
                             <span
                                 aria-hidden="true"
-                                className="inline-block w-2.5 h-2.5 mr-1 rounded-sm align-middle border border-border"
+                                className="inline-block w-2.5 h-2.5 mr-1 rounded-xs align-middle border border-border"
                                 style={{ background: specialDiceColor }}
                             />
                             <span className="font-semibold">
@@ -383,7 +383,7 @@ function RollHistory() {
                         (activeTab === 'recent' && recentNotations.length === 0)
                     }
                     className="flex items-center gap-1 py-0.5 px-3 text-xs font-semibold
-                        border border-border rounded cursor-pointer
+                        border border-border rounded-sm cursor-pointer
                         bg-bgSurface text-textPrimary
                         hover:bg-bgBase/50 transition-colors
                         disabled:opacity-40 disabled:cursor-not-allowed"

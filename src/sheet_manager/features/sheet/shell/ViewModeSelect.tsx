@@ -72,7 +72,7 @@ export function ViewModeSelect({
                         onChangeView(next as DocumentViewId);
                     }
                 }}
-                className="rounded border border-border bg-bgSurface px-2 py-1.5 text-textPrimary"
+                className="rounded-sm border border-border bg-bgSurface px-2 py-1.5 text-textPrimary"
             >
                 {views.map((candidate) => (
                     <option key={candidate.id} value={candidate.id}>

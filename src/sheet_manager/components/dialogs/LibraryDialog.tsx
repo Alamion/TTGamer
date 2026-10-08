@@ -125,7 +125,7 @@ function useLibraryTree() {
 
 const modeButton = (active: boolean) =>
     clsx(
-        'rounded px-2.5 py-1 text-xs font-medium transition-colors',
+        'rounded-sm px-2.5 py-1 text-xs font-medium transition-colors',
         active
             ? 'bg-primary-muted text-white'
             : 'text-textSecondary hover:bg-secondary/10 hover:text-textPrimary'
@@ -600,7 +600,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                             setPanel(undefined);
                         }
                     }}
-                    className="fixed left-1/2 top-1/2 z-[9999] flex h-[min(46rem,calc(100%-2rem))] w-[min(64rem,calc(100%-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-border bg-bgSurface shadow-xl focus:outline-none"
+                    className="fixed left-1/2 top-1/2 z-[9999] flex h-[min(46rem,calc(100%-2rem))] w-[min(64rem,calc(100%-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-border bg-bgSurface shadow-xl focus:outline-hidden"
                 >
                     <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
                         <Dialog.Title className="text-lg font-semibold text-textPrimary">
@@ -617,7 +617,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                             <div
                                 role="group"
                                 aria-label={translate(labels.modes.label)}
-                                className="ml-2 flex rounded border border-border p-0.5"
+                                className="ml-2 flex rounded-sm border border-border p-0.5"
                             >
                                 {(['browse', 'export', 'import'] as const).map((value) => (
                                     <button
@@ -641,7 +641,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                 <button
                                     type="button"
                                     aria-label={translate(labels.close)}
-                                    className="rounded p-1 text-textSecondary hover:bg-bgBase hover:text-textPrimary"
+                                    className="rounded-sm p-1 text-textSecondary hover:bg-bgBase hover:text-textPrimary"
                                 >
                                     <X className="h-5 w-5" aria-hidden="true" />
                                 </button>
@@ -662,7 +662,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                     value={query}
                                     placeholder={translate(labels.search.placeholder)}
                                     onChange={(event) => setQuery(event.target.value)}
-                                    className="w-full rounded border border-border bg-bgBase py-1 pl-8 pr-2 text-sm text-textPrimary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                    className="w-full rounded-sm border border-border bg-bgBase py-1 pl-8 pr-2 text-sm text-textPrimary focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
                                 />
                             </label>
                             <label className="flex items-center gap-1.5 text-xs text-textSecondary">
@@ -672,7 +672,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                     onChange={(event) =>
                                         setFilter(event.target.value as LibraryFilter)
                                     }
-                                    className="rounded border border-border bg-bgBase px-2 py-1 text-sm text-textPrimary"
+                                    className="rounded-sm border border-border bg-bgBase px-2 py-1 text-sm text-textPrimary"
                                 >
                                     <option value="all">{translate(labels.filters.all)}</option>
                                     <option value="yours">{translate(labels.filters.yours)}</option>
@@ -731,7 +731,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                             setQuery('');
                                             setFilter('all');
                                         }}
-                                        className="rounded border border-border px-2 py-1 text-xs text-textPrimary hover:bg-secondary/10"
+                                        className="rounded-sm border border-border px-2 py-1 text-xs text-textPrimary hover:bg-secondary/10"
                                     >
                                         {translate(labels.search.clear)}
                                     </button>

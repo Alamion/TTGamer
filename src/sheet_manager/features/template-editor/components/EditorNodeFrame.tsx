@@ -46,7 +46,7 @@ export const InsertSlot = memo(function InsertSlot({
                 }
                 onClick={(event) => event.stopPropagation()}
                 className={clsx(
-                    'group/slot flex w-full items-center justify-center rounded transition-colors focus:outline-none focus-visible:bg-primary/20',
+                    'group/slot flex w-full items-center justify-center rounded-sm transition-colors focus:outline-hidden focus-visible:bg-primary/20',
                     emptyColumn
                         ? 'min-h-14 border border-dashed border-borderMoreContrast p-2 text-center text-xs text-textSecondary hover:border-primary hover:text-primary'
                         : 'h-2 hover:bg-primary/20',
@@ -119,9 +119,9 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                 className={clsx(
                     'relative rounded-md outline-offset-2',
                     selected
-                        ? 'outline outline-2 outline-primary-muted'
-                        : '[&[data-hover]]:outline [&[data-hover]]:outline-1 [&[data-hover]]:outline-secondary',
-                    hasIssue && !selected && 'outline outline-1 outline-error',
+                        ? 'outline-2 outline-primary-muted'
+                        : '[&[data-hover]]:outline-1 [&[data-hover]]:outline-secondary',
+                    hasIssue && !selected && 'outline-1 outline-error',
                     '[&[data-previewing]]:outline-dashed [&[data-previewing]]:outline-2 [&[data-previewing]]:outline-primary',
                     conditionHidden &&
                         'bg-[repeating-linear-gradient(135deg,transparent_0_8px,rgb(var(--text-secondary)/0.08)_8px_16px)]',
@@ -130,7 +130,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
             >
                 <span
                     data-editor-chip=""
-                    className="absolute -top-3 left-2 z-10 hidden max-w-[80%] items-center gap-1 rounded bg-primary-muted py-0.5 pl-0.5 pr-2 text-[11px] leading-none text-white shadow"
+                    className="absolute -top-3 left-2 z-10 hidden max-w-[80%] items-center gap-1 rounded-sm bg-primary-muted py-0.5 pl-0.5 pr-2 text-[11px] leading-none text-white shadow-sm"
                 >
                     <button
                         type="button"
@@ -142,7 +142,7 @@ export const EditorNodeFrame = memo(function EditorNodeFrame({
                         }}
                         aria-label={`${translate(editor.gripHandle)}: ${name}`}
                         data-testid={`page-grip-${node.id}`}
-                        className="cursor-grab touch-none select-none rounded bg-white/20 p-0.5 active:cursor-grabbing"
+                        className="cursor-grab touch-none select-none rounded-sm bg-white/20 p-0.5 active:cursor-grabbing"
                     >
                         <GripVertical className="h-3 w-3" aria-hidden="true" />
                     </button>

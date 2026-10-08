@@ -26,7 +26,7 @@ export function GameTermsMenu() {
                 <select
                     value={mode}
                     onChange={(event) => setMode(event.target.value as GameTermsMode)}
-                    className="rounded border border-border bg-bgSurface px-2 py-1.5 text-textPrimary"
+                    className="rounded-sm border border-border bg-bgSurface px-2 py-1.5 text-textPrimary"
                 >
                     {(Object.keys(MODE_LABELS) as GameTermsMode[]).map((candidate) => (
                         <option key={candidate} value={candidate}>
@@ -64,7 +64,7 @@ export function TermHintNotice() {
             <button
                 type="button"
                 onClick={() => setDismissed(true)}
-                className="rounded border border-border px-2 py-1 text-xs text-textPrimary hover:bg-bgSurface"
+                className="rounded-sm border border-border px-2 py-1 text-xs text-textPrimary hover:bg-bgSurface"
             >
                 {translate(terms.dismiss)}
             </button>

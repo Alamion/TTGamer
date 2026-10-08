@@ -49,9 +49,9 @@ export default function NotationInput() {
                 <input
                     data-dr-notation-input
                     type="text"
-                    className={`w-full pr-20 py-1.5 px-2 text-sm rounded border
+                    className={`w-full pr-20 py-1.5 px-2 text-sm rounded-sm border
                         bg-bgBase text-textPrimary
-                        focus:border-primary focus:outline-none
+                        focus:border-primary focus:outline-hidden
                         ${
                             notationInput.length > 0
                                 ? notationValid
@@ -113,7 +113,7 @@ export default function NotationInput() {
                             className="block font-mono text-textSecondary whitespace-pre-wrap break-all"
                         >
                             {debouncedInput.slice(0, diagnostic.offset)}
-                            <mark className="bg-red-500/30 text-textPrimary rounded-sm">
+                            <mark className="bg-red-500/30 text-textPrimary rounded-xs">
                                 {diagnostic.length > 0
                                     ? debouncedInput.slice(
                                           diagnostic.offset,

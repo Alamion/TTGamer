@@ -42,7 +42,7 @@ export function KindChoice({
                 return (
                     <label
                         key={kind}
-                        className={`flex items-start gap-2 rounded border border-border px-2 py-1.5 text-xs has-[:checked]:border-primary ${disabled ? 'opacity-50' : 'cursor-pointer'}`}
+                        className={`flex items-start gap-2 rounded-sm border border-border px-2 py-1.5 text-xs has-[:checked]:border-primary ${disabled ? 'opacity-50' : 'cursor-pointer'}`}
                     >
                         <input
                             type="radio"

@@ -63,7 +63,7 @@ export function CollapsibleItem({
                                     e.stopPropagation();
                                     onRemove();
                                 }}
-                                className="flex items-center gap-1 text-xs text-textSecondary hover:text-error transition-colors px-1 py-1 rounded hover:bg-bgBase/20"
+                                className="flex items-center gap-1 text-xs text-textSecondary hover:text-error transition-colors px-1 py-1 rounded-sm hover:bg-bgBase/20"
                                 aria-label={translate(uiMessages.sheet.items.card.remove)}
                             >
                                 <X className="w-5 h-5" />

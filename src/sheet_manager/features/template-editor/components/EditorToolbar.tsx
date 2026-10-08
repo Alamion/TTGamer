@@ -13,7 +13,7 @@ const editor = uiMessages.sheet.templates.editor;
 export type EditorMode = 'edit' | 'preview';
 
 const toolbarButton =
-    'flex items-center gap-1 rounded border border-border px-2 py-1 text-xs text-textSecondary hover:bg-bgBase hover:text-textPrimary disabled:opacity-40';
+    'flex items-center gap-1 rounded-sm border border-border px-2 py-1 text-xs text-textSecondary hover:bg-bgBase hover:text-textPrimary disabled:opacity-40';
 
 /** Undo or redo from the command list (spec 025, D7). */
 function HistoryButton({
@@ -64,7 +64,7 @@ export function EditorToolbar({
             <div
                 role="group"
                 aria-label={translate(editor.modeLabel)}
-                className="flex overflow-hidden rounded border border-border"
+                className="flex overflow-hidden rounded-sm border border-border"
             >
                 {(['edit', 'preview'] as const).map((value) => (
                     <button

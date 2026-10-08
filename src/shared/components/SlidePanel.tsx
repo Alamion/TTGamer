@@ -111,14 +111,14 @@ export function SlidePanel({
                     </button>
                 )}
                 {title && (
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
                         <h2 className="text-sm font-bold tracking-wide uppercase text-textPrimary">
                             {title}
                         </h2>
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex items-center justify-center w-7 h-7 rounded hover:bg-bgBase/50 transition-colors text-textSecondary hover:text-textPrimary"
+                            className="flex items-center justify-center w-7 h-7 rounded-sm hover:bg-bgBase/50 transition-colors text-textSecondary hover:text-textPrimary"
                             aria-label={closeAriaLabel ?? translate(messages.close)}
                         >
                             <X className="w-4 h-4" />

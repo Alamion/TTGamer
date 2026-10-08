@@ -54,11 +54,11 @@ const labels = uiMessages.sheet.library.catalogTable;
 const libraryLabels = uiMessages.sheet.library;
 
 const iconButton =
-    'rounded p-1 text-textSecondary hover:bg-bgBase hover:text-textPrimary disabled:opacity-30';
+    'rounded-sm p-1 text-textSecondary hover:bg-bgBase hover:text-textPrimary disabled:opacity-30';
 const toolbarButton =
-    'inline-flex items-center gap-1.5 rounded border border-border px-2.5 py-1 text-xs font-medium text-textPrimary hover:border-secondary hover:bg-secondary/10 disabled:opacity-40';
+    'inline-flex items-center gap-1.5 rounded-sm border border-border px-2.5 py-1 text-xs font-medium text-textPrimary hover:border-secondary hover:bg-secondary/10 disabled:opacity-40';
 const cellInput =
-    'w-full min-w-[6rem] rounded border border-transparent bg-transparent px-1.5 py-1 text-sm text-textPrimary hover:border-border focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+    'w-full min-w-[6rem] rounded-sm border border-transparent bg-transparent px-1.5 py-1 text-sm text-textPrimary hover:border-border focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary';
 
 const now = () => new Date().toISOString();
 
@@ -276,7 +276,7 @@ function ColumnHeader({
                     value={column.type}
                     aria-label={translate(labels.columnType, { column: column.name })}
                     onChange={(event) => onRetype(event.target.value as CatalogColumnType)}
-                    className="rounded border border-border bg-bgBase px-1 py-0.5 text-xs text-textPrimary"
+                    className="rounded-sm border border-border bg-bgBase px-1 py-0.5 text-xs text-textPrimary"
                 >
                     {CATALOG_COLUMN_TYPES.map((type) => (
                         <option key={type} value={type}>
@@ -332,7 +332,7 @@ function PastePanel({
         [text, catalog.columns, room]
     );
     return (
-        <div className="space-y-2 rounded border border-border bg-bgBase p-3">
+        <div className="space-y-2 rounded-sm border border-border bg-bgBase p-3">
             <p className="text-sm font-semibold text-textPrimary">{translate(labels.pasteTitle)}</p>
             <p className="text-xs text-textSecondary">{translate(labels.pasteHint)}</p>
             <textarea
@@ -340,7 +340,7 @@ function PastePanel({
                 aria-label={translate(labels.pasteLabel)}
                 onChange={(event) => setText(event.target.value)}
                 rows={5}
-                className="w-full rounded border border-border bg-bgSurface p-2 font-mono text-xs text-textPrimary focus:border-primary focus:outline-none"
+                className="w-full rounded-sm border border-border bg-bgSurface p-2 font-mono text-xs text-textPrimary focus:border-primary focus:outline-hidden"
             />
             {parsed.rejected.length > 0 && (
                 <div className="text-xs text-error">
@@ -362,7 +362,7 @@ function PastePanel({
                     type="button"
                     disabled={parsed.entries.length === 0}
                     onClick={() => onAdd(parsed.entries)}
-                    className="rounded bg-primary-muted px-3 py-1 text-xs font-medium text-white hover:bg-primary disabled:opacity-40"
+                    className="rounded-sm bg-primary-muted px-3 py-1 text-xs font-medium text-white hover:bg-primary disabled:opacity-40"
                 >
                     {plural(labels.pasteAdd, parsed.entries.length)}
                 </button>

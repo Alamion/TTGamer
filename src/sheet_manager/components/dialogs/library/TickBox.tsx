@@ -35,7 +35,7 @@ export function TickBox({
                 onToggle();
             }}
             className={clsx(
-                'flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors disabled:opacity-40',
+                'flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border transition-colors disabled:opacity-40',
                 auto
                     ? 'border-tertiary bg-tertiary text-white'
                     : on

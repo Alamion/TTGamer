@@ -297,7 +297,7 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
                     disabled={readOnly}
                     ariaLabel={field.label}
                     placeholder={field.placeholder}
-                    className="w-full rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60"
+                    className="w-full rounded-sm border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary disabled:opacity-60"
                     showAllWhenEmpty
                 />
             ) : (
@@ -478,7 +478,7 @@ function TableBlock({
                                     onClick={() => pageApi.removeRow(tableValueKey(node), rowIndex)}
                                     disabled={pageApi.disabled || rowEntries.length <= node.minRows}
                                     aria-label={translate(editor.remove)}
-                                    className="rounded p-1 text-textSecondary hover:bg-bgBase hover:text-error disabled:opacity-40"
+                                    className="rounded-sm p-1 text-textSecondary hover:bg-bgBase hover:text-error disabled:opacity-40"
                                 >
                                     <X className="h-3.5 w-3.5" aria-hidden="true" />
                                 </button>
@@ -491,7 +491,7 @@ function TableBlock({
                 type="button"
                 onClick={() => pageApi.addRow(tableValueKey(node))}
                 disabled={pageApi.disabled || rowEntries.length >= node.maxRows}
-                className="mt-2 flex items-center gap-1 rounded px-2 py-1 text-xs text-primary hover:bg-bgBase disabled:opacity-40"
+                className="mt-2 flex items-center gap-1 rounded-sm px-2 py-1 text-xs text-primary hover:bg-bgBase disabled:opacity-40"
             >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 {translate(editor.addRow)}

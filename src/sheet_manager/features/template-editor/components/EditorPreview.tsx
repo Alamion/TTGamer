@@ -95,7 +95,7 @@ export function EditorPreview({ draft }: { draft: EditorDraft }) {
                 <select
                     value={fellBack ? 'blank' : chosenKey}
                     onChange={(event) => setChosenKey(event.target.value)}
-                    className="rounded border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary"
+                    className="rounded-sm border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary"
                 >
                     {options.map((option) => (
                         <option key={option.key} value={option.key}>

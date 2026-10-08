@@ -160,14 +160,14 @@ export function EditorPage({ draft }: { draft: EditorDraft }) {
         <div
             ref={rootRef}
             tabIndex={-1}
-            className="min-h-full space-y-3 p-4 focus:outline-none"
+            className="min-h-full space-y-3 p-4 focus:outline-hidden"
             onPointerOver={(event) =>
                 setHovered((event.target as Element).closest('[data-editor-frame]'))
             }
             onPointerLeave={() => setHovered(null)}
             data-editor-page=""
         >
-            <p className="flex items-center gap-2 rounded border border-dashed border-borderMoreContrast px-3 py-1.5 text-xs text-textSecondary">
+            <p className="flex items-center gap-2 rounded-sm border border-dashed border-borderMoreContrast px-3 py-1.5 text-xs text-textSecondary">
                 <FlaskConical className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                 {translate(editor.sampleNote)}
             </p>

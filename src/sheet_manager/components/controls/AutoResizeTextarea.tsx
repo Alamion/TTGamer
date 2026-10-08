@@ -31,7 +31,7 @@ export function AutoResizeTextarea({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             disabled={readOnly}
-            className="w-full bg-bgSurface border rounded px-3 py-2 text-sm text-textPrimary disabled:opacity-60 disabled:cursor-default resize-none overflow-hidden min-h-[80px]"
+            className="w-full bg-bgSurface border rounded-sm px-3 py-2 text-sm text-textPrimary disabled:opacity-60 disabled:cursor-default resize-none overflow-hidden min-h-[80px]"
             placeholder={placeholder}
             aria-label={
                 ariaLabel ?? placeholder ?? translate(uiMessages.sheet.controls.textFallbackLabel)

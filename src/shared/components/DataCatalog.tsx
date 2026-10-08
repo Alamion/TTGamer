@@ -184,7 +184,7 @@ function MultiSelectDropdown({
                                     type="checkbox"
                                     checked={isSelected}
                                     onChange={() => onToggle(option.value)}
-                                    className="rounded border-border text-primary focus:ring-primary/30"
+                                    className="rounded-sm border-border text-primary focus:ring-primary/30"
                                 />
                                 {option.label}
                             </label>
@@ -516,7 +516,7 @@ export function DataCatalog<T extends { id: string }>({
                         value={globalFilter}
                         onChange={(e) => handleSearchChange(e.target.value)}
                         placeholder={searchPlaceholder ?? translate(messages.search)}
-                        className="w-full pl-9 pr-8 py-2 text-sm rounded-lg border border-border bg-bgSurface text-textPrimary placeholder-textSecondary/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                        className="w-full pl-9 pr-8 py-2 text-sm rounded-lg border border-border bg-bgSurface text-textPrimary placeholder-textSecondary/60 focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                     />
                     {globalFilter && (
                         <button
@@ -549,7 +549,7 @@ export function DataCatalog<T extends { id: string }>({
                             key={fc.columnId}
                             value={getFilterValue(fc.columnId)}
                             onChange={(e) => handleSingleFilterChange(fc.columnId, e.target.value)}
-                            className="px-3 py-2 text-sm rounded-lg border border-border bg-bgSurface text-textPrimary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                            className="px-3 py-2 text-sm rounded-lg border border-border bg-bgSurface text-textPrimary focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                             aria-label={label}
                         >
                             <option value="">{label}</option>
@@ -664,7 +664,7 @@ export function DataCatalog<T extends { id: string }>({
                                                 toggleDetail(getRowId(row.original));
                                             }}
                                             className={clsx(
-                                                'border-b border-border last:border-0 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40',
+                                                'border-b border-border last:border-0 transition-colors cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40',
                                                 selectedId === getRowId(row.original)
                                                     ? 'bg-primary/10'
                                                     : 'hover:bg-bgSurface/80'
@@ -695,7 +695,7 @@ export function DataCatalog<T extends { id: string }>({
                             <button
                                 onClick={() => table.previousPage()}
                                 disabled={!table.getCanPreviousPage()}
-                                className="p-1.5 rounded text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                className="p-1.5 rounded-sm text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
                                 aria-label={translate(messages.previousPage)}
                             >
                                 <ChevronLeft className="w-4 h-4" />
@@ -706,7 +706,7 @@ export function DataCatalog<T extends { id: string }>({
                             <button
                                 onClick={() => table.nextPage()}
                                 disabled={!table.getCanNextPage()}
-                                className="p-1.5 rounded text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                className="p-1.5 rounded-sm text-textSecondary hover:text-textPrimary hover:bg-bgSurface disabled:opacity-30 disabled:pointer-events-none transition-colors"
                                 aria-label={translate(messages.nextPage)}
                             >
                                 <ChevronRight className="w-4 h-4" />

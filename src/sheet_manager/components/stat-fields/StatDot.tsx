@@ -146,7 +146,7 @@ export function StatDot({
                                     disabled={disabled}
                                     aria-pressed={Boolean(flagValues[flag])}
                                     className={clsx(
-                                        'rounded font-bold transition-all duration-200',
+                                        'rounded-sm font-bold transition-all duration-200',
                                         statFlagSizeClasses[size],
                                         flagValues[flag]
                                             ? `${FLAG_UI[flag].activeClass} opacity-100`
@@ -168,11 +168,11 @@ export function StatDot({
                             onClick={onRemove}
                             disabled={disabled}
                             className={clsx(
-                                'ml-auto rounded font-bold transition-all duration-200 flex items-center justify-center',
+                                'ml-auto rounded-sm font-bold transition-all duration-200 flex items-center justify-center',
                                 statFlagSizeClasses[size],
                                 // Destructive at rest, unmistakable under pointer or keyboard focus.
                                 'text-error opacity-50 hover:opacity-100 focus-visible:opacity-100',
-                                'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-error',
+                                'focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-error',
                                 disabled && 'cursor-not-allowed'
                             )}
                             aria-label={translate(uiMessages.sheet.controls.statDot.remove)}

@@ -36,7 +36,7 @@ export function MoveConsequences({ plan }: { plan: MovePlan }) {
         return lost ? (
             <div
                 role="note"
-                className="space-y-1 rounded border border-secondary/60 bg-secondary/10 px-3 py-2 text-xs text-textPrimary"
+                className="space-y-1 rounded-sm border border-secondary/60 bg-secondary/10 px-3 py-2 text-xs text-textPrimary"
             >
                 <p className="flex items-center gap-1.5 font-semibold">
                     <AlertTriangle className="h-3.5 w-3.5 text-secondary" aria-hidden="true" />
@@ -51,7 +51,7 @@ export function MoveConsequences({ plan }: { plan: MovePlan }) {
             {plan.crossesSystem && (
                 <div
                     role="note"
-                    className="space-y-1 rounded border border-secondary/60 bg-secondary/10 px-3 py-2"
+                    className="space-y-1 rounded-sm border border-secondary/60 bg-secondary/10 px-3 py-2"
                 >
                     <p className="flex items-center gap-1.5 font-semibold">
                         <AlertTriangle className="h-3.5 w-3.5 text-secondary" aria-hidden="true" />
@@ -133,7 +133,7 @@ export function MovePanel({
                             aria-pressed={node.key === chosenKey}
                             onClick={() => onChoose(node.key)}
                             className={clsx(
-                                'flex items-start gap-2 rounded border px-2 py-1.5 text-left text-sm',
+                                'flex items-start gap-2 rounded-sm border px-2 py-1.5 text-left text-sm',
                                 node.key === chosenKey
                                     ? 'border-primary bg-primary/10'
                                     : 'border-border hover:border-secondary hover:bg-secondary/10'
@@ -148,7 +148,7 @@ export function MovePanel({
                                 )}
                             </span>
                             {crossesSystem && (
-                                <span className="shrink-0 rounded bg-secondary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-textPrimary">
+                                <span className="shrink-0 rounded-sm bg-secondary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-textPrimary">
                                     {translate(labels.move.otherRules)}
                                 </span>
                             )}
@@ -162,7 +162,7 @@ export function MovePanel({
                     type="button"
                     disabled={!plan}
                     onClick={onConfirm}
-                    className="inline-flex items-center gap-1.5 rounded bg-primary-muted px-3 py-1 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
+                    className="inline-flex items-center gap-1.5 rounded-sm bg-primary-muted px-3 py-1 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
                 >
                     <ArrowRightLeft className="h-3.5 w-3.5" aria-hidden="true" />
                     {translate(labels.move.confirm)}
@@ -170,7 +170,7 @@ export function MovePanel({
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="rounded border border-border px-3 py-1 text-sm text-textPrimary hover:bg-bgSurface"
+                    className="rounded-sm border border-border px-3 py-1 text-sm text-textPrimary hover:bg-bgSurface"
                 >
                     {translate(labels.actions.cancel)}
                 </button>

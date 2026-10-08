@@ -44,7 +44,7 @@ const OutlineItem = memo(function OutlineItem({
                 aria-current={anchor ? 'true' : undefined}
                 data-anchor={anchor ? '' : undefined}
                 className={clsx(
-                    'flex items-center gap-1 rounded pr-1 text-sm',
+                    'flex items-center gap-1 rounded-sm pr-1 text-sm',
                     selected
                         ? 'bg-primary/15 font-medium text-textPrimary shadow-[inset_2px_0_0_0_rgb(var(--primary))]'
                         : 'text-textPrimary hover:bg-secondary/15'
@@ -57,7 +57,7 @@ const OutlineItem = memo(function OutlineItem({
                     onPointerDown={(event) => drag?.start(node.id, event, 'outline')}
                     aria-label={`${translate(editor.gripHandle)}: ${name}`}
                     data-testid={`grip-${node.id}`}
-                    className="cursor-grab touch-none select-none rounded p-1 opacity-60 hover:opacity-100 active:cursor-grabbing"
+                    className="cursor-grab touch-none select-none rounded-sm p-1 opacity-60 hover:opacity-100 active:cursor-grabbing"
                 >
                     <GripVertical className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>

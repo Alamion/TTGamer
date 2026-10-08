@@ -103,7 +103,7 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
         <Dialog.Root open={open} onOpenChange={onOpenChange}>
             <Dialog.Portal container={modalRoot ?? undefined}>
                 <Dialog.Overlay className="fixed inset-0 bg-black/50 z-[9998]" />
-                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] max-h-[calc(100%-2rem)] w-[min(30rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-bgSurface p-6 shadow-xl focus:outline-none">
+                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] max-h-[calc(100%-2rem)] w-[min(30rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-bgSurface p-6 shadow-xl focus:outline-hidden">
                     <Dialog.Title className="text-lg font-semibold text-textPrimary">
                         <Translate id="ttgamer.ui.sheet.documents.create.title" />
                     </Dialog.Title>
@@ -125,7 +125,7 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
                                     return (
                                         <label
                                             key={value}
-                                            className="flex cursor-pointer items-center gap-3 rounded border border-border p-3 hover:bg-bgBase"
+                                            className="flex cursor-pointer items-center gap-3 rounded-sm border border-border p-3 hover:bg-bgBase"
                                         >
                                             <input
                                                 type="radio"
@@ -160,7 +160,7 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
                         <Dialog.Close asChild>
                             <button
                                 type="button"
-                                className="rounded border border-border bg-bgSurface px-3 py-2 text-sm text-textPrimary hover:bg-bgBase"
+                                className="rounded-sm border border-border bg-bgSurface px-3 py-2 text-sm text-textPrimary hover:bg-bgBase"
                             >
                                 <Translate id="ttgamer.ui.sheet.documents.create.cancel" />
                             </button>
@@ -168,7 +168,7 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
                         <button
                             type="button"
                             onClick={handleCreate}
-                            className="rounded border border-transparent bg-primary-muted px-3 py-2 text-sm font-medium text-white hover:bg-primary"
+                            className="rounded-sm border border-transparent bg-primary-muted px-3 py-2 text-sm font-medium text-white hover:bg-primary"
                         >
                             <Translate id="ttgamer.ui.sheet.documents.create.confirm" />
                         </button>

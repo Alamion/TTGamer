@@ -23,7 +23,7 @@ function ScaleBadge({ scale }: { scale: VehicleEntry['scale'] }) {
         Capital: 'bg-red-500/20 text-red-300',
     };
     return (
-        <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors[scale] ?? ''}`}>
+        <span className={`px-2 py-0.5 rounded-sm text-xs font-medium ${colors[scale] ?? ''}`}>
             {t.label('scale', scale)}
         </span>
     );
@@ -36,7 +36,7 @@ function FirstEra({ eras }: { eras: string[] }) {
         <span className="text-xs text-textSecondary whitespace-nowrap">
             {t.label('eras', eras[0])}
             {eras.length > 1 && (
-                <span className="ml-1 px-1 py-0.5 rounded bg-bgSurface text-textTertiary text-[10px]">
+                <span className="ml-1 px-1 py-0.5 rounded-sm bg-bgSurface text-textTertiary text-[10px]">
                     +{eras.length - 1}
                 </span>
             )}

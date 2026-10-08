@@ -6,7 +6,7 @@ import { useId, useState } from 'react';
 const labels = uiMessages.sheet.library;
 
 const input =
-    'w-full rounded border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary';
+    'w-full rounded-sm border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary';
 
 export interface CreateFormValues {
     name: string;
@@ -114,14 +114,14 @@ export function CreateForm({
             <div className="flex flex-wrap gap-2">
                 <button
                     type="submit"
-                    className="rounded bg-primary-muted px-3 py-1 text-sm font-medium text-white hover:bg-primary"
+                    className="rounded-sm bg-primary-muted px-3 py-1 text-sm font-medium text-white hover:bg-primary"
                 >
                     {submitLabel}
                 </button>
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="rounded border border-border px-3 py-1 text-sm text-textPrimary hover:bg-bgSurface"
+                    className="rounded-sm border border-border px-3 py-1 text-sm text-textPrimary hover:bg-bgSurface"
                 >
                     {translate(labels.actions.cancel)}
                 </button>

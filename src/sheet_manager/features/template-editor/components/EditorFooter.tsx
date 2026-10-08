@@ -53,7 +53,7 @@ export function EditorFooter({
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="rounded border border-border bg-bgSurface px-4 py-2 text-sm font-medium text-textSecondary hover:bg-bgBase"
+                    className="rounded-sm border border-border bg-bgSurface px-4 py-2 text-sm font-medium text-textSecondary hover:bg-bgBase"
                 >
                     {translate(editor.cancel)}
                 </button>
@@ -61,7 +61,7 @@ export function EditorFooter({
                     type="button"
                     onClick={onSave}
                     disabled={saveDisabled}
-                    className="rounded border border-transparent bg-primary-muted px-4 py-2 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
+                    className="rounded-sm border border-transparent bg-primary-muted px-4 py-2 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
                 >
                     {translate(editor.save)}
                 </button>

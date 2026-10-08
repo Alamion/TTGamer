@@ -95,7 +95,7 @@ export function InventorySection({
                                         uiMessages.sheet.items.inventory.namePlaceholder
                                     )}
                                     disabled={readOnly}
-                                    className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
+                                    className="w-full bg-bgSurface border rounded-sm px-2 py-1 text-sm text-textPrimary"
                                     ariaLabel={translate(
                                         uiMessages.sheet.items.inventory.nameLabel
                                     )}
@@ -160,7 +160,7 @@ export function InventorySection({
                                                             : e.target.value
                                                     )
                                                 }
-                                                className="flex-1 w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
+                                                className="flex-1 w-full bg-bgSurface border rounded-sm px-2 py-1 text-sm text-textPrimary"
                                                 placeholder={translate(
                                                     INVENTORY_FIELDS[field].placeholder
                                                 )}

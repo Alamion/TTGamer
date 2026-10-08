@@ -65,7 +65,7 @@ export function rowMoveKeys(index: number, count: number, onMove: (to: number) =
 }
 
 const button =
-    'flex h-5 w-5 items-center justify-center rounded text-textSecondary hover:bg-bgBase hover:text-textPrimary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary';
+    'flex h-5 w-5 items-center justify-center rounded-sm text-textSecondary hover:bg-bgBase hover:text-textPrimary focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-primary';
 
 /**
  * A row's order controls: a grip to drag it (mouse and pen), Move up, and Move down. The first

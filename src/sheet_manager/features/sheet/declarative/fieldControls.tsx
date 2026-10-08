@@ -33,7 +33,7 @@ const referenceMessages = uiMessages.sheet.templates.reference;
 type FieldType<K extends TemplateField['type']> = Extract<TemplateField, { type: K }>;
 
 const inputClasses =
-    'rounded border border-border bg-bgSurface px-2 py-2 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50';
+    'rounded-sm border border-border bg-bgSurface px-2 py-2 text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary disabled:opacity-50';
 
 export interface CatalogOption {
     value: string;
@@ -373,7 +373,7 @@ function MultipleChoiceControl({
                                 disabled={disabled}
                                 onClick={() => toggle(option.value, !isSelected)}
                                 className={clsx(
-                                    'rounded border px-2 py-0.5 text-sm transition-colors',
+                                    'rounded-sm border px-2 py-0.5 text-sm transition-colors',
                                     isSelected
                                         ? 'border-primary text-textPrimary'
                                         : 'border-transparent text-textSecondary hover:border-border hover:text-textPrimary',
@@ -575,11 +575,11 @@ function ResourceFieldControlRender({
 
     // One framed "current / max" unit: both numbers and the slash share a size and baseline.
     const numberClasses =
-        'w-12 bg-transparent px-1 py-1 text-center text-sm tabular-nums text-textPrimary focus:outline-none';
+        'w-12 bg-transparent px-1 py-1 text-center text-sm tabular-nums text-textPrimary focus:outline-hidden';
     return (
         <div
             className={clsx(
-                'inline-flex items-center rounded border border-border bg-bgSurface focus-within:ring-1 focus-within:ring-primary',
+                'inline-flex items-center rounded-sm border border-border bg-bgSurface focus-within:ring-1 focus-within:ring-primary',
                 disabled && 'opacity-50'
             )}
         >
@@ -690,7 +690,7 @@ function ReferenceFieldControlRender({
                             <li
                                 key={id}
                                 className={clsx(
-                                    'flex items-center gap-1 rounded border px-2 py-1 text-sm',
+                                    'flex items-center gap-1 rounded-sm border px-2 py-1 text-sm',
                                     title
                                         ? 'border-border bg-bgBase text-textPrimary'
                                         : 'border-error/50 text-error'
@@ -708,7 +708,7 @@ function ReferenceFieldControlRender({
                                         onClick={() => onOpenDocument(id)}
                                         aria-label={translate(referenceMessages.open, { title })}
                                         title={translate(referenceMessages.open, { title })}
-                                        className="rounded p-0.5 text-textSecondary hover:text-primary"
+                                        className="rounded-sm p-0.5 text-textSecondary hover:text-primary"
                                     >
                                         <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                                     </button>
@@ -722,7 +722,7 @@ function ReferenceFieldControlRender({
                                         aria-label={translate(referenceMessages.remove, {
                                             title: title ?? id,
                                         })}
-                                        className="rounded p-0.5 text-textSecondary hover:text-error"
+                                        className="rounded-sm p-0.5 text-textSecondary hover:text-error"
                                     >
                                         <X className="h-3.5 w-3.5" aria-hidden="true" />
                                     </button>
@@ -822,7 +822,7 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
                     src={src}
                     alt={t(page.imageAlt)}
                     referrerPolicy="no-referrer"
-                    className="max-h-64 w-auto max-w-full rounded border border-border"
+                    className="max-h-64 w-auto max-w-full rounded-sm border border-border"
                 />
             )}
             {image && !src && (
@@ -837,7 +837,7 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
             )}
             {!disabled && (
                 <div className="flex flex-wrap items-center gap-2">
-                    <label className="cursor-pointer rounded px-2 py-1 text-xs text-primary hover:bg-bgSurface">
+                    <label className="cursor-pointer rounded-sm px-2 py-1 text-xs text-primary hover:bg-bgSurface">
                         {t(page.imageUpload)}
                         <input
                             type="file"
@@ -868,7 +868,7 @@ export function ImageFieldControl({ disabled, onChange, value }: TemplateFieldCo
                             type="button"
                             onClick={() => onChange(undefined)}
                             aria-label={t(page.imageRemove)}
-                            className="rounded p-1 text-textSecondary hover:text-error"
+                            className="rounded-sm p-1 text-textSecondary hover:text-error"
                         >
                             <X className="h-4 w-4" aria-hidden="true" />
                         </button>

@@ -46,9 +46,9 @@ export function SecretField({
                     onChange={(e) => onChange(e.target.value)}
                     placeholder={placeholder}
                     aria-label={ariaLabel}
-                    className={`w-full h-8 px-2 pr-8 text-xs rounded border border-border
+                    className={`w-full h-8 px-2 pr-8 text-xs rounded-sm border border-border
                         bg-bgBase text-textPrimary placeholder:text-textSecondary/40
-                        focus:outline-none focus:ring-1 focus:ring-primary ${inputClassName}`}
+                        focus:outline-hidden focus:ring-1 focus:ring-primary ${inputClassName}`}
                 />
                 <button
                     type="button"

@@ -95,7 +95,7 @@ export function ColumnSpanControl({
                             aria-checked={selected}
                             onClick={() => onChange(span === 1 ? undefined : span)}
                             className={clsx(
-                                'min-w-8 rounded border px-2 py-1 text-xs transition-colors',
+                                'min-w-8 rounded-sm border px-2 py-1 text-xs transition-colors',
                                 selected
                                     ? 'border-primary-muted bg-primary-muted text-white'
                                     : 'border-border bg-bgSurface text-textPrimary hover:border-primary'
@@ -147,7 +147,7 @@ export function ColumnPlacementControl({
                             aria-checked={selected}
                             onClick={() => onChange(option.value)}
                             className={clsx(
-                                'min-w-8 rounded border px-2 py-1 text-xs transition-colors',
+                                'min-w-8 rounded-sm border px-2 py-1 text-xs transition-colors',
                                 selected
                                     ? 'border-primary-muted bg-primary-muted text-white'
                                     : 'border-border bg-bgSurface text-textPrimary hover:border-primary'
@@ -251,7 +251,7 @@ export function ColumnLayoutControl({
                         {widths.map((width, index) => (
                             <div
                                 key={index}
-                                className="rounded-sm bg-primary/40"
+                                className="rounded-xs bg-primary/40"
                                 style={{ flexGrow: width, flexBasis: 0 }}
                             />
                         ))}

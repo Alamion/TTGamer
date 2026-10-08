@@ -74,7 +74,7 @@ const page = uiMessages.sheet.templates.page;
 const fields = uiMessages.sheet.documents.fields;
 
 const inputClasses =
-    'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
+    'rounded-sm border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary';
 
 /** maxFrom resolution for this node (feature 006 FR-12); degraded when the source is unavailable. */
 export interface PrimitiveMaxState {

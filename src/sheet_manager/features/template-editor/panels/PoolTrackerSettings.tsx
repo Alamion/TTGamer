@@ -19,7 +19,7 @@ const t = (descriptor: { message: string }, values?: Record<string, string | num
     translate(descriptor, values);
 
 const inputClasses =
-    'rounded border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
+    'rounded-sm border border-border bg-bgSurface px-2 py-1.5 text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary';
 
 const DISPLAY_LABEL: Record<PoolTrackerDisplay, { message: string }> = {
     row: editor.poolRow,
@@ -110,7 +110,7 @@ export function PoolTrackerSettings({
                         aria-pressed={value.display === display}
                         onClick={() => onChange({ ...value, display })}
                         className={clsx(
-                            'rounded border px-2.5 py-1 text-xs transition-colors',
+                            'rounded-sm border px-2.5 py-1 text-xs transition-colors',
                             value.display === display
                                 ? 'border-primary bg-primary-muted text-textPrimary'
                                 : 'border-border text-textSecondary hover:border-primary/60'

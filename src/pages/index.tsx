@@ -10,7 +10,7 @@ function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
     const version = String(siteConfig.customFields?.version);
     return (
-        <header className="relative overflow-hidden border-b-2 border-primary/40 bg-gradient-to-b from-bgSurface to-bgBase">
+        <header className="relative overflow-hidden border-b-2 border-primary/40 bg-linear-to-b from-bgSurface to-bgBase">
             <div className="absolute inset-0 opacity-5">
                 <div
                     className="absolute inset-0"
@@ -23,7 +23,7 @@ function HomepageHeader() {
             </div>
             <div className="relative container mx-auto px-4 py-16 md:py-24">
                 <div className="flex flex-col items-center text-center">
-                    <div className="mb-4 inline-flex items-center gap-2 rounded border border-jedi-green/40 bg-jedi-green/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-jedi-green">
+                    <div className="mb-4 inline-flex items-center gap-2 rounded-sm border border-jedi-green/40 bg-jedi-green/10 px-3 py-1 text-xs font-mono uppercase tracking-widest text-jedi-green">
                         <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-jedi-green" />
                         {translate(uiMessages.site.home.hero.status, { version })}
                     </div>
@@ -38,7 +38,7 @@ function HomepageHeader() {
                     </p>
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <Link
-                            className="inline-flex items-center justify-center gap-2 rounded border-2 border-primary bg-primary px-8 py-3 font-bold uppercase tracking-wider text-on-primary shadow-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-xl active:scale-95"
+                            className="inline-flex items-center justify-center gap-2 rounded-sm border-2 border-primary bg-primary px-8 py-3 font-bold uppercase tracking-wider text-on-primary shadow-lg transition-all duration-200 hover:bg-primary-hover hover:shadow-xl active:scale-95"
                             to="/universal_sheet"
                         >
                             <svg
@@ -59,7 +59,7 @@ function HomepageHeader() {
                             {translate(uiMessages.site.home.hero.characterSheet)}
                         </Link>
                         <Link
-                            className="inline-flex items-center justify-center gap-2 rounded border-2 border-border bg-bgSurface px-8 py-3 font-bold uppercase tracking-wider text-textPrimary shadow transition-all duration-200 hover:border-primary/50 hover:text-primary active:scale-95"
+                            className="inline-flex items-center justify-center gap-2 rounded-sm border-2 border-border bg-bgSurface px-8 py-3 font-bold uppercase tracking-wider text-textPrimary shadow-sm transition-all duration-200 hover:border-primary/50 hover:text-primary active:scale-95"
                             to="/docs/star-wars-wod-2e/quick-start"
                         >
                             <svg
@@ -100,9 +100,9 @@ function FeatureCard({
     return (
         <Link
             to={href}
-            className="group block h-full rounded border border-border bg-bgSurface p-6 shadow transition-all duration-200 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+            className="group block h-full rounded-sm border border-border bg-bgSurface p-6 shadow-sm transition-all duration-200 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
         >
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary/20">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-sm bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary/20">
                 {icon}
             </div>
             <Heading
@@ -111,7 +111,7 @@ function FeatureCard({
             >
                 {title}
                 {badge && (
-                    <span className="ml-2 rounded bg-droid-gold/20 px-2 py-0.5 text-xs font-mono text-droid-gold">
+                    <span className="ml-2 rounded-sm bg-droid-gold/20 px-2 py-0.5 text-xs font-mono text-droid-gold">
                         {badge}
                     </span>
                 )}
@@ -214,7 +214,7 @@ export default function Home(): ReactNode {
                         />
                     </div>
 
-                    <div className="mt-16 rounded border border-border bg-bgSurface p-8 shadow">
+                    <div className="mt-16 rounded-sm border border-border bg-bgSurface p-8 shadow-sm">
                         <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
                             <div className="flex-1">
                                 <Heading
@@ -248,7 +248,7 @@ export default function Home(): ReactNode {
                         </div>
                     </div>
 
-                    <div className="mt-8 rounded border border-droid-gold/30 bg-droid-gold/5 p-4 text-center">
+                    <div className="mt-8 rounded-sm border border-droid-gold/30 bg-droid-gold/5 p-4 text-center">
                         <p className="text-sm font-mono text-textSecondary">
                             <span className="text-droid-gold">
                                 {translate(uiMessages.site.home.status.live)}

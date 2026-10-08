@@ -89,7 +89,7 @@ export function WeaponsSection({
                                         uiMessages.sheet.items.weapons.namePlaceholder
                                     )}
                                     disabled={readOnly}
-                                    className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
+                                    className="w-full bg-bgSurface border rounded-sm px-2 py-1 text-sm text-textPrimary"
                                     ariaLabel={translate(uiMessages.sheet.items.weapons.nameLabel)}
                                 />
                             </div>
@@ -110,7 +110,7 @@ export function WeaponsSection({
                                                     isAmmo ? Number(e.target.value) : e.target.value
                                                 )
                                             }
-                                            className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
+                                            className="w-full bg-bgSurface border rounded-sm px-2 py-1 text-textPrimary"
                                             placeholder={translate(
                                                 WEAPON_FIELDS[field].placeholder
                                             )}

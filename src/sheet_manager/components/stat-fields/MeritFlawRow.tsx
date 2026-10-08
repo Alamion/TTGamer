@@ -109,7 +109,7 @@ export function MeritFlawList({
                             }
                             disabled={disabled}
                             label={translate(messages.points, { name: item.label })}
-                            className="w-8 bg-bgSurface border rounded px-1 py-0.5 text-center text-sm font-mono text-textPrimary"
+                            className="w-8 bg-bgSurface border rounded-sm px-1 py-0.5 text-center text-sm font-mono text-textPrimary"
                             min={1}
                             max={5}
                             step={1}
@@ -125,7 +125,7 @@ export function MeritFlawList({
                                     isMerit ? positivePlaceholder : negativePlaceholder
                                 )}
                                 disabled={disabled}
-                                className="flex-1 bg-bgSurface border rounded px-3 py-1 text-sm text-textPrimary"
+                                className="flex-1 bg-bgSurface border rounded-sm px-3 py-1 text-sm text-textPrimary"
                             />
                         ) : (
                             <input
@@ -133,7 +133,7 @@ export function MeritFlawList({
                                 value={item.label}
                                 onChange={(e) => onChange(item.id, item.points, e.target.value)}
                                 disabled={disabled}
-                                className="flex-1 bg-bgSurface border rounded px-3 py-1 text-sm text-textPrimary"
+                                className="flex-1 bg-bgSurface border rounded-sm px-3 py-1 text-sm text-textPrimary"
                                 placeholder={translate(
                                     isMerit
                                         ? uiMessages.sheet.controls.meritFlaw.meritPlaceholder

@@ -143,7 +143,7 @@ export function useImportMode(onDone: () => void): { tree: ReactNode; details: R
                 aria-level={depth}
                 aria-selected={false}
                 data-import-row={entry.key}
-                className="flex min-h-8 flex-wrap items-center gap-1.5 rounded px-1 text-sm text-textPrimary"
+                className="flex min-h-8 flex-wrap items-center gap-1.5 rounded-sm px-1 text-sm text-textPrimary"
                 style={{ paddingLeft: `${(depth - 1) * 0.875 + 0.25}rem` }}
             >
                 {record && (
@@ -165,7 +165,7 @@ export function useImportMode(onDone: () => void): { tree: ReactNode; details: R
                 {record && (
                     <span
                         className={clsx(
-                            'shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
+                            'shrink-0 rounded-sm px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide',
                             STATE_CLASS[record.state]
                         )}
                     >
@@ -176,7 +176,7 @@ export function useImportMode(onDone: () => void): { tree: ReactNode; details: R
                     <div
                         role="group"
                         aria-label={translate(labels.import.choiceLabel, { name: entry.name })}
-                        className="flex shrink-0 rounded border border-border p-0.5"
+                        className="flex shrink-0 rounded-sm border border-border p-0.5"
                     >
                         {(['replace', 'keep-both'] as const).map((value) => (
                             <button
@@ -187,7 +187,7 @@ export function useImportMode(onDone: () => void): { tree: ReactNode; details: R
                                     setChoices((current) => setChoice(current, key, value))
                                 }
                                 className={clsx(
-                                    'rounded px-1.5 py-0.5 text-[11px]',
+                                    'rounded-sm px-1.5 py-0.5 text-[11px]',
                                     choice === value
                                         ? 'bg-primary-muted text-white'
                                         : 'text-textSecondary hover:bg-secondary/10'
@@ -218,7 +218,7 @@ export function useImportMode(onDone: () => void): { tree: ReactNode; details: R
                 <p className="text-xs text-textSecondary">{translate(labels.import.hint)}</p>
                 <label
                     htmlFor={inputId}
-                    className="inline-flex cursor-pointer items-center gap-1.5 rounded border border-border px-3 py-1 text-sm text-textPrimary hover:border-secondary hover:bg-secondary/10"
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-sm border border-border px-3 py-1 text-sm text-textPrimary hover:border-secondary hover:bg-secondary/10"
                 >
                     <Upload className="h-4 w-4" aria-hidden="true" />
                     {translate(labels.import.choose)}
@@ -272,7 +272,7 @@ export function useImportMode(onDone: () => void): { tree: ReactNode; details: R
                     type="button"
                     disabled={!loaded || count === 0}
                     onClick={submit}
-                    className="rounded bg-primary-muted px-3 py-1.5 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
+                    className="rounded-sm bg-primary-muted px-3 py-1.5 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
                 >
                     {translate(labels.import.submit)}
                 </button>
@@ -283,7 +283,7 @@ export function useImportMode(onDone: () => void): { tree: ReactNode; details: R
                         setLoaded(undefined);
                         setChoices({});
                     }}
-                    className="rounded border border-border px-3 py-1.5 text-sm text-textPrimary hover:bg-bgSurface disabled:opacity-40"
+                    className="rounded-sm border border-border px-3 py-1.5 text-sm text-textPrimary hover:bg-bgSurface disabled:opacity-40"
                 >
                     {translate(labels.import.cancel)}
                 </button>

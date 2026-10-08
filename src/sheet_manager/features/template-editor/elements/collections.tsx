@@ -130,7 +130,7 @@ function TableColumns({ callbacks, node }: { callbacks: NodeEdits; node: TableNo
                                 onClick={() => callbacks.onRemoveTableColumn(node.id, column.id)}
                                 disabled={node.columns.length <= 1}
                                 aria-label={t(editor.remove)}
-                                className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error disabled:opacity-40"
+                                className="rounded-sm p-1 text-textSecondary hover:bg-bgSurface hover:text-error disabled:opacity-40"
                             >
                                 <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                             </button>
@@ -160,7 +160,7 @@ function TableColumns({ callbacks, node }: { callbacks: NodeEdits; node: TableNo
                 type="button"
                 onClick={() => callbacks.onAddTableColumn(node.id)}
                 disabled={node.columns.length >= TEMPLATE_LIMITS.tableColumnsMax}
-                className="flex items-center gap-1 justify-self-start rounded px-2 py-1 text-xs text-primary hover:bg-bgSurface disabled:opacity-40"
+                className="flex items-center gap-1 justify-self-start rounded-sm px-2 py-1 text-xs text-primary hover:bg-bgSurface disabled:opacity-40"
             >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 {t(editor.addField)}
@@ -198,7 +198,7 @@ export function listSettings(node: ListNode, callbacks: NodeEdits): GroupedSetti
                     />
                 )}
                 {custom && (
-                    <details open className="rounded border border-border">
+                    <details open className="rounded-sm border border-border">
                         <summary className="cursor-pointer px-2 py-1 text-xs font-medium text-textSecondary">
                             {t(editor.listEntry)}
                         </summary>
@@ -313,7 +313,7 @@ function ListPresetsEditor({ callbacks, node }: { callbacks: NodeEdits; node: Li
                                 update(presets.filter((_, candidate) => candidate !== index))
                             }
                             aria-label={t(primitives.removePreset)}
-                            className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
+                            className="rounded-sm p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
                         >
                             <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                         </button>
@@ -332,7 +332,7 @@ function ListPresetsEditor({ callbacks, node }: { callbacks: NodeEdits; node: Li
                         },
                     ])
                 }
-                className="flex items-center gap-1 justify-self-start rounded px-2 py-1 text-xs text-primary hover:bg-bgSurface"
+                className="flex items-center gap-1 justify-self-start rounded-sm px-2 py-1 text-xs text-primary hover:bg-bgSurface"
             >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 {t(primitives.addPreset)}

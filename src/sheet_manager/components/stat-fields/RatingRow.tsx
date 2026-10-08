@@ -106,7 +106,7 @@ export function RatingRow({
                     // Like a resource: one frame holding the value and a read-only maximum.
                     <div
                         className={clsx(
-                            'inline-flex items-center rounded border border-border bg-bgSurface focus-within:ring-1 focus-within:ring-primary',
+                            'inline-flex items-center rounded-sm border border-border bg-bgSurface focus-within:ring-1 focus-within:ring-primary',
                             disabled && 'opacity-50'
                         )}
                     >
@@ -118,7 +118,7 @@ export function RatingRow({
                             onChange={onChange}
                             disabled={disabled}
                             label={rollLabel}
-                            className="w-12 bg-transparent px-1 py-1 text-center text-sm tabular-nums text-textPrimary focus:outline-none"
+                            className="w-12 bg-transparent px-1 py-1 text-center text-sm tabular-nums text-textPrimary focus:outline-hidden"
                         />
                         <span
                             className="px-1 text-sm tabular-nums text-textSecondary"
@@ -136,7 +136,7 @@ export function RatingRow({
                         onChange={onChange}
                         disabled={disabled}
                         label={rollLabel}
-                        className="w-16 rounded border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+                        className="w-16 rounded-sm border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary disabled:opacity-50"
                     />
                 )}
                 {removeSlot}

@@ -106,7 +106,7 @@ export function ExportPanel({
                     </ul>
                 </div>
             )}
-            <details className="rounded border border-border bg-bgBase">
+            <details className="rounded-sm border border-border bg-bgBase">
                 <summary className="cursor-pointer px-3 py-1.5 text-xs font-medium text-textPrimary">
                     {translate(labels.export.preview)}
                 </summary>
@@ -121,7 +121,7 @@ export function ExportPanel({
                 type="button"
                 disabled={empty}
                 onClick={onSave}
-                className="inline-flex items-center gap-1.5 rounded bg-primary-muted px-3 py-1.5 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
+                className="inline-flex items-center gap-1.5 rounded-sm bg-primary-muted px-3 py-1.5 text-sm font-medium text-white hover:bg-primary disabled:opacity-40"
             >
                 <Download className="h-4 w-4" aria-hidden="true" />
                 {translate(labels.export.save)}

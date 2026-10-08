@@ -35,9 +35,9 @@ const t = (descriptor: { message: string }, values?: Record<string, string | num
     translate(descriptor, values);
 
 const inputClasses =
-    'rounded border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-60';
+    'rounded-sm border border-border bg-bgSurface px-2 py-1 text-sm text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary disabled:opacity-60';
 const iconButton =
-    'grid h-6 w-6 shrink-0 place-items-center rounded border border-border text-textSecondary hover:border-primary hover:text-primary disabled:opacity-30 disabled:hover:border-border disabled:hover:text-textSecondary';
+    'grid h-6 w-6 shrink-0 place-items-center rounded-sm border border-border text-textSecondary hover:border-primary hover:text-primary disabled:opacity-30 disabled:hover:border-border disabled:hover:text-textSecondary';
 
 /** What the author sets; own trackers store it, built-in ones map it onto their override. */
 export interface TrackerSettingsValue {
@@ -107,8 +107,8 @@ export function MarkColorPicker({
                     onClick={() => onChange(palette)}
                     className={clsx(
                         // The picked color gets a bright frame with a gap, as the brush does.
-                        'grid h-3.5 w-3.5 place-items-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                        fill === palette && 'outline outline-2 outline-offset-2 outline-textPrimary'
+                        'grid h-3.5 w-3.5 place-items-center rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                        fill === palette && 'outline-2 outline-offset-2 outline-textPrimary'
                     )}
                 >
                     <MarkSwatch mark={{ fill: palette, symbol: '' }} size="xs" />
@@ -121,8 +121,8 @@ export function MarkColorPicker({
                 title={t(text.markOwnColor, { name })}
                 onChange={(event) => onChange(event.target.value.toLowerCase())}
                 className={clsx(
-                    'h-6 w-7 cursor-pointer rounded border border-border bg-transparent p-0',
-                    fill.startsWith('#') && 'outline outline-2 outline-offset-2 outline-textPrimary'
+                    'h-6 w-7 cursor-pointer rounded-sm border border-border bg-transparent p-0',
+                    fill.startsWith('#') && 'outline-2 outline-offset-2 outline-textPrimary'
                 )}
             />
         </span>
@@ -212,7 +212,7 @@ function AddButton({
             type="button"
             disabled={disabled}
             onClick={onClick}
-            className="flex items-center gap-1 justify-self-start rounded px-2 py-1 text-xs text-primary hover:bg-bgBase disabled:opacity-40"
+            className="flex items-center gap-1 justify-self-start rounded-sm px-2 py-1 text-xs text-primary hover:bg-bgBase disabled:opacity-40"
         >
             <Plus className="h-3.5 w-3.5" aria-hidden="true" />
             {label}
@@ -262,7 +262,7 @@ export function TrackerSettings({
                             aria-pressed={value.display === display}
                             onClick={() => onChange({ display })}
                             className={clsx(
-                                'rounded border px-2.5 py-1 text-xs transition-colors',
+                                'rounded-sm border px-2.5 py-1 text-xs transition-colors',
                                 value.display === display
                                     ? 'border-primary bg-primary-muted text-textPrimary'
                                     : 'border-border text-textSecondary hover:border-primary/60'
@@ -351,7 +351,7 @@ export function TrackerSettings({
                                         disabled={locked}
                                         onClick={() => setMark(index, { layer })}
                                         className={clsx(
-                                            'rounded border px-1.5 py-0.5 text-[11px] transition-colors disabled:opacity-60',
+                                            'rounded-sm border px-1.5 py-0.5 text-[11px] transition-colors disabled:opacity-60',
                                             mark.layer === layer
                                                 ? 'border-primary bg-primary-muted text-textPrimary'
                                                 : 'border-border text-textSecondary hover:border-primary/60'
@@ -417,7 +417,7 @@ export function TrackerSettings({
                         <button
                             type="button"
                             onClick={game.legacyLevels.onUseGame}
-                            className="rounded border border-border px-2 py-0.5 text-xs text-primary hover:border-primary"
+                            className="rounded-sm border border-border px-2 py-0.5 text-xs text-primary hover:border-primary"
                         >
                             {t(text.levelsUseGame)}
                         </button>
@@ -519,7 +519,7 @@ export function TrackerSettings({
 
             <Group title={t(text.columns)} hint={locked ? t(text.columnsBuiltInHint) : undefined}>
                 {game && (
-                    <div className="rounded border border-border bg-bgBase px-2 py-1.5 text-xs text-textSecondary">
+                    <div className="rounded-sm border border-border bg-bgBase px-2 py-1.5 text-xs text-textSecondary">
                         <strong className="text-textPrimary">{t(text.columnBuiltIn)}</strong>
                         {game.marksColumn ? ` · ${game.marksColumn}` : ''}
                     </div>
@@ -530,7 +530,7 @@ export function TrackerSettings({
                     return (
                         <div
                             key={column.id}
-                            className="grid min-w-0 gap-1.5 rounded border border-border bg-bgBase p-2"
+                            className="grid min-w-0 gap-1.5 rounded-sm border border-border bg-bgBase p-2"
                         >
                             <div className="flex flex-wrap items-center gap-1.5">
                                 <strong className="text-xs text-textPrimary">
@@ -688,7 +688,7 @@ export function TrackerSettings({
                                     aria-pressed={(value.totalReads ?? 'deepest') === reads}
                                     onClick={() => onChange({ totalReads: reads })}
                                     className={clsx(
-                                        'rounded border px-2 py-0.5 text-xs transition-colors',
+                                        'rounded-sm border px-2 py-0.5 text-xs transition-colors',
                                         (value.totalReads ?? 'deepest') === reads
                                             ? 'border-primary bg-primary-muted text-textPrimary'
                                             : 'border-border text-textSecondary hover:border-primary/60'
@@ -784,7 +784,7 @@ function LengthSettings({
                                                     ),
                                                 })
                                             }
-                                            className="rounded p-0.5 hover:text-error disabled:opacity-30"
+                                            className="rounded-sm p-0.5 hover:text-error disabled:opacity-30"
                                         >
                                             <X className="h-3 w-3" aria-hidden="true" />
                                         </button>
