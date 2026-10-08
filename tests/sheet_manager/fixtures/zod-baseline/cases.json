@@ -214,7 +214,7 @@
         "issues": [
             {
                 "path": "kind",
-                "code": "invalid_string"
+                "code": "invalid_format"
             },
             {
                 "path": "schemaVersion",
@@ -294,7 +294,7 @@
         "issues": [
             {
                 "path": "children.0.children.0.type",
-                "code": "invalid_union_discriminator"
+                "code": "invalid_union"
             }
         ]
     },
@@ -344,7 +344,7 @@
         "issues": [
             {
                 "path": "id",
-                "code": "invalid_string"
+                "code": "invalid_format"
             }
         ]
     },
@@ -362,7 +362,7 @@
         "issues": [
             {
                 "path": "owner",
-                "code": "unrecognized_keys"
+                "code": "invalid_union"
             }
         ]
     },
@@ -456,7 +456,7 @@
         "issues": [
             {
                 "path": "entries.0.values.c-bbbbbbbb",
-                "code": "not_finite"
+                "code": "invalid_union"
             }
         ]
     },
@@ -813,7 +813,7 @@
         "issues": [
             {
                 "path": "health.levels.0",
-                "code": "invalid_enum_value"
+                "code": "invalid_value"
             },
             {
                 "path": "experience",
@@ -1033,7 +1033,7 @@
         "issues": [
             {
                 "path": "url",
-                "code": "invalid_string"
+                "code": "invalid_format"
             }
         ]
     },
@@ -1042,7 +1042,7 @@
         "issues": [
             {
                 "path": "url",
-                "code": "invalid_string"
+                "code": "invalid_format"
             }
         ]
     },
@@ -1051,7 +1051,7 @@
         "issues": [
             {
                 "path": "url",
-                "code": "invalid_string"
+                "code": "invalid_format"
             }
         ]
     },
@@ -1060,7 +1060,7 @@
         "issues": [
             {
                 "path": "url",
-                "code": "invalid_string"
+                "code": "invalid_format"
             }
         ]
     },
@@ -1085,7 +1085,7 @@
         "issues": [
             {
                 "path": "",
-                "code": "too_small"
+                "code": "invalid_key"
             }
         ]
     },

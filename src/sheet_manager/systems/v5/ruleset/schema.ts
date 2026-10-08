@@ -95,10 +95,10 @@ export const V5BiographySchema = z.object({
     history: text(V5_LIMITS.text.notes),
 });
 
-function traitRecord<T extends z.ZodTypeAny>(keys: readonly string[], schema: T) {
+function traitRecord<T extends z.ZodType>(keys: readonly string[], schema: T) {
     return z.object(
-        Object.fromEntries(keys.map((key) => [key, schema.default({})])) as {
-            [key: string]: z.ZodDefault<T>;
+        Object.fromEntries(keys.map((key) => [key, schema.prefault({} as z.input<T>)])) as {
+            [key: string]: z.ZodPrefault<T>;
         }
     );
 }
@@ -111,21 +111,21 @@ export const V5MetadataSchema = z.object({
 
 /** Fields every V5 character carries, whatever its module. Modules extend this shape. */
 export const V5CoreShape = {
-    metadata: V5MetadataSchema.default({}),
+    metadata: V5MetadataSchema.prefault({}),
     name: z.string().max(V5_LIMITS.text.short).default(''),
-    attributes: traitRecord(V5_ATTRIBUTE_KEYS, V5AttributeSchema).default({}),
-    skills: traitRecord(V5_SKILL_KEYS, V5SkillSchema).default({}),
-    health: V5TrackSchema.default({}),
-    willpower: V5TrackSchema.default({}),
+    attributes: traitRecord(V5_ATTRIBUTE_KEYS, V5AttributeSchema).prefault({}),
+    skills: traitRecord(V5_SKILL_KEYS, V5SkillSchema).prefault({}),
+    health: V5TrackSchema.prefault({}),
+    willpower: V5TrackSchema.prefault({}),
     advantages: z.array(V5AdvantageSchema).max(V5_LIMITS.rows.advantages).default([]),
     flaws: z.array(V5AdvantageSchema).max(V5_LIMITS.rows.advantages).default([]),
     touchstones: z.array(V5TouchstoneSchema).max(V5_LIMITS.rows.touchstones).default([]),
-    experience: V5ExperienceSchema.default({}),
+    experience: V5ExperienceSchema.prefault({}),
     chronicleTenets: text(V5_LIMITS.text.notes),
     weapons: z.array(WeaponItemSchema).max(V5_LIMITS.rows.weapons).default([]),
     inventory: z.array(ItemSchema).max(V5_LIMITS.rows.inventory).default([]),
     notes: text(V5_LIMITS.text.notes),
-    biography: V5BiographySchema.default({}),
+    biography: V5BiographySchema.prefault({}),
 };
 
 /**

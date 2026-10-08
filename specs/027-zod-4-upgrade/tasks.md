@@ -27,17 +27,17 @@ clean-up group (design D2); each passes `yarn verify`.
       values; the shipped-template tree; type-equality assertions for `Character`, `CustomTemplate`,
       `UserDocumentType`, and the catalog entry type. Run it green and commit,
       `test: Zod behavior baseline before the Zod 4 upgrade (spec 027)`.
-- [ ] T004 [US1] Bump `zod` in `package.json` to the latest 4.x with `yarn install`; make the
+- [x] T004 [US1] Bump `zod` in `package.json` to the latest 4.x with `yarn install`; make the
       minimum edits so `yarn typecheck` passes (`z.record` key argument in
       `src/sheet_manager/types/character.ts`, `ZodType`/`ZodTypeAny`/`ZodIssue` type names in
       `systems/types.ts`, `types/template.ts`, `systems/v5/ruleset/schema.ts`,
       `features/template-editor/issues/schemaIssues.ts`,
       `tests/sheet_manager/entity-bindings.test.ts`).
-- [ ] T005 [US1] Run `tests/sheet_manager/zod-baseline.test.ts` and the full unit run; for each diff
+- [x] T005 [US1] Run `tests/sheet_manager/zod-baseline.test.ts` and the full unit run; for each diff
       fix the schema to restore the old outcome or list it in design.md "Accepted differences" with
       a test (`.default()` semantics, URL checks, recursive `templateNodeSchema` error paths in
       `types/template.ts`).
-- [ ] T006 [US1] Run `yarn verify` (schema and persistence change, AGENTS.md §11) and commit,
+- [x] T006 [US1] Run `yarn verify` (schema and persistence change, AGENTS.md §11) and commit,
       `feat(deps): Zod 4 (spec 027)`.
 
 ## User Story 2 - Errors stay readable (P1)

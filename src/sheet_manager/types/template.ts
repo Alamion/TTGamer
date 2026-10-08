@@ -175,7 +175,7 @@ export const CatalogBindingSchema = z.object({
         .refine((fills) => Object.keys(fills).length <= TEMPLATE_LIMITS.fillMappingsPerField, {
             message: `At most ${TEMPLATE_LIMITS.fillMappingsPerField} fill mappings`,
         })
-        .default({}),
+        .prefault({}),
 });
 
 export type CatalogBinding = z.infer<typeof CatalogBindingSchema>;
@@ -360,7 +360,7 @@ const TrackerFieldSchema = z.object({
     display: z.enum(TRACKER_DISPLAYS).default('table'),
     marks: z.array(TrackerMarkKindSchema).min(1).max(TEMPLATE_LIMITS.trackerMarksMax),
     levels: z.array(TrackerLevelSchema).min(1).max(TEMPLATE_LIMITS.trackerLevelsMax),
-    valueColumn: TrackerValueColumnSchema.default({ show: true }),
+    valueColumn: TrackerValueColumnSchema.prefault({ show: true }),
     columns: trackerColumnsSchema(1),
     total: z.boolean().default(true),
     totalReads: z.enum(TRACKER_TOTAL_READS).default('deepest'),

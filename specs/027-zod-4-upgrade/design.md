@@ -102,3 +102,21 @@ the order is: first pin down current behavior, then change the dependency, then 
   sheet 12 ms (browser timings, `yarn test:e2e`); open the sheet 113 ms.
 - Characterization snapshots: `tests/sheet_manager/fixtures/zod-baseline/` (`cases.json`,
   `legacy-templates.json`, `shipped-templates.json`), written on Zod 3.
+
+## Accepted differences
+
+Found by the baseline on Zod 4.6.5; parsed values, defaults, and issue paths are identical, only
+issue codes were renamed by the library (nothing in `src` branches on them):
+
+- `invalid_string` → `invalid_format` (ids, kinds, URLs).
+- `invalid_enum_value` → `invalid_value`; `too_small` for an empty record key → `invalid_key`.
+- `invalid_union_discriminator` → `invalid_union` (same path `children.N.type`).
+- A strict object inside a union reports `invalid_union` at the union's path instead of the inner
+  `unrecognized_keys`; a non-finite catalog number reports `invalid_union` instead of `not_finite`.
+
+## Implementation notes
+
+- D2 gap: Zod 4 `.default()` returns its value without parsing it, which would drop the inner
+  defaults of the V5 trait/track blocks, `CatalogBinding.fills`, tracker `valueColumn`, and the
+  document `templateValues` bag. These use `.prefault()` (Zod 3 behavior); the baseline covers them.
+  `templateValues` also lost `.optional()`, which in v4 would make its output type optional.

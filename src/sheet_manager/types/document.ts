@@ -49,7 +49,7 @@ const DocumentEnvelopeBaseSchema = z.object({
      * Document-global value bag (clarification D1/D3): keyed by valueKey, one flat namespace per
      * document. Fields in different templates sharing a valueKey address the same entry here.
      */
-    templateValues: TemplatePageValuesSchema.optional().default({}),
+    templateValues: TemplatePageValuesSchema.prefault({}),
 });
 
 export const UnknownDocumentEnvelopeSchema = DocumentEnvelopeBaseSchema.extend({
