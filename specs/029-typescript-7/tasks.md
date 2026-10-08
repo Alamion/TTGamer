@@ -4,7 +4,7 @@
 
 ## Foundation
 
-- [ ] T001 Record in design.md "Results": cold `yarn typecheck` time (best of three, after deleting
+- [x] T001 Record in design.md "Results": cold `yarn typecheck` time (best of three, after deleting
       `node_modules/.tmp/*.tsbuildinfo`), installed versions, and the TypeScript 6 verdicts on five
       planted errors (kept as a script in the scratchpad).
 
@@ -13,14 +13,14 @@
 **Check**: planted errors reported with file and line; cold check at most a third of 16 s
 (SC-001/2).
 
-- [ ] T002 [US1] Add `typescript-native` (`npm:typescript@^7.0.2`) to `package.json`
+- [x] T002 [US1] Add `typescript-native` (`npm:typescript@^7.0.2`) to `package.json`
       devDependencies.
-- [ ] T003 [US1] Remove `baseUrl` from `tsconfig.json`, `tsconfig.app.json`, `tsconfig.test.json`,
+- [x] T003 [US1] Remove `baseUrl` from `tsconfig.json`, `tsconfig.app.json`, `tsconfig.test.json`,
       `tsconfig.node.json`, `tsconfig.e2e.json`; set `"baseUrl": null` in app and test; drop
       `ignoreDeprecations` where neither major needs it. Check both majors pass (`tsc -b --force`).
-- [ ] T004 [US1] Point `scripts/typecheck.ts` at `node_modules/typescript-native/bin/tsc` and add
+- [x] T004 [US1] Point `scripts/typecheck.ts` at `node_modules/typescript-native/bin/tsc` and add
       the compiler version to the stamp; keep `--force` behavior.
-- [ ] T005 [US1] Run the planted errors with the new script; run `yarn typecheck` cold three times;
+- [x] T005 [US1] Run the planted errors with the new script; run `yarn typecheck` cold three times;
       run `yarn verify` and commit, `feat(deps): TypeScript 7 for the type check (spec 029, US1)`.
 
 ## User Story 2 - Editor, lint, and build keep working (P1)

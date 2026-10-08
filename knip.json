@@ -15,7 +15,7 @@
     "vitest": {
         "entry": ["tests/**/*.test.{ts,tsx}", "vitest.config.ts"]
     },
-    "ignoreDependencies": ["tailwindcss"],
+    "ignoreDependencies": ["tailwindcss", "typescript-native"],
     "ignoreExportsUsedInFile": true,
     "tags": ["-knipignore"]
 }
