@@ -460,6 +460,567 @@
             }
         ]
     },
+    "v5: empty draft gets every default": {
+        "ok": true,
+        "data": {
+            "metadata": {},
+            "name": "",
+            "attributes": {
+                "strength": {
+                    "value": 1
+                },
+                "dexterity": {
+                    "value": 1
+                },
+                "stamina": {
+                    "value": 1
+                },
+                "charisma": {
+                    "value": 1
+                },
+                "manipulation": {
+                    "value": 1
+                },
+                "composure": {
+                    "value": 1
+                },
+                "intelligence": {
+                    "value": 1
+                },
+                "wits": {
+                    "value": 1
+                },
+                "resolve": {
+                    "value": 1
+                }
+            },
+            "skills": {
+                "athletics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "brawl": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "craft": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "driving": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "firearms": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "larceny": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "melee": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "stealth": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "survival": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "animal-ken": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "etiquette": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "insight": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "intimidation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "leadership": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "performance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "persuasion": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "streetwise": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "subterfuge": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "academics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "awareness": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "finance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "investigation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "medicine": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "occult": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "politics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "science": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "technology": {
+                    "value": 0,
+                    "specializationText": ""
+                }
+            },
+            "health": {
+                "levels": [],
+                "bonus": 0
+            },
+            "willpower": {
+                "levels": [],
+                "bonus": 0
+            },
+            "advantages": [],
+            "flaws": [],
+            "touchstones": [],
+            "experience": {
+                "total": 0,
+                "spent": 0
+            },
+            "chronicleTenets": "",
+            "weapons": [],
+            "inventory": [],
+            "notes": "",
+            "biography": {
+                "age": "",
+                "dateOfBirth": "",
+                "appearance": "",
+                "distinguishingFeatures": "",
+                "history": ""
+            }
+        }
+    },
+    "v5: legacy track counts and specialties": {
+        "ok": true,
+        "data": {
+            "metadata": {},
+            "name": "",
+            "attributes": {
+                "strength": {
+                    "value": 1
+                },
+                "dexterity": {
+                    "value": 1
+                },
+                "stamina": {
+                    "value": 1
+                },
+                "charisma": {
+                    "value": 1
+                },
+                "manipulation": {
+                    "value": 1
+                },
+                "composure": {
+                    "value": 1
+                },
+                "intelligence": {
+                    "value": 1
+                },
+                "wits": {
+                    "value": 1
+                },
+                "resolve": {
+                    "value": 1
+                }
+            },
+            "skills": {
+                "athletics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "brawl": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "craft": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "driving": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "firearms": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "larceny": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "melee": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "stealth": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "survival": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "animal-ken": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "etiquette": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "insight": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "intimidation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "leadership": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "performance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "persuasion": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "streetwise": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "subterfuge": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "academics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "awareness": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "finance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "investigation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "medicine": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "occult": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "politics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "science": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "technology": {
+                    "value": 0,
+                    "specializationText": ""
+                }
+            },
+            "health": {
+                "levels": [
+                    "cross",
+                    "slash",
+                    "slash"
+                ],
+                "bonus": 0
+            },
+            "willpower": {
+                "levels": [],
+                "bonus": 0
+            },
+            "advantages": [],
+            "flaws": [],
+            "touchstones": [],
+            "experience": {
+                "total": 0,
+                "spent": 0
+            },
+            "chronicleTenets": "",
+            "weapons": [],
+            "inventory": [],
+            "notes": "",
+            "biography": {
+                "age": "",
+                "dateOfBirth": "",
+                "appearance": "",
+                "distinguishingFeatures": "",
+                "history": ""
+            }
+        }
+    },
+    "v5: wrong track": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "health.levels.0",
+                "code": "invalid_enum_value"
+            },
+            {
+                "path": "experience",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "hunter: empty draft gets every default": {
+        "ok": true,
+        "data": {
+            "metadata": {},
+            "name": "",
+            "attributes": {
+                "strength": {
+                    "value": 1
+                },
+                "dexterity": {
+                    "value": 1
+                },
+                "stamina": {
+                    "value": 1
+                },
+                "charisma": {
+                    "value": 1
+                },
+                "manipulation": {
+                    "value": 1
+                },
+                "composure": {
+                    "value": 1
+                },
+                "intelligence": {
+                    "value": 1
+                },
+                "wits": {
+                    "value": 1
+                },
+                "resolve": {
+                    "value": 1
+                }
+            },
+            "skills": {
+                "athletics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "brawl": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "craft": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "driving": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "firearms": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "larceny": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "melee": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "stealth": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "survival": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "animal-ken": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "etiquette": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "insight": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "intimidation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "leadership": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "performance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "persuasion": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "streetwise": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "subterfuge": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "academics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "awareness": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "finance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "investigation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "medicine": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "occult": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "politics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "science": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "technology": {
+                    "value": 0,
+                    "specializationText": ""
+                }
+            },
+            "health": {
+                "levels": [],
+                "bonus": 0
+            },
+            "willpower": {
+                "levels": [],
+                "bonus": 0
+            },
+            "advantages": [],
+            "flaws": [],
+            "touchstones": [],
+            "experience": {
+                "total": 0,
+                "spent": 0
+            },
+            "chronicleTenets": "",
+            "weapons": [],
+            "inventory": [],
+            "notes": "",
+            "biography": {
+                "age": "",
+                "dateOfBirth": "",
+                "appearance": "",
+                "distinguishingFeatures": "",
+                "history": ""
+            },
+            "concept": "",
+            "creed": "",
+            "drive": "",
+            "ambition": "",
+            "desire": "",
+            "redemption": "",
+            "creedFields": "",
+            "edges": [],
+            "perks": [],
+            "despair": false,
+            "desperation": 0,
+            "danger": 0
+        }
+    },
+    "catalog binding: fills default": {
+        "ok": true,
+        "data": {
+            "catalogId": "weapons",
+            "fills": {}
+        }
+    },
+    "catalog binding: null fills": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "fills",
+                "code": "invalid_type"
+            }
+        ]
+    },
     "image: https url": {
         "ok": true,
         "data": {

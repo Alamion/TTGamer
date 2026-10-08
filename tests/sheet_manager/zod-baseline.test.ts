@@ -8,10 +8,12 @@ import {
     UserDocumentTypeSchema,
     UserSettingSchema,
 } from '@site/src/sheet_manager/systems/userTypes';
+import { HunterSchema } from '@site/src/sheet_manager/systems/v5/modules/hunter/schema';
+import { V5CoreSchema } from '@site/src/sheet_manager/systems/v5/ruleset/schema';
 import type { BaseCharacter, Item } from '@site/src/sheet_manager/types/character';
 import { BaseCharacterSchema } from '@site/src/sheet_manager/types/character';
 import { UnknownDocumentEnvelopeSchema } from '@site/src/sheet_manager/types/document';
-import { CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
+import { CatalogBindingSchema, CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import {
     TemplateImageValueSchema,
     TemplatePageValuesSchema,
@@ -217,6 +219,20 @@ const cases: Array<[string, z.ZodType, unknown]> = [
         UserCatalogSchema,
         catalog({ entries: [{ id: 'e-aaaaaaaa', name: 'A', values: { 'c-bbbbbbbb': Infinity } }] }),
     ],
+    ['v5: empty draft gets every default', V5CoreSchema, {}],
+    [
+        'v5: legacy track counts and specialties',
+        V5CoreSchema,
+        {
+            health: { superficial: 2, aggravated: 1 },
+            skills: { Firearms: { value: 2, specialties: ['Pistols', 'Rifles'] } },
+            attributes: { Strength: {} },
+        },
+    ],
+    ['v5: wrong track', V5CoreSchema, { health: { levels: ['nope'] }, experience: 'x' }],
+    ['hunter: empty draft gets every default', HunterSchema, {}],
+    ['catalog binding: fills default', CatalogBindingSchema, { catalogId: 'weapons' }],
+    ['catalog binding: null fills', CatalogBindingSchema, { catalogId: 'weapons', fills: null }],
     [
         'image: https url',
         TemplateImageValueSchema,
