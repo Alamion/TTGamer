@@ -62,14 +62,14 @@ clean-up group (design D2); each passes `yarn verify`.
 
 **Check**: `yarn outdated` shows no Zod entry; search finds no deprecated Zod calls (SC-003).
 
-- [ ] T010 [US3] Replace `z.ZodIssueCode.custom` with `'custom'` in `types/template.ts` and
+- [x] T010 [US3] Replace `z.ZodIssueCode.custom` with `'custom'` in `types/template.ts` and
       `systems/userCatalogs.ts`; move schema-supplied messages ('Duplicate column id', 'Duplicate
       entry id', template rule messages) to the v4 `error` form where needed. Verify, commit,
       `refactor: Zod 4 issue codes and messages (spec 027)`.
-- [ ] T011 [US3] Replace `.strict()` with `z.strictObject` in `types/templateValues.ts`,
+- [x] T011 [US3] Replace `.strict()` with `z.strictObject` in `types/templateValues.ts`,
       `systems/userTypes.ts`, `systems/userCatalogs.ts`, and `.passthrough()` with `z.looseObject`
       in `scripts/validate-data.ts`. Verify, commit, `refactor: Zod 4 object helpers (spec 027)`.
-- [ ] T012 [US3] Replace `z.string().url().startsWith('https://')` in `types/templateValues.ts` with
+- [x] T012 [US3] Replace `z.string().url().startsWith('https://')` in `types/templateValues.ts` with
       the v4 URL schema keeping the `https://` rule; the baseline URL cases must stay equal. Search
       `src`, `scripts`, `tests` for any other removed or deprecated call (`nativeEnum`, `errorMap`,
       `.format()`, `.flatten()`, `.merge()`, `.deepPartial`, string-format methods) and replace

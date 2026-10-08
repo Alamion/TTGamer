@@ -51,7 +51,7 @@ export const VisibleWhenSchema = z.object({
         .min(1)
         .max(120)
         .regex(/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/, 'Expected a kebab-case coordinate'),
-    equals: z.union([z.string().max(120), z.number().finite(), z.boolean()]),
+    equals: z.union([z.string().max(120), z.number(), z.boolean()]),
     not: z.boolean().optional(),
 });
 
@@ -92,9 +92,9 @@ const fieldBaseShape = {
 };
 
 const boundedNumberShape = {
-    min: z.number().finite().optional(),
-    max: z.number().finite().optional(),
-    step: z.number().finite().positive().optional(),
+    min: z.number().optional(),
+    max: z.number().optional(),
+    step: z.number().positive().optional(),
 };
 
 const hasValidBounds = (value: { min?: number; max?: number }) =>
@@ -401,7 +401,7 @@ type TemplateFieldObject = z.infer<(typeof fieldObjectSchemas)[number]>;
 
 function refineField(field: TemplateFieldObject, context: z.RefinementCtx): void {
     const issue = (message: string, path: string[]) =>
-        context.addIssue({ code: z.ZodIssueCode.custom, message, path });
+        context.addIssue({ code: 'custom', message, path });
     switch (field.type) {
         case 'number':
         case 'rating':
@@ -729,7 +729,7 @@ export function isTemplateField(node: TemplateNode): node is TemplateField {
 
 function refineNode(node: TemplateNode, context: z.RefinementCtx): void {
     const issue = (message: string, path: string[] = []) =>
-        context.addIssue({ code: z.ZodIssueCode.custom, message, path });
+        context.addIssue({ code: 'custom', message, path });
     if (isTemplateField(node)) {
         refineField(node, context);
         return;

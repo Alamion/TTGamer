@@ -21,7 +21,7 @@ const namedEntrySchema = z
         id: z.string().trim().min(1),
         name: z.string().trim().min(1),
     })
-    .passthrough();
+    .loose();
 
 const terminologyEntrySchema = z
     .object({
@@ -29,7 +29,7 @@ const terminologyEntrySchema = z
         english: z.string().trim().min(1),
         russian: z.string().trim().min(1),
     })
-    .passthrough();
+    .loose();
 
 const catalogs = {
     abilities: ABILITIES,

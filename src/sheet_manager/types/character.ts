@@ -1,9 +1,9 @@
 import { generateId } from '@site/src/shared/utils/random';
 import { z } from 'zod';
 
-const dotValueSchema = z.number().finite().int().min(0).max(5);
-const resourceValueSchema = z.number().finite().int().min(0).max(10);
-const nonNegativeIntegerSchema = z.number().finite().int().nonnegative();
+const dotValueSchema = z.number().int().min(0).max(5);
+const resourceValueSchema = z.number().int().min(0).max(10);
+const nonNegativeIntegerSchema = z.number().int().nonnegative();
 const resourcePairSchema = z
     .object({ current: resourceValueSchema, max: resourceValueSchema })
     .refine(({ current, max }) => current <= max, {
@@ -108,8 +108,8 @@ export const WeaponItemSchema = z
         name: z.string(),
         damage: z.string(),
         range: z.string(),
-        ammo: z.coerce.number().finite().int().nonnegative().default(0),
-        maxAmmo: z.coerce.number().finite().int().nonnegative().default(0),
+        ammo: z.coerce.number().int().nonnegative().default(0),
+        maxAmmo: z.coerce.number().int().nonnegative().default(0),
     })
     .refine(({ ammo, maxAmmo }) => ammo <= maxAmmo, {
         message: 'Ammo cannot exceed maximum ammo',
@@ -142,7 +142,7 @@ export const BackgroundSchema = z.object({
 
 export const MeritFlawSchema = z.object({
     id: z.string(),
-    points: z.number().finite().int().min(1).max(5),
+    points: z.number().int().min(1).max(5),
     label: z.string(),
     catalogId: z.string().optional(),
 });

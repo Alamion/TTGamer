@@ -40,11 +40,7 @@ export const CatalogColumnSchema = z
     })
     .strict();
 
-export const CatalogCellValueSchema = z.union([
-    z.string().max(2_000),
-    z.number().finite(),
-    z.boolean(),
-]);
+export const CatalogCellValueSchema = z.union([z.string().max(2_000), z.number(), z.boolean()]);
 
 export const CatalogEntrySchema = z
     .object({
@@ -95,10 +91,10 @@ export const UserCatalogSchema = z
     .superRefine((catalog, context) => {
         const unique = (ids: readonly string[]) => new Set(ids).size === ids.length;
         if (!unique(catalog.columns.map(({ id }) => id))) {
-            context.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate column id' });
+            context.addIssue({ code: 'custom', message: 'Duplicate column id' });
         }
         if (!unique(catalog.entries.map(({ id }) => id))) {
-            context.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate entry id' });
+            context.addIssue({ code: 'custom', message: 'Duplicate entry id' });
         }
     })
     // Values of unknown columns, or of the wrong type, are dropped rather than failing the catalog.

@@ -120,3 +120,10 @@ issue codes were renamed by the library (nothing in `src` branches on them):
   defaults of the V5 trait/track blocks, `CatalogBinding.fills`, tracker `valueColumn`, and the
   document `templateValues` bag. These use `.prefault()` (Zod 3 behavior); the baseline covers them.
   `templateValues` also lost `.optional()`, which in v4 would make its output type optional.
+- D2 correction: in Zod 4.6 only `.passthrough()`, `z.string().url()`, `z.ZodIssueCode`, and the
+  no-op `.finite()` carry deprecation marks. `.strict()`, `.strip()`, and `.superRefine()` do not,
+  so they stay (the plan listed `.strict()` for replacement; no supported reason found). `.finite()`
+  was removed everywhere: Zod 4 rejects infinite numbers by default, and `.int()` now also rejects
+  integers beyond the safe range (no stored value is that large).
+- The three clean-up groups (T010–T012) landed in one commit because each was a few lines and the
+  baseline stayed unchanged for all of them.
