@@ -349,10 +349,21 @@ describe('reference entry states (spec 017)', () => {
 });
 
 describe('palette accent roles (spec 013, T-081)', () => {
-    it('lists the violet as the tertiary color and no editor color', () => {
-        const names = tailwindColors().map(({ name }) => name);
-        expect(names).toContain('tertiary');
-        expect(names).not.toContain('editor');
+    afterEach(() =>
+        document.querySelectorAll('style[data-test-theme]').forEach((el) => el.remove())
+    );
+
+    it('lists the project theme tokens and no default Tailwind palette entry', () => {
+        const style = document.createElement('style');
+        style.dataset.testTheme = '';
+        style.textContent =
+            ':root { --color-tertiary: rgb(79 70 229 / 1); --color-primary-dark: red; --color-bgBase: white; --color-green-100: green; --color-white: white; }';
+        document.head.appendChild(style);
+        const colors = tailwindColors();
+        const names = colors.map(({ name }) => name);
+        expect(names).toEqual(['bgBase', 'primary-dark', 'tertiary']);
+        expect(colors.find(({ name }) => name === 'primary-dark')?.group).toBe('primary');
+        expect(colors.find(({ name }) => name === 'tertiary')?.group).toBe('Single colors');
     });
 });
 
