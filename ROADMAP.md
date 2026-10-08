@@ -218,8 +218,8 @@ dependencies — they are not identifiers; slugs are.
 - **Open questions**: how a schema change is migrated — proposed: the server migrates
   its own structures (envelope, metadata, quotas, rights, API version) and the client
   migrates document data by `schemaVersion`, showing a document of a newer version
-  read-only; where the frontend keeps the private contract (proposed: a pinned snapshot
-  with its source commit); whether a cloud document can be edited offline and sent
+  read-only; whether the contract moves to a shared private repository or each side
+  keeps its own copy; whether a cloud document can be edited offline and sent
   later or stays read-only from the cache; quota sizes and how usage is shown; account
   management (deletion, data export, email verification).
 - **Notes**:
@@ -245,8 +245,8 @@ dependencies — they are not identifiers; slugs are.
           along with it; items shared with other users become immutable published
           versions that documents pin.
         - Only the personal data the cloud space needs is stored.
-        - Backend: Go with ArangoDB, JWT sessions, and an OpenAPI contract in a
-          separate private repository that both sides propose changes to. It runs in
+        - Backend: Go with ArangoDB, JWT sessions, and an OpenAPI contract both sides
+          propose changes to, with snake_case fields on the wire. It runs in
           Docker on a VPS deployed by Jenkins; the production site moves there from
           Vercel once the VPS exists.
 
