@@ -143,3 +143,9 @@ Order of work:
   mobile docs); step 4 (palette page, draft-only) is covered by the unit test that reads the tokens.
   Left for the maintainer: restart `yarn start` once (the PostCSS plugin changed) and look at the
   palette page in the dev server.
+
+## Implementation notes
+
+- After the maintainer asked for nested CSS (2026-10-08), `set_tailwind_styles.css` was rewritten
+  with native nesting (`.tailwind-root { h1 { … } }`). The PostCSS plugin flattens it: the built CSS
+  is byte-identical to the flat version, so no screenshot comparison was repeated.
