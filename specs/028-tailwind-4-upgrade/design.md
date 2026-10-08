@@ -104,3 +104,14 @@ Order of work:
    before (outline and ring).
 4. Open `/docs/dev/storybook/palette` (dev) → swatches show every palette color with a value.
 5. Open a docs page on a phone-width window → navbar, footer, and content look unchanged.
+
+## Results
+
+- Baseline (Tailwind 3.4.19, 2026-10-08): production CSS 137,702 bytes (24,856 gzip, one file);
+  `yarn build` 14.8 s (warm cache); sheet JS and CSS 3,702,698 bytes (spec 027 final).
+- Screenshot baseline: 42 images (home, docs, catalog, sheet empty/new/dice, library, editor,
+  selected, focus; light/dark, en/ru, desktop and 390 px for the docs-type pages). Two captures of
+  the same build are pixel-identical.
+- Browsers: the project's production browserslist (`>0.5%, not dead, not op_mini all`) is evergreen
+  today; Tailwind 4 needs Safari 16.4, Chrome 111, Firefox 128. No supported browser falls outside
+  it.

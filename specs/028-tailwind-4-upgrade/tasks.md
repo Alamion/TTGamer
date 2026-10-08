@@ -8,11 +8,11 @@ engine switch and the class renames are separate commits, but the site is only c
 
 ## Foundation
 
-- [ ] T001 Record the baselines in design.md "Results": installed Tailwind version, the production
+- [x] T001 Record the baselines in design.md "Results": installed Tailwind version, the production
       CSS bytes (raw and gzip) of the sheet route from `yarn test:e2e` timings, the `yarn start`
       cold start and one rebuild time, and the browserslist check against Tailwind 4's minimums
       (D10).
-- [ ] T002 Write the screenshot script in the scratchpad (D1): fixed pages and states, light and
+- [x] T002 Write the screenshot script in the scratchpad (D1): fixed pages and states, light and
       dark, en and ru, plus the dialog-with-rotated-icon case; capture the Tailwind 3 baseline from
       the built site into the scratchpad. Check the script twice on the same build: identical
       output.
