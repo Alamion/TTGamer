@@ -118,14 +118,19 @@ so moving it to the cloud keeps every reference to it.
 **Why this priority**: moves (T-012) depend on it; it changes stored data, so it lands before the
 cloud space rather than with it.
 
-**Independent Test**: create a document and a user type offline; their ids are time-ordered UUIDs;
-existing documents keep their ids and still open with their templates.
+**Independent Test**: create a document, a user type, and a template offline; the document's id is a
+UUIDv7, the type's and template's ids keep their prefixes with 32 hex digits; existing documents
+keep their ids and still open with their templates.
 
 **Acceptance Scenarios**:
 
-1. **Given** a new document, user type, setting, or catalog, **When** it is created, **Then** its id
-   is a UUIDv7.
-2. **Given** documents and library items saved before this change, **When** the app loads them,
+1. **Given** a new document, **When** it is created, **Then** its id is a UUIDv7.
+2. **Given** a new user type, setting, catalog, or template, **When** it is created, **Then** its id
+   keeps its prefix (`user-`, `user-setting-`, `user-catalog-`, `tpl-`) followed by the 32 hex
+   digits of a UUIDv7.
+3. **Given** many template elements created in the same millisecond (a paste), **When** their ids
+   are made, **Then** no two are equal.
+4. **Given** documents and library items saved before this change, **When** the app loads them,
    **Then** their ids and every reference between them are unchanged.
 
 ### Edge Cases
@@ -139,8 +144,9 @@ existing documents keep their ids and still open with their templates.
 - A client meets a document whose `schemaVersion` is newer than it knows: it shows the document
   read-only and never writes it back.
 - An id that is not a UUID (a built-in template id, an old fallback id): the contract states which
-  ids must be UUIDs (user-created documents and library items) and which are fixed names (built-in
-  systems, definitions, templates).
+  ids must be UUIDs (user-created documents), which are prefixed identifiers unique per owner
+  (library items, old and new), and which are fixed names (built-in systems, definitions,
+  templates).
 
 ## Requirements
 
@@ -198,9 +204,11 @@ existing documents keep their ids and still open with their templates.
 
 - **FR-015**: The dice evaluator MUST accept the seeded generator as its random source and reproduce
   every test vector exactly; local rolls MUST keep the current random source.
-- **FR-016**: New user-created documents MUST get UUIDv7 ids, and new user types, settings, and
-  catalogs MUST keep their `user-` prefixes with the 32 hex digits of a UUIDv7; existing ids and
-  references MUST stay unchanged.
+- **FR-016**: New user-created documents MUST get UUIDv7 ids, and new user types, settings,
+  catalogs, and templates MUST keep their prefixes with the 32 hex digits of a UUIDv7; short ids
+  that only need to be unique inside one document or template (template elements, list entries,
+  tracker parts) MUST stay random, never time-based; existing ids and references MUST stay
+  unchanged.
 - **FR-017**: A shared roll record MUST carry the generator algorithm's id and the resulting dice,
   so a roll made before an evaluator change still displays and is recomputed only by clients that
   know its algorithm. Seeded rolls in this spec are 2D; 3D shared rolls are T-106's own work.
@@ -221,8 +229,8 @@ existing documents keep their ids and still open with their templates.
 - **SC-002**: The backend developer reviews the first contract version and records approval or
   change requests on it within one review round.
 - **SC-003**: Both sides reproduce 100% of the generator test vectors.
-- **SC-004**: The frontend conformance report names a deliberately changed field in under a minute
-  from running the command.
+- **SC-004**: The frontend conformance report names every deliberately changed field in its first
+  run after the change.
 - **SC-005**: No stored document or library item changes its id, and all existing documents open
   with their templates after the id change (US4).
 - **SC-006**: Local rolls, the 3D and 2D dice, and roll history behave as before (no test in the

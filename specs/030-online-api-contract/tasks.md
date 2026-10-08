@@ -12,18 +12,25 @@ Delivery order follows design.md "Approach": US4 (ids change stored data, so it 
 
 - [ ] T001 [US4] Write `tests/shared/random.test.ts`: `generateId()` returns a UUID with version 7
       and variant `10`, ids from later milliseconds sort after earlier ones, 10 000 ids have no
-      duplicate
+      duplicate; `randomToken(8)` returns 8 lowercase hex characters and 1 000 tokens made in one
+      synchronous loop have no duplicate
 - [ ] T002 [US4] Write `tests/sheet_manager/user-ids.test.ts`: `newUserTypeId()`,
       `newUserSettingId()`, and `newUserCatalogId()` keep their prefixes, end in 32 hex digits, pass
       the kebab-case identifier schema in `src/sheet_manager/types/document.ts`, and pass
       `isUserTypeId`/the setting and catalog checks; 8-digit ids such as `user-1a2b3c4d`,
-      `user-setting-1a2b3c4d`, and `user-catalog-1a2b3c4d` still pass the same checks
+      `user-setting-1a2b3c4d`, and `user-catalog-1a2b3c4d` still pass the same checks;
+      `generateDraftId('tpl')` ends in 32 hex digits, `generateDraftId('f')` in 8, and 1 000
+      `generateDraftId('f')` ids made in one synchronous loop have no duplicate
 - [ ] T003 [US4] Rewrite `generateId()` in `src/shared/utils/random.ts` as UUIDv7 from
       `crypto.getRandomValues` (48-bit millisecond time, version 7, variant, random rest); remove
-      the `randomUUID` fallback branch (design D8)
+      the `randomUUID` fallback branch; add `randomToken(length)` (lowercase hex from
+      `crypto.getRandomValues`) in the same file (design D8)
 - [ ] T004 [US4] Change `token()` in `src/sheet_manager/systems/userTypes.ts` and
       `src/sheet_manager/systems/userCatalogs.ts` to the 32 hex digits of `generateId()` (no slice
-      to 8), keeping the prefixes
+      to 8), keeping the prefixes; in `src/sheet_manager/features/template-editor/model/ids.ts` use
+      the 32 hex digits for `tpl` and `randomToken(8)` for every other prefix; replace the sliced
+      `generateId()` in `src/sheet_manager/features/sheet/data/trackerDefaults.ts` and
+      `src/sheet_manager/features/sheet/declarative/TrackerFieldControl.tsx` with `randomToken(8)`
 - [ ] T005 [US4] Run `yarn verify` (store and persistence ids) and commit:
       `feat(ids): UUIDv7 ids created on the device (spec 030, US4)`
 
@@ -42,11 +49,12 @@ rolls unchanged.
       `src/dice_roller/dice-logic/index.ts`
 - [ ] T009 [US3] Create `contracts/cloud-api/roll-vectors.json`: the algorithm id; draw vectors
       (three seeds × draws 0–4); roll vectors for `2d6`, `4d6!`, `4d6kh3`, `1d100`, `4dF`, and a
-      `d10>=6 f=1` pool, each with notation, seed, the dice values, and the total, produced by
+      `5d10>=6 f=1` pool, each with notation, seed, the dice values, and the total, produced by
       `rollDices(notation, createSeededRandom(seed))` and checked by hand for one vector
 - [ ] T010 [US3] Extend `tests/dice_roller/seeded-random.test.ts` to read `roll-vectors.json` and
       match every draw and every roll's dice and total exactly
-- [ ] T011 [US3] Run `yarn verify` (dice-logic change) and commit:
+- [ ] T011 [US3] Run `yarn verify:full` (new dependency, constitution VII); record the dice chunk's
+      size before and after `@noble/hashes` in design.md "Implementation notes"; commit:
       `feat(dice): seeded generator for shared rolls, with test vectors (spec 030, US3)`
 
 ## User Story 1 - A first contract both sides can review (P1)
@@ -70,8 +78,8 @@ note maps to an operation, model, or rule in the contract.
       `GET /rolls/{id}` (notation, seed, dice, total, `algorithm`); models `DocumentEnvelope`
       (opaque `data`, `template_values`), `LibraryItem`, `Usage`, `Account`, `SharedRoll`, and one
       `Error` with `kind` (validation, conflict, quota, unauthorized, forbidden, not_found,
-      rate_limit) and quota usage/limit on `quota`; quota error as 413/507 per the backend's choice,
-      noted
+      rate_limit) and quota usage/limit on `quota`; the quota error as 413 with `kind: quota` (the
+      backend may change the status in review)
 - [ ] T015 [US1] In the same file's `info.description`, state the rules: who migrates what (FR-013)
       and the read-only rule for newer `schema_version`; opaque content keys cross unchanged
       (FR-012); the generator and its vectors file (FR-011); which ids are UUIDs and which are fixed
@@ -85,7 +93,7 @@ note maps to an operation, model, or rule in the contract.
 - [ ] T017 [US1] Check SC-001: list every bullet of the ROADMAP `online-mode` 2026-10-08 note
       against the contract in design.md "Implementation notes"; add whatever is missing to the
       contract or mark it deferred with the reason
-- [ ] T018 [US1] Run `yarn verify:fast` (dependency + new check) and commit:
+- [ ] T018 [US1] Run `yarn verify:full` (new dev dependency, constitution VII) and commit:
       `feat(contract): cloud API contract v0.1.0 and its validation (spec 030, US1)`
 
 ## User Story 2 - The frontend knows where it differs from the contract (P2)

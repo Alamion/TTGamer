@@ -64,7 +64,14 @@ Delivery order:
   random bits): enough on one device, collision-prone across all cloud users, and with v7 those 8
   digits would be the timestamp. `getRandomValues` also works on plain-HTTP LAN addresses, where
   `randomUUID` does not, so the fallback branch goes. _Rejected_: the `uuid` package — v7 is 15
-  lines; dropping the `user-` prefixes — `isUserTypeId` and the registry rely on them.
+  lines; dropping the `user-` prefixes — `isUserTypeId` and the registry rely on them. Template ids
+  (`tpl-`, from `generateDraftId('tpl')`) are library items too and get the same 32 hex digits.
+  Short tokens that today slice `generateId()` to 8 characters (template element ids in
+  `template-editor/model/ids.ts`, `features/sheet/data/trackerDefaults.ts`,
+  `features/sheet/declarative/TrackerFieldControl.tsx`) switch to a new `randomToken(length)` from
+  `crypto.getRandomValues`: the first 8 hex digits of a v7 id are its timestamp, so elements made in
+  one millisecond (a paste) would share an id. They stay 8 characters, unique within their template
+  or document.
 - **D9 — Old ids stay, the server keys library items per owner**: stored 8-digit library ids and
   UUIDv4 document ids are never rewritten (references in documents, templates, and files stay
   valid). The contract keys library items by owner plus id, so old short ids cannot collide across
@@ -86,10 +93,14 @@ Delivery order:
 
 ## Changed types and data
 
-- `src/shared/utils/random.ts`: `generateId()` → UUIDv7. All callers (documents, list entries,
-  trackers, template node ids) get v7 ids; formats stay UUID strings, nothing parses them.
-- `systems/userTypes.ts`, `systems/userCatalogs.ts`: the token is the 32 hex digits of a v7 id;
-  prefixes unchanged; ids stay within the 64-character kebab-case identifier schema.
+- `src/shared/utils/random.ts`: `generateId()` → UUIDv7; new `randomToken(length)` (random hex).
+  Callers that keep the full id (documents, list entries, tracker members, duplicated imports) get
+  v7 ids; nothing parses them.
+- `systems/userTypes.ts`, `systems/userCatalogs.ts`, and `generateDraftId('tpl')`: the token is the
+  32 hex digits of a v7 id; prefixes unchanged; ids stay within the 64-character kebab-case
+  identifier schema.
+- Other `generateDraftId` prefixes, `trackerDefaults.ts`, `TrackerFieldControl.tsx`: 8 characters
+  from `randomToken(8)` instead of a sliced `generateId()`.
 - New `src/integrations/cloud-api/` (wire names) and `src/dice_roller/dice-logic/seeded-random.ts`.
 - `package.json`: `@noble/hashes` (dependency), `@apidevtools/swagger-parser` (dev);
   `validate:contract`, `contract:report`; `ci:validate` runs `validate:contract`.
