@@ -50,6 +50,11 @@ const catalogs = {
 
 const errors: string[] = [];
 
+const describeIssues = (issues: readonly { path: readonly PropertyKey[]; message: string }[]) =>
+    issues
+        .map(({ path, message }) => `${path.map(String).join('.') || '<root>'}: ${message}`)
+        .join(', ');
+
 function validateUniqueIds(name: string, entries: readonly { id: string }[]) {
     const seen = new Set<string>();
 
@@ -85,7 +90,7 @@ function validateFiniteNumbers(name: string, value: unknown, path = name): void 
 for (const [name, entries] of Object.entries(catalogs)) {
     const result = z.array(namedEntrySchema).safeParse(entries);
     if (!result.success) {
-        errors.push(`${name}: ${result.error.issues.map((issue) => issue.message).join(', ')}`);
+        errors.push(`${name}: ${describeIssues(result.error.issues)}`);
     }
     validateUniqueIds(name, entries);
     if (name !== 'species') validateUniqueNames(name, entries);
@@ -94,9 +99,7 @@ for (const [name, entries] of Object.entries(catalogs)) {
 
 const terminologyResult = z.array(terminologyEntrySchema).safeParse(TERMINOLOGY);
 if (!terminologyResult.success) {
-    errors.push(
-        `terminology: ${terminologyResult.error.issues.map((issue) => issue.message).join(', ')}`
-    );
+    errors.push(`terminology: ${describeIssues(terminologyResult.error.issues)}`);
 }
 validateUniqueIds('terminology', TERMINOLOGY);
 

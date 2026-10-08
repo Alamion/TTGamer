@@ -45,15 +45,16 @@ clean-up group (design D2); each passes `yarn verify`.
 **Check**: the template save check and the import dialog still show located issues (path and cause)
 (FR-004).
 
-- [ ] T007 [US2] Extend `tests/sheet_manager/zod-baseline.test.ts` (or `issue-location.test.ts`) to
-      assert `path` and `code` of issues for a nested template error, a duplicate id, and a bad
-      import; no message text.
-- [ ] T008 [US2] Check the Zod-text consumers still behave: `src/sheet_manager/diagnostics.ts`
+- [x] T007 [US2] (done by the `cases.json` snapshot, which records path and code) Extend
+      `tests/sheet_manager/zod-baseline.test.ts` (or `issue-location.test.ts`) to assert `path` and
+      `code` of issues for a nested template error, a duplicate id, and a bad import; no message
+      text.
+- [x] T008 [US2] Check the Zod-text consumers still behave: `src/sheet_manager/diagnostics.ts`
       (`issues` array shape), the clipboard `schema` stage in
       `features/template-editor/model/clipboard.ts`, `useTemplateSave.ts` (`ZodError` instanceof),
       `reportUncoveredIssues`, and `scripts/validate-data.ts` output for a broken catalog entry
       (entry and field identified). Fix or note any difference.
-- [ ] T009 [US2] Run the targeted tests (`draft-issues-coverage`, `issue-location`, `import-export`,
+- [x] T009 [US2] Run the targeted tests (`draft-issues-coverage`, `issue-location`, `import-export`,
       `library-import`) plus `yarn validate:data`, and commit,
       `test: Zod issue path and cause stay stable (spec 027)`.
 
