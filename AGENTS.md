@@ -36,7 +36,7 @@ check fo it existence before killing processes or creating new one.
 | --------------- | ----------------------------------- |
 | Package Manager | yarn@1.22.22                        |
 | Site Framework  | Docusaurus 3.10 (preset-classic)    |
-| Frontend        | React 19 + TypeScript 6 (strict)    |
+| Frontend        | React 19 + TypeScript 6/7 (strict)  |
 | State           | Zustand 5 (persist middleware)      |
 | Styling         | Tailwind CSS 4 + clsx               |
 | Validation      | Zod                                 |
@@ -50,29 +50,29 @@ check fo it existence before killing processes or creating new one.
 
 ## 3. Development Commands
 
-| Command                             | Purpose                                                           |
-| ----------------------------------- | ----------------------------------------------------------------- |
-| `yarn start`                        | Start Docusaurus dev server                                       |
-| `yarn build`                        | Production build                                                  |
-| `yarn serve`                        | Preview production build                                          |
-| `yarn typecheck`                    | `tsc -b` over every project; full after a `yarn.lock` change      |
-| `yarn lint` / `yarn lint:fix`       | ESLint + Prettier with caches (check / auto-fix)                  |
-| `yarn format` / `yarn format:check` | Prettier only (write / check)                                     |
-| `yarn test`                         | Vitest `unit` project (default run, no timing assertions)         |
-| `yarn test:perf`                    | Vitest `perf` project: timing tests, one file at a time           |
-| `yarn test:watch`                   | Vitest watch mode                                                 |
-| `yarn test:coverage`                | Vitest coverage report                                            |
-| `yarn test:e2e`                     | Playwright on the built site: smoke tests, then browser timings   |
-| `yarn e2e:install`                  | Install the Chromium build Playwright uses (once per machine)     |
-| `yarn build:translations`           | Generate UI/catalog translations (runs before start/test/build)   |
-| `yarn validate:data`                | Validate catalogs and references                                  |
-| `yarn audit:dead-code`              | knip: unused files/exports/deps                                   |
-| `yarn validate:i18n`                | One check: docs en/ru pairs and structure, YAML sources, coverage |
-| `yarn check:version`                | Check package/changelog/UI version                                |
-| `yarn release <minor\|patch>`       | Bump the version and draft the CHANGELOG entry (at merge)         |
-| `yarn ci:*`                         | The runner-independent checks (§11); `verify:*` compose them      |
-| `yarn deploy`                       | Deploy to GitHub Pages                                            |
-| `yarn clear`                        | Clear Docusaurus cache                                            |
+| Command                             | Purpose                                                                |
+| ----------------------------------- | ---------------------------------------------------------------------- |
+| `yarn start`                        | Start Docusaurus dev server                                            |
+| `yarn build`                        | Production build                                                       |
+| `yarn serve`                        | Preview production build                                               |
+| `yarn typecheck`                    | TypeScript 7 `tsc -b` over every project; full after a lockfile change |
+| `yarn lint` / `yarn lint:fix`       | ESLint + Prettier with caches (check / auto-fix)                       |
+| `yarn format` / `yarn format:check` | Prettier only (write / check)                                          |
+| `yarn test`                         | Vitest `unit` project (default run, no timing assertions)              |
+| `yarn test:perf`                    | Vitest `perf` project: timing tests, one file at a time                |
+| `yarn test:watch`                   | Vitest watch mode                                                      |
+| `yarn test:coverage`                | Vitest coverage report                                                 |
+| `yarn test:e2e`                     | Playwright on the built site: smoke tests, then browser timings        |
+| `yarn e2e:install`                  | Install the Chromium build Playwright uses (once per machine)          |
+| `yarn build:translations`           | Generate UI/catalog translations (runs before start/test/build)        |
+| `yarn validate:data`                | Validate catalogs and references                                       |
+| `yarn audit:dead-code`              | knip: unused files/exports/deps                                        |
+| `yarn validate:i18n`                | One check: docs en/ru pairs and structure, YAML sources, coverage      |
+| `yarn check:version`                | Check package/changelog/UI version                                     |
+| `yarn release <minor\|patch>`       | Bump the version and draft the CHANGELOG entry (at merge)              |
+| `yarn ci:*`                         | The runner-independent checks (§11); `verify:*` compose them           |
+| `yarn deploy`                       | Deploy to GitHub Pages                                                 |
+| `yarn clear`                        | Clear Docusaurus cache                                                 |
 
 ## 4. Code Conventions
 

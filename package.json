@@ -78,7 +78,6 @@
         "@docusaurus/faster": "3.10.2",
         "@docusaurus/module-type-aliases": "3.10.2",
         "@docusaurus/plugin-client-redirects": "3.10.2",
-        "@docusaurus/tsconfig": "3.10.2",
         "@docusaurus/types": "3.10.2",
         "@eslint/js": "^10.0.1",
         "@playwright/test": "^1.63.0",

@@ -25,20 +25,20 @@
 
 ## User Story 2 - Editor, lint, and build keep working (P1)
 
-- [ ] T006 [US2] Plant a type-aware ESLint violation and confirm `yarn lint` still reports it;
+- [x] T006 [US2] Plant a type-aware ESLint violation and confirm `yarn lint` still reports it;
       confirm `yarn start` and `yarn build` are unaffected (`yarn verify:full`).
 
 ## User Story 3 - The upgrade path is recorded and reversible (P2)
 
-- [ ] T007 [US3] Update guidance, one owner per rule: root `AGENTS.md` (stack row, `typecheck`
+- [x] T007 [US3] Update guidance, one owner per rule: root `AGENTS.md` (stack row, `typecheck`
       command row), the `typescript` skill (which tool uses which version, exit condition and the
       two edits that end the split), `.github/workflows/ci.yml` comment if it names `tsc -b`.
-- [ ] T008 [US3] Update `TODO.md` T-088 (TypeScript 7 in use for `tsc`; open only for the
+- [x] T008 [US3] Update `TODO.md` T-088 (TypeScript 7 in use for `tsc`; open only for the
       single-version move once typescript-eslint supports 7); `yarn validate:backlog`.
 
 ## Finish
 
-- [ ] T009 Run `yarn verify:full`; walk design.md "Manual walk"; record results in design.md;
+- [x] T009 Run `yarn verify:full`; walk design.md "Manual walk"; record results in design.md;
       commit, `docs: guidance, backlog, and results for TypeScript 7 (spec 029)`.
 
 ## Coverage

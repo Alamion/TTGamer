@@ -45,8 +45,8 @@ props, and `@theme/Heading` with `as` prop.
 ## TypeScript Configuration
 
 - `tsconfig.json` — solution file, references `tsconfig.app.json` and `tsconfig.node.json`
-- `tsconfig.app.json` — extends `@docusaurus/tsconfig`, sets `baseUrl: "."` and
-  `paths: { "@site/*": ["./*"] }`
+- `tsconfig.app.json` — carries Docusaurus's options itself and `paths: { "@site/*": ["./*"] }`; it
+  does not extend `@docusaurus/tsconfig`, whose `baseUrl` TypeScript 7 rejects (spec 029)
 - Docusaurus virtual modules (`@theme/*`, `@site/*`, `@docusaurus/*`) are typed via
   `@docusaurus/module-type-aliases`
 

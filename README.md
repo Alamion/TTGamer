@@ -232,21 +232,21 @@ Test files under `tests/` cover:
 
 ## Tech Stack
 
-| Concern         | Technology                       |
-| --------------- | -------------------------------- |
-| Package Manager | yarn@1.22.22                     |
-| Site Framework  | Docusaurus 3.10 (preset-classic) |
-| Frontend        | React 19 + TypeScript 6 (strict) |
-| State           | Zustand 5 (persist middleware)   |
-| Styling         | Tailwind CSS 4 + clsx            |
-| Validation      | Zod                              |
-| Persistence     | localForage (IndexedDB)          |
-| Icons           | Lucide-react                     |
-| Components      | Radix UI primitives              |
-| Testing         | Vitest                           |
-| i18n            | Docusaurus i18n (en, ru)         |
-| 3D Rendering    | Three.js + cannon-es             |
-| Dice Logic      | moo lexer + hand-written parser  |
+| Concern         | Technology                         |
+| --------------- | ---------------------------------- |
+| Package Manager | yarn@1.22.22                       |
+| Site Framework  | Docusaurus 3.10 (preset-classic)   |
+| Frontend        | React 19 + TypeScript 6/7 (strict) |
+| State           | Zustand 5 (persist middleware)     |
+| Styling         | Tailwind CSS 4 + clsx              |
+| Validation      | Zod                                |
+| Persistence     | localForage (IndexedDB)            |
+| Icons           | Lucide-react                       |
+| Components      | Radix UI primitives                |
+| Testing         | Vitest                             |
+| i18n            | Docusaurus i18n (en, ru)           |
+| 3D Rendering    | Three.js + cannon-es               |
+| Dice Logic      | moo lexer + hand-written parser    |
 
 ---
 

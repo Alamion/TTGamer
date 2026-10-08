@@ -25,11 +25,12 @@ the type-check script, document.
   _Rejected_: `typescript@7` as `typescript` (breaks typescript-eslint and the IDE service);
   `npx -p typescript@7` (not pinned, needs the network); the older `@typescript/native-preview` (a
   preview channel, superseded by the 7.x line).
-- **D2 — tsconfig**: remove `baseUrl` from the five files; in `tsconfig.app.json` and
-  `tsconfig.test.json` set `"baseUrl": null` because `@docusaurus/tsconfig` inherits one. `paths`
-  keep working relative to each tsconfig. `ignoreDeprecations` is kept only if TypeScript 6 still
-  needs it. _Why_: TypeScript 7 rejects `baseUrl` (TS5102); both majors must accept the files while
-  the split exists (editor uses 6).
+- **D2 — tsconfig**: remove `baseUrl`, and stop extending `@docusaurus/tsconfig` (its `baseUrl: "."`
+  is rejected by TypeScript 7 and cannot be unset: `null` makes Playwright's tsconfig loader throw).
+  Its few options (`allowJs`, `esModuleInterop`) move into `tsconfig.app.json`; the devDependency
+  goes. `paths` keep working relative to each tsconfig. `ignoreDeprecations` is kept only if
+  TypeScript 6 still needs it. _Why_: TypeScript 7 rejects `baseUrl` (TS5102); both majors must
+  accept the files while the split exists (editor uses 6).
 - **D3 — Stamp**: the forced full check after a lockfile change (spec 026) hashes `yarn.lock` plus
   the TypeScript 7 version string; incremental `.tsbuildinfo` files stay where they are, since each
   major rewrites a file written by the other (it records its own version). _Rejected_: separate
@@ -65,3 +66,32 @@ the type-check script, document.
 1. Run `yarn typecheck` twice → first pass cold (checks every file), second is fast.
 2. Break a type in `src` → it fails with file and line.
 3. Open the project in WebStorm → type hints still work (uses `typescript` 6).
+
+## Results (2026-10-08)
+
+- Versions: `typescript` 6.0.3 (typescript-eslint, editor), `typescript-native` = TypeScript 7.0.2
+  (`yarn typecheck`). typescript-eslint 8.71.1 / canary 8.71.2-alpha.1 still declare `<6.1.0`.
+- Cold type check (`.tsbuildinfo` deleted, best of three): TypeScript 6 16.0 s → TypeScript 7 1.7 s.
+- Planted errors (wrong type, unused local, missing import, `enum` under `erasableSyntaxOnly`, JSX
+  type error, e2e type error): TypeScript 6 and the new `yarn typecheck` report the same six file
+  and line positions.
+- tsconfig: `baseUrl` (and `ignoreDeprecations`) removed, `"baseUrl": null` in the two files that
+  inherit one from `@docusaurus/tsconfig`; both majors pass. A stale include of the deleted
+  `tailwind-config.d.ts` in `tsconfig.test.json` was removed.
+- ESLint (typescript-eslint on TypeScript 6) still reports a planted unused import. The ESLint
+  config has no type-aware rules today, so the type-aware part of FR-003 is vacuous.
+- `knip` needs `typescript-native` in `ignoreDependencies` (it is used by path, not imported).
+- Manual walk: steps 1 and 2 done (cold then warm check, planted error). Step 3 (WebStorm hints) is
+  left to the maintainer; the IDE reads `typescript`, which stays on 6.
+
+## Implementation notes
+
+- D2 changed during the work: `"baseUrl": null` passed both compilers but broke Playwright's
+  tsconfig loader (`The "paths[1]" argument must be of type string`), so `tsconfig.json` and
+  `tsconfig.app.json` no longer extend `@docusaurus/tsconfig` and the package was removed. Re-add it
+  when it stops setting `baseUrl`.
+- The root `tsconfig.json` also carries `paths` for `@site/*` now: `tsx` (the repository's scripts)
+  reads it, and it used to inherit the alias from `@docusaurus/tsconfig`. Found when
+  `yarn validate:i18n` could not resolve `@site/...`.
+- Final `yarn verify:full`: 203 unit files (2,222 tests), 6 perf files, 10 browser tests, all
+  passing.

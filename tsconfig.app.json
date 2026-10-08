@@ -1,7 +1,7 @@
 {
-    "extends": "@docusaurus/tsconfig",
     "compilerOptions": {
-        "baseUrl": null,
+        "allowJs": true,
+        "esModuleInterop": true,
         "paths": {
             "@site/*": ["./*"]
         },

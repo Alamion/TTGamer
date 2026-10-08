@@ -15,6 +15,11 @@ existing type/schema before adding a parallel representation.
 ## Type Rules
 
 - Keep strict TypeScript clean; `yarn typecheck` checks app, scripts, and tests.
+- Two TypeScript versions (spec 029): `yarn typecheck` runs TypeScript 7's `tsc` from the
+  `typescript-native` alias (about 10× faster); `typescript` stays 6 because typescript-eslint and
+  the IDE need the classic compiler API. tsconfig files must stay valid for both (no `baseUrl`). To
+  end the split once typescript-eslint supports 7: point `typescript` at 7, delete
+  `typescript-native`, and call `tsc` in `scripts/typecheck.ts`.
 - Avoid `any`. Narrow `unknown` at runtime, especially JSON, storage, URL, and network boundaries.
 - Use Zod 4 for imported character data and build-time catalog validation.
 - Prefer inferred local types. Use `interface` for extensible object/prop shapes and `type` for
