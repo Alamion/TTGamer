@@ -181,3 +181,9 @@ Delivery order:
 - **US1 — `tests/scripts/validate-contract.test.ts`** covers the validator (broken `$ref`, camelCase
   field, non-semver version); not in the task list, added because the check is blocking in
   `ci:validate`.
+- **US2 — first report**: the envelope and its metadata match the contract field by field except
+  `id`: the contract asks for a UUID, the frontend accepts any string up to 128 characters. That
+  difference is the rule, not drift — a document whose id is not a UUID gets a new one before it
+  moves (`info` "Ids").
+- **US2 — the report also maps `DocumentMetadata`**, a nested model, so its fields are compared one
+  by one rather than as one opaque object.

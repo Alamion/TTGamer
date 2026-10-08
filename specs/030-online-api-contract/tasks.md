@@ -101,23 +101,23 @@ note maps to an operation, model, or rule in the contract.
 **Check**: a changed field in a copy of the contract is named in the report; unmapped models show as
 not implemented.
 
-- [ ] T019 [US2] Write `tests/integrations/cloud-api/wire-names.test.ts`: an envelope with
+- [x] T019 [US2] Write `tests/integrations/cloud-api/wire-names.test.ts`: an envelope with
       `schemaVersion`, `definitionId`, `templateValues: { strengthBonus: 2 }`, and
       `data: { someKey: { innerKey: 1 } }` maps to snake_case top-level fields and back to an
       identical object; keys inside `data` and `templateValues` never change
-- [ ] T020 [US2] Create `src/integrations/cloud-api/wireNames.ts` (`toWire(model, value)`,
+- [x] T020 [US2] Create `src/integrations/cloud-api/wireNames.ts` (`toWire(model, value)`,
       `fromWire(model, value)` from a declared field list per model, opaque fields copied as is) and
       `src/integrations/cloud-api/version.ts` (`IMPLEMENTED_CONTRACT_VERSION = '0.1.0'`)
-- [ ] T021 [US2] Write `tests/scripts/contract-report.test.ts`: on a temporary copy of
+- [x] T021 [US2] Write `tests/scripts/contract-report.test.ts`: on a temporary copy of
       `openapi.yaml` with one envelope field's type changed, the report lists that field as
       differing with both shapes; a contract model without a mapped schema is listed as not
       implemented; the unchanged contract reports the envelope as matching
-- [ ] T022 [US2] Create `scripts/contract-report.ts`: the model → Zod schema table (start:
+- [x] T022 [US2] Create `scripts/contract-report.ts`: the model → Zod schema table (start:
       `DocumentEnvelope` → `UnknownDocumentEnvelopeSchema`), `z.toJSONSchema` input side, names
       through `wireNames.ts`, compare presence, required, type, enum, and limits; print the declared
       and contract versions and a table per model; exit 0 unless the contract cannot be read; script
       `contract:report` in `package.json` (not in `ci:*`, design D3)
-- [ ] T023 [US2] Run `yarn verify` and commit:
+- [x] T023 [US2] Run `yarn verify` and commit:
       `feat(contract): frontend conformance report (spec 030, US2)`
 
 ## Finish
