@@ -187,3 +187,22 @@ Delivery order:
   moves (`info` "Ids").
 - **US2 — the report also maps `DocumentMetadata`**, a nested model, so its fields are compared one
   by one rather than as one opaque object.
+
+## Results
+
+- **Checks (2026-10-08)**: final `yarn verify:full` green — 2260 unit tests in 209 files, 8 perf
+  tests, 10 browser tests (editor edit 20 ms, move preview 21 ms, open the sheet 105 ms; sheet JS
+  and CSS 3 744 548 bytes, unchanged by this spec).
+- **Manual walk** on the production build served on port 3101 (the dev server on 3000 answered
+  `/universal_sheet` with a Russian 404 page in this session and was left alone):
+    1. A new document's stored id is `01a11b1e-553c-7d61-…` — a UUIDv7 with today's time. Type,
+       setting, catalog, and template ids are covered by `tests/sheet_manager/user-ids.test.ts`; not
+       created through the UI.
+    2. Not walked with real old data: the clean test browser has none. Left to the maintainer — open
+       the existing library on the dev server; the schemas accept the old 8-character tails (unit
+       tests).
+    3. `4d6!` rolled in 2D (`4d6!= 32`), no page errors. 3D left to the maintainer.
+    4. `yarn contract:report`: envelope and metadata match except the expected `id` difference; 25
+       contract models listed as not implemented.
+    5. A broken `$ref` and a camelCase field fail `validate:contract`; a changed type is named by
+       the report (`tests/scripts/validate-contract.test.ts`, `contract-report.test.ts`).

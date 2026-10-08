@@ -71,6 +71,15 @@ The evaluator generates every initial die before processing modifiers. For `2d6r
 values `0.1, 0.5, 0.8`, the initial dice are `1, 4`, then the first die rerolls to `5`; the result
 is `[5, 4]`.
 
+## Seeded Rolls
+
+`seeded-random.ts` (spec 030) is the random source for rolls other people see:
+`createSeededRandom(seed)` passed as `rollDices`' `randomFn`. Draw `i` is SHA-256 over `seed:i`, the
+first four bytes big-endian ÷ 2^32; the algorithm id is `SEEDED_ROLL_ALGORITHM`. The draw order is
+the evaluator's order above, so a change to that order changes every recomputed shared roll: bump
+the algorithm id and add vectors to `contracts/cloud-api/roll-vectors.json`, which the tests replay.
+Seeded rolls are 2D only; a 3D shared roll must aim every die (T-106).
+
 ## 2D and 3D Authority
 
 The two paths share parsing and final evaluator semantics but obtain initial values differently:

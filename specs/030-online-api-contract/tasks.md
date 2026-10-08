@@ -122,12 +122,12 @@ not implemented.
 
 ## Finish
 
-- [ ] T024 Update guidance: `AGENTS.md` §3 (`validate:contract`, `contract:report`), §6
+- [x] T024 Update guidance: `AGENTS.md` §3 (`validate:contract`, `contract:report`), §6
       (`contracts/` folder), §8 (`integrations/cloud-api/`, the wire-name rule for opaque content),
       §11 (`validate:contract` in `ci:validate`); the `dice-logic` skill (seeded generator, 2D only,
       algorithm id); `src/sheet_manager/AGENTS.md` if it describes id formats; TODO T-105, T-106,
       T-107 notes (what this spec did, what remains); no user guide change (no visible behavior)
-- [ ] T025 Run `yarn verify:full`; walk design.md "Manual walk"; record results and deviations in
+- [x] T025 Run `yarn verify:full`; walk design.md "Manual walk"; record results and deviations in
       design.md
 - [ ] T026 Hand `contracts/cloud-api/` to the backend developer for review (SC-002); their approval
       or change requests are recorded in `CHANGES.md` after this spec merges
