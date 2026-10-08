@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.24.1
+
+### Chore
+
+- **Cloud API contract 0.1.0 (spec 030, T-105)**: the first draft of the API the cloud space will use — accounts and sessions, documents and library items moved to the cloud with their ids, revision checks, what a record depends on, usage and quotas, shared rolls, and one error model — in `contracts/cloud-api/`, with its change process; `yarn validate:contract` checks it in every run, and `yarn contract:report` shows where the frontend's schemas match or differ
+- **Ids that survive a move to the cloud (spec 030, T-107)**: new documents get time-ordered UUIDv7 ids; new user types, settings, catalogs, and templates get 32 random-and-time digits instead of 8, so they stay unique across every account; ids of elements inside a template stay random, and stored ids never change
+- **Shared-roll generator (spec 030, T-106)**: a seeded random source for rolls other people will see, with test vectors the backend replays; not used by any roll yet, so local rolls are unchanged
+
 ## v3.24.0
 
 ### Minor feat

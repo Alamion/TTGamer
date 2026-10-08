@@ -144,7 +144,8 @@ appropriate for layout/manager operations that explicitly manage the collection.
 - Blank/missing character names normalize to `''`; the UI displays `New Character` where a label is
   required.
 - IDs are opaque non-empty strings, not necessarily UUIDs, because presets and compatibility data
-  may use stable textual IDs.
+  may use stable textual IDs. New ones follow the device-id rule in the root `AGENTS.md` §8; user
+  type, setting, and catalog schemas accept the old 8-character and the new 32-character tails.
 - Numeric resource and dot values must be finite integers within their schema limits.
 - `forcePowerItems` is the single Force-power representation. Retired `forcePowers` and
   `customForcePowers` keys are stripped as unknown input.

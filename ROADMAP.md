@@ -38,9 +38,10 @@ dependencies — they are not identifiers; slugs are.
 | `campaigns`               | Campaigns                          | not started | 8        |
 | `map-notes`               | Map note entities                  | not started | 9        |
 | `note-showcase`           | Multi-note showcase                | not started | 10       |
-| `multiplayer-groups`      | Multiplayer groups                 | not started | 11       |
-| `online-forum`            | Online forum                       | not started | 12       |
-| `llm-integrations`        | LLM integrations                   | not started | 13       |
+| `online-mode`             | Online accounts and cloud space    | not started | 11       |
+| `multiplayer-groups`      | Multiplayer groups                 | not started | 12       |
+| `online-forum`            | Online forum                       | not started | 13       |
+| `llm-integrations`        | LLM integrations                   | not started | 14       |
 
 ## Path entries
 
@@ -128,6 +129,8 @@ dependencies — they are not identifiers; slugs are.
       the product is fully usable without it.
     - 2026-10-02 — spec 021 adds Matrix rooms (hookshot generic webhooks) as a second
       optional sharing service; still optional, still off the critical path.
+    - 2026-10-08 — the cloud space (`online-mode`) is an addition, not a replacement:
+      the local space keeps this guarantee with or without an account.
 
 ### `app-packaging` — App packaging and distribution
 
@@ -201,12 +204,58 @@ dependencies — they are not identifiers; slugs are.
   as one document without opening each note separately.
 - **Open questions**: none recorded.
 
-### `multiplayer-groups` — Multiplayer groups
+### `online-mode` — Online accounts and cloud space
 
 - **Status**: not started
 - **Priority**: 11
+- **Users**: players and GMs
+- **Depends on**: none
+- **Scope**: Players and GMs who sign in get a cloud space beside the local one: they
+  move chosen records and library items there, open them on other devices, and later
+  share them with other users inside the tool. Whatever other people see — shared
+  rolls, shared records — comes from the server, never trusted from the browser. The
+  local space keeps working without an account or a network.
+- **Open questions**: how a schema change is migrated — proposed: the server migrates
+  its own structures (envelope, metadata, quotas, rights, API version) and the client
+  migrates document data by `schemaVersion`, showing a document of a newer version
+  read-only; whether the contract moves to a shared private repository or each side
+  keeps its own copy; whether a cloud document can be edited offline and sent
+  later or stays read-only from the cache; quota sizes and how usage is shown; account
+  management (deletion, data export, email verification).
+- **Notes**:
+    - 2026-10-08 — direction agreed with the backend developer; details may change as
+      the product is built:
+        - One library shows two spaces, "on this device" and "in the cloud", instead of
+          a global mode switch or automatic full sync. A document has one home: moving
+          it to the cloud keeps its id, and downloading a cloud document makes a local
+          copy with a new id.
+        - Sync is selective, per kind: records (characters, markdown, folders,
+          canvases) and library items (settings, rulesets, types, templates) move to
+          the cloud; favorite rolls likely do; roll history and recent rolls do not.
+          Everything else exists in one space only.
+        - Trust boundary: anything other people see is not trusted from the client. A
+          roll others see uses a seed the server issues after storing the notation;
+          the client evaluates the roll with a deterministic SHA-256 based generator
+          over that seed, and every viewer recomputes the result. A roll for oneself
+          stays local.
+        - Cloud storage has quotas (larger ones may come with paid plans much later);
+          the local space has none.
+        - Accounts exist only for the cloud space; the local space never asks for one.
+        - Moving a record offers the library items it uses (template, type, setting)
+          along with it; items shared with other users become immutable published
+          versions that documents pin.
+        - Only the personal data the cloud space needs is stored.
+        - Backend: Go with ArangoDB, JWT sessions, and an OpenAPI contract both sides
+          propose changes to, with snake_case fields on the wire. It runs in
+          Docker on a VPS deployed by Jenkins; the production site moves there from
+          Vercel once the VPS exists.
+
+### `multiplayer-groups` — Multiplayer groups
+
+- **Status**: not started
+- **Priority**: 12
 - **Users**: GMs and players
-- **Depends on**: `campaigns`
+- **Depends on**: `campaigns`, `online-mode`
 - **Scope**: A GM creates a party where each player manages their own notes and
   character, while the GM can view and manage everything in the party. Some notes
   can be shared with or hidden from players within chosen campaigns.
@@ -219,7 +268,7 @@ dependencies — they are not identifiers; slugs are.
 ### `online-forum` — Online forum
 
 - **Status**: not started
-- **Priority**: 12
+- **Priority**: 13
 - **Users**: players and GMs
 - **Depends on**: none
 - **Scope**: A community space with discussions, feature voting, and announcements,
@@ -230,7 +279,7 @@ dependencies — they are not identifiers; slugs are.
 ### `llm-integrations` — LLM integrations
 
 - **Status**: not started
-- **Priority**: 13
+- **Priority**: 14
 - **Users**: players and GMs
 - **Depends on**: none
 - **Scope**: Optional AI assistance across the tool. Each capability below is a

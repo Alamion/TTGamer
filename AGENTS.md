@@ -67,6 +67,8 @@ check fo it existence before killing processes or creating new one.
 | `yarn build:translations`           | Generate UI/catalog translations (runs before start/test/build)        |
 | `yarn validate:data`                | Validate catalogs and references                                       |
 | `yarn audit:dead-code`              | knip: unused files/exports/deps                                        |
+| `yarn validate:contract`            | Cloud API contract: valid OpenAPI 3.1, semver, snake_case fields       |
+| `yarn contract:report`              | Where the frontend's schemas match or differ from the contract         |
 | `yarn validate:i18n`                | One check: docs en/ru pairs and structure, YAML sources, coverage      |
 | `yarn check:version`                | Check package/changelog/UI version                                     |
 | `yarn release <minor\|patch>`       | Bump the version and draft the CHANGELOG entry (at merge)              |
@@ -116,7 +118,8 @@ check fo it existence before killing processes or creating new one.
 │   │   ├── roll-sharing/      #   Queued roll sharing to Discord/Matrix (service registry)
 │   │   ├── docs-character-rolls/ # Documentation ↔ sheet/dice adapter
 │   │   ├── roll-reading/      #   Game-system dice readings (V5 criticals, special dice)
-│   │   └── sheet-dice/        #   Character stat ↔ dice panel adapter, shown document
+│   │   ├── sheet-dice/        #   Character stat ↔ dice panel adapter, shown document
+│   │   └── cloud-api/         #   Cloud API boundary: wire names, implemented contract version
 │   ├── data/                  # Catalog entries, filters, and table configs
 │   ├── shared/                # DataCatalog, EntityCard, TWWrapper, hooks, utils
 │   │   ├── components/        #   Reusable UI components (SecretField, DataCatalog, EntityCard, etc.)
@@ -136,6 +139,7 @@ check fo it existence before killing processes or creating new one.
 ├── scripts/                   # Validators, translation build, release script
 ├── tests/                     # Vitest logic, integration, and component tests
 ├── tests-e2e/                 # Playwright: smoke/ (blocking) and timings/ (reported) on the build
+├── contracts/cloud-api/       # Cloud API contract (OpenAPI), its change log, roll test vectors
 ├── static/                    # Images, sounds (dice impacts, surfaces)
 └── context/                   # Local, git-ignored reference material (see context/AGENTS.md)
 ```
@@ -162,6 +166,13 @@ check fo it existence before killing processes or creating new one.
   behavior belongs in `integrations/`.
 - Sheet document access and composition: `src/sheet_manager/AGENTS.md` ("Character Access",
   "Composition Scale"); pages are shipped templates, not React blocks.
+- Cloud API (spec 030): `contracts/cloud-api/openapi.yaml` is the authority for the wire, Zod
+  schemas for stored data. Contract fields are snake_case on the wire and are renamed only in
+  `integrations/cloud-api/wireNames.ts`; opaque content (document `data`, value keys, library item
+  content) never is. A contract change follows `contracts/cloud-api/CHANGES.md`.
+- Ids made on the device: `generateId()` is a UUIDv7; library item ids are their prefix plus its 32
+  hex digits (`compactId()`); ids unique only inside one document or template use `randomToken()`,
+  never a slice of `generateId()` (its first digits are the time).
 - Imported/persisted documents must pass the envelope schema and their registered definition schema;
   `BaseCharacterSchema` is only the legacy-character import path (Zod strips unknown legacy fields).
 - Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by
