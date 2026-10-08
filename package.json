@@ -30,6 +30,7 @@
         "validate:data": "node --import tsx scripts/validate-data.ts",
         "audit:dead-code": "knip",
         "validate:backlog": "node --import tsx scripts/validate-backlog.ts",
+        "validate:contract": "node --import tsx scripts/validate-contract.ts",
         "validate:i18n": "node --import tsx scripts/i18n-check.ts",
         "i18n:status": "node --import tsx scripts/translation-status.ts",
         "i18n:verify": "node --import tsx scripts/verify-i18n.ts",
@@ -43,7 +44,7 @@
         "ci:test": "yarn test",
         "ci:test:perf": "yarn test:perf",
         "ci:deadcode": "knip",
-        "ci:validate": "yarn validate:backlog && yarn validate:data && yarn validate:i18n && yarn check:version",
+        "ci:validate": "yarn validate:backlog && yarn validate:contract && yarn validate:data && yarn validate:i18n && yarn check:version",
         "ci:build": "yarn build",
         "ci:e2e": "yarn ci:build && yarn test:e2e",
         "verify:fast": "yarn ci:lint && yarn ci:typecheck && yarn ci:validate",
@@ -76,6 +77,7 @@
         "zustand": "^5.0.0"
     },
     "devDependencies": {
+        "@apidevtools/swagger-parser": "^13.1.0",
         "@docusaurus/faster": "3.10.2",
         "@docusaurus/module-type-aliases": "3.10.2",
         "@docusaurus/plugin-client-redirects": "3.10.2",

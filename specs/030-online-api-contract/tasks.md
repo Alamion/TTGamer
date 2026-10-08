@@ -62,12 +62,12 @@ rolls unchanged.
 **Check**: `yarn validate:contract` passes; every decision in the ROADMAP `online-mode` 2026-10-08
 note maps to an operation, model, or rule in the contract.
 
-- [ ] T012 [US1] Add `@apidevtools/swagger-parser` to devDependencies in `package.json`
-- [ ] T013 [US1] Create `scripts/validate-contract.ts`: validate and dereference
+- [x] T012 [US1] Add `@apidevtools/swagger-parser` to devDependencies in `package.json`
+- [x] T013 [US1] Create `scripts/validate-contract.ts`: validate and dereference
       `contracts/cloud-api/openapi.yaml` as OpenAPI 3.1, check `info.version` is semver and that
       every schema property name is snake_case; script `validate:contract` in `package.json`, added
       to `ci:validate`
-- [ ] T014 [US1] Write `contracts/cloud-api/openapi.yaml` v0.1.0 per design D10, snake_case fields:
+- [x] T014 [US1] Write `contracts/cloud-api/openapi.yaml` v0.1.0 per design D10, snake_case fields:
       `GET /version`; `POST /auth/sign-up`, `/auth/sign-in`, `/auth/refresh`, `/auth/sign-out`;
       `GET`/`DELETE /account` (no password material in any response); `GET /usage` (bytes used and
       limits, documents and images separately); `/documents` (`POST` move-in keeping the client id,
@@ -80,20 +80,20 @@ note maps to an operation, model, or rule in the contract.
       `Error` with `kind` (validation, conflict, quota, unauthorized, forbidden, not_found,
       rate_limit) and quota usage/limit on `quota`; the quota error as 413 with `kind: quota` (the
       backend may change the status in review)
-- [ ] T015 [US1] In the same file's `info.description`, state the rules: who migrates what (FR-013)
+- [x] T015 [US1] In the same file's `info.description`, state the rules: who migrates what (FR-013)
       and the read-only rule for newer `schema_version`; opaque content keys cross unchanged
       (FR-012); the generator and its vectors file (FR-011); which ids are UUIDs and which are fixed
       names; what is deferred to later versions (sharing, published library versions, rooms, the
       roll-sharing proxy, data export, email verification)
-- [ ] T016 [US1] Create `contracts/cloud-api/CHANGES.md`: how a change is proposed and approved,
+- [x] T016 [US1] Create `contracts/cloud-api/CHANGES.md`: how a change is proposed and approved,
       semver rules (breaking = major), each side declaring its version (FR-002); first entry 0.1.0
       with author and "approval pending: backend"; and `contracts/cloud-api/README.md` with what the
       folder holds and that the frontend's declared version is in
       `src/integrations/cloud-api/version.ts`
-- [ ] T017 [US1] Check SC-001: list every bullet of the ROADMAP `online-mode` 2026-10-08 note
+- [x] T017 [US1] Check SC-001: list every bullet of the ROADMAP `online-mode` 2026-10-08 note
       against the contract in design.md "Implementation notes"; add whatever is missing to the
       contract or mark it deferred with the reason
-- [ ] T018 [US1] Run `yarn verify:full` (new dev dependency, constitution VII) and commit:
+- [x] T018 [US1] Run `yarn verify:full` (new dev dependency, constitution VII) and commit:
       `feat(contract): cloud API contract v0.1.0 and its validation (spec 030, US1)`
 
 ## User Story 2 - The frontend knows where it differs from the contract (P2)

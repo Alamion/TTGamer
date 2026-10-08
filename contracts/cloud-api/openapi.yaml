@@ -1,0 +1,944 @@
+openapi: 3.1.0
+info:
+    title: TTGamer cloud API
+    version: 0.1.0
+    summary: The cloud space of TTGamer — accounts, documents, library items, quotas, shared rolls.
+    description: |
+        Draft for review by the frontend and the backend (spec 030). Changes are recorded in
+        CHANGES.md next to this file; each side declares the version it implements.
+
+        ## Spaces
+        A signed-in user has a local space (the browser; never seen by this API) and a cloud
+        space (this API). Nothing syncs automatically. A record or library item has one home:
+        moving it to the cloud keeps its id; downloading a cloud document creates a local copy
+        with a new id on the client, so no endpoint is needed for it. Accounts exist only for the
+        cloud space.
+
+        ## Ids
+        - Documents: UUIDs made on the device (UUIDv7 since spec 030, UUIDv4 before). A local
+          document whose id is not a UUID gets a new UUIDv7 on the client before it moves.
+        - Library items: prefixed identifiers made on the device (`user-…`, `user-setting-…`,
+          `user-catalog-…`, `tpl-…`), unique per owner — the server keys them by owner plus kind
+          plus id, so two users may hold the same id.
+        - Systems, definitions, and shipped templates: fixed names shipped with the app; the
+          server never stores them as library items.
+
+        ## Opaque content
+        The server validates the document envelope, sizes, and quotas only. `data`,
+        `template_values`, and `content` are stored and returned unchanged: the server does not
+        validate system data, and no field name inside them is renamed. Every field this
+        contract defines is snake_case on the wire; the frontend maps names at its boundary.
+
+        ## Migrations
+        - The server migrates its own structures (envelope fields, metadata, quotas, rights) and
+          bumps this contract's version for them.
+        - The client migrates document `data` by `schema_version` when it reads a document, and
+          writes the result back with the revision it read.
+        - A client that meets a `schema_version` newer than it knows shows the document
+          read-only and never writes it back.
+
+        ## Shared rolls
+        A roll other people see is never trusted from the client. The client sends the
+        notation; the server stores it and only then issues a seed. The client evaluates the roll
+        with the generator below and reports the dice; every viewer recomputes the roll from
+        notation and seed when it knows the algorithm, and shows the stored dice otherwise.
+
+        Generator `ttg-sha256-ctr-1`: draw `i` (from 0) is the first four bytes of SHA-256 over
+        the UTF-8 text `<seed>:<i>`, read as a big-endian unsigned 32-bit integer and divided by
+        2^32 (so it is below 1). Dice consume draws in the TTGamer evaluator's order. Test
+        vectors: roll-vectors.json next to this file; both sides must reproduce all of them.
+
+        ## Errors
+        Every error response is an `Error` with a stable `kind`; messages never carry stack
+        traces, queries, or other users' data.
+
+        ## Later versions
+        Sharing records and library items with other users, published (immutable) library
+        versions that documents pin, rooms and their roll history, the roll-sharing proxy for
+        Discord and Matrix (T-016), editing cloud documents offline, data export, and email
+        verification.
+servers:
+    - url: /api/v1
+tags:
+    - name: meta
+    - name: auth
+    - name: account
+    - name: documents
+    - name: library
+    - name: rolls
+security:
+    - access_token: []
+paths:
+    /version:
+        get:
+            tags: [meta]
+            operationId: getVersion
+            summary: The contract version this server implements.
+            security: []
+            responses:
+                '200':
+                    description: The implemented version.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Version'
+    /auth/sign-up:
+        post:
+            tags: [auth]
+            operationId: signUp
+            security: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SignUp'
+            responses:
+                '201':
+                    $ref: '#/components/responses/SessionStarted'
+                '400':
+                    $ref: '#/components/responses/Error'
+                '409':
+                    $ref: '#/components/responses/Error'
+                '429':
+                    $ref: '#/components/responses/Error'
+    /auth/sign-in:
+        post:
+            tags: [auth]
+            operationId: signIn
+            security: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SignIn'
+            responses:
+                '200':
+                    $ref: '#/components/responses/SessionStarted'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '429':
+                    $ref: '#/components/responses/Error'
+    /auth/refresh:
+        post:
+            tags: [auth]
+            operationId: refreshSession
+            summary: A new access token from the refresh cookie; the refresh token rotates.
+            security:
+                - refresh_cookie: []
+            responses:
+                '200':
+                    $ref: '#/components/responses/SessionStarted'
+                '401':
+                    $ref: '#/components/responses/Error'
+    /auth/sign-out:
+        post:
+            tags: [auth]
+            operationId: signOut
+            summary: Ends the session and clears the refresh cookie.
+            security:
+                - refresh_cookie: []
+            responses:
+                '204':
+                    description: Signed out.
+    /account:
+        get:
+            tags: [account]
+            operationId: getAccount
+            responses:
+                '200':
+                    description: The signed-in account; never password material.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Account'
+                '401':
+                    $ref: '#/components/responses/Error'
+        delete:
+            tags: [account]
+            operationId: deleteAccount
+            summary: Deletes the account and every document, library item, and roll it owns.
+            responses:
+                '204':
+                    description: Deleted.
+                '401':
+                    $ref: '#/components/responses/Error'
+    /usage:
+        get:
+            tags: [account]
+            operationId: getUsage
+            responses:
+                '200':
+                    description: Bytes used and the limits.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Usage'
+                '401':
+                    $ref: '#/components/responses/Error'
+    /documents:
+        get:
+            tags: [documents]
+            operationId: listDocuments
+            parameters:
+                - $ref: '#/components/parameters/Cursor'
+                - $ref: '#/components/parameters/Limit'
+            responses:
+                '200':
+                    description: The account's cloud documents, envelopes without `data`.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DocumentPage'
+                '401':
+                    $ref: '#/components/responses/Error'
+        post:
+            tags: [documents]
+            operationId: moveDocumentIn
+            summary: Moves a local document to the cloud, keeping its id.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DocumentEnvelope'
+            responses:
+                '201':
+                    description: Stored; revision 1.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StoredDocument'
+                '400':
+                    $ref: '#/components/responses/Error'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '409':
+                    description: The id is already in use.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                '413':
+                    $ref: '#/components/responses/QuotaExceeded'
+    /documents/{document_id}:
+        parameters:
+            - name: document_id
+              in: path
+              required: true
+              schema:
+                  type: string
+                  format: uuid
+        get:
+            tags: [documents]
+            operationId: getDocument
+            responses:
+                '200':
+                    description: The document with its revision in the `ETag` header.
+                    headers:
+                        ETag:
+                            $ref: '#/components/headers/Revision'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StoredDocument'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '404':
+                    $ref: '#/components/responses/Error'
+        put:
+            tags: [documents]
+            operationId: updateDocument
+            summary: Replaces the document if `If-Match` names its current revision.
+            parameters:
+                - $ref: '#/components/parameters/IfMatch'
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DocumentEnvelope'
+            responses:
+                '200':
+                    description: Stored with the next revision.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StoredDocument'
+                '400':
+                    $ref: '#/components/responses/Error'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '404':
+                    $ref: '#/components/responses/Error'
+                '412':
+                    description: 'A stale write — someone saved a newer revision (`kind`: conflict).'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+                '413':
+                    $ref: '#/components/responses/QuotaExceeded'
+                '428':
+                    $ref: '#/components/responses/Error'
+        delete:
+            tags: [documents]
+            operationId: deleteDocument
+            responses:
+                '204':
+                    description: Deleted.
+                '401':
+                    $ref: '#/components/responses/Error'
+                '404':
+                    $ref: '#/components/responses/Error'
+    /library/{library_kind}:
+        parameters:
+            - $ref: '#/components/parameters/LibraryKind'
+        get:
+            tags: [library]
+            operationId: listLibraryItems
+            parameters:
+                - $ref: '#/components/parameters/Cursor'
+                - $ref: '#/components/parameters/Limit'
+            responses:
+                '200':
+                    description: The account's items of this kind, without `content`.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/LibraryPage'
+                '401':
+                    $ref: '#/components/responses/Error'
+        post:
+            tags: [library]
+            operationId: moveLibraryItemIn
+            summary: Moves a local library item to the cloud, keeping its id.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LibraryItem'
+            responses:
+                '201':
+                    description: Stored; revision 1.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StoredLibraryItem'
+                '400':
+                    $ref: '#/components/responses/Error'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '409':
+                    $ref: '#/components/responses/Error'
+                '413':
+                    $ref: '#/components/responses/QuotaExceeded'
+    /library/{library_kind}/{item_id}:
+        parameters:
+            - $ref: '#/components/parameters/LibraryKind'
+            - name: item_id
+              in: path
+              required: true
+              schema:
+                  $ref: '#/components/schemas/LibraryItemId'
+        get:
+            tags: [library]
+            operationId: getLibraryItem
+            responses:
+                '200':
+                    description: The item with its revision in the `ETag` header.
+                    headers:
+                        ETag:
+                            $ref: '#/components/headers/Revision'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StoredLibraryItem'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '404':
+                    $ref: '#/components/responses/Error'
+        put:
+            tags: [library]
+            operationId: updateLibraryItem
+            parameters:
+                - $ref: '#/components/parameters/IfMatch'
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/LibraryItem'
+            responses:
+                '200':
+                    description: Stored with the next revision.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StoredLibraryItem'
+                '400':
+                    $ref: '#/components/responses/Error'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '404':
+                    $ref: '#/components/responses/Error'
+                '412':
+                    $ref: '#/components/responses/Error'
+                '413':
+                    $ref: '#/components/responses/QuotaExceeded'
+                '428':
+                    $ref: '#/components/responses/Error'
+        delete:
+            tags: [library]
+            operationId: deleteLibraryItem
+            responses:
+                '204':
+                    description: Deleted; documents that use it keep their stored values.
+                '401':
+                    $ref: '#/components/responses/Error'
+                '404':
+                    $ref: '#/components/responses/Error'
+    /dependencies:
+        post:
+            tags: [library]
+            operationId: checkDependencies
+            summary: Which library items a record uses the cloud does not have yet.
+            description: |
+                The client lists the user library items a record refers to (its template, user
+                type, setting, catalogs); shipped systems and templates are not sent. The answer
+                lets the client offer to move the missing items along with the record.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DependencyCheck'
+            responses:
+                '200':
+                    description: The refs split into present and missing.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DependencyReport'
+                '400':
+                    $ref: '#/components/responses/Error'
+                '401':
+                    $ref: '#/components/responses/Error'
+    /rolls:
+        post:
+            tags: [rolls]
+            operationId: startSharedRoll
+            summary: Stores the notation, then issues the seed.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RollRequest'
+            responses:
+                '201':
+                    description: The roll id and its seed.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RollSeed'
+                '400':
+                    $ref: '#/components/responses/Error'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '429':
+                    $ref: '#/components/responses/Error'
+    /rolls/{roll_id}/result:
+        parameters:
+            - $ref: '#/components/parameters/RollId'
+        put:
+            tags: [rolls]
+            operationId: reportRollResult
+            summary: The client's evaluated dice, stored once; viewers still recompute them.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RollResult'
+            responses:
+                '200':
+                    description: Stored.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SharedRoll'
+                '400':
+                    $ref: '#/components/responses/Error'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '404':
+                    $ref: '#/components/responses/Error'
+                '409':
+                    description: A result was already stored for this roll.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Error'
+    /rolls/{roll_id}:
+        parameters:
+            - $ref: '#/components/parameters/RollId'
+        get:
+            tags: [rolls]
+            operationId: getSharedRoll
+            responses:
+                '200':
+                    description: Notation, seed, algorithm, and the reported dice.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SharedRoll'
+                '401':
+                    $ref: '#/components/responses/Error'
+                '404':
+                    $ref: '#/components/responses/Error'
+components:
+    securitySchemes:
+        access_token:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: A short-lived access token kept in memory by the client.
+        refresh_cookie:
+            type: apiKey
+            in: cookie
+            name: ttg_refresh
+            description: |
+                Proposed: an HttpOnly, Secure, SameSite=Strict cookie on the shared domain; it
+                rotates on every refresh. The backend may change the transport in review.
+    headers:
+        Revision:
+            description: The stored revision, as a quoted strong ETag (`"3"`).
+            schema:
+                type: string
+    parameters:
+        Cursor:
+            name: cursor
+            in: query
+            required: false
+            schema:
+                type: string
+                maxLength: 256
+        Limit:
+            name: limit
+            in: query
+            required: false
+            schema:
+                type: integer
+                minimum: 1
+                maximum: 200
+                default: 50
+        IfMatch:
+            name: If-Match
+            in: header
+            required: true
+            description: The revision the client read; a write without it is refused with 428.
+            schema:
+                type: string
+        LibraryKind:
+            name: library_kind
+            in: path
+            required: true
+            schema:
+                $ref: '#/components/schemas/LibraryKind'
+        RollId:
+            name: roll_id
+            in: path
+            required: true
+            schema:
+                type: string
+                format: uuid
+    responses:
+        Error:
+            description: An error with a stable kind.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        QuotaExceeded:
+            description: "The write would exceed the account's quota (`kind`: quota)."
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        SessionStarted:
+            description: |
+                An access token; the refresh token arrives as the `ttg_refresh` cookie.
+            headers:
+                Set-Cookie:
+                    schema:
+                        type: string
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Session'
+    schemas:
+        Version:
+            type: object
+            required: [contract_version]
+            properties:
+                contract_version:
+                    type: string
+                    pattern: '^\d+\.\d+\.\d+$'
+        SignUp:
+            type: object
+            required: [email, password, nickname]
+            properties:
+                email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                password:
+                    type: string
+                    minLength: 8
+                    maxLength: 128
+                    description: |
+                        Proposed: length only, no composition rules; the server refuses passwords
+                        known from breaches.
+                nickname:
+                    $ref: '#/components/schemas/Nickname'
+        SignIn:
+            type: object
+            required: [email, password]
+            properties:
+                email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                password:
+                    type: string
+                    maxLength: 128
+        Session:
+            type: object
+            required: [access_token, expires_in]
+            properties:
+                access_token:
+                    type: string
+                expires_in:
+                    type: integer
+                    description: Seconds until the access token expires.
+                    minimum: 1
+        Nickname:
+            type: string
+            minLength: 2
+            maxLength: 50
+        Account:
+            type: object
+            description: Only what the cloud space needs; never password material.
+            required: [uuid, email, nickname, created_at, updated_at]
+            properties:
+                uuid:
+                    type: string
+                    format: uuid
+                email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                nickname:
+                    $ref: '#/components/schemas/Nickname'
+                image_url:
+                    type: string
+                    format: uri
+                    description: An image stored by this service, never an external address.
+                created_at:
+                    type: string
+                    format: date-time
+                updated_at:
+                    type: string
+                    format: date-time
+        Usage:
+            type: object
+            required: [documents, images]
+            properties:
+                documents:
+                    $ref: '#/components/schemas/QuotaUse'
+                images:
+                    $ref: '#/components/schemas/QuotaUse'
+        QuotaUse:
+            type: object
+            description: Documents and library items count as documents; images separately.
+            required: [used_bytes, limit_bytes]
+            properties:
+                used_bytes:
+                    type: integer
+                    minimum: 0
+                limit_bytes:
+                    type: integer
+                    minimum: 0
+        DocumentMetadata:
+            type: object
+            properties:
+                title:
+                    type: string
+                    maxLength: 200
+                template_id:
+                    $ref: '#/components/schemas/Identifier'
+                preferred_view_id:
+                    $ref: '#/components/schemas/Identifier'
+                tags:
+                    type: array
+                    maxItems: 50
+                    items:
+                        type: string
+                        minLength: 1
+                        maxLength: 64
+                seeded_presets:
+                    type: array
+                    items:
+                        type: string
+                setting_id:
+                    type: string
+                    minLength: 1
+                    maxLength: 64
+        DocumentEnvelope:
+            type: object
+            description: |
+                A document as the client stores it. `data` and `template_values` are opaque: stored
+                and returned unchanged, keys included.
+            required: [id, kind, system_id, definition_id, schema_version, metadata, data]
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                kind:
+                    $ref: '#/components/schemas/Identifier'
+                system_id:
+                    $ref: '#/components/schemas/Identifier'
+                definition_id:
+                    $ref: '#/components/schemas/Identifier'
+                schema_version:
+                    type: integer
+                    minimum: 1
+                    maximum: 1000000
+                metadata:
+                    $ref: '#/components/schemas/DocumentMetadata'
+                template_values:
+                    type: object
+                    description: Opaque; keys are the document's value keys, never renamed.
+                data:
+                    description: Opaque system data; never validated or renamed by the server.
+        StoredDocument:
+            type: object
+            required: [document, revision, size_bytes, created_at, updated_at]
+            properties:
+                document:
+                    $ref: '#/components/schemas/DocumentEnvelope'
+                revision:
+                    type: integer
+                    minimum: 1
+                size_bytes:
+                    type: integer
+                    minimum: 0
+                created_at:
+                    type: string
+                    format: date-time
+                updated_at:
+                    type: string
+                    format: date-time
+        DocumentPage:
+            type: object
+            required: [items]
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/StoredDocument'
+                next_cursor:
+                    type: string
+        LibraryKind:
+            type: string
+            enum: [setting, type, template, catalog]
+        LibraryItemId:
+            type: string
+            minLength: 1
+            maxLength: 64
+            pattern: '^(?:user-setting-|user-catalog-|user-|tpl-)[a-z0-9]+(?:-[a-z0-9]+)*$'
+        LibraryItem:
+            type: object
+            description: |
+                A user setting, document type, template, or catalog. `content` is the item as the
+                client stores it: opaque, keys never renamed.
+            required: [kind, id, name, content]
+            properties:
+                kind:
+                    $ref: '#/components/schemas/LibraryKind'
+                id:
+                    $ref: '#/components/schemas/LibraryItemId'
+                name:
+                    type: string
+                    minLength: 1
+                    maxLength: 120
+                system_id:
+                    $ref: '#/components/schemas/Identifier'
+                content:
+                    type: object
+        StoredLibraryItem:
+            type: object
+            required: [item, revision, size_bytes, created_at, updated_at]
+            properties:
+                item:
+                    $ref: '#/components/schemas/LibraryItem'
+                revision:
+                    type: integer
+                    minimum: 1
+                size_bytes:
+                    type: integer
+                    minimum: 0
+                created_at:
+                    type: string
+                    format: date-time
+                updated_at:
+                    type: string
+                    format: date-time
+        LibraryPage:
+            type: object
+            required: [items]
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/StoredLibraryItem'
+                next_cursor:
+                    type: string
+        LibraryRef:
+            type: object
+            required: [kind, id]
+            properties:
+                kind:
+                    $ref: '#/components/schemas/LibraryKind'
+                id:
+                    $ref: '#/components/schemas/LibraryItemId'
+        DependencyCheck:
+            type: object
+            required: [refs]
+            properties:
+                refs:
+                    type: array
+                    maxItems: 200
+                    items:
+                        $ref: '#/components/schemas/LibraryRef'
+        DependencyReport:
+            type: object
+            required: [present, missing]
+            properties:
+                present:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/LibraryRef'
+                missing:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/LibraryRef'
+        RollRequest:
+            type: object
+            required: [notation]
+            properties:
+                notation:
+                    type: string
+                    minLength: 1
+                    maxLength: 500
+        RollSeed:
+            type: object
+            required: [roll_id, seed, algorithm]
+            properties:
+                roll_id:
+                    type: string
+                    format: uuid
+                seed:
+                    type: string
+                    description: At least 128 random bits from a cryptographic source, as hex.
+                    pattern: '^[0-9a-f]{32,128}$'
+                algorithm:
+                    $ref: '#/components/schemas/RollAlgorithm'
+        RollAlgorithm:
+            type: string
+            enum: [ttg-sha256-ctr-1]
+        RollResult:
+            type: object
+            required: [dice, total]
+            properties:
+                dice:
+                    type: array
+                    description: The values of each dice group's rolls, in evaluator order.
+                    items:
+                        type: array
+                        items:
+                            type: integer
+                total:
+                    type: number
+        SharedRoll:
+            type: object
+            required: [roll_id, owner_uuid, notation, seed, algorithm, created_at]
+            properties:
+                roll_id:
+                    type: string
+                    format: uuid
+                owner_uuid:
+                    type: string
+                    format: uuid
+                notation:
+                    type: string
+                    maxLength: 500
+                seed:
+                    type: string
+                algorithm:
+                    $ref: '#/components/schemas/RollAlgorithm'
+                dice:
+                    type: array
+                    items:
+                        type: array
+                        items:
+                            type: integer
+                total:
+                    type: number
+                created_at:
+                    type: string
+                    format: date-time
+        Identifier:
+            type: string
+            minLength: 1
+            maxLength: 64
+            pattern: '^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$'
+        Error:
+            type: object
+            required: [kind, message]
+            properties:
+                kind:
+                    type: string
+                    enum:
+                        - validation
+                        - conflict
+                        - quota
+                        - unauthorized
+                        - forbidden
+                        - not_found
+                        - precondition_required
+                        - rate_limit
+                message:
+                    type: string
+                    description: A short text for logs; the client shows its own translated text.
+                fields:
+                    type: array
+                    description: For `validation`, the request fields that failed.
+                    items:
+                        type: object
+                        required: [path, message]
+                        properties:
+                            path:
+                                type: string
+                            message:
+                                type: string
+                retry_after_seconds:
+                    type: integer
+                    minimum: 0
+                    description: For `rate_limit`.
+                usage:
+                    $ref: '#/components/schemas/Usage'
+                    description: For `quota`, the usage at the time of the refused write.

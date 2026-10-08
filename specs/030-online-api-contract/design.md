@@ -159,3 +159,25 @@ Delivery order:
 - **US3 — vectors**: `roll-vectors.json` carries each draw both as the value and as the uint32, so
   the backend compares integers; the draws were checked against Node `crypto`, Python `hashlib`, and
   by hand for `2d6` and `4d6!` (explosions draw in order: draws 0–3, then 4 and 5).
+- **US1 — SC-001, the ROADMAP `online-mode` 2026-10-08 note against contract 0.1.0**:
+    - Two spaces, one home, a move keeps the id, a download is a copy → `info` "Spaces",
+      `POST /documents`, `POST /library/{library_kind}`; no download endpoint (client-side copy).
+    - Selective sync per kind → documents and library items have endpoints; roll history has none by
+      design. Favorite rolls are deferred: "likely" in the note, decided with the dice UI.
+    - Trust boundary and seeded rolls → `POST /rolls`, `PUT /rolls/{roll_id}/result`,
+      `GET /rolls/{roll_id}`, `info` "Shared rolls", `roll-vectors.json`.
+    - Quotas → `GET /usage`, `QuotaExceeded` (413), `Error.usage`; paid plans are not a contract
+      matter yet.
+    - Accounts only for the cloud space → `/auth/*`, `/account`, `info` "Spaces".
+    - A move offers the library items a record uses → `POST /dependencies`; published versions for
+      sharing → deferred ("Later versions" in `info`).
+    - Only needed personal data → `Account` (uuid, email, nickname, own image), `DELETE /account`.
+    - Backend stack and deployment → not contract matters; recorded in ROADMAP only.
+- **US1 — a stale write is 412, not 409**: `If-Match` failures are 412 Precondition Failed in HTTP;
+  `kind` stays `conflict`. A write without `If-Match` is 428 with the added kind
+  `precondition_required` (FR-014's list plus one).
+- **US1 — the roll result has its own call**: `PUT /rolls/{roll_id}/result` stores the dice the
+  client evaluated, once; D10 named only the seed and the read. Viewers still recompute.
+- **US1 — `tests/scripts/validate-contract.test.ts`** covers the validator (broken `$ref`, camelCase
+  field, non-semver version); not in the task list, added because the check is blocking in
+  `ci:validate`.
