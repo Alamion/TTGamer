@@ -1,5 +1,21 @@
 # Changelog
 
+## v3.24.0
+
+### Minor feat
+
+- **Faster type check (spec 029)**: `yarn typecheck`, the push hook, and CI run TypeScript 7 and finish in about 2 seconds instead of 16. The editor and the linter stay on TypeScript 6 until typescript-eslint supports 7; the two-version setup and how to end it are in the `typescript` skill
+
+### Fix
+
+- **Catalog check names the field**: `yarn validate:data` now says which field of which catalog entry failed, not only the message
+
+### Chore
+
+- **Zod 4 (spec 027, T-088)**: every schema runs on Zod 4 with the same results for stored characters, templates, user types, and catalogs, pinned by a behavior snapshot taken before the upgrade; defaults that must still be parsed use `.prefault()`, and deprecated Zod calls are gone
+- **Tailwind 4 (spec 028, T-088)**: styling is configured in CSS (`src/css/custom.css`) instead of a JavaScript config; Sass, `autoprefixer`, and the build step for styles are gone, the scoped reset is plain nested CSS in the `base` layer, and class names follow the v4 scale (`rounded-sm`, `shadow-sm`, `outline-hidden`, …). Checked page by page against the old build: at most 0.1% of pixels differ. Production CSS is 3.9 KB larger gzipped
+- **TypeScript configuration**: `tsconfig` files no longer extend `@docusaurus/tsconfig` (its `baseUrl` is rejected by TypeScript 7) and keep the `@site/*` alias themselves
+
 ## v3.23.0
 
 ### Fix
