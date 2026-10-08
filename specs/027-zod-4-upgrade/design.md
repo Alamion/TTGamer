@@ -127,3 +127,17 @@ issue codes were renamed by the library (nothing in `src` branches on them):
   integers beyond the safe range (no stored value is that large).
 - The three clean-up groups (T010–T012) landed in one commit because each was a few lines and the
   baseline stayed unchanged for all of them.
+
+## Final results (2026-10-08)
+
+- `yarn verify:full` passes: 203 unit files (2,222 tests), 6 perf files, 10 browser tests; no test
+  was removed or weakened (one assertion moved from the old discriminator code to `invalid_union`
+  plus the same path).
+- Zod 4.6.5; `yarn outdated` lists no Zod entry. No removed or deprecated Zod call is left.
+- Sheet JS and CSS: 3,663,519 → 3,702,698 bytes (+1.07%, limit 2%). Editor edit 11–13 ms (was 12),
+  move preview 27–38 ms.
+- Changed messages (SC-005): Zod's own text is no longer shown to authors; only issue codes changed
+  (see "Accepted differences"). `validate:data` now names the failing field.
+- Manual walk: steps 1 and 5 are covered by the browser tests (sheet reload keeps the character,
+  editor edit and undo, catalog table); steps 2–4 (old export import, template save issues, user
+  type/catalog refusal) are covered by unit tests but not walked by hand: left for the maintainer.

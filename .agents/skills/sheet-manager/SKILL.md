@@ -80,7 +80,8 @@ detail.
   values `desperation` / `danger` (0–5, per-hunter copies until cells exist). Example document:
   `modules/hunter/example.ts` (Lena Varga, used by docs).
 - IDs are opaque non-empty strings (presets use stable textual IDs). Zod strips unknown keys; do not
-  `.passthrough()` without a migration reason.
+  use `z.looseObject()` without a migration reason. Default objects: `.prefault()`, not `.default()`
+  (`src/sheet_manager/AGENTS.md`).
 
 ## Store Architecture
 

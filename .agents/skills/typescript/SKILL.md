@@ -16,7 +16,7 @@ existing type/schema before adding a parallel representation.
 
 - Keep strict TypeScript clean; `yarn typecheck` checks app, scripts, and tests.
 - Avoid `any`. Narrow `unknown` at runtime, especially JSON, storage, URL, and network boundaries.
-- Use Zod for imported character data and build-time catalog validation.
+- Use Zod 4 for imported character data and build-time catalog validation.
 - Prefer inferred local types. Use `interface` for extensible object/prop shapes and `type` for
   unions/intersections.
 - Use `import type` for type-only imports. ESLint owns import ordering.

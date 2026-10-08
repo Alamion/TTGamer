@@ -74,18 +74,18 @@ clean-up group (design D2); each passes `yarn verify`.
       `src`, `scripts`, `tests` for any other removed or deprecated call (`nativeEnum`, `errorMap`,
       `.format()`, `.flatten()`, `.merge()`, `.deepPartial`, string-format methods) and replace
       them. Verify, commit, `refactor: Zod 4 string formats and leftovers (spec 027)`.
-- [ ] T013 [US3] Compare the sheet route's JS bytes and schema backstop timing with the T001
+- [x] T013 [US3] Compare the sheet route's JS bytes and schema backstop timing with the T001
       baseline (SC-004, VII); if the growth exceeds 2%, find why before continuing.
 
 ## Finish
 
-- [ ] T014 Update guidance, one owner per rule: the Zod notes in `src/sheet_manager/AGENTS.md`
+- [x] T014 Update guidance, one owner per rule: the Zod notes in `src/sheet_manager/AGENTS.md`
       (strip-by-default wording), `.agents/skills/sheet-manager/SKILL.md`,
       `.agents/skills/typescript/SKILL.md`, and the root `AGENTS.md` stack row if the version is
       named. No user guide change (no visible behavior).
-- [ ] T015 Update `TODO.md` T-088 (Zod done, TypeScript 7 blocked until typescript-eslint supports
+- [x] T015 Update `TODO.md` T-088 (Zod done, TypeScript 7 blocked until typescript-eslint supports
       it, Tailwind 4 remains) and run `yarn validate:backlog`.
-- [ ] T016 Run `yarn verify:full`; confirm with `yarn outdated` that Zod is current (SC-003); walk
+- [x] T016 Run `yarn verify:full`; confirm with `yarn outdated` that Zod is current (SC-003); walk
       design.md "Manual walk"; record results and the list of changed messages (SC-005, empty if
       none) in design.md; commit, `docs: guidance, backlog, and results for Zod 4 (spec 027)`.
 
