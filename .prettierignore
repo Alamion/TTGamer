@@ -8,3 +8,4 @@ i18n/*/code.json
 specs/**/*.html
 playwright-report/
 test-results/
+tests/sheet_manager/fixtures/zod-baseline/

@@ -8,10 +8,10 @@ clean-up group (design D2); each passes `yarn verify`.
 
 ## Foundation
 
-- [ ] T001 Record the baselines in design.md "Results": installed Zod version, the sheet route's
+- [x] T001 Record the baselines in design.md "Results": installed Zod version, the sheet route's
       downloaded JS bytes from `yarn test:e2e` timings (needs a build), and the schema backstop
       timing, best of several warm runs of the editor perf test.
-- [ ] T002 Capture the fixtures in `tests/sheet_manager/fixtures/zod-baseline/` from current code:
+- [x] T002 Capture the fixtures in `tests/sheet_manager/fixtures/zod-baseline/` from current code:
       the shipped templates, a legacy character export with unknown fields, a user document type, a
       user catalog, and malformed variants of each (missing id, duplicate column id, `http://` URL,
       extra key on a strict object, wrong types).
@@ -21,7 +21,7 @@ clean-up group (design D2); each passes `yarn verify`.
 **Check**: the baseline test passes on Zod 3 and on Zod 4 with the same outcomes and parsed values
 (SC-001).
 
-- [ ] T003 [US1] Write `tests/sheet_manager/zod-baseline.test.ts` on Zod 3: accept/reject outcome
+- [x] T003 [US1] Write `tests/sheet_manager/zod-baseline.test.ts` on Zod 3: accept/reject outcome
       and parsed output per fixture; defaults for missing, `undefined`, and `null`; strict-object
       rejection; unknown-key stripping for `BaseCharacterSchema` and the envelopes; `https://` URL
       values; the shipped-template tree; type-equality assertions for `Character`, `CustomTemplate`,

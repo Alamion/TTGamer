@@ -95,3 +95,10 @@ the order is: first pin down current behavior, then change the dependency, then 
    against the right element; no raw Zod text.
 4. Create a user document type and a user catalog with duplicate column ids → refused.
 5. Reload each page after saving → data persists.
+
+## Results
+
+- Baseline (Zod 3.25.76, 2026-10-08): sheet JS and CSS 3,663,519 bytes; an edit on the full shipped
+  sheet 12 ms (browser timings, `yarn test:e2e`); open the sheet 113 ms.
+- Characterization snapshots: `tests/sheet_manager/fixtures/zod-baseline/` (`cases.json`,
+  `legacy-templates.json`, `shipped-templates.json`), written on Zod 3.
