@@ -69,7 +69,7 @@ export function StatDiceButton({
             }}
             disabled={disabled}
             className={clsx(
-                'rounded font-bold transition-all duration-200 flex items-center justify-center',
+                'rounded-sm font-bold transition-all duration-200 flex items-center justify-center',
                 statFlagSizeClasses[size],
                 'text-textSecondary opacity-40 hover:opacity-70',
                 disabled && 'cursor-not-allowed'

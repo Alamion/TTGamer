@@ -30,7 +30,7 @@ export function ConfirmDialog({
         <Dialog.Root open={open} onOpenChange={onOpenChange}>
             <Dialog.Portal container={modalRoot ?? undefined}>
                 <Dialog.Overlay className="fixed inset-0 z-[9998] bg-black/50" />
-                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-bgSurface p-6 shadow-lg focus:outline-none">
+                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-bgSurface p-6 shadow-lg focus:outline-hidden">
                     <div className="flex items-start gap-3">
                         {variant === 'danger' && (
                             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-error" />

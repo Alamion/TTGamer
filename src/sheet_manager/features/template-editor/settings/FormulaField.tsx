@@ -33,7 +33,7 @@ export function FormulaField({
             {(control) => (
                 <div
                     className={clsx(
-                        'flex min-w-0 items-stretch overflow-hidden rounded border bg-bgSurface focus-within:ring-1',
+                        'flex min-w-0 items-stretch overflow-hidden rounded-sm border bg-bgSurface focus-within:ring-1',
                         bad
                             ? 'border-error focus-within:ring-error'
                             : 'border-border focus-within:ring-primary'
@@ -57,7 +57,7 @@ export function FormulaField({
                         placeholder={placeholder}
                         list={coordinateListId}
                         spellCheck={false}
-                        className="min-w-0 flex-1 bg-transparent px-2 py-1.5 font-mono text-sm text-textPrimary focus:outline-none"
+                        className="min-w-0 flex-1 bg-transparent px-2 py-1.5 font-mono text-sm text-textPrimary focus:outline-hidden"
                     />
                 </div>
             )}

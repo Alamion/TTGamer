@@ -4,8 +4,86 @@
  * work well for content-centric websites.
  */
 
-@tailwind components;
-@tailwind utilities;
+/*
+ * Tailwind 4, CSS-first. Utilities are emitted under `.tailwind-root` (unlayered, so Infima's
+ * unlayered rules cannot outrank them); the reset lives in `set_tailwind_styles.css`. The palette
+ * tokens below keep the old config's names (`bg-primary-muted`, `text-bgBase`); `static` emits
+ * them all, so stylesheet code and the storybook palette can read any of them.
+ */
+@import 'tailwindcss/theme.css' layer(theme);
+
+@source '../../src';
+@source '../../docs';
+
+@theme {
+    /* Tailwind 3's absolute line heights: v4's unitless ratios shrink when a child sets its own size. */
+    --text-xs--line-height: 1rem;
+    --text-sm--line-height: 1.25rem;
+    --text-base--line-height: 1.5rem;
+    --text-lg--line-height: 1.75rem;
+    --text-xl--line-height: 1.75rem;
+    --text-2xl--line-height: 2rem;
+    --text-3xl--line-height: 2.25rem;
+    --text-4xl--line-height: 2.5rem;
+    --text-5xl--line-height: 1;
+    --text-6xl--line-height: 1;
+    --text-7xl--line-height: 1;
+    --text-8xl--line-height: 1;
+    --text-9xl--line-height: 1;
+}
+
+@theme static {
+    --color-primary: rgb(var(--primary) / 1);
+    --color-primary-hover: rgb(var(--primary) / 0.8);
+    --color-primary-on: rgb(var(--on-primary) / 1);
+    --color-primary-dark: color-mix(in srgb, rgb(var(--primary)), black 25%);
+    --color-primary-darker: color-mix(in srgb, rgb(var(--primary)), black 50%);
+    --color-primary-darkest: color-mix(in srgb, rgb(var(--primary)), black 75%);
+    --color-primary-light: color-mix(in srgb, rgb(var(--primary)), white 25%);
+    --color-primary-lighter: color-mix(in srgb, rgb(var(--primary)), white 50%);
+    --color-primary-lightest: color-mix(in srgb, rgb(var(--primary)), white 75%);
+    --color-primary-muted: color-mix(
+        in srgb,
+        rgb(var(--primary)),
+        rgb(var(--bg-surface)) var(--primary-mute)
+    );
+    --color-secondary: rgb(var(--secondary) / 1);
+    --color-secondary-hover: rgb(var(--secondary) / 0.8);
+    --color-secondary-on: rgb(var(--on-secondary) / 1);
+    --color-secondary-dark: color-mix(in srgb, rgb(var(--secondary)), black 25%);
+    --color-secondary-darker: color-mix(in srgb, rgb(var(--secondary)), black 50%);
+    --color-secondary-darkest: color-mix(in srgb, rgb(var(--secondary)), black 75%);
+    --color-secondary-light: color-mix(in srgb, rgb(var(--secondary)), white 25%);
+    --color-secondary-lighter: color-mix(in srgb, rgb(var(--secondary)), white 50%);
+    --color-secondary-lightest: color-mix(in srgb, rgb(var(--secondary)), white 75%);
+    --color-info: rgb(var(--info) / 1);
+    --color-error: rgb(var(--error) / 1);
+    --color-warning: rgb(var(--warning) / 1);
+    --color-success: rgb(var(--success) / 1);
+    --color-bgBase: rgb(var(--bg-base) / 1);
+    --color-bgSurface: rgb(var(--bg-surface) / 1);
+    --color-textPrimary: rgb(var(--text-primary) / 1);
+    --color-textSecondary: rgb(var(--text-secondary) / 1);
+    --color-border: rgb(var(--border) / 1);
+    --color-borderMoreContrast: rgb(var(--border-more-contrast) / 1);
+    --color-tertiary: rgb(var(--tertiary) / 1);
+    --color-jediBlue: rgb(var(--sw-jedi-blue) / 1);
+    --color-jediGreen: rgb(var(--sw-jedi-green) / 1);
+    --color-jediViolet: rgb(var(--sw-jedi-violet) / 1);
+    --color-jediRed: rgb(var(--sw-jedi-red) / 1);
+    --color-empireGrey: rgb(var(--sw-empire-grey) / 1);
+    --color-empireBlack: rgb(var(--sw-empire-black) / 1);
+    --color-empireWhite: rgb(var(--sw-empire-white) / 1);
+    --color-droidGold: rgb(var(--sw-droid-gold) / 1);
+    --color-droidOrange: rgb(var(--sw-droid-orange) / 1);
+    --color-droidRust: rgb(var(--sw-droid-rust) / 1);
+    --color-mandalorian: rgb(var(--sw-mandalorian) / 1);
+    --color-hyperjump: rgb(var(--sw-hyperjump) / 1);
+}
+
+.tailwind-root {
+    @tailwind utilities source(none);
+}
 
 /* Overall style pattern: "Industrial Military Utility"; Clone/stormtrooper equipment*/
 

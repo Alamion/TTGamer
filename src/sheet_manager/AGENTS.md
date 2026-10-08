@@ -148,8 +148,12 @@ appropriate for layout/manager operations that explicitly manage the collection.
 - Numeric resource and dot values must be finite integers within their schema limits.
 - `forcePowerItems` is the single Force-power representation. Retired `forcePowers` and
   `customForcePowers` keys are stripped as unknown input.
-- Zod object parsing strips unknown keys by default. Do not change schemas to `.passthrough()`
+- Zod 4 object parsing strips unknown keys by default. Do not change schemas to `z.looseObject()`
   without a migration/security reason.
+- A Zod 4 `.default(value)` returns the value without parsing it, so inner defaults do not apply.
+  Use `.prefault(value)` where the default object must still pass through the schema (V5 blocks,
+  `templateValues`, tracker `valueColumn`). Tests assert issue `path` and `code`, never message
+  text, and code never branches on a Zod issue code.
 - An import that collides with a stored ID must offer Replace, Duplicate (new ID), or Cancel.
 - Export names start with `ttgamer_`; a blank title uses the document definition ID.
 

@@ -24,7 +24,7 @@ export function KeyField({
     return (
         <SettingField label={label} help={help} hint={hint} setting={setting}>
             {(control) => (
-                <div className="flex min-w-0 items-stretch overflow-hidden rounded border border-border bg-bgSurface focus-within:ring-1 focus-within:ring-primary">
+                <div className="flex min-w-0 items-stretch overflow-hidden rounded-sm border border-border bg-bgSurface focus-within:ring-1 focus-within:ring-primary">
                     <span
                         aria-hidden="true"
                         className="self-center pl-2 pr-0.5 font-mono text-xs text-textSecondary"
@@ -37,7 +37,7 @@ export function KeyField({
                         onChange={(event) => onChange(event.target.value)}
                         placeholder={placeholder}
                         spellCheck={false}
-                        className="min-w-0 flex-1 bg-transparent py-1.5 pr-2 font-mono text-sm text-textPrimary focus:outline-none"
+                        className="min-w-0 flex-1 bg-transparent py-1.5 pr-2 font-mono text-sm text-textPrimary focus:outline-hidden"
                     />
                 </div>
             )}

@@ -85,7 +85,7 @@ export function PaneDivider({
                 const right = event.key === 'ArrowRight';
                 onChange(clamp(value + (right !== invert ? step : -step)));
             }}
-            className="group hidden cursor-col-resize touch-none select-none items-stretch justify-center focus:outline-none md:flex"
+            className="group hidden cursor-col-resize touch-none select-none items-stretch justify-center focus:outline-hidden md:flex"
         >
             <span className="w-px bg-border transition-colors group-hover:w-0.5 group-hover:bg-primary group-focus-visible:w-0.5 group-focus-visible:bg-primary" />
         </div>

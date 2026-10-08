@@ -15,7 +15,7 @@ interface SheetToolbarProps {
 }
 
 const buttonBase =
-    'flex items-center justify-center gap-1.5 rounded border px-3 py-1.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50';
+    'flex items-center justify-center gap-1.5 rounded-sm border px-3 py-1.5 text-xs font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50';
 const secondaryButton = `${buttonBase} border-border bg-bgSurface text-textPrimary hover:bg-bgBase`;
 const dangerButton = `${buttonBase} border-border bg-bgSurface text-error hover:bg-bgBase`;
 const primaryButton = `${buttonBase} border-transparent bg-primary-muted text-white hover:bg-primary`;

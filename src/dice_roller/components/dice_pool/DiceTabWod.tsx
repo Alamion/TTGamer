@@ -21,7 +21,7 @@ const CLASSIC_THRESHOLD = 6;
 const MAX_STEP = 10;
 
 const stepButtonClass = `w-7 h-7 flex items-center justify-center text-sm font-bold
-    bg-bgSurface border border-border rounded cursor-pointer
+    bg-bgSurface border border-border rounded-sm cursor-pointer
     hover:bg-bgBase/50 transition-colors
     disabled:opacity-30 disabled:cursor-not-allowed`;
 
@@ -64,7 +64,7 @@ function ModeSwitch() {
     const mode = useDiceRollerStore((s) => s.settings.wodMode);
     const updateSettings = useDiceRollerStore((s) => s.updateSettings);
     return (
-        <fieldset className="flex items-center justify-between gap-2 px-3 py-2 rounded bg-bgBase/60 border-0 m-0">
+        <fieldset className="flex items-center justify-between gap-2 px-3 py-2 rounded-sm bg-bgBase/60 border-0 m-0">
             <legend className="sr-only">{translate(uiMessages.dice.pool.wod.mode)}</legend>
             <span aria-hidden="true" className="text-xs font-semibold text-textPrimary">
                 {translate(uiMessages.dice.pool.wod.mode)}
@@ -74,7 +74,7 @@ function ModeSwitch() {
                     <label
                         key={option.id}
                         className={clsx(
-                            'px-2 py-1 text-xs font-semibold rounded cursor-pointer border',
+                            'px-2 py-1 text-xs font-semibold rounded-sm cursor-pointer border',
                             mode === option.id
                                 ? 'border-primary text-textPrimary'
                                 : 'border-transparent opacity-60 hover:opacity-90'
@@ -111,7 +111,7 @@ function NullableStepper({ label, value, onChange, start, notSet, labels }: Null
     const set = (next: number | null) =>
         onChange(next === null ? null : Math.max(1, Math.min(MAX_STEP, next)));
     return (
-        <div className="flex items-center justify-between gap-2 px-3 py-2 rounded bg-bgBase/60">
+        <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-sm bg-bgBase/60">
             <span className="text-xs font-semibold text-textPrimary">{label}</span>
             <div className="flex items-center gap-2">
                 <button
@@ -269,7 +269,7 @@ function V5Controls() {
 
     return (
         <>
-            <fieldset className="flex items-center justify-between gap-2 px-3 py-2 rounded bg-bgBase/60 border-0 m-0">
+            <fieldset className="flex items-center justify-between gap-2 px-3 py-2 rounded-sm bg-bgBase/60 border-0 m-0">
                 <legend className="sr-only">{translate(uiMessages.dice.pool.wod.line)}</legend>
                 <span aria-hidden="true" className="text-xs font-semibold text-textPrimary">
                     {translate(uiMessages.dice.pool.wod.line)}
@@ -280,7 +280,7 @@ function V5Controls() {
                             key={line.id}
                             title={line.game()}
                             className={clsx(
-                                'px-2 py-1 text-xs font-semibold rounded cursor-pointer border',
+                                'px-2 py-1 text-xs font-semibold rounded-sm cursor-pointer border',
                                 settings.v5Line === line.id
                                     ? 'border-primary text-textPrimary'
                                     : 'border-transparent opacity-60 hover:opacity-90'

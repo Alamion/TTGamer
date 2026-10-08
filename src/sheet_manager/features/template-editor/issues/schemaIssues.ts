@@ -22,7 +22,7 @@ const ROW_KEYS: Record<string, string> = { options: 'option', presets: 'preset' 
 /** Arrays a tracker edits in one block (spec 018). */
 const TRACKER_KEYS = new Set(['marks', 'levels', 'lengths', 'valueColumn', 'tracker', 'track']);
 
-function settingKey(segments: readonly (string | number)[]): string | undefined {
+function settingKey(segments: readonly PropertyKey[]): string | undefined {
     const [first, second] = segments;
     if (typeof first !== 'string') return undefined;
     if (ROW_KEYS[first] && typeof second === 'number') return `${ROW_KEYS[first]}:${second}`;
@@ -36,10 +36,7 @@ function settingKey(segments: readonly (string | number)[]): string | undefined 
  * inside it. Table columns and the list entry field belong to their table or list. `{}` when
  * the path leads to no node.
  */
-export function issueLocation(
-    draft: EditorDraft,
-    path: readonly (string | number)[]
-): IssueLocation {
+export function issueLocation(draft: EditorDraft, path: readonly PropertyKey[]): IssueLocation {
     let children: readonly TemplateNode[] | undefined = draft.children;
     let node: TemplateNode | undefined;
     let index = 0;

@@ -83,7 +83,7 @@ export function ArmorSection({
                                         uiMessages.sheet.items.armor.namePlaceholder
                                     )}
                                     disabled={readOnly}
-                                    className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
+                                    className="w-full bg-bgSurface border rounded-sm px-2 py-1 text-sm text-textPrimary"
                                     ariaLabel={translate(uiMessages.sheet.items.armor.nameLabel)}
                                 />
                             </div>
@@ -96,7 +96,7 @@ export function ArmorSection({
                                         type="text"
                                         value={item[field]}
                                         onChange={(e) => onUpdate(item.id, field, e.target.value)}
-                                        className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
+                                        className="w-full bg-bgSurface border rounded-sm px-2 py-1 text-textPrimary"
                                         placeholder={translate(ARMOR_FIELDS[field].placeholder)}
                                         aria-label={translate(ARMOR_FIELDS[field].label)}
                                     />

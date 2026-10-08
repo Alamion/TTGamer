@@ -37,7 +37,7 @@ function FirstEra({ eras }: { eras: string[] }) {
         <span className="text-xs text-textSecondary whitespace-nowrap">
             {t.label('eras', eras[0])}
             {eras.length > 1 && (
-                <span className="ml-1 px-1 py-0.5 rounded bg-bgSurface text-textTertiary text-[10px]">
+                <span className="ml-1 px-1 py-0.5 rounded-sm bg-bgSurface text-textTertiary text-[10px]">
                     +{eras.length - 1}
                 </span>
             )}

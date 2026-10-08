@@ -63,7 +63,7 @@ export function ImplantsSection({
                                         uiMessages.sheet.items.implants.namePlaceholder
                                     )}
                                     disabled={readOnly}
-                                    className="w-full bg-bgSurface border rounded px-2 py-1 text-sm text-textPrimary"
+                                    className="w-full bg-bgSurface border rounded-sm px-2 py-1 text-sm text-textPrimary"
                                     ariaLabel={translate(uiMessages.sheet.items.implants.nameLabel)}
                                 />
                             </div>
@@ -75,7 +75,7 @@ export function ImplantsSection({
                                     type="text"
                                     value={item.type}
                                     onChange={(e) => onUpdate(item.id, 'type', e.target.value)}
-                                    className="w-full bg-bgSurface border rounded px-2 py-1 text-textPrimary"
+                                    className="w-full bg-bgSurface border rounded-sm px-2 py-1 text-textPrimary"
                                     placeholder={translate(
                                         uiMessages.sheet.items.implants.typePlaceholder
                                     )}

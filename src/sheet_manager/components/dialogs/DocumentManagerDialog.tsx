@@ -63,7 +63,7 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
                 <Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
                 <Dialog.Content
                     aria-describedby={undefined}
-                    className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl max-h-[85vh] bg-bgSurface border border-border rounded-lg shadow-xl overflow-hidden flex flex-col focus:outline-none"
+                    className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl max-h-[85vh] bg-bgSurface border border-border rounded-lg shadow-xl overflow-hidden flex flex-col focus:outline-hidden"
                 >
                     <div className="flex items-center justify-between p-4 border-b border-border">
                         <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
                             type="button"
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={selectedIds.size === 0}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-error bg-bgSurface border border-border rounded hover:bg-error/10 disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-error bg-bgSurface border border-border rounded-sm hover:bg-error/10 disabled:opacity-50"
                         >
                             <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                             <Translate id="ttgamer.ui.sheet.documents.manager.deleteSelected" />

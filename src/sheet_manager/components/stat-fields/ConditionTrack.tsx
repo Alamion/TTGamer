@@ -17,7 +17,7 @@ export function ConditionTrackLengthButtons({
     disabled: boolean;
 }) {
     const button =
-        'grid h-6 w-6 place-items-center rounded text-textSecondary hover:bg-bgBase hover:text-primary disabled:opacity-30';
+        'grid h-6 w-6 place-items-center rounded-sm text-textSecondary hover:bg-bgBase hover:text-primary disabled:opacity-30';
     return (
         <span className="inline-flex items-center gap-0.5">
             <button

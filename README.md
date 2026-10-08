@@ -151,7 +151,6 @@ Opens the site at `http://localhost:3000`.
 │   ├── sounds/dicehit/        #   40+ dice impact sounds (coin, metal, plastic, wood)
 │   └── sounds/surfaces/       #   25+ surface impact sounds (felt, metal, wood)
 ├── docusaurus.config.ts
-├── tailwind.config.cjs        # Must be CommonJS for webpack
 ├── postcss.config.js          # Must be CommonJS
 ├── tsconfig.json              # Solution → tsconfig.app.json + tsconfig.node.json
 ├── sidebars.ts
@@ -160,7 +159,7 @@ Opens the site at `http://localhost:3000`.
 
 ### Architecture Highlights
 
-- **Tailwind Isolation**: `@tailwind base` is NOT in `custom.css` to avoid resetting Infima/Docusaurus styles. Base resets are scoped to `.tailwind-root` via `tailwind-base-reset.scss`.
+- **Tailwind Isolation**: Tailwind's preflight is NOT imported, so Infima/Docusaurus styles stay intact. Utilities and the base reset are scoped to `.tailwind-root` (`src/css/custom.css`, `src/css/set_tailwind_styles.css`).
 - **Module CSS**: Module pages import their own Tailwind stylesheet directly (e.g., `../../css/set_tailwind_styles.css`).
 - **Module Separation**: `dice_roller/` and `sheet_manager/` are logically independent modules with their own `AGENTS.md`, `TODO.md`, and `TOFIX.md` files.
 - **Dice Logic**: `moo` lexer, strict hand-written AST parser, evaluator, and physics orchestrator. Supported 3D dice use physics-generated values; unsupported/excessive/failed 3D rolls fall back wholly to 2D evaluation.
@@ -170,15 +169,15 @@ Opens the site at `http://localhost:3000`.
 
 ### Key Design Decisions
 
-| Decision                             | Rationale                                                                        |
-| ------------------------------------ | -------------------------------------------------------------------------------- |
-| Tailwind via `tailwind-root` scoping | Prevents conflict with Docusaurus/Infima styles                                  |
-| `tailwind.config.cjs` as CommonJS    | Required by Docusaurus webpack config                                            |
-| `postcss.config.js` as CommonJS      | Root `package.json` has no `"type": "module"`                                    |
-| `clsx` for conditional classes       | Lighter than `classnames`, better DX                                             |
-| Zustand over Redux                   | Simpler API, built-in persist middleware                                         |
-| localForage over localStorage        | Async, IndexedDB under the hood (no 5MB limit)                                   |
-| Parser/evaluator/renderer separation | Keeps grammar and result semantics testable while allowing physics-backed values |
+| Decision                              | Rationale                                                                        |
+| ------------------------------------- | -------------------------------------------------------------------------------- |
+| Tailwind via `tailwind-root` scoping  | Prevents conflict with Docusaurus/Infima styles                                  |
+| Tailwind configured in CSS (`@theme`) | Tailwind 4 is CSS-first; palette tokens live in `src/css/custom.css`             |
+| `postcss.config.js` as CommonJS       | Root `package.json` has no `"type": "module"`                                    |
+| `clsx` for conditional classes        | Lighter than `classnames`, better DX                                             |
+| Zustand over Redux                    | Simpler API, built-in persist middleware                                         |
+| localForage over localStorage         | Async, IndexedDB under the hood (no 5MB limit)                                   |
+| Parser/evaluator/renderer separation  | Keeps grammar and result semantics testable while allowing physics-backed values |
 
 ### Testing
 
@@ -233,21 +232,21 @@ Test files under `tests/` cover:
 
 ## Tech Stack
 
-| Concern         | Technology                       |
-| --------------- | -------------------------------- |
-| Package Manager | yarn@1.22.22                     |
-| Site Framework  | Docusaurus 3.10 (preset-classic) |
-| Frontend        | React 19 + TypeScript 6 (strict) |
-| State           | Zustand 5 (persist middleware)   |
-| Styling         | Tailwind CSS 3 + clsx            |
-| Validation      | Zod                              |
-| Persistence     | localForage (IndexedDB)          |
-| Icons           | Lucide-react                     |
-| Components      | Radix UI primitives              |
-| Testing         | Vitest                           |
-| i18n            | Docusaurus i18n (en, ru)         |
-| 3D Rendering    | Three.js + cannon-es             |
-| Dice Logic      | moo lexer + hand-written parser  |
+| Concern         | Technology                         |
+| --------------- | ---------------------------------- |
+| Package Manager | yarn@1.22.22                       |
+| Site Framework  | Docusaurus 3.10 (preset-classic)   |
+| Frontend        | React 19 + TypeScript 6/7 (strict) |
+| State           | Zustand 5 (persist middleware)     |
+| Styling         | Tailwind CSS 4 + clsx              |
+| Validation      | Zod                                |
+| Persistence     | localForage (IndexedDB)            |
+| Icons           | Lucide-react                       |
+| Components      | Radix UI primitives                |
+| Testing         | Vitest                             |
+| i18n            | Docusaurus i18n (en, ru)           |
+| 3D Rendering    | Three.js + cannon-es               |
+| Dice Logic      | moo lexer + hand-written parser    |
 
 ---
 

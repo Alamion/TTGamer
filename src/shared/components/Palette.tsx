@@ -1,4 +1,3 @@
-import tailwindConfig from '@site/tailwind.config.cjs';
 import { useEffect, useState } from 'react';
 
 interface Swatch {
@@ -7,18 +6,6 @@ interface Swatch {
     name: string;
     expression: string;
     value: string;
-}
-
-/** Tailwind theme colors, flattened the way Tailwind names their classes (`primary-dark`). */
-export function tailwindColors(): Array<{ group: string; name: string; expression: string }> {
-    return Object.entries(tailwindConfig.theme.extend.colors).flatMap(([key, value]) => {
-        const entries = typeof value === 'string' ? { DEFAULT: value } : value;
-        return Object.entries(entries).map(([shade, expression]) => ({
-            group: typeof value === 'string' ? 'Single colors' : key,
-            name: shade === 'DEFAULT' ? key : `${key}-${shade}`,
-            expression: expression.replace('<alpha-value>', '1'),
-        }));
-    });
 }
 
 function resolveColor(raw: string): string | undefined {
@@ -74,6 +61,31 @@ function customProperties(): Set<string> {
     return names;
 }
 
+/** Tailwind's own palette families, which the theme import adds when a class uses one. */
+const DEFAULT_PALETTE =
+    /^(?:(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-\d+|black|white)$/;
+
+/**
+ * The project's Tailwind theme colors: every `--color-*` token of `custom.css`, named the way the
+ * classes are (`primary-dark`) and grouped by their first part.
+ */
+export function tailwindColors(): Array<{ group: string; name: string; expression: string }> {
+    const computed = getComputedStyle(document.documentElement);
+    return [...customProperties()]
+        .filter((property) => property.startsWith('--color-'))
+        .map((property) => property.slice('--color-'.length))
+        .filter((name) => !DEFAULT_PALETTE.test(name))
+        .sort()
+        .map((name) => {
+            const [family = name] = name.split('-');
+            return {
+                group: family === name ? 'Single colors' : family,
+                name,
+                expression: computed.getPropertyValue(`--color-${name}`).trim(),
+            };
+        });
+}
+
 function variableGroup(name: string): string {
     if (name.startsWith('--ifm-')) return 'Infima variables';
     if (name.startsWith('--sw-')) return 'Star Wars variables';
@@ -98,7 +110,7 @@ function SwatchCard({ swatch }: { swatch: Swatch }) {
     const utility = swatch.name.startsWith('--') ? undefined : `bg-${swatch.name}`;
     return (
         <figure
-            className="m-0 overflow-hidden rounded border border-border bg-bgSurface"
+            className="m-0 overflow-hidden rounded-sm border border-border bg-bgSurface"
             title={swatch.expression}
         >
             <div className="h-14" style={{ backgroundColor: swatch.value }} />
@@ -113,7 +125,7 @@ function SwatchCard({ swatch }: { swatch: Swatch }) {
 
 /**
  * Every color the app defines (constitution VI): the Tailwind theme colors from
- * `tailwind.config.cjs` and every color-valued CSS custom property, resolved in the current
+ * `custom.css` (`@theme`) and every color-valued CSS custom property, resolved in the current
  * theme and recomputed when the site theme switches.
  */
 export function Palette() {

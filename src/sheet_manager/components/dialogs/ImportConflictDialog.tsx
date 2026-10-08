@@ -25,7 +25,7 @@ export function ImportConflictDialog({
         >
             <Dialog.Portal container={modalRoot ?? undefined}>
                 <Dialog.Overlay className="fixed inset-0 z-[9998] bg-black/50" />
-                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-bgSurface p-6 shadow-xl focus:outline-none">
+                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-bgSurface p-6 shadow-xl focus:outline-hidden">
                     <Dialog.Title className="text-lg font-semibold text-textPrimary">
                         {subject === 'type' ? (
                             <Translate id="ttgamer.ui.sheet.documents.conflict.typeTitle" />
@@ -44,21 +44,21 @@ export function ImportConflictDialog({
                         <button
                             type="button"
                             onClick={() => onResolve('cancel')}
-                            className="rounded border border-border bg-bgSurface px-3 py-1.5 text-xs font-medium text-textPrimary hover:bg-bgBase"
+                            className="rounded-sm border border-border bg-bgSurface px-3 py-1.5 text-xs font-medium text-textPrimary hover:bg-bgBase"
                         >
                             <Translate id="ttgamer.ui.sheet.documents.create.cancel" />
                         </button>
                         <button
                             type="button"
                             onClick={() => onResolve('duplicate')}
-                            className="rounded border border-border bg-bgSurface px-3 py-1.5 text-xs font-medium text-textPrimary hover:bg-bgBase"
+                            className="rounded-sm border border-border bg-bgSurface px-3 py-1.5 text-xs font-medium text-textPrimary hover:bg-bgBase"
                         >
                             <Translate id="ttgamer.ui.sheet.documents.conflict.duplicate" />
                         </button>
                         <button
                             type="button"
                             onClick={() => onResolve('replace')}
-                            className="rounded border border-transparent bg-primary-muted px-3 py-1.5 text-xs font-medium text-white hover:bg-primary"
+                            className="rounded-sm border border-transparent bg-primary-muted px-3 py-1.5 text-xs font-medium text-white hover:bg-primary"
                         >
                             <Translate id="ttgamer.ui.sheet.documents.conflict.replace" />
                         </button>

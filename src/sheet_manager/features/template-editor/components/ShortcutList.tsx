@@ -41,7 +41,7 @@ export function ShortcutList({
                 <Dialog.Overlay className="fixed inset-0 z-[10000] bg-black/40" />
                 <Dialog.Content
                     data-shortcut-list=""
-                    className="fixed left-1/2 top-1/2 z-[10001] max-h-[85vh] w-[min(32rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-bgSurface p-4 shadow-xl focus:outline-none"
+                    className="fixed left-1/2 top-1/2 z-[10001] max-h-[85vh] w-[min(32rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-bgSurface p-4 shadow-xl focus:outline-hidden"
                 >
                     <div className="mb-3 flex items-center gap-2">
                         <Dialog.Title className="mr-auto text-base font-semibold text-textPrimary">
@@ -49,7 +49,7 @@ export function ShortcutList({
                         </Dialog.Title>
                         <Dialog.Close
                             aria-label={translate(editor.closeShortcuts)}
-                            className="rounded p-1 text-textSecondary hover:text-textPrimary"
+                            className="rounded-sm p-1 text-textSecondary hover:text-textPrimary"
                         >
                             <X className="h-4 w-4" aria-hidden="true" />
                         </Dialog.Close>
@@ -84,7 +84,7 @@ export function ShortcutList({
                                                         (keys, index) => (
                                                             <span key={keys}>
                                                                 {index > 0 && ' / '}
-                                                                <kbd className="rounded border border-border bg-bgBase px-1 font-sans text-xs">
+                                                                <kbd className="rounded-sm border border-border bg-bgBase px-1 font-sans text-xs">
                                                                     {keys}
                                                                 </kbd>
                                                             </span>

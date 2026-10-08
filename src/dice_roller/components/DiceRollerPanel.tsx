@@ -20,7 +20,7 @@ export default function DiceRollerPanel() {
         >
             <div className="flex flex-col gap-4 px-4 py-3">
                 <DicePool />
-                <div className="h-px bg-border flex-shrink-0" />
+                <div className="h-px bg-border shrink-0" />
                 <RollHistory />
             </div>
         </SlidePanel>

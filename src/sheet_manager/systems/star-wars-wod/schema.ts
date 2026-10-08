@@ -17,8 +17,8 @@ import { StarWarsSettingShape, Wod2eCoreShape } from '../wod2e/ruleset/schema';
 
 const boundedTextSchema = z.string().max(2_000).default('');
 const boundedLabelSchema = z.string().max(120).default('');
-const dotValueSchema = z.number().finite().int().min(0).max(5);
-const resourceValueSchema = z.number().finite().int().min(0).max(10);
+const dotValueSchema = z.number().int().min(0).max(5);
+const resourceValueSchema = z.number().int().min(0).max(10);
 const resourcePairSchema = z
     .object({ current: resourceValueSchema, max: resourceValueSchema })
     .refine(({ current, max }) => current <= max, {

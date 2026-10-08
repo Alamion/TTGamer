@@ -68,7 +68,7 @@ function fillLook(mark: Pick<Mark, 'fill'> | undefined): {
     };
 }
 
-const BOX = 'grid shrink-0 place-items-center rounded border-2 font-mono font-bold leading-none';
+const BOX = 'grid shrink-0 place-items-center rounded-sm border-2 font-mono font-bold leading-none';
 // Spec 019: boxes are smaller and further apart, so outline rings never touch.
 const BOX_SIZE = {
     md: 'h-[26px] w-[26px] text-xs',
@@ -82,10 +82,10 @@ type BoxSize = keyof typeof BOX_SIZE;
 
 /** The outline layer: a ring outside the box with a see-through gap (spec 019 R7). */
 const OUTLINE_SIZE: Record<BoxSize, string> = {
-    md: 'outline outline-[2.5px] outline-offset-[1.5px]',
-    sm: 'outline outline-2 outline-offset-1',
-    dot: 'outline outline-2 outline-offset-1',
-    xs: 'outline outline-[1.5px] outline-offset-1',
+    md: 'outline-[2.5px] outline-offset-[1.5px]',
+    sm: 'outline-2 outline-offset-1',
+    dot: 'outline-2 outline-offset-1',
+    xs: 'outline-[1.5px] outline-offset-1',
 };
 
 const OUTLINE_CLASSES: Record<TrackerPaletteFill, string> = {
@@ -292,7 +292,7 @@ function MarkBox({
                 BOX_SIZE[size],
                 'transition-colors focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-70',
                 // The outline layer owns `outline`; plain boxes drop the browser's focus outline.
-                !outline && 'focus-visible:outline-none',
+                !outline && 'focus-visible:outline-hidden',
                 // A long press must not select text or open the phone's callout.
                 'select-none [-webkit-touch-callout:none]',
                 look.className,
@@ -460,7 +460,7 @@ export function Tracker({
                 type="button"
                 onClick={() => requestRemove(column, copy)}
                 aria-label={wording.remove(column, copy)}
-                className="rounded p-0.5 text-textSecondary hover:text-error"
+                className="rounded-sm p-0.5 text-textSecondary hover:text-error"
             >
                 <X className="h-3 w-3" aria-hidden="true" />
             </button>
@@ -492,7 +492,7 @@ export function Tracker({
                       type="button"
                       onClick={() => onAddCopy?.(column.id)}
                       disabled={!column.canAdd}
-                      className="flex items-center gap-1 rounded px-2 py-1 text-xs text-primary hover:bg-bgBase disabled:opacity-40"
+                      className="flex items-center gap-1 rounded-sm px-2 py-1 text-xs text-primary hover:bg-bgBase disabled:opacity-40"
                   >
                       <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                       {wording.add(column)}
@@ -642,7 +642,7 @@ export function Tracker({
                                                     event.target.value
                                                 )
                                             }
-                                            className="w-full rounded border bg-bgBase px-1.5 py-0.5 text-sm text-textPrimary"
+                                            className="w-full rounded-sm border bg-bgBase px-1.5 py-0.5 text-sm text-textPrimary"
                                         />
                                     )}
                                 </span>
@@ -673,7 +673,7 @@ export function Tracker({
                                     className="text-center"
                                 >
                                     {column.kind !== 'marks' ? null : copy.out ? (
-                                        <span className="rounded bg-error/15 px-1.5 font-sans text-[10px] font-semibold uppercase text-error">
+                                        <span className="rounded-sm bg-error/15 px-1.5 font-sans text-[10px] font-semibold uppercase text-error">
                                             {wording.out}
                                         </span>
                                     ) : (
@@ -730,7 +730,7 @@ export function Tracker({
                             </span>
                             {model.total &&
                                 (copy.out ? (
-                                    <span className="rounded bg-error/15 px-1.5 text-[10px] font-semibold uppercase text-error">
+                                    <span className="rounded-sm bg-error/15 px-1.5 text-[10px] font-semibold uppercase text-error">
                                         {wording.out}
                                     </span>
                                 ) : (
@@ -797,7 +797,7 @@ export function Tracker({
                                         )
                                     }
                                     className={clsx(
-                                        'inline-flex items-center gap-1.5 rounded-md border px-2 py-1.5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                                        'inline-flex items-center gap-1.5 rounded-md border px-2 py-1.5 transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary',
                                         pressed
                                             ? 'border-warning text-textPrimary ring-1 ring-warning'
                                             : 'border-border hover:border-borderMoreContrast hover:text-textPrimary'

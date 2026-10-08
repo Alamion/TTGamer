@@ -507,7 +507,7 @@ export function FieldEditor(props: Omit<FieldSettingsOptions, 'bindings'>) {
     const { bindings } = useEditorModel();
     return (
         <div
-            className="grid gap-3 rounded border border-border bg-bgSurface p-3"
+            className="grid gap-3 rounded-sm border border-border bg-bgSurface p-3"
             data-field-id={props.field.id}
         >
             {mergeGroups([fieldSettings({ ...props, bindings })]).map(({ id, nodes }) => (
@@ -591,7 +591,7 @@ function SelectOptions({
                             onClick={() => callbacks.onRemoveOption(option.id)}
                             disabled={field.options.length <= 1}
                             aria-label={t(editor.remove)}
-                            className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error disabled:opacity-40"
+                            className="rounded-sm p-1 text-textSecondary hover:bg-bgSurface hover:text-error disabled:opacity-40"
                         >
                             <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                         </button>
@@ -602,7 +602,7 @@ function SelectOptions({
                 type="button"
                 onClick={callbacks.onAddOption}
                 disabled={field.options.length >= TEMPLATE_LIMITS.optionsPerField}
-                className="flex items-center gap-1 justify-self-start rounded px-2 py-1 text-xs text-primary hover:bg-bgSurface disabled:opacity-40"
+                className="flex items-center gap-1 justify-self-start rounded-sm px-2 py-1 text-xs text-primary hover:bg-bgSurface disabled:opacity-40"
             >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 {t(editor.addOption)}
@@ -736,7 +736,7 @@ function RatingSwitches({
                                 aria-label={t(RATING_FLAG_UI[flag].title)}
                                 onClick={() => toggleFlag(flag)}
                                 className={clsx(
-                                    'h-6 w-6 rounded border text-xs font-bold transition-colors',
+                                    'h-6 w-6 rounded-sm border text-xs font-bold transition-colors',
                                     state === true
                                         ? 'border-primary bg-primary-muted text-textPrimary'
                                         : state === 'mixed'
@@ -789,7 +789,7 @@ function ResourceDisplay({
                             );
                         }}
                         className={clsx(
-                            'rounded border px-2.5 py-1 text-xs transition-colors disabled:opacity-50',
+                            'rounded-sm border px-2.5 py-1 text-xs transition-colors disabled:opacity-50',
                             asTracker === tracker
                                 ? 'border-primary bg-primary-muted text-textPrimary'
                                 : 'border-border text-textSecondary hover:border-primary/60'

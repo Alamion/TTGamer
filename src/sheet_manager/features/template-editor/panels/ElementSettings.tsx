@@ -24,7 +24,7 @@ export interface ElementActions {
 }
 
 const actionButton =
-    'flex h-7 w-7 items-center justify-center rounded border border-transparent text-textSecondary hover:border-border hover:text-textPrimary disabled:opacity-40';
+    'flex h-7 w-7 items-center justify-center rounded-sm border border-transparent text-textSecondary hover:border-border hover:text-textPrimary disabled:opacity-40';
 
 /** Move up, move down, duplicate, and remove: for one element or a selection (spec 023). */
 export function ElementActionsRow({ actions }: { actions: ElementActions }) {
@@ -79,7 +79,7 @@ function ElementHeader({ actions, node }: { actions: ElementActions; node: Templ
         <div className="grid gap-1.5">
             <ElementActionsRow actions={actions} />
             <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5" data-element-name="">
-                <span className="shrink-0 rounded bg-bgBase px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-textSecondary">
+                <span className="shrink-0 rounded-sm bg-bgBase px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-textSecondary">
                     {elementTypeLabel(node)}
                 </span>
                 <span className="min-w-0 break-words text-sm font-semibold text-textPrimary">

@@ -70,10 +70,10 @@ function ListEntryRemove({ label, onRemove }: { label: string; onRemove: () => v
             aria-label={label}
             title={label}
             className={clsx(
-                'relative flex h-4 w-4 shrink-0 items-center justify-center rounded text-error',
+                'relative flex h-4 w-4 shrink-0 items-center justify-center rounded-sm text-error',
                 "before:absolute before:-inset-2 before:content-['']",
                 'opacity-50 transition-opacity hover:opacity-100 focus-visible:opacity-100',
-                'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-error'
+                'focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-error'
             )}
         >
             <X className="h-3.5 w-3.5" aria-hidden="true" />

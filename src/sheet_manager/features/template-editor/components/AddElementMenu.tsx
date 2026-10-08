@@ -23,7 +23,7 @@ function MenuItems({
             onClick={() => onChoose(option.build(atRoot))}
             disabled={disabled}
             data-palette-option={option.key}
-            className="flex items-start gap-2 rounded p-2 text-left hover:bg-secondary/15 focus:bg-secondary/15 focus:outline-none disabled:opacity-40"
+            className="flex items-start gap-2 rounded-sm p-2 text-left hover:bg-secondary/15 focus:bg-secondary/15 focus:outline-hidden disabled:opacity-40"
         >
             <Plus className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
             <span className="grid gap-0.5">

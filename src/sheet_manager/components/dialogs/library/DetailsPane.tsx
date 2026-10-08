@@ -21,7 +21,7 @@ export interface DetailsPaneProps {
 
 function Note({ children }: { children: ReactNode }) {
     return (
-        <p className="rounded border-l-2 border-secondary bg-secondary/10 px-3 py-2 text-xs text-textPrimary">
+        <p className="rounded-sm border-l-2 border-secondary bg-secondary/10 px-3 py-2 text-xs text-textPrimary">
             {children}
         </p>
     );
@@ -158,7 +158,7 @@ export function DetailsPane({ found, actions, onAction, panel }: DetailsPaneProp
                                 data-library-action={id}
                                 onClick={() => onAction(id)}
                                 className={clsx(
-                                    'inline-flex items-center gap-1.5 rounded border px-2.5 py-1 text-xs font-medium transition-colors',
+                                    'inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-xs font-medium transition-colors',
                                     danger
                                         ? 'border-error/40 text-error hover:bg-error/10'
                                         : 'border-border text-textPrimary hover:border-secondary hover:bg-secondary/10'

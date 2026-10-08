@@ -34,7 +34,7 @@ export function CreateCharacterButton({
                     })
                 )
             }
-            className="inline-flex items-center justify-center gap-1.5 rounded border border-transparent bg-primary-muted px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="inline-flex items-center justify-center gap-1.5 rounded-sm border border-transparent bg-primary-muted px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary focus:outline-hidden focus:ring-2 focus:ring-primary/50"
             title={translate(uiMessages.sheet.documents.toolbar.newTitle)}
         >
             <Plus className="h-4 w-4" aria-hidden="true" />

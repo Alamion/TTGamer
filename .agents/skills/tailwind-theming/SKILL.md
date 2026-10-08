@@ -80,5 +80,26 @@ Sheet blocks use the shared `AccentColor` prop (`'primary' | 'secondary'`), mapp
 
 ## Tailwind Classes
 
-Use `clsx` for conditional classes. All custom color values are configured in `tailwind.config.cjs`
-under `theme.extend.colors`.
+Use `clsx` for conditional classes.
+
+## Where Tailwind Is Configured (Tailwind 4, CSS-first)
+
+There is no JavaScript config. Everything is in `src/css/custom.css`, with `postcss.config.js` only
+naming the `@tailwindcss/postcss` plugin:
+
+- **Tokens**: `@theme static { --color-primary-muted: …; }`. The class name is the token name
+  (`bg-primary-muted`, `text-bgBase`). To add a color, add one `--color-*` line there (values reuse
+  the `--primary`-style channel variables above); the storybook palette lists it automatically.
+- **Line heights**: the `@theme` block above it restores Tailwind 3's absolute line heights
+  (`--text-sm--line-height: 1.25rem`); v4's unitless ratios shrink inherited line height when a
+  child sets its own font size.
+- **Scope**: utilities are emitted inside `.tailwind-root { @tailwind utilities … }` (unlayered,
+  with `@source` for `src` and `docs`). Do not use Tailwind's global `important`.
+- **Reset**: `src/css/set_tailwind_styles.css` holds the reset in `@layer base`. It must stay
+  layered: v4's `space-*` and `divide-*` utilities have zero specificity, and an unlayered reset
+  (`margin: 0` on every element) cancels them. Unlayered rules in that file (focus border, default
+  border colors) deliberately beat utilities as before.
+- **Names changed in v4**: bare `rounded`/`shadow`/`blur` are now `-sm`, the old `-sm` is `-xs`,
+  `ring` is `ring-3`, `outline-none` is `outline-hidden`, `flex-shrink`/`flex-grow` are
+  `shrink`/`grow`, `bg-gradient-to-*` is `bg-linear-to-*`. `hover:` applies only on hover-capable
+  devices; `dark:` follows the OS setting, not `data-theme`.

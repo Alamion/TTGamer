@@ -435,7 +435,7 @@ export function useEditorDrag({
                     ghost.setAttribute('data-drag-ghost', '');
                     ghost.textContent = nameOf(nodeIds);
                     ghost.className =
-                        'pointer-events-none fixed z-[10001] rounded bg-primary-muted px-2 py-0.5 text-xs text-white shadow';
+                        'pointer-events-none fixed z-[10001] rounded-sm bg-primary-muted px-2 py-0.5 text-xs text-white shadow-sm';
                     document.body.appendChild(ghost);
                 }
                 if (

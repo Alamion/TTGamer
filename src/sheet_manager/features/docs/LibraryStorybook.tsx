@@ -85,7 +85,7 @@ function Story({ title, children }: { title: string; children: ReactNode }) {
             <p className="text-xs font-semibold uppercase tracking-wide text-textSecondary">
                 {title}
             </p>
-            <div role="tree" aria-label={title} className="rounded border border-border p-1">
+            <div role="tree" aria-label={title} className="rounded-sm border border-border p-1">
                 {children}
             </div>
         </div>

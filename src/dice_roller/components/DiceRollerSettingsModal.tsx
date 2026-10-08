@@ -46,9 +46,9 @@ export default function DiceRollerSettingsModal() {
                     aria-describedby={undefined}
                     className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[300]
                         w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] flex flex-col
-                        bg-bgSurface border border-border rounded-lg shadow-xl focus:outline-none"
+                        bg-bgSurface border border-border rounded-lg shadow-xl focus:outline-hidden"
                 >
-                    <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0">
+                    <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0">
                         <Dialog.Title className="text-lg font-bold text-textPrimary">
                             {translate(uiMessages.dice.settings.title)}
                         </Dialog.Title>
@@ -90,7 +90,7 @@ export default function DiceRollerSettingsModal() {
                                     onChange={(e) =>
                                         updateSettings({ primaryDiceColor: e.target.value })
                                     }
-                                    className="block w-full h-8 p-0.5 rounded cursor-pointer border border-border"
+                                    className="block w-full h-8 p-0.5 rounded-sm cursor-pointer border border-border"
                                 />
                             </label>
                             <label className="flex-1 space-y-1">
@@ -103,7 +103,7 @@ export default function DiceRollerSettingsModal() {
                                     onChange={(e) =>
                                         updateSettings({ secondaryDiceColor: e.target.value })
                                     }
-                                    className="block w-full h-8 p-0.5 rounded cursor-pointer border border-border"
+                                    className="block w-full h-8 p-0.5 rounded-sm cursor-pointer border border-border"
                                 />
                             </label>
                             <label className="flex-1 space-y-1">
@@ -116,7 +116,7 @@ export default function DiceRollerSettingsModal() {
                                     onChange={(e) =>
                                         updateSettings({ specialDiceColor: e.target.value })
                                     }
-                                    className="block w-full h-8 p-0.5 rounded cursor-pointer border border-border"
+                                    className="block w-full h-8 p-0.5 rounded-sm cursor-pointer border border-border"
                                 />
                             </label>
                         </div>
@@ -300,7 +300,7 @@ export default function DiceRollerSettingsModal() {
                                         })
                                     }
                                     className="px-3 py-2 text-sm rounded-lg border border-border
-                                        bg-bgSurface text-textPrimary focus:outline-none
+                                        bg-bgSurface text-textPrimary focus:outline-hidden
                                         focus:ring-2 focus:ring-primary/30 focus:border-primary"
                                 >
                                     {SHARING_SERVICES.map((entry) => (

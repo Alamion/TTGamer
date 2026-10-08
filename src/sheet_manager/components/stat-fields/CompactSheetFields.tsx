@@ -23,7 +23,7 @@ export function CompactTextField({ disabled, label, onChange, value }: CompactTe
                 value={value}
                 disabled={disabled}
                 onChange={(event) => onChange(event.target.value)}
-                className="min-w-0 border-0 border-b border-border bg-transparent px-1 py-0.5 text-sm text-textPrimary outline-none focus:border-primary disabled:opacity-70"
+                className="min-w-0 border-0 border-b border-border bg-transparent px-1 py-0.5 text-sm text-textPrimary outline-hidden focus:border-primary disabled:opacity-70"
             />
         </label>
     );
@@ -59,7 +59,7 @@ export function CompactRating({
                 disabled={disabled}
                 onChange={(next) => onChange(next ?? value)}
                 label={label}
-                className="h-7 w-11 rounded border border-border bg-bgBase px-1 text-center text-sm font-semibold text-textPrimary outline-none focus:border-primary disabled:opacity-70"
+                className="h-7 w-11 rounded-sm border border-border bg-bgBase px-1 text-center text-sm font-semibold text-textPrimary outline-hidden focus:border-primary disabled:opacity-70"
             />
         </label>
     );
@@ -96,7 +96,7 @@ export function CompactResource({
                 disabled={disabled}
                 onChange={(next) => onChange(next ?? current, maximum)}
                 label={`${label}: ${currentLabel}`}
-                className="h-7 w-10 rounded border border-border bg-bgBase px-1 text-center text-sm text-textPrimary disabled:opacity-70"
+                className="h-7 w-10 rounded-sm border border-border bg-bgBase px-1 text-center text-sm text-textPrimary disabled:opacity-70"
             />
             <span className="text-textSecondary">/</span>
             <NumberInput
@@ -111,7 +111,7 @@ export function CompactResource({
                     onChange(Math.min(current, nextMaximum), nextMaximum);
                 }}
                 label={`${label}: ${maximumLabel}`}
-                className="h-7 w-10 rounded border border-border bg-bgBase px-1 text-center text-sm text-textPrimary disabled:opacity-70"
+                className="h-7 w-10 rounded-sm border border-border bg-bgBase px-1 text-center text-sm text-textPrimary disabled:opacity-70"
             />
         </div>
     );
@@ -172,7 +172,7 @@ export function CompactConditionTrack({
                             }}
                             aria-label={`${level.label}: ${mark}`}
                             className={clsx(
-                                'grid h-7 w-7 place-items-center rounded border-2 font-mono text-sm font-bold transition-colors disabled:opacity-70',
+                                'grid h-7 w-7 place-items-center rounded-sm border-2 font-mono text-sm font-bold transition-colors disabled:opacity-70',
                                 mark === 'cross'
                                     ? 'border-error bg-error text-white'
                                     : mark === 'slash'

@@ -43,7 +43,7 @@ export function StatLabel({ label, tooltip, className, required = false, term }:
                         <HelpCircle className="w-4 h-4" />
                     </button>
                     {showTooltip && (
-                        <div className="absolute z-50 left-full ml-2 top-0 w-48 p-2 bg-bgSurface border rounded text-xs text-textPrimary shadow-lg">
+                        <div className="absolute z-50 left-full ml-2 top-0 w-48 p-2 bg-bgSurface border rounded-sm text-xs text-textPrimary shadow-lg">
                             {tooltip}
                         </div>
                     )}

@@ -19,7 +19,7 @@ import { SettingField } from '../settings/SettingField';
 const bindingMessages = uiMessages.sheet.templates.binding;
 
 const inputClasses =
-    'rounded border border-border bg-bgSurface px-2 py-1 text-xs text-textPrimary focus:outline-none focus:ring-1 focus:ring-primary';
+    'rounded-sm border border-border bg-bgSurface px-2 py-1 text-xs text-textPrimary focus:outline-hidden focus:ring-1 focus:ring-primary';
 
 export interface CatalogBindingEditorCallbacks {
     onAttach: (catalogId: string) => void;
@@ -204,7 +204,7 @@ export function CatalogBindingEditor({
         .map((target) => [target.id, target] as const);
 
     return (
-        <div className="grid gap-2 rounded border border-border bg-bgBase p-2">
+        <div className="grid gap-2 rounded-sm border border-border bg-bgBase p-2">
             <div className="flex items-end gap-2">
                 <SettingField
                     className="flex-1"
@@ -227,7 +227,7 @@ export function CatalogBindingEditor({
                     type="button"
                     onClick={callbacks.onDetach}
                     aria-label={t(bindingMessages.attach)}
-                    className="rounded p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
+                    className="rounded-sm p-1 text-textSecondary hover:bg-bgSurface hover:text-error"
                 >
                     <Link2Off className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>

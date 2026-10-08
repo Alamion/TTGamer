@@ -37,7 +37,7 @@ export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(function E
                 'rounded-lg border border-border bg-bgSurface p-3 cursor-pointer transition-all duration-200',
                 'sm:hover:scale-[1.02] sm:hover:shadow-md sm:hover:bg-bgBase/50',
                 expanded && 'sm:scale-[1.02] sm:shadow-md',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30'
+                'focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/30'
             )}
         >
             <div className="text-sm font-semibold text-textPrimary">{name}</div>

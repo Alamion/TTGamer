@@ -27,7 +27,7 @@ const DndTab = memo(function DndTab() {
                     <button
                         type="button"
                         onClick={handleAdv}
-                        className="flex-1 py-1.5 px-3 text-xs font-semibold rounded border border-border
+                        className="flex-1 py-1.5 px-3 text-xs font-semibold rounded-sm border border-border
                             bg-bgSurface text-textPrimary cursor-pointer
                             hover:bg-bgBase/50 transition-colors"
                     >
@@ -36,7 +36,7 @@ const DndTab = memo(function DndTab() {
                     <button
                         type="button"
                         onClick={handleDis}
-                        className="flex-1 py-1.5 px-3 text-xs font-semibold rounded border border-border
+                        className="flex-1 py-1.5 px-3 text-xs font-semibold rounded-sm border border-border
                             bg-bgSurface text-textPrimary cursor-pointer
                             hover:bg-bgBase/50 transition-colors"
                     >

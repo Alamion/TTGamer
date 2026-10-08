@@ -288,7 +288,8 @@ describe('node schema errors (discriminated union)', () => {
         expect(result.success).toBe(false);
         const issues = result.success ? [] : result.error.issues;
         expect(issues).toHaveLength(1);
-        expect(issues[0]?.code).toBe('invalid_union_discriminator');
+        expect(issues[0]?.code).toBe('invalid_union');
+        expect(issues[0]?.path).toEqual(['children', 0, 'type']);
     });
 
     it('reports only the offending property of a known type', () => {

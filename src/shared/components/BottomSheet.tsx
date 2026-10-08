@@ -93,7 +93,7 @@ export function BottomSheet({ onClose, children }: BottomSheetProps) {
                 type="button"
                 aria-label={translate(messages.close)}
                 onClick={onClose}
-                className="absolute right-3 top-2 z-10 rounded p-1 text-textSecondary hover:bg-bgBase hover:text-textPrimary"
+                className="absolute right-3 top-2 z-10 rounded-sm p-1 text-textSecondary hover:bg-bgBase hover:text-textPrimary"
             >
                 <X className="h-4 w-4" aria-hidden="true" />
             </button>

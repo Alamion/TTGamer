@@ -106,7 +106,7 @@ export function EditorContextMenu({
                             onSelect={item.run}
                             data-command={item.id}
                             className={clsx(
-                                'flex cursor-default items-center gap-4 rounded px-2 py-1.5 text-textPrimary outline-none',
+                                'flex cursor-default items-center gap-4 rounded-sm px-2 py-1.5 text-textPrimary outline-hidden',
                                 'data-[highlighted]:bg-primary/15 data-[disabled]:text-textSecondary data-[disabled]:opacity-60',
                                 item.group === 'remove' && 'data-[highlighted]:text-error'
                             )}

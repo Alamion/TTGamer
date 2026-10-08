@@ -186,7 +186,7 @@ function InlineRollState({
                     'border-0 border-b border-dashed border-current/30 hover:border-current/60'
                 )}
             >
-                <Dices size={14} className="inline opacity-40 flex-shrink-0 self-center" />
+                <Dices size={14} className="inline opacity-40 shrink-0 self-center" />
                 <span>{displayNotation}</span>
                 {resultEl}
             </button>

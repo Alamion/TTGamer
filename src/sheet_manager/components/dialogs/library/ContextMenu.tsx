@@ -110,7 +110,7 @@ export function ContextMenu({
                                         onAction(id);
                                     }}
                                     className={clsx(
-                                        'flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm outline-none',
+                                        'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-hidden',
                                         'hover:bg-secondary/15 focus:bg-secondary/15',
                                         danger ? 'text-error' : 'text-textPrimary'
                                     )}

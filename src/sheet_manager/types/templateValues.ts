@@ -20,15 +20,15 @@ const boundedString = z.string().max(TEMPLATE_VALUES_LIMITS.stringMaxLength);
 /** Scalars plus bounded id lists (multi-select / multi-reference values). */
 const PrimitiveValueSchema = z.union([
     boundedString,
-    z.number().finite(),
+    z.number(),
     z.boolean(),
     z.array(boundedString),
 ]);
 
 export const TemplateResourceValueSchema = z
     .object({
-        current: z.number().finite().int(),
-        max: z.number().finite().int(),
+        current: z.number().int(),
+        max: z.number().int(),
     })
     .strict();
 
@@ -42,7 +42,7 @@ export type TemplateResourceValue = z.infer<typeof TemplateResourceValueSchema>;
 export const TemplateImageValueSchema = z.union([
     z.object({ source: z.literal('device'), blobId: z.string().min(1).max(128) }).strict(),
     // URL sources must be HTTPS (site-relative resources stay portrait-owned, not template data).
-    z.object({ source: z.literal('url'), url: z.string().url().startsWith('https://') }).strict(),
+    z.object({ source: z.literal('url'), url: z.url().startsWith('https://') }).strict(),
 ]);
 
 export type TemplateImageValue = z.infer<typeof TemplateImageValueSchema>;

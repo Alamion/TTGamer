@@ -1,7 +1,7 @@
 {
-    "extends": "@docusaurus/tsconfig",
     "compilerOptions": {
-        "baseUrl": ".",
+        "allowJs": true,
+        "esModuleInterop": true,
         "paths": {
             "@site/*": ["./*"]
         },
@@ -12,7 +12,6 @@
         "module": "esnext",
         "types": ["@docusaurus/module-type-aliases"],
         "skipLibCheck": true,
-        "ignoreDeprecations": "6.0",
 
         /* Bundler mode */
         "moduleResolution": "bundler",

@@ -27,7 +27,7 @@ const LEVEL_ICON: Record<LibraryLevel, typeof Dices> = {
     catalog: Table2,
 };
 
-const badge = 'shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide';
+const badge = 'shrink-0 rounded-sm px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide';
 
 export interface TreeRowDrag {
     draggable: boolean;
@@ -133,7 +133,7 @@ export const TreeRow = memo(function TreeRow({
             onDragLeave={drag?.onDragLeave}
             onDrop={drag?.onDrop}
             className={clsx(
-                'group flex min-h-8 cursor-pointer items-center gap-1.5 rounded border pr-1 text-sm outline-none transition-colors',
+                'group flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm border pr-1 text-sm outline-hidden transition-colors',
                 'focus-visible:ring-2 focus-visible:ring-primary',
                 selected
                     ? 'border-primary/60 bg-primary/10 text-textPrimary'
@@ -156,7 +156,7 @@ export const TreeRow = memo(function TreeRow({
                     onToggle(node.key);
                 }}
                 className={clsx(
-                    'flex h-5 w-5 shrink-0 items-center justify-center rounded text-textSecondary hover:text-textPrimary',
+                    'flex h-5 w-5 shrink-0 items-center justify-center rounded-sm text-textSecondary hover:text-textPrimary',
                     !expandable && 'invisible'
                 )}
             >
@@ -209,7 +209,7 @@ export const TreeRow = memo(function TreeRow({
                 tabIndex={-1}
                 aria-label={translate(labels.row.actions, { name: node.name })}
                 onClick={openMenu}
-                className="rounded p-1 text-textSecondary opacity-60 hover:bg-bgBase hover:text-textPrimary group-hover:opacity-100"
+                className="rounded-sm p-1 text-textSecondary opacity-60 hover:bg-bgBase hover:text-textPrimary group-hover:opacity-100"
             >
                 <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
             </button>

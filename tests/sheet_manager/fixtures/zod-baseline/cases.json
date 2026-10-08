@@ -1,0 +1,1101 @@
+{
+    "character: legacy import strips unknown keys": {
+        "ok": true,
+        "data": {
+            "id": "00000000-0000-4000-8000-000000000001",
+            "metadata": {
+                "name": "A",
+                "type": "sentient",
+                "template": "standard"
+            },
+            "attributes": {
+                "Strength": {
+                    "value": 2,
+                    "specialization": false,
+                    "experienced": false,
+                    "practiced": false
+                }
+            },
+            "skills": {
+                "Brawl": {
+                    "value": 2,
+                    "specialization": false,
+                    "experienced": false,
+                    "practiced": false
+                }
+            },
+            "backgrounds": [],
+            "merits": [],
+            "flaws": [],
+            "forcePowerItems": [],
+            "health": {
+                "levels": [
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty",
+                    "empty"
+                ]
+            },
+            "inventory": [],
+            "armor": [],
+            "weapons": [],
+            "implants": [],
+            "customTalents": [],
+            "customSkills": [],
+            "customKnowledges": [],
+            "notes": ""
+        }
+    },
+    "character: experience defaults and refine path": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "experience.spent",
+                "code": "custom"
+            }
+        ]
+    },
+    "character: spent above total": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "experience.spent",
+                "code": "custom"
+            }
+        ]
+    },
+    "character: null defaulted array": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "inventory",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "character: wrong trait type": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "id",
+                "code": "invalid_type"
+            },
+            {
+                "path": "metadata",
+                "code": "invalid_type"
+            },
+            {
+                "path": "attributes.Strength",
+                "code": "invalid_type"
+            },
+            {
+                "path": "skills",
+                "code": "invalid_type"
+            },
+            {
+                "path": "health",
+                "code": "invalid_type"
+            },
+            {
+                "path": "notes",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "character: empty object": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "id",
+                "code": "invalid_type"
+            },
+            {
+                "path": "metadata",
+                "code": "invalid_type"
+            },
+            {
+                "path": "attributes",
+                "code": "invalid_type"
+            },
+            {
+                "path": "skills",
+                "code": "invalid_type"
+            },
+            {
+                "path": "health",
+                "code": "invalid_type"
+            },
+            {
+                "path": "notes",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "character: not an object": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "envelope: legacy system id is renamed": {
+        "ok": true,
+        "data": {
+            "id": "doc-1",
+            "kind": "character",
+            "systemId": "wod-v5",
+            "definitionId": "character",
+            "schemaVersion": 1,
+            "metadata": {
+                "title": "",
+                "templateId": "page",
+                "tags": []
+            },
+            "templateValues": {},
+            "data": {
+                "anything": true
+            }
+        }
+    },
+    "envelope: values bag and tags default": {
+        "ok": true,
+        "data": {
+            "id": "doc-1",
+            "kind": "character",
+            "systemId": "wod-v5",
+            "definitionId": "character",
+            "schemaVersion": 1,
+            "metadata": {
+                "title": "",
+                "templateId": "page",
+                "tags": []
+            },
+            "templateValues": {},
+            "data": {
+                "anything": true
+            }
+        }
+    },
+    "envelope: null templateValues": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "templateValues",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "envelope: undefined templateValues": {
+        "ok": true,
+        "data": {
+            "id": "doc-1",
+            "kind": "character",
+            "systemId": "wod-v5",
+            "definitionId": "character",
+            "schemaVersion": 1,
+            "metadata": {
+                "title": "",
+                "templateId": "page",
+                "tags": []
+            },
+            "templateValues": {},
+            "data": {
+                "anything": true
+            }
+        }
+    },
+    "envelope: bad kind and version": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "kind",
+                "code": "invalid_format"
+            },
+            {
+                "path": "schemaVersion",
+                "code": "too_small"
+            }
+        ]
+    },
+    "envelope: oversized title": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "metadata.title",
+                "code": "too_big"
+            }
+        ]
+    },
+    "template: minimal gets default system": {
+        "ok": true,
+        "data": {
+            "id": "page",
+            "name": "Page",
+            "systemId": "star-wars-wod",
+            "documentKind": "character",
+            "schemaVersion": 3,
+            "children": [
+                {
+                    "id": "name",
+                    "label": "Name",
+                    "required": false,
+                    "compact": false,
+                    "type": "text",
+                    "multiline": false
+                }
+            ]
+        }
+    },
+    "template: legacy system id": {
+        "ok": true,
+        "data": {
+            "id": "page",
+            "name": "Page",
+            "systemId": "wod-v5",
+            "documentKind": "character",
+            "schemaVersion": 3,
+            "children": [
+                {
+                    "id": "name",
+                    "label": "Name",
+                    "required": false,
+                    "compact": false,
+                    "type": "text",
+                    "multiline": false
+                }
+            ]
+        }
+    },
+    "template: empty children": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "children",
+                "code": "too_small"
+            }
+        ]
+    },
+    "template: duplicate ids": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "",
+                "code": "custom"
+            }
+        ]
+    },
+    "template: nested bad node": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "children.0.children.0.type",
+                "code": "invalid_union"
+            }
+        ]
+    },
+    "template: unknown top-level key": {
+        "ok": true,
+        "data": {
+            "id": "page",
+            "name": "Page",
+            "systemId": "star-wars-wod",
+            "documentKind": "character",
+            "schemaVersion": 3,
+            "children": [
+                {
+                    "id": "name",
+                    "label": "Name",
+                    "required": false,
+                    "compact": false,
+                    "type": "text",
+                    "multiline": false
+                }
+            ]
+        }
+    },
+    "template: wrong types": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "children.0.label",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "user type: trimmed name": {
+        "ok": true,
+        "data": {
+            "id": "user-org00001",
+            "name": "Organization",
+            "owner": {
+                "systemId": "star-wars-wod"
+            },
+            "createdAt": "2026-09-25T10:00:00.000Z",
+            "updatedAt": "2026-09-25T10:00:00.000Z"
+        }
+    },
+    "user type: bad id": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "id",
+                "code": "invalid_format"
+            }
+        ]
+    },
+    "user type: strict owner rejects extras": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "owner",
+                "code": "unrecognized_keys"
+            }
+        ]
+    },
+    "user type: owner with both keys": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "owner",
+                "code": "invalid_union"
+            }
+        ]
+    },
+    "user setting: pages default": {
+        "ok": true,
+        "data": {
+            "id": "user-setting-aaaaaaaa",
+            "name": "S",
+            "systemId": "star-wars-wod",
+            "pages": {},
+            "createdAt": "2026-09-25T10:00:00.000Z",
+            "updatedAt": "2026-09-25T10:00:00.000Z"
+        }
+    },
+    "user setting: null pages": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "pages",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "catalog: drops mismatched and unknown values": {
+        "ok": true,
+        "data": {
+            "id": "user-catalog-aaaaaaaa",
+            "name": "Gear",
+            "owner": {
+                "settingId": "user-setting-aaaaaaaa"
+            },
+            "columns": [
+                {
+                    "id": "c-aaaaaaaa",
+                    "name": "c-aaaaaaaa",
+                    "type": "text"
+                },
+                {
+                    "id": "c-bbbbbbbb",
+                    "name": "c-bbbbbbbb",
+                    "type": "number"
+                }
+            ],
+            "entries": [
+                {
+                    "id": "e-aaaaaaaa",
+                    "name": "Rope",
+                    "values": {
+                        "c-aaaaaaaa": "hemp"
+                    }
+                },
+                {
+                    "id": "e-bbbbbbbb",
+                    "name": "Lamp",
+                    "values": {}
+                }
+            ],
+            "createdAt": "2026-09-25T10:00:00.000Z",
+            "updatedAt": "2026-09-25T10:00:00.000Z"
+        }
+    },
+    "catalog: duplicate column id": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "",
+                "code": "custom"
+            }
+        ]
+    },
+    "catalog: duplicate entry id": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "",
+                "code": "custom"
+            }
+        ]
+    },
+    "catalog: strict column rejects extras": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "columns.0",
+                "code": "unrecognized_keys"
+            }
+        ]
+    },
+    "catalog: non-finite value": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "entries.0.values.c-bbbbbbbb",
+                "code": "invalid_union"
+            }
+        ]
+    },
+    "v5: empty draft gets every default": {
+        "ok": true,
+        "data": {
+            "metadata": {},
+            "name": "",
+            "attributes": {
+                "strength": {
+                    "value": 1
+                },
+                "dexterity": {
+                    "value": 1
+                },
+                "stamina": {
+                    "value": 1
+                },
+                "charisma": {
+                    "value": 1
+                },
+                "manipulation": {
+                    "value": 1
+                },
+                "composure": {
+                    "value": 1
+                },
+                "intelligence": {
+                    "value": 1
+                },
+                "wits": {
+                    "value": 1
+                },
+                "resolve": {
+                    "value": 1
+                }
+            },
+            "skills": {
+                "athletics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "brawl": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "craft": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "driving": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "firearms": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "larceny": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "melee": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "stealth": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "survival": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "animal-ken": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "etiquette": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "insight": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "intimidation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "leadership": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "performance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "persuasion": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "streetwise": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "subterfuge": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "academics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "awareness": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "finance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "investigation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "medicine": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "occult": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "politics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "science": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "technology": {
+                    "value": 0,
+                    "specializationText": ""
+                }
+            },
+            "health": {
+                "levels": [],
+                "bonus": 0
+            },
+            "willpower": {
+                "levels": [],
+                "bonus": 0
+            },
+            "advantages": [],
+            "flaws": [],
+            "touchstones": [],
+            "experience": {
+                "total": 0,
+                "spent": 0
+            },
+            "chronicleTenets": "",
+            "weapons": [],
+            "inventory": [],
+            "notes": "",
+            "biography": {
+                "age": "",
+                "dateOfBirth": "",
+                "appearance": "",
+                "distinguishingFeatures": "",
+                "history": ""
+            }
+        }
+    },
+    "v5: legacy track counts and specialties": {
+        "ok": true,
+        "data": {
+            "metadata": {},
+            "name": "",
+            "attributes": {
+                "strength": {
+                    "value": 1
+                },
+                "dexterity": {
+                    "value": 1
+                },
+                "stamina": {
+                    "value": 1
+                },
+                "charisma": {
+                    "value": 1
+                },
+                "manipulation": {
+                    "value": 1
+                },
+                "composure": {
+                    "value": 1
+                },
+                "intelligence": {
+                    "value": 1
+                },
+                "wits": {
+                    "value": 1
+                },
+                "resolve": {
+                    "value": 1
+                }
+            },
+            "skills": {
+                "athletics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "brawl": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "craft": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "driving": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "firearms": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "larceny": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "melee": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "stealth": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "survival": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "animal-ken": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "etiquette": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "insight": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "intimidation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "leadership": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "performance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "persuasion": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "streetwise": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "subterfuge": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "academics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "awareness": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "finance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "investigation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "medicine": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "occult": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "politics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "science": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "technology": {
+                    "value": 0,
+                    "specializationText": ""
+                }
+            },
+            "health": {
+                "levels": [
+                    "cross",
+                    "slash",
+                    "slash"
+                ],
+                "bonus": 0
+            },
+            "willpower": {
+                "levels": [],
+                "bonus": 0
+            },
+            "advantages": [],
+            "flaws": [],
+            "touchstones": [],
+            "experience": {
+                "total": 0,
+                "spent": 0
+            },
+            "chronicleTenets": "",
+            "weapons": [],
+            "inventory": [],
+            "notes": "",
+            "biography": {
+                "age": "",
+                "dateOfBirth": "",
+                "appearance": "",
+                "distinguishingFeatures": "",
+                "history": ""
+            }
+        }
+    },
+    "v5: wrong track": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "health.levels.0",
+                "code": "invalid_value"
+            },
+            {
+                "path": "experience",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "hunter: empty draft gets every default": {
+        "ok": true,
+        "data": {
+            "metadata": {},
+            "name": "",
+            "attributes": {
+                "strength": {
+                    "value": 1
+                },
+                "dexterity": {
+                    "value": 1
+                },
+                "stamina": {
+                    "value": 1
+                },
+                "charisma": {
+                    "value": 1
+                },
+                "manipulation": {
+                    "value": 1
+                },
+                "composure": {
+                    "value": 1
+                },
+                "intelligence": {
+                    "value": 1
+                },
+                "wits": {
+                    "value": 1
+                },
+                "resolve": {
+                    "value": 1
+                }
+            },
+            "skills": {
+                "athletics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "brawl": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "craft": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "driving": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "firearms": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "larceny": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "melee": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "stealth": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "survival": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "animal-ken": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "etiquette": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "insight": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "intimidation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "leadership": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "performance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "persuasion": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "streetwise": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "subterfuge": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "academics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "awareness": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "finance": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "investigation": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "medicine": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "occult": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "politics": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "science": {
+                    "value": 0,
+                    "specializationText": ""
+                },
+                "technology": {
+                    "value": 0,
+                    "specializationText": ""
+                }
+            },
+            "health": {
+                "levels": [],
+                "bonus": 0
+            },
+            "willpower": {
+                "levels": [],
+                "bonus": 0
+            },
+            "advantages": [],
+            "flaws": [],
+            "touchstones": [],
+            "experience": {
+                "total": 0,
+                "spent": 0
+            },
+            "chronicleTenets": "",
+            "weapons": [],
+            "inventory": [],
+            "notes": "",
+            "biography": {
+                "age": "",
+                "dateOfBirth": "",
+                "appearance": "",
+                "distinguishingFeatures": "",
+                "history": ""
+            },
+            "concept": "",
+            "creed": "",
+            "drive": "",
+            "ambition": "",
+            "desire": "",
+            "redemption": "",
+            "creedFields": "",
+            "edges": [],
+            "perks": [],
+            "despair": false,
+            "desperation": 0,
+            "danger": 0
+        }
+    },
+    "catalog binding: fills default": {
+        "ok": true,
+        "data": {
+            "catalogId": "weapons",
+            "fills": {}
+        }
+    },
+    "catalog binding: null fills": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "fills",
+                "code": "invalid_type"
+            }
+        ]
+    },
+    "image: https url": {
+        "ok": true,
+        "data": {
+            "source": "url",
+            "url": "https://example.com/a.png"
+        }
+    },
+    "image: http url": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "url",
+                "code": "invalid_format"
+            }
+        ]
+    },
+    "image: not a url": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "url",
+                "code": "invalid_format"
+            }
+        ]
+    },
+    "image: url with spaces": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "url",
+                "code": "invalid_format"
+            }
+        ]
+    },
+    "image: javascript url": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "url",
+                "code": "invalid_format"
+            }
+        ]
+    },
+    "image: strict rejects extras": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "",
+                "code": "unrecognized_keys"
+            }
+        ]
+    },
+    "image: device blob": {
+        "ok": true,
+        "data": {
+            "source": "device",
+            "blobId": "abc"
+        }
+    },
+    "values: empty record keys": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "",
+                "code": "invalid_key"
+            }
+        ]
+    },
+    "values: mixed primitives": {
+        "ok": false,
+        "issues": [
+            {
+                "path": "d",
+                "code": "invalid_union"
+            }
+        ]
+    }
+}

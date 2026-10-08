@@ -189,7 +189,7 @@ export function primitiveSettings({
                                 if (asTracker !== tracker) setDisplay(tracker);
                             }}
                             className={clsx(
-                                'rounded border px-2.5 py-1 text-xs transition-colors',
+                                'rounded-sm border px-2.5 py-1 text-xs transition-colors',
                                 asTracker === tracker
                                     ? 'border-primary bg-primary-muted text-textPrimary'
                                     : 'border-border text-textSecondary hover:border-primary/60'

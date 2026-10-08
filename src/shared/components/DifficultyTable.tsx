@@ -93,7 +93,7 @@ export function DifficultyTable() {
                         value={currentPool}
                         onChange={(pool) => setCurrentPool(pool ?? currentPool)}
                         label={translate(messages.pool)}
-                        className="w-20 border rounded px-2 py-1 dark:bg-gray-800 dark:border-gray-600"
+                        className="w-20 border rounded-sm px-2 py-1 dark:bg-gray-800 dark:border-gray-600"
                     />
                 </label>
                 <label className="flex items-center gap-2 text-sm">

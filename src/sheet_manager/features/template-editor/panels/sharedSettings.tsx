@@ -252,7 +252,7 @@ export function MultiSettings({
                             aria-label={translate(editor.openSelected, {
                                 name: elementName(node),
                             })}
-                            className="flex w-full items-baseline gap-2 rounded px-1 py-0.5 text-left text-sm hover:bg-secondary/15"
+                            className="flex w-full items-baseline gap-2 rounded-sm px-1 py-0.5 text-left text-sm hover:bg-secondary/15"
                         >
                             <span className="shrink-0 text-[10px] uppercase tracking-wide text-textSecondary">
                                 {elementTypeLabel(node)}
