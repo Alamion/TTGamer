@@ -141,3 +141,21 @@ Delivery order:
    not implemented.
 5. Change a field's type in `openapi.yaml` → `yarn validate:contract` still passes and the report
    names the field; break a `$ref` → `yarn validate:contract` fails.
+
+## Implementation notes
+
+- **US4 — library id schemas were strict**: `UserDocumentTypeSchema`, `UserSettingSchema` (two
+  copies), and `UserCatalogSchema` accepted exactly 8 characters after the prefix. They now accept 8
+  or 32, so old ids keep parsing. An app version from before this change rejects a type or catalog
+  file that carries a new id; files go forward, not back.
+- **US4 — catalog column and entry ids** (`c-`, `e-`) used the same sliced token and now use
+  `randomToken(8)`; their schemas still require 8 characters.
+- **US3 — no `dice-logic/index.ts` export yet**: nothing in the app uses the generator until T-106,
+  so `seeded-random.ts` is imported by its own file path from the tests only; the export joins the
+  public API with its first app caller.
+- **US3 — bundle**: `main.js` (where the dice logic lives) is 973 346 bytes before and after, same
+  hash, because nothing imports the generator yet; `@noble/hashes`' SHA-256 adds a few KB when T-106
+  wires it in.
+- **US3 — vectors**: `roll-vectors.json` carries each draw both as the value and as the uint32, so
+  the backend compares integers; the draws were checked against Node `crypto`, Python `hashlib`, and
+  by hand for `2d6` and `4d6!` (explosions draw in order: draws 0–3, then 4 and 5).

@@ -31,7 +31,7 @@ Delivery order follows design.md "Approach": US4 (ids change stored data, so it 
       the 32 hex digits for `tpl` and `randomToken(8)` for every other prefix; replace the sliced
       `generateId()` in `src/sheet_manager/features/sheet/data/trackerDefaults.ts` and
       `src/sheet_manager/features/sheet/declarative/TrackerFieldControl.tsx` with `randomToken(8)`
-- [ ] T005 [US4] Run `yarn verify` (store and persistence ids) and commit:
+- [x] T005 [US4] Run `yarn verify` (store and persistence ids) and commit:
       `feat(ids): UUIDv7 ids created on the device (spec 030, US4)`
 
 ## User Story 3 - A shared roll anyone can recompute (P3)
@@ -39,21 +39,21 @@ Delivery order follows design.md "Approach": US4 (ids change stored data, so it 
 **Check**: each vector's notation evaluated with its seed gives the vector's dice and total; local
 rolls unchanged.
 
-- [ ] T006 [US3] Add `@noble/hashes` (^2) to dependencies in `package.json`
-- [ ] T007 [US3] Write `tests/dice_roller/seeded-random.test.ts`: draws equal an independent
+- [x] T006 [US3] Add `@noble/hashes` (^2) to dependencies in `package.json`
+- [x] T007 [US3] Write `tests/dice_roller/seeded-random.test.ts`: draws equal an independent
       computation with Node `crypto` `createHash('sha256')` over `seed:i`; 1 000 draws all in [0,
       1); the same seed gives the same `rollDices` result twice; a different seed differs
-- [ ] T008 [US3] Create `src/dice_roller/dice-logic/seeded-random.ts`: `createSeededRandom(seed)`
+- [x] T008 [US3] Create `src/dice_roller/dice-logic/seeded-random.ts`: `createSeededRandom(seed)`
       returning `() => number` (draw `i` = first four bytes of SHA-256 of UTF-8 `seed:i`, big-endian
       uint32 ÷ 2^32) and `SEEDED_ROLL_ALGORITHM = 'ttg-sha256-ctr-1'`; export both from
       `src/dice_roller/dice-logic/index.ts`
-- [ ] T009 [US3] Create `contracts/cloud-api/roll-vectors.json`: the algorithm id; draw vectors
+- [x] T009 [US3] Create `contracts/cloud-api/roll-vectors.json`: the algorithm id; draw vectors
       (three seeds × draws 0–4); roll vectors for `2d6`, `4d6!`, `4d6kh3`, `1d100`, `4dF`, and a
       `5d10>=6 f=1` pool, each with notation, seed, the dice values, and the total, produced by
       `rollDices(notation, createSeededRandom(seed))` and checked by hand for one vector
-- [ ] T010 [US3] Extend `tests/dice_roller/seeded-random.test.ts` to read `roll-vectors.json` and
+- [x] T010 [US3] Extend `tests/dice_roller/seeded-random.test.ts` to read `roll-vectors.json` and
       match every draw and every roll's dice and total exactly
-- [ ] T011 [US3] Run `yarn verify:full` (new dependency, constitution VII); record the dice chunk's
+- [x] T011 [US3] Run `yarn verify:full` (new dependency, constitution VII); record the dice chunk's
       size before and after `@noble/hashes` in design.md "Implementation notes"; commit:
       `feat(dice): seeded generator for shared rolls, with test vectors (spec 030, US3)`
 
