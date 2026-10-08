@@ -10,22 +10,22 @@ Delivery order follows design.md "Approach": US4 (ids change stored data, so it 
 **Check**: new documents get UUIDv7 ids, new user types, settings, and catalogs get `user-…-` plus
 32 hex digits; documents saved before the change open with their templates.
 
-- [ ] T001 [US4] Write `tests/shared/random.test.ts`: `generateId()` returns a UUID with version 7
+- [x] T001 [US4] Write `tests/shared/random.test.ts`: `generateId()` returns a UUID with version 7
       and variant `10`, ids from later milliseconds sort after earlier ones, 10 000 ids have no
       duplicate; `randomToken(8)` returns 8 lowercase hex characters and 1 000 tokens made in one
       synchronous loop have no duplicate
-- [ ] T002 [US4] Write `tests/sheet_manager/user-ids.test.ts`: `newUserTypeId()`,
+- [x] T002 [US4] Write `tests/sheet_manager/user-ids.test.ts`: `newUserTypeId()`,
       `newUserSettingId()`, and `newUserCatalogId()` keep their prefixes, end in 32 hex digits, pass
       the kebab-case identifier schema in `src/sheet_manager/types/document.ts`, and pass
       `isUserTypeId`/the setting and catalog checks; 8-digit ids such as `user-1a2b3c4d`,
       `user-setting-1a2b3c4d`, and `user-catalog-1a2b3c4d` still pass the same checks;
       `generateDraftId('tpl')` ends in 32 hex digits, `generateDraftId('f')` in 8, and 1 000
       `generateDraftId('f')` ids made in one synchronous loop have no duplicate
-- [ ] T003 [US4] Rewrite `generateId()` in `src/shared/utils/random.ts` as UUIDv7 from
+- [x] T003 [US4] Rewrite `generateId()` in `src/shared/utils/random.ts` as UUIDv7 from
       `crypto.getRandomValues` (48-bit millisecond time, version 7, variant, random rest); remove
       the `randomUUID` fallback branch; add `randomToken(length)` (lowercase hex from
       `crypto.getRandomValues`) in the same file (design D8)
-- [ ] T004 [US4] Change `token()` in `src/sheet_manager/systems/userTypes.ts` and
+- [x] T004 [US4] Change `token()` in `src/sheet_manager/systems/userTypes.ts` and
       `src/sheet_manager/systems/userCatalogs.ts` to the 32 hex digits of `generateId()` (no slice
       to 8), keeping the prefixes; in `src/sheet_manager/features/template-editor/model/ids.ts` use
       the 32 hex digits for `tpl` and `randomToken(8)` for every other prefix; replace the sliced

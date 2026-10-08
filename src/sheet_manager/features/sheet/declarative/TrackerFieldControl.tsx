@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
-import { generateId } from '../../../../shared/utils/random';
+import { randomToken } from '../../../../shared/utils/random';
 import { Tracker } from '../../../components/stat-fields/Tracker';
 import { reportSheetIssue } from '../../../diagnostics';
 import type { TrackerField } from '../../../types/template';
@@ -17,12 +17,7 @@ import {
 import type { TemplateFieldControlProps } from './fieldControls';
 
 function newCopyId(): string {
-    return (
-        generateId()
-            .toLowerCase()
-            .replace(/[^a-z0-9]/g, '')
-            .slice(0, 8) || 'copy'
-    );
+    return randomToken(8);
 }
 
 /** An own tracker (spec 018): every action writes the whole value once. */

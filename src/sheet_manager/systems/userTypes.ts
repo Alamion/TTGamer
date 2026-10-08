@@ -1,7 +1,7 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { z } from 'zod';
 
-import { generateId } from '../../shared/utils/random';
+import { compactId } from '../../shared/utils/random';
 import {
     type DocumentDefinitionId,
     DocumentDefinitionIdSchema,
@@ -22,32 +22,28 @@ import type { DocumentDefinition, DocumentViewDefinition } from './types';
 export const USER_KIND_PREFIX = 'user-';
 export const USER_SETTING_PREFIX = 'user-setting-';
 
-const token = () =>
-    generateId()
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '')
-        .slice(0, 8)
-        .padEnd(8, '0');
-
 export function isUserKind(id: string): boolean {
     return id.startsWith(USER_KIND_PREFIX) && !id.startsWith(USER_SETTING_PREFIX);
 }
 
 export function newUserTypeId(): string {
-    return `${USER_KIND_PREFIX}${token()}`;
+    return `${USER_KIND_PREFIX}${compactId()}`;
 }
 
 export function newUserSettingId(): string {
-    return `${USER_SETTING_PREFIX}${token()}`;
+    return `${USER_SETTING_PREFIX}${compactId()}`;
 }
 
 export const USER_TYPE_SCHEMA_VERSION = 1;
 export const UserTypeDataSchema = z.object({}).strip();
 
-const userTypeIdSchema = z.string().regex(/^user-[a-z0-9]{8}$/, 'Expected a user type id');
+// 8 random digits before spec 030, the 32 digits of a UUIDv7 since; stored ids are never rewritten.
+const userTypeIdSchema = z
+    .string()
+    .regex(/^user-(?:[a-z0-9]{8}|[a-z0-9]{32})$/, 'Expected a user type id');
 const userSettingIdSchema = z
     .string()
-    .regex(/^user-setting-[a-z0-9]{8}$/, 'Expected a user setting id');
+    .regex(/^user-setting-(?:[a-z0-9]{8}|[a-z0-9]{32})$/, 'Expected a user setting id');
 
 export const UserTypeOwnerSchema = z.union([
     z.object({ settingId: userSettingIdSchema }).strict(),

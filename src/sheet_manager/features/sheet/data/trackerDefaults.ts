@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { generateId } from '../../../../shared/utils/random';
+import { randomToken } from '../../../../shared/utils/random';
 import type {
     TrackerColumn,
     TrackerField,
@@ -14,12 +14,7 @@ const healthLevels = uiMessages.sheet.documents.fields.healthLevels;
 
 /** A tracker-local identifier: kebab-safe, starting with a letter. */
 export function newTrackerId(prefix: 'lv' | 'mk' | 'col'): string {
-    const token =
-        generateId()
-            .toLowerCase()
-            .replace(/[^a-z0-9]/g, '')
-            .slice(0, 8) || 'x';
-    return `${prefix}-${token}`;
+    return `${prefix}-${randomToken(8)}`;
 }
 
 export type MarkSetId = 'one' | 'two' | 'three' | 'points';

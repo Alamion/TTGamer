@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { generateId } from '../../shared/utils/random';
+import { compactId, randomToken } from '../../shared/utils/random';
 import { SystemIdSchema } from '../types/document';
 import { TEMPLATE_LIMITS } from '../types/templateLimits';
 import type { CatalogBindingEntry, CatalogDetailValue, CatalogFillKind } from './catalogs';
@@ -14,16 +14,9 @@ import { isUserKind } from './userTypes';
  */
 export const USER_CATALOG_PREFIX = 'user-catalog-';
 
-const token = () =>
-    generateId()
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, '')
-        .slice(0, 8)
-        .padEnd(8, '0');
-
-export const newUserCatalogId = () => `${USER_CATALOG_PREFIX}${token()}`;
-export const newCatalogColumnId = () => `c-${token()}`;
-export const newCatalogEntryId = () => `e-${token()}`;
+export const newUserCatalogId = () => `${USER_CATALOG_PREFIX}${compactId()}`;
+export const newCatalogColumnId = () => `c-${randomToken(8)}`;
+export const newCatalogEntryId = () => `e-${randomToken(8)}`;
 
 export function isUserCatalogId(id: string): boolean {
     return id.startsWith(USER_CATALOG_PREFIX);
@@ -52,7 +45,7 @@ export const CatalogEntrySchema = z
 
 const userSettingIdSchema = z
     .string()
-    .regex(/^user-setting-[a-z0-9]{8}$/, 'Expected a user setting id');
+    .regex(/^user-setting-(?:[a-z0-9]{8}|[a-z0-9]{32})$/, 'Expected a user setting id');
 
 export const UserCatalogOwnerSchema = z.union([
     z.object({ settingId: userSettingIdSchema }).strict(),
@@ -79,7 +72,9 @@ const matchesType = (value: CatalogCellValue, type: CatalogColumnType) =>
 
 export const UserCatalogSchema = z
     .object({
-        id: z.string().regex(/^user-catalog-[a-z0-9]{8}$/, 'Expected a user catalog id'),
+        id: z
+            .string()
+            .regex(/^user-catalog-(?:[a-z0-9]{8}|[a-z0-9]{32})$/, 'Expected a user catalog id'),
         name: z.string().trim().min(1).max(80),
         description: z.string().max(500).optional(),
         owner: UserCatalogOwnerSchema,
