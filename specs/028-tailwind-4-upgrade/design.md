@@ -70,6 +70,13 @@ Order of work:
 - **D9 — Accepted by default**: `hover:` applies only on hover-capable devices in v4 (no sticky
   hover on touch); `dark:` keeps following the OS setting (the existing `DifficultyTable` use), not
   the site's `data-theme`; both are noted for the maintainer, not changed here.
+- **D11 — Line heights**: `@theme` restores Tailwind 3's absolute line heights
+  (`--text-sm--line-height: 1.25rem`, …). _Why_: v4's unitless ratios made `text-[10px]` inside a
+  `text-sm` row 6px shorter (outline rows 24 → 18 px). _Rejected_: re-spacing every row.
+- **D12 — Reset layer**: the reset moves into `@layer base` instead of the planned plain nesting.
+  _Why_: v4 emits `space-*`/`divide-*` inside `:where()` (zero specificity), so the unlayered
+  reset's `margin: 0` cancelled them (the sheet lost 144 px). _Rejected_: `:where()` around the
+  reset selectors (still ties with the utilities and depends on stylesheet order).
 - **D10 — Browsers**: Tailwind 4 needs Safari 16.4+, Chrome 111+, Firefox 128+. The project's
   browserslist (`>0.5%, not dead`) is checked against that and the result recorded; a gap goes to
   the maintainer (spec Edge Cases).
@@ -115,3 +122,24 @@ Order of work:
 - Browsers: the project's production browserslist (`>0.5%, not dead, not op_mini all`) is evergreen
   today; Tailwind 4 needs Safari 16.4, Chrome 111, Firefox 128. No supported browser falls outside
   it.
+
+## Final results (2026-10-08)
+
+- Comparison against a Tailwind 3 build of the same commit (`git worktree`, built separately), 42
+  images plus difficulty table, bestiary, equipment, V5 docs, and docs index pages in light/dark,
+  en/ru, desktop and 390 px: every page is within 0.1% of pixels; the sheet differs by 0.003%
+  (color-mix rounding). One long page (equipment, ru, mobile) changed height by 24 px in both
+  directions between themes in the baseline itself, so it is capture noise.
+- A DOM dump (size, spacing, font, color of every element) of the sheet is identical to Tailwind 3
+  except `outline-hidden`'s computed style (`outline-style: none` instead of a transparent 2 px
+  outline: invisible, and it keeps the forced-colors outline) and color notation (`oklab(...)` for
+  `/N` opacity colors).
+- Production CSS 137,702 → 177,897 bytes (24,856 → 28,738 gzipped, +3.9 KB); sheet JS and CSS
+  3,702,698 → 3,743,812 bytes (+1.1%). Editor edit 14 ms, move preview 36 ms, open the sheet 116 ms.
+  Dev server starts in 5.3 s; a new `--color-*` token and a class using it appear in the dev CSS
+  without a restart (SC-005).
+- Browser behavior changes accepted (D9): `hover:` only on hover-capable devices.
+- Manual walk: steps 1–3 and 5 are covered by the screenshot list (sheet, dark theme, editor focus,
+  mobile docs); step 4 (palette page, draft-only) is covered by the unit test that reads the tokens.
+  Left for the maintainer: restart `yarn start` once (the PostCSS plugin changed) and look at the
+  palette page in the dev server.

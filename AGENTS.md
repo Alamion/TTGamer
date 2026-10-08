@@ -38,7 +38,7 @@ check fo it existence before killing processes or creating new one.
 | Site Framework  | Docusaurus 3.10 (preset-classic)    |
 | Frontend        | React 19 + TypeScript 6 (strict)    |
 | State           | Zustand 5 (persist middleware)      |
-| Styling         | Tailwind CSS 3 + clsx               |
+| Styling         | Tailwind CSS 4 + clsx               |
 | Validation      | Zod                                 |
 | Persistence     | localForage (IndexedDB)             |
 | Icons           | Lucide-react                        |
@@ -83,8 +83,8 @@ check fo it existence before killing processes or creating new one.
 - **Comments:** keep them uncommon; use them for non-obvious constraints or rationale, not narration
 - **Imports:** separate `import type { ... }` from value imports; let ESLint sort groups
 - **Types:** Prefer `interface` for object shapes, `type` for unions/intersections; avoid `any`
-- **Config files:** `tailwind.config.cjs` and `postcss.config.js` must be CommonJS
-  (`module.exports`) for Docusaurus webpack
+- **Config files:** `postcss.config.js` must be CommonJS (`module.exports`) for Docusaurus webpack;
+  Tailwind is configured in CSS (`src/css/custom.css`, `tailwind-theming` skill)
 - **Language:** repository-level documents and code (specs, TODO/TOFIX, code comments) are
   English-only; Russian is a localization mirror for user-facing surfaces only (UI strings via
   `translations/source`, docs locales via i18n)

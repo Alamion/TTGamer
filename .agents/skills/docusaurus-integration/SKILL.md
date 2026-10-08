@@ -29,16 +29,15 @@ props, and `@theme/Heading` with `as` prop.
 
 ## Tailwind Isolation
 
-- `@tailwind base` is **not** in `custom.css` — it would reset Docusaurus/Infima styles globally
-- `src/css/tailwind-base-reset.scss` provides normalize/reset **scoped to `.tailwind-root`**
-- `@tailwind components` and `@tailwind utilities` are global but safe (only apply when class names
-  are used)
-- Tailwind `content` in `tailwind.config.cjs` scans both `./src/**` and `./src/sheet_manager/**`
+- Tailwind's preflight is **not** imported — it would reset Docusaurus/Infima styles globally
+- `src/css/set_tailwind_styles.css` holds the normalize/reset **scoped to `.tailwind-root`**, in the
+  `base` layer (`tailwind-theming` skill explains why)
+- `custom.css` emits utilities as `.tailwind-root { @tailwind utilities }`: global but safe (they
+  only apply under the root and when class names are used); `@source` there scans `src` and `docs`
 - Module pages import their Tailwind CSS file directly (e.g., `../../css/set_tailwind_styles.css`)
 
 ## Config File Formats
 
-- `tailwind.config.cjs` — **must be CommonJS** (`module.exports`) for Docusaurus webpack
 - `postcss.config.js` — **must be CommonJS** (`module.exports`) — root `package.json` has no
   `"type": "module"`
 - `docusaurus.config.ts` — ESM (TypeScript, compiled by Docusaurus)
