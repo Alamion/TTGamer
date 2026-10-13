@@ -156,6 +156,8 @@ export function wod2eFieldBindings(
             path: ['metadata', fieldKey],
             valueType: 'string',
             coordinate: toCoordinate(label),
+            // The engine character has no character capability to keep the title in step.
+            ...(fieldKey === 'name' ? { syncsTitle: true } : {}),
         })),
         {
             key: 'field:notes',

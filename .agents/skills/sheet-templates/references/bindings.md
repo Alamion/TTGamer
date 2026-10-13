@@ -41,7 +41,10 @@ item array through the same molecules (V5 `weapons`, `inventory`).
 
 - Field bindings: `path` + `valueType` (`string`/`number`/`image`/`enum` with `options`); `numeric`
   gives text a formula reading (`'+3D'` → 3, empty → 0); `syncsTitle` renames the document when
-  written (entity name/concept).
+  written (entity name/concept; the WoD 2e engine's `field:name`, since it has no character
+  capability to do it) and names a document whose title is still empty on the first view. A custom
+  field that is not set to store the Name (Stores value in → Details → Name) never names the
+  document: the list shows its type and rolls carry no name.
 - Member tracks: a track binding with `members: { trackKey, maxMembers }` renders `CohortTrack`
   (`features/sheet/declarative/CohortTrack.tsx`, pure rules in `cohort.ts`): letters A, B, C… (none
   for a single member), bounded add, confirmation before removing a member with marks, "out of the
