@@ -1,5 +1,15 @@
 # Changelog
 
+## v3.25.1
+
+### Minor feat
+
+- **A hint for pages with no name field (T-110)**: the template editor says, under the page and without blocking the save, when no field stores the document's name, because then the document list and dice rolls show none. A text field that is only called "Name" does not count: set its "Stores value in" to Character details → Name
+
+### Fix
+
+- **Names in the document list and dice rolls (T-109)**: a WoD 2e engine character (and every setting built on it) now shows its name in the document manager and on its rolls, including characters whose name was typed earlier. A roll from a document without a name no longer carries the name of a character rolled before it, possibly from another setting: the queued name is dropped when the dice input is emptied, when a nameless stat is queued, and for rolls made at once from the sheet
+
 ## v3.25.0
 
 ### Minor feat
