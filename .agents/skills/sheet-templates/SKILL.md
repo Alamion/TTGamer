@@ -109,8 +109,9 @@ primitive rather than a similar new one.
 `TEMPLATE_FIELD_TYPES`, and `refineField` in `types/template.ts`; the value switches in
 `types/templateValues.ts`; a control in `fieldControls.tsx` + the entry in
 `registry/declarativeFieldRegistry.ts`; the factory case in `template-editor/model/factories.ts`;
-the entry in `template-editor/elements/registry.tsx`; a config branch in `panels/FieldEditor.tsx`
-with its settings in `settings/registry.ts`; the `fieldTypes.<type>` label in en/ru YAML +
+the entry in `template-editor/elements/registry.tsx`; a config branch in the matching settings group
+of `panels/field/` (`fieldSettings` in `panels/FieldEditor.tsx` composes the groups) with its
+settings in `settings/registry.ts`; the `fieldTypes.<type>` label in en/ru YAML +
 `yarn build:translations`; tests. The compiler flags every missing piece except the `FieldEditor`
 branch and tests (exhaustive switches, `Record<TemplateField['type'], …>` maps, and the editor's
 element registry; the type picker and all leaf predicates derive from the canonical list). Where to

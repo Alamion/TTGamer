@@ -99,14 +99,15 @@ invariants are in the skill index.
   `cohort.ts` `paintMark`/`toggleMark`. Built-in marks are always fills (`hasOutlines: false`). Own
   values: `declarative/TrackerFieldControl.tsx`; built-in: `declarative/BuiltInTracker.tsx`
   (replaces `CohortTrack`; page values reach it through `PrimitiveNodeView`'s `page`). - Editor:
-  `TrackerSettings.tsx` serves both (game-fixed parts disabled, game text as placeholders;
-  `builtInTrackerSettings.ts` maps the panel onto the override); the Source select
-  (`TrackerSourceSelect`, `trackerFromSource`) switches own ↔ built-in keeping id, label, display,
-  value column, extra columns, total. Draft issues: a length with no known level, covers ≥ level
-  count, an extras key colliding with a value key. Saving runs `trackerChangeReport` (marks, notes,
-  copies a change stops showing) with the list report. - Diagnostics: `template-value-unreadable`
-  (value of another shape, reads empty) and `template-value-hidden` (count of stored values under
-  removed parts), both skipped in the editor preview.
+  `TrackerSettings.tsx` (one file per settings group in `panels/tracker/`) serves both (game-fixed
+  parts disabled, game text as placeholders; `builtInTrackerSettings.ts` maps the panel onto the
+  override); the Source select (`TrackerSourceSelect`, `trackerFromSource`) switches own ↔ built-in
+  keeping id, label, display, value column, extra columns, total. Draft issues: a length with no
+  known level, covers ≥ level count, an extras key colliding with a value key. Saving runs
+  `trackerChangeReport` (marks, notes, copies a change stops showing) with the list report. -
+  Diagnostics: `template-value-unreadable` (value of another shape, reads empty) and
+  `template-value-hidden` (count of stored values under removed parts), both skipped in the editor
+  preview.
 - Any node may carry `visibleWhen: { coordinate, equals, not? }`: rendered only while the value at
   the coordinate (bag value or bound document data) equals `equals` (`not` inverts). Never affects
   storage; the editor always shows the node (condition control on every panel). An unknown
