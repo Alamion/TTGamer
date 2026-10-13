@@ -24,6 +24,26 @@ conflict:
     prompt: Замените его, импортируйте копию с новым ID или отмените импорт файла.
     duplicate: Копировать
     replace: Заменить
+    applyToRest: Применить этот выбор к остальным конфликтам этого импорта
+importSummary:
+    title: Импорт завершён
+    imported: 'Импортировано: {count}'
+    skipped: 'Пропущено: {count}'
+    rejected: 'Не импортировано: {count}'
+    repaired: 'Исправлено под текущие правила: {count}'
+    importedMany:
+        message: Импортирован {count} документ|Импортировано {count} документа|Импортировано {count} документов
+        plural: true
+    repairedHeading: Исправленные файлы
+    repairArmorName: У предмета брони не было названия; названием стал его прежний тип.
+    repairResourceMaximum: Текущее значение превышало максимум; максимум поднят до него.
+    rejectedHeading: Не импортировано
+    rejectedKept: Отклонённые файлы сохраняются, они не потеряны.
+    reasonNotJson: Файл не является корректным JSON.
+    reasonUnknownShape: Файл не является документом TTGamer или старым экспортом.
+    reasonLegacyEnded: Поддержка старых экспортов первых версий закончилась.
+    reasonInvalid: 'Файл некорректен: {detail}'
+    close: Закрыть
 manager:
     title: Управление документами
     empty: Документов пока нет. Создайте первый документ.

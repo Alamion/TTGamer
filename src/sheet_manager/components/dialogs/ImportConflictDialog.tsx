@@ -1,18 +1,27 @@
 import Translate from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
+import { useState } from 'react';
 
 interface ImportConflictDialogProps {
     open: boolean;
-    onResolve: (resolution: 'replace' | 'duplicate' | 'cancel') => void;
+    onResolve: (resolution: 'replace' | 'duplicate' | 'cancel', applyToRest: boolean) => void;
+    /** More files follow in this import, so the choice may be reused for them. */
+    offerApplyToRest?: boolean;
     /** What collides: a document (default) or an installed user document type. */
     subject?: 'document' | 'type';
 }
 
 export function ImportConflictDialog({
+    offerApplyToRest = false,
     onResolve,
     open,
     subject = 'document',
 }: ImportConflictDialogProps) {
+    const [applyToRest, setApplyToRest] = useState(false);
+    const resolve = (resolution: 'replace' | 'duplicate' | 'cancel') => {
+        onResolve(resolution, offerApplyToRest && applyToRest);
+        setApplyToRest(false);
+    };
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
 
@@ -20,7 +29,7 @@ export function ImportConflictDialog({
         <Dialog.Root
             open={open}
             onOpenChange={(isOpen) => {
-                if (!isOpen) onResolve('cancel');
+                if (!isOpen) resolve('cancel');
             }}
         >
             <Dialog.Portal container={modalRoot ?? undefined}>
@@ -40,24 +49,35 @@ export function ImportConflictDialog({
                             <Translate id="ttgamer.ui.sheet.documents.conflict.prompt" />
                         )}
                     </Dialog.Description>
+                    {offerApplyToRest && (
+                        <label className="mt-4 flex items-center gap-2 text-xs text-textPrimary">
+                            <input
+                                type="checkbox"
+                                checked={applyToRest}
+                                onChange={(event) => setApplyToRest(event.target.checked)}
+                                className="h-3.5 w-3.5"
+                            />
+                            <Translate id="ttgamer.ui.sheet.documents.conflict.applyToRest" />
+                        </label>
+                    )}
                     <div className="mt-6 flex justify-end gap-2">
                         <button
                             type="button"
-                            onClick={() => onResolve('cancel')}
+                            onClick={() => resolve('cancel')}
                             className="rounded-sm border border-border bg-bgSurface px-3 py-1.5 text-xs font-medium text-textPrimary hover:bg-bgBase"
                         >
                             <Translate id="ttgamer.ui.sheet.documents.create.cancel" />
                         </button>
                         <button
                             type="button"
-                            onClick={() => onResolve('duplicate')}
+                            onClick={() => resolve('duplicate')}
                             className="rounded-sm border border-border bg-bgSurface px-3 py-1.5 text-xs font-medium text-textPrimary hover:bg-bgBase"
                         >
                             <Translate id="ttgamer.ui.sheet.documents.conflict.duplicate" />
                         </button>
                         <button
                             type="button"
-                            onClick={() => onResolve('replace')}
+                            onClick={() => resolve('replace')}
                             className="rounded-sm border border-transparent bg-primary-muted px-3 py-1.5 text-xs font-medium text-white hover:bg-primary"
                         >
                             <Translate id="ttgamer.ui.sheet.documents.conflict.replace" />

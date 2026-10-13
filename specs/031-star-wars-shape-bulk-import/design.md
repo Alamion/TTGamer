@@ -122,3 +122,10 @@ file (US3). US1 is a pure refactor guarded by the parity suites that exist today
   Zod baseline snapshot compares parse-output key order.
 - `data/presets.ts` moved to `systems/star-wars-wod/presets.ts`; `StarWarsSettingShape` moved from
   the WoD 2e ruleset to the Star Wars schema (it is the setting's, not the engine's).
+- **US2, legacy read goes through the store**: the shell may not import a concrete system, so
+  `readLegacyExport` and the generic `ImportRepair` type live in `store/documentStore.ts` (an
+  allowed importer, beside the persisted-store migration); `importBatch.ts` calls it. The superseded
+  `parseImportedDocument` in `documentFile.ts` is removed; tests that parsed envelopes with it call
+  `systemRegistry.parseDocument` directly.
+- **US2, summary text** uses `translate(...)` descriptors rather than `<Translate id>` so component
+  tests read English; the repair kinds known to the dialog are a descriptor map with a fallback.

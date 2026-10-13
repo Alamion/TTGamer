@@ -1,6 +1,5 @@
 import {
     buildDocumentExport,
-    parseImportedDocument,
     readEmbeddedType,
 } from '@site/src/sheet_manager/features/sheet/shell/documentFile';
 import {
@@ -184,7 +183,7 @@ describe('type files (spec 012, US5)', () => {
         if (!embedded?.ok) return;
         expect(typeInstallState(embedded.payload)).toBe('new');
         installTypePayload(embedded.payload);
-        const imported = parseImportedDocument(file);
+        const imported = systemRegistry.parseDocument(file).envelope;
         expect(imported.templateValues.motto).toBe('Hope');
         expect(systemRegistry.getDocumentDefinition('star-wars-wod', TYPE_ID)?.defaultViewId).toBe(
             'tpl-orgpage1'

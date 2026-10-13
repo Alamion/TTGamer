@@ -10,7 +10,11 @@ import {
 } from '../features/sheet/data/templateValueWrites';
 import { deletePortrait } from '../persistence/portraitStorage';
 import { systemRegistry } from '../systems';
-import { characterDocumentFromBase } from '../systems/star-wars-wod/characterDocument';
+import {
+    convertLegacyExport,
+    isLegacyExportSupported,
+    looksLikeLegacyExport,
+} from '../systems/star-wars-wod/legacyExport';
 import { isPresetId } from '../systems/star-wars-wod/presets';
 import { isUserKind } from '../systems/userTypes';
 import type { DocumentMetadata, DocumentViewId, UnknownDocumentEnvelope } from '../types/document';
@@ -149,6 +153,27 @@ function retainForRecovery(
     });
 }
 
+/** A change an import made so an old file passes today's rules (shown in the batch summary). */
+export interface ImportRepair {
+    kind: string;
+    path: string;
+}
+
+export type LegacyRead =
+    | { status: 'not-legacy' }
+    | { status: 'ended' }
+    | { status: 'converted'; document: UnknownDocumentEnvelope; repairs: ImportRepair[] };
+
+/**
+ * The untagged flat character of the first versions as a document. Throws what validation throws;
+ * `ended` once its temporary support is over (spec 031).
+ */
+export function readLegacyExport(raw: unknown, now: Date): LegacyRead {
+    if (!looksLikeLegacyExport(raw)) return { status: 'not-legacy' };
+    if (!isLegacyExportSupported(now)) return { status: 'ended' };
+    return { status: 'converted', ...convertLegacyExport(raw) };
+}
+
 export function migrateDocumentStoreState(input: unknown): PersistedDocumentState {
     if (!isRecord(input)) {
         return { documents: [], currentDocumentId: null, recoveryEntries: [] };
@@ -180,7 +205,7 @@ export function migrateDocumentStoreState(input: unknown): PersistedDocumentStat
     const recoveryEntries: unknown[] = [];
     for (const entry of legacyCharacters) {
         try {
-            documents.push(characterDocumentFromBase(entry));
+            documents.push(convertLegacyExport(entry).document);
         } catch (error) {
             retainForRecovery(recoveryEntries, entry, error);
         }

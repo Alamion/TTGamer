@@ -46,34 +46,34 @@ generic file imports `star-wars-wod` outside the allowed importers.
 **Check**: a mixed batch (envelope, old export, broken file) imports every valid file, repairs the
 old export without losing a value, and ends with one summary.
 
-- [ ] T008 [US2] Add `tests/sheet_manager/fixtures/legacy-export-first-version.json` (the real
+- [x] T008 [US2] Add `tests/sheet_manager/fixtures/legacy-export-first-version.json` (the real
       export, character name replaced, player text kept) and write
       `tests/sheet_manager/legacy-export.test.ts`: it parses into the Star Wars system with every
       value intact, reports the armor-name and Willpower repairs, raises Force points the same way,
       and a weapon with ammo above its maximum still rejects (FR-004, FR-005, SC-003)
-- [ ] T009 [US2] Write `tests/sheet_manager/legacy-export-end.test.ts`: fails after
+- [x] T009 [US2] Write `tests/sheet_manager/legacy-export-end.test.ts`: fails after
       `LEGACY_EXPORT_END` with a message to delete the module, its fixture, its tests, and its
       guidance; with a faked date after the end, the importer rejects the old shape with the
       end-of-support reason (FR-013, edge cases)
-- [ ] T010 [US2] Create `src/sheet_manager/systems/star-wars-wod/legacyExport.ts`: the flat legacy
+- [x] T010 [US2] Create `src/sheet_manager/systems/star-wars-wod/legacyExport.ts`: the flat legacy
       schema, `repairLegacyExport(raw)` returning the character and its repairs, and
       `LEGACY_EXPORT_END = '2027-04-13'`; make `characterDocumentFromBase` and the migration in
       `store/documentStore.ts` use it; remove the old schema from `characterDocument.ts`
-- [ ] T011 [US2] Write `tests/sheet_manager/import-batch.test.ts`: mixed batch, one summary with
+- [x] T011 [US2] Write `tests/sheet_manager/import-batch.test.ts`: mixed batch, one summary with
       counts and rejected names and reasons, valid files imported around invalid ones, an envelope
       that also looks like an old export read as the envelope, collisions asked per file and applied
       to the rest when chosen, the choice not carried to the next batch (FR-003, FR-006, FR-007,
       FR-008, SC-002)
-- [ ] T012 [US2] Create `src/sheet_manager/features/sheet/shell/importBatch.ts` (no React): classify
+- [x] T012 [US2] Create `src/sheet_manager/features/sheet/shell/importBatch.ts` (no React): classify
       each parsed file (envelope, legacy export, otherwise reject), collect outcomes and repairs,
       keep rejected content for recovery; use it from `SheetWorkspace.tsx` `handleImport` and remove
       the inline loop; keep the embedded user type install order
-- [ ] T013 [US2] Add the "apply to the rest of the batch" checkbox to the import-conflict dialog in
+- [x] T013 [US2] Add the "apply to the rest of the batch" checkbox to the import-conflict dialog in
       `src/sheet_manager/components/dialogs/` and `ImportSummaryDialog` beside it (Radix dialog,
       labelled, focus trap, Escape, `role="alert"` on rejected reasons); show the dialog when
       anything was repaired or rejected, a toast otherwise; add en and ru strings under
       `translations/source`
-- [ ] T014 [US2] Run `yarn verify` (import and persistence edits) and commit:
+- [x] T014 [US2] Run `yarn verify` (import and persistence edits) and commit:
       `feat(import): old exports import with repairs, one summary per batch (spec 031, US2)`
 
 ## User Story 3 - Recover rejected files (P3)

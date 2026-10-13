@@ -24,6 +24,26 @@ conflict:
     prompt: Replace it, import a duplicate with a new ID, or cancel this file.
     duplicate: Duplicate
     replace: Replace
+    applyToRest: Apply this choice to the other conflicts in this import
+importSummary:
+    title: Import finished
+    imported: 'Imported: {count}'
+    skipped: 'Skipped: {count}'
+    rejected: 'Not imported: {count}'
+    repaired: "Repaired to fit today's rules: {count}"
+    importedMany:
+        message: Imported {count} document|Imported {count} documents
+        plural: true
+    repairedHeading: Repaired files
+    repairArmorName: An armor item had no name; its old type became the name.
+    repairResourceMaximum: A current value was above its maximum; the maximum was raised to match it.
+    rejectedHeading: Not imported
+    rejectedKept: Rejected files are kept, so they are not lost.
+    reasonNotJson: The file is not valid JSON.
+    reasonUnknownShape: The file is neither a TTGamer document nor an old export.
+    reasonLegacyEnded: Support for old exports of the first versions has ended.
+    reasonInvalid: 'The file is invalid: {detail}'
+    close: Close
 manager:
     title: Manage documents
     empty: No documents yet. Create one to get started.

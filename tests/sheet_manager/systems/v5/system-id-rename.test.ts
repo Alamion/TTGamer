@@ -1,4 +1,3 @@
-import { parseImportedDocument } from '@site/src/sheet_manager/features/sheet/shell/documentFile';
 import { migrateDocumentStoreState } from '@site/src/sheet_manager/store/documentStore';
 import { migrateTemplateStoreState } from '@site/src/sheet_manager/store/templateStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
@@ -24,9 +23,10 @@ describe('renamed V5 system id', () => {
     });
 
     it('imports files exported with the old id', () => {
-        expect(parseImportedDocument(JSON.parse(JSON.stringify(legacyDocument))).systemId).toBe(
-            'wod-v5'
-        );
+        expect(
+            systemRegistry.parseDocument(JSON.parse(JSON.stringify(legacyDocument))).envelope
+                .systemId
+        ).toBe('wod-v5');
     });
 
     it('keeps user template copies made with the old id', () => {

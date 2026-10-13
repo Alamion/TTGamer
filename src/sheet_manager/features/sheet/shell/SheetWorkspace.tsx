@@ -2,7 +2,6 @@ import Translate, { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { useShownDocumentPublisher } from '@site/src/integrations/sheet-dice/shownDocument';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
-import { generateId } from '@site/src/shared/utils/random';
 import { useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -10,6 +9,7 @@ import { ConfirmDialog } from '../../../components/dialogs/ConfirmDialog';
 import { DocumentCreateDialog } from '../../../components/dialogs/DocumentCreateDialog';
 import { DocumentManagerDialog } from '../../../components/dialogs/DocumentManagerDialog';
 import { ImportConflictDialog } from '../../../components/dialogs/ImportConflictDialog';
+import { ImportSummaryDialog } from '../../../components/dialogs/ImportSummaryDialog';
 import { LibraryDialog } from '../../../components/dialogs/LibraryDialog';
 import { useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
@@ -21,18 +21,12 @@ import {
     systemRegistry,
 } from '../../../systems';
 import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
-import type { UnknownDocumentEnvelope } from '../../../types/document';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
-import {
-    exportFileName,
-    parseImportedDocument,
-    readEmbeddedType,
-    serializeDocumentExport,
-} from './documentFile';
+import { exportFileName, serializeDocumentExport } from './documentFile';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
+import { type BatchSummary, type ConflictAnswer, runImportBatch } from './importBatch';
 import { PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
-import { installTypePayload, rewriteTypeIdentity, typeInstallState } from './typeFile';
 import { selectableViews, templateSelectValue, ViewModeSelect } from './ViewModeSelect';
 
 interface SheetWorkspaceProps {
@@ -89,9 +83,9 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [templatesDialogOpen, setTemplatesDialogOpen] = useState(false);
     const [importConflict, setImportConflict] = useState<'document' | 'type' | null>(null);
-    const conflictResolverRef = useRef<
-        ((resolution: 'replace' | 'duplicate' | 'cancel') => void) | null
-    >(null);
+    const [offerApplyToRest, setOfferApplyToRest] = useState(false);
+    const [importSummary, setImportSummary] = useState<BatchSummary | null>(null);
+    const conflictResolverRef = useRef<((answer: ConflictAnswer) => void) | null>(null);
 
     const handleExport = () => {
         if (!currentDocument) return;
@@ -135,72 +129,50 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
     };
 
     const requestConflictResolution = (subject: 'document' | 'type') =>
-        new Promise<'replace' | 'duplicate' | 'cancel'>((resolve) => {
+        new Promise<ConflictAnswer>((resolve) => {
             conflictResolverRef.current = resolve;
             setImportConflict(subject);
         });
 
-    const resolveConflict = (resolution: 'replace' | 'duplicate' | 'cancel') => {
-        conflictResolverRef.current?.(resolution);
+    const resolveConflict = (choice: ConflictAnswer['choice'], applyToRest: boolean) => {
+        conflictResolverRef.current?.({ choice, applyToRest });
         conflictResolverRef.current = null;
         setImportConflict(null);
     };
 
     const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
         // Capture files before resetting the input — clearing the value empties the live FileList.
-        const files = Array.from(event.target.files ?? []);
-        if (files.length === 0) return;
+        const selected = Array.from(event.target.files ?? []);
+        if (selected.length === 0) return;
         event.target.value = '';
 
-        for (const file of files) {
-            let raw: unknown;
-            try {
-                raw = JSON.parse(await file.text());
-                // Validate everything before any change: the document, then the type it carries.
-                const embedded = readEmbeddedType(raw);
-                if (embedded && !embedded.ok) {
-                    throw new Error(`Embedded document type: ${embedded.error}`);
-                }
-                let imported = parseImportedDocument(raw);
-                // A document of a user type carries its type; install it first (spec 012).
-                if (embedded?.ok) {
-                    let payload = embedded.payload;
-                    const state = typeInstallState(payload);
-                    if (state === 'conflict') {
-                        const resolution = await requestConflictResolution('type');
-                        if (resolution === 'cancel') continue;
-                        if (resolution === 'duplicate') payload = rewriteTypeIdentity(payload);
-                    }
-                    if (state !== 'same') installTypePayload(payload);
-                    if (imported.definitionId !== payload.type.id) {
-                        imported = {
-                            ...imported,
-                            kind: payload.type.id as UnknownDocumentEnvelope['kind'],
-                            definitionId: payload.type
-                                .id as UnknownDocumentEnvelope['definitionId'],
-                        };
-                    }
-                }
-                if (documents.some(({ id }) => id === imported.id)) {
-                    const resolution = await requestConflictResolution('document');
-                    if (resolution === 'cancel') continue;
-                    if (resolution === 'duplicate') imported = { ...imported, id: generateId() };
-                }
-                importDocument(imported);
-                toast.success(
-                    translate(uiMessages.sheet.documents.toolbar.importSuccess, {
-                        title: imported.metadata.title || imported.definitionId,
-                    })
-                );
-            } catch (error) {
-                // A readable file that fails validation is kept for recovery, never dropped.
-                if (raw !== undefined) retainImportForRecovery(raw, error);
-                toast.error(
-                    translate(uiMessages.sheet.documents.toolbar.importError, {
-                        filename: file.name,
-                    })
-                );
-            }
+        setOfferApplyToRest(selected.length > 1);
+        const files = await Promise.all(
+            selected.map(async (file) => ({ name: file.name, text: await file.text() }))
+        );
+        const summary = await runImportBatch(files, {
+            hasDocument: (id) => useDocumentStore.getState().documents.some((d) => d.id === id),
+            importDocument,
+            retain: retainImportForRecovery,
+            askConflict: requestConflictResolution,
+        });
+
+        if (summary.repaired > 0 || summary.rejected > 0) {
+            setImportSummary(summary);
+        } else if (summary.imported === 1) {
+            toast.success(
+                translate(uiMessages.sheet.documents.toolbar.importSuccess, {
+                    title:
+                        summary.outcomes.find(({ status }) => status === 'imported')?.title ?? '',
+                })
+            );
+        } else if (summary.imported > 1) {
+            toast.success(
+                pluralMessage(
+                    uiMessages.sheet.documents.importSummary.importedMany,
+                    summary.imported
+                )
+            );
         }
     };
 
@@ -268,7 +240,9 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
             <DocumentManagerDialog open={managerDialogOpen} onOpenChange={setManagerDialogOpen} />
             <DocumentCreateDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
             <LibraryDialog open={templatesDialogOpen} onOpenChange={setTemplatesDialogOpen} />
+            <ImportSummaryDialog summary={importSummary} onClose={() => setImportSummary(null)} />
             <ImportConflictDialog
+                offerApplyToRest={offerApplyToRest}
                 open={importConflict !== null}
                 subject={importConflict ?? 'document'}
                 onResolve={resolveConflict}

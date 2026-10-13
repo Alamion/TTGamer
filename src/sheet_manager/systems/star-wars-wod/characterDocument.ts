@@ -4,6 +4,7 @@ import {
     starWarsCharacterDefinition,
     starWarsDroidDefinition,
 } from './index';
+import type { StarWarsCharacter } from './schema';
 import { DroidDataSchema, StarWarsCharacterDataSchema, StarWarsCharacterSchema } from './schema';
 
 /**
@@ -12,7 +13,13 @@ import { DroidDataSchema, StarWarsCharacterDataSchema, StarWarsCharacterSchema }
  * built-in equipment/damage; the payload id moves to the envelope.
  */
 export function characterDocumentFromBase(input: unknown): UnknownDocumentEnvelope {
-    const character = StarWarsCharacterSchema.parse(input);
+    return characterDocumentFromCharacter(StarWarsCharacterSchema.parse(input));
+}
+
+/** The envelope of an already validated flat character. */
+export function characterDocumentFromCharacter(
+    character: StarWarsCharacter
+): UnknownDocumentEnvelope {
     const { id, ...characterData } = character;
     const isDroid = character.metadata.type === 'droid';
     const definition = isDroid ? starWarsDroidDefinition : starWarsCharacterDefinition;
