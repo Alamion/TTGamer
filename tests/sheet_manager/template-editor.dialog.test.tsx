@@ -58,6 +58,17 @@ describe('TemplateEditorDialog', () => {
         expect(templates[0]?.name).toBe('My Kit');
     });
 
+    it('tells the author when no field stores the document name, without blocking the save', () => {
+        render(createElement(TemplateEditorDialog, { base: { kind: 'empty' }, onClose: () => {} }));
+
+        const notice = document.querySelector('[data-editor-notices]');
+        expect(notice?.textContent).toContain('No field on this page stores the document');
+        fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'My Kit' } });
+        expect((screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement).disabled).toBe(
+            false
+        );
+    });
+
     it('offers insertion points at the root and inside nested containers', () => {
         render(createElement(TemplateEditorDialog, { base: { kind: 'empty' }, onClose: () => {} }));
 

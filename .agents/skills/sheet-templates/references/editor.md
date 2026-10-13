@@ -61,9 +61,11 @@ Reference for the `sheet-templates` skill: the template editor (`features/templa
   `useSchemaBackstop` parses on open and 300 ms after typing pauses and lists rules the specific
   checks miss ("{Setting} has a value that is not allowed"). Save is disabled by specific issues
   only; a refused save maps the Zod error the same way and `reportUncoveredIssues` reports
-  `template-draft-invalid` — add a specific check for it. `session/useDraftIssues.ts` derives the
-  lists, per-group counts, and marked nodes; issue buttons select, open the group and `<details>`,
-  and focus `[data-setting]`.
+  `template-draft-invalid` — add a specific check for it. `draftNotices.ts` (`collectDraftNotices`)
+  adds hints that never block a save (today: no field stores the document's name, found through the
+  game's `syncsTitle` field binding), shown by `EditorFooter` as `[data-editor-notices]`.
+  `session/useDraftIssues.ts` derives the lists, per-group counts, marked nodes, and notices; issue
+  buttons select, open the group and `<details>`, and focus `[data-setting]`.
 - **Settings** (`settings/`, `panels/`): `ElementSettings` (`panels/ElementSettings.tsx`) shows the
   actions row, kind chip, and name, then `mergeGroups` of the parts from the element registry plus
   placement, in the fixed order Content, Value, Limits and formulas, Look, Visibility and help

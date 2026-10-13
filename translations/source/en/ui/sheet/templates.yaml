@@ -92,6 +92,7 @@ editor:
     limitReached: Limit reached — {limit} {subject} maximum.
     invalidBounds: Minimum cannot exceed maximum.
     emptyName: Template name is required.
+    noNameNotice: 'No field on this page stores the document''s name, so the document list and dice rolls will show none. To add one, set a text field''s "Stores value in" to Character details → Name.'
     emptyLabel: Every section and field needs a non-empty label.
     addElement: Add element
     paletteGroup: Group

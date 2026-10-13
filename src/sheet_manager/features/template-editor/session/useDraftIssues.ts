@@ -7,6 +7,7 @@ import {
     type DraftIssue,
     type DraftIssueMessages,
 } from '../issues/draftIssues';
+import { collectDraftNotices } from '../issues/draftNotices';
 import { useSchemaBackstop } from '../issues/schemaIssues';
 import { type EditorDraft } from '../model/types';
 import type { SettingsGroupId } from '../settings/groupedSettings';
@@ -45,6 +46,8 @@ export interface DraftIssues {
     groupCounts: ReadonlyMap<string, Partial<Record<SettingsGroupId, number>>>;
     /** Elements with at least one issue. */
     nodeIds: ReadonlySet<string>;
+    /** Hints that never block a save. */
+    notices: readonly string[];
 }
 
 /** The draft's issues; each derived value changes only when what it describes changes. */
@@ -72,5 +75,7 @@ export function useDraftIssues(draft: EditorDraft): DraftIssues {
         .filter(Boolean)
         .join('|');
     const nodeIds = useMemo(() => new Set(nodeKey ? nodeKey.split('|') : []), [nodeKey]);
-    return { specific, all, groupCounts, nodeIds };
+    const noticeKey = collectDraftNotices(draft).join('|');
+    const notices = useMemo(() => (noticeKey ? [translate(editor.noNameNotice)] : []), [noticeKey]);
+    return { specific, all, groupCounts, nodeIds, notices };
 }
