@@ -174,7 +174,8 @@ check fo it existence before killing processes or creating new one.
   hex digits (`compactId()`); ids unique only inside one document or template use `randomToken()`,
   never a slice of `generateId()` (its first digits are the time).
 - Imported/persisted documents must pass the envelope schema and their registered definition schema;
-  `BaseCharacterSchema` is only the legacy-character import path (Zod strips unknown legacy fields).
+  the first-version flat character export (`systems/star-wars-wod/legacyExport.ts`) is the only
+  legacy import path, supported until its end date (Zod strips unknown legacy fields).
 - Game systems are layered as ruleset (mechanics) + setting + supernatural module; engines shared by
   several lines (e.g. V5) are one ruleset. In code: `systems/v5/ruleset/` +
   `systems/v5/modules/<line>/`, and `systems/wod2e/ruleset/` under the Star Wars setting

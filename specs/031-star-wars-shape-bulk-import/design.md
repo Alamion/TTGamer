@@ -136,3 +136,15 @@ file (US3). US1 is a pure refactor guarded by the parity suites that exist today
   Entries kept by the persisted-store migration stay raw.
 - **US3, file shape**: `{ ttgRecovery: 1, exportedAt, records }`; a recovery file inside a record is
   rejected. The full-collection case marks the file `kept: false` in the summary.
+
+## Walk results (2026-10-13)
+
+- Steps 1–3 run as `tests-e2e/smoke/import.spec.ts` on the built site in Chromium: an old export and
+  a broken file import in one batch, one summary names the repair and the rejected file, the manager
+  shows "Rejected files kept for recovery: 1", the download holds one record, importing the repaired
+  recovery file imports it and the count disappears. No logged error or failed request.
+- Step 4 (apply-to-rest) is covered by `import-batch.test.ts` and `import-dialogs.test.tsx`; step 5
+  (reload keeps documents) by the existing sheet smoke test and the unchanged parity suites.
+- `yarn verify:full`: 217 unit files (2293 tests), 6 perf files, 11 browser tests, all passing.
+- Not done: a user-guide page. No page in `docs/` describes file import, so there was nothing to
+  update; a new page would need an en/ru pair.

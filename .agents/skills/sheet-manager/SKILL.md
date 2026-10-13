@@ -41,22 +41,26 @@ detail.
   `notices` array. Other docs pages carry nothing. Strings live in
   `translations/source/*/ui/sheet/policies.yaml`.
 - `capabilities.character` (`systems/capabilities.ts`) adapts a payload to the shared
-  `BaseCharacter` interface: `read(documentId, data)` for display, `applyUpdates(data, updates)` for
-  writes. The droid capability maps persisted `damage` ↔ `health` and `builtInEquipment` ↔
-  `inventory` without renaming stored fields.
+  `CharacterView` interface (id, name and kind, traits, health, equipment lists):
+  `read(documentId, data)` for display, `applyUpdates(data, updates)` for writes. The droid
+  capability maps persisted `damage` ↔ `health` and `builtInEquipment` ↔ `inventory` without
+  renaming stored fields.
 - Shared views route by capability presence (`definition.capabilities?.character`), never by
   `definitionId` string matching. View labels are definition-owned translation descriptors
   (`DocumentViewLabel`), consumed by `ViewModeSelect` via `translate(view.label)`.
 
 ## Document Schema Details
 
-- `types/character.ts` — `BaseCharacterSchema` (shared character payload): metadata (with
-  `type: sentient|droid|vehicle`), trait records (`TraitValueSchema` = value + flags +
-  specializationText), resources, `forcePowerItems` (single Force-power representation), equipment
-  arrays, custom skills (`customTalents/customSkills/customKnowledges`), health.
+- `types/trait.ts`, `types/condition.ts`, `types/equipment.ts` — the neutral atoms generic code
+  reads (`TraitValueSchema` = value + flags + specializationText, `ConditionMark`, items).
+  `systems/wod2e/ruleset/schema.ts` owns the engine character (resources, health levels and
+  `calculateHealthPenalty`, custom skills); `systems/star-wars-wod/schema.ts` owns
+  `StarWarsCharacterSchema` (the flat character: metadata with `type: sentient|droid|vehicle`,
+  `forcePowerItems`, implants) and `createDefaultCharacter()`.
 - `systems/star-wars-wod/schema.ts` — definition payloads:
-    - `StarWarsCharacterDataSchema` = BaseCharacter minus `id`, metadata `type: 'sentient'`.
-    - `DroidDataSchema` = BaseCharacter minus `id/forceSkills/health`, plus
+    - `StarWarsCharacterDataSchema` = `StarWarsCharacterSchema` minus `id`, metadata
+      `type: 'sentient'`.
+    - `DroidDataSchema` = `StarWarsCharacterSchema` minus `id/forceSkills/health`, plus
       `builtInEquipment: Item[]` and `damage` (7-level track).
     - `CreatureDataSchema` / `VehicleDataSchema` / `FodderDataSchema` — flat non-character payloads;
       cohort members carry per-member `health`/`damage` tracks.
@@ -125,11 +129,14 @@ Pure file logic in `features/sheet/shell/documentFile.ts`, wired in `SheetWorksp
 - **Export:** `serializeDocumentExport()` — the envelope with device images and `portraitId`
   stripped, plus `notices` when the document's policies are non-empty; filename `exportFileName()` =
   `ttgamer_<title|definitionId>.json`.
-- **Import:** `parseImportedDocument()` — `systemRegistry.parseDocument()` (unknown keys such as
-  `notices` stripped); untagged legacy character JSON falls back to the legacy wrapper; ID
-  collisions offer Replace / Duplicate (new ID) / Cancel (`ImportConflictDialog`). A readable file
-  that fails validation shows an error toast and is kept via `retainImportForRecovery()` (reports
-  `document-recovered`).
+- **Import:** `runImportBatch()` (`importBatch.ts`) — a tagged file goes through
+  `systemRegistry.parseDocument()` (unknown keys such as `notices` stripped); an untagged file is
+  read as the first-version export through `readLegacyExport()` until `LEGACY_EXPORT_END`; ID
+  collisions offer Replace / Duplicate (new ID) / Cancel, optionally for the rest of the batch
+  (`ImportConflictDialog`). A readable file that fails validation is kept via
+  `retainImportForRecovery()` (reports `document-recovered`); the batch ends with one
+  `ImportSummaryDialog` when something was repaired or rejected. A recovery file (`recoveryFile.ts`,
+  downloaded from the document manager) is retried record by record.
 
 ## Derived Stats Formulas
 
@@ -145,8 +152,8 @@ Pure file logic in `features/sheet/shell/documentFile.ts`, wired in `SheetWorksp
 Virtues provide the minimum values (`minFrom`) for the editable Willpower and Dark Side Resistance
 resources in the character template's Force section; merits/flaws may raise them. The other formulas
 are read-only formula fields in its Other section (`systems/star-wars-wod/templates/character.ts`).
-`calculateHealthPenalty()` (`types/character.ts`) returns the deepest marked level's penalty
-(Bruised 0 → Crippled −5; Incapacitated none).
+`calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) returns the deepest marked level's
+penalty (Bruised 0 → Crippled −5; Incapacitated none).
 
 ## Testing Notes
 

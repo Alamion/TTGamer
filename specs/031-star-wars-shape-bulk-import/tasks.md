@@ -101,12 +101,12 @@ drops to zero.
 
 ## Finish
 
-- [ ] T020 Update the guidance, one owner per rule: `src/sheet_manager/AGENTS.md` ("Schema and
+- [x] T020 Update the guidance, one owner per rule: `src/sheet_manager/AGENTS.md` ("Schema and
       Import/Export": the legacy path, its end date, the recovery file, the shape's new homes),
       `.agents/skills/sheet-manager/SKILL.md`, root `AGENTS.md` §8 (the `BaseCharacterSchema`
-      sentence), and the same sentence in constitution principle II (ask the maintainer first); the
-      user guide en + ru where file import is described (search `docs/` for it); mark T-098 and
-      T-103 done in `TODO.md` with a dated note and add a backlog entry to delete the legacy module
-      after 2027-04-13
-- [ ] T021 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
+      sentence), and the same sentence in constitution principle II (left for the maintainer: it is
+      their document); the user guide en + ru where file import is described (search `docs/` for
+      it); mark T-098 and T-103 done in `TODO.md` with a dated note and add a backlog entry to
+      delete the legacy module after 2027-04-13
+- [x] T021 Run `yarn verify:full`; walk the steps in design.md "Manual walk"; record results in
       design.md
