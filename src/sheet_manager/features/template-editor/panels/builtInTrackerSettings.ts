@@ -10,7 +10,7 @@ import type {
 } from '../../../types/template';
 import { penaltyText, trackerDisplayOf } from '../../sheet/data/trackerModel';
 import type { NodeUpdates } from '../model/types';
-import type { TrackerSettingsGame, TrackerSettingsValue } from './TrackerSettings';
+import type { TrackerSettingsGame, TrackerSettingsValue } from './tracker/types';
 
 const fields = uiMessages.sheet.documents.fields;
 const tracks = uiMessages.sheet.tracks;

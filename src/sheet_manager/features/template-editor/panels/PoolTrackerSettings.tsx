@@ -10,7 +10,7 @@ import {
     TEMPLATE_LIMITS,
 } from '../../../types/template';
 import { ToggleRow } from './LayoutControls';
-import { MarkColorPicker } from './TrackerSettings';
+import { MarkColorPicker } from './tracker/MarkColorPicker';
 
 const text = uiMessages.sheet.templates.tracker;
 const editor = uiMessages.sheet.templates.editor;
