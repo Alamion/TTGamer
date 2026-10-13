@@ -1,7 +1,7 @@
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 
-import type { ConditionMark } from '../../types/character';
+import type { ConditionMark } from '../../types/condition';
 import { TermLabel } from '../terms/TermLabel';
 import type { TermLink } from '../terms/termLink';
 

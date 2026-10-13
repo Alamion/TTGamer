@@ -6,7 +6,7 @@ import { AutoResizeTextarea } from '../../../components/controls/AutoResizeTexta
 import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { CollapsibleItem } from '../../../components/sections/CollapsibleItem';
-import type { ImplantItem } from '../../../types/character';
+import type { ImplantItem } from '../../../types/equipment';
 import { useItemName } from '../data/itemDisplay';
 
 interface ImplantsSectionProps {

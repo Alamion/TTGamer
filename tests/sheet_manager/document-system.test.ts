@@ -17,7 +17,7 @@ import {
 } from '@site/src/sheet_manager/systems';
 import { readCharacter } from '@site/src/sheet_manager/systems/capabilities';
 import { DroidDataSchema } from '@site/src/sheet_manager/systems/star-wars-wod';
-import { createDefaultCharacter } from '@site/src/sheet_manager/types/character';
+import { createDefaultCharacter } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import {
     DocumentDefinitionIdSchema,
     DocumentKindSchema,

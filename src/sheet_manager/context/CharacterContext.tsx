@@ -1,9 +1,9 @@
 import { createContext, useContext } from 'react';
 
-import type { BaseCharacter } from '../types/character';
+import type { CharacterView } from '../systems/capabilities';
 
 interface CharacterContextValue {
-    character: BaseCharacter | null;
+    character: CharacterView | null;
     readOnly: boolean;
 }
 

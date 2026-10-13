@@ -3,7 +3,6 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 
-import { JAX_VORN_PRESET, PRESET_CHARACTERS } from '@site/src/sheet_manager/data/presets';
 import {
     exampleDocument,
     healthPreviewDocument,
@@ -17,6 +16,10 @@ import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
 import { STAR_WARS_EXAMPLE_IDS } from '@site/src/sheet_manager/systems/star-wars-wod/examples';
+import {
+    JAX_VORN_PRESET,
+    PRESET_CHARACTERS,
+} from '@site/src/sheet_manager/systems/star-wars-wod/presets';
 import { cleanup, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';

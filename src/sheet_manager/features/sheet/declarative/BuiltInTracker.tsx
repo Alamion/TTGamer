@@ -14,7 +14,7 @@ import {
     trackLevelsFor,
     trackVariantLengths,
 } from '../../../systems/templateBindings';
-import type { ConditionMark } from '../../../types/character';
+import type { ConditionMark } from '../../../types/condition';
 import type { PrimitiveNode, TrackerField } from '../../../types/template';
 import { type TrackerValue, TrackerValueSchema } from '../../../types/templateValues';
 import {

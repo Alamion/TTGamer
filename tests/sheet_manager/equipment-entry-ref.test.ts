@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { resolveItemName } from '../../src/sheet_manager/features/sheet/data/itemDisplay';
-import { ItemSchema, WeaponItemSchema } from '../../src/sheet_manager/types/character';
+import { ItemSchema, WeaponItemSchema } from '../../src/sheet_manager/types/equipment';
 
 describe('equipment entry references', () => {
     it('shows a picked entry in the reader language until the user renames it', () => {

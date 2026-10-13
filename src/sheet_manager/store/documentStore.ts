@@ -3,7 +3,6 @@ import type { StateCreator } from 'zustand';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { isPresetId } from '../data/presets';
 import { describeError, reportSheetIssue } from '../diagnostics';
 import {
     applyTemplateValueWrites,
@@ -12,6 +11,7 @@ import {
 import { deletePortrait } from '../persistence/portraitStorage';
 import { systemRegistry } from '../systems';
 import { characterDocumentFromBase } from '../systems/star-wars-wod/characterDocument';
+import { isPresetId } from '../systems/star-wars-wod/presets';
 import { isUserKind } from '../systems/userTypes';
 import type { DocumentMetadata, DocumentViewId, UnknownDocumentEnvelope } from '../types/document';
 import { DocumentMetadataSchema, SystemIdSchema } from '../types/document';

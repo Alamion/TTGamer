@@ -1,5 +1,5 @@
-import { HEALTH_LEVELS } from '../../../types/character';
 import { defineWodSheetProfile } from '../../wod-like';
+import { HEALTH_LEVELS } from './schema';
 
 /** A 0–5 dots trait of a WoD 2e profile (the id is the kebab form of the key). */
 export const wodTrait = (key: string, minimum = 0) => ({

@@ -1,8 +1,8 @@
-import type { BaseCharacter } from '@site/src/sheet_manager/types/character';
-import { BaseCharacterSchema } from '@site/src/sheet_manager/types/character';
+import type { StarWarsCharacter } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
+import { StarWarsCharacterSchema } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import { describe, expect, it } from 'vitest';
 
-function buildMaximalCharacter(): BaseCharacter {
+function buildMaximalCharacter(): StarWarsCharacter {
     return {
         id: '00000000-0000-4000-8000-000000000001',
         metadata: {
@@ -139,9 +139,9 @@ describe('Character import/export round-trip', () => {
 
         const parsed = JSON.parse(json);
 
-        let validated: BaseCharacter;
+        let validated: StarWarsCharacter;
         expect(() => {
-            validated = BaseCharacterSchema.parse(parsed);
+            validated = StarWarsCharacterSchema.parse(parsed);
         }).not.toThrow();
 
         expect(validated!.id).toBe(original.id);
@@ -455,9 +455,9 @@ describe('Character import/export round-trip', () => {
 
         const parsed = JSON.parse(jsonStr);
 
-        let validated: BaseCharacter;
+        let validated: StarWarsCharacter;
         expect(() => {
-            validated = BaseCharacterSchema.parse(parsed);
+            validated = StarWarsCharacterSchema.parse(parsed);
         }).not.toThrow();
 
         expect(validated!.metadata.name).toBe('Кэсседи');

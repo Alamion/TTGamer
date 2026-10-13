@@ -2,7 +2,7 @@ import {
     createEquipmentItem,
     updateEquipmentItem,
 } from '@site/src/sheet_manager/features/sheet/body/equipmentItems';
-import { ItemSchema, WeaponItemSchema } from '@site/src/sheet_manager/types/character';
+import { ItemSchema, WeaponItemSchema } from '@site/src/sheet_manager/types/equipment';
 import { describe, expect, it } from 'vitest';
 
 describe('equipment item rules', () => {

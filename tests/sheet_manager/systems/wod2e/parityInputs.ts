@@ -1,10 +1,10 @@
-import { JAX_VORN_PRESET } from '@site/src/sheet_manager/data/presets';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { characterDocumentFromBase } from '@site/src/sheet_manager/systems/star-wars-wod/characterDocument';
 import {
     STAR_WARS_EXAMPLE_IDS,
     starWarsExampleDocument,
 } from '@site/src/sheet_manager/systems/star-wars-wod/examples';
+import { JAX_VORN_PRESET } from '@site/src/sheet_manager/systems/star-wars-wod/presets';
 
 /** Star Wars behaviour frozen before the WoD 2e ruleset split (spec 012, T002 / T066). */
 export interface StarWarsParitySnapshot {

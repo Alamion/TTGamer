@@ -1,7 +1,7 @@
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import type { FodderData } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
-import type { ConditionMark } from '@site/src/sheet_manager/types/character';
+import type { ConditionMark } from '@site/src/sheet_manager/types/condition';
 
 export const EMPTY: ConditionMark[] = [
     'empty',

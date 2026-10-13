@@ -7,7 +7,7 @@ import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { Checkbox } from '../../../components/controls/Checkbox';
 import { CollapsibleItem } from '../../../components/sections/CollapsibleItem';
-import type { Item } from '../../../types/character';
+import type { Item } from '../../../types/equipment';
 import { useItemName } from '../data/itemDisplay';
 
 const inventoryMessages = uiMessages.sheet.items.inventory;

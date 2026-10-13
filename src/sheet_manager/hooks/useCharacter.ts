@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useCharacterContext } from '../context/CharacterContext';
 import { systemRegistry } from '../systems';
+import type { CharacterView } from '../systems/capabilities';
 import { readCharacter } from '../systems/capabilities';
-import type { BaseCharacter } from '../types/character';
 import { useDocumentSource } from './useDocumentSource';
 
 export function useCharacter() {
@@ -32,7 +32,7 @@ export function useCharacter() {
     }, [character, readOnly]);
 
     const updateCharacter = useCallback(
-        (id: string, updates: Partial<BaseCharacter>) => {
+        (id: string, updates: Partial<CharacterView>) => {
             if (readOnlyRef.current || !characterRef.current) return;
             const document = documents.find((candidate) => candidate.id === id);
             if (!document) return;

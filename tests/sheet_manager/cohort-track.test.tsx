@@ -15,7 +15,7 @@ import {
     createDefaultFodderData,
     createDefaultVehicleData,
 } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
-import type { ConditionMark } from '@site/src/sheet_manager/types/character';
+import type { ConditionMark } from '@site/src/sheet_manager/types/condition';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';

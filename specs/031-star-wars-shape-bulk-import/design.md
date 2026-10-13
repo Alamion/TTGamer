@@ -109,3 +109,16 @@ file (US3). US1 is a pure refactor guarded by the parity suites that exist today
    the document appears and the count drops to 0.
 4. Import 3 files that collide with stored ids, tick "apply to the rest" on the first → one prompt.
 5. Reload the page with documents of every kind → all open, with the same numbers as before.
+
+## Implementation notes
+
+- **US1, neutral rated entries**: `CustomSkill`, background, and merit/flaw schemas live in
+  `types/trait.ts` (not `wod2e`), because generic `primitives.tsx` reads their types.
+- **US1, `CharacterView`** also carries `attributes`, `skills`, `health` (the docs roll link reads
+  the first two; the droid capability maps `health`) and `metadata.type` (`useBodyHandlers` treats
+  droids as mechanical). Capability methods use method syntax so a system may accept its own
+  narrower update type.
+- **US1, key order** of the flat Star Wars character and its metadata is written out explicitly: the
+  Zod baseline snapshot compares parse-output key order.
+- `data/presets.ts` moved to `systems/star-wars-wod/presets.ts`; `StarWarsSettingShape` moved from
+  the WoD 2e ruleset to the Star Wars schema (it is the setting's, not the engine's).

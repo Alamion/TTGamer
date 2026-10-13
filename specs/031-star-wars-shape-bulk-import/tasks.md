@@ -10,35 +10,35 @@ Star Wars schema), US2, then US3 (needs the batch pipeline and the retained-reco
 **Check**: the parse, page, dice, and import parity suites pass with no changed expectation; no
 generic file imports `star-wars-wod` outside the allowed importers.
 
-- [ ] T001 [US1] Write `tests/sheet_manager/boundaries.test.ts`: no file under `src/` outside
+- [x] T001 [US1] Write `tests/sheet_manager/boundaries.test.ts`: no file under `src/` outside
       `systems/`, `docsEmbeds.tsx`, and `store/documentStore.ts` imports `systems/star-wars-wod` or
       `systems/wod2e` (design Tests); run it first and note which files fail today
-- [ ] T002 [US1] Create `src/sheet_manager/types/trait.ts` (`TraitValueSchema`, modifiers,
+- [x] T002 [US1] Create `src/sheet_manager/types/trait.ts` (`TraitValueSchema`, modifiers,
       `DEFAULT_ATTRIBUTE_VALUE`, `DEFAULT_SKILL_VALUE`), `types/condition.ts`
       (`ConditionMarkSchema`, `ConditionMark`), and `types/equipment.ts` (`ItemSchema`,
       `ArmorItemSchema`, `WeaponItemSchema`, `ImplantItemSchema` and their types), copied unchanged
       from `types/character.ts`
-- [ ] T003 [US1] Move the engine pieces into `src/sheet_manager/systems/wod2e/ruleset/`:
+- [x] T003 [US1] Move the engine pieces into `src/sheet_manager/systems/wod2e/ruleset/`:
       `HEALTH_LEVELS`, `HealthSchema`, `calculateHealthPenalty`, backgrounds, merits and flaws,
       custom skills, the resource pair, the engine metadata, and the engine default; make
       `ruleset/schema.ts` the source of the engine schema instead of omitting from
       `BaseCharacterSchema`; update `ruleset/profile.ts`
-- [ ] T004 [US1] Move the setting pieces into `src/sheet_manager/systems/star-wars-wod/schema.ts`:
+- [x] T004 [US1] Move the setting pieces into `src/sheet_manager/systems/star-wars-wod/schema.ts`:
       metadata with `type`/`template`/`species`/`homeWorld`, force skills, Force points, dark side,
       force powers, implants; the character schema as engine shape plus setting shape (field names
       and defaults unchanged); `createDefaultCharacter()`; move `data/presets.ts` beside it
-- [ ] T005 [US1] Add `CharacterView` to `src/sheet_manager/systems/capabilities.ts` (`id`,
+- [x] T005 [US1] Add `CharacterView` to `src/sheet_manager/systems/capabilities.ts` (`id`,
       `metadata.name`, `inventory`, `armor`, `weapons`, `implants`) and use it in
       `CharacterDocumentCapability`, `hooks/useCharacter.ts`, `context/CharacterContext.tsx`,
       `features/sheet/declarative/boundDocument.ts`, and `features/sheet/hooks/useBodyHandlers.ts`;
       give `integrations/docs-character-rolls/CharRoll.tsx` a local type of the two maps it reads
-- [ ] T006 [US1] Repoint the remaining importers of `types/character` (body sections,
+- [x] T006 [US1] Repoint the remaining importers of `types/character` (body sections,
       `declarative/primitives.tsx`, `cohort.ts`, `trackLength.ts`, `trackerModel.ts`,
       `BuiltInTracker.tsx`, `CompactSheetFields.tsx`, `docsEmbeds.tsx`,
       `systems/v5/ruleset/schema.ts`, `star-wars-wod/{index,examples,characterDocument}.ts`) and the
       12 test files that import it; keep the flat legacy schema in
       `star-wars-wod/characterDocument.ts` for now; delete `types/character.ts`
-- [ ] T007 [US1] Run `yarn verify` (schema and persistence edits) and commit:
+- [x] T007 [US1] Run `yarn verify` (schema and persistence edits) and commit:
       `refactor(sheet): Star Wars character shape moves into its system folders (spec 031, US1)`
 
 ## User Story 2 - Old exports import, in bulk (P2)
