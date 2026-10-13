@@ -45,7 +45,7 @@ export async function handleRollEvent(
             if (rollOptions?.statLabels && rollOptions.statLabels.length > 0) {
                 result.statLabels = rollOptions.statLabels;
             }
-            if (rollOptions?.characterName) {
+            if (rollOptions?.characterName !== undefined) {
                 result.characterName = rollOptions.characterName;
             }
             if (rollOptions?.origin) {

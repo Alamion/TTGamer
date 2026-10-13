@@ -17,6 +17,8 @@ Every field keeps its value under a key. Fields with the same key share one valu
 - **Custom value (this template)** — the field keeps its own value in the document;
 - a value the game already keeps for the document — **Traits**, **Resources**, **Character details**. The field then shows and changes that value, so the dice, other pages, and the rest of the sheet see the same number. Its type follows the game's value.
 
+A page names its document through one field: set a text field to **Character details → Name**. Without such a field the document list shows only the type, and dice rolls carry no name; the editor reminds you under the page while none is set. A text field that is merely called "Name" keeps its own custom value and names nothing.
+
 Changing where the value lives keeps the field's place and look: its width in columns, when it shows, its label settings, and its help text. Settings the new kind of value cannot have are set aside and named for screen readers; switch back before closing the editor and they return.
 
 ## Shared value key \{#shared-value-key}

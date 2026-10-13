@@ -18,6 +18,7 @@ import type {
 } from '../utils/rollReader';
 import { buildPanelOrigin, getRollReader, rollVerdict } from '../utils/rollReader';
 import {
+    clearCharacterName,
     clearRollSource,
     clearStatLabels,
     getCharacterName,
@@ -109,7 +110,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
 
         if (settings.includeCharacterName) {
             const name = getCharacterName();
-            if (name && !result.characterName) {
+            if (name && result.characterName === undefined) {
                 result.characterName = name;
             }
         }
@@ -164,8 +165,9 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
                 statLabels = takeStatLabels();
             }
 
+            // An explicit '' is a roll that has no name: it never borrows a queued one.
             let characterName = rollOptions?.characterName;
-            if (!characterName && s.includeCharacterName) {
+            if (characterName === undefined && s.includeCharacterName) {
                 characterName = getCharacterName();
             }
 
@@ -184,7 +186,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
             await handleRollEvent(
                 rolledNotation,
                 config,
-                statLabels || characterName || origin
+                statLabels || characterName !== undefined || origin
                     ? { statLabels, characterName, origin }
                     : undefined,
                 (result) => {
@@ -248,6 +250,7 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
             if (!val.trim()) {
                 clearRollSource();
                 clearStatLabels();
+                clearCharacterName();
             }
             set({ notationInput: val });
         },

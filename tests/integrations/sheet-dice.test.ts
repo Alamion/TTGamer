@@ -4,7 +4,7 @@ import { onRollResult } from '@site/src/dice_roller/dice-logic';
 import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';
 import { DEFAULT_SETTINGS } from '@site/src/dice_roller/utils/constants';
 import type { RollOptions } from '@site/src/dice_roller/utils/events';
-import { getRollSource } from '@site/src/dice_roller/utils/sessionStorage';
+import { getCharacterName, getRollSource } from '@site/src/dice_roller/utils/sessionStorage';
 import {
     getShownDocument,
     useShownDocumentPublisher,
@@ -73,6 +73,51 @@ describe('sheet → dice handoff', () => {
         await act(() => roll(notationInput));
         off();
         expect(labels).toEqual(['Firearms']);
+    });
+
+    it('forgets the queued character name when the input is erased by hand', () => {
+        const { result } = renderHook(() => useSheetDiceActions({ characterName: 'Jax' }));
+        act(() => result.current.queueNotation('3d10>=6'));
+        expect(getCharacterName()).toBe('Jax');
+        act(() => useDiceRollerStore.getState().setNotationInput(''));
+        expect(getCharacterName()).toBe('');
+    });
+
+    it("does not keep another document's name when a nameless stat is queued", () => {
+        const named = renderHook(() => useSheetDiceActions({ characterName: 'Jax' }));
+        act(() => named.result.current.queueNotation('3d10>=6'));
+        const nameless = renderHook(() => useSheetDiceActions({}));
+        act(() => nameless.result.current.queueNotation('2d10>=6'));
+        expect(getCharacterName()).toBe('');
+    });
+
+    it('rolls a nameless stat at once without a leftover name', async () => {
+        useDiceRollerStore.setState({
+            roll: realRoll,
+            settings: { ...DEFAULT_SETTINGS, enable3dDicePanel: false },
+        });
+        const named = renderHook(() => useSheetDiceActions({ characterName: 'Jax' }));
+        act(() => named.result.current.queueNotation('3d10>=6'));
+
+        const nameless = renderHook(() => useSheetDiceActions({ rollSource: HUNTER }));
+        const names: Array<string | undefined> = [];
+        const off = onRollResult((rolled) => names.push(rolled.characterName));
+        await act(() => nameless.result.current.rollImmediately('2d10>=6'));
+        off();
+        expect(names.map((name) => name || undefined)).toEqual([undefined]);
+        expect(useDiceRollerStore.getState().history[0]?.result.characterName || undefined).toBe(
+            undefined
+        );
+    });
+
+    it('rolls a named stat at once under its own name', async () => {
+        useDiceRollerStore.setState({
+            roll: realRoll,
+            settings: { ...DEFAULT_SETTINGS, enable3dDicePanel: false },
+        });
+        const named = renderHook(() => useSheetDiceActions({ characterName: 'Mara' }));
+        await act(() => named.result.current.rollImmediately('2d10>=6'));
+        expect(useDiceRollerStore.getState().history[0]?.result.characterName).toBe('Mara');
     });
 
     it('publishes the shown document only while mounted', () => {

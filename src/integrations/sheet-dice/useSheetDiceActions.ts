@@ -26,7 +26,8 @@ export function useSheetDiceActions({ characterName, statLabel, rollSource }: Sh
     const queueNotation = useCallback(
         (notation: string) => {
             if (includeCharacterStats && statLabel) pushStatLabel(statLabel);
-            if (characterName) setCharacterName(characterName);
+            // A stat of a nameless document must not roll under the name queued before it.
+            setCharacterName(characterName ?? '');
             if (rollSource) setRollSource(rollSource);
             setNotationInput(notationInput ? mergeDiceNotation(notationInput, notation) : notation);
         },
@@ -43,7 +44,7 @@ export function useSheetDiceActions({ characterName, statLabel, rollSource }: Sh
     const rollImmediately = useCallback(
         (notation: string) =>
             roll(notation, {
-                characterName: characterName || undefined,
+                characterName: characterName ?? '',
                 statLabels: includeCharacterStats && statLabel ? [statLabel] : undefined,
                 origin: rollSource ? { kind: 'sheet', source: rollSource } : undefined,
             }),

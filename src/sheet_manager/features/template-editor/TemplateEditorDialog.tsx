@@ -216,6 +216,7 @@ function EditorDialog({
                         )}
                         <EditorFooter
                             draftIssues={issues.all}
+                            notices={issues.notices}
                             onCancel={requestClose}
                             onGoToIssue={goToIssue}
                             onSave={save}

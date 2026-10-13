@@ -9,12 +9,15 @@ const editor = uiMessages.sheet.templates.editor;
 /** The issue list (each opens its setting), the screen-reader announcer, Cancel, and Save. */
 export function EditorFooter({
     draftIssues,
+    notices = [],
     onCancel,
     onGoToIssue,
     onSave,
     saveDisabled,
 }: {
     draftIssues: readonly DraftIssue[];
+    /** Hints that never block a save. */
+    notices?: readonly string[];
     onCancel: () => void;
     onGoToIssue: (issue: DraftIssue) => void;
     onSave: () => void;
@@ -46,6 +49,17 @@ export function EditorFooter({
                     </ul>
                 )}
             </div>
+            {notices.length > 0 && (
+                <ul
+                    role="status"
+                    data-editor-notices=""
+                    className="mb-3 max-h-16 space-y-1 overflow-y-auto text-xs text-textSecondary"
+                >
+                    {notices.map((notice) => (
+                        <li key={notice}>{notice}</li>
+                    ))}
+                </ul>
+            )}
             <p className="sr-only" aria-live="polite" data-editor-announcer="">
                 {announcement}
             </p>

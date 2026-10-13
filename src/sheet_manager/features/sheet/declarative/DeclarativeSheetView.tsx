@@ -262,11 +262,21 @@ function FieldCell({
 function BoundFieldCell({ field, binding }: { field: TemplateField; binding: FieldBinding }) {
     const bound = useBoundDocument();
     const suggestions = useCatalogSuggestions(binding.suggestions?.catalogId);
+    const stored = bound
+        ? binding.adapter
+            ? binding.adapter.read(bound.data)
+            : readDataPath(bound.data, binding.path)
+        : undefined;
+    // A name typed before the title followed it (older documents) names the document now.
+    const unnamed = bound !== undefined && bound.name === undefined;
+    const setTitle = bound?.setTitle;
+    useEffect(() => {
+        if (binding.syncsTitle && unnamed && typeof stored === 'string' && stored) {
+            setTitle?.(stored);
+        }
+    }, [binding.syncsTitle, unnamed, setTitle, stored]);
     if (!bound) return null;
     const { readOnly } = bound;
-    const stored = binding.adapter
-        ? binding.adapter.read(bound.data)
-        : readDataPath(bound.data, binding.path);
     // Document-owned images follow the portrait rules (site-relative paths allowed; the image
     // control still checks safety), not the stricter HTTPS-only template value rules.
     const value = binding.valueType === 'image' ? stored : coerceStoredValue(field, stored);
