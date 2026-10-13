@@ -1,30 +1,106 @@
 import { generateId } from '@site/src/shared/utils/random';
 import { z } from 'zod';
 
+import { ConditionMarkSchema } from '../../types/condition';
+import { ImplantItemSchema, ItemSchema } from '../../types/equipment';
 import {
-    BaseCharacterSchema,
-    CharacterMetadataSchema,
-    ConditionMarkSchema,
-    createDefaultCharacter,
     CustomSkillSchema,
     DEFAULT_ATTRIBUTE_VALUE,
     DEFAULT_SKILL_VALUE,
-    HealthSchema,
-    ItemSchema,
     TraitValueSchema,
-} from '../../types/character';
-import { StarWarsSettingShape, Wod2eCoreShape } from '../wod2e/ruleset/schema';
+} from '../../types/trait';
+import {
+    HealthSchema,
+    ResourcePairSchema,
+    Wod2eCoreShape,
+    Wod2eMetadataSchema,
+} from '../wod2e/ruleset/schema';
 
 const boundedTextSchema = z.string().max(2_000).default('');
 const boundedLabelSchema = z.string().max(120).default('');
 const dotValueSchema = z.number().int().min(0).max(5);
 const resourceValueSchema = z.number().int().min(0).max(10);
-const resourcePairSchema = z
-    .object({ current: resourceValueSchema, max: resourceValueSchema })
-    .refine(({ current, max }) => current <= max, {
-        message: 'Current value cannot exceed maximum value',
-        path: ['current'],
-    });
+
+export const CharacterTypeSchema = z.enum(['sentient', 'droid', 'vehicle']);
+
+const engineMetadata = Wod2eMetadataSchema.shape;
+
+/**
+ * The WoD 2e engine metadata plus what the Star Wars setting adds to it, in the order the flat
+ * character has always listed its fields (the order shows in parse output and exports).
+ */
+export const CharacterMetadataSchema = z.object({
+    name: engineMetadata.name,
+    type: CharacterTypeSchema,
+    template: z.string().min(1),
+    player: engineMetadata.player,
+    owner: engineMetadata.owner,
+    adventure: engineMetadata.adventure,
+    concept: engineMetadata.concept,
+    nature: engineMetadata.nature,
+    demeanor: engineMetadata.demeanor,
+    species: z.string().optional(),
+    homeWorld: z.string().optional(),
+    age: engineMetadata.age,
+    setting: engineMetadata.setting,
+    gender: engineMetadata.gender,
+    height: engineMetadata.height,
+    build: engineMetadata.build,
+    hair: engineMetadata.hair,
+    eyes: engineMetadata.eyes,
+    features: engineMetadata.features,
+    biography: engineMetadata.biography,
+    imageUrl: engineMetadata.imageUrl,
+    portraitId: engineMetadata.portraitId,
+});
+
+export const ForcePowerItemSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    value: dotValueSchema.default(0),
+    catalogId: z.string().optional(),
+});
+
+/** What the Star Wars setting adds to the engine character. */
+export const StarWarsSettingShape = {
+    forceSkills: z.record(z.string(), TraitValueSchema).optional(),
+    forcePoints: ResourcePairSchema.optional(),
+    darkSideResistance: resourceValueSchema.optional(),
+    forcePowerItems: z.array(ForcePowerItemSchema).default([]),
+    implants: z.array(ImplantItemSchema).default([]),
+};
+
+/**
+ * The flat character the app stored before documents: the engine and setting fields with the
+ * document id inside. Droid data and the character capability are read through it.
+ */
+export const StarWarsCharacterSchema = z.object({
+    id: z.string(),
+    metadata: CharacterMetadataSchema,
+    attributes: Wod2eCoreShape.attributes,
+    skills: Wod2eCoreShape.skills,
+    forceSkills: StarWarsSettingShape.forceSkills,
+    virtues: Wod2eCoreShape.virtues,
+    backgrounds: Wod2eCoreShape.backgrounds,
+    merits: Wod2eCoreShape.merits,
+    flaws: Wod2eCoreShape.flaws,
+    willpower: Wod2eCoreShape.willpower,
+    forcePoints: StarWarsSettingShape.forcePoints,
+    darkSideResistance: StarWarsSettingShape.darkSideResistance,
+    forcePowerItems: StarWarsSettingShape.forcePowerItems,
+    health: Wod2eCoreShape.health,
+    inventory: Wod2eCoreShape.inventory,
+    armor: Wod2eCoreShape.armor,
+    weapons: Wod2eCoreShape.weapons,
+    implants: StarWarsSettingShape.implants,
+    experience: Wod2eCoreShape.experience,
+    customTalents: Wod2eCoreShape.customTalents,
+    customSkills: Wod2eCoreShape.customSkills,
+    customKnowledges: Wod2eCoreShape.customKnowledges,
+    notes: Wod2eCoreShape.notes,
+});
+
+export type StarWarsCharacter = z.infer<typeof StarWarsCharacterSchema>;
 
 export const CombatScaleSchema = z.enum([
     'death-star',
@@ -98,7 +174,7 @@ export const StarWarsCharacterDataSchema = z.object({
     metadata: StarWarsCharacterMetadataSchema,
 });
 
-export const DroidDataSchema = BaseCharacterSchema.omit({
+export const DroidDataSchema = StarWarsCharacterSchema.omit({
     id: true,
     forceSkills: true,
     health: true,
@@ -117,7 +193,7 @@ export const CreatureDataSchema = z.object({
     owner: boundedLabelSchema,
     attributes: PhysicalMentalAttributesSchema,
     abilities: z.array(CustomSkillSchema).max(60).default([]),
-    willpower: resourcePairSchema,
+    willpower: ResourcePairSchema,
     armor: ArmorProfileSchema,
     attacks: z.array(AttackProfileSchema).max(50).default([]),
     notes: boundedTextSchema,
@@ -207,6 +283,72 @@ function createFullAttributes() {
         Charisma: { ...DEFAULT_ATTRIBUTE_VALUE },
         Manipulation: { ...DEFAULT_ATTRIBUTE_VALUE },
         Appearance: { ...DEFAULT_ATTRIBUTE_VALUE },
+    };
+}
+
+export function createDefaultCharacter(): StarWarsCharacter {
+    return {
+        id: generateId(),
+        metadata: {
+            name: '',
+            type: 'sentient',
+            template: 'standard',
+            player: '',
+            owner: '',
+            adventure: '',
+            concept: '',
+            nature: '',
+            demeanor: '',
+            species: '',
+            homeWorld: '',
+            age: '',
+            setting: 'Star Wars WoD 2e',
+            gender: '',
+            height: '',
+            build: '',
+            hair: '',
+            eyes: '',
+            features: '',
+            biography: '',
+            imageUrl: '',
+        },
+        attributes: {
+            Strength: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Dexterity: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Stamina: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Charisma: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Manipulation: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Appearance: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Perception: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Intelligence: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Wits: { ...DEFAULT_ATTRIBUTE_VALUE },
+        },
+        skills: {},
+        forceSkills: {},
+        virtues: {
+            Conscience: { ...DEFAULT_ATTRIBUTE_VALUE },
+            Passion: { ...DEFAULT_ATTRIBUTE_VALUE },
+            'Self Control': { ...DEFAULT_ATTRIBUTE_VALUE },
+        },
+        backgrounds: [],
+        merits: [],
+        flaws: [],
+        willpower: { current: 5, max: 5 },
+        forcePoints: { current: 0, max: 0 },
+        darkSideResistance: 5,
+        forcePowerItems: [],
+        health: {
+            levels: ['empty', 'empty', 'empty', 'empty', 'empty', 'empty', 'empty'],
+        },
+        inventory: [],
+        armor: [],
+        weapons: [],
+        implants: [],
+        experience: { total: 0, spent: 0 },
+        customTalents: [],
+        customSkills: [],
+        customKnowledges: [],
+        notes: '',
     };
 }
 

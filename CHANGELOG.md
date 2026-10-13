@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.25.0
+
+### Minor feat
+
+- **Old character exports import again (spec 031, T-103)**: a character file saved by the first versions of the app now imports into the Star Wars system. Two things in such files broke today's rules and are repaired instead of rejected, without losing a value: an armor item with no name takes its old type as the name, and a current value above its maximum (Willpower, Force points) raises the maximum. This support is temporary and ends on 2027-04-13
+- **One summary for a batch of files (spec 031, T-103)**: importing several files ends with one summary that names each repaired file and each rejected file with its reason, instead of a message per file; the other files still import around a broken one. When several files collide with saved documents, one choice (Replace, Duplicate, Cancel) can be applied to all the rest
+- **Rejected files can be recovered (spec 031, T-103)**: files that could not be imported are kept, and the document manager shows how many and lets you download them as one file or clear them. Importing that file again retries each one; those that now import are removed from the list
+
+### Fix
+
+- **A catalog link keeps its page (F-002)**: opening a catalog address with a page number (`?page=3`) now shows that page instead of the first one
+
+### Chore
+
+- **Star Wars character shape in its own folders (spec 031, T-098)**: the Star Wars character fields, its default character, its presets, and the health penalty moved out of the generic `types/character.ts` into the Star Wars system and the WoD 2e rules it builds on; the generic sheet code reads a character through a small shared view. No stored or exported value changed
+- **Smaller template editor panels (T-104)**: the field and tracker settings panels (about 800 lines each) are split into one file per settings group; behavior is the same
+
 ## v3.24.1
 
 ### Chore

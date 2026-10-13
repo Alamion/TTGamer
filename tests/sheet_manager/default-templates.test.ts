@@ -361,7 +361,7 @@ describe('effective template resolution (feature 004/006)', () => {
 import { DeclarativeSheetView } from '@site/src/sheet_manager/features/sheet/declarative/DeclarativeSheetView';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
-import { BaseCharacterSchema } from '@site/src/sheet_manager/types/character';
+import { StarWarsCharacterSchema } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import { cleanup, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach } from 'vitest';
@@ -406,7 +406,7 @@ describe('default template rendering and data safety', () => {
         );
         expect(surviving['orphan-key']).toBe('precious-data');
         // Character data itself is schema-owned and untouched by template operations.
-        const character = BaseCharacterSchema.parse({
+        const character = StarWarsCharacterSchema.parse({
             id: 'doc-x',
             ...createDefaultStarWarsCharacterData(),
         });

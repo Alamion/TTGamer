@@ -1,0 +1,369 @@
+{
+    "id": "5c3a7a4f-80e0-418f-b868-e99d214bdadb",
+    "metadata": {
+        "name": "Test Character",
+        "type": "sentient",
+        "template": "standard",
+        "player": "Player",
+        "adventure": "фыв",
+        "concept": "Loner",
+        "nature": "Curious",
+        "demeanor": "Rebel",
+        "species": "Атоанец",
+        "homeWorld": "Togoria",
+        "age": "12",
+        "setting": "Star Wars WoD 2e",
+        "gender": "male",
+        "height": "165",
+        "build": "lean",
+        "hair": "dark",
+        "eyes": "green"
+    },
+    "attributes": {
+        "Strength": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Dexterity": {
+            "value": 4,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Stamina": {
+            "value": 1,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Charisma": {
+            "value": 4,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Manipulation": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Appearance": {
+            "value": 3,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Perception": {
+            "value": 1,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Intelligence": {
+            "value": 3,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Wits": {
+            "value": 1,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        }
+    },
+    "skills": {
+        "Intimidation": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя"
+        },
+        "Alertness": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Subterfuge": {
+            "value": 1,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Brawl": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Athletics": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Empathy": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Gunnery": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя"
+        },
+        "Streetwise": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя"
+        },
+        "Pilot": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя"
+        },
+        "Ride": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя"
+        },
+        "Astrogation": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя(1макс)"
+        },
+        "Bureaucracy": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя"
+        },
+        "Blaster": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя"
+        },
+        "Politics": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя"
+        },
+        "Trade": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false,
+            "specializationText": "-низя"
+        },
+        "Stealth": {
+            "value": 1,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Melee": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Dodge": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Medicine": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Interfaces": {
+            "value": 2,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Tech": {
+            "value": 1,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Languages": {
+            "value": 1,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Investigation": {
+            "value": 1,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        }
+    },
+    "forceSkills": {
+        "Rapport": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Telekinesis": {
+            "value": 1,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Dynamism": {
+            "value": 0,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        }
+    },
+    "virtues": {
+        "Conscience": {
+            "value": 3,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Passion": {
+            "value": 3,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        },
+        "Self Control": {
+            "value": 4,
+            "specialization": false,
+            "experienced": false,
+            "practiced": false
+        }
+    },
+    "backgrounds": [
+        {
+            "id": "e3763632-5cb1-4956-b99e-380ed45c362b",
+            "label": "Mentor(Jedi mentor)",
+            "value": 1,
+            "catalogId": "mentor"
+        },
+        {
+            "id": "f8b5df91-811f-41f1-8a7b-2abee4fd1534",
+            "label": "Mentor(Jedi Атоанка)",
+            "value": 2
+        }
+    ],
+    "merits": [
+        {
+            "id": "f0df50f8-4fa4-4e46-91d2-b189437084ce",
+            "points": 2,
+            "label": "Powerful",
+            "catalogId": "ap-powerful"
+        },
+        {
+            "id": "78bc9a0c-ce20-4705-8bbc-f9fb4105c5c9",
+            "points": 3,
+            "label": "Force Spirit Mentor",
+            "catalogId": "force-spirit-mentor"
+        }
+    ],
+    "flaws": [
+        {
+            "id": "5ecda40c-2fe1-44fe-8c20-0ea49e463e7a",
+            "points": 2,
+            "label": "Weak Vascular System(х2 от блида,+2 стаб)"
+        }
+    ],
+    "willpower": {
+        "current": 7,
+        "max": 5
+    },
+    "forcePoints": {
+        "current": 7,
+        "max": 7
+    },
+    "darkSideResistance": 5,
+    "health": {
+        "levels": ["empty", "empty", "empty", "empty", "empty", "empty", "empty"]
+    },
+    "inventory": [
+        {
+            "id": "8dd69816-1bd5-45f7-a65e-eea48716603b",
+            "text": "Comlink (Short-Range)"
+        }
+    ],
+    "armor": [
+        {
+            "id": "84c66a06-a48b-4a14-849f-56d99cbe05f4",
+            "type": "Jedi Robes",
+            "classVal": "1",
+            "ar": "+0D",
+            "dex": "0"
+        }
+    ],
+    "weapons": [],
+    "experience": {
+        "total": 0,
+        "spent": 0
+    },
+    "customTalents": [],
+    "customSkills": [],
+    "customKnowledges": [],
+    "notes": "Force Spirit Mentor -> Mentor(Jedi Атоанка)\n\nесть Training Lightsaber, но не у меня",
+    "forcePowerItems": [
+        {
+            "id": "0b6bff56-653e-4904-b3f8-cceb9d109358",
+            "name": "Awareness",
+            "value": 1,
+            "catalogId": "awareness"
+        },
+        {
+            "id": "3aca34fe-f745-4990-be1a-9c83778c4e62",
+            "name": "Meditate",
+            "value": 1
+        },
+        {
+            "id": "0b416846-c3e0-43f1-a636-b09a98e62571",
+            "name": "Manipulate Object",
+            "value": 1,
+            "catalogId": "manipulate-object"
+        },
+        {
+            "id": "0f0f0ae0-c479-4bd5-95e1-e49b501253de",
+            "name": "Heave",
+            "value": 1,
+            "catalogId": "heave"
+        },
+        {
+            "id": "207e4c50-428c-42c9-90db-42ebbadd8852",
+            "name": "Summon Object",
+            "value": 1,
+            "catalogId": "summon-object"
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 import type { TrackMarkId } from '../../../systems/templateBindings';
-import type { ConditionMark } from '../../../types/character';
+import type { ConditionMark } from '../../../types/condition';
 import type {
     PrimitiveNode,
     TrackerColumn,

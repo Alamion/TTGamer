@@ -18,7 +18,6 @@ src/sheet_manager/
 │   ├── sections/             # collapsible panels, cards, tables
 │   └── stat-fields/          # atomic traits, dots, labels, Force and merit/flaw rows
 ├── context/                  # read-only CharacterContext
-├── data/                     # bundled character presets
 ├── features/template-editor/ # template editor (spec 025): session/, operations/, commands/,
 │                             # model/, issues/, elements/, settings/, panels/, components/
 ├── features/sheet/           # the assembled interactive sheet
@@ -139,8 +138,22 @@ appropriate for layout/manager operations that explicitly manage the collection.
 ## Schema and Import/Export
 
 - `DocumentEnvelopeSchema` plus the registered definition schema are the runtime boundary for
-  current JSON imports. Untagged legacy character JSON is validated with `BaseCharacterSchema` and
-  migrated explicitly.
+  current JSON imports. The one legacy shape is the flat character the first versions exported
+  (untagged JSON): `systems/star-wars-wod/legacyExport.ts` repairs and converts it (an armor item
+  without a name takes its old `type`; a current value above its maximum raises the maximum),
+  `store/documentStore.ts` (`readLegacyExport`) is the only door generic code uses, and support ends
+  on `LEGACY_EXPORT_END` (2027-04-13): `tests/sheet_manager/legacy-export-end.test.ts` then fails
+  and lists what to delete (module, fixture, tests, this paragraph).
+- A character's shape belongs to its system: engine fields in `systems/wod2e/ruleset/schema.ts`,
+  Star Wars additions and `createDefaultCharacter()` in `systems/star-wars-wod/schema.ts`. Generic
+  code reads a character only through `CharacterView` (`systems/capabilities.ts`) and the neutral
+  atoms in `types/` (`trait`, `condition`, `equipment`); `tests/sheet_manager/boundaries.test.ts`
+  guards it.
+- A batch import (`features/sheet/shell/importBatch.ts`) never stops at a bad file: invalid files
+  are kept as recovery records (`store/recoveryRecord.ts`, bounded at 100), the batch ends with one
+  summary, and a collision choice may be applied to the rest of the batch. The document manager
+  downloads the records as a recovery file (`ttgamer_recovery_<date>.json`); importing that file
+  retries each record, removes those that import, and updates those that still fail.
 - Blank/missing character names normalize to `''`; the UI displays `New Character` where a label is
   required.
 - IDs are opaque non-empty strings, not necessarily UUIDs, because presets and compatibility data
@@ -195,7 +208,8 @@ duplicate template facts here. Invariants that must never be broken:
 
 ## Derived State
 
-- `calculateHealthPenalty()` uses the deepest marked health level.
+- `calculateHealthPenalty()` (`systems/wod2e/ruleset/schema.ts`) uses the deepest marked health
+  level.
 - Virtues define the minimum Willpower (`min(passion + self-control, 10)`) and Dark Side Resistance
   (`max(0, min(5 + conscience - passion, 10))`); the default template shows these minimums as
   read-only Derived Stats, while the editable resources live in the Force section's Resources group.

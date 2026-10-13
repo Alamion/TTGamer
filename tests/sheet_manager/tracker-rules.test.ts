@@ -27,7 +27,7 @@ import {
     paintMark,
     shortenMarks,
 } from '@site/src/sheet_manager/features/sheet/declarative/cohort';
-import type { ConditionMark } from '@site/src/sheet_manager/types/character';
+import type { ConditionMark } from '@site/src/sheet_manager/types/condition';
 import { TemplateFieldSchema, type TrackerField } from '@site/src/sheet_manager/types/template';
 import type { TrackerValue } from '@site/src/sheet_manager/types/templateValues';
 import { describe, expect, it } from 'vitest';

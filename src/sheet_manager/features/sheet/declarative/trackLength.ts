@@ -1,5 +1,5 @@
 import type { TrackBinding } from '../../../systems/templateBindings';
-import type { ConditionMark } from '../../../types/character';
+import type { ConditionMark } from '../../../types/condition';
 import { evaluateFormula, parseFormula } from './formula';
 
 type ComputedLength = NonNullable<TrackBinding['length']>;

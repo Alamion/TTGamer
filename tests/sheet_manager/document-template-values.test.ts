@@ -1,6 +1,6 @@
 import { applyTemplateValueWrites } from '@site/src/sheet_manager/features/sheet/data/templateValueWrites';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
-import { createDefaultCharacter } from '@site/src/sheet_manager/types/character';
+import { createDefaultCharacter } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import type { UnknownDocumentEnvelope } from '@site/src/sheet_manager/types/document';
 import { UnknownDocumentEnvelopeSchema } from '@site/src/sheet_manager/types/document';
 import {

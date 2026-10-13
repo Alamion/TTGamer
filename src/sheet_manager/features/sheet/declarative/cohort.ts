@@ -1,4 +1,4 @@
-import type { ConditionMark } from '../../../types/character';
+import type { ConditionMark } from '../../../types/condition';
 
 /**
  * Pure rules for member tracks (fodder squads, creature packs, vehicle squadrons): one condition

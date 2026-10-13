@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { ItemSchema, WeaponItemSchema } from '../../../types/character';
+import { ItemSchema, WeaponItemSchema } from '../../../types/equipment';
 import { V5_ATTRIBUTE_KEYS, V5_SKILL_KEYS } from './profile';
 
 /** Validation limits of the V5 core data (data-model.md). */

@@ -24,6 +24,27 @@ conflict:
     prompt: Replace it, import a duplicate with a new ID, or cancel this file.
     duplicate: Duplicate
     replace: Replace
+    applyToRest: Apply this choice to the other conflicts in this import
+importSummary:
+    title: Import finished
+    imported: 'Imported: {count}'
+    skipped: 'Skipped: {count}'
+    rejected: 'Not imported: {count}'
+    repaired: "Repaired to fit today's rules: {count}"
+    importedMany:
+        message: Imported {count} document|Imported {count} documents
+        plural: true
+    repairedHeading: Repaired files
+    repairArmorName: An armor item had no name; its old type became the name.
+    repairResourceMaximum: A current value was above its maximum; the maximum was raised to match it.
+    rejectedHeading: Not imported
+    rejectedKept: Rejected files are kept, so they are not lost.
+    reasonNotJson: The file is not valid JSON.
+    reasonUnknownShape: The file is neither a TTGamer document nor an old export.
+    reasonLegacyEnded: Support for old exports of the first versions has ended.
+    notKept: 'Not kept for recovery: there is no room left.'
+    reasonInvalid: 'The file is invalid: {detail}'
+    close: Close
 manager:
     title: Manage documents
     empty: No documents yet. Create one to get started.
@@ -39,6 +60,12 @@ manager:
         message: Are you sure you want to delete {count} document? This cannot be undone.|Are you sure you want to delete {count} documents? This cannot be undone.
         plural: true
     close: Close
+    rejectedCount: 'Rejected files kept for recovery: {count}'
+    rejectedHint: Download them to repair or send them, then import the file again; files that now import are removed from here.
+    rejectedDownload: Download rejected files
+    rejectedClear: Clear rejected files
+    rejectedClearTitle: Clear rejected files
+    rejectedClearDescription: Delete every kept rejected file? Download them first if you may need them. This cannot be undone.
 examples:
     jaxVorn: Jax Vorn (example)
     wampa: Wampa (example)

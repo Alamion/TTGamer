@@ -3,7 +3,6 @@ import type { StateCreator } from 'zustand';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { isPresetId } from '../data/presets';
 import { describeError, reportSheetIssue } from '../diagnostics';
 import {
     applyTemplateValueWrites,
@@ -11,12 +10,18 @@ import {
 } from '../features/sheet/data/templateValueWrites';
 import { deletePortrait } from '../persistence/portraitStorage';
 import { systemRegistry } from '../systems';
-import { characterDocumentFromBase } from '../systems/star-wars-wod/characterDocument';
+import {
+    convertLegacyExport,
+    isLegacyExportSupported,
+    looksLikeLegacyExport,
+} from '../systems/star-wars-wod/legacyExport';
+import { isPresetId } from '../systems/star-wars-wod/presets';
 import { isUserKind } from '../systems/userTypes';
 import type { DocumentMetadata, DocumentViewId, UnknownDocumentEnvelope } from '../types/document';
 import { DocumentMetadataSchema, SystemIdSchema } from '../types/document';
 import { collectTemplateFields, type CustomTemplate, fieldValueKey } from '../types/template';
 import type { TemplatePageValues } from '../types/templateValues';
+import { asRecoveryRecord, newRecoveryRecord } from './recoveryRecord';
 import { useTemplateStore } from './templateStore';
 
 /** Version 4: a re-parse that rewrites renamed system ids (`v5` → `wod-v5`). */
@@ -96,8 +101,14 @@ export interface DocumentStoreState {
     ) => void;
     deleteDocument: (id: string) => void;
     importDocument: (document: UnknownDocumentEnvelope) => void;
-    /** Keeps an imported file that failed validation in the bounded recovery collection. */
-    retainImportForRecovery: (entry: unknown, error: unknown) => void;
+    /**
+     * Keeps an imported file that failed validation in the bounded recovery collection; a known
+     * `id` updates that record instead. Returns false when the collection is full.
+     */
+    retainImportForRecovery: (entry: unknown, error: unknown, id?: string) => boolean;
+    /** Drops one record, by id, once its file has been imported. */
+    forgetRecoveryEntry: (id: string) => void;
+    clearRecoveryEntries: () => void;
 }
 
 interface PersistedDocumentState {
@@ -128,15 +139,12 @@ function preparePersistedEntry(entry: unknown): unknown {
     return { ...entry, templateValues: flattenLegacyTemplateValues(entry.templateValues) };
 }
 
-/** Keeps an unparseable persisted entry in the bounded recovery collection and reports why. */
-function retainForRecovery(
-    recoveryEntries: unknown[],
+function reportRecovery(
     entry: unknown,
     error: unknown,
-    origin: 'Persisted' | 'Imported' = 'Persisted'
+    retained: boolean,
+    origin: 'Persisted' | 'Imported'
 ) {
-    const retained = recoveryEntries.length < MAX_RECOVERY_ENTRIES;
-    if (retained) recoveryEntries.push(entry);
     reportSheetIssue({
         code: 'document-recovered',
         message: retained
@@ -147,6 +155,34 @@ function retainForRecovery(
             error: describeError(error),
         },
     });
+}
+
+/** Keeps an unparseable persisted entry in the bounded recovery collection and reports why. */
+function retainForRecovery(recoveryEntries: unknown[], entry: unknown, error: unknown) {
+    const retained = recoveryEntries.length < MAX_RECOVERY_ENTRIES;
+    if (retained) recoveryEntries.push(entry);
+    reportRecovery(entry, error, retained, 'Persisted');
+}
+
+/** A change an import made so an old file passes today's rules (shown in the batch summary). */
+export interface ImportRepair {
+    kind: string;
+    path: string;
+}
+
+export type LegacyRead =
+    | { status: 'not-legacy' }
+    | { status: 'ended' }
+    | { status: 'converted'; document: UnknownDocumentEnvelope; repairs: ImportRepair[] };
+
+/**
+ * The untagged flat character of the first versions as a document. Throws what validation throws;
+ * `ended` once its temporary support is over (spec 031).
+ */
+export function readLegacyExport(raw: unknown, now: Date): LegacyRead {
+    if (!looksLikeLegacyExport(raw)) return { status: 'not-legacy' };
+    if (!isLegacyExportSupported(now)) return { status: 'ended' };
+    return { status: 'converted', ...convertLegacyExport(raw) };
 }
 
 export function migrateDocumentStoreState(input: unknown): PersistedDocumentState {
@@ -180,7 +216,7 @@ export function migrateDocumentStoreState(input: unknown): PersistedDocumentStat
     const recoveryEntries: unknown[] = [];
     for (const entry of legacyCharacters) {
         try {
-            documents.push(characterDocumentFromBase(entry));
+            documents.push(convertLegacyExport(entry).document);
         } catch (error) {
             retainForRecovery(recoveryEntries, entry, error);
         }
@@ -347,12 +383,27 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
         void deletePortrait(getPortraitId(deleted));
     },
 
-    retainImportForRecovery: (entry, error) =>
-        set((state) => {
-            const recoveryEntries = [...state.recoveryEntries];
-            retainForRecovery(recoveryEntries, entry, error, 'Imported');
-            return { recoveryEntries };
-        }),
+    retainImportForRecovery: (entry, error, id) => {
+        const recoveryEntries = [...get().recoveryEntries];
+        const record = newRecoveryRecord(entry, describeError(error), id);
+        const known = recoveryEntries.findIndex((kept) => asRecoveryRecord(kept).id === id);
+        if (id !== undefined && known >= 0) recoveryEntries[known] = record;
+        else if (recoveryEntries.length < MAX_RECOVERY_ENTRIES) recoveryEntries.push(record);
+        else {
+            reportRecovery(entry, error, false, 'Imported');
+            return false;
+        }
+        set({ recoveryEntries });
+        reportRecovery(entry, error, true, 'Imported');
+        return true;
+    },
+    forgetRecoveryEntry: (id) =>
+        set((state) => ({
+            recoveryEntries: state.recoveryEntries.filter(
+                (kept) => asRecoveryRecord(kept).id !== id
+            ),
+        })),
+    clearRecoveryEntries: () => set({ recoveryEntries: [] }),
     importDocument: (document) => {
         if (isPresetId(document.id)) return;
         const parsed = systemRegistry.parseDocument(document).envelope;

@@ -24,8 +24,9 @@ import {
 import { systemRegistry } from './systems';
 import { characterDocumentFromBase } from './systems/star-wars-wod/characterDocument';
 import { starWarsExampleDocument, vehicleDamageDocument } from './systems/star-wars-wod/examples';
+import type { StarWarsCharacter } from './systems/star-wars-wod/schema';
 import { LENA_VARGA_DOCUMENT } from './systems/v5/modules/hunter/example';
-import type { BaseCharacter, ConditionMark } from './types/character';
+import type { ConditionMark } from './types/condition';
 import type { UnknownDocumentEnvelope } from './types/document';
 import type { CustomTemplate, TemplateNode } from './types/template';
 import { walkTemplateNodes } from './types/template';
@@ -135,7 +136,7 @@ export function TemplatePreview({
     );
 }
 
-export { JAX_VORN_PRESET } from './data/presets';
+export { JAX_VORN_PRESET } from './systems/star-wars-wod/presets';
 export {
     CatalogBrowser,
     CreateCharacterButton,
@@ -173,7 +174,7 @@ export function vehicleDamagePreviewDocument(
 }
 
 /** Preview document for a bundled character preset. */
-export function presetCharacterDocument(character: BaseCharacter): UnknownDocumentEnvelope {
+export function presetCharacterDocument(character: StarWarsCharacter): UnknownDocumentEnvelope {
     return characterDocumentFromBase(character);
 }
 

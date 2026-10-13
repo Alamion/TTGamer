@@ -35,8 +35,9 @@ contract. Rules:
 
 - Imported or persisted documents MUST pass the document envelope schema and the Zod
   schema of the registered definition they name; entries that fail are kept in a bounded
-  recovery collection, never silently trusted or dropped. `BaseCharacterSchema` remains
-  only the legacy-character import path, where unknown fields are stripped.
+  recovery collection, never silently trusted or dropped. The first-version flat character
+  export is the only legacy import path, supported until its end date, and unknown fields
+  are stripped there.
 - Documentation imports project code through the `@site/` alias only (root-absolute or
   relative paths into `src/` resolve in webpack but not in TypeScript, knip, or IDEs);
   `tests/docs/mdx-imports.test.ts` enforces this.
@@ -289,4 +290,4 @@ is perceived, the principles govern and this table clarifies application.
   guidance file for day-to-day development; it must remain consistent with this
   constitution and defer to it on conflict.
 
-**Version**: 1.6.0 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-10-04
+**Version**: 1.6.1 | **Ratified**: 2026-09-02 | **Last Amended**: 2026-10-14

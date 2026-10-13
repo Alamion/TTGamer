@@ -1,8 +1,5 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { JAX_VORN_PRESET } from '../../data/presets';
-import type { BaseCharacter } from '../../types/character';
-import { BaseCharacterSchema } from '../../types/character';
 import {
     DocumentDefinitionIdSchema,
     DocumentKindSchema,
@@ -16,6 +13,8 @@ import { characterDocumentFromBase } from './characterDocument';
 import { starWarsWodDefaultTemplates } from './defaultTemplates';
 import { starWarsTemplateBindings } from './documentBindings';
 import { starWarsExampleDocument } from './examples';
+import { JAX_VORN_PRESET } from './presets';
+import type { StarWarsCharacter } from './schema';
 import {
     createDefaultCreatureData,
     createDefaultDroidData,
@@ -26,6 +25,7 @@ import {
     DroidDataSchema,
     FodderDataSchema,
     StarWarsCharacterDataSchema,
+    StarWarsCharacterSchema,
     VehicleDataSchema,
 } from './schema';
 
@@ -47,7 +47,7 @@ function templateView(id: string, label: DocumentViewLabel, legacyIds: readonly 
 const CHARACTER_FULL_VIEW = templateView('full-sheet', viewLabels.fullSheet);
 const BRIEF_VIEW = templateView('brief', viewLabels.brief, ['npc-card']);
 
-function dataUpdates(updates: Partial<BaseCharacter>) {
+function dataUpdates(updates: Partial<StarWarsCharacter>) {
     const next = { ...updates } as Record<string, unknown>;
     delete next.id;
     return next;
@@ -55,8 +55,8 @@ function dataUpdates(updates: Partial<BaseCharacter>) {
 
 const characterCapability = {
     read: (documentId: string, data: unknown) =>
-        BaseCharacterSchema.parse({ id: documentId, ...(data as Record<string, unknown>) }),
-    applyUpdates: (data: unknown, updates: Partial<BaseCharacter>) =>
+        StarWarsCharacterSchema.parse({ id: documentId, ...(data as Record<string, unknown>) }),
+    applyUpdates: (data: unknown, updates: Partial<StarWarsCharacter>) =>
         StarWarsCharacterDataSchema.parse({
             ...StarWarsCharacterDataSchema.parse(data),
             ...dataUpdates(updates),
@@ -66,14 +66,14 @@ const characterCapability = {
 const droidCharacterCapability = {
     read: (documentId: string, data: unknown) => {
         const droid = DroidDataSchema.parse(data);
-        return BaseCharacterSchema.parse({
+        return StarWarsCharacterSchema.parse({
             id: documentId,
             ...droid,
             health: droid.damage,
             inventory: droid.builtInEquipment,
         });
     },
-    applyUpdates: (data: unknown, updates: Partial<BaseCharacter>) => {
+    applyUpdates: (data: unknown, updates: Partial<StarWarsCharacter>) => {
         const next = dataUpdates(updates);
         if (next.health) {
             next.damage = next.health;

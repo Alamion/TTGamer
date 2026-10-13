@@ -5,8 +5,8 @@ import { useCharacterContext } from '../../../context/CharacterContext';
 import { describeError, reportSheetIssue } from '../../../diagnostics';
 import { useDocumentSource } from '../../../hooks/useDocumentSource';
 import { systemRegistry } from '../../../systems';
+import type { CharacterView } from '../../../systems/capabilities';
 import { readCharacter } from '../../../systems/capabilities';
-import type { BaseCharacter } from '../../../types/character';
 
 export interface BoundDocument {
     /** Document data as bindings address it (the character view for character documents). */
@@ -37,7 +37,7 @@ export function useBoundDocument(): BoundDocument | undefined {
             ?.capabilities?.character;
     }, [document]);
 
-    const character = useMemo<BaseCharacter | undefined>(() => {
+    const character = useMemo<CharacterView | undefined>(() => {
         if (contextCharacter) return contextCharacter;
         if (!document || !capability) return undefined;
         try {
@@ -56,7 +56,7 @@ export function useBoundDocument(): BoundDocument | undefined {
             try {
                 updateDocumentData(documentId, (data) =>
                     capability
-                        ? capability.applyUpdates(data, updates as Partial<BaseCharacter>)
+                        ? capability.applyUpdates(data, updates as Partial<CharacterView>)
                         : { ...(data as Record<string, unknown>), ...updates }
                 );
                 const metadata = updates.metadata as { name?: unknown } | undefined;

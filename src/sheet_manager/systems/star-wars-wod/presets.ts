@@ -1,10 +1,10 @@
-import type { BaseCharacter } from '../types/character';
+import type { StarWarsCharacter } from './schema';
 
 export function isPresetId(id: string): boolean {
     return id.endsWith('::preset');
 }
 
-export const JAX_VORN_PRESET: BaseCharacter = {
+export const JAX_VORN_PRESET: StarWarsCharacter = {
     id: 'jax-vorn::preset',
     metadata: {
         name: 'Jax Vorn',
@@ -125,6 +125,6 @@ export const JAX_VORN_PRESET: BaseCharacter = {
     notes: 'See biography for full backstory.',
 };
 
-export const PRESET_CHARACTERS: Record<string, BaseCharacter> = {
+export const PRESET_CHARACTERS: Record<string, StarWarsCharacter> = {
     'jax-vorn': JAX_VORN_PRESET,
 };

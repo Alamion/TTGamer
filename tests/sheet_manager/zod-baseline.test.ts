@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { systemRegistry } from '@site/src/sheet_manager/systems';
+import type { StarWarsCharacter } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
+import { StarWarsCharacterSchema } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import type { CatalogCellValue, CatalogEntry } from '@site/src/sheet_manager/systems/userCatalogs';
 import { UserCatalogSchema } from '@site/src/sheet_manager/systems/userCatalogs';
 import {
@@ -10,9 +12,8 @@ import {
 } from '@site/src/sheet_manager/systems/userTypes';
 import { HunterSchema } from '@site/src/sheet_manager/systems/v5/modules/hunter/schema';
 import { V5CoreSchema } from '@site/src/sheet_manager/systems/v5/ruleset/schema';
-import type { BaseCharacter, Item } from '@site/src/sheet_manager/types/character';
-import { BaseCharacterSchema } from '@site/src/sheet_manager/types/character';
 import { UnknownDocumentEnvelopeSchema } from '@site/src/sheet_manager/types/document';
+import type { Item } from '@site/src/sheet_manager/types/equipment';
 import { CatalogBindingSchema, CustomTemplateSchema } from '@site/src/sheet_manager/types/template';
 import {
     TemplateImageValueSchema,
@@ -104,27 +105,27 @@ const userType = (extra: object = {}) => ({
 const cases: Array<[string, z.ZodType, unknown]> = [
     [
         'character: legacy import strips unknown keys',
-        BaseCharacterSchema,
+        StarWarsCharacterSchema,
         character({ legacyTop: 'x', skills: { Brawl: { ...trait, retired: true } } }),
     ],
     [
         'character: experience defaults and refine path',
-        BaseCharacterSchema,
+        StarWarsCharacterSchema,
         character({ experience: { spent: 5 } }),
     ],
     [
         'character: spent above total',
-        BaseCharacterSchema,
+        StarWarsCharacterSchema,
         character({ experience: { total: 1, spent: 5 } }),
     ],
     [
         'character: null defaulted array',
-        BaseCharacterSchema,
+        StarWarsCharacterSchema,
         character({ inventory: null, merits: undefined }),
     ],
-    ['character: wrong trait type', BaseCharacterSchema, { attributes: { Strength: 'high' } }],
-    ['character: empty object', BaseCharacterSchema, {}],
-    ['character: not an object', BaseCharacterSchema, null],
+    ['character: wrong trait type', StarWarsCharacterSchema, { attributes: { Strength: 'high' } }],
+    ['character: empty object', StarWarsCharacterSchema, {}],
+    ['character: not an object', StarWarsCharacterSchema, null],
     ['envelope: legacy system id is renamed', UnknownDocumentEnvelopeSchema, envelope()],
     ['envelope: values bag and tags default', UnknownDocumentEnvelopeSchema, envelope()],
     [
@@ -300,8 +301,8 @@ describe('Zod baseline (spec 027)', () => {
     });
 
     it('keeps the shape of the exported types', () => {
-        expectTypeOf<BaseCharacter['inventory']>().toEqualTypeOf<Item[]>();
-        expectTypeOf<BaseCharacter['notes']>().toEqualTypeOf<string>();
+        expectTypeOf<StarWarsCharacter['inventory']>().toEqualTypeOf<Item[]>();
+        expectTypeOf<StarWarsCharacter['notes']>().toEqualTypeOf<string>();
         expectTypeOf<CatalogEntry['values']>().toEqualTypeOf<Record<string, CatalogCellValue>>();
         expectTypeOf<CatalogEntry['name']>().toEqualTypeOf<string>();
     });

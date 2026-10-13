@@ -1,4 +1,3 @@
-import { migrateDocumentStoreState } from '../../../store/documentStore';
 import { exportNotices, resolveDocumentPolicies, systemRegistry } from '../../../systems';
 import { isUserKind } from '../../../systems/userTypes';
 import type { UnknownDocumentEnvelope } from '../../../types/document';
@@ -59,19 +58,4 @@ export function serializeDocumentExport(document: UnknownDocumentEnvelope): stri
 export function exportFileName(document: UnknownDocumentEnvelope): string {
     const safeName = document.metadata.title.trim().replace(/[^\p{L}\p{N}_-]+/gu, '_');
     return `ttgamer_${safeName || document.definitionId}.json`;
-}
-
-/** Parses an imported file: current envelope first, then the legacy character path. */
-export function parseImportedDocument(input: unknown): UnknownDocumentEnvelope {
-    try {
-        return systemRegistry.parseDocument(input).envelope;
-    } catch (envelopeError) {
-        const migrated = migrateDocumentStoreState({
-            characters: [input],
-            currentCharacter: input,
-        });
-        const document = migrated.documents[0];
-        if (!document) throw envelopeError;
-        return document;
-    }
 }

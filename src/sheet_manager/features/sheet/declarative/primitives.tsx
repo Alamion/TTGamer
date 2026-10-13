@@ -30,18 +30,11 @@ import {
     readDataPath,
     resolveDocumentBinding,
 } from '../../../systems/templateBindings';
-import type {
-    ArmorItem,
-    CustomSkill,
-    ImplantItem,
-    Item,
-    MeritFlawItem,
-    TraitValue,
-    WeaponItem,
-} from '../../../types/character';
-import { DEFAULT_ATTRIBUTE_VALUE } from '../../../types/character';
+import type { ArmorItem, ImplantItem, Item, WeaponItem } from '../../../types/equipment';
 import type { ListNode, PrimitiveNode } from '../../../types/template';
 import { listValueKey } from '../../../types/template';
+import type { CustomSkill, MeritFlawItem, TraitValue } from '../../../types/trait';
+import { DEFAULT_ATTRIBUTE_VALUE } from '../../../types/trait';
 import { ArmorSection } from '../body/ArmorSection';
 import {
     createEquipmentItem,

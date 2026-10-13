@@ -1,6 +1,6 @@
-import type { ConditionMark } from '../../types/character';
-import { DEFAULT_ATTRIBUTE_VALUE, DEFAULT_SKILL_VALUE } from '../../types/character';
+import type { ConditionMark } from '../../types/condition';
 import type { UnknownDocumentEnvelope } from '../../types/document';
+import { DEFAULT_ATTRIBUTE_VALUE, DEFAULT_SKILL_VALUE } from '../../types/trait';
 import {
     STAR_WARS_WOD_SYSTEM_ID,
     starWarsCreatureDefinition,

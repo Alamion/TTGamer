@@ -2,9 +2,10 @@ import Translate, { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
-import { Trash2, Users, X } from 'lucide-react';
+import { Download, Trash2, Users, X } from 'lucide-react';
 import { useState } from 'react';
 
+import { recoveryFileName, serializeRecoveryFile } from '../../features/sheet/shell/recoveryFile';
 import { useDocumentStore } from '../../store/documentStore';
 import { documentSettingLabel, systemRegistry } from '../../systems';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -15,9 +16,17 @@ export interface DocumentManagerDialogProps {
 }
 
 export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDialogProps) {
-    const { currentDocumentId, deleteDocument, documents, setCurrentDocument } = useDocumentStore();
+    const {
+        clearRecoveryEntries,
+        currentDocumentId,
+        deleteDocument,
+        documents,
+        recoveryEntries,
+        setCurrentDocument,
+    } = useDocumentStore();
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [clearRejectedOpen, setClearRejectedOpen] = useState(false);
     const pluralMessage = usePluralMessage();
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
@@ -55,6 +64,19 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
         }
         setSelectedIds(new Set());
         setDeleteDialogOpen(false);
+    };
+
+    const handleDownloadRejected = () => {
+        const url = URL.createObjectURL(
+            new Blob([serializeRecoveryFile(recoveryEntries)], { type: 'application/json' })
+        );
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = recoveryFileName();
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
     };
 
     return (
@@ -186,6 +208,43 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
                         )}
                     </div>
 
+                    {recoveryEntries.length > 0 && (
+                        <section
+                            aria-labelledby="rejected-files-heading"
+                            className="grid gap-2 border-t border-border p-4 text-xs text-textSecondary"
+                        >
+                            <p
+                                id="rejected-files-heading"
+                                className="m-0 font-semibold text-textPrimary"
+                            >
+                                {translate(uiMessages.sheet.documents.manager.rejectedCount, {
+                                    count: recoveryEntries.length,
+                                })}
+                            </p>
+                            <p className="m-0">
+                                {translate(uiMessages.sheet.documents.manager.rejectedHint)}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handleDownloadRejected}
+                                    className="flex items-center gap-1.5 rounded-sm border border-border bg-bgSurface px-3 py-1.5 font-medium text-textPrimary hover:bg-bgBase"
+                                >
+                                    <Download className="h-3.5 w-3.5" aria-hidden="true" />
+                                    {translate(uiMessages.sheet.documents.manager.rejectedDownload)}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setClearRejectedOpen(true)}
+                                    className="flex items-center gap-1.5 rounded-sm border border-border bg-bgSurface px-3 py-1.5 font-medium text-error hover:bg-error/10"
+                                >
+                                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                                    {translate(uiMessages.sheet.documents.manager.rejectedClear)}
+                                </button>
+                            </div>
+                        </section>
+                    )}
+
                     <div className="flex justify-end p-4 border-t border-border bg-bgBase/30">
                         <button
                             type="button"
@@ -209,6 +268,22 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
                             selectedIds.size
                         )}
                         confirmLabel={translate(uiMessages.sheet.documents.manager.deleteSelected)}
+                        cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}
+                        variant="danger"
+                    />
+
+                    <ConfirmDialog
+                        open={clearRejectedOpen}
+                        onOpenChange={setClearRejectedOpen}
+                        onConfirm={() => {
+                            clearRecoveryEntries();
+                            setClearRejectedOpen(false);
+                        }}
+                        title={translate(uiMessages.sheet.documents.manager.rejectedClearTitle)}
+                        description={translate(
+                            uiMessages.sheet.documents.manager.rejectedClearDescription
+                        )}
+                        confirmLabel={translate(uiMessages.sheet.documents.manager.rejectedClear)}
                         cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}
                         variant="danger"
                     />

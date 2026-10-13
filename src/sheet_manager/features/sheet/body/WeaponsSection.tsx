@@ -5,7 +5,7 @@ import { Plus } from 'lucide-react';
 import type { CatalogEntry } from '../../../components/controls/CatalogSuggest';
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { CollapsibleItem } from '../../../components/sections/CollapsibleItem';
-import type { WeaponItem } from '../../../types/character';
+import type { WeaponItem } from '../../../types/equipment';
 import { useItemName } from '../data/itemDisplay';
 
 const weaponMessages = uiMessages.sheet.items.weapons;

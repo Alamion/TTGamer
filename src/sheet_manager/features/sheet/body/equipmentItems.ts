@@ -1,7 +1,7 @@
 import { generateId } from '@site/src/shared/utils/random';
 
 import type { EquipmentSectionId } from '../../../systems/templateBindings';
-import type { ArmorItem, ImplantItem, Item, WeaponItem } from '../../../types/character';
+import type { ArmorItem, ImplantItem, Item, WeaponItem } from '../../../types/equipment';
 
 /**
  * Pure item rules of the equipment sections, shared by the Star Wars character capability and

@@ -1,11 +1,11 @@
 import {
     buildDocumentExport,
     exportFileName,
-    parseImportedDocument,
     serializeDocumentExport,
 } from '@site/src/sheet_manager/features/sheet/shell/documentFile';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { PUBLISHER_POLICIES } from '@site/src/sheet_manager/systems';
+import { asRecoveryRecord } from '@site/src/sheet_manager/store/recoveryRecord';
+import { PUBLISHER_POLICIES, systemRegistry } from '@site/src/sheet_manager/systems';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import { LENA_VARGA_DOCUMENT } from '@site/src/sheet_manager/systems/v5/modules/hunter/example';
 import type { UnknownDocumentEnvelope } from '@site/src/sheet_manager/types/document';
@@ -46,7 +46,9 @@ describe('hunter document files', () => {
     });
 
     it('re-imports an identical document and drops the notices', () => {
-        const imported = parseImportedDocument(JSON.parse(serializeDocumentExport(hunter)));
+        const imported = systemRegistry.parseDocument(
+            JSON.parse(serializeDocumentExport(hunter))
+        ).envelope;
         expect(imported).not.toHaveProperty('notices');
         expect(imported.data).toEqual(hunter.data);
         expect(imported.metadata.title).toBe('Lena Varga');
@@ -54,7 +56,9 @@ describe('hunter document files', () => {
 
     it('writes no notices for Star Wars documents and still round-trips them', () => {
         expect(buildDocumentExport(starWars)).not.toHaveProperty('notices');
-        const imported = parseImportedDocument(JSON.parse(serializeDocumentExport(starWars)));
+        const imported = systemRegistry.parseDocument(
+            JSON.parse(serializeDocumentExport(starWars))
+        ).envelope;
         expect(imported.definitionId).toBe('character');
     });
 
@@ -63,7 +67,7 @@ describe('hunter document files', () => {
         tampered.data.attributes.strength.value = 9;
         let error: unknown;
         try {
-            parseImportedDocument(tampered);
+            systemRegistry.parseDocument(tampered);
         } catch (caught) {
             error = caught;
         }
@@ -71,7 +75,11 @@ describe('hunter document files', () => {
         takeSheetIssues();
         useDocumentStore.setState({ recoveryEntries: [] });
         useDocumentStore.getState().retainImportForRecovery(tampered, error);
-        expect(useDocumentStore.getState().recoveryEntries).toEqual([tampered]);
+        expect(
+            useDocumentStore
+                .getState()
+                .recoveryEntries.map((entry) => asRecoveryRecord(entry).content)
+        ).toEqual([tampered]);
         expect(takeSheetIssues().map(({ code }) => code)).toEqual(['document-recovered']);
     });
 });
