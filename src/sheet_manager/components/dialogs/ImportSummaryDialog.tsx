@@ -86,6 +86,7 @@ export function ImportSummaryDialog({ onClose, summary }: ImportSummaryDialogPro
                                 {rejected.map((outcome) => (
                                     <li key={outcome.file}>
                                         <strong>{outcome.file}</strong>: {reasonText(outcome)}
+                                        {outcome.kept === false && ` ${translate(text.notKept)}`}
                                     </li>
                                 ))}
                             </ul>

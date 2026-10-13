@@ -129,3 +129,10 @@ file (US3). US1 is a pure refactor guarded by the parity suites that exist today
   `systemRegistry.parseDocument` directly.
 - **US2, summary text** uses `translate(...)` descriptors rather than `<Translate id>` so component
   tests read English; the repair kinds known to the dialog are a descriptor map with a fallback.
+- **US3, record identity**: records carry an `id` so a retried record that imports is forgotten and
+  one that still fails is updated in place (the count drops to zero after a repair).
+  `store/recoveryRecord.ts` owns the record shape; entries kept before it are wrapped on read and
+  get a fresh id per export, so they are not forgotten on import (accepted: none were reachable).
+  Entries kept by the persisted-store migration stay raw.
+- **US3, file shape**: `{ ttgRecovery: 1, exportedAt, records }`; a recovery file inside a record is
+  rejected. The full-collection case marks the file `kept: false` in the summary.

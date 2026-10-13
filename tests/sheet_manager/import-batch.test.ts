@@ -42,7 +42,10 @@ function makeHost(stored: string[] = [], answers: ConflictAnswer[] = []) {
             ids.add(document.id);
             imported.push(document);
         },
-        retain: (content, reason) => retained.push({ content, reason }),
+        retain: (content, reason) => {
+            retained.push({ content, reason });
+            return true;
+        },
         askConflict: async () => answers[asked++] ?? { choice: 'cancel', applyToRest: false },
     };
     return { host, imported, retained, asked: () => asked };

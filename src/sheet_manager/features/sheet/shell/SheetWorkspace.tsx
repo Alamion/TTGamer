@@ -37,6 +37,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
     const {
         currentDocumentId,
         documents,
+        forgetRecoveryEntry,
         importDocument,
         retainImportForRecovery,
         updateDocumentData,
@@ -154,6 +155,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
             hasDocument: (id) => useDocumentStore.getState().documents.some((d) => d.id === id),
             importDocument,
             retain: retainImportForRecovery,
+            forget: forgetRecoveryEntry,
             askConflict: requestConflictResolution,
         });
 

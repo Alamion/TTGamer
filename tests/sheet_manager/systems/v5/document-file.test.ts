@@ -4,6 +4,7 @@ import {
     serializeDocumentExport,
 } from '@site/src/sheet_manager/features/sheet/shell/documentFile';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
+import { asRecoveryRecord } from '@site/src/sheet_manager/store/recoveryRecord';
 import { PUBLISHER_POLICIES, systemRegistry } from '@site/src/sheet_manager/systems';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import { LENA_VARGA_DOCUMENT } from '@site/src/sheet_manager/systems/v5/modules/hunter/example';
@@ -74,7 +75,11 @@ describe('hunter document files', () => {
         takeSheetIssues();
         useDocumentStore.setState({ recoveryEntries: [] });
         useDocumentStore.getState().retainImportForRecovery(tampered, error);
-        expect(useDocumentStore.getState().recoveryEntries).toEqual([tampered]);
+        expect(
+            useDocumentStore
+                .getState()
+                .recoveryEntries.map((entry) => asRecoveryRecord(entry).content)
+        ).toEqual([tampered]);
         expect(takeSheetIssues().map(({ code }) => code)).toEqual(['document-recovered']);
     });
 });

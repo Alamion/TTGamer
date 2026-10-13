@@ -81,22 +81,22 @@ old export without losing a value, and ends with one summary.
 **Check**: a rejected file is downloaded in the recovery file, fixed, imported back, and the count
 drops to zero.
 
-- [ ] T015 [US3] Write `tests/sheet_manager/recovery-file.test.ts`: record shape and the Zod schema
+- [x] T015 [US3] Write `tests/sheet_manager/recovery-file.test.ts`: record shape and the Zod schema
       of the file; old raw retained entries read back as records; export strips `portraitId`; a
       fixed record imports through the batch and is not retained again; a record that still fails is
       kept with its new reason; a full collection is reported; the recovery file is never stored as
       a document (FR-009, FR-010, FR-014, SC-004)
-- [ ] T016 [US3] Add the recovery record and file schemas in
+- [x] T016 [US3] Add the recovery record and file schemas in
       `src/sheet_manager/features/sheet/shell/recoveryFile.ts`; make
       `retainImportForRecovery(entry, error)` in `store/documentStore.ts` write
       `{ ttgRecovery: 1, content, reason, at }`; add `clearRecoveryEntries()`; read both shapes
-- [ ] T017 [US3] Teach `importBatch.ts` to recognize a recovery file and retry each record as an
+- [x] T017 [US3] Teach `importBatch.ts` to recognize a recovery file and retry each record as an
       independent file; report a full collection in the summary
-- [ ] T018 [US3] Add a "Rejected files (N)" section with Download and Clear (confirmation through
+- [x] T018 [US3] Add a "Rejected files (N)" section with Download and Clear (confirmation through
       the existing confirm dialog, icon buttons labelled) to the document manager in
       `src/sheet_manager/components/dialogs/`; file name `ttgamer_recovery_<date>.json`; en and ru
       strings; component test for count, download, and confirmed clear (FR-009, FR-012, SC-005)
-- [ ] T019 [US3] Run `yarn verify` and commit:
+- [x] T019 [US3] Run `yarn verify` and commit:
       `feat(import): download, retry, and clear rejected files (spec 031, US3)`
 
 ## Finish

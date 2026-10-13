@@ -42,6 +42,7 @@ importSummary:
     reasonNotJson: The file is not valid JSON.
     reasonUnknownShape: The file is neither a TTGamer document nor an old export.
     reasonLegacyEnded: Support for old exports of the first versions has ended.
+    notKept: 'Not kept for recovery: there is no room left.'
     reasonInvalid: 'The file is invalid: {detail}'
     close: Close
 manager:
@@ -59,6 +60,12 @@ manager:
         message: Are you sure you want to delete {count} document? This cannot be undone.|Are you sure you want to delete {count} documents? This cannot be undone.
         plural: true
     close: Close
+    rejectedCount: 'Rejected files kept for recovery: {count}'
+    rejectedHint: Download them to repair or send them, then import the file again; files that now import are removed from here.
+    rejectedDownload: Download rejected files
+    rejectedClear: Clear rejected files
+    rejectedClearTitle: Clear rejected files
+    rejectedClearDescription: Delete every kept rejected file? Download them first if you may need them. This cannot be undone.
 examples:
     jaxVorn: Jax Vorn (example)
     wampa: Wampa (example)

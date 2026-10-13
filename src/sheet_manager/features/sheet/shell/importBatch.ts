@@ -5,6 +5,7 @@ import { type ImportRepair, readLegacyExport } from '../../../store/documentStor
 import { systemRegistry } from '../../../systems';
 import type { UnknownDocumentEnvelope } from '../../../types/document';
 import { readEmbeddedType } from './documentFile';
+import { readRecoveryFile } from './recoveryFile';
 import { installTypePayload, rewriteTypeIdentity, typeInstallState } from './typeFile';
 
 export type ConflictChoice = 'replace' | 'duplicate' | 'cancel';
@@ -19,8 +20,10 @@ export interface ConflictAnswer {
 export interface ImportHost {
     hasDocument: (id: string) => boolean;
     importDocument: (document: UnknownDocumentEnvelope) => void;
-    /** Keeps a rejected file's content for recovery. */
-    retain: (content: unknown, reason: string) => void;
+    /** Keeps a rejected file's content for recovery; false when there is no room. */
+    retain: (content: unknown, reason: string, recordId?: string) => boolean;
+    /** Drops a kept record whose file has now been imported. */
+    forget?: (recordId: string) => void;
     askConflict: (subject: 'document' | 'type') => Promise<ConflictAnswer>;
     now?: () => Date;
 }
@@ -38,6 +41,8 @@ export interface FileOutcome {
     title?: string;
     repairs: ImportRepair[];
     reason?: { code: RejectionCode; detail?: string };
+    /** Rejected files only: false when the recovery collection was full. */
+    kept?: boolean;
 }
 
 export interface BatchSummary {
@@ -55,6 +60,14 @@ class Rejection extends Error {
     constructor(code: RejectionCode, detail?: string) {
         super(detail ?? code);
         this.code = code;
+    }
+}
+
+function parseOrUndefined(text: string): unknown {
+    try {
+        return JSON.parse(text);
+    } catch {
+        return undefined;
     }
 }
 
@@ -100,14 +113,34 @@ export async function runImportBatch(
     };
 
     const outcomes: FileOutcome[] = [];
-    for (const { name, text } of files) {
+
+    /** A file to import: its text, or a record of an earlier rejection that is retried. */
+    interface Job {
+        name: string;
+        source: { text: string } | { content: unknown };
+        recordId?: string;
+    }
+
+    const importJob = async ({ name, source, recordId }: Job) => {
         let raw: unknown;
         try {
-            try {
-                raw = JSON.parse(text);
-            } catch {
-                raw = text;
-                throw new Rejection('not-json');
+            if ('text' in source) {
+                try {
+                    raw = JSON.parse(source.text);
+                } catch {
+                    raw = source.text;
+                    throw new Rejection('not-json');
+                }
+            } else {
+                raw = source.content;
+            }
+            if (
+                recordId !== undefined &&
+                typeof raw === 'object' &&
+                raw !== null &&
+                'ttgRecovery' in raw
+            ) {
+                throw new Rejection('unknown-shape');
             }
             const { document: parsed, repairs } = readDocument(raw, host.now?.() ?? new Date());
             let document = parsed;
@@ -121,7 +154,7 @@ export async function runImportBatch(
                     const choice = await resolve('type');
                     if (choice === 'cancel') {
                         outcomes.push({ file: name, status: 'skipped', repairs: [] });
-                        continue;
+                        return;
                     }
                     if (choice === 'duplicate') payload = rewriteTypeIdentity(payload);
                 }
@@ -144,11 +177,12 @@ export async function runImportBatch(
                         title: document.metadata.title,
                         repairs,
                     });
-                    continue;
+                    return;
                 }
                 if (choice === 'duplicate') document = { ...document, id: generateId() };
             }
             host.importDocument(document);
+            if (recordId !== undefined) host.forget?.(recordId);
             outcomes.push({
                 file: name,
                 status: 'imported',
@@ -163,8 +197,42 @@ export async function runImportBatch(
                           ...(error.message !== error.code && { detail: error.message }),
                       }
                     : { code: 'invalid' as const, detail: describeError(error) };
-            if (raw !== undefined) host.retain(raw, reason.detail ?? reason.code);
-            outcomes.push({ file: name, status: 'rejected', repairs: [], reason });
+            const kept =
+                raw === undefined
+                    ? false
+                    : host.retain(raw, reason.detail ?? reason.code, recordId);
+            outcomes.push({ file: name, status: 'rejected', repairs: [], reason, kept });
+        }
+    };
+
+    for (const { name, text } of files) {
+        let records: ReturnType<typeof readRecoveryFile>;
+        try {
+            records = readRecoveryFile(parseOrUndefined(text));
+        } catch (error) {
+            const detail = describeError(error);
+            const kept = host.retain(text, detail);
+            outcomes.push({
+                file: name,
+                status: 'rejected',
+                repairs: [],
+                reason: { code: 'invalid', detail },
+                kept,
+            });
+            continue;
+        }
+        if (!records) {
+            await importJob({ name, source: { text } });
+            continue;
+        }
+        // A recovery file is not a document: each record is retried as a file of its own.
+        for (const [index, record] of records.entries()) {
+            const content = record.content;
+            await importJob({
+                name: `${name} #${index + 1}`,
+                source: typeof content === 'string' ? { text: content } : { content },
+                recordId: record.id,
+            });
         }
     }
 
