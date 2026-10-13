@@ -219,7 +219,6 @@ export function DataCatalog<T extends { id: string }>({
     const locale = useLocale();
     const location = useLocation();
     const history = useHistory();
-    const firstRender = useRef(true);
     const prevSearchRef = useRef('');
     const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
     const pfx = id ? `${id}-` : '';
@@ -465,20 +464,21 @@ export function DataCatalog<T extends { id: string }>({
         // URL after hydration; reading it during render would not match the server HTML.
         // eslint-disable-next-line react-hooks/set-state-in-effect
         applyUrlParams(location.search);
-        firstRender.current = false;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
-        if (firstRender.current) return;
         const relevant = extractOurParams(location.search);
         if (relevant === prevSearchRef.current) return;
         applyUrlParams(location.search);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search]);
 
+    // A page from the URL survives the mount; only a later change of the size starts over.
+    const appliedPageSize = useRef(effectivePageSize);
     useEffect(() => {
-        if (firstRender.current) return;
+        if (appliedPageSize.current === effectivePageSize) return;
+        appliedPageSize.current = effectivePageSize;
         setPagination({
             pageIndex: 0,
             pageSize: effectivePageSize,
@@ -486,7 +486,6 @@ export function DataCatalog<T extends { id: string }>({
     }, [effectivePageSize]);
 
     useEffect(() => {
-        if (firstRender.current) return;
         if (debounceRef.current) clearTimeout(debounceRef.current);
         const search = buildSearchString();
         const ourParams = extractOurParams(search ? `?${search}` : '');
