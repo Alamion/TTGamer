@@ -129,6 +129,31 @@ const containers = story(
             ],
         },
         {
+            id: 'section-brief-look',
+            type: 'section',
+            title: 'Brief look: columns follow the width of the area',
+            children: [
+                group(
+                    'group-area',
+                    'Short labels in area columns',
+                    [
+                        ...['Strength', 'Dexterity', 'Stamina'].map((label, index) => ({
+                            id: `area-${label.toLowerCase()}`,
+                            type: 'rating' as const,
+                            label,
+                            max: 5,
+                            required: false,
+                            compact: true,
+                            shortForm: true,
+                            column: index + 1,
+                        })),
+                        { ...text('area-name', 'Name'), compact: true },
+                    ],
+                    { columns: 3, layout: 'area' }
+                ),
+            ],
+        },
+        {
             id: 'section-groups',
             type: 'section',
             title: 'Groups',
@@ -308,6 +333,23 @@ const fields = story(
                     label: 'Rating, maximum from "Number"',
                     max: 10,
                     maxFrom: 'number-plain',
+                },
+                {
+                    id: 'rating-short',
+                    type: 'rating',
+                    label: 'Rating: short label',
+                    max: 5,
+                    compact: true,
+                    shortForm: true,
+                },
+                {
+                    id: 'rating-short-own',
+                    type: 'rating',
+                    label: 'Rating: own short label',
+                    max: 5,
+                    compact: true,
+                    shortForm: true,
+                    shortLabel: 'OWN',
                 },
                 { id: 'resource', type: 'resource', label: 'Resource', max: 10 },
                 {

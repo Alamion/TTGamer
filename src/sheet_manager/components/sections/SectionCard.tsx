@@ -5,6 +5,7 @@ import { useLocalStorageState } from '@site/src/shared/hooks/useLocalStorageStat
 import { clsx } from 'clsx';
 import { ChevronDown } from 'lucide-react';
 
+import { BRIEF } from '../../features/sheet/declarative/briefRhythm';
 import { documentationFor } from '../controls/documentationFor';
 
 interface SectionCardProps {
@@ -13,6 +14,8 @@ interface SectionCardProps {
     defaultExpanded?: boolean;
     children: React.ReactNode;
     docsPath?: string;
+    /** Brief look (spec 033): no box, a small heading over a hairline, rhythm gaps. */
+    dense?: boolean;
 }
 
 export function SectionCard({
@@ -21,6 +24,7 @@ export function SectionCard({
     defaultExpanded = true,
     children,
     docsPath,
+    dense = false,
 }: SectionCardProps) {
     const [_storedExpanded, _setStoredExpanded] = useLocalStorageState(
         storageKey ?? '__section_card_never__',
@@ -62,6 +66,46 @@ export function SectionCard({
             {renderDocsIcon()}
         </h3>
     );
+
+    if (dense) {
+        return (
+            <section className="min-w-0">
+                {title &&
+                    (storageKey ? (
+                        <button
+                            type="button"
+                            onClick={() => setIsExpanded(!isExpanded)}
+                            className={clsx(
+                                'mb-0.5 flex w-full items-center justify-between text-left',
+                                BRIEF.heading
+                            )}
+                            aria-expanded={isExpanded}
+                            aria-label={translate(uiMessages.sheet.controls.toggleSection, {
+                                title: title ?? '',
+                            })}
+                        >
+                            <h3 className="flex items-center gap-2">
+                                {title}
+                                {renderDocsIcon()}
+                            </h3>
+                            <ChevronDown
+                                className={clsx(
+                                    'h-4 w-4 shrink-0 transition-transform duration-200 ease-linear motion-reduce:transition-none',
+                                    isExpanded && 'rotate-180'
+                                )}
+                                aria-hidden="true"
+                            />
+                        </button>
+                    ) : (
+                        <h3 className={clsx('mb-0.5 flex items-center gap-2', BRIEF.heading)}>
+                            {title}
+                            {renderDocsIcon()}
+                        </h3>
+                    ))}
+                {(!storageKey || isExpanded) && <div>{children}</div>}
+            </section>
+        );
+    }
 
     return (
         <div

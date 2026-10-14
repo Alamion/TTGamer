@@ -43,6 +43,8 @@ const field = (node: TemplateNode) => isTemplateField(node);
 const valueElement = (node: TemplateNode) => field(node) || node.type === 'primitive';
 const card = (node: TemplateNode) => node.type === 'group';
 const container = (node: TemplateNode) => isContainerNode(node);
+/** Ratings: the fields of the rating type and the game's own values placed on the page. */
+const rating = (node: TemplateNode) => node.type === 'rating' || node.type === 'primitive';
 const numberField = (node: TemplateNode) => node.type === 'number';
 const list = (node: TemplateNode) => node.type === 'list';
 const any = () => true;
@@ -115,6 +117,16 @@ export const SETTINGS = {
         carry: true,
         unset: false,
     },
+    shortForm: {
+        group: 'look',
+        label: editor.shortForm,
+        appliesTo: rating,
+        shared: { control: 'toggle' },
+        carry: true,
+        unset: false,
+    },
+    shortLabel: { group: 'look', label: editor.shortLabel, appliesTo: rating, carry: true },
+    layout: { group: 'look', label: editor.areaLayout, appliesTo: card, carry: true },
     hideTitle: {
         group: 'look',
         label: editor.showTitle,

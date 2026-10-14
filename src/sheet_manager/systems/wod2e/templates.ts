@@ -1,6 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { formula, group, primitive } from '../../templates/builders';
+import { denseBrief, formula, group, primitive } from '../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../types/document';
 import {
     type CustomTemplate,
@@ -118,7 +118,8 @@ function template(id: string, name: string, children: TemplateNode[]): CustomTem
 
 function briefChildren(): TemplateNode[] {
     const placed = <T extends TemplateNode>(node: T, column: number): T => ({ ...node, column });
-    const compact = (keys: readonly string[]) => keys.map((key) => trait(key, { compact: true }));
+    const compact = (keys: readonly string[]) =>
+        keys.map((key) => trait(key, { compact: true, shortForm: true }));
     return [
         group(
             'identity-fields',
@@ -135,7 +136,7 @@ function briefChildren(): TemplateNode[] {
             ATTRIBUTE_GROUPS.flatMap(({ keys }, index) =>
                 compact(keys).map((field) => placed(field, index + 1))
             ),
-            { columns: 3 }
+            { columns: 3, layout: 'area' }
         ),
         group(
             'brief-abilities',
@@ -143,7 +144,7 @@ function briefChildren(): TemplateNode[] {
             ABILITY_GROUPS.flatMap(({ keys }, index) =>
                 compact(keys).map((field) => placed(field, index + 1))
             ),
-            { columns: 3, collapsible: true }
+            { columns: 3, collapsible: true, layout: 'area' }
         ),
         group(
             'brief-resolve',
@@ -272,5 +273,5 @@ export const wod2eTemplates: readonly CustomTemplate[] = [
             otherSection(),
         ])
     ),
-    translatable(template('wod2e-brief', 'Brief', briefChildren())),
+    translatable(denseBrief(template('wod2e-brief', 'Brief', briefChildren()), ['brief-weapons'])),
 ];

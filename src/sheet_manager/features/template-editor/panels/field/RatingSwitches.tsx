@@ -5,6 +5,7 @@ import type { RatingFlag, TemplateField } from '../../../../types/template';
 import { RATING_FLAGS } from '../../../../types/template';
 import { EditorHelp } from '../../components/EditorHelp';
 import { ToggleRow } from '../LayoutControls';
+import { ShortFormSettings } from '../ShortFormSettings';
 import { editor, t } from './shared';
 import type { FieldEditorCallbacks, SeveralFields } from './types';
 
@@ -53,6 +54,14 @@ export function RatingSwitches({
     };
     return (
         <div className="grid gap-1 text-xs text-textSecondary">
+            {!several && (
+                <ShortFormSettings
+                    node={field}
+                    label={field.label}
+                    prefix={prefix}
+                    onChange={onUpdate}
+                />
+            )}
             {switches.map(([name, label]) => (
                 <ToggleRow
                     key={name}

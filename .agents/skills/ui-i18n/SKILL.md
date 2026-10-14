@@ -58,6 +58,9 @@ description:
   (UI ids or `catalog:<catalogId>/<entryId>`). A label is a book term exactly when its ref is
   listed; it then gets the English-name hint (`TermLabel`), follows the "Game terms" preference, and
   must match `ru` everywhere.
+- A rating shown in the brief format needs `abbr` and `ruAbbr` (two to four capitals each, set
+  together; a test checks every shipped brief). A rating outside the glossary takes the first three
+  letters of its label.
 - A term longer than a row's budget needs `ruShort` (verifier `overflow` rule; budgets in
   `scripts/i18n-verifier/config.ts`).
 - Russian docs write a term's first mention on a page as «Русский (English)».

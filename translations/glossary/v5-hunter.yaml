@@ -4,6 +4,8 @@
 #     en: Larceny                                  # English book name (must match the English text at every ref)
 #     ru: Воровство                                # approved Russian form (must match the Russian text at every ref)
 #     ruShort: Воровство                           # optional; shown when a sheet row is narrow
+#     abbr: LAR                                    # optional; two to four capitals a rating shows in the brief view (English)
+#     ruAbbr: ВОР                                  # optional; the same in Russian; set both or neither
 #     note: why this translation was chosen        # optional
 #     refs:                                        # UI message ids or catalog:<catalogId>/<entryId>
 #       - ttgamer.ui.sheet.v5.skills.larceny

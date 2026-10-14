@@ -4,6 +4,8 @@
 #     en: Larceny                                  # English book name (must match the English text at every ref)
 #     ru: Воровство                                # approved Russian form (must match the Russian text at every ref)
 #     ruShort: Воровство                           # optional; shown when a sheet row is narrow
+#     abbr: LAR                                    # optional; two to four capitals a rating shows in the brief view (English)
+#     ruAbbr: ВОР                                  # optional; the same in Russian; set both or neither
 #     note: why this translation was chosen        # optional
 #     refs:                                        # UI message ids or catalog:<catalogId>/<entryId>
 #       - ttgamer.ui.sheet.v5.skills.larceny
@@ -12,82 +14,114 @@
 - id: strength
   en: Strength
   ru: Сила
+  abbr: STR
+  ruAbbr: СИЛ
   refs:
       - ttgamer.ui.sheet.v5.attributes.strength
 - id: dexterity
   en: Dexterity
   ru: Ловкость
+  abbr: DEX
+  ruAbbr: ЛОВ
   refs:
       - ttgamer.ui.sheet.v5.attributes.dexterity
 - id: stamina
   en: Stamina
   ru: Выносливость
+  abbr: STA
+  ruAbbr: ВЫН
   refs:
       - ttgamer.ui.sheet.v5.attributes.stamina
 - id: charisma
   en: Charisma
   ru: Обаяние
+  abbr: CHA
+  ruAbbr: ОБА
   refs:
       - ttgamer.ui.sheet.v5.attributes.charisma
 - id: manipulation
   en: Manipulation
   ru: Манипуляция
+  abbr: MAN
+  ruAbbr: МАН
   note: 'T-061 review: unified with the Star Wars setting and the Russian docs (was «Манипулирование»)'
   refs:
       - ttgamer.ui.sheet.v5.attributes.manipulation
 - id: composure
   en: Composure
   ru: Самообладание
+  abbr: COM
+  ruAbbr: САМ
   refs:
       - ttgamer.ui.sheet.v5.attributes.composure
 - id: intelligence
   en: Intelligence
   ru: Интеллект
+  abbr: INT
+  ruAbbr: ИНТ
   refs:
       - ttgamer.ui.sheet.v5.attributes.intelligence
 - id: wits
   en: Wits
   ru: Смекалка
+  abbr: WIT
+  ruAbbr: СМК
   refs:
       - ttgamer.ui.sheet.v5.attributes.wits
 - id: resolve
   en: Resolve
   ru: Решительность
+  abbr: RES
+  ruAbbr: РЕШ
   refs:
       - ttgamer.ui.sheet.v5.attributes.resolve
 - id: athletics
   en: Athletics
   ru: Атлетика
+  abbr: ATH
+  ruAbbr: АТЛ
   refs:
       - ttgamer.ui.sheet.v5.skills.athletics
 - id: brawl
   en: Brawl
   ru: Драка
+  abbr: BRW
+  ruAbbr: ДРА
   refs:
       - ttgamer.ui.sheet.v5.skills.brawl
 - id: craft
   en: Craft
   ru: Ремесло
+  abbr: CRF
+  ruAbbr: РЕМ
   refs:
       - ttgamer.ui.sheet.v5.skills.craft
 - id: driving
   en: Driving
   ru: Вождение
+  abbr: DRV
+  ruAbbr: ВОЖ
   refs:
       - ttgamer.ui.sheet.v5.skills.driving
 - id: firearms
   en: Firearms
   ru: Стрельба
+  abbr: FIR
+  ruAbbr: СТР
   refs:
       - ttgamer.ui.sheet.v5.skills.firearms
 - id: larceny
   en: Larceny
   ru: Воровство
+  abbr: LAR
+  ruAbbr: ВОР
   refs:
       - ttgamer.ui.sheet.v5.skills.larceny
 - id: melee
   en: Melee
   ru: Холодное оружие
+  abbr: MEL
+  ruAbbr: ХОЛ
   ruShort: Хол. оружие
   note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
@@ -95,16 +129,22 @@
 - id: stealth
   en: Stealth
   ru: Скрытность
+  abbr: STE
+  ruAbbr: СКР
   refs:
       - ttgamer.ui.sheet.v5.skills.stealth
 - id: survival
   en: Survival
   ru: Выживание
+  abbr: SRV
+  ruAbbr: ВЫЖ
   refs:
       - ttgamer.ui.sheet.v5.skills.survival
 - id: animal-ken
   en: Animal Ken
   ru: Обращение с животными
+  abbr: ANM
+  ruAbbr: ЖИВ
   ruShort: Обр. с живот.
   note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
@@ -112,11 +152,15 @@
 - id: etiquette
   en: Etiquette
   ru: Этикет
+  abbr: ETQ
+  ruAbbr: ЭТИ
   refs:
       - ttgamer.ui.sheet.v5.skills.etiquette
 - id: insight
   en: Insight
   ru: Проницательность
+  abbr: INS
+  ruAbbr: ПРН
   ruShort: Прониц.
   note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
@@ -124,36 +168,50 @@
 - id: intimidation
   en: Intimidation
   ru: Запугивание
+  abbr: INT
+  ruAbbr: ЗАП
   refs:
       - ttgamer.ui.sheet.v5.skills.intimidation
 - id: leadership
   en: Leadership
   ru: Лидерство
+  abbr: LDR
+  ruAbbr: ЛИД
   refs:
       - ttgamer.ui.sheet.v5.skills.leadership
 - id: performance
   en: Performance
   ru: Исполнение
+  abbr: PRF
+  ruAbbr: ИСП
   refs:
       - ttgamer.ui.sheet.v5.skills.performance
 - id: persuasion
   en: Persuasion
   ru: Убеждение
+  abbr: PRS
+  ruAbbr: УБЕ
   refs:
       - ttgamer.ui.sheet.v5.skills.persuasion
 - id: streetwise
   en: Streetwise
   ru: Знание улиц
+  abbr: STW
+  ruAbbr: УЛИ
   refs:
       - ttgamer.ui.sheet.v5.skills.streetwise
 - id: subterfuge
   en: Subterfuge
   ru: Обман
+  abbr: SUB
+  ruAbbr: ОБМ
   refs:
       - ttgamer.ui.sheet.v5.skills.subterfuge
 - id: academics
   en: Academics
   ru: Гуманитарные науки
+  abbr: ACA
+  ruAbbr: ГУМ
   ruShort: Гум. науки
   note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
@@ -161,42 +219,58 @@
 - id: awareness
   en: Awareness
   ru: Бдительность
+  abbr: AWA
+  ruAbbr: БДИ
   note: 'T-061 review: «Бдительность» (was «Внимательность»); the Star Wars Alertness ability keeps that name in its own setting'
   refs:
       - ttgamer.ui.sheet.v5.skills.awareness
 - id: finance
   en: Finance
   ru: Финансы
+  abbr: FIN
+  ruAbbr: ФИН
   refs:
       - ttgamer.ui.sheet.v5.skills.finance
 - id: investigation
   en: Investigation
   ru: Расследование
+  abbr: INV
+  ruAbbr: РАС
   refs:
       - ttgamer.ui.sheet.v5.skills.investigation
 - id: medicine
   en: Medicine
   ru: Медицина
+  abbr: MED
+  ruAbbr: МЕД
   refs:
       - ttgamer.ui.sheet.v5.skills.medicine
 - id: occult
   en: Occult
   ru: Оккультизм
+  abbr: OCC
+  ruAbbr: ОКК
   refs:
       - ttgamer.ui.sheet.v5.skills.occult
 - id: politics
   en: Politics
   ru: Политика
+  abbr: POL
+  ruAbbr: ПОЛ
   refs:
       - ttgamer.ui.sheet.v5.skills.politics
 - id: science
   en: Science
   ru: Наука
+  abbr: SCI
+  ruAbbr: НАУ
   refs:
       - ttgamer.ui.sheet.v5.skills.science
 - id: technology
   en: Technology
   ru: Технологии
+  abbr: TEC
+  ruAbbr: ТЕХ
   refs:
       - ttgamer.ui.sheet.v5.skills.technology
 - id: health

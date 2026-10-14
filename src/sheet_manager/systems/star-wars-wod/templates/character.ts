@@ -269,7 +269,7 @@ function fullSheet(viewId: string, name: string, variant: SheetVariant): CustomT
 function briefSheet(viewId: string, name: string, variant: SheetVariant): CustomTemplate {
     const isDroid = variant === 'droid';
     const compactTraits = (keys: readonly string[]) =>
-        keys.map((key) => trait(key, { compact: true }));
+        keys.map((key) => trait(key, { compact: true, shortForm: true }));
     const placed = <T extends TemplateNode>(node: T, column: number): T => ({ ...node, column });
     return {
         id: viewId,
@@ -285,7 +285,7 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                     IDENTITY_FIELDS.filter(([key]) => ['name', 'concept', 'species'].includes(key)),
                     true
                 ),
-                { columns: 3, hideTitle: true }
+                { columns: 3, hideTitle: true, layout: 'area' }
             ),
             group(
                 'brief-attributes',
@@ -293,7 +293,7 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 ATTRIBUTE_GROUPS.flatMap(({ keys }, index) =>
                     compactTraits(keys).map((field) => placed(field, index + 1))
                 ),
-                { columns: 3 }
+                { columns: 3, layout: 'area' }
             ),
             group(
                 'brief-abilities',
@@ -301,62 +301,47 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                 ABILITY_GROUPS.flatMap(({ keys }, index) =>
                     compactTraits(keys).map((field) => placed(field, index + 1))
                 ),
-                { columns: 3, collapsible: true }
+                { columns: 3, collapsible: true, layout: 'area' }
             ),
             group(
                 'brief-resolve',
                 'Resolve',
                 [
-                    ...compactTraits(VIRTUE_KEYS).map((field) => placed(field, 1)),
-                    placed(
-                        resource('resource-willpower', 'resource:willpower', 'Willpower', {
-                            compact: true,
-                        }),
-                        2
-                    ),
+                    ...compactTraits(VIRTUE_KEYS),
+                    resource('resource-willpower', 'resource:willpower', 'Willpower', {
+                        compact: true,
+                    }),
                     ...(isDroid
                         ? []
                         : [
-                              placed(
-                                  resource(
-                                      'resource-force-points',
-                                      'resource:force-points',
-                                      'Force Points',
-                                      { compact: true }
-                                  ),
-                                  2
+                              resource(
+                                  'resource-force-points',
+                                  'resource:force-points',
+                                  'Force Points',
+                                  { compact: true }
                               ),
-                              placed(
-                                  resource(
-                                      'resource-dark-side',
-                                      'resource:dark-side-resistance',
-                                      'Dark Side Resistance',
-                                      { compact: true }
-                                  ),
-                                  2
+                              resource(
+                                  'resource-dark-side',
+                                  'resource:dark-side-resistance',
+                                  'Dark Side Resistance',
+                                  { compact: true, shortForm: true }
                               ),
                           ]),
-                    placed(
-                        formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative, {
-                            compact: true,
-                        }),
-                        3
-                    ),
+                    formula('derived-initiative', 'Initiative (Std)', DERIVED.initiative, {
+                        compact: true,
+                    }),
                     ...(isDroid
                         ? []
                         : [
-                              placed(
-                                  formula(
-                                      'derived-initiative-saber',
-                                      'Initiative (Saber)',
-                                      DERIVED.initiativeSaber,
-                                      { compact: true }
-                                  ),
-                                  3
+                              formula(
+                                  'derived-initiative-saber',
+                                  'Initiative (Saber)',
+                                  DERIVED.initiativeSaber,
+                                  { compact: true }
                               ),
                           ]),
                 ],
-                { columns: 3 }
+                { layout: 'area' }
             ),
             group(
                 'brief-health',
@@ -367,13 +352,13 @@ function briefSheet(viewId: string, name: string, variant: SheetVariant): Custom
                         label: isDroid ? 'Damage' : 'Health',
                     }),
                 ],
-                { hideTitle: true }
+                { hideTitle: true, layout: 'area' }
             ),
             group(
                 'brief-weapons',
                 'Weapons',
                 [primitive('equipment-weapons', 'equipment:weapons')],
-                { collapsible: true }
+                { collapsible: true, defaultCollapsed: true, layout: 'area' }
             ),
         ],
     };

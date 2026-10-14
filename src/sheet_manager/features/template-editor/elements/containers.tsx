@@ -116,6 +116,12 @@ export function groupSettings(node: GroupNode, callbacks: NodeEdits): GroupedSet
                     columnWidths={node.columnWidths}
                     onChange={update}
                 />
+                <ToggleRow
+                    checked={node.layout === 'area'}
+                    label={settingLabel('layout')}
+                    setting="layout"
+                    onChange={(checked) => update({ layout: checked ? 'area' : undefined })}
+                />
             </>
         ),
         visibility: (

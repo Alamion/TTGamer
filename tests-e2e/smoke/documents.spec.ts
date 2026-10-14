@@ -53,7 +53,7 @@ for (const { name, viewport } of sizes) {
 
             await window.getByRole('searchbox', { name: 'Search names' }).fill('camp');
             await expect(tree.getByRole('treeitem')).toHaveCount(2);
-            await window.getByRole('button', { name: 'Clear search' }).click();
+            await window.getByRole('button', { name: 'Clear search', exact: true }).click();
 
             await window.getByRole('button', { name: 'Undo: Move' }).click();
             await expect(tree.getByRole('treeitem', { name: /^Character/ })).toHaveAttribute(

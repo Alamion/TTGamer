@@ -120,6 +120,10 @@ editor:
     helpAbout: 'Справка: {setting}'
     guide: Руководство по редактору шаблонов
     groupCollapsible: Сворачиваемая (состояние запоминается)
+    shortForm: Короткая подпись (краткий вид)
+    shortLabel: Текст короткой подписи
+    shortLabelPlaceholder: 'По умолчанию: {derived}'
+    areaLayout: Краткий вид (колонки зависят от ширины области)
     tableTitle: Название таблицы (необязательно)
     listTitle: Заголовок списка (необязательно)
     tableValueKey: Общий ключ значения (строки таблицы)

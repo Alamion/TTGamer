@@ -4127,6 +4127,7 @@
                     ],
                     "columns": 3,
                     "hideTitle": true,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
                 },
                 {
@@ -4145,6 +4146,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:attributes/strength"
                         },
@@ -4158,6 +4160,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:attributes/dexterity"
                         },
@@ -4171,6 +4174,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:attributes/stamina"
                         },
@@ -4184,6 +4188,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:attributes/charisma"
                         },
@@ -4197,6 +4202,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:attributes/manipulation"
                         },
@@ -4210,6 +4216,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:attributes/appearance"
                         },
@@ -4223,6 +4230,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:attributes/perception"
                         },
@@ -4236,6 +4244,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:attributes/intelligence"
                         },
@@ -4249,11 +4258,13 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:attributes/wits"
                         }
                     ],
                     "columns": 3,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes"
                 },
                 {
@@ -4272,6 +4283,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/alertness"
                         },
@@ -4285,6 +4297,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/athletics"
                         },
@@ -4298,6 +4311,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/brawl"
                         },
@@ -4311,6 +4325,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/command"
                         },
@@ -4324,6 +4339,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/diplomacy"
                         },
@@ -4337,6 +4353,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/dodge"
                         },
@@ -4350,6 +4367,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/empathy"
                         },
@@ -4363,6 +4381,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/intimidation"
                         },
@@ -4376,6 +4395,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/streetwise"
                         },
@@ -4389,6 +4409,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/subterfuge"
                         },
@@ -4402,6 +4423,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/blaster"
                         },
@@ -4415,6 +4437,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/gunnery"
                         },
@@ -4428,6 +4451,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/melee"
                         },
@@ -4441,6 +4465,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/pilot"
                         },
@@ -4454,6 +4479,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/programming"
                         },
@@ -4467,6 +4493,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/repair"
                         },
@@ -4480,6 +4507,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/ride"
                         },
@@ -4493,6 +4521,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/security"
                         },
@@ -4506,6 +4535,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/stealth"
                         },
@@ -4519,6 +4549,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/survival"
                         },
@@ -4532,6 +4563,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/astrogation"
                         },
@@ -4545,6 +4577,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/bureaucracy"
                         },
@@ -4558,6 +4591,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/cultures"
                         },
@@ -4571,6 +4605,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/interfaces"
                         },
@@ -4584,6 +4619,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/investigation"
                         },
@@ -4597,6 +4633,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/languages"
                         },
@@ -4610,6 +4647,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/medicine"
                         },
@@ -4623,6 +4661,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/politics"
                         },
@@ -4636,6 +4675,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/tech"
                         },
@@ -4649,11 +4689,13 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/trade"
                         }
                     ],
                     "columns": 3,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
                 },
                 {
@@ -4672,7 +4714,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
-                            "column": 1,
+                            "shortForm": true,
                             "labelMessage": "catalog:virtues/conscience"
                         },
                         {
@@ -4685,7 +4727,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
-                            "column": 1,
+                            "shortForm": true,
                             "labelMessage": "catalog:virtues/passion"
                         },
                         {
@@ -4698,7 +4740,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
-                            "column": 1,
+                            "shortForm": true,
                             "labelMessage": "catalog:virtues/self-control"
                         },
                         {
@@ -4707,7 +4749,6 @@
                             "bindingKey": "resource:willpower",
                             "compact": true,
                             "label": "Willpower",
-                            "column": 2,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                         },
                         {
@@ -4716,7 +4757,6 @@
                             "bindingKey": "resource:force-points",
                             "compact": true,
                             "label": "Force Points",
-                            "column": 2,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
                         },
                         {
@@ -4724,8 +4764,8 @@
                             "type": "primitive",
                             "bindingKey": "resource:dark-side-resistance",
                             "compact": true,
+                            "shortForm": true,
                             "label": "Dark Side Resistance",
-                            "column": 2,
                             "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
                         },
                         {
@@ -4735,7 +4775,6 @@
                             "formula": "wits + alertness",
                             "compact": true,
                             "required": false,
-                            "column": 3,
                             "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard"
                         },
                         {
@@ -4745,11 +4784,10 @@
                             "formula": "wits + alertness + control",
                             "compact": true,
                             "required": false,
-                            "column": 3,
                             "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber"
                         }
                     ],
-                    "columns": 3,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve"
                 },
                 {
@@ -4768,6 +4806,7 @@
                         }
                     ],
                     "hideTitle": true,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
                 },
                 {
@@ -4783,6 +4822,8 @@
                             "compact": false
                         }
                     ],
+                    "layout": "area",
+                    "defaultCollapsed": true,
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
                 }
             ]
@@ -4833,6 +4874,7 @@
                     ],
                     "columns": 3,
                     "hideTitle": true,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
                 },
                 {
@@ -4851,6 +4893,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:attributes/strength"
                         },
@@ -4864,6 +4907,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:attributes/dexterity"
                         },
@@ -4877,6 +4921,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:attributes/stamina"
                         },
@@ -4890,6 +4935,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:attributes/charisma"
                         },
@@ -4903,6 +4949,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:attributes/manipulation"
                         },
@@ -4916,6 +4963,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:attributes/appearance"
                         },
@@ -4929,6 +4977,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:attributes/perception"
                         },
@@ -4942,6 +4991,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:attributes/intelligence"
                         },
@@ -4955,11 +5005,13 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:attributes/wits"
                         }
                     ],
                     "columns": 3,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes"
                 },
                 {
@@ -4978,6 +5030,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/alertness"
                         },
@@ -4991,6 +5044,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/athletics"
                         },
@@ -5004,6 +5058,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/brawl"
                         },
@@ -5017,6 +5072,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/command"
                         },
@@ -5030,6 +5086,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/diplomacy"
                         },
@@ -5043,6 +5100,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/dodge"
                         },
@@ -5056,6 +5114,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/empathy"
                         },
@@ -5069,6 +5128,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/intimidation"
                         },
@@ -5082,6 +5142,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/streetwise"
                         },
@@ -5095,6 +5156,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 1,
                             "labelMessage": "catalog:abilities/subterfuge"
                         },
@@ -5108,6 +5170,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/blaster"
                         },
@@ -5121,6 +5184,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/gunnery"
                         },
@@ -5134,6 +5198,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/melee"
                         },
@@ -5147,6 +5212,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/pilot"
                         },
@@ -5160,6 +5226,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/programming"
                         },
@@ -5173,6 +5240,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/repair"
                         },
@@ -5186,6 +5254,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/ride"
                         },
@@ -5199,6 +5268,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/security"
                         },
@@ -5212,6 +5282,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/stealth"
                         },
@@ -5225,6 +5296,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 2,
                             "labelMessage": "catalog:abilities/survival"
                         },
@@ -5238,6 +5310,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/astrogation"
                         },
@@ -5251,6 +5324,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/bureaucracy"
                         },
@@ -5264,6 +5338,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/cultures"
                         },
@@ -5277,6 +5352,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/interfaces"
                         },
@@ -5290,6 +5366,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/investigation"
                         },
@@ -5303,6 +5380,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/languages"
                         },
@@ -5316,6 +5394,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/medicine"
                         },
@@ -5329,6 +5408,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/politics"
                         },
@@ -5342,6 +5422,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/tech"
                         },
@@ -5355,11 +5436,13 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
+                            "shortForm": true,
                             "column": 3,
                             "labelMessage": "catalog:abilities/trade"
                         }
                     ],
                     "columns": 3,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
                 },
                 {
@@ -5378,7 +5461,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
-                            "column": 1,
+                            "shortForm": true,
                             "labelMessage": "catalog:virtues/conscience"
                         },
                         {
@@ -5391,7 +5474,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
-                            "column": 1,
+                            "shortForm": true,
                             "labelMessage": "catalog:virtues/passion"
                         },
                         {
@@ -5404,7 +5487,7 @@
                             "presentation": "dots",
                             "compact": true,
                             "required": false,
-                            "column": 1,
+                            "shortForm": true,
                             "labelMessage": "catalog:virtues/self-control"
                         },
                         {
@@ -5413,7 +5496,6 @@
                             "bindingKey": "resource:willpower",
                             "compact": true,
                             "label": "Willpower",
-                            "column": 2,
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                         },
                         {
@@ -5423,11 +5505,10 @@
                             "formula": "wits + alertness",
                             "compact": true,
                             "required": false,
-                            "column": 3,
                             "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard"
                         }
                     ],
-                    "columns": 3,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve"
                 },
                 {
@@ -5446,6 +5527,7 @@
                         }
                     ],
                     "hideTitle": true,
+                    "layout": "area",
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
                 },
                 {
@@ -5461,6 +5543,8 @@
                             "compact": false
                         }
                     ],
+                    "layout": "area",
+                    "defaultCollapsed": true,
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
                 }
             ]
@@ -6069,7 +6153,8 @@
                     ],
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.identity",
                     "columns": 4,
-                    "hideTitle": true
+                    "hideTitle": true,
+                    "layout": "area"
                 },
                 {
                     "id": "brief-pools",
@@ -6088,6 +6173,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/strength",
+                            "shortForm": true,
                             "column": 1
                         },
                         {
@@ -6101,6 +6187,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/dexterity",
+                            "shortForm": true,
                             "column": 1
                         },
                         {
@@ -6114,6 +6201,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/stamina",
+                            "shortForm": true,
                             "column": 1
                         },
                         {
@@ -6127,6 +6215,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/perception",
+                            "shortForm": true,
                             "column": 2
                         },
                         {
@@ -6140,6 +6229,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/intelligence",
+                            "shortForm": true,
                             "column": 2
                         },
                         {
@@ -6153,6 +6243,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/wits",
+                            "shortForm": true,
                             "column": 2
                         },
                         {
@@ -6195,7 +6286,8 @@
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.templates.entities.pools",
-                    "columns": 3
+                    "columns": 3,
+                    "layout": "area"
                 },
                 {
                     "id": "brief-attacks",
@@ -6212,7 +6304,8 @@
                             "label": "Attacks"
                         }
                     ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.attacks"
+                    "labelMessage": "ttgamer.ui.sheet.documents.fields.attacks",
+                    "layout": "area"
                 },
                 {
                     "id": "brief-health",
@@ -6233,7 +6326,8 @@
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.health",
-                    "hideTitle": true
+                    "hideTitle": true,
+                    "layout": "area"
                 }
             ]
         },
@@ -6902,7 +6996,8 @@
                     ],
                     "labelMessage": "ttgamer.ui.sheet.templates.entities.identification",
                     "columns": 3,
-                    "hideTitle": true
+                    "hideTitle": true,
+                    "layout": "area"
                 },
                 {
                     "id": "brief-systems",
@@ -6961,7 +7056,8 @@
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.systems",
-                    "columns": 2
+                    "columns": 2,
+                    "layout": "area"
                 },
                 {
                     "id": "brief-weapons",
@@ -6978,7 +7074,8 @@
                             "label": "Weapons"
                         }
                     ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
+                    "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
+                    "layout": "area"
                 },
                 {
                     "id": "brief-crew",
@@ -7010,7 +7107,8 @@
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.templates.entities.crewStations",
-                    "columns": 2
+                    "columns": 2,
+                    "layout": "area"
                 },
                 {
                     "id": "brief-damage",
@@ -7031,7 +7129,8 @@
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.damage",
-                    "hideTitle": true
+                    "hideTitle": true,
+                    "layout": "area"
                 }
             ]
         },
@@ -7513,7 +7612,8 @@
                     ],
                     "labelMessage": "ttgamer.ui.sheet.templates.entities.group",
                     "columns": 2,
-                    "hideTitle": true
+                    "hideTitle": true,
+                    "layout": "area"
                 },
                 {
                     "id": "brief-pools",
@@ -7532,6 +7632,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/strength",
+                            "shortForm": true,
                             "column": 1
                         },
                         {
@@ -7545,6 +7646,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/dexterity",
+                            "shortForm": true,
                             "column": 1
                         },
                         {
@@ -7558,6 +7660,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/stamina",
+                            "shortForm": true,
                             "column": 1
                         },
                         {
@@ -7571,6 +7674,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/charisma",
+                            "shortForm": true,
                             "column": 2
                         },
                         {
@@ -7584,6 +7688,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/manipulation",
+                            "shortForm": true,
                             "column": 2
                         },
                         {
@@ -7597,6 +7702,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/appearance",
+                            "shortForm": true,
                             "column": 2
                         },
                         {
@@ -7610,6 +7716,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/perception",
+                            "shortForm": true,
                             "column": 3
                         },
                         {
@@ -7623,6 +7730,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/intelligence",
+                            "shortForm": true,
                             "column": 3
                         },
                         {
@@ -7636,6 +7744,7 @@
                             "compact": true,
                             "required": false,
                             "labelMessage": "catalog:attributes/wits",
+                            "shortForm": true,
                             "column": 3
                         },
                         {
@@ -7659,7 +7768,8 @@
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.templates.entities.pools",
-                    "columns": 3
+                    "columns": 3,
+                    "layout": "area"
                 },
                 {
                     "id": "brief-abilities",
@@ -7676,7 +7786,9 @@
                             "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
                         }
                     ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities"
+                    "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
+                    "layout": "area",
+                    "defaultCollapsed": true
                 },
                 {
                     "id": "brief-weapons",
@@ -7693,7 +7805,8 @@
                             "label": "Weapons"
                         }
                     ],
-                    "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
+                    "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons",
+                    "layout": "area"
                 },
                 {
                     "id": "brief-members",
@@ -7714,7 +7827,8 @@
                         }
                     ],
                     "labelMessage": "ttgamer.ui.sheet.documents.fields.members",
-                    "hideTitle": true
+                    "hideTitle": true,
+                    "layout": "area"
                 }
             ]
         }

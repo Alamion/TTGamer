@@ -62,6 +62,7 @@ import { PoolTracker } from './PoolTracker';
 import { traitRowKind } from './rowKind';
 import { moveItem } from './rowOrder';
 import { EnumField, RowsBody } from './RowsBody';
+import { useShortLabel } from './shortLabels';
 
 const page = uiMessages.sheet.templates.page;
 const fields = uiMessages.sheet.documents.fields;
@@ -565,6 +566,7 @@ function PrimitiveTraitBody({
 }) {
     const bound = useBoundDocument();
     const traitDiceRoll = useDocumentTraitDiceRoll();
+    const shortLabel = useShortLabel(node, node.label ?? descriptor.label);
     if (!bound) {
         return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
     }
@@ -591,6 +593,7 @@ function PrimitiveTraitBody({
             <CompactRating
                 label={label}
                 term={termLinkOf(node)}
+                shortLabel={shortLabel}
                 value={trait.value}
                 max={descriptor.maximum}
                 disabled={readOnly}
@@ -684,6 +687,7 @@ function PrimitiveResourceBody({
     maxState?: PrimitiveMaxState;
 }) {
     const bound = useBoundDocument();
+    const shortLabel = useShortLabel(node, node.label ?? descriptor.label);
     if (!bound) {
         return <DegradedBinding bindingKey={node.bindingKey} reason="no-document" />;
     }
@@ -749,7 +753,7 @@ function PrimitiveResourceBody({
     }
     if (node.compact) {
         return (
-            <div className="grid gap-1">
+            <div className="grid min-w-0 grid-cols-1 gap-1">
                 {descriptor.mode === 'pool' && !node.part ? (
                     <CompactResource
                         label={label}
@@ -772,6 +776,7 @@ function PrimitiveResourceBody({
                     <CompactRating
                         label={label}
                         term={termLinkOf(node)}
+                        shortLabel={shortLabel}
                         value={Math.min(shown, rowMax)}
                         max={rowMax}
                         disabled={readOnly}

@@ -82,6 +82,21 @@ view (aliases `brief`/`npc-card` where older data may use them). Keep obsolete p
 definition-owned aliases until their data can no longer exist. View labels are definition-owned
 translation descriptors; shells must not maintain view-ID label maps.
 
+Brief look (spec 033): the sheet root is the named size container `brief` (`@container/brief`), and
+brief layout reads its width, never the window's. A group with `layout: 'area'` is drawn in the
+brief look: no box, a heading over a hairline (`SectionCard dense`), three columns (one under 260
+px), and cells that are rows in a narrow area and wrapping chips from the `md` container width;
+children without a `column` flow by natural width. Shipped briefs go through `dense()` /
+`denseBrief()` (`templates/builders.ts`); their weapons list starts collapsed. Spacing and heading
+classes come from `features/sheet/declarative/briefRhythm.ts`; add a compact form there, not a
+private gap. A rating with `shortForm` draws a short label (the author's `shortLabel`, else the
+glossary's `abbr`/`ruAbbr`, else the first three letters; `shortLabels.ts`) while the full name
+stays the input's name and the hint of the cell; a clash inside one group falls back to the full
+label. Do not use `.term-row` for a cell that must size by its content (it is an inline-size
+container). Contrast of the brief's colours is computed from the palette in
+`tests/sheet_manager/brief-contrast.test.ts`; measured heights are pinned by
+`tests-e2e/smoke/brief-layout.spec.ts` against `brief-baseline.ts`.
+
 Prefer capability adapters for related payloads. For example, sentient and droid documents share
 character trait/equipment blocks; the droid adapter maps its mechanical `damage` track to the shared
 condition capability without changing persisted field names. Labels and track profiles remain

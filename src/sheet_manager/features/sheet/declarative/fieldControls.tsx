@@ -8,6 +8,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 import { CatalogSuggest } from '../../../components/controls/CatalogSuggest';
 import { Checkbox } from '../../../components/controls/Checkbox';
 import { DocumentSearch } from '../../../components/controls/DocumentSearch';
+import { CompactRating } from '../../../components/stat-fields/CompactSheetFields';
 import { RatingRow } from '../../../components/stat-fields/RatingRow';
 import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
@@ -22,6 +23,7 @@ import { fieldLabelPosition, TEMPLATE_LIMITS } from '../../../types/template';
 import type { RatingDetail, TemplateImageValue } from '../../../types/templateValues';
 import { useDocumentTraitDiceRoll } from './boundDocument';
 import { PoolTracker } from './PoolTracker';
+import { useShortLabel } from './shortLabels';
 
 const page = uiMessages.sheet.templates.page;
 const referenceMessages = uiMessages.sheet.templates.reference;
@@ -470,6 +472,20 @@ function RatingFieldControlRender({
     // the stored value; raising the maximum re-exposes the full range.
     const current = stored === undefined ? undefined : Math.min(stored, effectiveMax);
     const flags = field.presentation === 'dots' ? (field.flags ?? []) : [];
+    const shortLabel = useShortLabel(field, field.label);
+    if (shortLabel) {
+        return (
+            <CompactRating
+                label={field.label}
+                term={termLinkOf(field)}
+                shortLabel={shortLabel}
+                value={current ?? field.min}
+                max={effectiveMax}
+                disabled={disabled}
+                onChange={(next) => onChange(Math.min(effectiveMax, Math.max(field.min, next)))}
+            />
+        );
+    }
 
     return (
         <RatingRow
@@ -889,7 +905,11 @@ function FormulaFieldControlRender({
     return (
         <div
             className={clsx(
-                top ? 'grid gap-1' : 'flex items-baseline justify-between gap-3',
+                top
+                    ? 'grid gap-1'
+                    : field.compact
+                      ? 'flex items-baseline gap-1.5'
+                      : 'flex items-baseline justify-between gap-3',
                 field.compact ? 'text-xs' : 'text-sm'
             )}
         >

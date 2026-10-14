@@ -31,6 +31,16 @@ export const LabelMessageSchema = z
 const labelMessageShape = { labelMessage: LabelMessageSchema.optional() };
 
 /**
+ * Brief look of a rating (spec 033): `shortForm` shows a short label (three letters unless the
+ * author sets `shortLabel`, up to four) beside the value; the full name stays the accessible name
+ * and the hint. Absent means off, so pages saved before it parse unchanged.
+ */
+const shortLabelShape = {
+    shortForm: z.boolean().optional(),
+    shortLabel: z.string().min(1).max(4).optional(),
+};
+
+/**
  * Spec 009: the book term a field or primitive stands for. `termRef` keeps the translation
  * reference after the author renames the label (which drops `labelMessage`); the effective
  * term is `termRef ?? labelMessage`. `termHint: false` turns its English-name hint off.
@@ -89,6 +99,7 @@ const fieldBaseShape = {
     valueKey: templateIdentifierSchema.optional(),
     /** Brief-format rendering when the field is bridged to document data (feature 005). */
     compact: z.boolean().default(false),
+    ...shortLabelShape,
 };
 
 const boundedNumberShape = {
@@ -605,6 +616,7 @@ const PrimitiveNodeSchema = z.object({
     /** With `poolTracker`: the maximum's minimum (formula). */
     maxMinFrom: z.string().min(1).max(500).optional(),
     compact: z.boolean().default(false),
+    ...shortLabelShape,
     track: PrimitiveTrackOverrideSchema.optional(),
     /**
      * Track bindings: `table` (a row per level with its name and penalty) or `strip` (a line of
@@ -694,6 +706,8 @@ export interface GroupNode {
     collapsible: boolean;
     /** Collapsible groups only: start collapsed until opened. */
     defaultCollapsed?: boolean;
+    /** `area`: columns and cell look follow the width of the area the page is drawn in (spec 033). */
+    layout?: 'window' | 'area';
     columns?: number;
     columnWidths?: number[];
     children: TemplateNode[];
@@ -795,6 +809,7 @@ const templateNodeSchema: z.ZodType<TemplateNode> = z.lazy(() =>
                 docsPath: z.string().max(500).optional(),
                 collapsible: z.boolean().default(false),
                 defaultCollapsed: z.boolean().optional(),
+                layout: z.enum(['window', 'area']).optional(),
                 columns: z.number().int().min(1).max(TEMPLATE_LIMITS.columnsMax).optional(),
                 ...columnWidthsShape,
                 children: z.array(templateNodeSchema).max(TEMPLATE_LIMITS.nodesPerTemplate),

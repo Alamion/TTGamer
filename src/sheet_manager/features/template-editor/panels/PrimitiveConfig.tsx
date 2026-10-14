@@ -13,6 +13,7 @@ import { SettingField } from '../settings/SettingField';
 import { builtInSettings, builtInSettingsUpdate } from './builtInTrackerSettings';
 import { ToggleRow } from './LayoutControls';
 import { PoolTrackerSettings } from './PoolTrackerSettings';
+import { ShortFormSettings } from './ShortFormSettings';
 import { ListSourceSelect, TrackerSourceSelect, ValueSourceSelect } from './SourceControls';
 import { hasTermHint, TermHintControl } from './TermHintControl';
 import { TrackerSettings } from './TrackerSettings';
@@ -206,6 +207,13 @@ export function primitiveSettings({
                     label={settingLabel('compact')}
                     setting="compact"
                     onChange={(compact) => update({ compact })}
+                />
+            )}
+            {descriptor?.kind !== 'track' && !asTracker && node.compact && (
+                <ShortFormSettings
+                    node={node}
+                    label={node.label ?? descriptor?.label ?? ''}
+                    onChange={update}
                 />
             )}
             <ToggleRow

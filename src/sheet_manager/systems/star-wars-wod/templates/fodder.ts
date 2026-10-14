@@ -1,6 +1,7 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import {
+    denseBrief,
     formula,
     group,
     list,
@@ -55,7 +56,11 @@ const SOAK = 'stamina + armor-armor-rating';
 const MAX_MEMBERS = 12;
 
 const trait = (key: string, compact = false) =>
-    dotsTrait(key, { compact, labelMessage: `catalog:attributes/${traitCoordinate(key)}` });
+    dotsTrait(key, {
+        compact,
+        shortForm: compact,
+        labelMessage: `catalog:attributes/${traitCoordinate(key)}`,
+    });
 
 function armorCatalog(): TemplateField {
     return select(
@@ -295,7 +300,7 @@ function fodderBrief(): CustomTemplate {
                     { ...willpower(true), column: 1 },
                     { ...soak(true), column: 2 },
                 ] as TemplateNode[],
-                { columns: 3, labelMessage: entities.pools }
+                { columns: 3, labelMessage: entities.pools, layout: 'area' }
             ),
             group(
                 'brief-abilities',
@@ -319,4 +324,7 @@ function fodderBrief(): CustomTemplate {
     };
 }
 
-export const starWarsFodderTemplates: readonly CustomTemplate[] = [fodderSheet(), fodderBrief()];
+export const starWarsFodderTemplates: readonly CustomTemplate[] = [
+    fodderSheet(),
+    denseBrief(fodderBrief(), ['brief-abilities']),
+];
