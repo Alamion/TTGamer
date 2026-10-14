@@ -81,8 +81,11 @@ describe('search, filters, and sort in the documents window (spec 032, US3)', ()
         openWindow();
         const toggle = screen.getByRole('button', { name: 'Filters' });
         expect(toggle.getAttribute('aria-expanded')).toBe('false');
+        const panel = document.getElementById(toggle.getAttribute('aria-controls')!)!;
+        expect(panel.classList.contains('hidden')).toBe(true);
         fireEvent.click(toggle);
         expect(toggle.getAttribute('aria-expanded')).toBe('true');
+        expect(panel.classList.contains('hidden')).toBe(false);
         fireEvent.change(screen.getByLabelText('Created'), { target: { value: 'unknown' } });
         fireEvent.change(screen.getByLabelText('Type'), { target: { value: 'character' } });
         const chip = screen.getByRole('button', { name: 'Remove filter: Type: Character' });

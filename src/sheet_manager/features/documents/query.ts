@@ -257,11 +257,13 @@ function compareTimes(a: string | undefined, b: string | undefined, descending: 
     return descending ? right - left : left - right;
 }
 
+const collator = new Intl.Collator(undefined, { sensitivity: 'base' });
+
 /** How rows order inside a folder for a query; folders always come before documents. */
 export function orderFor(query: DocumentsQuery, index: QueryIndex): RowOrder {
     if (query.sort === 'manual') return { folders: byRank, documents: byRank };
     const sign = query.descending ? -1 : 1;
-    const text = (a: string, b: string) => a.localeCompare(b, undefined, { sensitivity: 'base' });
+    const text = collator.compare;
     const nameOf = (entry: DocumentIndexEntry) => index.labels.get(entry.id)?.name ?? entry.name;
     const field = (entry: DocumentIndexEntry, key: 'kind' | 'system') =>
         index.labels.get(entry.id)?.[key] ?? '';

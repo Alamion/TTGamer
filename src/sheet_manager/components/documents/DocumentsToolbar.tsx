@@ -39,15 +39,17 @@ function Select({
     value,
     onChange,
     children,
+    hideLabel = false,
 }: {
     label: string;
+    hideLabel?: boolean;
     value: string;
     onChange: (value: string) => void;
     children: React.ReactNode;
 }) {
     return (
         <label className="grid min-w-0 gap-0.5 text-[11px] text-textSecondary">
-            {label}
+            <span className={hideLabel ? 'sr-only' : undefined}>{label}</span>
             <select
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
@@ -204,7 +206,7 @@ export function DocumentsToolbar({
                     )}
                 </button>
             </div>
-            <div id={panelId} hidden={!expanded} className="grid grid-cols-2 gap-1.5">
+            <div id={panelId} className={clsx('grid grid-cols-2 gap-1.5', !expanded && 'hidden')}>
                 <Select
                     label={translate(labels.kind)}
                     value={query.kind ?? ''}
@@ -249,10 +251,11 @@ export function DocumentsToolbar({
                     {presetOptions}
                 </Select>
             </div>
-            <div className="flex items-end gap-1.5">
+            <div className="flex items-center gap-1.5">
                 <div className="min-w-0 flex-1">
                     <Select
                         label={translate(labels.sort.label)}
+                        hideLabel
                         value={query.sort}
                         onChange={(value) => onChange({ sort: value as SortKey })}
                     >

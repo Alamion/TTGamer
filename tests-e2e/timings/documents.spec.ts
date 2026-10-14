@@ -1,0 +1,145 @@
+import { expect, test } from '@playwright/test';
+
+import { best, recordTiming, RUNS } from './record';
+
+const DOCUMENTS = 3000;
+const PER_LEAF = 20;
+
+/** The slim stored state of 3,000 documents in nested folders (spec 032, D2): no records. */
+function slimState() {
+    const stamp = '2026-10-01T10:00:00.000Z';
+    const folders: unknown[] = [];
+    const leaves: string[] = [];
+    const campaigns = Math.ceil(DOCUMENTS / PER_LEAF / 25);
+    for (let campaign = 0; campaign < campaigns; campaign++) {
+        const folder = (id: string, parentId: string | null, rank: number) =>
+            folders.push({
+                id,
+                name: `Folder ${id}`,
+                parentId,
+                rank,
+                createdAt: stamp,
+                changedAt: stamp,
+                updatedAt: 1,
+            });
+        folder(`c${campaign}`, null, campaign);
+        for (let session = 0; session < 5; session++) {
+            folder(`c${campaign}s${session}`, `c${campaign}`, session);
+            for (let group = 0; group < 5; group++) {
+                folder(`c${campaign}s${session}g${group}`, `c${campaign}s${session}`, group);
+                leaves.push(`c${campaign}s${session}g${group}`);
+            }
+        }
+    }
+    const entries = Array.from({ length: DOCUMENTS }, (_, index) => ({
+        id: `d${index}`,
+        name: `Doc ${String(index).padStart(4, '0')}`,
+        kind: 'character',
+        systemId: 'wod-v5',
+        definitionId: 'hunter',
+        parentId: leaves[index % leaves.length],
+        rank: Math.floor(index / leaves.length),
+        createdAt: stamp,
+        changedAt: stamp,
+        updatedAt: 1,
+    }));
+    return {
+        folders,
+        entries,
+        value: JSON.stringify({
+            state: {
+                entries,
+                folders,
+                pendingPurge: [],
+                currentDocumentId: null,
+                recoveryEntries: [],
+            },
+            version: 5,
+        }),
+    };
+}
+
+test('opening, scrolling, and searching 3,000 documents in nested folders', async ({ page }) => {
+    const { folders, value } = slimState();
+    await page.goto('/universal_sheet');
+    await page.waitForLoadState('networkidle');
+    // The page's own storage: the database localForage made when the page started.
+    await page.evaluate(async (stored) => {
+        await new Promise<void>((resolve, reject) => {
+            const open = indexedDB.open('localforage');
+            open.onerror = () => reject(open.error);
+            open.onsuccess = () => {
+                const database = open.result;
+                const transaction = database.transaction('keyvaluepairs', 'readwrite');
+                transaction.objectStore('keyvaluepairs').put(stored, 'universal-character-storage');
+                transaction.oncomplete = () => {
+                    database.close();
+                    resolve();
+                };
+                transaction.onerror = () => reject(transaction.error);
+            };
+        });
+    }, value);
+    await page.evaluate(
+        (open) => localStorage.setItem('documents-window-open-folders', JSON.stringify(open)),
+        folders.map((folder) => `folder:${(folder as { id: string }).id}`)
+    );
+
+    const opens: number[] = [];
+    const searches: number[] = [];
+    let frames = 0;
+    for (let run = 0; run <= RUNS; run++) {
+        await page.reload({ waitUntil: 'networkidle' });
+        const manage = page.getByRole('button', { name: 'Manage', exact: true });
+        await expect(manage).toBeEnabled();
+        const started = Date.now();
+        await manage.click();
+        const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+        await expect(window.getByRole('treeitem').first()).toBeVisible();
+        if (run > 0) opens.push(Date.now() - started);
+
+        if (run === 1) {
+            // Frames per second while the tree scrolls from top to bottom.
+            frames = await page.evaluate(async () => {
+                const tree = document.querySelector('[role="tree"]')!;
+                const scroller = tree.parentElement!;
+                const total = scroller.scrollHeight - scroller.clientHeight;
+                return await new Promise<number>((resolve) => {
+                    const begin = performance.now();
+                    let count = 0;
+                    const step = (now: number) => {
+                        count += 1;
+                        const progress = Math.min(1, (now - begin) / 1500);
+                        scroller.scrollTop = total * progress;
+                        if (progress < 1) requestAnimationFrame(step);
+                        else resolve(count / ((now - begin) / 1000));
+                    };
+                    requestAnimationFrame(step);
+                });
+            });
+        }
+
+        const box = window.getByRole('searchbox', { name: 'Search names' });
+        const typed = Date.now();
+        await box.fill('Doc 2999');
+        await expect(window.getByRole('treeitem', { name: /Doc 2999/ })).toBeVisible();
+        if (run > 0) searches.push(Date.now() - typed);
+    }
+    recordTiming({
+        name: 'documents window: open (3,000)',
+        value: best(opens),
+        unit: 'ms',
+        budget: 500,
+    });
+    recordTiming({
+        name: 'documents window: search (3,000)',
+        value: best(searches),
+        unit: 'ms',
+        budget: 200,
+    });
+    recordTiming({
+        name: 'documents window: scroll frames per second',
+        value: frames,
+        unit: 'fps',
+    });
+});

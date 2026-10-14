@@ -11,7 +11,7 @@ export const RUNS = 5;
 export interface Timing {
     name: string;
     value: number;
-    unit: 'ms' | 'bytes';
+    unit: 'ms' | 'bytes' | 'fps';
     /** No budget yet: the first measurements become the baseline. */
     budget?: number;
 }

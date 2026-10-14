@@ -291,3 +291,13 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   it: the create dialog does not give the focus back after creating (`onCloseAutoFocus`), and the
   shared row menu does not either after an action was chosen, or the focus return would end the
   typing at once.
+- **US4, scale**: with 3,000 documents in nested folders (folders three deep, about 20 documents in
+  each lowest folder) in a built site: the window shows rows 50 to 80 ms after the click (budget
+  500), a search shows its match in about 20 ms (budget 200), and the tree scrolls at 60 frames per
+  second. In unit time, 3,000 entries take 2.5 ms for the index, 1.5 ms for a search, 1.6 ms for all
+  rows; sorting by name took 16 ms until the collator was reused (`Intl.Collator`). No worker was
+  needed. The perf tests compare 300 against 3,000 documents in the same run (linear, not
+  quadratic). A closed window renders nothing and holds no subscription (`DocumentsWindow` returns
+  null; its body mounts when opened), so the sheet pays nothing for it (FR-017). The filter panel
+  had shown always on a phone (`hidden` lost to `grid`); a test now guards it, and the sort row is
+  one line.

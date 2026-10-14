@@ -88,6 +88,11 @@ const pickSort = ({ sort, descending }: DocumentsQuery) => ({ sort, descending }
  * screen with the tree and the details as two tabs, and opening a document closes it.
  */
 export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
+    // Closed, it holds no subscription and builds no rows: the sheet pays nothing for it (FR-017).
+    return open ? <OpenDocumentsWindow open onOpenChange={onOpenChange} /> : null;
+}
+
+function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
     const plural = usePluralMessage();
     const narrow = useMediaQuery('(max-width: 767px)');
     const entries = useDocumentStore((state) => state.entries);

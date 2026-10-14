@@ -185,17 +185,17 @@ reload, reopen; the same at 375 px.
 
 **Check**: 3,000 documents: opening, scrolling, search, and a move within the budgets.
 
-- [ ] T036 [US4] Write `tests/sheet_manager/documents.perf.test.ts`: 3,000 entries in nested
+- [x] T036 [US4] Write `tests/sheet_manager/documents.perf.test.ts`: 3,000 entries in nested
       folders; building rows, a search, a sort, and a move compared with a baseline measured in the
       same run (SC-002); a unit test that a closed window adds no subscription to the page and that
       a name search reads no record (FR-022)
-- [ ] T037 [US4] Write `tests-e2e/timings/documents.spec.ts` (seed 3,000 records through the page's
+- [x] T037 [US4] Write `tests-e2e/timings/documents.spec.ts` (seed 3,000 records through the page's
       storage; time open, scroll frames, search; budgets from SC-001 and SC-002; reported only) and
       `tests-e2e/smoke/documents.spec.ts` (create a folder, move, search, undo, reload at 1280 px
       and at 375 px, no logged error or failed request)
-- [ ] T038 [US4] Fix whatever the measurements show (row memoization, selectors, debounce); if the
+- [x] T038 [US4] Fix whatever the measurements show (row memoization, selectors, debounce); if the
       search misses 200 ms, move it to a worker and record the change in design.md
-- [ ] T039 [US4] Run `yarn verify:full` and commit:
+- [x] T039 [US4] Run `yarn verify:full` and commit:
       `test(documents): thousands of documents within budget (spec 032, US4)`
 
 ## Finish
