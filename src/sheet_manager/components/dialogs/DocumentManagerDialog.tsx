@@ -6,6 +6,7 @@ import { Download, Trash2, Users, X } from 'lucide-react';
 import { useState } from 'react';
 
 import { recoveryFileName, serializeRecoveryFile } from '../../features/sheet/shell/recoveryFile';
+import { documentRefs } from '../../store/documentIndex';
 import { useDocumentStore } from '../../store/documentStore';
 import { documentSettingLabel, systemRegistry } from '../../systems';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -20,10 +21,11 @@ export function DocumentManagerDialog({ open, onOpenChange }: DocumentManagerDia
         clearRecoveryEntries,
         currentDocumentId,
         deleteDocument,
-        documents,
+        entries,
         recoveryEntries,
         setCurrentDocument,
     } = useDocumentStore();
+    const documents = documentRefs(entries);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [clearRejectedOpen, setClearRejectedOpen] = useState(false);

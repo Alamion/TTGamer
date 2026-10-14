@@ -161,3 +161,24 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
 8. Library dialog and template editor dividers: drag, arrows, Home, double click.
 9. 375 px width: full-screen sheet, tabs tree/details, tap targets 44 px, no horizontal scroll.
 10. 1280 px width: sheet usable behind the window; light and dark themes.
+
+## Implementation notes
+
+- **Foundation A, test setup instead of a helper (T007)**: `tests/setup/documentStore.ts` mocks the
+  store module lazily (so files that never import it do not load the sheet manager) to give each
+  test file in-memory record storage and to fill `entries` when a test calls
+  `setState({ documents })`. No test needed an edit; `seedDocuments.ts` was not written.
+- **Records are JSON text** (as the collection was), not structured clones: a value IndexedDB cannot
+  clone cannot make a save fail.
+- **The backup countdown lives in the same storage** (`meta:v4-backup-launches`), not
+  `localStorage`; a launch counts when the open document opened (or none was open).
+- **Entries are authoritative for system, setting, and template** of documents that are not loaded:
+  a library move writes the entry, and `readEnvelope` applies it when the record is read.
+  `relocateDocuments` therefore stays synchronous.
+- **Reference pickers and library counts read `DocumentRef`s** (`documentIndex.ts`), built from
+  entries and cached per entries list; `DocumentSource.documents` changed to that type.
+- **Template save** reads stored values of unopened documents only when a list, table, or tracker of
+  the page changed (`session/saveDocuments.ts`); `loadDocuments(ids)` reads them without keeping
+  them loaded. Retargeted documents are released through `relocateDocuments`.
+- **Merging two tabs**: `pendingPurge` is a union; a tombstone already carried out (`purgedIds`)
+  does not come back, and an undo here wins over an older stored tombstone.

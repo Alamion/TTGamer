@@ -11,6 +11,7 @@ toolbar:
     newTitle: Create a new document
     importLabel: Import document file
     noDocumentTitle: No document loaded
+    openingDocument: Opening the document…
     noDocumentDescription: Create a new document or load one from the manager.
     resetDescription: Are you sure you want to reset all document data? This cannot be undone.
     exportSuccess: Exported "{title}"

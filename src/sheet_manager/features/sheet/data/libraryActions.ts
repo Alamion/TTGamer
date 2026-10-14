@@ -1,3 +1,4 @@
+import { documentRefs } from '../../../store/documentIndex';
 import { type DocumentRelocation, useDocumentStore } from '../../../store/documentStore';
 import { defaultPageKey, useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
@@ -67,7 +68,7 @@ export function readLibraryState(): LibraryState {
         defaultPages,
         catalogs,
         templates: useTemplateStore.getState().templates,
-        documents: useDocumentStore.getState().documents,
+        documents: documentRefs(useDocumentStore.getState().entries),
     };
 }
 

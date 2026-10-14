@@ -12,23 +12,23 @@ stalls, the later phases do not start. Paths are under `src/sheet_manager/` unle
 **Check**: all existing store, import, library, and sheet suites pass; a v4 store migrates with
 every document intact; boot reads only the slim state and the open record.
 
-- [ ] T001 Write `tests/sheet_manager/document-store-v5.test.ts`: migration of a v4 value (every
+- [x] T001 Write `tests/sheet_manager/document-store-v5.test.ts`: migration of a v4 value (every
       envelope becomes a record and an entry, `currentDocumentId` and `recoveryEntries` kept, backup
       key written first, a rerun after a simulated crash gives the same result), a missing record
       rebuilds its entry, the sweep removes only `pendingPurge` ids (portrait included) and never an
       unlisted record, boot and a name search read no record but the open one (spy on `readRecord`)
-- [ ] T002 Create `store/documentIndex.ts`: `DocumentIndexEntrySchema` (with `updatedAt`) and
+- [x] T002 Create `store/documentIndex.ts`: `DocumentIndexEntrySchema` (with `updatedAt`) and
       `FolderSchema` (Zod; fields in design D1), `entryOf(envelope)`, `mergeById`, `STORE_KEYS`
       (`doc:<id>`, backup key); no store access
-- [ ] T002a Write `tests/sheet_manager/document-index.test.ts`: write-through keeps entries equal to
+- [x] T002a Write `tests/sheet_manager/document-index.test.ts`: write-through keeps entries equal to
       envelopes, the `changedAt` throttle, two store instances over one storage (a stale tab) merge
       by id and lose no row
-- [ ] T003 Create `store/documentContent.ts`: `readRecord`, `writeRecord`, `removeRecord`,
+- [x] T003 Create `store/documentContent.ts`: `readRecord`, `writeRecord`, `removeRecord`,
       `listRecordIds` over localForage; the debounced writer (300 ms, flush on `pagehide`, one write
       per changed envelope identity); the boot sweep; a loaded-cache LRU of 8 that never evicts the
       open or an unsaved document; failures reported with
       `reportSheetIssue('document-write-failed')`
-- [ ] T004 Rework `store/documentStore.ts` to persisted version 5: add `entries`, `folders`,
+- [x] T004 Rework `store/documentStore.ts` to persisted version 5: add `entries`, `folders`,
       `openDocument(id)`, `rebuildIndex()`; `documents` becomes the loaded cache; every mutation
       (`createDocument`, `importDocument`, `updateDocumentData`, `updateDocumentMetadata`,
       `relocateDocuments`, `updateTemplateValues`, `deleteDocument`) updates envelope and entry in
@@ -38,23 +38,23 @@ every document intact; boot reads only the slim state and the open record.
       folders merge by id when the index is rehydrated or saved; `migrateDocumentStoreState` writes
       the `universal-character-storage:v4-backup` copy, then records and entries; imports land at
       the top level
-- [ ] T005 Move the metadata-only readers to `entries`: `features/sheet/data/libraryActions.ts`,
+- [x] T005 Move the metadata-only readers to `entries`: `features/sheet/data/libraryActions.ts`,
       `libraryMoves.ts`, `templateRetarget.ts`, `components/dialogs/LibraryDialog.tsx` (counts),
       `features/sheet/data/libraryTree.ts` callers; `isTemplateCompatible` and
       `templateMatchesSetting` read only system, kind, and setting, so planners use entries (an
       adapter maps `settingId`); only the open document's preview
       (`features/template-editor/components/EditorPreview.tsx`, `EditorPage.tsx`) loads by id
-- [ ] T006 Make the sheet shell wait for the open record: `features/sheet/shell/SheetWorkspace.tsx`
+- [x] T006 Make the sheet shell wait for the open record: `features/sheet/shell/SheetWorkspace.tsx`
       and the callers of `setCurrentDocument` (`DocumentCreateDialog`, import path, manager) use
       `openDocument`; show the existing loading feedback while it reads
-- [ ] T007 Fix the tests that set `documents` directly (`tests/sheet_manager/**`,
+- [x] T007 Fix the tests that set `documents` directly (`tests/sheet_manager/**`,
       `tests/integrations/**`) through a small helper `tests/sheet_manager/helpers/seedDocuments.ts`
       that fills `documents` and `entries` together; no assertion is weakened
-- [ ] T008 Delete the v4 backup after the second launch that opened the app and its open document
+- [x] T008 Delete the v4 backup after the second launch that opened the app and its open document
       without a reported storage issue (counter in `localStorage`, `store/documentContent.ts`), with
       a test of the counter; record the removal of this migration code in `TODO.md` (same pattern as
       T-108) and the folders-to-cloud mapping as a new backlog entry (contract change)
-- [ ] T009 Run `yarn verify` and `yarn contract:report` (persistence change; list differences), and
+- [x] T009 Run `yarn verify` and `yarn contract:report` (persistence change; list differences), and
       commit: `feat(store): one record per document and a light index (spec 032, Foundation A)`
 
 ## Foundation B - Shared splitter (D8)

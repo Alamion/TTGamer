@@ -152,7 +152,8 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
             selected.map(async (file) => ({ name: file.name, text: await file.text() }))
         );
         const summary = await runImportBatch(files, {
-            hasDocument: (id) => useDocumentStore.getState().documents.some((d) => d.id === id),
+            hasDocument: (id) =>
+                useDocumentStore.getState().entries.some((entry) => entry.id === id),
             importDocument,
             retain: retainImportForRecovery,
             forget: forgetRecoveryEntry,
@@ -217,7 +218,12 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                     }
                 />
                 {currentDocument && <TermHintNotice />}
-                {!currentDocument && (
+                {!currentDocument && currentDocumentId !== null && (
+                    <p role="status" className="py-6 text-center text-sm text-textSecondary">
+                        {translate(uiMessages.sheet.documents.toolbar.openingDocument)}
+                    </p>
+                )}
+                {!currentDocument && currentDocumentId === null && (
                     <div className="py-6 text-center">
                         <h2 className="mb-2 text-xl font-bold text-textPrimary">
                             <Translate id="ttgamer.ui.sheet.documents.toolbar.noDocumentTitle" />

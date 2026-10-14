@@ -11,6 +11,7 @@ toolbar:
     newTitle: Создать новый документ
     importLabel: Импортировать файл документа
     noDocumentTitle: Документ не загружен
+    openingDocument: Открываем документ…
     noDocumentDescription: Создайте новый документ или загрузите его через управление.
     resetDescription: Сбросить все данные документа? Это действие нельзя отменить.
     exportSuccess: Документ «{title}» экспортирован

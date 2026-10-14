@@ -49,6 +49,7 @@ import {
     TemplateEditorDialog,
     type TemplateEditorDialogProps,
 } from '../../features/template-editor/TemplateEditorDialog';
+import { documentRefs } from '../../store/documentIndex';
 import { useDocumentStore } from '../../store/documentStore';
 import { useDocumentTypeStore } from '../../store/documentTypeStore';
 import { useTemplateStore } from '../../store/templateStore';
@@ -105,8 +106,8 @@ function useLibraryTree() {
     const catalogs = useDocumentTypeStore((state) => state.catalogs);
     const templates = useTemplateStore((state) => state.templates);
     const defaultOverrides = useTemplateStore((state) => state.defaultOverrides);
-    const documents = useDocumentStore((state) => state.documents);
-    const counts = useMemo(() => countDocuments(documents), [documents]);
+    const entries = useDocumentStore((state) => state.entries);
+    const counts = useMemo(() => countDocuments(documentRefs(entries)), [entries]);
     return useMemo(
         () =>
             buildLibraryTree({
