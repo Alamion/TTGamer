@@ -4,11 +4,13 @@ const KEY_STEP = 10;
 const KEY_STEP_LARGE = 40;
 
 /**
- * A vertical divider between two editor areas (spec 022, US3): drag it, use ←/→ (Shift for
- * bigger steps), Home or a double click for the default. While dragging only `onPreview` runs
- * (a CSS variable), and the width is stored once on release.
+ * A vertical divider between two side-by-side panes, the one behavior of every such place (the
+ * template editor, the library dialog, the documents window; specs 022 and 032): drag it, use ←/→
+ * (Shift for bigger steps), Home or a double click for the default. While dragging only
+ * `onPreview` runs (a CSS variable), the size is stored once on release, and a cancelled drag
+ * puts the preview back. It shows from the `md` breakpoint up; narrower layouts use tabs.
  */
-export function PaneDivider({
+export function Splitter({
     clamp,
     invert = false,
     label,

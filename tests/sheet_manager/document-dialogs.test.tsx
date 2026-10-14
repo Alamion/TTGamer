@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
-import { DocumentManagerDialog } from '@site/src/sheet_manager/components/dialogs/DocumentManagerDialog';
+import { DocumentsWindow } from '@site/src/sheet_manager/components/documents/DocumentsWindow';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import { createHunterDefault } from '@site/src/sheet_manager/systems/v5';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -24,7 +24,7 @@ const envelope = (id: string, systemId: string, definitionId: string, data: unkn
     }) as never;
 
 describe('document dialogs', () => {
-    it('lists the type and the setting as separate columns', () => {
+    it('shows the kind and the setting of the selected document as separate fields', () => {
         useDocumentStore.setState({
             documents: [
                 envelope('Jax', 'star-wars-wod', 'character', createDefaultStarWarsCharacterData()),
@@ -32,16 +32,24 @@ describe('document dialogs', () => {
             ],
             currentDocumentId: 'Jax',
         });
-        render(createElement(DocumentManagerDialog, { open: true, onOpenChange: () => {} }));
-        // Select-all, Name, Type, Setting.
-        expect(screen.getAllByRole('columnheader')).toHaveLength(4);
-        const cells = (name: string) =>
-            within(screen.getByRole('button', { name: new RegExp(`^${name}`) }).closest('tr')!)
-                .getAllByRole('cell')
-                .slice(2)
-                .map(({ textContent }) => textContent);
-        expect(cells('Jax')).toEqual(['Character', 'Star Wars (World of Darkness 2e)']);
-        expect(cells('Lena')).toEqual(['Character', 'Hunter: the Reckoning 5e']);
+        render(createElement(DocumentsWindow, { open: true, onOpenChange: () => {} }));
+        const fields = (name: string) => {
+            fireEvent.click(screen.getByRole('treeitem', { name: new RegExp(`^${name}`) }));
+            const details = screen.getByRole('region', { name: 'Details' });
+            return Object.fromEntries(
+                within(details)
+                    .getAllByRole('term')
+                    .map((term) => [term.textContent, term.nextElementSibling?.textContent])
+            );
+        };
+        expect(fields('Jax')).toMatchObject({
+            Kind: 'Character',
+            Setting: 'Star Wars (World of Darkness 2e)',
+        });
+        expect(fields('Lena')).toMatchObject({
+            Kind: 'Character',
+            Setting: 'Hunter: the Reckoning 5e',
+        });
     });
 
     it('groups creatable documents by setting', () => {

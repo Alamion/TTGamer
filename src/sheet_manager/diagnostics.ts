@@ -35,7 +35,21 @@ export type SheetIssueCode =
     /** A schema rule no editor check covers blocked a save (spec 022): add a specific check. */
     | 'template-draft-invalid'
     /** Pasted text named the copied-elements format but was refused (spec 023): version or schema. */
-    | 'template-clipboard-invalid';
+    | 'template-clipboard-invalid'
+    /** A document's record could not be read, is missing, or no longer validates (spec 032). */
+    | 'document-record-unreadable'
+    | 'document-record-missing'
+    | 'document-record-invalid'
+    /** A changed document could not be saved; it stays queued for the next attempt. */
+    | 'document-write-failed'
+    /** The move of stored documents to one record each failed; nothing is saved until reload. */
+    | 'document-migration-failed'
+    /** A record without an index entry got its entry back. */
+    | 'document-index-rebuilt'
+    /** A deleted document's record could not be removed yet. */
+    | 'document-purge-failed'
+    | 'document-folders-repaired'
+    | 'document-boot-failed';
 
 export interface SheetIssue {
     code: SheetIssueCode;

@@ -103,6 +103,30 @@ describe('library dialog — catalogs (spec 015, US1)', () => {
         expect(relics().entries[2]!.values[relics().columns[2]!.id]).toBeUndefined();
     });
 
+    it('offers no menu on a row that has nothing to offer, and its keys do nothing', () => {
+        openLibrary();
+        expand('s:system:star-wars-wod');
+        const shipped = mustRow('c:star-wars-wod:melee-weapons');
+        expect(within(shipped).queryByRole('button', { name: /Actions/ })).toBeNull();
+        fireEvent.click(shipped);
+        shipped.focus();
+        fireEvent.keyDown(shipped, { key: 'ContextMenu' });
+        fireEvent.contextMenu(shipped);
+        expect(screen.queryByRole('menu')).toBeNull();
+        expect(
+            within(mustRow('s:system:star-wars-wod')).getByRole('button', { name: /Actions/ })
+        ).toBeTruthy();
+    });
+
+    it('opens the menu from its button without selecting or opening the row', () => {
+        openLibrary();
+        select(`s:user:${ASHEN_ID}`);
+        fireEvent.click(within(mustRow('r:wod-v5')).getByRole('button', { name: /Actions/ }));
+        expect(screen.getByRole('menu')).toBeTruthy();
+        expect(mustRow(`s:user:${ASHEN_ID}`).getAttribute('aria-selected')).toBe('true');
+        expect(mustRow('r:wod-v5').getAttribute('aria-selected')).toBe('false');
+    });
+
     it('shows shipped catalogs read-only', () => {
         openLibrary();
         expand('s:system:star-wars-wod');

@@ -36,7 +36,7 @@ function setting(id: string, name: string, systemId: string): UserSetting {
 const openLibrary = () =>
     render(createElement(LibraryDialog, { open: true, onOpenChange: () => {} }));
 const clickRow = (key: string) =>
-    fireEvent.click(document.querySelector(`[data-library-row="${key}"]`)!);
+    fireEvent.click(document.querySelector(`[data-tree-row="${key}"]`)!);
 const clickAction = (id: string) =>
     fireEvent.click(document.querySelector(`[data-library-action="${id}"]`)!);
 
@@ -53,8 +53,8 @@ describe('user settings (spec 012, US6)', () => {
     it('builds settings on the rulesets of the library', () => {
         openLibrary();
         expect(
-            [...document.querySelectorAll('[data-library-row^="r:"]')].map((row) =>
-                row.getAttribute('data-library-row')
+            [...document.querySelectorAll('[data-tree-row^="r:"]')].map((row) =>
+                row.getAttribute('data-tree-row')
             )
         ).toEqual(['r:wod-2e', 'r:wod-v5']);
         clickRow('r:wod-v5');
@@ -75,7 +75,7 @@ describe('user settings (spec 012, US6)', () => {
         fireEvent.click(
             within(
                 document.querySelector<HTMLElement>(
-                    '[data-library-row="s:user:user-setting-ash00001"]'
+                    '[data-tree-row="s:user:user-setting-ash00001"]'
                 )!
             ).getByLabelText(/Expand/)
         );

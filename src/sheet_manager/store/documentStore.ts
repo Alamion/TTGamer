@@ -5,6 +5,11 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { describeError, reportSheetIssue } from '../diagnostics';
 import {
+    applyOperations,
+    type TreeOperation,
+    type TreeResult,
+} from '../features/documents/operations';
+import {
     applyTemplateValueWrites,
     collectTableBlocks,
 } from '../features/sheet/data/templateValueWrites';
@@ -21,11 +26,35 @@ import type { DocumentMetadata, DocumentViewId, UnknownDocumentEnvelope } from '
 import { DocumentMetadataSchema, SystemIdSchema } from '../types/document';
 import { collectTemplateFields, type CustomTemplate, fieldValueKey } from '../types/template';
 import type { TemplatePageValues } from '../types/templateValues';
+import { bootDocuments } from './documentBoot';
+import {
+    isCleanEnvelope,
+    purgedIds,
+    readEnvelope,
+    recordWriter,
+    saveBackup,
+    startBackupCountdown,
+    writeRecord,
+} from './documentContent';
+import {
+    type DocumentIndexEntry,
+    entryOf,
+    type Folder,
+    mergeById,
+    mergeStoredValue,
+    nextRank,
+    parseEntries,
+    parseFolders,
+    sameEntry,
+} from './documentIndex';
 import { asRecoveryRecord, newRecoveryRecord } from './recoveryRecord';
 import { useTemplateStore } from './templateStore';
 
-/** Version 4: a re-parse that rewrites renamed system ids (`v5` → `wod-v5`). */
-const STORE_VERSION = 4;
+/**
+ * Version 5 (spec 032): the state holds a light entry per document and each document is its own
+ * stored record. Version 4 held every envelope in one value (and re-parsed renamed system ids).
+ */
+const STORE_VERSION = 5;
 
 /**
  * v2 → v3: per-template nested value bags flatten into one document-global bag keyed by
@@ -79,15 +108,34 @@ export interface DocumentRelocation {
 }
 
 export interface DocumentStoreState {
+    /** The documents held in memory: the open one and the last few opened; not every document. */
     documents: UnknownDocumentEnvelope[];
+    /** One light entry per document (spec 032); this list, not `documents`, is the collection. */
+    entries: DocumentIndexEntry[];
+    folders: Folder[];
+    /** Ids of deleted documents whose records are removed at the next start (undo needs them). */
+    pendingPurge: string[];
+    /** The id being read from storage for the sheet, until it arrives. */
+    opening: string | null;
     currentDocumentId: string | null;
     recoveryEntries: unknown[];
+    /** Opens a loaded document at once; one that is only an entry is read from storage first. */
     setCurrentDocument: (id: string | null) => void;
+    /** Reads the document if needed, then shows it; false when it cannot be opened. */
+    openDocument: (id: string) => Promise<boolean>;
     /** `settingId` / `templateId`: a document created in a user setting, on its page (spec 012). */
     createDocument: (
         systemId: string,
         definitionId: string,
-        options?: { settingId?: string; templateId?: string; preferredViewId?: DocumentViewId }
+        options?: {
+            settingId?: string;
+            templateId?: string;
+            preferredViewId?: DocumentViewId;
+            /** Show it on the sheet (the default); false only adds it. */
+            activate?: boolean;
+            /** The folder it goes into (last there); the top level when absent. */
+            parentId?: string | null;
+        }
     ) => UnknownDocumentEnvelope;
     updateDocumentData: (id: string, updater: (data: unknown) => unknown) => void;
     updateDocumentMetadata: (id: string, updates: Partial<DocumentMetadata>) => void;
@@ -100,6 +148,11 @@ export interface DocumentStoreState {
         updater: (values: TemplatePageValues) => TemplatePageValues
     ) => void;
     deleteDocument: (id: string) => void;
+    /**
+     * Runs tree operations (folders, moves, deletes) on the index in one write; nothing is
+     * written when they change nothing. Deleted ids wait in `pendingPurge`, restored ones leave it.
+     */
+    applyTreeOperations: (operations: readonly TreeOperation[]) => TreeResult;
     importDocument: (document: UnknownDocumentEnvelope) => void;
     /**
      * Keeps an imported file that failed validation in the bounded recovery collection; a known
@@ -111,11 +164,27 @@ export interface DocumentStoreState {
     clearRecoveryEntries: () => void;
 }
 
+/** What version 4 saved (every envelope in the value) and the legacy migration produces. */
 interface PersistedDocumentState {
     documents: UnknownDocumentEnvelope[];
     currentDocumentId: string | null;
     recoveryEntries: unknown[];
 }
+
+/** What is saved now: the light state; documents are separate records (spec 032, D2). */
+interface SlimDocumentState {
+    entries: DocumentIndexEntry[];
+    folders: Folder[];
+    pendingPurge: string[];
+    currentDocumentId: string | null;
+    recoveryEntries: unknown[];
+}
+
+const MAX_LOADED_DOCUMENTS = 8;
+/** A document's changed time moves at most this often while it is edited (spec 032, D3). */
+const TOUCH_INTERVAL_MS = 5000;
+const lastTouch = new Map<string, number>();
+let openRequest = 0;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -230,14 +299,149 @@ export function migrateDocumentStoreState(input: unknown): PersistedDocumentStat
     return { documents, currentDocumentId, recoveryEntries };
 }
 
+const WRITE_BATCH = 25;
+
+/**
+ * Version 4 → 5 (and older shapes through it): the raw value is kept as a backup first, then every
+ * envelope becomes its own record and a light entry. Safe to run twice; nothing is deleted here.
+ */
+export async function migrateToIndexedState(input: unknown): Promise<SlimDocumentState> {
+    const { documents, currentDocumentId, recoveryEntries } = migrateDocumentStoreState(input);
+    if (isRecord(input)) {
+        await saveBackup(input);
+        await startBackupCountdown();
+    }
+    for (let start = 0; start < documents.length; start += WRITE_BATCH) {
+        await Promise.all(
+            documents
+                .slice(start, start + WRITE_BATCH)
+                .map((document) => writeRecord(document.id, document))
+        );
+    }
+    const now = Date.now();
+    return {
+        entries: documents.map((document, index) => ({
+            ...entryOf(document, undefined, {}, now),
+            rank: index + 1,
+        })),
+        folders: [],
+        pendingPurge: [],
+        currentDocumentId,
+        recoveryEntries,
+    };
+}
+
+/** The entries with this document's entry brought in line with its envelope. */
+function syncEntry(
+    entries: DocumentIndexEntry[],
+    document: UnknownDocumentEnvelope,
+    { touch }: { touch: boolean }
+): DocumentIndexEntry[] {
+    const position = entries.findIndex(({ id }) => id === document.id);
+    const previous = entries[position];
+    const now = Date.now();
+    let changedAt: string | undefined;
+    if (touch && now - (lastTouch.get(document.id) ?? 0) >= TOUCH_INTERVAL_MS) {
+        lastTouch.set(document.id, now);
+        changedAt = new Date(now).toISOString();
+    }
+    const next = entryOf(document, previous, { changedAt }, now);
+    if (previous && sameEntry(previous, next)) return entries;
+    if (!previous) return [...entries, { ...next, rank: nextRank(entries) }];
+    return entries.map((entry, index) => (index === position ? next : entry));
+}
+
+/**
+ * Writes a name given in the documents window into the document itself (its name value, when the
+ * kind has one, and its title). The document is read first when it is only an entry.
+ */
+async function renameDocumentContent(id: string, name: string): Promise<void> {
+    const store = useDocumentStore;
+    let document = store.getState().documents.find((candidate) => candidate.id === id);
+    if (!document) {
+        const entry = store.getState().entries.find((candidate) => candidate.id === id);
+        document = (await readEnvelope(id, entry)) ?? undefined;
+        if (!document) return;
+        const loaded = document;
+        store.setState((state) => ({
+            documents: state.documents.some((candidate) => candidate.id === id)
+                ? state.documents
+                : loadInto(state.documents, loaded, state.currentDocumentId ?? ''),
+        }));
+    }
+    const capability = systemRegistry.getDocumentDefinition(
+        document.systemId,
+        document.definitionId
+    )?.capabilities?.character;
+    const { updateDocumentData, updateDocumentMetadata } = store.getState();
+    if (capability) {
+        updateDocumentData(id, (data) => {
+            const { metadata } = capability.read(id, data);
+            return capability.applyUpdates(data, { metadata: { ...metadata, name } });
+        });
+    }
+    updateDocumentMetadata(id, { title: name });
+}
+
+/** Adds a read document to the loaded ones, dropping the oldest that is neither open nor unsaved. */
+function loadInto(
+    documents: UnknownDocumentEnvelope[],
+    document: UnknownDocumentEnvelope,
+    currentId: string
+): UnknownDocumentEnvelope[] {
+    const next = [...documents.filter(({ id }) => id !== document.id), document];
+    for (let index = 0; next.length > MAX_LOADED_DOCUMENTS && index < next.length;) {
+        const candidate = next[index]!;
+        if (candidate.id === currentId || recordWriter.isPending(candidate.id)) index += 1;
+        else next.splice(index, 1);
+    }
+    return next;
+}
+
 const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
     documents: [],
+    entries: [],
+    folders: [],
+    pendingPurge: [],
+    opening: null,
     currentDocumentId: null,
     recoveryEntries: [],
 
     setCurrentDocument: (id) => {
-        if (id !== null && !get().documents.some((document) => document.id === id)) return;
-        set({ currentDocumentId: id });
+        if (id === null) {
+            set({ currentDocumentId: null, opening: null });
+            return;
+        }
+        const { documents, entries } = get();
+        if (documents.some((document) => document.id === id)) {
+            set({ currentDocumentId: id, opening: null });
+        } else if (entries.some((entry) => entry.id === id)) {
+            void get().openDocument(id);
+        }
+    },
+
+    openDocument: async (id) => {
+        const { documents, entries } = get();
+        if (documents.some((document) => document.id === id)) {
+            set({ currentDocumentId: id, opening: null });
+            return true;
+        }
+        const entry = entries.find((candidate) => candidate.id === id);
+        if (!entry) return false;
+        const request = ++openRequest;
+        set({ opening: id });
+        const document = await readEnvelope(id, entry);
+        if (request !== openRequest) return false;
+        if (!document || !get().entries.some((candidate) => candidate.id === id)) {
+            set({ opening: null });
+            return false;
+        }
+        set((state) => ({
+            documents: loadInto(state.documents, document, id),
+            currentDocumentId: id,
+            opening: null,
+        }));
+        return true;
     },
 
     createDocument: (systemId, definitionId, options = {}) => {
@@ -262,9 +466,23 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             templateValues: {},
             data: definition.schema.parse(definition.createDefault()),
         };
-        set(({ documents }) => ({
+        const now = Date.now();
+        const stamp = new Date(now).toISOString();
+        lastTouch.set(document.id, now);
+        set(({ documents, entries, folders, currentDocumentId }) => ({
             documents: [...documents, document],
-            currentDocumentId: document.id,
+            entries: [
+                ...entries,
+                {
+                    ...entryOf(document, undefined, { createdAt: stamp, changedAt: stamp }, now),
+                    parentId:
+                        options.parentId && folders.some(({ id }) => id === options.parentId)
+                            ? options.parentId
+                            : null,
+                    rank: nextRank(entries),
+                },
+            ],
+            currentDocumentId: options.activate === false ? currentDocumentId : document.id,
         }));
         return document;
     },
@@ -278,14 +496,14 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
         );
         if (!definition) return;
         const nextData = definition.schema.parse(updater(current.data));
-        set(({ documents }) => ({
-            documents: documents.map((document) =>
-                document.id === id ? { ...document, data: nextData } : document
-            ),
+        const next = { ...current, data: nextData };
+        set(({ documents, entries }) => ({
+            documents: documents.map((document) => (document.id === id ? next : document)),
+            entries: syncEntry(entries, next, { touch: true }),
         }));
 
         const previousPortraitId = getPortraitId(current);
-        const nextPortraitId = getPortraitId({ ...current, data: nextData });
+        const nextPortraitId = getPortraitId(next);
         if (previousPortraitId && previousPortraitId !== nextPortraitId) {
             void deletePortrait(previousPortraitId);
         }
@@ -293,19 +511,19 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
 
     updateDocumentMetadata: (id, updates) => {
         if (isPresetId(id)) return;
-        set(({ documents }) => ({
-            documents: documents.map((document) =>
-                document.id === id
-                    ? {
-                          ...document,
-                          metadata: DocumentMetadataSchema.parse({
-                              ...document.metadata,
-                              ...updates,
-                          }),
-                      }
-                    : document
-            ),
-        }));
+        set(({ documents, entries }) => {
+            let nextEntries = entries;
+            const nextDocuments = documents.map((document) => {
+                if (document.id !== id) return document;
+                const next = {
+                    ...document,
+                    metadata: DocumentMetadataSchema.parse({ ...document.metadata, ...updates }),
+                };
+                nextEntries = syncEntry(entries, next, { touch: true });
+                return next;
+            });
+            return { documents: nextDocuments, entries: nextEntries };
+        });
     },
 
     relocateDocuments: (changes) => {
@@ -313,7 +531,23 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             changes.filter(({ id }) => !isPresetId(id)).map((change) => [change.id, change])
         );
         if (byId.size === 0) return;
-        set(({ documents }) => ({
+        const now = Date.now();
+        set(({ documents, entries }) => ({
+            // Entries carry the move for every document; a record that is not loaded gets it
+            // when it is read (applyEntryFields).
+            entries: entries.map((entry) => {
+                const change = byId.get(entry.id);
+                if (!change) return entry;
+                const next = { ...entry, updatedAt: now };
+                if (change.settingId === null) delete next.settingId;
+                else if (change.settingId !== undefined) next.settingId = change.settingId;
+                if (change.templateId === null) delete next.templateId;
+                else if (change.templateId !== undefined) next.templateId = change.templateId;
+                if (change.systemId && isUserKind(entry.definitionId)) {
+                    next.systemId = SystemIdSchema.parse(change.systemId);
+                }
+                return next;
+            }),
             documents: documents.map((document) => {
                 const change = byId.get(document.id);
                 if (!change) return document;
@@ -359,28 +593,55 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             });
             return;
         }
-        const merged = result.values;
-        set(({ documents }) => ({
-            documents: documents.map((document) =>
-                document.id === id
-                    ? {
-                          ...document,
-                          templateValues: merged,
-                      }
-                    : document
-            ),
+        const next = { ...current, templateValues: result.values };
+        set(({ documents, entries }) => ({
+            documents: documents.map((document) => (document.id === id ? next : document)),
+            entries: syncEntry(entries, next, { touch: true }),
         }));
     },
 
     deleteDocument: (id) => {
         if (isPresetId(id)) return;
-        const { currentDocumentId, documents } = get();
-        const deleted = documents.find((document) => document.id === id);
+        const { currentDocumentId, documents, entries, pendingPurge } = get();
+        if (!entries.some((entry) => entry.id === id) && !documents.some((d) => d.id === id)) {
+            return;
+        }
+        // The record and its portrait are removed at the next start, so an undo can bring the
+        // document back (spec 032, D5).
         set({
             documents: documents.filter((document) => document.id !== id),
+            entries: entries.filter((entry) => entry.id !== id),
+            pendingPurge: pendingPurge.includes(id) ? pendingPurge : [...pendingPurge, id],
             currentDocumentId: currentDocumentId === id ? null : currentDocumentId,
         });
-        void deletePortrait(getPortraitId(deleted));
+    },
+
+    applyTreeOperations: (operations) => {
+        const { entries, folders, documents, pendingPurge, currentDocumentId } = get();
+        const result = applyOperations({ entries, folders }, operations);
+        if (result.inverse.length === 0) return result;
+        const removed = new Set(result.removed);
+        const added = new Set(result.added);
+        const before = new Map(entries.map((entry) => [entry.id, entry.name]));
+        const renamed = result.state.entries.filter(
+            (entry) => before.has(entry.id) && before.get(entry.id) !== entry.name
+        );
+        set({
+            entries: result.state.entries,
+            folders: result.state.folders,
+            documents: documents.filter(({ id }) => !removed.has(id)),
+            pendingPurge: [
+                ...pendingPurge.filter((id) => !added.has(id)),
+                ...result.removed.filter((id) => !pendingPurge.includes(id)),
+            ],
+            currentDocumentId:
+                currentDocumentId !== null && removed.has(currentDocumentId)
+                    ? null
+                    : currentDocumentId,
+        });
+        // A document's name lives in the document too: the sheet's name field is the same fact.
+        for (const { id, name } of renamed) void renameDocumentContent(id, name);
+        return result;
     },
 
     retainImportForRecovery: (entry, error, id) => {
@@ -407,23 +668,123 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
     importDocument: (document) => {
         if (isPresetId(document.id)) return;
         const parsed = systemRegistry.parseDocument(document).envelope;
-        set(({ documents }) => ({
-            documents: documents.some(({ id }) => id === parsed.id)
-                ? documents.map((existing) => (existing.id === parsed.id ? parsed : existing))
-                : [...documents, parsed],
-            currentDocumentId: parsed.id,
-        }));
+        const now = Date.now();
+        const stamp = new Date(now).toISOString();
+        set(({ documents, entries, pendingPurge }) => {
+            const existing = entries.find(({ id }) => id === parsed.id);
+            const nextEntry = {
+                ...entryOf(
+                    parsed,
+                    existing,
+                    existing ? { changedAt: stamp } : { createdAt: stamp, changedAt: stamp },
+                    now
+                ),
+                rank: existing?.rank ?? nextRank(entries),
+            };
+            return {
+                documents: documents.some(({ id }) => id === parsed.id)
+                    ? documents.map((existingDocument) =>
+                          existingDocument.id === parsed.id ? parsed : existingDocument
+                      )
+                    : [...documents, parsed],
+                entries: existing
+                    ? entries.map((entry) => (entry.id === parsed.id ? nextEntry : entry))
+                    : [...entries, nextEntry],
+                pendingPurge: pendingPurge.filter((id) => id !== parsed.id),
+                currentDocumentId: parsed.id,
+            };
+        });
     },
 });
 
+/**
+ * The envelopes of these ids, from memory or read from their records, without opening them or
+ * keeping them loaded; ids with no readable record are left out. For checks that must see stored
+ * values of documents that are not open (the template save checks).
+ */
+export async function loadDocuments(ids: readonly string[]): Promise<UnknownDocumentEnvelope[]> {
+    const { documents, entries } = useDocumentStore.getState();
+    const found: UnknownDocumentEnvelope[] = [];
+    const missing: string[] = [];
+    for (const id of ids) {
+        const loaded = documents.find((document) => document.id === id);
+        if (loaded) found.push(loaded);
+        else missing.push(id);
+    }
+    for (let start = 0; start < missing.length; start += WRITE_BATCH) {
+        const read = await Promise.all(
+            missing.slice(start, start + WRITE_BATCH).map((id) =>
+                readEnvelope(
+                    id,
+                    entries.find((entry) => entry.id === id)
+                )
+            )
+        );
+        for (const document of read) if (document) found.push(document);
+    }
+    return found;
+}
+
 const isBrowser = typeof window !== 'undefined';
+
+/** The stored value, with what another tab saved since merged in (spec 032, D13). */
+async function saveMerged(name: string, value: string) {
+    const localforage = (await import('localforage')).default;
+    const stored = await localforage.getItem<string>(name);
+    await localforage.setItem(name, mergeStoredValue(stored, value, purgedIds));
+}
+
+/** Set when the migration failed: nothing is saved until a reload, so the old value survives. */
+let migrationFailed = false;
+
+function mergePersisted(persisted: unknown, current: DocumentStoreState): DocumentStoreState {
+    if (!isRecord(persisted)) return current;
+    const { entries } = parseEntries(persisted.entries);
+    const { folders } = parseFolders(persisted.folders);
+    const pendingPurge = [
+        ...new Set([
+            ...current.pendingPurge,
+            ...(Array.isArray(persisted.pendingPurge)
+                ? persisted.pendingPurge.filter((id): id is string => typeof id === 'string')
+                : []),
+        ]),
+    ];
+    const held = new Set(entries.map(({ id }) => id));
+    const requested =
+        typeof persisted.currentDocumentId === 'string' ? persisted.currentDocumentId : null;
+    return {
+        ...current,
+        entries: mergeById(entries, current.entries, new Set(current.pendingPurge)),
+        folders: mergeById(folders, current.folders, new Set(current.pendingPurge)),
+        pendingPurge,
+        recoveryEntries: Array.isArray(persisted.recoveryEntries)
+            ? persisted.recoveryEntries.slice(0, MAX_RECOVERY_ENTRIES)
+            : current.recoveryEntries,
+        currentDocumentId:
+            current.currentDocumentId ??
+            (requested !== null && held.has(requested) ? requested : null),
+    };
+}
 
 export const useDocumentStore = isBrowser
     ? create<DocumentStoreState>()(
           persist(stateCreator, {
               name: 'universal-character-storage',
               version: STORE_VERSION,
-              migrate: migrateDocumentStoreState,
+              migrate: async (persisted) => {
+                  try {
+                      return await migrateToIndexedState(persisted);
+                  } catch (error) {
+                      migrationFailed = true;
+                      reportSheetIssue({
+                          code: 'document-migration-failed',
+                          message: 'Stored documents could not be moved to the new layout',
+                          details: { error: describeError(error) },
+                      });
+                      throw error;
+                  }
+              },
+              merge: (persisted, current) => mergePersisted(persisted, current),
               storage: createJSONStorage(() => ({
                   getItem: async (name: string) => {
                       const localforage = await import('localforage');
@@ -431,19 +792,55 @@ export const useDocumentStore = isBrowser
                       return value ?? null;
                   },
                   setItem: async (name: string, value: string) => {
-                      const localforage = await import('localforage');
-                      await localforage.default.setItem(name, value);
+                      if (migrationFailed) return;
+                      await saveMerged(name, value);
                   },
                   removeItem: async (name: string) => {
                       const localforage = await import('localforage');
                       await localforage.default.removeItem(name);
                   },
               })),
-              partialize: ({ currentDocumentId, documents, recoveryEntries }) => ({
+              partialize: ({
                   currentDocumentId,
-                  documents,
+                  entries,
+                  folders,
+                  pendingPurge,
+                  recoveryEntries,
+              }): SlimDocumentState => ({
+                  currentDocumentId,
+                  entries,
+                  folders,
+                  pendingPurge,
                   recoveryEntries,
               }),
+              onRehydrateStorage: () => (_state, error) => {
+                  if (error) return;
+                  queueMicrotask(() => void bootDocuments(documentBootApi()));
+              },
           })
       )
     : create<DocumentStoreState>()(stateCreator);
+
+function documentBootApi() {
+    return {
+        getState: () => useDocumentStore.getState(),
+        setState: (partial: Partial<DocumentStoreState>) => useDocumentStore.setState(partial),
+        openDocument: (id: string) => useDocumentStore.getState().openDocument(id),
+    };
+}
+
+if (isBrowser) {
+    // Changed documents are saved as their own records, after a short pause (spec 032, D3).
+    useDocumentStore.subscribe((state, previous) => {
+        if (state.documents === previous.documents) return;
+        const before = new Map(previous.documents.map((document) => [document.id, document]));
+        for (const document of state.documents) {
+            if (before.get(document.id) === document || isCleanEnvelope(document)) continue;
+            recordWriter.schedule(document);
+        }
+    });
+    window.addEventListener('pagehide', () => void recordWriter.flush());
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') void recordWriter.flush();
+    });
+}

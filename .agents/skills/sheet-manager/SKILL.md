@@ -91,12 +91,16 @@ detail.
 
 `store/documentStore.ts` — Zustand 5 + `persist` (async localForage storage, IndexedDB):
 
-- Storage key `'universal-character-storage'`, `version: 4`, `migrate: migrateDocumentStoreState`.
-- State: `documents[]`, `currentDocumentId`, bounded `recoveryEntries` (max 100).
+- Storage key `'universal-character-storage'`, `version: 5`, `migrate: migrateToIndexedState` (spec
+  032; the layout, tombstones, and tree rules are in `src/sheet_manager/AGENTS.md`, "Documents:
+  Storage, Tree, and Window").
+- Persisted state: `entries[]` (the light index), `folders[]`, `pendingPurge[]`,
+  `currentDocumentId`, bounded `recoveryEntries` (max 100). Each document is its own record
+  `doc:<id>`; `documents[]` is only the loaded cache.
 - Envelopes also carry the flat `templateValues` bag; templates, defaults, formulas, and the
   template write path are documented in `.agents/skills/sheet-templates/SKILL.md`.
-- `migrateDocumentStoreState()` accepts both envelope collections and legacy `{ characters: [...] }`
-  shapes; legacy characters are wrapped via `wrapLegacyCharacter()` (droids map
+- The migration accepts the version 4 envelope collection and legacy `{ characters: [...] }` shapes;
+  legacy characters are wrapped via `wrapLegacyCharacter()` (droids map
   `inventory → builtInEquipment`, `health → damage`); failed entries land in recovery, never
   silently dropped.
 - Mutations re-parse through the owning definition: `updateDocumentData(id, updater)` runs
@@ -136,7 +140,7 @@ Pure file logic in `features/sheet/shell/documentFile.ts`, wired in `SheetWorksp
   (`ImportConflictDialog`). A readable file that fails validation is kept via
   `retainImportForRecovery()` (reports `document-recovered`); the batch ends with one
   `ImportSummaryDialog` when something was repaired or rejected. A recovery file (`recoveryFile.ts`,
-  downloaded from the document manager) is retried record by record.
+  downloaded from the documents window) is retried record by record.
 
 ## Derived Stats Formulas
 

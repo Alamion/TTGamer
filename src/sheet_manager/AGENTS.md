@@ -13,11 +13,13 @@ and named views; do not fold kind-specific state into the shared document envelo
 src/sheet_manager/
 ├── components/               # reusable UI, grouped by visual responsibility
 │   ├── controls/             # generic inputs: checkbox, textarea, catalog picker
-│   ├── dialogs/              # create/manage/confirm/import-conflict/library modal flows
+│   ├── dialogs/              # create/confirm/import-conflict/library modal flows
 │   │   └── library/          # library tree, details, move, export and import panels (spec 013)
+│   ├── documents/            # the documents window: tree, details, toolbar, move picker (spec 032)
 │   ├── sections/             # collapsible panels, cards, tables
 │   └── stat-fields/          # atomic traits, dots, labels, Force and merit/flaw rows
 ├── context/                  # read-only CharacterContext
+├── features/documents/       # the documents tree as data: rows, query, operations, history (spec 032)
 ├── features/template-editor/ # template editor (spec 025): session/, operations/, commands/,
 │                             # model/, issues/, elements/, settings/, panels/, components/
 ├── features/sheet/           # the assembled interactive sheet
@@ -37,7 +39,7 @@ src/sheet_manager/
 │   ├── star-wars-wod/        # Star Wars setting on the WoD 2e ruleset (identities frozen)
 │   └── v5/                   # V5 ruleset (`ruleset/`), engine character (`core/`), modules (`modules/hunter/`)
 ├── templates/                # setting-neutral template node builders
-├── store/                    # documentStore (v4) + templateStore (library, v5) + documentTypeStore (user types/settings, default pages, catalogs, v3)
+├── store/                    # documentStore (v5: index + one record per document) + templateStore (library, v5) + documentTypeStore (user types/settings, default pages, catalogs, v3)
 └── types/                    # generic contracts, template schema, templateValues bag
 ```
 
@@ -135,6 +137,43 @@ appropriate for layout/manager operations that explicitly manage the collection.
   value in `templateValues`. User catalogs (spec 015) do the same through `setUserCatalogs` and are
   read with `getCatalogBinding`. Current-state detail: the sheet-templates skill.
 
+## Documents: Storage, Tree, and Window
+
+Spec 032 replaced the manager modal and the one-value document storage. Current rules:
+
+- **Storage (v5).** The persisted store value is slim: `entries` (one light index entry per
+  document: id, name, kind, system, definition, setting, template, `parentId`, `rank`, created and
+  changed times, `updatedAt`), `folders`, `pendingPurge`, `currentDocumentId`, `recoveryEntries`.
+  Each document is its own record `doc:<id>` (JSON text) in the same localForage database
+  (`store/documentContent.ts`); `documents` in the store is only the loaded cache (the open one and
+  up to eight others). Readers that need only identity, kind, setting, or name read `entries`
+  (`DocumentRef`, `documentRefs`); anything that needs data loads by id (`openDocument`,
+  `loadDocuments`). Place, order, and times live only in the index: the envelope, the export file,
+  and the cloud contract are unchanged.
+- **Writes.** A mutation updates the loaded envelope and its entry in one `set`; a subscriber saves
+  changed records at once, coalesced within a task, and flushes on `pagehide`. `changedAt` moves at
+  most once per 5 s per document. Two tabs merge the index by id (newer `updatedAt` wins).
+- **Delete is a tombstone.** Deleting removes the entry and lists the id in `pendingPurge`; the next
+  start's sweep removes exactly those records (and portraits). A record with no entry and no
+  tombstone gets its entry rebuilt, never deleted. Folders use the same list.
+- **Migration.** `migrateToIndexedState` writes `universal-character-storage:v4-backup` first, is
+  idempotent, and a failure blocks saving until reload; the backup goes after two clean launches.
+  T-114 removes it all (after 2027-04-13).
+- **Tree operations** (`features/documents/operations.ts`) are the only way the tree changes:
+  `createFolder`, `rename` (folders and documents), `move` (with `before` for order), `delete` (a
+  folder takes its contents), and `restore` (the inverse of the others). `applyOperations` is pure,
+  returns the inverse, and refuses with problems (cycle, depth 32, missing, not a folder) while the
+  rest of the batch applies; `describeOperation` is the preview line. The window and a future AI
+  role call the same functions through `store.applyTreeOperations` and `treeActions.ts` (undo and
+  redo, 50 steps, in memory until reload). A document rename also writes the document's name value
+  and title.
+- **Query** (`features/documents/query.ts`) is pure and registry-free (labels come from a
+  `DocumentLabeler`): normalized names built once per entries list, filters, sort, ancestors kept
+  and opened; unknown times are never invented. The window keeps the query in session storage.
+- **The window** (`components/documents/`) is a shared `FloatingWindow` over the shared `TreeView`;
+  closed, it renders nothing. Phone: full screen, modal, page behind it locked, tree and details as
+  tabs, drag replaced by "Move to…". Names are typed in place (`InlineName`), never in a dialog.
+
 ## Schema and Import/Export
 
 - `DocumentEnvelopeSchema` plus the registered definition schema are the runtime boundary for
@@ -151,7 +190,7 @@ appropriate for layout/manager operations that explicitly manage the collection.
   guards it.
 - A batch import (`features/sheet/shell/importBatch.ts`) never stops at a bad file: invalid files
   are kept as recovery records (`store/recoveryRecord.ts`, bounded at 100), the batch ends with one
-  summary, and a collision choice may be applied to the rest of the batch. The document manager
+  summary, and a collision choice may be applied to the rest of the batch. The documents window
   downloads the records as a recovery file (`ttgamer_recovery_<date>.json`); importing that file
   retries each record, removes those that import, and updates those that still fail.
 - Blank/missing character names normalize to `''`; the UI displays `New Character` where a label is

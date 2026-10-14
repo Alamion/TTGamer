@@ -122,7 +122,7 @@ check fo it existence before killing processes or creating new one.
 │   │   └── cloud-api/         #   Cloud API boundary: wire names, implemented contract version
 │   ├── data/                  # Catalog entries, filters, and table configs
 │   ├── shared/                # DataCatalog, EntityCard, TWWrapper, hooks, utils
-│   │   ├── components/        #   Reusable UI components (SecretField, DataCatalog, EntityCard, etc.)
+│   │   ├── components/        #   Reusable UI components (SecretField, DataCatalog, EntityCard, Splitter, FloatingWindow, tree/TreeView, etc.)
 │   │   ├── hooks/             #   useLocalStorageState, useSessionStorageState, etc.
 │   │   └── utils/             #   logging, diceNotation, env
 │   ├── pages/                 # Docusaurus pages
@@ -164,6 +164,14 @@ check fo it existence before killing processes or creating new one.
   import the specific internal file they own.
 - `shared/` contains system-independent UI and utilities only. Cross-feature or external-service
   behavior belongs in `integrations/`.
+- Shared UI building blocks (spec 032): nested rows use `shared/components/tree/TreeView` (the
+  library and the documents window are its users: differences are slots and options, not forks),
+  side-by-side panes use `shared/components/Splitter`, floating windows use `FloatingWindow`. Add an
+  option to these instead of copying them; their contract tests in `tests/shared/` run against every
+  user.
+- The document collection is the index: generic code reads `entries` (or `DocumentRef`s) and loads
+  one document by id when it needs its data; it never scans the loaded `documents`
+  (`src/sheet_manager/AGENTS.md`, "Documents: Storage, Tree, and Window").
 - Sheet document access and composition: `src/sheet_manager/AGENTS.md` ("Character Access",
   "Composition Scale"); pages are shipped templates, not React blocks.
 - Cloud API (spec 030): `contracts/cloud-api/openapi.yaml` is the authority for the wire, Zod

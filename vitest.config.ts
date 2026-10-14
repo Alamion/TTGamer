@@ -18,7 +18,7 @@ export default defineConfig({
             provider: 'v8',
             reporter: ['text', 'html'],
         },
-        setupFiles: ['tests/setup/sheetIssues.ts'],
+        setupFiles: ['tests/setup/sheetIssues.ts', 'tests/setup/documentStore.ts'],
         // Worker threads start faster than forked processes: about 15% off the default run.
         pool: 'threads',
         // Timing tests run alone, one file at a time; the default run has no wall-clock budgets

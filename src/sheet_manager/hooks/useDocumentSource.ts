@@ -3,6 +3,7 @@ import { create } from 'zustand';
 
 import { reportSheetIssue } from '../diagnostics';
 import { applyTemplateValueWrites } from '../features/sheet/data/templateValueWrites';
+import { type DocumentRef, documentRefs, refOf } from '../store/documentIndex';
 import type { DocumentStoreState } from '../store/documentStore';
 import { useDocumentStore } from '../store/documentStore';
 import type { DocumentDefinition } from '../systems/types';
@@ -16,7 +17,8 @@ import type { TemplatePageValues } from '../types/templateValues';
  * preset embedded in documentation) without the renderers knowing.
  */
 export interface DocumentSource {
-    documents: readonly UnknownDocumentEnvelope[];
+    /** Every document the source offers as a reference target (identity and name only). */
+    documents: readonly DocumentRef[];
     document: UnknownDocumentEnvelope | undefined;
     readOnly: boolean;
     /**
@@ -36,7 +38,7 @@ const ignoreWrite = () => undefined;
 /** A read-only source around one fixed document; every write is ignored. */
 export function createStaticDocumentSource(document: UnknownDocumentEnvelope): DocumentSource {
     return {
-        documents: [document],
+        documents: [refOf(document)],
         document,
         readOnly: true,
         preview: true,
@@ -113,7 +115,7 @@ export function createScratchDocumentSource(
     };
 
     const toSource = (document: UnknownDocumentEnvelope): DocumentSource => ({
-        documents: [document],
+        documents: [refOf(document)],
         document,
         readOnly: false,
         preview: true,
@@ -137,13 +139,14 @@ export function useDocumentSource(): DocumentSource {
     const {
         currentDocumentId,
         documents,
+        entries,
         updateDocumentData,
         updateDocumentMetadata,
         updateTemplateValues,
     } = useDocumentStore();
     const storeSource = useMemo<DocumentSource>(
         () => ({
-            documents,
+            documents: documentRefs(entries),
             document: documents.find(({ id }) => id === currentDocumentId),
             readOnly: false,
             preview: false,
@@ -154,6 +157,7 @@ export function useDocumentSource(): DocumentSource {
         [
             currentDocumentId,
             documents,
+            entries,
             updateDocumentData,
             updateDocumentMetadata,
             updateTemplateValues,

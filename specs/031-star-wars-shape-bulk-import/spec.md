@@ -1,5 +1,9 @@
 # Feature Specification: Star Wars Shape in Its Plugin and Bulk Import
 
+> **Historical record (partly superseded).** The "document manager" modal this spec mentions is now
+> the documents window (spec 032). Current behavior: `src/sheet_manager/AGENTS.md` ("Documents:
+> Storage, Tree, and Window").
+
 **Branch**: `031-star-wars-shape-bulk-import` | **Created**: 2026-10-13 | **Status**: Draft
 
 **Input**: "T-098 (Star Wars character shape inside its plugin, no behavior change) together with

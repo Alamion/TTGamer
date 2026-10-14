@@ -7,10 +7,10 @@ import toast from 'react-hot-toast';
 
 import { ConfirmDialog } from '../../../components/dialogs/ConfirmDialog';
 import { DocumentCreateDialog } from '../../../components/dialogs/DocumentCreateDialog';
-import { DocumentManagerDialog } from '../../../components/dialogs/DocumentManagerDialog';
 import { ImportConflictDialog } from '../../../components/dialogs/ImportConflictDialog';
 import { ImportSummaryDialog } from '../../../components/dialogs/ImportSummaryDialog';
 import { LibraryDialog } from '../../../components/dialogs/LibraryDialog';
+import { DocumentsWindow } from '../../../components/documents/DocumentsWindow';
 import { useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
@@ -152,7 +152,8 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
             selected.map(async (file) => ({ name: file.name, text: await file.text() }))
         );
         const summary = await runImportBatch(files, {
-            hasDocument: (id) => useDocumentStore.getState().documents.some((d) => d.id === id),
+            hasDocument: (id) =>
+                useDocumentStore.getState().entries.some((entry) => entry.id === id),
             importDocument,
             retain: retainImportForRecovery,
             forget: forgetRecoveryEntry,
@@ -217,7 +218,12 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                     }
                 />
                 {currentDocument && <TermHintNotice />}
-                {!currentDocument && (
+                {!currentDocument && currentDocumentId !== null && (
+                    <p role="status" className="py-6 text-center text-sm text-textSecondary">
+                        {translate(uiMessages.sheet.documents.toolbar.openingDocument)}
+                    </p>
+                )}
+                {!currentDocument && currentDocumentId === null && (
                     <div className="py-6 text-center">
                         <h2 className="mb-2 text-xl font-bold text-textPrimary">
                             <Translate id="ttgamer.ui.sheet.documents.toolbar.noDocumentTitle" />
@@ -239,7 +245,7 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                 cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}
                 variant="danger"
             />
-            <DocumentManagerDialog open={managerDialogOpen} onOpenChange={setManagerDialogOpen} />
+            <DocumentsWindow open={managerDialogOpen} onOpenChange={setManagerDialogOpen} />
             <DocumentCreateDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
             <LibraryDialog open={templatesDialogOpen} onOpenChange={setTemplatesDialogOpen} />
             <ImportSummaryDialog summary={importSummary} onClose={() => setImportSummary(null)} />

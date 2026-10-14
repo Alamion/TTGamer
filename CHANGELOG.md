@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.26.0
+
+### Minor feat
+
+- **A documents window with folders (spec 032, T-052)**: **Manage** now opens a window you can drag and resize, with your documents in a tree of folders on the left and the selected row's details on the right; the sheet behind it stays usable. Click a document to open it; Ctrl or Cmd click and Shift click select several rows. Create folders, drag rows into them or above and below other rows (a line shows where they land), or use **Move to…**; names are typed in place (F2, the row menu, or the name field in the details), and **Add a document** makes one in a folder without switching the sheet to it. Deleting a folder asks first and says what goes with it; moves, renames, new folders, and deletes can be undone and redone (50 steps, until you reload). On a phone the window fills the screen with the list and the details as tabs
+- **Search, filters, and sort for documents (spec 032, T-052)**: search matches names (ignoring case, accents, and ё) and marks the match, with the folders that hold it kept open; filter by type, game system, setting, and when a document was created or changed; sort by name, type, system, or either time, or return to your own order. Older documents show an unknown time rather than a made-up one. Your search and filters are kept while you close and reopen the window
+- **Thousands of documents (spec 032, T-052)**: documents are now stored one by one with a small index, so opening the app and the window reads only what is shown; with 3,000 documents in folders the window opens in under 100 ms. Your existing documents are moved over on the first start (a copy of the old storage is kept for two more launches, then removed) and appear at the top level, unchanged
+- **Select several library rows (spec 032)**: Ctrl or Cmd click, Shift click, and Shift with the arrows select several rows of the library, which can then be deleted or moved together; on a touch screen, hold a row to start selecting, tap the rows you need, and use the × to stop. The documents window selects the same way
+
+### Fix
+
+- **The row menu in the library (spec 032)**: a row with nothing to offer no longer shows the three dots, and opening the menu no longer selects the row or opens its details
+
+### Chore
+
+- **Shared splitter, tree, and window (spec 032)**: the divider of the template editor, the library, and the documents window is one component with one set of keys; the library and the documents window share one tree component (keys, type-ahead, long lists draw only the rows in view); the floating window is shared too, ready for the next windows. Perf bound of the template editor test raised from 3.5× to 4.5× after it failed on `master` too
+
 ## v3.25.1
 
 ### Minor feat

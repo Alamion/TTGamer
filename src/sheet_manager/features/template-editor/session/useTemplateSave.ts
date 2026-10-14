@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { ZodError } from 'zod';
 
 import { describeError, reportSheetIssue } from '../../../diagnostics';
-import { useDocumentStore } from '../../../store/documentStore';
+import { documentRefs } from '../../../store/documentIndex';
+import { loadDocuments, useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
 import { type CustomTemplate, CustomTemplateSchema } from '../../../types/template';
@@ -14,6 +15,7 @@ import type { DraftIssue } from '../issues/draftIssues';
 import { describeLocation, issueLocation, reportUncoveredIssues } from '../issues/schemaIssues';
 import type { EditorDraft } from '../model/types';
 import { saveEffects } from './saveChecks';
+import { savedValuesMayChange } from './saveDocuments';
 import type { EditorSession } from './store';
 
 const editor = uiMessages.sheet.templates.editor;
@@ -62,8 +64,9 @@ export function useTemplateSave({
         const types = useDocumentTypeStore.getState();
         for (const setting of plan.settings) types.saveSetting(setting);
         for (const type of plan.types) types.saveType(type);
-        const { updateDocumentMetadata } = useDocumentStore.getState();
-        for (const id of plan.documentIds) updateDocumentMetadata(id, { templateId: undefined });
+        useDocumentStore
+            .getState()
+            .relocateDocuments(plan.documentIds.map((id) => ({ id, templateId: null })));
         onSaved?.(template);
         onClose();
     };
@@ -75,52 +78,80 @@ export function useTemplateSave({
         onClose();
     };
 
+    const showSaveProblem = (draft: EditorDraft, error: unknown) => {
+        // Raw schema text never reaches the author (spec 022, FR-019): each problem is
+        // mapped to its element and setting, and rules no check covers are reported.
+        if (error instanceof ZodError) {
+            reportUncoveredIssues(draft, specificIssues);
+            const mapped = error.issues.map((issue) =>
+                describeLocation(draft, issueLocation(draft, issue.path))
+            );
+            session.showIssues(
+                mapped.filter(
+                    (issue, index) =>
+                        mapped.findIndex(({ message }) => message === issue.message) === index
+                )
+            );
+        } else {
+            reportSheetIssue({
+                code: 'template-draft-invalid',
+                message: 'Saving the template failed',
+                details: { error: describeError(error) },
+            });
+            session.showIssues([describeLocation(draft, {})]);
+        }
+    };
+
+    /** The save once the stored values its checks need are at hand. */
+    const finishSave = (parsed: CustomTemplate, documents: Parameters<typeof saveEffects>[2]) => {
+        // Values a save stops showing are confirmed first; nothing is deleted (saveChecks.ts).
+        const effects = saveEffects(base, parsed, documents, plural);
+        const asks = effects.lines.length > 0;
+        if (editingDefault) {
+            if (asks) setPending({ template: parsed, effects });
+            else saveDefault(parsed);
+            return;
+        }
+        // A page moved to another type or setting (T-070) takes its assignments along.
+        const { settings, types } = useDocumentTypeStore.getState();
+        const plan = planTemplateRetarget(parsed, {
+            documents: documentRefs(useDocumentStore.getState().entries),
+            settings,
+            types,
+            templates: useTemplateStore.getState().templates,
+        });
+        if (plan.documentIds.length > 0 || asks) {
+            setPending({ template: parsed, plan, effects });
+        } else saveUserTemplate(parsed, plan);
+    };
+
     const save = () => {
         const draft: EditorDraft = session.draft();
         try {
             const parsed = CustomTemplateSchema.parse(draft);
-            const { documents } = useDocumentStore.getState();
-            // Values a save stops showing are confirmed first; nothing is deleted (saveChecks.ts).
-            const effects = saveEffects(base, parsed, documents, plural);
-            const asks = effects.lines.length > 0;
-            if (editingDefault) {
-                if (asks) setPending({ template: parsed, effects });
-                else saveDefault(parsed);
+            const { documents, entries } = useDocumentStore.getState();
+            // Stored values are read from the documents that are not open only when a list,
+            // table, or tracker of the page changed (spec 032, D2).
+            const unopened =
+                base && savedValuesMayChange(base, parsed)
+                    ? entries
+                          .filter(
+                              (entry) =>
+                                  entry.systemId === parsed.systemId &&
+                                  entry.kind === parsed.documentKind &&
+                                  !documents.some(({ id }) => id === entry.id)
+                          )
+                          .map(({ id }) => id)
+                    : [];
+            if (unopened.length === 0) {
+                finishSave(parsed, documents);
                 return;
             }
-            // A page moved to another type or setting (T-070) takes its assignments along.
-            const { settings, types } = useDocumentTypeStore.getState();
-            const plan = planTemplateRetarget(parsed, {
-                documents,
-                settings,
-                types,
-                templates: useTemplateStore.getState().templates,
-            });
-            if (plan.documentIds.length > 0 || asks) {
-                setPending({ template: parsed, plan, effects });
-            } else saveUserTemplate(parsed, plan);
+            void loadDocuments(unopened)
+                .then((loaded) => finishSave(parsed, [...documents, ...loaded]))
+                .catch((error: unknown) => showSaveProblem(draft, error));
         } catch (error) {
-            // Raw schema text never reaches the author (spec 022, FR-019): each problem is
-            // mapped to its element and setting, and rules no check covers are reported.
-            if (error instanceof ZodError) {
-                reportUncoveredIssues(draft, specificIssues);
-                const mapped = error.issues.map((issue) =>
-                    describeLocation(draft, issueLocation(draft, issue.path))
-                );
-                session.showIssues(
-                    mapped.filter(
-                        (issue, index) =>
-                            mapped.findIndex(({ message }) => message === issue.message) === index
-                    )
-                );
-            } else {
-                reportSheetIssue({
-                    code: 'template-draft-invalid',
-                    message: 'Saving the template failed',
-                    details: { error: describeError(error) },
-                });
-                session.showIssues([describeLocation(draft, {})]);
-            }
+            showSaveProblem(draft, error);
         }
     };
 

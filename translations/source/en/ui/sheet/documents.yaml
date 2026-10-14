@@ -11,6 +11,7 @@ toolbar:
     newTitle: Create a new document
     importLabel: Import document file
     noDocumentTitle: No document loaded
+    openingDocument: Opening the document…
     noDocumentDescription: Create a new document or load one from the manager.
     resetDescription: Are you sure you want to reset all document data? This cannot be undone.
     exportSuccess: Exported "{title}"
@@ -46,26 +47,128 @@ importSummary:
     reasonInvalid: 'The file is invalid: {detail}'
     close: Close
 manager:
-    title: Manage documents
+    title: Documents
     empty: No documents yet. Create one to get started.
-    name: Name
-    type: Type
-    setting: Setting
-    current: current
-    selectAll: Select all documents
-    selectDocument: Select {title}
-    deleteSelected: Delete selected
-    deleteTitle: Delete documents
-    deleteDescription:
-        message: Are you sure you want to delete {count} document? This cannot be undone.|Are you sure you want to delete {count} documents? This cannot be undone.
-        plural: true
-    close: Close
+    deleteSelected: Delete
+    deleteTitle: Delete from the tree
+    deleteDescription: Delete {what}? You can undo this until you reload the page.
+    deleteOpenNote: The open document is among them; the sheet will switch to another one.
+    and: ' and '
+    counts:
+        folders:
+            message: '{count} folder|{count} folders'
+            plural: true
+        documents:
+            message: '{count} document|{count} documents'
+            plural: true
+    close: Close the documents window
     rejectedCount: 'Rejected files kept for recovery: {count}'
     rejectedHint: Download them to repair or send them, then import the file again; files that now import are removed from here.
     rejectedDownload: Download rejected files
     rejectedClear: Clear rejected files
     rejectedClearTitle: Clear rejected files
     rejectedClearDescription: Delete every kept rejected file? Download them first if you may need them. This cannot be undone.
+    expand: Expand {name}
+    collapse: Collapse {name}
+    treeLabel: Documents
+    resizeTree: Resize the document list
+    tabs:
+        label: Documents view
+        tree: Documents
+        details: Details
+    current: current
+    rowActions: 'Actions for {name}'
+    details:
+        heading: Details
+        name: Name
+        nothing: Select a document or a folder to see its details.
+        kind: Kind
+        system: Game system
+        setting: Setting
+        place: Place
+        created: Created
+        changed: Changed
+        unknown: Unknown
+        top: Top level
+        open: Open
+        delete: Delete
+        rename: Rename
+        move: Move to…
+        contents: Contents
+        selected:
+            message: '{count} item selected|{count} items selected'
+            plural: true
+        hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range, and on a touch screen a long press starts selecting. A click on a document opens it.
+    search:
+        label: Search names
+        placeholder: Search names…
+        clear: Clear search
+        filters: Filters and sort
+        kind: Type
+        system: Game system
+        setting: Setting
+        created: Created
+        changed: Changed
+        any: Any
+        presets:
+            day: Last 24 hours
+            week: Last 7 days
+            month: Last 30 days
+            older: Older than 30 days
+            unknown: Unknown
+        sort:
+            label: Sort by
+            manual: Manual order
+            name: Name
+            kind: Type
+            system: Game system
+            created: Created
+            changed: Changed
+            descending: Descending order
+        removeFilter: 'Remove filter: {name}'
+        clearAll: Clear search and filters
+        noMatch: Nothing matches the search and filters.
+        results: 'Showing {count} of {total}'
+    toolbar:
+        stopSelecting: Stop selecting
+        label: Tree actions
+        newDocument: Add a document
+        newFolder: New folder
+        undo: Undo
+        redo: Redo
+        undoNamed: 'Undo: {name}'
+        redoNamed: 'Redo: {name}'
+    folder:
+        createTitle: New folder
+        renameTitle: Rename folder
+        name: Folder name
+        defaultName: New folder
+        create: Create
+        rename: Rename
+    move:
+        title:
+            message: Move {count} item to…|Move {count} items to…
+            plural: true
+        treeLabel: Folders
+        top: Top level
+        confirm: Move here
+    history:
+        createFolder: Create folder
+        rename: Rename folder
+        move: Move
+        delete: Delete
+    refused:
+        sorted: Switch to manual order to rearrange rows.
+        cycle: A folder cannot go into itself or into a folder inside it.
+        depth: Folders can be nested only {max} levels deep.
+        missing: That place no longer exists.
+        generic: The change could not be made.
+    announce:
+        moved:
+            message: Moved {count} item|Moved {count} items
+            plural: true
+        undone: 'Undone: {name}'
+        redone: 'Redone: {name}'
 examples:
     jaxVorn: Jax Vorn (example)
     wampa: Wampa (example)

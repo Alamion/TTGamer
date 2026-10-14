@@ -376,11 +376,11 @@ describe('library storybook (spec 013)', () => {
             expect(document.querySelector(`[data-library-story="${title}"]`)).not.toBeNull();
         }
         // Spec 015: a user catalog row and a read-only shipped one.
-        expect(document.querySelector('[data-library-row^="c:user:"]')).not.toBeNull();
+        expect(document.querySelector('[data-tree-row^="c:user:"]')).not.toBeNull();
         expect(
-            document.querySelector('[data-library-row="c:star-wars-wod:melee-weapons"]')
+            document.querySelector('[data-tree-row="c:star-wars-wod:melee-weapons"]')
         ).not.toBeNull();
-        const levels = [...document.querySelectorAll('[data-library-row]')].map((row) =>
+        const levels = [...document.querySelectorAll('[data-tree-row]')].map((row) =>
             row.getAttribute('aria-level')
         );
         expect(new Set(levels)).toEqual(new Set(['1', '2', '3', '4']));

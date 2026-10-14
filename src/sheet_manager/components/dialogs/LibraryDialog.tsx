@@ -2,10 +2,18 @@ import { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
+import { Splitter } from '@site/src/shared/components/Splitter';
+import { SelectionBar } from '@site/src/shared/components/tree/SelectionBar';
+import type { SelectExtend } from '@site/src/shared/components/tree/TreeRowShell';
+import {
+    type PaneLimits,
+    useMeasuredElement,
+    usePaneSizes,
+} from '@site/src/shared/hooks/usePaneSizes';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import clsx from 'clsx';
 import { Search, X } from 'lucide-react';
-import type { DragEvent, ReactNode } from 'react';
+import type { CSSProperties, DragEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -21,6 +29,12 @@ import {
     renameItem,
     setDefaultWrites,
 } from '../../features/sheet/data/libraryActions';
+import {
+    bulkMoveTargets,
+    bulkSubjects,
+    planBulkDelete,
+    planBulkMove,
+} from '../../features/sheet/data/libraryBulk';
 import {
     isMovable,
     type MovePlan,
@@ -38,6 +52,7 @@ import {
     countDocuments,
     filterTree,
     findNode,
+    flattenVisible,
     type LibraryFilter,
     type LibraryNode,
     type PageNode,
@@ -49,6 +64,7 @@ import {
     TemplateEditorDialog,
     type TemplateEditorDialogProps,
 } from '../../features/template-editor/TemplateEditorDialog';
+import { documentRefs } from '../../store/documentIndex';
 import { useDocumentStore } from '../../store/documentStore';
 import { useDocumentTypeStore } from '../../store/documentTypeStore';
 import { useTemplateStore } from '../../store/templateStore';
@@ -57,6 +73,7 @@ import type { CustomTemplate } from '../../types/template';
 import { TEMPLATE_LIMITS } from '../../types/templateLimits';
 import { ConfirmDialog } from './ConfirmDialog';
 import { availableActions, type LibraryActionId } from './library/actions';
+import { BulkPanel } from './library/BulkPanel';
 import { ContextMenu } from './library/ContextMenu';
 import { CreateForm, type CreateFormValues } from './library/CreateForm';
 import { DetailsPane } from './library/DetailsPane';
@@ -66,6 +83,10 @@ import { LibraryTree, type RowExtras } from './library/LibraryTree';
 import { MovePanel } from './library/MovePanel';
 
 const labels = uiMessages.sheet.library;
+
+/** The tree pane of the dialog; the details take the rest, at least `restMin` wide. */
+const TREE_LIMITS: Record<'tree', PaneLimits> = { tree: { min: 220, max: 560, initial: 384 } };
+const TREE_ROOM = { restMin: 320, dividers: 6 };
 const LIBRARY_MIME = 'application/x-ttgamer-library-node';
 
 export type LibraryMode = 'browse' | 'export' | 'import';
@@ -105,8 +126,8 @@ function useLibraryTree() {
     const catalogs = useDocumentTypeStore((state) => state.catalogs);
     const templates = useTemplateStore((state) => state.templates);
     const defaultOverrides = useTemplateStore((state) => state.defaultOverrides);
-    const documents = useDocumentStore((state) => state.documents);
-    const counts = useMemo(() => countDocuments(documents), [documents]);
+    const entries = useDocumentStore((state) => state.entries);
+    const counts = useMemo(() => countDocuments(documentRefs(entries)), [entries]);
     return useMemo(
         () =>
             buildLibraryTree({
@@ -146,7 +167,18 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
     const [expanded, setExpanded] = useState<Set<string>>(
         () => new Set(tree.map(({ key }) => key))
     );
-    const [selectedKey, setSelectedKey] = useState<string>();
+    const [selectedKey, setSelectedKeyOnly] = useState<string>();
+    // Rows selected together (Ctrl/Cmd click, Shift click); empty while one row is selected.
+    const [selection, setSelection] = useState<ReadonlySet<string>>(new Set());
+    const [bulkMove, setBulkMove] = useState<{ target?: string }>();
+    /** A finger-started selection: a tap toggles a row until it is stopped. */
+    const [selecting, setSelecting] = useState(false);
+    const anchorKey = useRef<string | undefined>(undefined);
+    const setSelectedKey = useCallback((key: string | undefined) => {
+        setSelectedKeyOnly(key);
+        setSelection(new Set());
+        setBulkMove(undefined);
+    }, []);
     const [narrowTab, setNarrowTab] = useState<'tree' | 'details'>('tree');
     const [panel, setPanel] = useState<Panel>();
     const [menu, setMenu] = useState<{ key: string; x: number; y: number }>();
@@ -158,6 +190,13 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
     const treeRegion = useRef<HTMLDivElement>(null);
+    const { ref: bodyRef, node: body, width: bodyWidth } = useMeasuredElement<HTMLDivElement>();
+    const panes = usePaneSizes('library-panes', TREE_LIMITS, bodyWidth, TREE_ROOM);
+    // Only the CSS variable moves while the divider is dragged; the width is stored on release.
+    const previewTree = useCallback(
+        (width: number) => body?.style.setProperty('--tree', `${width}px`),
+        [body]
+    );
     const [content, setContent] = useState<HTMLDivElement | null>(null);
 
     const filtering = query.trim() !== '' || filter !== 'all';
@@ -183,10 +222,13 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
      * Selects a node that may exist only from the next render on (just created or saved), opening
      * the branches that lead to it; the caller names them because the tree does not know it yet.
      */
-    const reveal = useCallback((key: string, open: readonly string[]) => {
-        setExpanded((current) => new Set([...current, ...open]));
-        setSelectedKey(key);
-    }, []);
+    const reveal = useCallback(
+        (key: string, open: readonly string[]) => {
+            setExpanded((current) => new Set([...current, ...open]));
+            setSelectedKey(key);
+        },
+        [setSelectedKey]
+    );
     const pathKeys = (key: string) => [
         ...(findNode(tree, key)?.ancestors.map((ancestor) => ancestor.key) ?? []),
         key,
@@ -204,7 +246,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
 
     const focusRow = (key: string) => {
         window.setTimeout(() => {
-            treeRegion.current?.querySelector<HTMLElement>(`[data-library-row="${key}"]`)?.focus();
+            treeRegion.current?.querySelector<HTMLElement>(`[data-tree-row="${key}"]`)?.focus();
         }, 0);
     };
 
@@ -575,8 +617,125 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
     const displayedTree = shown;
     const menuNode = menu ? findNode(tree, menu.key)?.node : undefined;
 
+    // --- Selecting several rows ---------------------------------------------------------------
+
+    const bulk = mode === 'browse' && selection.size > 1;
+    const subjects = useMemo(
+        () => (bulk ? bulkSubjects(tree, selection) : []),
+        [bulk, tree, selection]
+    );
+    const selectRow = (key: string, extend: SelectExtend) => {
+        if (mode !== 'browse' || extend === 'none') {
+            anchorKey.current = key;
+            setSelectedKey(key);
+            return;
+        }
+        const current = selection.size > 0 ? selection : new Set(selectedKey ? [selectedKey] : []);
+        let next: Set<string>;
+        if (extend === 'toggle') {
+            next = new Set(current);
+            if (next.has(key)) next.delete(key);
+            else next.add(key);
+            anchorKey.current = key;
+        } else {
+            const keys = flattenVisible(displayedTree, effectiveExpanded).map(
+                (row) => row.node.key
+            );
+            const from = keys.indexOf(anchorKey.current ?? selectedKey ?? key);
+            const to = keys.indexOf(key);
+            const [start, end] = from < 0 ? [to, to] : [Math.min(from, to), Math.max(from, to)];
+            next = new Set(keys.slice(start, end + 1));
+        }
+        setBulkMove(undefined);
+        if (next.size <= 1) {
+            setSelectedKeyOnly([...next][0] ?? key);
+            setSelection(new Set());
+        } else {
+            setSelectedKeyOnly(key);
+            setSelection(next);
+        }
+    };
+    const startSelecting = (key: string) => {
+        setSelecting(true);
+        selectRow(key, 'none');
+    };
+    const stopSelecting = () => {
+        setSelecting(false);
+        setSelection(new Set());
+        setBulkMove(undefined);
+    };
+    const shownSelection =
+        selection.size > 0 ? selection : new Set(selectedKey ? [selectedKey] : []);
+    const bulkDelete = bulk ? planBulkDelete(subjects, state()) : undefined;
+    const bulkTargets = bulk ? bulkMoveTargets(subjects, tree) : undefined;
+    const bulkMovePlan =
+        bulk && bulkMove?.target
+            ? planBulkMove(subjects, bulkMove.target, tree, state(), systemRegistry)
+            : undefined;
+
+    const requestBulkDelete = () => {
+        if (!bulkDelete || bulkDelete.blocked.length > 0) return;
+        const count = subjects.length;
+        setConfirmation({
+            title: translate(labels.bulk.deleteTitle),
+            description: [
+                plural(labels.bulk.deleteDescription, count, {
+                    documents: plural(labels.counts.documents, bulkDelete.documentCount),
+                }),
+                bulkDelete.catalogCount > 0
+                    ? plural(labels.delete.settingCatalogs, bulkDelete.catalogCount)
+                    : '',
+            ]
+                .filter(Boolean)
+                .join(' '),
+            confirmLabel: translate(labels.actions.delete),
+            danger: true,
+            run: () => {
+                applyLibraryWrites(bulkDelete.writes);
+                setSelectedKey(undefined);
+                setPanel(undefined);
+                toast.success(plural(labels.bulk.deleted, count));
+            },
+        });
+    };
+
+    const applyBulkMove = (plan: MovePlan) => {
+        applyLibraryWrites(plan.writes);
+        const target = plan.target;
+        const moved = subjects.length;
+        setExpanded((current) => new Set([...current, target.key]));
+        setSelectedKey(subjects[0]?.key);
+        setFlashKey(subjects[0]?.key);
+        toast.success(plural(labels.bulk.moved, moved, { target: target.name }));
+    };
+
+    const bulkDetails = bulk ? (
+        <BulkPanel
+            subjects={subjects}
+            blockedCount={bulkDelete?.blocked.length ?? 0}
+            canMove={(bulkTargets?.length ?? 0) > 0}
+            onDelete={requestBulkDelete}
+            onMove={() => setBulkMove({})}
+            panel={
+                bulkMove && subjects[0] && bulkTargets ? (
+                    <MovePanel
+                        subject={subjects[0]}
+                        title={plural(labels.bulk.moveTitle, subjects.length)}
+                        targets={bulkTargets}
+                        chosenKey={bulkMove.target}
+                        plan={bulkMovePlan}
+                        onChoose={(target) => setBulkMove({ target })}
+                        onConfirm={() => bulkMovePlan && applyBulkMove(bulkMovePlan)}
+                        onCancel={() => setBulkMove(undefined)}
+                    />
+                ) : undefined
+            }
+        />
+    ) : undefined;
+
     const details =
         modePanels?.details ??
+        bulkDetails ??
         (found ? (
             <DetailsPane
                 found={found}
@@ -708,14 +867,27 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                         ))}
                     </div>
 
-                    <div className="flex min-h-0 flex-1">
+                    <div
+                        ref={bodyRef}
+                        style={{ '--tree': `${panes.sizes.tree}px` } as CSSProperties}
+                        className="flex min-h-0 flex-1"
+                    >
                         <div
                             ref={treeRegion}
                             className={clsx(
-                                'min-h-0 flex-1 overflow-y-auto p-2 md:block md:max-w-[26rem] md:border-r md:border-border',
+                                'min-h-0 flex-1 overflow-y-auto p-2 md:block md:w-[var(--tree)] md:flex-none',
                                 narrowTab === 'tree' ? 'block' : 'hidden'
                             )}
                         >
+                            {mode === 'browse' && selecting && (
+                                <div className="sticky top-0 z-10 -mx-2 -mt-2 mb-2 bg-bgSurface">
+                                    <SelectionBar
+                                        text={plural(labels.bulk.title, shownSelection.size)}
+                                        cancelLabel={translate(labels.bulk.stop)}
+                                        onCancel={stopSelecting}
+                                    />
+                                </div>
+                            )}
                             {mode === 'import' ? (
                                 importMode.tree
                             ) : displayedTree.length === 0 ? (
@@ -742,15 +914,23 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                     tree={displayedTree}
                                     expanded={effectiveExpanded}
                                     selectedKey={selectedKey}
-                                    onSelect={setSelectedKey}
+                                    selectedKeys={
+                                        bulk ? selection : selecting ? shownSelection : undefined
+                                    }
+                                    selecting={mode === 'browse' && selecting}
+                                    onLongPress={mode === 'browse' ? startSelecting : undefined}
+                                    onSelect={selectRow}
                                     onRowClick={() => setNarrowTab('details')}
                                     onToggle={toggle}
                                     onOpenPage={openPage}
                                     onDelete={
                                         mode === 'browse'
                                             ? (node) => {
-                                                  if (node.ownership === 'user')
+                                                  if (bulk && selection.has(node.key)) {
+                                                      requestBulkDelete();
+                                                  } else if (node.ownership === 'user') {
                                                       requestDelete(node);
+                                                  }
                                               }
                                             : undefined
                                     }
@@ -759,12 +939,26 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                     }
                                     onSpace={modePanels?.onSpace}
                                     rowExtras={modePanels?.rowExtras ?? browseExtras}
+                                    hasMenu={(node) =>
+                                        mode === 'browse' && actionsFor(node).length > 0
+                                    }
+                                    scrollRef={treeRegion}
                                 />
                             )}
                         </div>
+                        <Splitter
+                            label={translate(labels.resizeTree)}
+                            min={TREE_LIMITS.tree.min}
+                            max={TREE_LIMITS.tree.max}
+                            value={panes.sizes.tree}
+                            clamp={(width) => panes.clamp('tree', width)}
+                            onPreview={previewTree}
+                            onChange={(width) => panes.setSize('tree', width)}
+                            onReset={() => panes.reset('tree')}
+                        />
                         <div
                             className={clsx(
-                                'min-h-0 flex-1 overflow-y-auto md:block',
+                                'min-h-0 min-w-0 flex-1 overflow-y-auto md:block',
                                 narrowTab === 'details' ? 'block' : 'hidden'
                             )}
                         >

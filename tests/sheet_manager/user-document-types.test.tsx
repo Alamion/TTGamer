@@ -81,7 +81,7 @@ describe('user document types (spec 012, US4)', () => {
 
     it('creates a type in a shipped setting without a page, then gives it its first page', () => {
         render(createElement(LibraryDialog, { open: true, onOpenChange: () => {} }));
-        fireEvent.click(document.querySelector('[data-library-row="s:system:star-wars-wod"]')!);
+        fireEvent.click(document.querySelector('[data-tree-row="s:system:star-wars-wod"]')!);
         fireEvent.click(document.querySelector('[data-library-action="newType"]')!);
         fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Organization' } });
         fireEvent.click(screen.getByRole('button', { name: 'Create' }));
@@ -167,12 +167,10 @@ describe('user document types (spec 012, US4)', () => {
             render(createElement(LibraryDialog, { open: true, onOpenChange: () => {} }));
             fireEvent.click(
                 within(
-                    document.querySelector<HTMLElement>(
-                        '[data-library-row="s:system:star-wars-wod"]'
-                    )!
+                    document.querySelector<HTMLElement>('[data-tree-row="s:system:star-wars-wod"]')!
                 ).getByLabelText(/Expand/)
             );
-            fireEvent.click(document.querySelector(`[data-library-row="t:user:${TYPE_ID}"]`)!);
+            fireEvent.click(document.querySelector(`[data-tree-row="t:user:${TYPE_ID}"]`)!);
             fireEvent.click(document.querySelector('[data-library-action="delete"]')!);
             const confirm = screen.getAllByRole('dialog').at(-1)!;
             expect(confirm.textContent).toContain('1 document uses it');

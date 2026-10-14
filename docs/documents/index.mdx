@@ -1,0 +1,56 @@
+---
+sidebar_position: 6
+slug: ./
+title: Documents window
+sidebar_label: Documents window
+description: How to find, arrange, and manage your documents — folders, search, filters, sorting, moving, renaming, and undo, on a computer and on a phone.
+---
+
+# Documents window \{#documents-window}
+
+:::tip[In short]
+**Manage** on the [character sheet](/universal_sheet) opens the documents window. Your documents sit in a tree of folders: click a document to open it, drag rows to arrange them, type in the search box to find one, and press **Undo** if you change your mind.
+:::
+
+## Opening and moving the window
+
+On a computer the window floats over the sheet, and the sheet behind it stays usable. Drag the title bar to move it, drag an edge or a corner to resize it, and double-click the title bar to put it back. Its place and size are remembered on this device. On a phone the window fills the screen: the tree and the details are two tabs, and opening a document closes the window.
+
+## The tree
+
+Folders come first, then documents, each in the order you arranged. Open and close a folder with its arrow; the open folders are remembered.
+
+- **Click** a document, or press `Enter`, to open it on the sheet. The open document is marked _current_.
+- **Ctrl or Cmd click** adds or removes a row from the selection, **Shift click** selects a range, and `Space` toggles the focused row. Selecting never opens a document.
+- On a touch screen, **hold** a row to start selecting, then tap the rows you need; the bar above the tree counts them and offers **Move to…** and **Delete**, and its **×** stops selecting. The library tree works the same way.
+- The **⋯** button on a row, a right click, `Shift+F10`, or the Menu key opens that row's actions. On a phone the **⋯** button is always shown.
+
+The keyboard works as in a file tree: the arrows move and open folders, `Home` and `End` jump to the first and last row, typing a name jumps to it, `F2` renames, `Delete` deletes.
+
+## Folders, names, and moving
+
+- **New folder** makes a folder (inside the selected folder, or beside the selected document) with its name ready to type over. **Add a document** asks which kind of document to make, puts it in the same place, and asks for its name, without switching the sheet to it.
+- **Rename** with `F2`, the row's menu, or the name field in the details on the right. `Enter` or leaving the field saves, `Escape` drops the change. Renaming a document also changes its name on the sheet.
+- **Drag** rows onto a folder to put them inside it, or above or below another row to put them there; a line shows where they will land. A folder cannot go into itself or into a folder inside it, and folders can be nested 32 deep.
+- **Move to…** (the row's menu, or the button in the details) works for everything the mouse does, and is the way to move rows on a phone: pick a folder, or the top level.
+- **Delete** asks first. Deleting a folder deletes what is inside it; the question says how many folders and documents go, and whether the open document is among them. The sheet then moves to the nearest document.
+
+**Undo** and **Redo** (the buttons above the tree, or `Ctrl+Z`, `Ctrl+Shift+Z`, and `Ctrl+Y`) take back and repeat the last 50 changes: moves, renames, new folders, and deletes, with the order of rows. The history lasts until you reload the page.
+
+Documents saved before folders existed appear at the top level, unchanged.
+
+## Search, filters, and sort
+
+- **Search** matches the names of documents and folders, ignoring case, accents, and `ё`; every word you type must be in the name. Matches are marked, and the folders that hold them stay open above them. A folder whose own name matches shows everything inside it.
+- **Filters** (the sliders button) narrow by type, game system, setting, and by when a document was created or last changed. All active filters apply together; each one shows as a chip you can remove, and **Clear search and filters** removes them all. Documents saved before times were kept show an unknown time and only match the filter _Unknown_.
+- **Sort** orders rows inside every folder by name, type, game system, created, or changed time, up or down; folders always come first. **Manual order** returns the order you arranged. While rows are sorted you can still drop rows into a folder, but not above or below other rows.
+
+Search and filters are kept while you close and reopen the window in the same visit.
+
+## Many documents
+
+The window is built for thousands of documents: it draws only the rows you can see, and it reads a document's content only when you open it. With 3,000 documents it opens in well under a second.
+
+## Rejected files
+
+Files that failed to import are kept at the bottom of the window until you download or clear them. Download the kept files, repair them, and import the recovery file again from the sheet's **Import** button.

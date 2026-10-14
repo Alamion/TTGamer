@@ -1,7 +1,7 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { newDocumentPage } from '../../features/sheet/data/libraryPages';
 import { useDocumentStore } from '../../store/documentStore';
@@ -13,6 +13,11 @@ import { isUserKind, type UserSetting } from '../../systems/userTypes';
 interface DocumentCreateDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    /** Show the new document on the sheet (the default); false only creates it. */
+    activate?: boolean;
+    /** The folder the new document goes into; the top level when absent. */
+    parentId?: string | null;
+    onCreated?: (id: string) => void;
 }
 
 type DefinitionEntry = ReturnType<typeof systemRegistry.listDefinitions>[number];
@@ -68,7 +73,13 @@ function createGroups(settings: Readonly<Record<string, UserSetting>>): CreateGr
 }
 
 /** Lists every registered document definition, grouped by setting. */
-export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialogProps) {
+export function DocumentCreateDialog({
+    open,
+    onOpenChange,
+    activate = true,
+    parentId = null,
+    onCreated,
+}: DocumentCreateDialogProps) {
     const createDocument = useDocumentStore((state) => state.createDocument);
     // The registry lists installed user types; subscribing re-renders when they change.
     const userTypes = useDocumentTypeStore((state) => state.types);
@@ -78,6 +89,7 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
     const [selected, setSelected] = useState(
         first ? optionValue(first.system.id, first.definition.id) : ''
     );
+    const justCreated = useRef(false);
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
 
@@ -91,11 +103,15 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
             templates: useTemplateStore.getState().templates,
             defaultPages: useDocumentTypeStore.getState().defaultPages,
         });
-        createDocument(systemId, definitionId, {
+        const created = createDocument(systemId, definitionId, {
+            activate,
+            parentId,
             settingId,
             templateId: templateId ?? page.templateId,
             ...(page.preferredViewId ? { preferredViewId: page.preferredViewId } : {}),
         });
+        justCreated.current = true;
+        onCreated?.(created.id);
         onOpenChange(false);
     };
 
@@ -103,7 +119,14 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
         <Dialog.Root open={open} onOpenChange={onOpenChange}>
             <Dialog.Portal container={modalRoot ?? undefined}>
                 <Dialog.Overlay className="fixed inset-0 bg-black/50 z-[9998]" />
-                <Dialog.Content className="fixed left-1/2 top-1/2 z-[9999] max-h-[calc(100%-2rem)] w-[min(30rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-bgSurface p-6 shadow-xl focus:outline-hidden">
+                <Dialog.Content
+                    onCloseAutoFocus={(event) => {
+                        // The owner places the focus on what was made (a name to type).
+                        if (justCreated.current && onCreated) event.preventDefault();
+                        justCreated.current = false;
+                    }}
+                    className="fixed left-1/2 top-1/2 z-[9999] max-h-[calc(100%-2rem)] w-[min(30rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg border border-border bg-bgSurface p-6 shadow-xl focus:outline-hidden"
+                >
                     <Dialog.Title className="text-lg font-semibold text-textPrimary">
                         <Translate id="ttgamer.ui.sheet.documents.create.title" />
                     </Dialog.Title>

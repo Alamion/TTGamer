@@ -1,19 +1,14 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import {
+    type SelectExtend,
+    TreeRowShell,
+    type TreeRowSlots,
+} from '@site/src/shared/components/tree/TreeRowShell';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import clsx from 'clsx';
-import {
-    ChevronRight,
-    Dices,
-    FileText,
-    Globe2,
-    LayoutTemplate,
-    MoreHorizontal,
-    Star,
-    Table2,
-} from 'lucide-react';
-import type { DragEvent, KeyboardEvent, MouseEvent, ReactNode } from 'react';
-import { memo } from 'react';
+import { Dices, FileText, Globe2, LayoutTemplate, Star, Table2 } from 'lucide-react';
+import type { KeyboardEvent } from 'react';
 
 import type { LibraryLevel, LibraryNode } from '../../../features/sheet/data/libraryTree';
 
@@ -29,38 +24,9 @@ const LEVEL_ICON: Record<LibraryLevel, typeof Dices> = {
 
 const badge = 'shrink-0 rounded-sm px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide';
 
-export interface TreeRowDrag {
-    draggable: boolean;
-    onDragStart?: (event: DragEvent<HTMLDivElement>) => void;
-    onDragOver?: (event: DragEvent<HTMLDivElement>) => void;
-    onDragLeave?: (event: DragEvent<HTMLDivElement>) => void;
-    onDrop?: (event: DragEvent<HTMLDivElement>) => void;
-    /** A dragged row may be dropped here. */
-    over?: boolean;
-}
+type PluralMessage = ReturnType<typeof usePluralMessage>;
 
-export interface TreeRowProps {
-    node: LibraryNode;
-    depth: number;
-    setSize: number;
-    position: number;
-    expanded: boolean;
-    selected: boolean;
-    tabbable: boolean;
-    /** Briefly highlighted after a move landed here. */
-    flash?: boolean;
-    /** Export/import mode: the row's checkbox, rendered before its name. */
-    checkbox?: ReactNode;
-    /** Import mode: state badge and reason. */
-    trailing?: ReactNode;
-    drag?: TreeRowDrag;
-    onSelect: (key: string) => void;
-    onToggle: (key: string) => void;
-    onMenu: (key: string, anchor: { x: number; y: number }) => void;
-    onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
-}
-
-function hasChildren(node: LibraryNode): boolean {
+export function libraryNodeHasChildren(node: LibraryNode): boolean {
     switch (node.level) {
         case 'ruleset':
             return node.catalogs.length + node.settings.length > 0;
@@ -74,27 +40,9 @@ function hasChildren(node: LibraryNode): boolean {
     }
 }
 
-/** One `treeitem` of the library (contracts/library-ui.md "Row content"). Props only. */
-export const TreeRow = memo(function TreeRow({
-    node,
-    depth,
-    setSize,
-    position,
-    expanded,
-    selected,
-    tabbable,
-    flash,
-    checkbox,
-    trailing,
-    drag,
-    onSelect,
-    onToggle,
-    onMenu,
-    onKeyDown,
-}: TreeRowProps) {
-    const plural = usePluralMessage();
+/** What a library row says besides its name (contracts/library-ui.md "Row content"). */
+export function libraryRowSlots(node: LibraryNode, plural: PluralMessage): TreeRowSlots {
     const Icon = LEVEL_ICON[node.level];
-    const expandable = hasChildren(node);
     const count =
         node.level === 'ruleset'
             ? plural(labels.counts.settings, node.settings.length)
@@ -106,113 +54,98 @@ export const TreeRow = memo(function TreeRow({
                   ? plural(labels.counts.entries, node.entryCount)
                   : undefined;
     const edited = node.level === 'page' && node.ref.kind === 'shipped' && node.ref.edited;
-    const openMenu = (event: MouseEvent<HTMLElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-        onSelect(node.key);
-        onMenu(node.key, { x: event.clientX, y: event.clientY });
-    };
-
-    return (
-        <div
-            role="treeitem"
-            id={`library-row-${node.key}`}
-            data-library-row={node.key}
-            aria-level={depth}
-            aria-setsize={setSize}
-            aria-posinset={position}
-            aria-selected={selected}
-            aria-expanded={expandable ? expanded : undefined}
-            tabIndex={tabbable ? 0 : -1}
-            onClick={() => onSelect(node.key)}
-            onContextMenu={openMenu}
-            onKeyDown={onKeyDown}
-            draggable={drag?.draggable ?? false}
-            onDragStart={drag?.onDragStart}
-            onDragOver={drag?.onDragOver}
-            onDragLeave={drag?.onDragLeave}
-            onDrop={drag?.onDrop}
-            className={clsx(
-                'group flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm border pr-1 text-sm outline-hidden transition-colors',
-                'focus-visible:ring-2 focus-visible:ring-primary',
-                selected
-                    ? 'border-primary/60 bg-primary/10 text-textPrimary'
-                    : 'border-transparent text-textPrimary hover:bg-secondary/10',
-                drag?.over && 'border-primary bg-primary/5',
-                flash && 'bg-secondary/20',
-                node.unavailable && 'opacity-60',
-                drag?.draggable && 'active:cursor-grabbing'
-            )}
-            style={{ paddingLeft: `${(depth - 1) * 0.875 + 0.25}rem` }}
-        >
-            <button
-                type="button"
-                tabIndex={-1}
-                aria-label={translate(expanded ? labels.row.collapse : labels.row.expand, {
-                    name: node.name,
-                })}
-                onClick={(event) => {
-                    event.stopPropagation();
-                    onToggle(node.key);
-                }}
-                className={clsx(
-                    'flex h-5 w-5 shrink-0 items-center justify-center rounded-sm text-textSecondary hover:text-textPrimary',
-                    !expandable && 'invisible'
+    return {
+        icon: <Icon className="h-4 w-4 shrink-0 text-textSecondary" aria-hidden="true" />,
+        badges: (
+            <>
+                {node.level === 'page' && node.isDefault && (
+                    <Star
+                        className="h-3.5 w-3.5 shrink-0 fill-secondary text-secondary"
+                        aria-label={translate(labels.badges.default)}
+                        role="img"
+                    />
                 )}
-            >
-                <ChevronRight
-                    className={clsx(
-                        'h-3.5 w-3.5 transition-transform duration-200 ease-linear motion-reduce:transition-none',
-                        expanded && 'rotate-90'
-                    )}
-                    aria-hidden="true"
-                />
-            </button>
-            {checkbox}
-            <Icon className="h-4 w-4 shrink-0 text-textSecondary" aria-hidden="true" />
-            <span className="min-w-0 flex-1 truncate">{node.name}</span>
-            {node.level === 'page' && node.isDefault && (
-                <Star
-                    className="h-3.5 w-3.5 shrink-0 fill-secondary text-secondary"
-                    aria-label={translate(labels.badges.default)}
-                    role="img"
-                />
-            )}
-            {node.ownership === 'user' && node.level !== 'ruleset' && (
-                <span className={clsx(badge, 'bg-primary/10 text-primary')}>
-                    {translate(labels.badges.yours)}
-                </span>
-            )}
-            {edited && (
-                <span className={clsx(badge, 'bg-secondary/15 text-textPrimary')}>
-                    {translate(labels.badges.edited)}
-                </span>
-            )}
-            {node.level === 'setting' && node.ref.kind === 'rules' && (
-                <span className={clsx(badge, 'bg-bgBase text-textSecondary')}>
-                    {translate(labels.badges.noSetting)}
-                </span>
-            )}
-            {node.unavailable && (
-                <span className={clsx(badge, 'bg-bgBase text-textSecondary')}>
-                    {translate(labels.badges.unavailable)}
-                </span>
-            )}
-            {trailing}
-            {count && (
-                <span className="hidden shrink-0 text-xs tabular-nums text-textSecondary sm:inline">
-                    {count}
-                </span>
-            )}
-            <button
-                type="button"
-                tabIndex={-1}
-                aria-label={translate(labels.row.actions, { name: node.name })}
-                onClick={openMenu}
-                className="rounded-sm p-1 text-textSecondary opacity-60 hover:bg-bgBase hover:text-textPrimary group-hover:opacity-100"
-            >
-                <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
-            </button>
-        </div>
+                {node.ownership === 'user' && node.level !== 'ruleset' && (
+                    <span className={clsx(badge, 'bg-primary/10 text-primary')}>
+                        {translate(labels.badges.yours)}
+                    </span>
+                )}
+                {edited && (
+                    <span className={clsx(badge, 'bg-secondary/15 text-textPrimary')}>
+                        {translate(labels.badges.edited)}
+                    </span>
+                )}
+                {node.level === 'setting' && node.ref.kind === 'rules' && (
+                    <span className={clsx(badge, 'bg-bgBase text-textSecondary')}>
+                        {translate(labels.badges.noSetting)}
+                    </span>
+                )}
+                {node.unavailable && (
+                    <span className={clsx(badge, 'bg-bgBase text-textSecondary')}>
+                        {translate(labels.badges.unavailable)}
+                    </span>
+                )}
+            </>
+        ),
+        count,
+        dimmed: node.unavailable,
+    };
+}
+
+export const libraryTreeLabels = {
+    toggle: (name: string, expanded: boolean) =>
+        translate(expanded ? labels.row.collapse : labels.row.expand, { name }),
+    actions: (name: string) => translate(labels.row.actions, { name }),
+};
+
+export interface TreeRowProps extends Pick<
+    TreeRowSlots,
+    'checkbox' | 'trailing' | 'drag' | 'flash'
+> {
+    node: LibraryNode;
+    depth: number;
+    setSize: number;
+    position: number;
+    expanded: boolean;
+    selected: boolean;
+    tabbable: boolean;
+    onSelect: (key: string, extend?: SelectExtend) => void;
+    onToggle: (key: string) => void;
+    onMenu: (key: string, anchor: { x: number; y: number }) => void;
+    onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
+}
+
+/** One row of the library tree, drawn alone (the dev storybook shows every state this way). */
+export function TreeRow({
+    node,
+    depth,
+    expanded,
+    checkbox,
+    trailing,
+    drag,
+    flash,
+    onSelect,
+    ...rest
+}: TreeRowProps) {
+    const plural = usePluralMessage();
+    return (
+        <TreeRowShell
+            idPrefix="library-row-"
+            rowKey={node.key}
+            name={node.name}
+            depth={depth}
+            expandable={libraryNodeHasChildren(node)}
+            expanded={expanded}
+            toggleLabel={libraryTreeLabels.toggle(node.name, expanded)}
+            actionsLabel={libraryTreeLabels.actions(node.name)}
+            {...libraryRowSlots(node, plural)}
+            checkbox={checkbox}
+            trailing={trailing}
+            drag={drag}
+            flash={flash}
+            onSelect={(key, extend) => onSelect(key, extend)}
+            onContext={rest.onMenu}
+            {...rest}
+        />
     );
-});
+}

@@ -1,8 +1,6 @@
 // @vitest-environment happy-dom
 
-import { translate } from '@docusaurus/Translate';
-import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { DocumentManagerDialog } from '@site/src/sheet_manager/components/dialogs/DocumentManagerDialog';
+import { DocumentsWindow } from '@site/src/sheet_manager/components/documents/DocumentsWindow';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
@@ -34,16 +32,13 @@ function deleteDescription(count: number): string {
         documents: Array.from({ length: count }, (_, index) => envelope('doc-' + index)),
         currentDocumentId: 'doc-0',
     });
-    render(createElement(DocumentManagerDialog, { open: true, onOpenChange: () => {} }));
-    fireEvent.click(
-        screen.getByRole('checkbox', {
-            name: translate(uiMessages.sheet.documents.manager.selectAll),
-        })
-    );
-    // The delete button shows the selection size; its id-only label is empty in the en stub.
+    render(createElement(DocumentsWindow, { open: true, onOpenChange: () => {} }));
+    const rows = screen.getAllByRole('treeitem');
+    fireEvent.click(rows[0]!);
+    fireEvent.click(rows.at(-1)!, { shiftKey: true });
     const deleteButton = screen
         .getAllByRole('button')
-        .find((button) => button.textContent?.endsWith('(' + count + ')'));
+        .find((button) => /^(Delete|Удалить)$/.test(button.textContent ?? ''));
     fireEvent.click(deleteButton!);
     return document.body.textContent ?? '';
 }
@@ -59,8 +54,8 @@ describe('plural messages', () => {
     });
 
     it.each([
-        [1, 'delete 1 document?'],
-        [5, 'delete 5 documents?'],
+        [1, 'Delete 1 document?'],
+        [5, 'Delete 5 documents?'],
     ])('en: delete description for %i documents', (count, expected) => {
         expect(deleteDescription(count)).toContain(expected);
     });

@@ -11,6 +11,7 @@ toolbar:
     newTitle: Создать новый документ
     importLabel: Импортировать файл документа
     noDocumentTitle: Документ не загружен
+    openingDocument: Открываем документ…
     noDocumentDescription: Создайте новый документ или загрузите его через управление.
     resetDescription: Сбросить все данные документа? Это действие нельзя отменить.
     exportSuccess: Документ «{title}» экспортирован
@@ -46,26 +47,128 @@ importSummary:
     reasonInvalid: 'Файл некорректен: {detail}'
     close: Закрыть
 manager:
-    title: Управление документами
+    title: Документы
     empty: Документов пока нет. Создайте первый документ.
-    name: Название
-    type: Тип
-    setting: Сеттинг
-    current: текущий
-    selectAll: Выбрать все документы
-    selectDocument: Выбрать {title}
-    deleteSelected: Удалить выбранные
-    deleteTitle: Удалить документы
-    deleteDescription:
-        message: Удалить {count} документ? Это действие нельзя отменить.|Удалить {count} документа? Это действие нельзя отменить.|Удалить {count} документов? Это действие нельзя отменить.
-        plural: true
-    close: Закрыть
+    deleteSelected: Удалить
+    deleteTitle: Удалить из дерева
+    deleteDescription: Удалить {what}? Это можно отменить, пока вы не перезагрузили страницу.
+    deleteOpenNote: Среди них открытый документ; лист переключится на другой.
+    and: ' и '
+    counts:
+        folders:
+            message: '{count} папку|{count} папки|{count} папок'
+            plural: true
+        documents:
+            message: '{count} документ|{count} документа|{count} документов'
+            plural: true
+    close: Закрыть окно документов
     rejectedCount: 'Отклонённых файлов сохранено для восстановления: {count}'
     rejectedHint: Скачайте их, чтобы исправить или отправить, и импортируйте файл снова; файлы, которые теперь импортируются, удаляются отсюда.
     rejectedDownload: Скачать отклонённые файлы
     rejectedClear: Очистить отклонённые файлы
     rejectedClearTitle: Очистить отклонённые файлы
     rejectedClearDescription: Удалить все сохранённые отклонённые файлы? Если они могут понадобиться, сначала скачайте их. Это действие нельзя отменить.
+    expand: Раскрыть {name}
+    collapse: Свернуть {name}
+    treeLabel: Документы
+    resizeTree: Изменить ширину списка документов
+    tabs:
+        label: Вид окна документов
+        tree: Документы
+        details: Сведения
+    current: текущий
+    rowActions: 'Действия для {name}'
+    details:
+        heading: Сведения
+        name: Название
+        nothing: Выберите документ или папку, чтобы увидеть сведения о них.
+        kind: Вид
+        system: Игровая система
+        setting: Сеттинг
+        place: Место
+        created: Создан
+        changed: Изменён
+        unknown: Неизвестно
+        top: Верхний уровень
+        open: Открыть
+        delete: Удалить
+        rename: Переименовать
+        move: Переместить в…
+        contents: Содержимое
+        selected:
+            message: 'Выбран {count} элемент|Выбрано {count} элемента|Выбрано {count} элементов'
+            plural: true
+        hint: Ctrl или Cmd с щелчком добавляет или убирает строку, Shift с щелчком выбирает диапазон, а на сенсорном экране выбор начинается долгим нажатием. Щелчок по документу открывает его.
+    search:
+        label: Поиск по названиям
+        placeholder: Поиск по названиям…
+        clear: Очистить поиск
+        filters: Фильтры и сортировка
+        kind: Тип
+        system: Игровая система
+        setting: Сеттинг
+        created: Создан
+        changed: Изменён
+        any: Любой
+        presets:
+            day: За последние сутки
+            week: За последние 7 дней
+            month: За последние 30 дней
+            older: Старше 30 дней
+            unknown: Неизвестно
+        sort:
+            label: Сортировка
+            manual: Ручной порядок
+            name: По названию
+            kind: По типу
+            system: По игровой системе
+            created: По времени создания
+            changed: По времени изменения
+            descending: По убыванию
+        removeFilter: 'Убрать фильтр: {name}'
+        clearAll: Сбросить поиск и фильтры
+        noMatch: По поиску и фильтрам ничего не найдено.
+        results: 'Показано {count} из {total}'
+    toolbar:
+        stopSelecting: Закончить выбор
+        label: Действия с деревом
+        newDocument: Добавить документ
+        newFolder: Новая папка
+        undo: Отменить
+        redo: Повторить
+        undoNamed: 'Отменить: {name}'
+        redoNamed: 'Повторить: {name}'
+    folder:
+        createTitle: Новая папка
+        renameTitle: Переименовать папку
+        name: Название папки
+        defaultName: Новая папка
+        create: Создать
+        rename: Переименовать
+    move:
+        title:
+            message: Переместить {count} элемент в…|Переместить {count} элемента в…|Переместить {count} элементов в…
+            plural: true
+        treeLabel: Папки
+        top: Верхний уровень
+        confirm: Переместить сюда
+    history:
+        createFolder: Создание папки
+        rename: Переименование папки
+        move: Перемещение
+        delete: Удаление
+    refused:
+        sorted: Чтобы менять порядок строк, включите ручной порядок.
+        cycle: Папку нельзя поместить в саму себя или в папку внутри неё.
+        depth: Папки можно вкладывать не глубже {max} уровней.
+        missing: Этого места больше нет.
+        generic: Изменение не удалось.
+    announce:
+        moved:
+            message: 'Перемещён {count} элемент|Перемещено {count} элемента|Перемещено {count} элементов'
+            plural: true
+        undone: 'Отменено: {name}'
+        redone: 'Повторено: {name}'
 examples:
     jaxVorn: Джакс Ворн (пример)
     wampa: Вампа (пример)
