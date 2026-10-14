@@ -159,8 +159,10 @@ left pane and check the dice panel's shown document.
 
 ### Edge Cases
 
-- A document being opened beside from another browser tab, or deleted while shown: the pane shows
-  that the document is gone with a close control, never a blank pane or an error.
+- A document deleted while shown (in this tab, or by another tab's merge): its pane is removed from
+  the arrangement without an error; if it was the focused one, focus moves to a remaining pane, and
+  with none left the page shows the empty state as before. A document whose record cannot be read
+  when loading shows an error notice with a close control in its pane.
 - The same document in two panes is not allowed (see US1), but the same document may be open in two
   tabs: the cross-tab merge rules of documents apply and nothing here changes them.
 - A document whose type is unavailable (a user type that was removed): the pane shows the existing
@@ -188,12 +190,6 @@ left pane and check the dice panel's shown document.
   visible pane.
 - **FR-006**: On a narrow screen (phone), exactly one pane MUST show at a time; the tab strip is the
   way to change it, and no side-by-side layout is offered.
-- **FR-017**: A tab strip MUST list every open document by name whenever two or more are open, on
-  every screen size, with the focused pane's tab marked; each tab has a close control. With one
-  document open there is no strip (FR-014).
-- **FR-018**: On desktop, double-clicking a tab, or a maximize control with the same effect that
-  works by keyboard, MUST show only that pane at full width, and repeating it MUST restore the
-  previous panes and sizes. The maximize state is not offered on a phone.
 - **FR-007**: Each pane MUST lay its document out from the width of the pane, not of the window (the
   brief and full-sheet area rules of spec 033 apply inside a pane).
 - **FR-008**: A pane MUST start in the document's brief view when it has one, otherwise in its
@@ -209,12 +205,22 @@ left pane and check the dice panel's shown document.
   device with nothing stored MUST show the current document alone.
 - **FR-013**: Opening, closing, switching, and resizing panes MUST work with the keyboard and
   announce the change to assistive technology (a pane's region has a name; the strip's tabs expose
-  the selected one and the arrow keys move between them).
+  the selected one and the arrow keys move between them). After a pane is closed, focus moves to the
+  neighbouring tab; a replaced pane is announced through a status message.
 - **FR-014**: With a single document open the page MUST look and behave as it does before this
   change (no strip, no divider, no extra chrome).
 - **FR-015**: All text added by this change MUST exist in English and Russian.
 - **FR-016**: The user guide page for the documents window MUST describe opening documents beside
   each other, in English and Russian.
+- **FR-017**: A tab strip MUST list every open document by name whenever two or more are open, on
+  every screen size, with the focused pane's tab marked; each tab has a close control. With one
+  document open there is no strip (FR-014).
+- **FR-018**: On desktop, double-clicking a tab, or a maximize control with the same effect that
+  works by keyboard, MUST show only that pane at full width, and repeating it MUST restore the
+  previous panes and sizes. The maximize state is not offered on a phone.
+- **FR-019**: Choosing **Open** (or a reference to another document) with several panes MUST show
+  that document in the focused pane, or focus the pane that already shows it; on a phone, **Open
+  beside** adds a tab and focuses it.
 
 ### Key Entities
 

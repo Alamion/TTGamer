@@ -25,7 +25,8 @@ is never evicted from the loaded cache.
       `loadIntoCache(ids)` to `store/documentStore.ts`; `loadInto` keeps pinned ids beside the
       current one (design D4)
 - [ ] T004 Factor `useStoreDocumentSource(documentId?)` out of `useDocumentSource` in
-      `hooks/useDocumentSource.ts` (the public hook behaves as before); create
+      `hooks/useDocumentSource.ts` (the public hook behaves as before; it subscribes by selector to
+      its own document and entry, not to the whole store, design D2); create
       `features/sheet/panes/PaneSourceProvider.tsx` providing it through `DocumentSourceContext`
       with `preview: false` (D1, D2)
 - [ ] T005 Give `CurrentDocumentSheet` in `features/sheet/CharacterSheet.tsx` the props `documentId`
@@ -38,7 +39,7 @@ is never evicted from the loaded cache.
 - [ ] T007 Write `tests/sheet_manager/pane-single.test.tsx`: with one document the page markup
       (class-name snapshot) has no strip, divider, header, or wrapper added; run the existing sheet
       and workspace tests unchanged
-- [ ] T008 Run `yarn verify` (store edit) and commit:
+- [ ] T008 Run `yarn verify:full` (store edit, shared page shell, baseline in e2e) and commit:
       `feat(sheet): pinned document cache and pane source (spec 034, Foundation)`
 
 ## User Story 1 - Keep a second document open beside the first (P1)
@@ -57,18 +58,22 @@ the other and its values are unchanged.
       it (D3)
 - [ ] T011 [US1] Write `tests/sheet_manager/pane-tabs.test.tsx`: strip only with two or more panes;
       roles `tablist`, `tab`, `aria-selected` on the focused one; ←/→/Home/End move focus and
-      select; each tab has a named close button; each pane is a `region` labelled by its tab; a pane
-      whose document is gone shows a notice with a close control, an unavailable type shows the
-      existing notice for that pane only (FR-002, FR-013, FR-017, edge cases)
+      select; each tab has a named close button; each pane is a `region` labelled by its tab;
+      closing a pane moves focus to the neighbouring tab; a pane whose record cannot be read shows
+      an error notice with a close control (reported through `reportSheetIssue`, consumed with
+      `takeSheetIssues()`); an unavailable type shows the existing notice for that pane only
+      (FR-002, FR-013, FR-017, edge cases)
 - [ ] T012 [US1] Create `features/sheet/panes/PaneTabs.tsx` and `Pane.tsx` (header with title, view
       selector slot, maximize slot, close; provider and `CurrentDocumentSheet` inside) and render
-      them from `PaneArea.tsx` for two or more panes, panes stacked or side by side by the simple
-      rule only (layout is US2); touch targets of tab and close at least 32 px on coarse pointers
+      them from `PaneArea.tsx` for two or more panes, panes stacked one under another until the
+      layout of US2; touch targets of tab and close at least 32 px on coarse pointers
 - [ ] T013 [US1] Add **Open beside** to the row menu and the details pane in
       `components/documents/DocumentsWindow.tsx` and `DocumentDetails.tsx` (window stays open on
-      desktop, closes on a phone like Open); toast through `react-hot-toast` when a pane was
-      replaced; extend `tests/sheet_manager/documents-window.test.tsx` and
-      `documents-window.touch.test.tsx` (FR-001, FR-004, SC-001)
+      desktop, closes on a phone like Open); toast through `react-hot-toast` (`role="status"`) when
+      a pane was replaced; on a phone it adds a tab and focuses it, and **Open** replaces the
+      focused pane's document or focuses the pane that already shows it (FR-019); extend
+      `tests/sheet_manager/documents-window.test.tsx` and `documents-window.touch.test.tsx` (FR-001,
+      FR-004, SC-001)
 - [ ] T014 [US1] Add the strings (`ttgamer.ui.sheet.panes.*`: tabs label, close, open beside,
       replaced notice, gone, unavailable) to `translations/source/en/ui/sheet/documents.yaml` and
       the ru mirror (FR-015); run `yarn build:translations`
@@ -94,8 +99,10 @@ the other and its values are unchanged.
       SC-002)
 - [ ] T019 [US2] Write `tests-e2e/smoke/panes.spec.ts` layout cases: 1280 px three panes, each at
       least 320 px, no sideways page scroll; 375 px exactly one pane and the tab strip listing all;
-      a fourth pane at 960 px goes to tabs only; maximize then restore returns the same panes and
-      sizes (SC-002); brief heights at pane widths 700 and 400 stay within spec 033 limits (SC-007)
+      a third pane at 960 px goes to tabs only; maximize then restore returns the same panes and
+      sizes (SC-002); brief heights at pane widths 700 and 400 stay within spec 033 limits (SC-007);
+      with one document the page height at 375 and 1280 px stays within 1% of the T001 baseline
+      (SC-005); no layout jump on reload
 - [ ] T020 [US2] Walk the layout on the dev server on a phone viewport and desktop, light and dark
       (Chrome devtools device mode, touch), tune gaps, header height, and strip scrolling; record
       the numbers in `design.md` "Implementation notes"
@@ -114,8 +121,8 @@ preferences do not change.
 - [ ] T023 [US3] Add `views` to the pane store and `briefViewOf(definition)` in
       `features/sheet/panes/views.ts`; in `Pane.tsx` use `ViewModeSelect` and `selectableViews`
       unchanged with handlers writing the pane store, passing `viewId` to `CurrentDocumentSheet`;
-      with two or more panes the toolbar selector in `SheetWorkspace.tsx` acts on the focused pane,
-      with one pane it keeps writing the preferred view (D8)
+      with two or more panes the toolbar selector in `SheetWorkspace.tsx` is hidden with two or more
+      panes (each pane header has its own), with one pane it keeps writing the preferred view (D8)
 - [ ] T024 [US3] Run `yarn verify` and commit:
       `feat(sheet): each pane has its own view (spec 034, US3)`
 
@@ -125,14 +132,16 @@ preferences do not change.
 
 - [ ] T025 [US4] Write `tests/sheet_manager/pane-restore.test.ts`: persisted panes, order, weights,
       views, and maximized restore; ids with no entry are dropped without an error; broken or
-      old-version storage falls back to the current document alone; the current document missing
-      from the stored panes replaces the focused one; deleting a document (tree delete or another
-      tab's index merge) removes its pane and focuses the survivor (FR-012, D11)
-- [ ] T026 [US4] Persist the pane store (Zustand `persist` on localStorage key `ttgamer:panes:v1`,
-      Zod parse on read, `partialize` without transient fields); restore after the documents index
-      hydrates in `features/sheet/panes/useRestorePanes.ts`: filter against `entries`,
-      `loadIntoCache`, ensure the current document is a pane, call `pinDocuments`; subscribe to
-      `entries` for deletions; use it in `PaneArea.tsx`
+      old-version storage falls back to the current document alone and reports once; a normal
+      deletion reports nothing; the current document missing from the stored panes replaces the
+      focused one; deleting a document (tree delete or another tab's index merge) removes its pane
+      and focuses the survivor (FR-012, D11)
+- [ ] T026 [US4] Persist the pane store (Zustand `persist` with `skipHydration`, rehydrated after
+      mount, on localStorage key `ttgamer:panes:v1`, Zod parse on read, `partialize` without
+      transient fields); restore after the documents index hydrates in
+      `features/sheet/panes/useRestorePanes.ts`: filter against `entries`, `loadIntoCache`, ensure
+      the current document is a pane, call `pinDocuments`; subscribe to `entries` for deletions; use
+      it in `PaneArea.tsx`
 - [ ] T027 [US4] Extend `tests-e2e/smoke/panes.spec.ts`: three panes reload to the same panes,
       order, sizes, and views; delete one document through the documents window, reload, the other
       two come back (SC-004); a store with nothing stored shows the current document alone
@@ -149,7 +158,8 @@ follows.
       character name through `useSheetDiceActions`; focusing or editing in a pane sets
       `currentDocumentId` and the published shown document (`getShownDocument`); the documents
       window marks the focused pane's document as current; with six panes no pane's document leaves
-      the cache (FR-009 – FR-011, SC-006)
+      the cache; a write to one document does not re-render the other panes (render count) (FR-009 –
+      FR-011, SC-006)
 - [ ] T030 [US5] Focus on pointer down, focus-in, and edit inside a pane calls `focus(id)`; fix what
       T029 finds in `useBoundDocument` / `useDocumentRollSource` paths
       (`features/sheet/declarative/boundDocument.ts`, `hooks/useDocumentSource.ts`) so every element
@@ -186,12 +196,13 @@ follows.
 | FR-008                 | T022, T023                      |
 | FR-009, FR-010, FR-011 | T029, T030                      |
 | FR-012, SC-004         | T025, T026, T027                |
-| FR-013                 | T011, T012, T018                |
+| FR-013                 | T011, T012, T013, T018          |
 | FR-014, SC-005         | T001, T007                      |
 | FR-015                 | T014                            |
 | FR-016                 | T034                            |
 | FR-017                 | T011, T012                      |
 | FR-018                 | T018, T019                      |
+| FR-019                 | T010, T013                      |
 | SC-001                 | T013                            |
 | SC-002                 | T018, T019                      |
 | SC-003                 | T031 (browser timing, reported) |
