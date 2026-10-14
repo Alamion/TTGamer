@@ -12,6 +12,8 @@ const labels = uiMessages.sheet.library;
 
 export interface MovePanelProps {
     subject: LibraryNode;
+    /** Replaces "Move <name>" when several rows move together. */
+    title?: string;
     targets: readonly MoveTarget[];
     chosenKey: string | undefined;
     plan: MovePlan | undefined;
@@ -89,6 +91,7 @@ export function MoveConsequences({ plan }: { plan: MovePlan }) {
 /** "Move…": destinations as buttons with their path, then the consequences and Move. */
 export function MovePanel({
     subject,
+    title,
     targets,
     chosenKey,
     plan,
@@ -111,7 +114,7 @@ export function MovePanel({
         >
             <div className="flex items-center gap-2">
                 <h4 className="flex-1 text-sm font-semibold text-textPrimary">
-                    {translate(labels.move.title, { name: subject.name })}
+                    {title ?? translate(labels.move.title, { name: subject.name })}
                 </h4>
                 <EditorHelp topic="libraryMove" about={translate(labels.actions.move)} />
             </div>

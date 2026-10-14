@@ -98,6 +98,12 @@ has a draggable divider.
       `features/sheet/data/libraryTree.ts` flatten; rename `data-library-row` in the library tests
 - [x] T018 Run `yarn verify:full`, compare the bundle size with master, and commit:
       `refactor(ui): shared tree view for the library (spec 032, Foundation C)`
+- [x] T018a Library follow-up (maintainer's review of the test build): the row menu button shows
+      only where the row has actions and opens without selecting or opening the row (`TreeRowShell`,
+      `TreeView`, `LibraryTree`); several rows select with Ctrl/Cmd click, Shift click, and Shift
+      with arrows, with bulk Delete and Move (`features/sheet/data/libraryBulk.ts`,
+      `library/BulkPanel.tsx`, `LibraryDialog.tsx`); tests `library-bulk.test.ts`,
+      `library-dialog.bulk.test.tsx`, extra cases in `tree-view.contract.test.tsx` (FR-025)
 
 ## User Story 1 - A documents window beside the sheet (P1)
 

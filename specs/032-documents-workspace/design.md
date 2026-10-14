@@ -208,3 +208,10 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   about one run in six on `master` as well (measured 3.4× to 4.2× over 14 idle runs against 3.5×);
   it is 4.5× now. More warm runs made the ratio worse (the commit's best time falls), so the run
   count stayed.
+- **Library follow-up after the test build** (FR-025): the row menu shows only for rows with actions
+  and no longer selects or opens a row (`onMenu` is separate from `onContext`, a right click selects
+  without the click's navigation); the library selects several rows (`selection` beside
+  `selectedKey`; Ctrl/Cmd, Shift, Shift with arrows) and bulk Delete and Move reuse each row's own
+  planner (`libraryBulk.ts`: subjects drop rows whose parent is selected, one kind to move, the
+  delete waits while any row is shipped). Not built: a touch way to select several rows (the
+  modifiers need a keyboard).

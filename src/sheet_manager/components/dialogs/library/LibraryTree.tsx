@@ -1,4 +1,4 @@
-import type { TreeRowDrag } from '@site/src/shared/components/tree/TreeRowShell';
+import type { SelectExtend, TreeRowDrag } from '@site/src/shared/components/tree/TreeRowShell';
 import { type TreeRowItem, TreeView } from '@site/src/shared/components/tree/TreeView';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import type { ReactNode, RefObject } from 'react';
@@ -23,8 +23,10 @@ export interface LibraryTreeProps {
     tree: readonly LibraryNode[];
     expanded: ReadonlySet<string>;
     selectedKey: string | undefined;
-    onSelect: (key: string) => void;
-    /** A pointer click on a row (narrow screens switch to the details tab). */
+    /** Several selected rows, when more than one is (Ctrl/Cmd click, Shift click). */
+    selectedKeys?: ReadonlySet<string>;
+    onSelect: (key: string, extend: SelectExtend) => void;
+    /** A plain pointer click on a row (narrow screens switch to the details tab). */
     onRowClick?: (key: string) => void;
     onToggle: (key: string, open?: boolean) => void;
     /** Enter on a page. */
@@ -49,6 +51,7 @@ export function LibraryTree({
     tree,
     expanded,
     selectedKey,
+    selectedKeys,
     onSelect,
     onRowClick,
     onToggle,
@@ -88,8 +91,11 @@ export function LibraryTree({
             label={label}
             rows={rows}
             selectedKey={selectedKey}
-            onSelect={(key) => onSelect(key)}
-            onRowClick={(key) => onRowClick?.(key)}
+            selectedKeys={selectedKeys}
+            onSelect={onSelect}
+            onRowClick={(key, extend) => {
+                if (extend === 'none') onRowClick?.(key);
+            }}
             onToggle={onToggle}
             onEnter={(item) => {
                 if (item.node.level === 'page') onOpenPage(item.node);

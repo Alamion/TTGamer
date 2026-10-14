@@ -242,6 +242,12 @@ and a move (browser timings, reported next to their budgets).
 - **FR-024**: The window's right side MUST show the selected row (name, kind, game system, setting,
   place, created and changed times) with open, rename, move, and delete; for several rows, their
   count and the bulk actions. The rejected-files section of the old manager moves here unchanged.
+- **FR-025**: The library dialog MUST let several rows be selected with Ctrl/Cmd click, Shift click,
+  and Shift with the arrows; while several are selected, the details side shows their count and
+  names, and Delete and Move act on all of them (a row whose parent is selected rides along; an
+  action that cannot apply to every selected row is unavailable and says why). A row's menu button
+  appears only when the row has actions, and opening it neither selects the row nor opens its
+  details.
 - **FR-022**: Opening the window, browsing, and searching by name MUST NOT read the full content of
   documents that are not open; a document's content is read when it is opened, and documents saved
   before this feature MUST be carried over without loss.

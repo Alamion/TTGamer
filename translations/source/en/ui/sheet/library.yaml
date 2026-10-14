@@ -280,3 +280,26 @@ catalogTable:
         plural: true
     confirm: Continue
     cancel: Cancel
+bulk:
+    title:
+        message: '{count} item selected|{count} items selected'
+        plural: true
+    hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range, a plain click selects one row.
+    names: Selected rows
+    blocked:
+        message: '{count} selected row cannot be deleted (shipped and unavailable items stay).|{count} selected rows cannot be deleted (shipped and unavailable items stay).'
+        plural: true
+    cannotMove: These rows cannot move together; they must be your own items of one kind.
+    moveTitle:
+        message: 'Move {count} selected item|Move {count} selected items'
+        plural: true
+    deleteTitle: Delete the selected items?
+    deleteDescription:
+        message: 'Delete {count} selected item with everything inside it? Documents that belong to it: {documents}; they are kept.|Delete {count} selected items with everything inside them? Documents that belong to them: {documents}; they are kept.'
+        plural: true
+    deleted:
+        message: 'Deleted {count} item|Deleted {count} items'
+        plural: true
+    moved:
+        message: 'Moved {count} item to "{target}"|Moved {count} items to "{target}"'
+        plural: true
