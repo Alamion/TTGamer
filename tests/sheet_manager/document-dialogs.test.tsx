@@ -35,7 +35,7 @@ describe('document dialogs', () => {
         render(createElement(DocumentsWindow, { open: true, onOpenChange: () => {} }));
         const fields = (name: string) => {
             fireEvent.click(screen.getByRole('treeitem', { name: new RegExp(`^${name}`) }));
-            const details = screen.getByRole('region', { name });
+            const details = screen.getByRole('region', { name: 'Details' });
             return Object.fromEntries(
                 within(details)
                     .getAllByRole('term')

@@ -351,6 +351,38 @@ function syncEntry(
     return entries.map((entry, index) => (index === position ? next : entry));
 }
 
+/**
+ * Writes a name given in the documents window into the document itself (its name value, when the
+ * kind has one, and its title). The document is read first when it is only an entry.
+ */
+async function renameDocumentContent(id: string, name: string): Promise<void> {
+    const store = useDocumentStore;
+    let document = store.getState().documents.find((candidate) => candidate.id === id);
+    if (!document) {
+        const entry = store.getState().entries.find((candidate) => candidate.id === id);
+        document = (await readEnvelope(id, entry)) ?? undefined;
+        if (!document) return;
+        const loaded = document;
+        store.setState((state) => ({
+            documents: state.documents.some((candidate) => candidate.id === id)
+                ? state.documents
+                : loadInto(state.documents, loaded, state.currentDocumentId ?? ''),
+        }));
+    }
+    const capability = systemRegistry.getDocumentDefinition(
+        document.systemId,
+        document.definitionId
+    )?.capabilities?.character;
+    const { updateDocumentData, updateDocumentMetadata } = store.getState();
+    if (capability) {
+        updateDocumentData(id, (data) => {
+            const { metadata } = capability.read(id, data);
+            return capability.applyUpdates(data, { metadata: { ...metadata, name } });
+        });
+    }
+    updateDocumentMetadata(id, { title: name });
+}
+
 /** Adds a read document to the loaded ones, dropping the oldest that is neither open nor unsaved. */
 function loadInto(
     documents: UnknownDocumentEnvelope[],
@@ -590,6 +622,10 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
         if (result.inverse.length === 0) return result;
         const removed = new Set(result.removed);
         const added = new Set(result.added);
+        const before = new Map(entries.map((entry) => [entry.id, entry.name]));
+        const renamed = result.state.entries.filter(
+            (entry) => before.has(entry.id) && before.get(entry.id) !== entry.name
+        );
         set({
             entries: result.state.entries,
             folders: result.state.folders,
@@ -603,6 +639,8 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
                     ? null
                     : currentDocumentId,
         });
+        // A document's name lives in the document too: the sheet's name field is the same fact.
+        for (const { id, name } of renamed) void renameDocumentContent(id, name);
         return result;
     },
 

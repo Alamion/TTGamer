@@ -5,7 +5,9 @@ import { type TreeRowItem, TreeView } from '@site/src/shared/components/tree/Tre
 import { FileText, Folder, FolderOpen } from 'lucide-react';
 import type { KeyboardEvent, RefObject } from 'react';
 
+import { highlightSegments } from '../../features/documents/highlight';
 import type { DocumentsNode } from '../../features/documents/rows';
+import { InlineName } from './InlineName';
 
 const labels = uiMessages.sheet.documents.manager;
 
@@ -26,6 +28,12 @@ export interface DocumentsTreeProps {
     /** Keys the window handles itself (F2, Ctrl+Z); true when handled. */
     onCommand: (event: KeyboardEvent<HTMLDivElement>, item: TreeRowItem<DocumentsNode>) => boolean;
     dragFor: (item: TreeRowItem<DocumentsNode>) => TreeRowDrag;
+    /** The row whose name is typed in place, if any. */
+    editing: string | null;
+    onRename: (key: string, name: string) => void;
+    onRenameCancel: (key: string) => void;
+    /** The search text: matches in names are marked. */
+    highlight: string;
     scrollRef: RefObject<HTMLElement | null>;
 }
 
@@ -45,6 +53,10 @@ export function DocumentsTree({
     onMenu,
     onCommand,
     dragFor,
+    editing,
+    onRename,
+    onRenameCancel,
+    highlight,
     scrollRef,
 }: DocumentsTreeProps) {
     const byKey = new Map(rows.map((row) => [row.key, row]));
@@ -67,7 +79,31 @@ export function DocumentsTree({
             onSpace={(item) => onSelect(item.key, 'toggle')}
             renderRow={(item) => {
                 const { node, expanded } = item;
-                const drag = dragFor(item);
+                const isEditing = editing === item.key;
+                const drag = isEditing ? undefined : dragFor(item);
+                const nameSlot = isEditing ? (
+                    <InlineName
+                        initial={item.name}
+                        label={translate(labels.details.name)}
+                        onCommit={(name) => onRename(item.key, name)}
+                        onCancel={() => onRenameCancel(item.key)}
+                    />
+                ) : highlight.trim() ? (
+                    <span className="min-w-0 flex-1 truncate">
+                        {highlightSegments(item.name, highlight).map((segment, position) =>
+                            segment.match ? (
+                                <mark
+                                    key={position}
+                                    className="rounded-sm bg-primary/25 text-inherit"
+                                >
+                                    {segment.text}
+                                </mark>
+                            ) : (
+                                segment.text
+                            )
+                        )}
+                    </span>
+                ) : undefined;
                 return node.type === 'folder'
                     ? {
                           icon: expanded ? (
@@ -76,10 +112,12 @@ export function DocumentsTree({
                               <Folder className={iconClass} aria-hidden="true" />
                           ),
                           drag,
+                          nameSlot,
                       }
                     : {
                           icon: <FileText className={iconClass} aria-hidden="true" />,
                           drag,
+                          nameSlot,
                           badges:
                               node.entry.id === currentDocumentId ? (
                                   <span className="shrink-0 rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">

@@ -13,6 +13,7 @@ const rowNames = () =>
     screen
         .queryAllByRole('treeitem')
         .map((item) => item.querySelector('span.truncate')?.textContent);
+const inline = () => within(screen.getByRole('tree')).getByRole('textbox', { name: 'Name' });
 const state = () => useDocumentStore.getState();
 const placeOf = (id: string) => state().entries.find((entry) => entry.id === id)?.parentId;
 
@@ -73,31 +74,62 @@ describe('folders in the documents window (spec 032, US2)', () => {
         resetDocuments();
     });
 
-    it('creates a folder from the toolbar and selects it', () => {
+    it('creates a folder from the toolbar with its name ready to type over, and selects it', () => {
         seedDocuments(['Ana']);
         openWindow();
         fireEvent.click(screen.getByRole('button', { name: 'New folder' }));
-        const input = screen.getByRole('textbox', { name: 'Folder name' }) as HTMLInputElement;
+        const input = inline() as HTMLInputElement;
+        expect(input.value).toBe('New folder');
+        expect(document.activeElement).toBe(input);
         fireEvent.change(input, { target: { value: 'Campaign' } });
-        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        fireEvent.keyDown(input, { key: 'Enter' });
         expect(rowNames()).toEqual(['Campaign', 'Ana']);
         expect(row('Campaign').getAttribute('aria-selected')).toBe('true');
         expect(state().folders[0]).toMatchObject({ name: 'Campaign', parentId: null });
+        expect(screen.queryByRole('dialog', { name: 'New folder' })).toBeNull();
     });
 
-    it('renames a folder with F2 and from its details, and undoes it', () => {
-        seedDocuments(['Ana'], { folders: [folder('f1', 'Old')] });
+    it('keeps the name when the typing is left, and drops it on Escape', () => {
+        seedDocuments([], { folders: [folder('f1', 'Old')] });
         openWindow();
         row('Old').focus();
         fireEvent.click(row('Old'));
         fireEvent.keyDown(row('Old'), { key: 'F2' });
-        fireEvent.change(screen.getByRole('textbox', { name: 'Folder name' }), {
-            target: { value: 'Renamed' },
+        fireEvent.change(inline(), {
+            target: { value: 'Kept' },
         });
-        fireEvent.click(screen.getByRole('button', { name: 'Rename' }));
+        fireEvent.blur(inline());
+        expect(rowNames()).toEqual(['Kept']);
+        fireEvent.keyDown(row('Kept'), { key: 'F2' });
+        const input = inline();
+        fireEvent.change(input, { target: { value: 'Dropped' } });
+        fireEvent.keyDown(input, { key: 'Escape' });
+        expect(rowNames()).toEqual(['Kept']);
+    });
+
+    it('renames a folder and a document from the details, and undoes it', () => {
+        seedDocuments(['Ana'], { folders: [folder('f1', 'Old')] });
+        openWindow();
+        fireEvent.click(row('Old'));
+        const field = within(screen.getByRole('region', { name: 'Details' })).getByRole('textbox', {
+            name: 'Name',
+        });
+        fireEvent.change(field, { target: { value: 'Renamed' } });
+        fireEvent.blur(field);
         expect(rowNames()).toContain('Renamed');
-        fireEvent.click(screen.getByRole('button', { name: /^Undo/ }));
+        fireEvent.click(screen.getByRole('button', { name: /^Undo: Rename/ }));
         expect(rowNames()).toContain('Old');
+
+        fireEvent.click(row('Ana'), { ctrlKey: true });
+        fireEvent.click(row('Old'), { ctrlKey: true });
+        const documentField = within(screen.getByRole('region', { name: 'Details' })).getByRole(
+            'textbox',
+            { name: 'Name' }
+        );
+        fireEvent.change(documentField, { target: { value: 'Anastasia' } });
+        fireEvent.keyDown(documentField, { key: 'Enter' });
+        expect(state().entries[0]!.name).toBe('Anastasia');
+        expect(rowNames()).toContain('Anastasia');
     });
 
     it('drags a document onto a folder, opens nothing, and undoes the move', () => {
@@ -207,13 +239,15 @@ describe('folders in the documents window (spec 032, US2)', () => {
         expect(dialog.textContent).toContain('Delete 1 folder and 1 document?');
     });
 
-    it('offers rename and new folder in a folder row menu, and creates inside it', () => {
-        seedDocuments([], { folders: [folder('f1', 'Campaign')] });
+    it('offers rename and new folder in a row menu, and creates inside the folder', () => {
+        seedDocuments(['Ana'], { folders: [folder('f1', 'Campaign')] });
         openWindow();
         fireEvent.click(screen.getByRole('button', { name: 'Actions for Campaign' }));
         fireEvent.click(screen.getByRole('menuitem', { name: 'New folder' }));
-        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        fireEvent.keyDown(inline(), { key: 'Enter' });
         expect(state().folders.find((item) => item.name === 'New folder')!.parentId).toBe('f1');
+        fireEvent.click(screen.getByRole('button', { name: 'Actions for Ana' }));
+        expect(screen.getByRole('menuitem', { name: 'Rename' })).toBeTruthy();
     });
 
     it('adds a document from the window without showing it, inside the selected folder', () => {

@@ -19,6 +19,8 @@ export interface DocumentsDragOptions {
     rows: readonly TreeRowItem<DocumentsNode>[];
     folders: readonly Folder[];
     selection: ReadonlySet<string>;
+    /** Rows may be put above or below others (manual order); a sorted view allows only "into". */
+    reorderable: boolean;
     /** Rows were dropped: where they go and before which sibling (null: last). */
     onDrop: (ids: string[], parentId: string | null, before: string | null) => void;
 }
@@ -33,11 +35,19 @@ const parentOf = (item: TreeRowItem<DocumentsNode>, known: ReadonlySet<string>):
  * Mouse drag of tree rows (touch has "Move to…" instead, spec 032 D11). Shows where the rows would
  * land before they are dropped; a place inside a dragged folder is refused and says why.
  */
-export function useDocumentsDrag({ rows, folders, selection, onDrop }: DocumentsDragOptions) {
+export function useDocumentsDrag({
+    rows,
+    folders,
+    selection,
+    reorderable,
+    onDrop,
+}: DocumentsDragOptions) {
     const dragged = useRef<{ ids: string[]; folderIds: Set<string> } | null>(null);
-    const [target, setTarget] = useState<{ key: string; mode: Mode; blocked: boolean } | null>(
-        null
-    );
+    const [target, setTarget] = useState<{
+        key: string;
+        mode: Mode;
+        blocked: 'cycle' | 'sorted' | null;
+    } | null>(null);
     const [atEnd, setAtEnd] = useState(false);
     const known = useMemo(() => new Set(folders.map(({ id }) => id)), [folders]);
     const parents = useMemo(
@@ -107,14 +117,22 @@ export function useDocumentsDrag({ rows, folders, selection, onDrop }: Documents
         [parents]
     );
 
+    const refusal = useCallback(
+        (drop: Drop, item: TreeRowItem<DocumentsNode>): 'cycle' | 'sorted' | null => {
+            if (blockedPlace(drop.parentId, item)) return 'cycle';
+            return !reorderable && drop.mode !== 'into' ? 'sorted' : null;
+        },
+        [blockedPlace, reorderable]
+    );
+
     const dragFor = useCallback(
         (item: TreeRowItem<DocumentsNode>): TreeRowDrag => {
             const hovering = target?.key === item.key ? target : null;
             return {
                 draggable: true,
-                over: hovering?.mode === 'into' && !hovering.blocked,
+                over: hovering?.mode === 'into' && hovering.blocked === null,
                 edge:
-                    hovering && hovering.mode !== 'into' && !hovering.blocked
+                    hovering && hovering.mode !== 'into' && hovering.blocked === null
                         ? hovering.mode
                         : undefined,
                 onDragStart: (event) => {
@@ -132,7 +150,7 @@ export function useDocumentsDrag({ rows, folders, selection, onDrop }: Documents
                 onDragOver: (event) => {
                     if (!dragged.current) return;
                     const drop = resolve(item, event);
-                    const blocked = blockedPlace(drop.parentId, item);
+                    const blocked = refusal(drop, item);
                     setTarget((current) =>
                         current?.key === item.key &&
                         current.mode === drop.mode &&
@@ -157,13 +175,13 @@ export function useDocumentsDrag({ rows, folders, selection, onDrop }: Documents
                     event.preventDefault();
                     const drop = resolve(item, event);
                     const ids = active.ids;
-                    const blocked = blockedPlace(drop.parentId, item);
+                    const blocked = refusal(drop, item);
                     finish();
                     if (!blocked) onDrop(ids, drop.parentId, drop.before);
                 },
             };
         },
-        [blockedPlace, finish, onDrop, resolve, selection, target]
+        [finish, onDrop, refusal, resolve, selection, target]
     );
 
     /** The empty space under the last row: a drop there puts the rows last at the top level. */
@@ -188,5 +206,5 @@ export function useDocumentsDrag({ rows, folders, selection, onDrop }: Documents
         [finish, onDrop]
     );
 
-    return { dragFor, endZone, atEnd, refused: target?.blocked ?? false };
+    return { dragFor, endZone, atEnd, refused: target?.blocked ?? null };
 }

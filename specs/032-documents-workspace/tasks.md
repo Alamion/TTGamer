@@ -165,20 +165,20 @@ reload, reopen; the same at 375 px.
 
 **Check**: with mixed documents in nested folders, search, filter by each field, sort by each field.
 
-- [ ] T031 [US3] Write `tests/sheet_manager/documents-query.test.ts`: name search ignoring case,
+- [x] T031 [US3] Write `tests/sheet_manager/documents-query.test.ts`: name search ignoring case,
       `ё`, and accents; ancestors kept and expanded; filters (kind, system, setting, created and
       changed presets) combine; sort by name, kind, system, created, changed in both directions with
       folders first; manual order; unknown times kept apart and never invented
-- [ ] T032 [US3] Create `features/documents/query.ts` (normalized names built once per entries
+- [x] T032 [US3] Create `features/documents/query.ts` (normalized names built once per entries
       change, filters, sorts, ancestor expansion) and extend `rows.ts` to take a query
-- [ ] T033 [US3] Create `components/documents/DocumentsToolbar.tsx`: debounced search box, a filter
+- [x] T033 [US3] Create `components/documents/DocumentsToolbar.tsx`: debounced search box, a filter
       disclosure (`aria-expanded`) with facets from the entries, removable active-filter chips, the
       sort control, a clear-all action, the empty-result message; the toolbar wraps on narrow
       screens and keeps search and filters for the visit (session storage)
-- [ ] T034 [US3] Extend `documents-window.test.tsx` for the toolbar: marks matches, clears one
+- [x] T034 [US3] Extend `documents-window.test.tsx` for the toolbar: marks matches, clears one
       filter at a time, kept across close and reopen in the same visit, keyboard operation of every
       control
-- [ ] T035 [US3] Add en and ru translations; run `yarn verify` and commit:
+- [x] T035 [US3] Add en and ru translations; run `yarn verify` and commit:
       `feat(documents): search, filter, and sort (spec 032, US3)`
 
 ## User Story 4 - Thousands of documents stay usable (P4)

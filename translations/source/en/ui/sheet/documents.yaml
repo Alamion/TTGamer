@@ -79,6 +79,8 @@ manager:
     current: current
     rowActions: 'Actions for {name}'
     details:
+        heading: Details
+        name: Name
         nothing: Select a document or a folder to see its details.
         kind: Kind
         system: Game system
@@ -97,6 +99,36 @@ manager:
             message: '{count} item selected|{count} items selected'
             plural: true
         hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range. A click on a document opens it.
+    search:
+        label: Search names
+        placeholder: Search names…
+        clear: Clear search
+        filters: Filters
+        kind: Type
+        system: Game system
+        setting: Setting
+        created: Created
+        changed: Changed
+        any: Any
+        presets:
+            day: Last 24 hours
+            week: Last 7 days
+            month: Last 30 days
+            older: Older than 30 days
+            unknown: Unknown
+        sort:
+            label: Sort by
+            manual: Manual order
+            name: Name
+            kind: Type
+            system: Game system
+            created: Created
+            changed: Changed
+            descending: Descending order
+        removeFilter: 'Remove filter: {name}'
+        clearAll: Clear search and filters
+        noMatch: Nothing matches the search and filters.
+        results: 'Showing {count} of {total}'
     toolbar:
         label: Tree actions
         newDocument: Add a document
@@ -125,6 +157,7 @@ manager:
         move: Move
         delete: Delete
     refused:
+        sorted: Switch to manual order to rearrange rows.
         cycle: A folder cannot go into itself or into a folder inside it.
         depth: Folders can be nested only {max} levels deep.
         missing: That place no longer exists.

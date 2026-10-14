@@ -1,10 +1,17 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
-import { ExternalLink, FolderInput, Pencil, Trash2 } from 'lucide-react';
+import { ExternalLink, FolderInput, Trash2 } from 'lucide-react';
+import { type KeyboardEvent, useState } from 'react';
 
 import { collectDeletion } from '../../features/documents/operations';
-import { type DocumentsNode, entryTitle, placePath } from '../../features/documents/rows';
+import {
+    documentKey,
+    type DocumentsNode,
+    entryTitle,
+    folderKey,
+    placePath,
+} from '../../features/documents/rows';
 import { kindLabel, kindSettingLabel } from '../../features/sheet/data/documentLabels';
 import type { DocumentIndexEntry, Folder } from '../../store/documentIndex';
 import { systemRegistry } from '../../systems';
@@ -17,7 +24,8 @@ export interface DocumentDetailsProps {
     folders: readonly Folder[];
     entries: readonly DocumentIndexEntry[];
     onOpen: (entry: DocumentIndexEntry) => void;
-    onRename: (folder: Folder) => void;
+    /** Commits a name typed in the details; `key` is the row key. */
+    onRename: (key: string, name: string) => void;
     onMove: () => void;
     onDelete: () => void;
 }
@@ -41,6 +49,41 @@ function Field({ name, value }: { name: string; value: string }) {
 
 const actionButton =
     'inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-xs font-medium transition-colors [@media(pointer:coarse)]:px-3 [@media(pointer:coarse)]:py-2.5';
+
+/** The name of the selected row, typed here and saved when the field is left or Enter is pressed. */
+function NameField({
+    value,
+    placeholder,
+    onCommit,
+}: {
+    value: string;
+    placeholder?: string;
+    onCommit: (name: string) => void;
+}) {
+    const [draft, setDraft] = useState(value);
+    const commit = () => {
+        const trimmed = draft.trim();
+        if (trimmed && trimmed !== value) onCommit(trimmed);
+        else setDraft(value);
+    };
+    const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') commit();
+        else if (event.key === 'Escape') setDraft(value);
+    };
+    return (
+        <input
+            id="documents-details-title"
+            value={draft}
+            placeholder={placeholder}
+            maxLength={200}
+            aria-label={translate(labels.details.name)}
+            onChange={(event) => setDraft(event.target.value)}
+            onBlur={commit}
+            onKeyDown={onKeyDown}
+            className="w-full rounded-sm border border-transparent bg-transparent px-1 py-0.5 text-lg font-semibold text-textPrimary hover:border-border focus:border-primary focus:outline-hidden"
+        />
+    );
+}
 
 const rowName = (item: DocumentsNode) =>
     item.type === 'folder' ? item.folder.name : entryTitle(item.entry);
@@ -112,13 +155,12 @@ export function DocumentDetails({
             item.folder.id,
         ]);
         return (
-            <section aria-labelledby="documents-details-title" className="space-y-3 p-4">
-                <h3
-                    id="documents-details-title"
-                    className="break-words text-lg font-semibold text-textPrimary"
-                >
-                    {item.folder.name}
-                </h3>
+            <section aria-label={translate(labels.details.heading)} className="space-y-3 p-4">
+                <NameField
+                    key={`${item.folder.id}:${item.folder.name}`}
+                    value={item.folder.name}
+                    onCommit={(name) => onRename(folderKey(item.folder.id), name)}
+                />
                 <dl className="m-0 grid gap-3">
                     <Field name={translate(labels.details.place)} value={place} />
                     <Field
@@ -138,14 +180,6 @@ export function DocumentDetails({
                     />
                 </dl>
                 <div className="flex flex-wrap gap-2">
-                    <button
-                        type="button"
-                        onClick={() => onRename(item.folder)}
-                        className={neutralButton}
-                    >
-                        <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
-                        {translate(labels.details.rename)}
-                    </button>
                     {moveButton}
                     {deleteButton}
                 </div>
@@ -155,13 +189,13 @@ export function DocumentDetails({
     const { entry } = item;
     const system = systemRegistry.getSystem(entry.systemId);
     return (
-        <section aria-labelledby="documents-details-title" className="space-y-3 p-4">
-            <h3
-                id="documents-details-title"
-                className="break-words text-lg font-semibold text-textPrimary"
-            >
-                {entryTitle(entry)}
-            </h3>
+        <section aria-label={translate(labels.details.heading)} className="space-y-3 p-4">
+            <NameField
+                key={`${entry.id}:${entry.name}`}
+                value={entry.name}
+                placeholder={entryTitle(entry)}
+                onCommit={(name) => onRename(documentKey(entry.id), name)}
+            />
             <dl className="m-0 grid gap-3">
                 <Field
                     name={translate(labels.details.kind)}

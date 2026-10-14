@@ -269,3 +269,19 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   empty space under the last row is a drop target (last at the top level). The window can add a
   document without showing it (`createDocument` options `activate: false` and `parentId`; the create
   dialog takes `activate`, `parentId`, `onCreated`), into the selected folder.
+- **US3, query** (`features/documents/query.ts`, pure, labels injected through `DocumentLabeler`):
+  `buildQueryIndex` holds per-entry labels and normalized names once per entries list; `applyQuery`
+  keeps a document that passes every filter and whose name matches (or sits in a folder whose name
+  matches) and the folders above a kept row, which open while the query narrows; `orderFor` gives
+  the comparators (name, type, system, created, changed; a row with no time goes last in both
+  directions; folders first and ordered by name or time). Setting is filtered by its label (what the
+  details show). The query is kept in session storage (`documents-window-query`); clearing keeps the
+  sort. Name matches are marked (`highlight.ts`). Dragging in a sorted view only allows "into a
+  folder"; above and below are refused with a hint.
+- **US3, names typed in place**: the name dialog is gone. A new folder appears with its name
+  selected to type over; F2, the row menu, and the details field rename folders and documents (Enter
+  or leaving saves, Escape drops). `rename` now covers documents: the entry name changes in the
+  operation and the store writes it into the document (its name value, when the kind has one, and
+  its title; an unloaded document is read first). The inverse of a batch restores a row's place but
+  renames through `rename`, so undoing a move keeps a rename made since.
+- **Bundle size after US3**: 24321993 bytes of JS and 179959 of CSS (master 23,510,686 and 178,097).

@@ -4,6 +4,7 @@ import type { TreeRowItem } from '@site/src/shared/components/tree/TreeView';
 import type { DocumentIndexEntry, Folder } from '../../store/documentIndex';
 import { systemRegistry } from '../../systems';
 import { descendantFolderIds } from './operations';
+import type { RowOrder } from './query';
 
 /** What a row of the documents tree holds. */
 export type DocumentsNode =
@@ -31,7 +32,8 @@ const byRank = <T extends { rank: number }>(a: T, b: T) => a.rank - b.rank;
 export function buildRows(
     entries: readonly DocumentIndexEntry[],
     folders: readonly Folder[],
-    expanded: ReadonlySet<string>
+    expanded: ReadonlySet<string>,
+    order: RowOrder = { folders: byRank, documents: byRank }
 ): TreeRowItem<DocumentsNode>[] {
     const folderIds = new Set(folders.map(({ id }) => id));
     const placeOf = (parentId: string | null) =>
@@ -48,8 +50,8 @@ export function buildRows(
 
     const rows: TreeRowItem<DocumentsNode>[] = [];
     const walk = (place: string | null, depth: number, parentKey: string | undefined) => {
-        const subfolders = [...(folderChildren.get(place) ?? [])].sort(byRank);
-        const documents = [...(documentChildren.get(place) ?? [])].sort(byRank);
+        const subfolders = [...(folderChildren.get(place) ?? [])].sort(order.folders);
+        const documents = [...(documentChildren.get(place) ?? [])].sort(order.documents);
         const size = subfolders.length + documents.length;
         let position = 0;
         for (const folder of subfolders) {

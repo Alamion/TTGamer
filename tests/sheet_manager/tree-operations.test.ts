@@ -10,9 +10,16 @@ import {
     type TreeOperation,
     type TreeState,
 } from '@site/src/sheet_manager/features/documents/operations';
+import {
+    configureRecordStorage,
+    createMemoryRecordStorage,
+    writeRecord,
+} from '@site/src/sheet_manager/store/documentContent';
 import type { DocumentIndexEntry, Folder } from '@site/src/sheet_manager/store/documentIndex';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { libraryDocument } from './helpers/library';
 
 const NOW = Date.parse('2026-10-14T10:00:00Z');
 
@@ -83,18 +90,31 @@ describe('tree operations (spec 032, D6)', () => {
         });
     });
 
-    it('renames a folder, and refuses to rename a document or a missing row', () => {
-        const ok = run([{ op: 'rename', id: 'f1', name: 'Renamed' }]);
+    it('renames a folder or a document, and refuses what it cannot', () => {
+        const ok = run([
+            { op: 'rename', id: 'f1', name: 'Renamed' },
+            { op: 'rename', id: 'a', name: '  Ana  ' },
+        ]);
         expect(ok.state.folders.find((x) => x.id === 'f1')!.name).toBe('Renamed');
+        expect(ok.state.entries.find((x) => x.id === 'a')!.name).toBe('Ana');
         const refused = run([
-            { op: 'rename', id: 'a', name: 'X' },
             { op: 'rename', id: 'nope', name: 'X' },
+            { op: 'rename', id: 'f1', name: '   ' },
         ]);
         expect(refused.problems).toEqual([
-            { code: 'document-name', id: 'a' },
             { code: 'missing', id: 'nope' },
+            { code: 'name', id: 'f1' },
         ]);
         expect(refused.inverse).toEqual([]);
+        expect(run([{ op: 'rename', id: 'a', name: '' }]).state.entries[0]!.name).toBe('');
+    });
+
+    it('undoing a move keeps a rename made since', () => {
+        const moved = run([{ op: 'move', ids: ['a'], parentId: 'f2' }]);
+        const renamed = applyOperations(moved.state, [{ op: 'rename', id: 'a', name: 'New' }], NOW);
+        const undone = applyOperations(renamed.state, moved.inverse, NOW);
+        const a = undone.state.entries.find((x) => x.id === 'a')!;
+        expect(a).toMatchObject({ name: 'New', parentId: null });
     });
 
     it('moves rows into a folder and puts folders before the documents', () => {
@@ -239,7 +259,7 @@ describe('tree operations (spec 032, D6)', () => {
 
     it('rejects malformed operations', () => {
         expect(parseOperations([{ op: 'move', ids: [], parentId: null }]).ok).toBe(false);
-        expect(parseOperations([{ op: 'rename', id: 'x', name: '   ' }]).ok).toBe(false);
+        expect(parseOperations([{ op: 'rename', id: 'x' }]).ok).toBe(false);
         expect(parseOperations([{ op: 'explode' }]).ok).toBe(false);
         expect(parseOperations('nope').ok).toBe(false);
         expect(parseOperations([{ op: 'createFolder', name: 'ok', parentId: null }]).ok).toBe(true);
@@ -283,9 +303,30 @@ describe('the store applies operations (spec 032, T026)', () => {
     it('writes nothing when the operations change nothing', () => {
         let writes = 0;
         const stop = useDocumentStore.subscribe(() => writes++);
-        useDocumentStore.getState().applyTreeOperations([{ op: 'rename', id: 'a', name: 'x' }]);
+        useDocumentStore.getState().applyTreeOperations([{ op: 'rename', id: 'a', name: 'a' }]);
         stop();
         expect(writes).toBe(0);
+    });
+
+    it('writes a document rename into the document, reading it first when it is only an entry', async () => {
+        configureRecordStorage(createMemoryRecordStorage());
+        const stored = libraryDocument('stored', { systemId: 'wod-v5', definitionId: 'hunter' });
+        await writeRecord('stored', stored);
+        useDocumentStore.setState({
+            documents: [],
+            entries: [{ ...doc('stored'), name: 'Old' }],
+            folders: [],
+            currentDocumentId: null,
+        });
+        useDocumentStore
+            .getState()
+            .applyTreeOperations([{ op: 'rename', id: 'stored', name: 'Fresh' }]);
+        await vi.waitFor(() => {
+            const loaded = useDocumentStore.getState().documents.find((x) => x.id === 'stored');
+            expect(loaded?.metadata.title).toBe('Fresh');
+        });
+        expect(useDocumentStore.getState().entries[0]!.name).toBe('Fresh');
+        expect(useDocumentStore.getState().currentDocumentId).toBeNull();
     });
 });
 

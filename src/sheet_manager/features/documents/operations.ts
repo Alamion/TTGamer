@@ -30,7 +30,8 @@ export const TreeOperationSchema = z.discriminatedUnion('op', [
         parentId: id.nullable(),
         before: id.nullable().optional(),
     }),
-    z.object({ op: z.literal('rename'), id, name: folderName }),
+    /** A folder or a document; a document may be given an empty name (its kind's name shows). */
+    z.object({ op: z.literal('rename'), id, name: z.string().trim().max(200) }),
     z.object({
         op: z.literal('move'),
         ids,
@@ -63,8 +64,6 @@ export type TreeProblemCode =
     | 'depth'
     /** The target of a move or a new folder is not a folder. */
     | 'not-a-folder'
-    /** A document's name is its sheet's; only folders are renamed here. */
-    | 'document-name'
     /** A folder needs a name. */
     | 'name';
 
@@ -311,18 +310,24 @@ class Working {
     }
 
     rename(op: Extract<TreeOperation, { op: 'rename' }>) {
-        const folder = this.folders.get(op.id);
-        if (!folder)
-            return this.problem(this.entries.has(op.id) ? 'document-name' : 'missing', op.id);
         const name = op.name.trim().slice(0, 200);
-        if (!name) return this.problem('name', op.id);
-        if (folder.name === name) return;
-        this.folders.set(op.id, {
-            ...folder,
-            name,
-            changedAt: this.stamp,
-            updatedAt: this.now,
-        });
+        const folder = this.folders.get(op.id);
+        if (folder) {
+            if (!name) return this.problem('name', op.id);
+            if (folder.name === name) return;
+            this.folders.set(op.id, {
+                ...folder,
+                name,
+                changedAt: this.stamp,
+                updatedAt: this.now,
+            });
+            this.touched.add(op.id);
+            return;
+        }
+        const entry = this.entries.get(op.id);
+        if (!entry) return this.problem('missing', op.id);
+        if (entry.name === name) return;
+        this.entries.set(op.id, { ...entry, name, updatedAt: this.now });
         this.touched.add(op.id);
     }
 
@@ -416,13 +421,35 @@ class Working {
         });
     }
 
+    /**
+     * A row that is gone comes back whole; one still here gets back only its place (and a folder's
+     * changed time), so undoing a move never undoes a rename made since.
+     */
     restore(op: Extract<TreeOperation, { op: 'restore' }>) {
         for (const folder of op.folders) {
-            this.folders.set(folder.id, { ...folder, updatedAt: this.now });
+            const here = this.folders.get(folder.id);
+            this.folders.set(
+                folder.id,
+                here
+                    ? {
+                          ...here,
+                          parentId: folder.parentId,
+                          rank: folder.rank,
+                          changedAt: folder.changedAt,
+                          updatedAt: this.now,
+                      }
+                    : { ...folder, updatedAt: this.now }
+            );
             this.touched.add(folder.id);
         }
         for (const entry of op.entries) {
-            this.entries.set(entry.id, { ...entry, updatedAt: this.now });
+            const here = this.entries.get(entry.id);
+            this.entries.set(
+                entry.id,
+                here
+                    ? { ...here, parentId: entry.parentId, rank: entry.rank, updatedAt: this.now }
+                    : { ...entry, updatedAt: this.now }
+            );
             this.touched.add(entry.id);
         }
     }
@@ -463,6 +490,7 @@ export function applyOperations(
     const originalEntries = new Map(state.entries.map((entry) => [entry.id, entry]));
     const undoFolders: Folder[] = [];
     const undoEntries: DocumentIndexEntry[] = [];
+    const undoRenames: TreeOperation[] = [];
     const added: string[] = [];
     const removed: string[] = [];
     for (const touched of work.touched) {
@@ -472,22 +500,30 @@ export function applyOperations(
         const wasEntry = originalEntries.get(touched);
         if (folder) {
             if (wasFolder && sameFolder(wasFolder, folder)) work.folders.set(touched, wasFolder);
-            else if (wasFolder) undoFolders.push(wasFolder);
-            else added.push(touched);
+            else if (wasFolder) {
+                undoFolders.push(wasFolder);
+                if (wasFolder.name !== folder.name) {
+                    undoRenames.push({ op: 'rename', id: touched, name: wasFolder.name });
+                }
+            } else added.push(touched);
         } else if (wasFolder) {
             undoFolders.push(wasFolder);
             removed.push(touched);
         }
         if (entry) {
             if (wasEntry && sameEntry(wasEntry, entry)) work.entries.set(touched, wasEntry);
-            else if (wasEntry) undoEntries.push(wasEntry);
-            else added.push(touched);
+            else if (wasEntry) {
+                undoEntries.push(wasEntry);
+                if (wasEntry.name !== entry.name) {
+                    undoRenames.push({ op: 'rename', id: touched, name: wasEntry.name });
+                }
+            } else added.push(touched);
         } else if (wasEntry) {
             undoEntries.push(wasEntry);
             removed.push(touched);
         }
     }
-    const inverse: TreeOperation[] = [];
+    const inverse: TreeOperation[] = [...undoRenames];
     if (undoFolders.length > 0 || undoEntries.length > 0) {
         inverse.push({ op: 'restore', entries: undoEntries, folders: undoFolders });
     }

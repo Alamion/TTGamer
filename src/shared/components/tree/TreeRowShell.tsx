@@ -30,6 +30,8 @@ export interface TreeRowSlots {
     /** A short count shown from the `sm` breakpoint up. */
     count?: string;
     drag?: TreeRowDrag;
+    /** Replaces the name (marked matches, an inline editor); it keeps the `min-w-0 flex-1` role. */
+    nameSlot?: ReactNode;
     /** Briefly highlighted after a move landed here. */
     flash?: boolean;
     /** Shown dimmed (its owner is not available). */
@@ -87,6 +89,7 @@ export const TreeRowShell = memo(function TreeRowShell({
     badges,
     trailing,
     count,
+    nameSlot,
     drag,
     flash,
     dimmed,
@@ -167,7 +170,7 @@ export const TreeRowShell = memo(function TreeRowShell({
             )}
             {checkbox}
             {icon}
-            <span className="min-w-0 flex-1 truncate">{name}</span>
+            {nameSlot ?? <span className="min-w-0 flex-1 truncate">{name}</span>}
             {badges}
             {trailing}
             {count && (

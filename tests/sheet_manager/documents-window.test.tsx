@@ -79,7 +79,10 @@ describe('the documents window (spec 032, US1)', () => {
         seedDocuments(['Ana']);
         openWindow();
         fireEvent.click(row('Ana'));
-        const details = screen.getByRole('region', { name: 'Ana' });
+        const details = screen.getByRole('region', { name: 'Details' });
+        expect(
+            (within(details).getByRole('textbox', { name: 'Name' }) as HTMLInputElement).value
+        ).toBe('Ana');
         expect(within(details).getByText('Character')).toBeTruthy();
         expect(within(details).getByText('Top level')).toBeTruthy();
         expect(within(details).getAllByText('Unknown').length).toBeGreaterThan(0);
