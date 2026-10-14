@@ -22,6 +22,17 @@ export const glossaryRule: Rule = {
             if (term.ruShort && term.ruShort.length >= term.ru.length) {
                 push('ruShort "' + term.ruShort + '" is not shorter than "' + term.ru + '"');
             }
+            if (Boolean(term.abbr) !== Boolean(term.ruAbbr)) {
+                push('abbr and ruAbbr are set together or not at all');
+            }
+            for (const [key, value] of [
+                ['abbr', term.abbr],
+                ['ruAbbr', term.ruAbbr],
+            ] as const) {
+                if (value !== undefined && (value.length < 2 || value.length > 4)) {
+                    push(key + ' "' + value + '" must be two to four characters');
+                }
+            }
             for (const ref of term.refs) {
                 const english = refText(context, ref, 'en');
                 if (english === undefined) {

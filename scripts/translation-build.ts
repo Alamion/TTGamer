@@ -139,10 +139,16 @@ function runtimeCatalogData(
 
 /** Runtime map of glossary refs: the English book name and the optional Russian short form. */
 async function buildBookTermsModule(glossary: GlossaryTerm[]): Promise<string> {
-    const terms: Record<string, { en: string; ruShort?: string }> = {};
+    const terms: Record<string, { en: string; ruShort?: string; abbr?: string; ruAbbr?: string }> =
+        {};
     for (const term of glossary) {
         for (const ref of term.refs) {
-            terms[ref] = { en: term.en, ...(term.ruShort ? { ruShort: term.ruShort } : {}) };
+            terms[ref] = {
+                en: term.en,
+                ...(term.ruShort ? { ruShort: term.ruShort } : {}),
+                ...(term.abbr ? { abbr: term.abbr } : {}),
+                ...(term.ruAbbr ? { ruAbbr: term.ruAbbr } : {}),
+            };
         }
     }
     return (
@@ -152,6 +158,9 @@ async function buildBookTermsModule(glossary: GlossaryTerm[]): Promise<string> {
         '    readonly en: string;\n' +
         '    /** Approved Russian short form for narrow rows. */\n' +
         '    readonly ruShort?: string;\n' +
+        '    /** Short rating label (brief view), English and Russian. */\n' +
+        '    readonly abbr?: string;\n' +
+        '    readonly ruAbbr?: string;\n' +
         '}\n\n' +
         '/** Glossary refs (`ttgamer.ui.*` or `catalog:<catalogId>/<entryId>`) that are book terms. */\n' +
         'export const bookTerms: Readonly<Record<string, BookTerm>> = ' +

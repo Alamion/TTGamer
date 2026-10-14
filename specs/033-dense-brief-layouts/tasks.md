@@ -44,39 +44,39 @@ three columns from the container width.
 **Check**: the Star Wars character brief at 375 px shows three-letter labels with values, grouped,
 and every short label has its full name as accessible name and hint, in en and ru.
 
-- [ ] T007 [US1] Write `tests/sheet_manager/short-labels.test.ts` for `shortLabelsFor`: order (node
+- [x] T007 [US1] Write `tests/sheet_manager/short-labels.test.ts` for `shortLabelsFor`: order (node
       `shortLabel`, glossary abbreviation by locale, first three letters uppercased), labels under
       three letters kept whole, Cyrillic derived from the Russian label, a clash gives the later
       node its full label
-- [ ] T008 [US1] Add `abbr` and `ruAbbr` to every rated term in `translations/glossary/wod2e.yaml`,
+- [x] T008 [US1] Add `abbr` and `ruAbbr` to every rated term in `translations/glossary/wod2e.yaml`,
       `star-wars-wod.yaml`, `v5.yaml`, `v5-hunter.yaml` (attributes, abilities, virtues, Hunter
       attributes and skills; Strength is МОЩ, not СИЛ), document the keys in each file's header,
       carry them through `scripts/translation-build.ts` and `scripts/translation-source.ts` into the
       generated `BookTerm`
-- [ ] T009 [US1] Add the verifier rule in `scripts/i18n-verifier/rules/glossary.ts` (new
+- [x] T009 [US1] Add the verifier rule in `scripts/i18n-verifier/rules/glossary.ts` (new
       `abbreviation` check): a term with a rating ref lacks `abbr` or `ruAbbr`, or one is outside
       2–4 characters; extend the verifier test file for it
-- [ ] T010 [US1] Create `features/sheet/declarative/shortLabels.ts`:
+- [x] T010 [US1] Create `features/sheet/declarative/shortLabels.ts`:
       `shortLabelFor(node, label, locale)` and `shortLabelsFor(nodes, locale)`; a
       `ShortLabelContext` the area group provides per group (memoized on the nodes and locale)
-- [ ] T011 [US1] Write `tests/sheet_manager/brief-short-labels.test.tsx`: for every shipped brief
+- [x] T011 [US1] Write `tests/sheet_manager/brief-short-labels.test.tsx`: for every shipped brief
       (Star Wars character, droid, creature, vehicle, fodder, V5 core, Hunter) in en and ru, no
       short-label clash per group, each short control has the full name as accessible name and a
       hint (SC-004), the value input is present, `shortForm` ratings keep `NumberInput` labels
       (FR-005)
-- [ ] T012 [US1] Rework `CompactRating` in `components/stat-fields/CompactSheetFields.tsx`: a
+- [x] T012 [US1] Rework `CompactRating` in `components/stat-fields/CompactSheetFields.tsx`: a
       `shortLabel` prop; cell look (label, value, 24 px row, hover tint) in narrow areas and pill
       look (label and value chip, 26 px) from `@md/brief`; full name stays in `aria-label`, `title`
       and the `TermLabel` hint; touch hit area ≥32 px through an extended pseudo-element under
       `@media (pointer: coarse)` (D4, D7, D8); pass the label from `primitives.tsx` (rating branch
       near `traitRowKind`)
-- [ ] T013 [US1] Turn on `shortForm: true` and `layout: 'area'` in the shipped briefs: Star Wars
+- [x] T013 [US1] Turn on `shortForm: true` and `layout: 'area'` in the shipped briefs: Star Wars
       `systems/star-wars-wod/templates/character.ts` (`briefSheet`, also droid), `creature.ts`,
       `vehicle.ts`, `fodder.ts`, V5 core `systems/v5/core/templates.ts`, and Hunter
       `systems/v5/modules/hunter/templates/brief.ts` (both through `compactTraitsGroup` in
       `systems/v5/ruleset/templateParts.ts`); ratings that are not glossary terms (creature pools,
       vehicle stats) keep the full label unless the node sets `shortLabel`; keep headings and groups
-- [ ] T014 [US1] Run `yarn verify` (translations and glossary edits) and commit:
+- [x] T014 [US1] Run `yarn verify` (translations and glossary edits) and commit:
       `feat(sheet): three-letter labels and cell/pill looks in briefs (spec 033, US1)`
 
 ## User Story 3 - A brief fits the area it is drawn in (P3)

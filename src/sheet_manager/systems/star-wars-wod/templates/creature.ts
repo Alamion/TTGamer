@@ -36,7 +36,11 @@ const NOT_FODDER = { coordinate: 'threat-tier', equals: 'fodder', not: true } as
 const FODDER = { coordinate: 'threat-tier', equals: 'fodder' } as const;
 
 const trait = (key: string, compact = false) =>
-    dotsTrait(key, { compact, labelMessage: `catalog:attributes/${traitCoordinate(key)}` });
+    dotsTrait(key, {
+        compact,
+        shortForm: compact,
+        labelMessage: `catalog:attributes/${traitCoordinate(key)}`,
+    });
 
 /** Bestiary pick: overwrites every mapped creature value (contracts/catalog-fill.md). */
 function speciesCatalog(): TemplateField {
@@ -338,7 +342,7 @@ function creatureBrief(): CustomTemplate {
                     }),
                     ...soakRows(true).map((row) => ({ ...row, column: 3 })),
                 ],
-                { columns: 3, labelMessage: entities.pools }
+                { columns: 3, labelMessage: entities.pools, layout: 'area' }
             ),
             group(
                 'brief-attacks',

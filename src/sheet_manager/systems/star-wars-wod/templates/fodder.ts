@@ -55,7 +55,11 @@ const SOAK = 'stamina + armor-armor-rating';
 const MAX_MEMBERS = 12;
 
 const trait = (key: string, compact = false) =>
-    dotsTrait(key, { compact, labelMessage: `catalog:attributes/${traitCoordinate(key)}` });
+    dotsTrait(key, {
+        compact,
+        shortForm: compact,
+        labelMessage: `catalog:attributes/${traitCoordinate(key)}`,
+    });
 
 function armorCatalog(): TemplateField {
     return select(
@@ -295,7 +299,7 @@ function fodderBrief(): CustomTemplate {
                     { ...willpower(true), column: 1 },
                     { ...soak(true), column: 2 },
                 ] as TemplateNode[],
-                { columns: 3, labelMessage: entities.pools }
+                { columns: 3, labelMessage: entities.pools, layout: 'area' }
             ),
             group(
                 'brief-abilities',

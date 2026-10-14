@@ -4,6 +4,8 @@
 #     en: Larceny                                  # English book name (must match the English text at every ref)
 #     ru: Воровство                                # approved Russian form (must match the Russian text at every ref)
 #     ruShort: Воровство                           # optional; shown when a sheet row is narrow
+#     abbr: LAR                                    # optional; two to four capitals a rating shows in the brief view (English)
+#     ruAbbr: ВОР                                  # optional; the same in Russian; set both or neither
 #     note: why this translation was chosen        # optional
 #     refs:                                        # UI message ids or catalog:<catalogId>/<entryId>
 #       - ttgamer.ui.sheet.v5.skills.larceny
@@ -12,114 +14,158 @@
 - id: strength
   en: Strength
   ru: Мощь
+  abbr: STR
+  ruAbbr: МОЩ
   note: 'T-061 review: «Сила» names the Force in this setting, so Strength is «Мощь»; V5 keeps «Сила»'
   refs:
       - catalog:attributes/strength
 - id: dexterity
   en: Dexterity
   ru: Ловкость
+  abbr: DEX
+  ruAbbr: ЛОВ
   refs:
       - catalog:attributes/dexterity
 - id: stamina
   en: Stamina
   ru: Выносливость
+  abbr: STA
+  ruAbbr: ВЫН
   refs:
       - catalog:attributes/stamina
 - id: charisma
   en: Charisma
   ru: Харизма
+  abbr: CHA
+  ruAbbr: ХАР
   refs:
       - catalog:attributes/charisma
 - id: manipulation
   en: Manipulation
   ru: Манипуляция
+  abbr: MAN
+  ruAbbr: МАН
   note: 'T-061 review: unified with V5 and the Russian docs (was «Манипулирование» in catalog data)'
   refs:
       - catalog:attributes/manipulation
 - id: appearance
   en: Appearance
   ru: Внешность
+  abbr: APP
+  ruAbbr: ВНЕ
   refs:
       - catalog:attributes/appearance
 - id: perception
   en: Perception
   ru: Восприятие
+  abbr: PER
+  ruAbbr: ВОС
   refs:
       - catalog:attributes/perception
 - id: intelligence
   en: Intelligence
   ru: Интеллект
+  abbr: INT
+  ruAbbr: ИНТ
   refs:
       - catalog:attributes/intelligence
 - id: wits
   en: Wits
   ru: Смекалка
+  abbr: WIT
+  ruAbbr: СМК
   note: 'T-061 review: unified with V5 and the Russian docs (was «Сообразительность» in catalog data and «Хитроумие» on some docs pages)'
   refs:
       - catalog:attributes/wits
 - id: alertness
   en: Alertness
   ru: Бдительность
+  abbr: ALR
+  ruAbbr: БДИ
   refs:
       - catalog:abilities/alertness
 - id: athletics
   en: Athletics
   ru: Атлетика
+  abbr: ATH
+  ruAbbr: АТЛ
   refs:
       - catalog:abilities/athletics
 - id: brawl
   en: Brawl
   ru: Рукопашный бой
+  abbr: BRW
+  ruAbbr: БОЙ
   refs:
       - catalog:abilities/brawl
 - id: command
   en: Command
   ru: Командование
+  abbr: CMD
+  ruAbbr: КОМ
   refs:
       - catalog:abilities/command
 - id: diplomacy
   en: Diplomacy
   ru: Дипломатия
+  abbr: DIP
+  ruAbbr: ДИП
   refs:
       - catalog:abilities/diplomacy
 - id: dodge
   en: Dodge
   ru: Уклонение
+  abbr: DOD
+  ruAbbr: УКЛ
   refs:
       - catalog:abilities/dodge
 - id: empathy
   en: Empathy
   ru: Эмпатия
+  abbr: EMP
+  ruAbbr: ЭМП
   refs:
       - catalog:abilities/empathy
 - id: intimidation
   en: Intimidation
   ru: Запугивание
+  abbr: INT
+  ruAbbr: ЗАП
   refs:
       - catalog:abilities/intimidation
 - id: streetwise
   en: Streetwise
   ru: Знание улиц
+  abbr: STW
+  ruAbbr: УЛИ
   refs:
       - catalog:abilities/streetwise
 - id: subterfuge
   en: Subterfuge
   ru: Хитрость
+  abbr: SUB
+  ruAbbr: ХИТ
   refs:
       - catalog:abilities/subterfuge
 - id: blaster
   en: Blaster
   ru: Бластер
+  abbr: BLS
+  ruAbbr: БЛА
   refs:
       - catalog:abilities/blaster
 - id: gunnery
   en: Gunnery
   ru: Артиллерия
+  abbr: GUN
+  ruAbbr: АРТ
   refs:
       - catalog:abilities/gunnery
 - id: melee
   en: Melee
   ru: Рукопашное оружие
+  abbr: MEL
+  ruAbbr: ОРУ
   ruShort: Рук. оружие
   note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
@@ -127,11 +173,15 @@
 - id: pilot
   en: Pilot
   ru: Пилотирование
+  abbr: PIL
+  ruAbbr: ПИЛ
   refs:
       - catalog:abilities/pilot
 - id: programming
   en: Programming
   ru: Программирование
+  abbr: PRG
+  ruAbbr: ПРО
   ruShort: Програм.
   note: short form for narrow sheet rows (T-061 review, 2026-09-23)
   refs:
@@ -139,115 +189,161 @@
 - id: repair
   en: Repair
   ru: Ремонт
+  abbr: REP
+  ruAbbr: РЕМ
   refs:
       - catalog:abilities/repair
 - id: ride
   en: Ride
   ru: Езда
+  abbr: RID
+  ruAbbr: ЕЗД
   refs:
       - catalog:abilities/ride
 - id: security
   en: Security
   ru: Взлом
+  abbr: SEC
+  ruAbbr: ВЗЛ
   refs:
       - catalog:abilities/security
 - id: stealth
   en: Stealth
   ru: Скрытность
+  abbr: STE
+  ruAbbr: СКР
   refs:
       - catalog:abilities/stealth
 - id: survival
   en: Survival
   ru: Выживание
+  abbr: SRV
+  ruAbbr: ВЫЖ
   refs:
       - catalog:abilities/survival
 - id: astrogation
   en: Astrogation
   ru: Астрогация
+  abbr: AST
+  ruAbbr: АСТ
   refs:
       - catalog:abilities/astrogation
 - id: bureaucracy
   en: Bureaucracy
   ru: Бюрократия
+  abbr: BUR
+  ruAbbr: БЮР
   refs:
       - catalog:abilities/bureaucracy
 - id: cultures
   en: Cultures
   ru: Культуры
+  abbr: CUL
+  ruAbbr: КУЛ
   refs:
       - catalog:abilities/cultures
 - id: interfaces
   en: Interfaces
   ru: Интерфейсы
+  abbr: ITF
+  ruAbbr: ИФС
   refs:
       - catalog:abilities/interfaces
 - id: investigation
   en: Investigation
   ru: Расследование
+  abbr: INV
+  ruAbbr: РАС
   refs:
       - catalog:abilities/investigation
 - id: languages
   en: Languages
   ru: Языки
+  abbr: LNG
+  ruAbbr: ЯЗЫ
   refs:
       - catalog:abilities/languages
 - id: medicine
   en: Medicine
   ru: Медицина
+  abbr: MED
+  ruAbbr: МЕД
   refs:
       - catalog:abilities/medicine
 - id: politics
   en: Politics
   ru: Политика
+  abbr: POL
+  ruAbbr: ПОЛ
   refs:
       - catalog:abilities/politics
 - id: tech
   en: Tech
   ru: Технологии
+  abbr: TEC
+  ruAbbr: ТЕХ
   refs:
       - catalog:abilities/tech
 - id: trade
   en: Trade
   ru: Торговля
+  abbr: TRD
+  ruAbbr: ТОР
   refs:
       - catalog:abilities/trade
 - id: force-skills-control
   en: Control
   ru: Контроль
+  abbr: CTL
+  ruAbbr: КОН
   refs:
       - catalog:force-skills/control
 - id: force-skills-dynamism
   en: Dynamism
   ru: Динамизм
+  abbr: DYN
+  ruAbbr: ДИН
   refs:
       - catalog:force-skills/dynamism
 - id: force-skills-rapport
   en: Rapport
   ru: Связь
+  abbr: RAP
+  ruAbbr: СВЯ
   refs:
       - catalog:force-skills/rapport
 - id: force-skills-sense
   en: Sense
   ru: Чувство
+  abbr: SEN
+  ruAbbr: ЧУВ
   refs:
       - catalog:force-skills/sense
 - id: force-skills-telekinesis
   en: Telekinesis
   ru: Телекинез
+  abbr: TEL
+  ruAbbr: ТЕЛ
   refs:
       - catalog:force-skills/telekinesis
 - id: virtues-conscience
   en: Conscience
   ru: Совесть
+  abbr: CON
+  ruAbbr: СОВ
   refs:
       - catalog:virtues/conscience
 - id: virtues-passion
   en: Passion
   ru: Страсть
+  abbr: PAS
+  ruAbbr: СТР
   refs:
       - catalog:virtues/passion
 - id: virtues-self-control
   en: Self Control
   ru: Самообладание
+  abbr: SCT
+  ruAbbr: САМ
   refs:
       - catalog:virtues/self-control

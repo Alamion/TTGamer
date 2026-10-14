@@ -9,7 +9,13 @@ export const traitCoordinate = (key: string) => key.toLowerCase().replace(/\s+/g
  */
 export function dotsTrait(
     key: string,
-    options: { compact?: boolean; labelMessage?: string; column?: number } = {}
+    options: {
+        compact?: boolean;
+        labelMessage?: string;
+        column?: number;
+        /** Brief look: a short label beside the value (spec 033). */
+        shortForm?: boolean;
+    } = {}
 ): TemplateField {
     return {
         id: `trait-${traitCoordinate(key)}`,
@@ -23,5 +29,6 @@ export function dotsTrait(
         required: false,
         ...(options.labelMessage ? { labelMessage: options.labelMessage } : {}),
         ...(options.column ? { column: options.column } : {}),
+        ...(options.shortForm ? { shortForm: true } : {}),
     };
 }

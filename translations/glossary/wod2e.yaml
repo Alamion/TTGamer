@@ -5,120 +5,160 @@
 - id: strength
   en: Strength
   ru: Сила
+  abbr: STR
+  ruAbbr: СИЛ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.strength
 - id: dexterity
   en: Dexterity
   ru: Ловкость
+  abbr: DEX
+  ruAbbr: ЛОВ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.dexterity
 - id: stamina
   en: Stamina
   ru: Выносливость
+  abbr: STA
+  ruAbbr: ВЫН
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.stamina
 - id: charisma
   en: Charisma
   ru: Обаяние
+  abbr: CHA
+  ruAbbr: ОБА
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.charisma
 - id: manipulation
   en: Manipulation
   ru: Манипуляция
+  abbr: MAN
+  ruAbbr: МАН
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.manipulation
 - id: appearance
   en: Appearance
   ru: Внешность
+  abbr: APP
+  ruAbbr: ВНЕ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.appearance
 - id: perception
   en: Perception
   ru: Восприятие
+  abbr: PER
+  ruAbbr: ВОС
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.perception
 - id: intelligence
   en: Intelligence
   ru: Интеллект
+  abbr: INT
+  ruAbbr: ИНТ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.intelligence
 - id: wits
   en: Wits
   ru: Смекалка
+  abbr: WIT
+  ruAbbr: СМК
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.wits
 - id: alertness
   en: Alertness
   ru: Бдительность
+  abbr: ALR
+  ruAbbr: БДИ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.alertness
 - id: athletics
   en: Athletics
   ru: Атлетика
+  abbr: ATH
+  ruAbbr: АТЛ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.athletics
 - id: brawl
   en: Brawl
   ru: Драка
+  abbr: BRW
+  ruAbbr: ДРА
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.brawl
 - id: dodge
   en: Dodge
   ru: Уклонение
+  abbr: DOD
+  ruAbbr: УКЛ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.dodge
 - id: empathy
   en: Empathy
   ru: Эмпатия
+  abbr: EMP
+  ruAbbr: ЭМП
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.empathy
 - id: expression
   en: Expression
   ru: Экспрессия
+  abbr: EXP
+  ruAbbr: ЭКС
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.expression
 - id: intimidation
   en: Intimidation
   ru: Запугивание
+  abbr: INT
+  ruAbbr: ЗАП
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.intimidation
 - id: leadership
   en: Leadership
   ru: Лидерство
+  abbr: LDR
+  ruAbbr: ЛИД
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.leadership
 - id: streetwise
   en: Streetwise
   ru: Знание улиц
+  abbr: STW
+  ruAbbr: УЛИ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.streetwise
 - id: subterfuge
   en: Subterfuge
   ru: Обман
+  abbr: SUB
+  ruAbbr: ОБМ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.subterfuge
 - id: animal-ken
   en: Animal Ken
   ru: Обращение с животными
+  abbr: ANM
+  ruAbbr: ЖИВ
   ruShort: Обр. с живот.
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
@@ -126,30 +166,40 @@
 - id: crafts
   en: Crafts
   ru: Ремёсла
+  abbr: CRF
+  ruAbbr: РМС
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.crafts
 - id: drive
   en: Drive
   ru: Вождение
+  abbr: DRV
+  ruAbbr: ВОЖ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.drive
 - id: etiquette
   en: Etiquette
   ru: Этикет
+  abbr: ETQ
+  ruAbbr: ЭТИ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.etiquette
 - id: firearms
   en: Firearms
   ru: Стрельба
+  abbr: FIR
+  ruAbbr: СТР
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.firearms
 - id: melee
   en: Melee
   ru: Холодное оружие
+  abbr: MEL
+  ruAbbr: ХОЛ
   ruShort: Хол. оружие
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
@@ -157,30 +207,40 @@
 - id: performance
   en: Performance
   ru: Исполнение
+  abbr: PRF
+  ruAbbr: ИСП
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.performance
 - id: security
   en: Security
   ru: Взлом
+  abbr: SEC
+  ruAbbr: ВЗЛ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.security
 - id: stealth
   en: Stealth
   ru: Скрытность
+  abbr: STE
+  ruAbbr: СКР
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.stealth
 - id: survival
   en: Survival
   ru: Выживание
+  abbr: SRV
+  ruAbbr: ВЫЖ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.survival
 - id: academics
   en: Academics
   ru: Гуманитарные науки
+  abbr: ACA
+  ruAbbr: ГУМ
   ruShort: Гум. науки
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
@@ -188,72 +248,96 @@
 - id: computer
   en: Computer
   ru: Компьютеры
+  abbr: CMP
+  ruAbbr: КОМ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.computer
 - id: finance
   en: Finance
   ru: Финансы
+  abbr: FIN
+  ruAbbr: ФИН
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.finance
 - id: investigation
   en: Investigation
   ru: Расследование
+  abbr: INV
+  ruAbbr: РАС
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.investigation
 - id: law
   en: Law
   ru: Право
+  abbr: LAW
+  ruAbbr: ПРА
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.law
 - id: linguistics
   en: Linguistics
   ru: Лингвистика
+  abbr: LIN
+  ruAbbr: ЛИН
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.linguistics
 - id: medicine
   en: Medicine
   ru: Медицина
+  abbr: MED
+  ruAbbr: МЕД
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.medicine
 - id: occult
   en: Occult
   ru: Оккультизм
+  abbr: OCC
+  ruAbbr: ОКК
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.occult
 - id: politics
   en: Politics
   ru: Политика
+  abbr: POL
+  ruAbbr: ПОЛ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.politics
 - id: science
   en: Science
   ru: Наука
+  abbr: SCI
+  ruAbbr: НАУ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.science
 - id: conscience
   en: Conscience
   ru: Совесть
+  abbr: CON
+  ruAbbr: СОВ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.conscience
 - id: self-control
   en: Self-Control
   ru: Самоконтроль
+  abbr: SCT
+  ruAbbr: САМ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.selfControl
 - id: courage
   en: Courage
   ru: Мужество
+  abbr: COU
+  ruAbbr: МУЖ
   note: 'Spec 012: WoD 2e engine term, awaiting the maintainer glossary review'
   refs:
       - ttgamer.ui.sheet.wod2e.traits.courage

@@ -51,6 +51,23 @@ describe('content rules', () => {
         ]);
     });
 
+    it('glossary: abbreviations come as a pair of two to four characters', async () => {
+        const files = {
+            ...FIXTURE_FILES,
+            'translations/glossary/v5.yaml': FIXTURE_FILES['translations/glossary/v5.yaml'].replace(
+                'ru: Обращение с животными\n',
+                'ru: Обращение с животными\n  abbr: ANIMAL\n'
+            ),
+        };
+        const run = await runVerifier(await fixtureOptions(files), { rules: ['glossary'] });
+        expect(findingsOf(run.findings, 'glossary')).toEqual(
+            expect.arrayContaining([
+                'translations/glossary/v5.yaml#animal-ken | abbr and ruAbbr are set together or not at all',
+                'translations/glossary/v5.yaml#animal-ken | abbr "ANIMAL" must be two to four characters',
+            ])
+        );
+    });
+
     it('overflow: long Russian terms without a fitting short form', async () => {
         const run = await runVerifier(await fixtureOptions(), { rules: ['overflow'] });
         expect(findingsOf(run.findings, 'overflow')).toEqual([

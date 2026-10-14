@@ -2477,6 +2477,7 @@
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes",
      "collapsible": false,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -2487,6 +2488,7 @@
        "required": false,
        "valueKey": "strength",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2500,6 +2502,7 @@
        "required": false,
        "valueKey": "dexterity",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2513,6 +2516,7 @@
        "required": false,
        "valueKey": "stamina",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2526,6 +2530,7 @@
        "required": false,
        "valueKey": "charisma",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2539,6 +2544,7 @@
        "required": false,
        "valueKey": "manipulation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2552,6 +2558,7 @@
        "required": false,
        "valueKey": "appearance",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2565,6 +2572,7 @@
        "required": false,
        "valueKey": "perception",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2578,6 +2586,7 @@
        "required": false,
        "valueKey": "intelligence",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2591,6 +2600,7 @@
        "required": false,
        "valueKey": "wits",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2604,6 +2614,7 @@
      "title": "Abilities",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
      "collapsible": true,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -2614,6 +2625,7 @@
        "required": false,
        "valueKey": "alertness",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2627,6 +2639,7 @@
        "required": false,
        "valueKey": "athletics",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2640,6 +2653,7 @@
        "required": false,
        "valueKey": "brawl",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2653,6 +2667,7 @@
        "required": false,
        "valueKey": "command",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2666,6 +2681,7 @@
        "required": false,
        "valueKey": "diplomacy",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2679,6 +2695,7 @@
        "required": false,
        "valueKey": "dodge",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2692,6 +2709,7 @@
        "required": false,
        "valueKey": "empathy",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2705,6 +2723,7 @@
        "required": false,
        "valueKey": "intimidation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2718,6 +2737,7 @@
        "required": false,
        "valueKey": "streetwise",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2731,6 +2751,7 @@
        "required": false,
        "valueKey": "subterfuge",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2744,6 +2765,7 @@
        "required": false,
        "valueKey": "blaster",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2757,6 +2779,7 @@
        "required": false,
        "valueKey": "gunnery",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2770,6 +2793,7 @@
        "required": false,
        "valueKey": "melee",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2783,6 +2807,7 @@
        "required": false,
        "valueKey": "pilot",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2796,6 +2821,7 @@
        "required": false,
        "valueKey": "programming",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2809,6 +2835,7 @@
        "required": false,
        "valueKey": "repair",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2822,6 +2849,7 @@
        "required": false,
        "valueKey": "ride",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2835,6 +2863,7 @@
        "required": false,
        "valueKey": "security",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2848,6 +2877,7 @@
        "required": false,
        "valueKey": "stealth",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2861,6 +2891,7 @@
        "required": false,
        "valueKey": "survival",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2874,6 +2905,7 @@
        "required": false,
        "valueKey": "astrogation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2887,6 +2919,7 @@
        "required": false,
        "valueKey": "bureaucracy",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2900,6 +2933,7 @@
        "required": false,
        "valueKey": "cultures",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2913,6 +2947,7 @@
        "required": false,
        "valueKey": "interfaces",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2926,6 +2961,7 @@
        "required": false,
        "valueKey": "investigation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2939,6 +2975,7 @@
        "required": false,
        "valueKey": "languages",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2952,6 +2989,7 @@
        "required": false,
        "valueKey": "medicine",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2965,6 +3003,7 @@
        "required": false,
        "valueKey": "politics",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2978,6 +3017,7 @@
        "required": false,
        "valueKey": "tech",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -2991,6 +3031,7 @@
        "required": false,
        "valueKey": "trade",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3014,6 +3055,7 @@
        "required": false,
        "valueKey": "conscience",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3027,6 +3069,7 @@
        "required": false,
        "valueKey": "passion",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3040,6 +3083,7 @@
        "required": false,
        "valueKey": "self-control",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3186,6 +3230,7 @@
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes",
      "collapsible": false,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -3196,6 +3241,7 @@
        "required": false,
        "valueKey": "strength",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3209,6 +3255,7 @@
        "required": false,
        "valueKey": "dexterity",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3222,6 +3269,7 @@
        "required": false,
        "valueKey": "stamina",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3235,6 +3283,7 @@
        "required": false,
        "valueKey": "charisma",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3248,6 +3297,7 @@
        "required": false,
        "valueKey": "manipulation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3261,6 +3311,7 @@
        "required": false,
        "valueKey": "appearance",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3274,6 +3325,7 @@
        "required": false,
        "valueKey": "perception",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3287,6 +3339,7 @@
        "required": false,
        "valueKey": "intelligence",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3300,6 +3353,7 @@
        "required": false,
        "valueKey": "wits",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3313,6 +3367,7 @@
      "title": "Abilities",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
      "collapsible": true,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -3323,6 +3378,7 @@
        "required": false,
        "valueKey": "alertness",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3336,6 +3392,7 @@
        "required": false,
        "valueKey": "athletics",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3349,6 +3406,7 @@
        "required": false,
        "valueKey": "brawl",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3362,6 +3420,7 @@
        "required": false,
        "valueKey": "command",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3375,6 +3434,7 @@
        "required": false,
        "valueKey": "diplomacy",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3388,6 +3448,7 @@
        "required": false,
        "valueKey": "dodge",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3401,6 +3462,7 @@
        "required": false,
        "valueKey": "empathy",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3414,6 +3476,7 @@
        "required": false,
        "valueKey": "intimidation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3427,6 +3490,7 @@
        "required": false,
        "valueKey": "streetwise",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3440,6 +3504,7 @@
        "required": false,
        "valueKey": "subterfuge",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3453,6 +3518,7 @@
        "required": false,
        "valueKey": "blaster",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3466,6 +3532,7 @@
        "required": false,
        "valueKey": "gunnery",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3479,6 +3546,7 @@
        "required": false,
        "valueKey": "melee",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3492,6 +3560,7 @@
        "required": false,
        "valueKey": "pilot",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3505,6 +3574,7 @@
        "required": false,
        "valueKey": "programming",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3518,6 +3588,7 @@
        "required": false,
        "valueKey": "repair",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3531,6 +3602,7 @@
        "required": false,
        "valueKey": "ride",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3544,6 +3616,7 @@
        "required": false,
        "valueKey": "security",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3557,6 +3630,7 @@
        "required": false,
        "valueKey": "stealth",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3570,6 +3644,7 @@
        "required": false,
        "valueKey": "survival",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3583,6 +3658,7 @@
        "required": false,
        "valueKey": "astrogation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3596,6 +3672,7 @@
        "required": false,
        "valueKey": "bureaucracy",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3609,6 +3686,7 @@
        "required": false,
        "valueKey": "cultures",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3622,6 +3700,7 @@
        "required": false,
        "valueKey": "interfaces",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3635,6 +3714,7 @@
        "required": false,
        "valueKey": "investigation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3648,6 +3728,7 @@
        "required": false,
        "valueKey": "languages",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3661,6 +3742,7 @@
        "required": false,
        "valueKey": "medicine",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3674,6 +3756,7 @@
        "required": false,
        "valueKey": "politics",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3687,6 +3770,7 @@
        "required": false,
        "valueKey": "tech",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3700,6 +3784,7 @@
        "required": false,
        "valueKey": "trade",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3723,6 +3808,7 @@
        "required": false,
        "valueKey": "conscience",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3736,6 +3822,7 @@
        "required": false,
        "valueKey": "passion",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -3749,6 +3836,7 @@
        "required": false,
        "valueKey": "self-control",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -4428,6 +4516,7 @@
      "title": "Pools",
      "labelMessage": "ttgamer.ui.sheet.templates.entities.pools",
      "collapsible": false,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -4438,6 +4527,7 @@
        "required": false,
        "valueKey": "strength",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -4451,6 +4541,7 @@
        "required": false,
        "valueKey": "dexterity",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -4464,6 +4555,7 @@
        "required": false,
        "valueKey": "stamina",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -4477,6 +4569,7 @@
        "required": false,
        "valueKey": "perception",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -4490,6 +4583,7 @@
        "required": false,
        "valueKey": "intelligence",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -4503,6 +4597,7 @@
        "required": false,
        "valueKey": "wits",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -5910,6 +6005,7 @@
      "title": "Pools",
      "labelMessage": "ttgamer.ui.sheet.templates.entities.pools",
      "collapsible": false,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -5920,6 +6016,7 @@
        "required": false,
        "valueKey": "strength",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -5933,6 +6030,7 @@
        "required": false,
        "valueKey": "dexterity",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -5946,6 +6044,7 @@
        "required": false,
        "valueKey": "stamina",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -5959,6 +6058,7 @@
        "required": false,
        "valueKey": "charisma",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -5972,6 +6072,7 @@
        "required": false,
        "valueKey": "manipulation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -5985,6 +6086,7 @@
        "required": false,
        "valueKey": "appearance",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -5998,6 +6100,7 @@
        "required": false,
        "valueKey": "perception",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -6011,6 +6114,7 @@
        "required": false,
        "valueKey": "intelligence",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -6024,6 +6128,7 @@
        "required": false,
        "valueKey": "wits",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7238,6 +7343,7 @@
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.attributes",
      "collapsible": false,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -7248,6 +7354,7 @@
        "required": false,
        "valueKey": "strength",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7261,6 +7368,7 @@
        "required": false,
        "valueKey": "dexterity",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7274,6 +7382,7 @@
        "required": false,
        "valueKey": "stamina",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7287,6 +7396,7 @@
        "required": false,
        "valueKey": "charisma",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7300,6 +7410,7 @@
        "required": false,
        "valueKey": "manipulation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7313,6 +7424,7 @@
        "required": false,
        "valueKey": "appearance",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7326,6 +7438,7 @@
        "required": false,
        "valueKey": "perception",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7339,6 +7452,7 @@
        "required": false,
        "valueKey": "intelligence",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7352,6 +7466,7 @@
        "required": false,
        "valueKey": "wits",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7365,6 +7480,7 @@
      "title": "Abilities",
      "labelMessage": "ttgamer.ui.sheet.documents.fields.abilities",
      "collapsible": true,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -7375,6 +7491,7 @@
        "required": false,
        "valueKey": "alertness",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7388,6 +7505,7 @@
        "required": false,
        "valueKey": "athletics",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7401,6 +7519,7 @@
        "required": false,
        "valueKey": "brawl",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7414,6 +7533,7 @@
        "required": false,
        "valueKey": "dodge",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7427,6 +7547,7 @@
        "required": false,
        "valueKey": "empathy",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7440,6 +7561,7 @@
        "required": false,
        "valueKey": "expression",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7453,6 +7575,7 @@
        "required": false,
        "valueKey": "intimidation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7466,6 +7589,7 @@
        "required": false,
        "valueKey": "leadership",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7479,6 +7603,7 @@
        "required": false,
        "valueKey": "streetwise",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7492,6 +7617,7 @@
        "required": false,
        "valueKey": "subterfuge",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7505,6 +7631,7 @@
        "required": false,
        "valueKey": "animal-ken",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7518,6 +7645,7 @@
        "required": false,
        "valueKey": "crafts",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7531,6 +7659,7 @@
        "required": false,
        "valueKey": "drive",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7544,6 +7673,7 @@
        "required": false,
        "valueKey": "etiquette",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7557,6 +7687,7 @@
        "required": false,
        "valueKey": "firearms",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7570,6 +7701,7 @@
        "required": false,
        "valueKey": "melee",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7583,6 +7715,7 @@
        "required": false,
        "valueKey": "performance",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7596,6 +7729,7 @@
        "required": false,
        "valueKey": "security",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7609,6 +7743,7 @@
        "required": false,
        "valueKey": "stealth",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7622,6 +7757,7 @@
        "required": false,
        "valueKey": "survival",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7635,6 +7771,7 @@
        "required": false,
        "valueKey": "academics",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7648,6 +7785,7 @@
        "required": false,
        "valueKey": "computer",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7661,6 +7799,7 @@
        "required": false,
        "valueKey": "finance",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7674,6 +7813,7 @@
        "required": false,
        "valueKey": "investigation",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7687,6 +7827,7 @@
        "required": false,
        "valueKey": "law",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7700,6 +7841,7 @@
        "required": false,
        "valueKey": "linguistics",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7713,6 +7855,7 @@
        "required": false,
        "valueKey": "medicine",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7726,6 +7869,7 @@
        "required": false,
        "valueKey": "occult",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7739,6 +7883,7 @@
        "required": false,
        "valueKey": "politics",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7752,6 +7897,7 @@
        "required": false,
        "valueKey": "science",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7775,6 +7921,7 @@
        "required": false,
        "valueKey": "conscience",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7788,6 +7935,7 @@
        "required": false,
        "valueKey": "self-control",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -7801,6 +7949,7 @@
        "required": false,
        "valueKey": "courage",
        "compact": true,
+       "shortForm": true,
        "type": "rating",
        "min": 0,
        "max": 5,
@@ -8923,6 +9072,7 @@
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.attributes",
      "collapsible": false,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -8932,7 +9082,8 @@
        "label": "Strength",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.strength",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-dexterity",
@@ -8941,7 +9092,8 @@
        "label": "Dexterity",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.dexterity",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-stamina",
@@ -8950,7 +9102,8 @@
        "label": "Stamina",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.stamina",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-charisma",
@@ -8959,7 +9112,8 @@
        "label": "Charisma",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.charisma",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-manipulation",
@@ -8968,7 +9122,8 @@
        "label": "Manipulation",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.manipulation",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-composure",
@@ -8977,7 +9132,8 @@
        "label": "Composure",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.composure",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-intelligence",
@@ -8986,7 +9142,8 @@
        "label": "Intelligence",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.intelligence",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-wits",
@@ -8995,7 +9152,8 @@
        "label": "Wits",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.wits",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-resolve",
@@ -9004,7 +9162,8 @@
        "label": "Resolve",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.resolve",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       }
      ]
     },
@@ -9014,6 +9173,7 @@
      "title": "Skills",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
      "collapsible": true,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -9023,7 +9183,8 @@
        "label": "Athletics",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.athletics",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-brawl",
@@ -9032,7 +9193,8 @@
        "label": "Brawl",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.brawl",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-craft",
@@ -9041,7 +9203,8 @@
        "label": "Craft",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.craft",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-driving",
@@ -9050,7 +9213,8 @@
        "label": "Driving",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.driving",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-firearms",
@@ -9059,7 +9223,8 @@
        "label": "Firearms",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.firearms",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-larceny",
@@ -9068,7 +9233,8 @@
        "label": "Larceny",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.larceny",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-melee",
@@ -9077,7 +9243,8 @@
        "label": "Melee",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.melee",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-stealth",
@@ -9086,7 +9253,8 @@
        "label": "Stealth",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.stealth",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-survival",
@@ -9095,7 +9263,8 @@
        "label": "Survival",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.survival",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-animal-ken",
@@ -9104,7 +9273,8 @@
        "label": "Animal Ken",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.animalKen",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-etiquette",
@@ -9113,7 +9283,8 @@
        "label": "Etiquette",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.etiquette",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-insight",
@@ -9122,7 +9293,8 @@
        "label": "Insight",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.insight",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-intimidation",
@@ -9131,7 +9303,8 @@
        "label": "Intimidation",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.intimidation",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-leadership",
@@ -9140,7 +9313,8 @@
        "label": "Leadership",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.leadership",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-performance",
@@ -9149,7 +9323,8 @@
        "label": "Performance",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.performance",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-persuasion",
@@ -9158,7 +9333,8 @@
        "label": "Persuasion",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.persuasion",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-streetwise",
@@ -9167,7 +9343,8 @@
        "label": "Streetwise",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.streetwise",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-subterfuge",
@@ -9176,7 +9353,8 @@
        "label": "Subterfuge",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.subterfuge",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-academics",
@@ -9185,7 +9363,8 @@
        "label": "Academics",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.academics",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-awareness",
@@ -9194,7 +9373,8 @@
        "label": "Awareness",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.awareness",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-finance",
@@ -9203,7 +9383,8 @@
        "label": "Finance",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.finance",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-investigation",
@@ -9212,7 +9393,8 @@
        "label": "Investigation",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.investigation",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-medicine",
@@ -9221,7 +9403,8 @@
        "label": "Medicine",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.medicine",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-occult",
@@ -9230,7 +9413,8 @@
        "label": "Occult",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.occult",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-politics",
@@ -9239,7 +9423,8 @@
        "label": "Politics",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.politics",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-science",
@@ -9248,7 +9433,8 @@
        "label": "Science",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.science",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-technology",
@@ -9257,7 +9443,8 @@
        "label": "Technology",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.technology",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       }
      ]
     },
@@ -10126,6 +10313,7 @@
      "title": "Attributes",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.attributes",
      "collapsible": false,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -10135,7 +10323,8 @@
        "label": "Strength",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.strength",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-dexterity",
@@ -10144,7 +10333,8 @@
        "label": "Dexterity",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.dexterity",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-stamina",
@@ -10153,7 +10343,8 @@
        "label": "Stamina",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.stamina",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-charisma",
@@ -10162,7 +10353,8 @@
        "label": "Charisma",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.charisma",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-manipulation",
@@ -10171,7 +10363,8 @@
        "label": "Manipulation",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.manipulation",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-composure",
@@ -10180,7 +10373,8 @@
        "label": "Composure",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.composure",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-intelligence",
@@ -10189,7 +10383,8 @@
        "label": "Intelligence",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.intelligence",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-wits",
@@ -10198,7 +10393,8 @@
        "label": "Wits",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.wits",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "attribute-resolve",
@@ -10207,7 +10403,8 @@
        "label": "Resolve",
        "labelMessage": "ttgamer.ui.sheet.v5.attributes.resolve",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       }
      ]
     },
@@ -10217,6 +10414,7 @@
      "title": "Skills",
      "labelMessage": "ttgamer.ui.sheet.v5.sections.skills",
      "collapsible": true,
+     "layout": "area",
      "columns": 3,
      "children": [
       {
@@ -10226,7 +10424,8 @@
        "label": "Athletics",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.athletics",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-brawl",
@@ -10235,7 +10434,8 @@
        "label": "Brawl",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.brawl",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-craft",
@@ -10244,7 +10444,8 @@
        "label": "Craft",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.craft",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-driving",
@@ -10253,7 +10454,8 @@
        "label": "Driving",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.driving",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-firearms",
@@ -10262,7 +10464,8 @@
        "label": "Firearms",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.firearms",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-larceny",
@@ -10271,7 +10474,8 @@
        "label": "Larceny",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.larceny",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-melee",
@@ -10280,7 +10484,8 @@
        "label": "Melee",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.melee",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-stealth",
@@ -10289,7 +10494,8 @@
        "label": "Stealth",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.stealth",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-survival",
@@ -10298,7 +10504,8 @@
        "label": "Survival",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.survival",
        "column": 1,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-animal-ken",
@@ -10307,7 +10514,8 @@
        "label": "Animal Ken",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.animalKen",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-etiquette",
@@ -10316,7 +10524,8 @@
        "label": "Etiquette",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.etiquette",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-insight",
@@ -10325,7 +10534,8 @@
        "label": "Insight",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.insight",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-intimidation",
@@ -10334,7 +10544,8 @@
        "label": "Intimidation",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.intimidation",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-leadership",
@@ -10343,7 +10554,8 @@
        "label": "Leadership",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.leadership",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-performance",
@@ -10352,7 +10564,8 @@
        "label": "Performance",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.performance",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-persuasion",
@@ -10361,7 +10574,8 @@
        "label": "Persuasion",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.persuasion",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-streetwise",
@@ -10370,7 +10584,8 @@
        "label": "Streetwise",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.streetwise",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-subterfuge",
@@ -10379,7 +10594,8 @@
        "label": "Subterfuge",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.subterfuge",
        "column": 2,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-academics",
@@ -10388,7 +10604,8 @@
        "label": "Academics",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.academics",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-awareness",
@@ -10397,7 +10614,8 @@
        "label": "Awareness",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.awareness",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-finance",
@@ -10406,7 +10624,8 @@
        "label": "Finance",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.finance",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-investigation",
@@ -10415,7 +10634,8 @@
        "label": "Investigation",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.investigation",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-medicine",
@@ -10424,7 +10644,8 @@
        "label": "Medicine",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.medicine",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-occult",
@@ -10433,7 +10654,8 @@
        "label": "Occult",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.occult",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-politics",
@@ -10442,7 +10664,8 @@
        "label": "Politics",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.politics",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-science",
@@ -10451,7 +10674,8 @@
        "label": "Science",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.science",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       },
       {
        "id": "skill-technology",
@@ -10460,7 +10684,8 @@
        "label": "Technology",
        "labelMessage": "ttgamer.ui.sheet.v5.skills.technology",
        "column": 3,
-       "compact": true
+       "compact": true,
+       "shortForm": true
       }
      ]
     },

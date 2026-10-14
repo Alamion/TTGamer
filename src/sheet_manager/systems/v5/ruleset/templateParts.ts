@@ -51,7 +51,12 @@ function traitGroupNodes(
                 primitive(
                     `${map === 'attributes' ? 'attribute' : 'skill'}-${trait.key}`,
                     `trait:${map}:${trait.key}`,
-                    { label: trait.label.message, labelMessage: trait.label, compact }
+                    {
+                        label: trait.label.message,
+                        labelMessage: trait.label,
+                        compact,
+                        shortForm: compact,
+                    }
                 )
             ),
             { labelMessage: traitGroup.label, column: index + 1, hideTitle: compact }
@@ -92,7 +97,12 @@ export function compactTraitsGroup(
         traitGroupNodes(groups, id, true).flatMap((column) =>
             column.children.map((child) => ({ ...child, column: column.column }))
         ),
-        { columns: 3, labelMessage: label, collapsible: options.collapsible ?? false }
+        {
+            columns: 3,
+            labelMessage: label,
+            collapsible: options.collapsible ?? false,
+            layout: 'area',
+        }
     );
 }
 

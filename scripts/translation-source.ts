@@ -22,6 +22,9 @@ export interface GlossaryTerm {
     en: string;
     ru: string;
     ruShort?: string;
+    /** Two to four capital letters a rating shows in the brief view (English / Russian). */
+    abbr?: string;
+    ruAbbr?: string;
     note?: string;
     /** UI message ids (`ttgamer.ui.*`) or `catalog:<catalogId>/<entryId>` references. */
     refs: string[];
@@ -295,12 +298,16 @@ export async function loadGlossary(root = GLOSSARY_ROOT): Promise<GlossaryTerm[]
                 refOwners.set(ref, system + '/' + id);
             }
             const ruShort = optionalString(raw, 'ruShort', location);
+            const abbr = optionalString(raw, 'abbr', location);
+            const ruAbbr = optionalString(raw, 'ruAbbr', location);
             const note = optionalString(raw, 'note', location);
             terms.push({
                 id,
                 en: requireString(raw, 'en', location),
                 ru: requireString(raw, 'ru', location),
                 ...(ruShort ? { ruShort } : {}),
+                ...(abbr ? { abbr } : {}),
+                ...(ruAbbr ? { ruAbbr } : {}),
                 ...(note ? { note } : {}),
                 refs: refs as string[],
                 system,

@@ -67,7 +67,11 @@ describe('the WoD 2e engine plugin (spec 012, US7)', () => {
                 )
             );
             // Unresolved bindings would report `binding-unresolved` and fail the test setup.
-            expect(screen.getAllByText('Strength').length).toBeGreaterThan(0);
+            // The brief shows a short label (STR) while the field keeps its full name.
+            expect(
+                screen.queryAllByText('Strength').length +
+                    screen.queryAllByLabelText('Strength').length
+            ).toBeGreaterThan(0);
             expect(screen.queryByText(/Force/)).toBeNull();
         },
         20_000

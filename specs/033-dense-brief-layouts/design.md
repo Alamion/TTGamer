@@ -145,3 +145,13 @@ vehicle, fodder, V5 core (`systems/v5/core/templates.ts`), and Hunter
   help.
 - Dev-server runs of the e2e spec report a React "unique key" warning from `Tracker` for the fodder,
   Hunter, and V5 sheets; it comes from existing code and shows in dev builds only.
+- **US1**: the verifier rule checks the glossary form (`abbr` and `ruAbbr` together, two to four
+  characters); that every rated term of a shipped brief has both is a test
+  (`brief-short-labels.test.ts`) because the verifier does not know which terms briefs rate. The
+  hint of a short cell is the label element itself carrying `data-term-ref`/`-hint`/`-detail` (the
+  sheet's one popover reads them on hover, focus, and tap), so no extra tab stop appears. A short
+  cell does not use `.term-row` (an inline-size container would collapse a chip). Creature and
+  fodder briefs use short labels for their attribute pools (glossary terms); vehicle briefs rate
+  nothing from the glossary and keep full labels. Shipped-page fixtures
+  (`character-templates.pre-007.json`, `star-wars-parity.json`, zod baselines) were regenerated:
+  they differ only by the new `shortForm` and `layout` keys.

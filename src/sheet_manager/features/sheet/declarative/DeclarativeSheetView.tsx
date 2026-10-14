@@ -58,6 +58,7 @@ import { LabeledField } from './LabeledField';
 import { CustomListView } from './listEntries';
 import { localizeTemplate } from './localizeTemplate';
 import { PrimitiveNodeView, SystemListView } from './primitives';
+import { ShortLabelScope } from './ShortLabelScope';
 
 const editor = uiMessages.sheet.templates.editor;
 const rowMessages = uiMessages.sheet.documents.rows;
@@ -144,6 +145,8 @@ function FieldCell({
                         ...(field.termRef ? { termRef: field.termRef } : {}),
                         ...(field.termHint === false ? { termHint: false } : {}),
                         compact: field.compact,
+                        ...(field.shortForm ? { shortForm: true } : {}),
+                        ...(field.shortLabel ? { shortLabel: field.shortLabel } : {}),
                     }}
                     systemId={template.systemId}
                     documentKind={template.documentKind}
@@ -600,14 +603,16 @@ const NodeView = memo(function NodeView({
                 storageKey={node.collapsible && !node.hideTitle ? collapseKey : undefined}
                 defaultExpanded={!(node.collapsible && node.defaultCollapsed)}
             >
-                <ChildrenGrid
-                    parentId={node.id}
-                    nodes={node.children}
-                    pageApi={pageApi}
-                    columns={node.columns}
-                    columnWidths={node.columnWidths}
-                    area={node.layout === 'area'}
-                />
+                <ShortLabelScope nodes={node.children}>
+                    <ChildrenGrid
+                        parentId={node.id}
+                        nodes={node.children}
+                        pageApi={pageApi}
+                        columns={node.columns}
+                        columnWidths={node.columnWidths}
+                        area={node.layout === 'area'}
+                    />
+                </ShortLabelScope>
             </SectionCard>
         );
     }
