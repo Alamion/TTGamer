@@ -468,7 +468,10 @@ export function Tracker({
 
     const lengthControl =
         model.length && model.display !== 'line' && !disabled ? (
-            <span className="inline-flex items-center gap-1 text-xs text-textSecondary">
+            <span
+                key="length"
+                className="inline-flex items-center gap-1 text-xs text-textSecondary"
+            >
                 <ConditionTrackLengthButtons
                     disabled={disabled}
                     control={{
