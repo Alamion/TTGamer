@@ -144,7 +144,7 @@ describe('the documents window (spec 032, US1)', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
         expect(useDocumentStore.getState().entries).toHaveLength(3);
         const dialog = screen.getAllByRole('dialog').at(-1)!;
-        fireEvent.click(within(dialog).getByRole('button', { name: 'Delete selected' }));
+        fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }));
         expect(useDocumentStore.getState().entries.map(({ id }) => id)).toEqual(['Ana', 'Cleo']);
         await waitFor(() => expect(current()).toBe('Cleo'));
     });
@@ -156,7 +156,7 @@ describe('the documents window (spec 032, US1)', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
         fireEvent.click(
             within(screen.getAllByRole('dialog').at(-1)!).getByRole('button', {
-                name: 'Delete selected',
+                name: 'Delete',
             })
         );
         expect(current()).toBeNull();

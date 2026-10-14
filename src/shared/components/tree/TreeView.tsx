@@ -41,6 +41,8 @@ export interface TreeViewProps<T> {
     onEnter?: (item: TreeRowItem<T>) => void;
     onDelete?: (item: TreeRowItem<T>) => void;
     onMenu: (key: string, anchor: { x: number; y: number }) => void;
+    /** First look at a key on a row (F2, Ctrl+Z, ...); returning true means it was handled. */
+    onCommand?: (event: KeyboardEvent<HTMLDivElement>, item: TreeRowItem<T>) => boolean;
     /** Space on a row (export and import modes tick it; the documents window toggles it). */
     onSpace?: (item: TreeRowItem<T>) => void;
     renderRow: (item: TreeRowItem<T>) => TreeRowSlots | undefined;
@@ -72,6 +74,7 @@ export function TreeView<T>({
     onEnter,
     onDelete,
     onMenu,
+    onCommand,
     onSpace,
     renderRow,
     labels,
@@ -138,6 +141,10 @@ export function TreeView<T>({
             event.preventDefault();
             event.stopPropagation();
         };
+        if (onCommand?.(event, current)) {
+            handled();
+            return;
+        }
         const extend: SelectExtend = event.shiftKey ? 'range' : 'none';
         const firstChild = rows[index + 1]?.parentKey === current.key ? rows[index + 1] : undefined;
         switch (event.key) {

@@ -139,26 +139,26 @@ reload, reopen; the same at 375 px.
 
 **Check**: create nested folders, move by drag, menu, and keyboard, rename, delete, undo, reload.
 
-- [ ] T025 [US2] Write `tests/sheet_manager/tree-operations.test.ts`: create, rename, move, reorder
+- [x] T025 [US2] Write `tests/sheet_manager/tree-operations.test.ts`: create, rename, move, reorder
       by `before`, delete, a move into itself or a descendant refused, depth bound 32, batch applied
       then its inverse equals the start, rank renormalization, `describe` lines, the operation
       schema rejects malformed input
-- [ ] T026 [US2] Create `features/documents/operations.ts` (`TreeOperationSchema`, `apply`,
+- [x] T026 [US2] Create `features/documents/operations.ts` (`TreeOperationSchema`, `apply`,
       `describe`, problems) and `features/documents/history.ts` (in-memory 50-step undo and redo of
       inverses); wire `documentStore` folder actions that persist `folders` and entry placement (a
       saved and reloaded tree equals the one before, tested in `tree-operations.test.ts`)
-- [ ] T027 [US2] Add to the window: create, rename, delete of folders; HTML5 drag with the drop
+- [x] T027 [US2] Add to the window: create, rename, delete of folders; HTML5 drag with the drop
       position shown before the drop and a refusal message for illegal targets; the row menu and
       keyboard commands (F2 rename, Delete, "Move to…"); the `MoveToPicker.tsx` folder picker on the
       shared tree; undo and redo buttons and Ctrl+Z (`components/documents/`)
-- [ ] T028 [US2] Folder delete: a confirmation listing counts and the open document, then the delete
+- [x] T028 [US2] Folder delete: a confirmation listing counts and the open document, then the delete
       as one operation; deleting the open document moves the sheet to the nearest remaining one or
       the empty state; sweep behaviour from T003 verified by a test
-- [ ] T029 [US2] Extend `documents-window.test.tsx`: drag onto a folder and between rows,
+- [x] T029 [US2] Extend `documents-window.test.tsx`: drag onto a folder and between rows,
       multi-select move and delete as one step, undo restores order, the open document stays shown
       after a move, a drop on a hidden target is refused, reorder under an active sort is refused
       with the hint
-- [ ] T030 [US2] Add en and ru translations; run `yarn verify` and commit:
+- [x] T030 [US2] Add en and ru translations; run `yarn verify` and commit:
       `feat(documents): folders, moves, and undo (spec 032, US2)`
 
 ## User Story 3 - Find things: search, filter, sort (P3)

@@ -13,16 +13,31 @@ import {
 } from '@site/src/shared/hooks/usePaneSizes';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { useTreeSelection } from '@site/src/shared/hooks/useTreeSelection';
+import { generateId } from '@site/src/shared/utils/random';
 import clsx from 'clsx';
-import { ExternalLink, Trash2 } from 'lucide-react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { ExternalLink, FolderInput, FolderPlus, Pencil, Redo2, Trash2, Undo2 } from 'lucide-react';
+import { type KeyboardEvent, useCallback, useMemo, useRef, useState } from 'react';
 
-import { buildRows, documentKey, type DocumentsNode } from '../../features/documents/rows';
+import {
+    collectDeletion,
+    MAX_TREE_DEPTH,
+    type TreeProblem,
+} from '../../features/documents/operations';
+import { buildRows, type DocumentsNode, folderKey, idOfKey } from '../../features/documents/rows';
+import {
+    redoTreeChange,
+    runTreeChange,
+    undoTreeChange,
+    useDocumentsHistory,
+} from '../../features/documents/treeActions';
 import { useDocumentStore } from '../../store/documentStore';
 import { ConfirmDialog } from '../dialogs/ConfirmDialog';
 import { DocumentDetails } from './DocumentDetails';
 import { DocumentsTree } from './DocumentsTree';
+import { FolderNameDialog } from './FolderNameDialog';
+import { MoveToPicker } from './MoveToPicker';
 import { RejectedFiles } from './RejectedFiles';
+import { useDocumentsDrag } from './useDocumentsDrag';
 
 const labels = uiMessages.sheet.documents.manager;
 
@@ -34,9 +49,15 @@ export interface DocumentsWindowProps {
     onOpenChange: (open: boolean) => void;
 }
 
+type NameDialog =
+    { mode: 'create'; parentId: string | null } | { mode: 'rename'; id: string; name: string };
+
+const iconButton =
+    'inline-flex items-center justify-center rounded-sm border border-border p-1.5 text-textSecondary transition-colors hover:border-secondary hover:bg-secondary/10 hover:text-textPrimary disabled:cursor-not-allowed disabled:opacity-40 [@media(pointer:coarse)]:p-2.5';
+
 /**
  * The documents window (spec 032): the tree of folders and documents on the left, the selected
- * one's details on the right, over the sheet page and not blocking it. On a phone it fills the
+ * rows' details on the right, over the sheet page and not blocking it. On a phone it fills the
  * screen with the tree and the details as two tabs, and opening a document closes it.
  */
 export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
@@ -46,7 +67,7 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
     const folders = useDocumentStore((state) => state.folders);
     const currentDocumentId = useDocumentStore((state) => state.currentDocumentId);
     const setCurrentDocument = useDocumentStore((state) => state.setCurrentDocument);
-    const deleteDocument = useDocumentStore((state) => state.deleteDocument);
+    const history = useDocumentsHistory();
 
     const [openFolders, setOpenFolders] = useLocalStorageState<string[]>(
         'documents-window-open-folders',
@@ -59,7 +80,12 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
 
     const [tab, setTab] = useState<'tree' | 'details'>('tree');
     const [menu, setMenu] = useState<{ key: string; x: number; y: number }>();
+    /** The rows a delete or move acts on, fixed when the action starts. */
+    const [acting, setActing] = useState<string[]>([]);
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [picking, setPicking] = useState(false);
+    const [nameDialog, setNameDialog] = useState<NameDialog>();
+    const [status, setStatus] = useState<{ text: string; alert: boolean }>();
     const treeRegion = useRef<HTMLDivElement>(null);
     const { ref: bodyRef, node: body, width: bodyWidth } = useMeasuredElement<HTMLDivElement>();
     const panes = usePaneSizes('documents-panes', TREE_LIMITS, bodyWidth, TREE_ROOM);
@@ -69,12 +95,8 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
     );
 
     const byKey = useMemo(() => new Map(rows.map((row) => [row.key, row])), [rows]);
-    const selectedDocuments = useMemo(
-        () =>
-            [...selection].flatMap((key) => {
-                const node = byKey.get(key)?.node;
-                return node?.type === 'document' ? [node.entry] : [];
-            }),
+    const selectedItems = useMemo(
+        () => [...selection].flatMap((key) => (byKey.has(key) ? [byKey.get(key)!.node] : [])),
         [selection, byKey]
     );
 
@@ -89,6 +111,15 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
             }),
         [setOpenFolders]
     );
+    const revealFolder = useCallback(
+        (folderId: string | null) => {
+            if (folderId === null) return;
+            setOpenFolders((current) =>
+                current.includes(folderKey(folderId)) ? current : [...current, folderKey(folderId)]
+            );
+        },
+        [setOpenFolders]
+    );
 
     const openDocument = (id: string) => {
         setCurrentDocument(id);
@@ -99,27 +130,194 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
         else if (item.expandable) toggleFolder(item.key, !item.expanded);
     };
 
-    /** Deletes the selected documents; the sheet moves to the nearest document left, or empties. */
-    const deleteSelected = () => {
-        const doomed = new Set(selectedDocuments.map(({ id }) => id));
-        if (doomed.size === 0) return;
-        const order = rows.flatMap(({ node }) => (node.type === 'document' ? [node.entry.id] : []));
-        const first = order.findIndex((id) => doomed.has(id));
+    const problemText = (problem: TreeProblem | undefined) => {
+        if (!problem) return translate(labels.refused.generic);
+        if (problem.code === 'cycle') return translate(labels.refused.cycle);
+        if (problem.code === 'depth') {
+            return translate(labels.refused.depth, { max: MAX_TREE_DEPTH });
+        }
+        if (problem.code === 'missing') return translate(labels.refused.missing);
+        return translate(labels.refused.generic);
+    };
+
+    /** Runs one named change; what was refused is said at once, never silently dropped. */
+    const change = (
+        name: keyof typeof labels.history,
+        operations: Parameters<typeof runTreeChange>[1]
+    ) => {
+        const result = runTreeChange(translate(labels.history[name]), operations);
+        const problem = result.problems[0];
+        if (problem) setStatus({ text: problemText(problem), alert: true });
+        return result;
+    };
+
+    const moveRows = (ids: string[], parentId: string | null, before: string | null) => {
+        const result = change('move', [{ op: 'move', ids, parentId, before }]);
+        if (result.inverse.length > 0) {
+            revealFolder(parentId);
+            setStatus({ text: plural(labels.announce.moved, ids.length), alert: false });
+        }
+    };
+
+    const drag = useDocumentsDrag({ rows, folders, selection, onDrop: moveRows });
+
+    /** The rows a menu or a button acts on: the selection when the row is in it, else the row. */
+    const keysFor = (key: string) => (selection.has(key) ? [...selection] : [key]);
+    const startDelete = (keys: string[]) => {
+        if (keys.length === 0) return;
+        setActing(keys);
+        setConfirmDelete(true);
+    };
+    const startMove = (keys: string[]) => {
+        if (keys.length === 0) return;
+        setActing(keys);
+        setPicking(true);
+    };
+    const startCreate = () => {
+        const [only] = selectedItems;
+        const parentId =
+            selectedItems.length === 1 && only
+                ? only.type === 'folder'
+                    ? only.folder.id
+                    : only.entry.parentId
+                : null;
+        setNameDialog({ mode: 'create', parentId });
+    };
+    const startRename = (folderId: string, name: string) =>
+        setNameDialog({ mode: 'rename', id: folderId, name });
+
+    const submitName = (name: string) => {
+        if (!nameDialog) return;
+        if (nameDialog.mode === 'rename') {
+            change('rename', [{ op: 'rename', id: nameDialog.id, name }]);
+            return;
+        }
+        const id = generateId();
+        const result = change('createFolder', [
+            { op: 'createFolder', id, name, parentId: nameDialog.parentId },
+        ]);
+        if (result.added.length > 0) {
+            revealFolder(nameDialog.parentId);
+            reset([folderKey(id)]);
+        }
+    };
+
+    const doomed = useMemo(
+        () => collectDeletion({ entries, folders }, acting.map(idOfKey)),
+        [entries, folders, acting]
+    );
+    const openWillClose =
+        currentDocumentId !== null && doomed.documentIds.includes(currentDocumentId);
+
+    /** Deletes the acting rows; the sheet moves to the nearest document left, or empties. */
+    const deleteActing = () => {
+        const gone = new Set(doomed.documentIds);
+        const order = entries.map(({ id }) => id);
+        const visible = rows.flatMap(({ node }) =>
+            node.type === 'document' ? [node.entry.id] : []
+        );
+        const first = visible.findIndex((id) => gone.has(id));
         const survivor =
-            order.slice(first).find((id) => !doomed.has(id)) ??
-            order
-                .slice(0, first)
+            visible.slice(Math.max(first, 0)).find((id) => !gone.has(id)) ??
+            visible
+                .slice(0, Math.max(first, 0))
                 .reverse()
-                .find((id) => !doomed.has(id));
-        const wasOpen = currentDocumentId !== null && doomed.has(currentDocumentId);
-        doomed.forEach(deleteDocument);
+                .find((id) => !gone.has(id)) ??
+            order.find((id) => !gone.has(id));
+        const wasOpen = openWillClose;
+        change('delete', [{ op: 'delete', ids: acting.map(idOfKey) }]);
         if (wasOpen) setCurrentDocument(survivor ?? null);
         reset([]);
         setConfirmDelete(false);
     };
 
+    const undo = () => {
+        const name = history.undoLabel;
+        if (name && undoTreeChange()) {
+            setStatus({ text: translate(labels.announce.undone, { name }), alert: false });
+        }
+    };
+    const redo = () => {
+        const name = history.redoLabel;
+        if (name && redoTreeChange()) {
+            setStatus({ text: translate(labels.announce.redone, { name }), alert: false });
+        }
+    };
+
+    const onCommand = (event: KeyboardEvent<HTMLDivElement>, item: TreeRowItem<DocumentsNode>) => {
+        const modifier = event.ctrlKey || event.metaKey;
+        if (modifier && !event.altKey && event.key.toLowerCase() === 'z') {
+            if (event.shiftKey) redo();
+            else undo();
+            return true;
+        }
+        if (modifier && !event.altKey && event.key.toLowerCase() === 'y') {
+            redo();
+            return true;
+        }
+        if (event.key === 'F2' && item.node.type === 'folder') {
+            startRename(item.node.folder.id, item.node.folder.name);
+            return true;
+        }
+        return false;
+    };
+
+    const selectedKeys = useMemo(
+        () => [...selection].filter((key) => byKey.has(key)),
+        [selection, byKey]
+    );
+    const movingFolders = useMemo(
+        () => new Set(acting.filter((key) => key.startsWith('folder:')).map(idOfKey)),
+        [acting]
+    );
+
     const menuItem = menu ? byKey.get(menu.key) : undefined;
-    const menuDocument = menuItem?.node.type === 'document' ? menuItem.node.entry : undefined;
+    const menuActions = menuItem
+        ? menuItem.node.type === 'document'
+            ? [
+                  { id: 'open', label: translate(labels.details.open), icon: ExternalLink },
+                  { id: 'move', label: translate(labels.details.move), icon: FolderInput },
+                  {
+                      id: 'delete',
+                      label: translate(labels.details.delete),
+                      icon: Trash2,
+                      danger: true,
+                  },
+              ]
+            : [
+                  { id: 'rename', label: translate(labels.details.rename), icon: Pencil },
+                  { id: 'newFolder', label: translate(labels.toolbar.newFolder), icon: FolderPlus },
+                  { id: 'move', label: translate(labels.details.move), icon: FolderInput },
+                  {
+                      id: 'delete',
+                      label: translate(labels.details.delete),
+                      icon: Trash2,
+                      danger: true,
+                  },
+              ]
+        : [];
+
+    const onMenuAction = (id: string) => {
+        if (!menuItem) return;
+        const keys = keysFor(menuItem.key);
+        if (id === 'open' && menuItem.node.type === 'document')
+            openDocument(menuItem.node.entry.id);
+        else if (id === 'rename' && menuItem.node.type === 'folder') {
+            startRename(menuItem.node.folder.id, menuItem.node.folder.name);
+        } else if (id === 'newFolder' && menuItem.node.type === 'folder') {
+            setNameDialog({ mode: 'create', parentId: menuItem.node.folder.id });
+        } else if (id === 'move') startMove(keys);
+        else if (id === 'delete') startDelete(keys);
+    };
+
+    const deleteWhat = [
+        ...(doomed.folderIds.length > 0
+            ? [plural(labels.counts.folders, doomed.folderIds.length)]
+            : []),
+        ...(doomed.documentIds.length > 0
+            ? [plural(labels.counts.documents, doomed.documentIds.length)]
+            : []),
+    ].join(translate(uiMessages.sheet.documents.manager.and));
 
     return (
         <>
@@ -159,37 +357,96 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                     className="flex min-h-0 flex-1"
                 >
                     <div
-                        ref={treeRegion}
                         className={clsx(
-                            'min-h-0 flex-1 overflow-y-auto p-2 md:block md:w-[var(--tree)] md:flex-none',
-                            tab === 'tree' ? 'block' : 'hidden'
+                            'min-h-0 min-w-0 flex-1 flex-col md:flex md:w-[var(--tree)] md:flex-none',
+                            tab === 'tree' ? 'flex' : 'hidden'
                         )}
                     >
-                        {rows.length === 0 ? (
-                            <p className="p-4 text-sm text-textSecondary">
-                                {translate(labels.empty)}
-                            </p>
-                        ) : (
-                            <DocumentsTree
-                                rows={rows}
-                                focused={focused}
-                                selection={selection}
-                                currentDocumentId={currentDocumentId}
-                                onSelect={select}
-                                onRowClick={(item) => {
-                                    if (item.node.type === 'document') {
-                                        openDocument(item.node.entry.id);
-                                    }
-                                }}
-                                onToggle={toggleFolder}
-                                onEnter={activate}
-                                onDelete={() =>
-                                    selectedDocuments.length > 0 && setConfirmDelete(true)
+                        <div
+                            role="toolbar"
+                            aria-label={translate(labels.toolbar.label)}
+                            className="flex items-center gap-1.5 border-b border-border px-2 py-1.5"
+                        >
+                            <button
+                                type="button"
+                                onClick={startCreate}
+                                aria-label={translate(labels.toolbar.newFolder)}
+                                title={translate(labels.toolbar.newFolder)}
+                                className={iconButton}
+                            >
+                                <FolderPlus className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={undo}
+                                disabled={history.undoLabel === null}
+                                aria-label={
+                                    history.undoLabel
+                                        ? translate(labels.toolbar.undoNamed, {
+                                              name: history.undoLabel,
+                                          })
+                                        : translate(labels.toolbar.undo)
                                 }
-                                onMenu={(key, anchor) => setMenu({ key, ...anchor })}
-                                scrollRef={treeRegion}
-                            />
-                        )}
+                                title={translate(labels.toolbar.undo)}
+                                className={iconButton}
+                            >
+                                <Undo2 className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={redo}
+                                disabled={history.redoLabel === null}
+                                aria-label={
+                                    history.redoLabel
+                                        ? translate(labels.toolbar.redoNamed, {
+                                              name: history.redoLabel,
+                                          })
+                                        : translate(labels.toolbar.redo)
+                                }
+                                title={translate(labels.toolbar.redo)}
+                                className={iconButton}
+                            >
+                                <Redo2 className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                        </div>
+                        <div
+                            role={drag.refused || status?.alert ? 'alert' : 'status'}
+                            className={clsx(
+                                'px-2 text-xs',
+                                (drag.refused || status?.alert) && 'py-1 text-error',
+                                !drag.refused && !status?.alert && 'text-textSecondary',
+                                !drag.refused && !status && 'sr-only'
+                            )}
+                        >
+                            {drag.refused ? translate(labels.refused.cycle) : status?.text}
+                        </div>
+                        <div ref={treeRegion} className="min-h-0 flex-1 overflow-y-auto p-2">
+                            {rows.length === 0 ? (
+                                <p className="p-4 text-sm text-textSecondary">
+                                    {translate(labels.empty)}
+                                </p>
+                            ) : (
+                                <DocumentsTree
+                                    rows={rows}
+                                    focused={focused}
+                                    selection={selection}
+                                    currentDocumentId={currentDocumentId}
+                                    onSelect={select}
+                                    onRowClick={(item) => {
+                                        if (item.node.type === 'document') {
+                                            openDocument(item.node.entry.id);
+                                        }
+                                    }}
+                                    onToggle={toggleFolder}
+                                    onEnter={activate}
+                                    onDelete={() => startDelete(selectedKeys)}
+                                    onMenu={(key, anchor) => setMenu({ key, ...anchor })}
+                                    onCommand={onCommand}
+                                    dragFor={drag.dragFor}
+                                    scrollRef={treeRegion}
+                                />
+                            )}
+                        </div>
                     </div>
                     <Splitter
                         label={translate(labels.resizeTree)}
@@ -208,54 +465,73 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                         )}
                     >
                         <DocumentDetails
-                            documents={selectedDocuments}
+                            items={selectedItems}
+                            folders={folders}
+                            entries={entries}
                             onOpen={(entry) => openDocument(entry.id)}
-                            onDelete={() => setConfirmDelete(true)}
+                            onRename={(folder) => startRename(folder.id, folder.name)}
+                            onMove={() => startMove(selectedKeys)}
+                            onDelete={() => startDelete(selectedKeys)}
                         />
                     </div>
                 </div>
                 <RejectedFiles />
             </FloatingWindow>
-            {open && menu && menuDocument && (
+            {open && menu && menuItem && (
                 <TreeContextMenu
-                    label={translate(labels.rowActions, { name: menuItem?.name ?? '' })}
+                    label={translate(labels.rowActions, { name: menuItem.name })}
                     container={null}
                     anchor={menu}
-                    actions={[
-                        {
-                            id: 'open',
-                            label: translate(labels.details.open),
-                            icon: ExternalLink,
-                        },
-                        {
-                            id: 'delete',
-                            label: translate(labels.details.delete),
-                            icon: Trash2,
-                            danger: true,
-                        },
-                    ]}
-                    onAction={(id) => {
-                        if (id === 'open') openDocument(menuDocument.id);
-                        else {
-                            if (!selection.has(documentKey(menuDocument.id))) {
-                                reset([documentKey(menuDocument.id)]);
-                            }
-                            setConfirmDelete(true);
-                        }
-                    }}
+                    actions={menuActions}
+                    onAction={onMenuAction}
                     onClose={() => setMenu(undefined)}
                 />
             )}
             <ConfirmDialog
                 open={confirmDelete}
                 onOpenChange={setConfirmDelete}
-                onConfirm={deleteSelected}
+                onConfirm={deleteActing}
                 title={translate(labels.deleteTitle)}
-                description={plural(labels.deleteDescription, selectedDocuments.length)}
+                description={[
+                    translate(labels.deleteDescription, { what: deleteWhat }),
+                    ...(openWillClose ? [translate(labels.deleteOpenNote)] : []),
+                ].join('\n')}
                 confirmLabel={translate(labels.deleteSelected)}
                 cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}
                 variant="danger"
             />
+            {nameDialog && (
+                <FolderNameDialog
+                    open
+                    onOpenChange={(next) => !next && setNameDialog(undefined)}
+                    title={translate(
+                        nameDialog.mode === 'create'
+                            ? labels.folder.createTitle
+                            : labels.folder.renameTitle
+                    )}
+                    nameLabel={translate(labels.folder.name)}
+                    initialName={
+                        nameDialog.mode === 'rename'
+                            ? nameDialog.name
+                            : translate(labels.folder.defaultName)
+                    }
+                    confirmLabel={translate(
+                        nameDialog.mode === 'create' ? labels.folder.create : labels.folder.rename
+                    )}
+                    cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}
+                    onSubmit={submitName}
+                />
+            )}
+            {picking && (
+                <MoveToPicker
+                    open
+                    onOpenChange={(next) => !next && setPicking(false)}
+                    folders={folders}
+                    moving={movingFolders}
+                    title={plural(labels.move.title, acting.length)}
+                    onPick={(parentId) => moveRows(acting.map(idOfKey), parentId, null)}
+                />
+            )}
         </>
     );
 }

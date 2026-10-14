@@ -1,4 +1,5 @@
 import { describeError, reportSheetIssue } from '../diagnostics';
+import { repairFolders } from '../features/documents/operations';
 import { deletePortrait } from '../persistence/portraitStorage';
 import {
     countCleanLaunch,
@@ -49,6 +50,20 @@ export async function reconcileIndex(api: BootApi): Promise<number> {
     return rebuilt;
 }
 
+/** Cuts a loop in the stored folders, which would hide those folders from the tree. */
+export function repairFolderLoops(api: BootApi): number {
+    const { folders } = api.getState();
+    const { folders: repaired, repaired: count } = repairFolders(folders, Date.now());
+    if (count === 0) return 0;
+    api.setState({ folders: repaired });
+    reportSheetIssue({
+        code: 'document-folders-repaired',
+        message: 'Stored folders formed a loop; the loop was cut',
+        details: { folders: count },
+    });
+    return count;
+}
+
 /** Removes the records (and portraits) of deleted documents that were not restored. */
 export async function purgeDeleted(api: BootApi): Promise<void> {
     const { pendingPurge } = api.getState();
@@ -93,6 +108,7 @@ export async function bootDocuments(api: BootApi): Promise<void> {
                 api.setState({ currentDocumentId: null });
             }
         }
+        repairFolderLoops(api);
         await reconcileIndex(api);
         await purgeDeleted(api);
         if (opened) await countCleanLaunch();

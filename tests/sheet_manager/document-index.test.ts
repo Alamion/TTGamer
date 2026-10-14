@@ -147,6 +147,31 @@ describe('two tabs saving the index (spec 032, D13)', () => {
         expect(pending).toEqual(['gone2', 'gone']);
     });
 
+    it('merges folders too: a deleted folder stays deleted, a restored one comes back', () => {
+        const folder = (id: string, updatedAt = 1) => ({
+            id,
+            name: id,
+            parentId: null,
+            rank: 1,
+            createdAt: '2026-01-01T00:00:00.000Z',
+            changedAt: '2026-01-01T00:00:00.000Z',
+            updatedAt,
+        });
+        const withFolders = (folders: unknown[], pendingPurge: string[] = []) =>
+            JSON.stringify({ state: { entries: [], folders, pendingPurge }, version: 5 });
+        const foldersOf = (merged: string) =>
+            (JSON.parse(merged) as { state: { folders: Array<{ id: string }> } }).state.folders.map(
+                ({ id }) => id
+            );
+        const stored = withFolders([folder('kept'), folder('gone'), folder('other-tab')], ['back']);
+        const next = withFolders([folder('kept'), folder('back', 4)], ['gone']);
+        expect(foldersOf(mergeStoredValue(stored, next, new Set()))).toEqual([
+            'kept',
+            'back',
+            'other-tab',
+        ]);
+    });
+
     it('does not bring back a tombstone already carried out', () => {
         const stored = value([], ['done']);
         const merged = mergeStoredValue(stored, value([]), new Set(['done']));

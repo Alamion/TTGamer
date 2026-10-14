@@ -48,6 +48,7 @@ export type SheetIssueCode =
     | 'document-index-rebuilt'
     /** A deleted document's record could not be removed yet. */
     | 'document-purge-failed'
+    | 'document-folders-repaired'
     | 'document-boot-failed';
 
 export interface SheetIssue {

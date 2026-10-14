@@ -5,6 +5,11 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { describeError, reportSheetIssue } from '../diagnostics';
 import {
+    applyOperations,
+    type TreeOperation,
+    type TreeResult,
+} from '../features/documents/operations';
+import {
     applyTemplateValueWrites,
     collectTableBlocks,
 } from '../features/sheet/data/templateValueWrites';
@@ -135,6 +140,11 @@ export interface DocumentStoreState {
         updater: (values: TemplatePageValues) => TemplatePageValues
     ) => void;
     deleteDocument: (id: string) => void;
+    /**
+     * Runs tree operations (folders, moves, deletes) on the index in one write; nothing is
+     * written when they change nothing. Deleted ids wait in `pendingPurge`, restored ones leave it.
+     */
+    applyTreeOperations: (operations: readonly TreeOperation[]) => TreeResult;
     importDocument: (document: UnknownDocumentEnvelope) => void;
     /**
      * Keeps an imported file that failed validation in the bounded recovery collection; a known
@@ -562,6 +572,28 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
         });
     },
 
+    applyTreeOperations: (operations) => {
+        const { entries, folders, documents, pendingPurge, currentDocumentId } = get();
+        const result = applyOperations({ entries, folders }, operations);
+        if (result.inverse.length === 0) return result;
+        const removed = new Set(result.removed);
+        const added = new Set(result.added);
+        set({
+            entries: result.state.entries,
+            folders: result.state.folders,
+            documents: documents.filter(({ id }) => !removed.has(id)),
+            pendingPurge: [
+                ...pendingPurge.filter((id) => !added.has(id)),
+                ...result.removed.filter((id) => !pendingPurge.includes(id)),
+            ],
+            currentDocumentId:
+                currentDocumentId !== null && removed.has(currentDocumentId)
+                    ? null
+                    : currentDocumentId,
+        });
+        return result;
+    },
+
     retainImportForRecovery: (entry, error, id) => {
         const recoveryEntries = [...get().recoveryEntries];
         const record = newRecoveryRecord(entry, describeError(error), id);
@@ -673,7 +705,7 @@ function mergePersisted(persisted: unknown, current: DocumentStoreState): Docume
     return {
         ...current,
         entries: mergeById(entries, current.entries, new Set(current.pendingPurge)),
-        folders: mergeById(folders, current.folders),
+        folders: mergeById(folders, current.folders, new Set(current.pendingPurge)),
         pendingPurge,
         recoveryEntries: Array.isArray(persisted.recoveryEntries)
             ? persisted.recoveryEntries.slice(0, MAX_RECOVERY_ENTRIES)

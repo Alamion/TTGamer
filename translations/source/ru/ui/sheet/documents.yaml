@@ -49,11 +49,18 @@ importSummary:
 manager:
     title: Документы
     empty: Документов пока нет. Создайте первый документ.
-    deleteSelected: Удалить выбранные
-    deleteTitle: Удалить документы
-    deleteDescription:
-        message: Удалить {count} документ? Это действие нельзя отменить.|Удалить {count} документа? Это действие нельзя отменить.|Удалить {count} документов? Это действие нельзя отменить.
-        plural: true
+    deleteSelected: Удалить
+    deleteTitle: Удалить из дерева
+    deleteDescription: Удалить {what}? Это можно отменить, пока вы не перезагрузили страницу.
+    deleteOpenNote: Среди них открытый документ; лист переключится на другой.
+    and: ' и '
+    counts:
+        folders:
+            message: '{count} папку|{count} папки|{count} папок'
+            plural: true
+        documents:
+            message: '{count} документ|{count} документа|{count} документов'
+            plural: true
     close: Закрыть окно документов
     rejectedCount: 'Отклонённых файлов сохранено для восстановления: {count}'
     rejectedHint: Скачайте их, чтобы исправить или отправить, и импортируйте файл снова; файлы, которые теперь импортируются, удаляются отсюда.
@@ -72,7 +79,7 @@ manager:
     current: текущий
     rowActions: 'Действия для {name}'
     details:
-        nothing: Выберите документ, чтобы увидеть сведения о нём.
+        nothing: Выберите документ или папку, чтобы увидеть сведения о них.
         kind: Вид
         system: Игровая система
         setting: Сеттинг
@@ -83,10 +90,50 @@ manager:
         top: Верхний уровень
         open: Открыть
         delete: Удалить
+        rename: Переименовать
+        move: Переместить в…
+        contents: Содержимое
         selected:
             message: 'Выбран {count} элемент|Выбрано {count} элемента|Выбрано {count} элементов'
             plural: true
         hint: Ctrl или Cmd с щелчком добавляет или убирает строку, Shift с щелчком выбирает диапазон. Щелчок по документу открывает его.
+    toolbar:
+        label: Действия с деревом
+        newFolder: Новая папка
+        undo: Отменить
+        redo: Повторить
+        undoNamed: 'Отменить: {name}'
+        redoNamed: 'Повторить: {name}'
+    folder:
+        createTitle: Новая папка
+        renameTitle: Переименовать папку
+        name: Название папки
+        defaultName: Новая папка
+        create: Создать
+        rename: Переименовать
+    move:
+        title:
+            message: Переместить {count} элемент в…|Переместить {count} элемента в…|Переместить {count} элементов в…
+            plural: true
+        treeLabel: Папки
+        top: Верхний уровень
+        confirm: Переместить сюда
+    history:
+        createFolder: Создание папки
+        rename: Переименование папки
+        move: Перемещение
+        delete: Удаление
+    refused:
+        cycle: Папку нельзя поместить в саму себя или в папку внутри неё.
+        depth: Папки можно вкладывать не глубже {max} уровней.
+        missing: Этого места больше нет.
+        generic: Изменение не удалось.
+    announce:
+        moved:
+            message: 'Перемещён {count} элемент|Перемещено {count} элемента|Перемещено {count} элементов'
+            plural: true
+        undone: 'Отменено: {name}'
+        redone: 'Повторено: {name}'
 examples:
     jaxVorn: Джакс Ворн (пример)
     wampa: Вампа (пример)

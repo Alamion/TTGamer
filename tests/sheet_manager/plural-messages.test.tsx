@@ -54,8 +54,8 @@ describe('plural messages', () => {
     });
 
     it.each([
-        [1, 'delete 1 document?'],
-        [5, 'delete 5 documents?'],
+        [1, 'Delete 1 document?'],
+        [5, 'Delete 5 documents?'],
     ])('en: delete description for %i documents', (count, expected) => {
         expect(deleteDescription(count)).toContain(expected);
     });

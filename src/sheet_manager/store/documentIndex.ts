@@ -199,7 +199,8 @@ export function mergeStoredValue(
         const nextState = after.state;
         if (!isRecord(storedState) || !isRecord(nextState)) return next;
         const nextEntries = parseEntries(nextState.entries).entries;
-        const held = new Set(nextEntries.map(({ id }) => id));
+        const nextFolders = parseFolders(nextState.folders).folders;
+        const held = new Set([...nextEntries, ...nextFolders].map(({ id }) => id));
         const pendingHere = idList(nextState.pendingPurge);
         const carried = idList(storedState.pendingPurge).filter(
             (id) => !purged.has(id) && !held.has(id)
@@ -210,7 +211,15 @@ export function mergeStoredValue(
             parseEntries(storedState.entries).entries,
             new Set(pendingPurge)
         );
-        return JSON.stringify({ ...after, state: { ...nextState, entries, pendingPurge } });
+        const folders = mergeById(
+            nextFolders,
+            parseFolders(storedState.folders).folders,
+            new Set(pendingPurge)
+        );
+        return JSON.stringify({
+            ...after,
+            state: { ...nextState, entries, folders, pendingPurge },
+        });
     } catch {
         return next;
     }

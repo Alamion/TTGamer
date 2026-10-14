@@ -12,8 +12,10 @@ export interface TreeRowDrag {
     onDragOver?: (event: DragEvent<HTMLDivElement>) => void;
     onDragLeave?: (event: DragEvent<HTMLDivElement>) => void;
     onDrop?: (event: DragEvent<HTMLDivElement>) => void;
-    /** A dragged row may be dropped here. */
+    /** A dragged row would land inside this row. */
     over?: boolean;
+    /** A dragged row would land just above or below this row. */
+    edge?: 'before' | 'after';
 }
 
 /** What a tree's owner puts into a row besides its name. */
@@ -127,6 +129,8 @@ export const TreeRowShell = memo(function TreeRowShell({
                     ? 'border-primary/60 bg-primary/10 text-textPrimary'
                     : 'border-transparent text-textPrimary hover:bg-secondary/10',
                 drag?.over && 'border-primary bg-primary/5',
+                drag?.edge === 'before' && 'border-t-2 border-t-primary',
+                drag?.edge === 'after' && 'border-b-2 border-b-primary',
                 flash && 'bg-secondary/20',
                 dimmed && 'opacity-60',
                 drag?.draggable && 'active:cursor-grabbing'

@@ -49,11 +49,18 @@ importSummary:
 manager:
     title: Documents
     empty: No documents yet. Create one to get started.
-    deleteSelected: Delete selected
-    deleteTitle: Delete documents
-    deleteDescription:
-        message: Are you sure you want to delete {count} document? This cannot be undone.|Are you sure you want to delete {count} documents? This cannot be undone.
-        plural: true
+    deleteSelected: Delete
+    deleteTitle: Delete from the tree
+    deleteDescription: Delete {what}? You can undo this until you reload the page.
+    deleteOpenNote: The open document is among them; the sheet will switch to another one.
+    and: ' and '
+    counts:
+        folders:
+            message: '{count} folder|{count} folders'
+            plural: true
+        documents:
+            message: '{count} document|{count} documents'
+            plural: true
     close: Close the documents window
     rejectedCount: 'Rejected files kept for recovery: {count}'
     rejectedHint: Download them to repair or send them, then import the file again; files that now import are removed from here.
@@ -72,7 +79,7 @@ manager:
     current: current
     rowActions: 'Actions for {name}'
     details:
-        nothing: Select a document to see its details.
+        nothing: Select a document or a folder to see its details.
         kind: Kind
         system: Game system
         setting: Setting
@@ -83,10 +90,50 @@ manager:
         top: Top level
         open: Open
         delete: Delete
+        rename: Rename
+        move: Move to…
+        contents: Contents
         selected:
             message: '{count} item selected|{count} items selected'
             plural: true
         hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range. A click on a document opens it.
+    toolbar:
+        label: Tree actions
+        newFolder: New folder
+        undo: Undo
+        redo: Redo
+        undoNamed: 'Undo: {name}'
+        redoNamed: 'Redo: {name}'
+    folder:
+        createTitle: New folder
+        renameTitle: Rename folder
+        name: Folder name
+        defaultName: New folder
+        create: Create
+        rename: Rename
+    move:
+        title:
+            message: Move {count} item to…|Move {count} items to…
+            plural: true
+        treeLabel: Folders
+        top: Top level
+        confirm: Move here
+    history:
+        createFolder: Create folder
+        rename: Rename folder
+        move: Move
+        delete: Delete
+    refused:
+        cycle: A folder cannot go into itself or into a folder inside it.
+        depth: Folders can be nested only {max} levels deep.
+        missing: That place no longer exists.
+        generic: The change could not be made.
+    announce:
+        moved:
+            message: Moved {count} item|Moved {count} items
+            plural: true
+        undone: 'Undone: {name}'
+        redone: 'Redone: {name}'
 examples:
     jaxVorn: Jax Vorn (example)
     wampa: Wampa (example)

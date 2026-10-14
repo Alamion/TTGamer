@@ -232,3 +232,35 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
 - **US1, deleting**: the confirmation lists the count; deleting the open document opens the next
   document in the list (else the one before), or empties the sheet.
 - **Bundle size after US1**: 23955076 bytes of JS and 178825 of CSS (master 23,510,686 and 178,097).
+- **US2, operations** (`features/documents/operations.ts`): five JSON operations, not four. The
+  fifth, `restore`, puts records back as they were; it is the one inverse every other operation
+  uses, built from what really changed (so a batch, however mixed, is undone by `restore` plus a
+  `delete` of what it created). `applyOperations` is pure, returns
+  `{ state, inverse, problems, removed, added }`, and an operation with a problem changes nothing
+  for the rows it names while the rest of the batch applies. `applyTreeOperations` in the store
+  writes entries, folders, and tombstones in one `set`. A document is not renamed by an operation
+  (its name is its sheet's); a document's changed time does not move when it is only moved.
+- **US2, folders in the other tab merge**: deleted folder ids share `pendingPurge` with documents
+  (ids are unique across both; the sweep finds no record for a folder and just forgets the id), and
+  `mergeStoredValue` merges `folders` like entries. A loop in stored folders is cut at boot
+  (`repairFolders`, issue `document-folders-repaired`).
+- **US2, drop position**: the pointer height inside a row decides it. A folder: top quarter before,
+  bottom quarter after, the middle into it. A document: upper half before, lower half after. A
+  document dropped before a folder goes to the top of the documents (folders always list first).
+  `TreeRowDrag` got `edge: 'before' | 'after'` for the line. Refused places (inside a dragged
+  folder, onto a dragged row) show an alert and give no drop effect.
+- **US2, name dialog and picker**: folder names are asked in a small dialog (`FolderNameDialog`,
+  create and rename), not inline in the row, so the phone keyboard and the tree's own keys do not
+  fight. "Move to…" is a dialog with the shared tree over folders only (`MoveToPicker`, rows from
+  `buildFolderRows`; the moved folders and what they hold are not offered).
+- **US2, shared tree**: `TreeView` takes `onCommand(event, item)`, a first look at keys the owner
+  handles (F2, Ctrl+Z); the documents tree uses it, the library does not.
+- **Undo, redo**: `OperationHistory` (50 steps, in memory) with `runTreeChange`/`undoTreeChange`/
+  `redoTreeChange` in `treeActions.ts`; the toolbar buttons name the step ("Undo: Move") and
+  Ctrl/Cmd+Z, Shift+Ctrl/Cmd+Z, Ctrl/Cmd+Y work with focus in the tree. Undoing a delete does not
+  reopen the document the sheet had moved away from.
+- **Known gap**: a right click on a row of a multi-selection selects that row alone (the shared tree
+  selects on `onContext`); the row's button menu keeps the selection.
+
+- **Bundle size after US2**: 24,256,804 bytes of JS and 179,307 of CSS (master 23,510,686 and
+  178,097).

@@ -1,9 +1,9 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import type { SelectExtend } from '@site/src/shared/components/tree/TreeRowShell';
+import type { SelectExtend, TreeRowDrag } from '@site/src/shared/components/tree/TreeRowShell';
 import { type TreeRowItem, TreeView } from '@site/src/shared/components/tree/TreeView';
 import { FileText, Folder, FolderOpen } from 'lucide-react';
-import type { RefObject } from 'react';
+import type { KeyboardEvent, RefObject } from 'react';
 
 import type { DocumentsNode } from '../../features/documents/rows';
 
@@ -23,6 +23,9 @@ export interface DocumentsTreeProps {
     onEnter: (item: TreeRowItem<DocumentsNode>) => void;
     onDelete: (item: TreeRowItem<DocumentsNode>) => void;
     onMenu: (key: string, anchor: { x: number; y: number }) => void;
+    /** Keys the window handles itself (F2, Ctrl+Z); true when handled. */
+    onCommand: (event: KeyboardEvent<HTMLDivElement>, item: TreeRowItem<DocumentsNode>) => boolean;
+    dragFor: (item: TreeRowItem<DocumentsNode>) => TreeRowDrag;
     scrollRef: RefObject<HTMLElement | null>;
 }
 
@@ -40,6 +43,8 @@ export function DocumentsTree({
     onEnter,
     onDelete,
     onMenu,
+    onCommand,
+    dragFor,
     scrollRef,
 }: DocumentsTreeProps) {
     const byKey = new Map(rows.map((row) => [row.key, row]));
@@ -58,27 +63,31 @@ export function DocumentsTree({
             onEnter={onEnter}
             onDelete={onDelete}
             onMenu={onMenu}
+            onCommand={onCommand}
             onSpace={(item) => onSelect(item.key, 'toggle')}
-            renderRow={({ node, expanded }) =>
-                node.type === 'folder'
+            renderRow={(item) => {
+                const { node, expanded } = item;
+                const drag = dragFor(item);
+                return node.type === 'folder'
                     ? {
                           icon: expanded ? (
                               <FolderOpen className={iconClass} aria-hidden="true" />
                           ) : (
                               <Folder className={iconClass} aria-hidden="true" />
                           ),
-                          menu: false,
+                          drag,
                       }
                     : {
                           icon: <FileText className={iconClass} aria-hidden="true" />,
+                          drag,
                           badges:
                               node.entry.id === currentDocumentId ? (
                                   <span className="shrink-0 rounded-sm bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
                                       {translate(labels.current)}
                                   </span>
                               ) : undefined,
-                      }
-            }
+                      };
+            }}
             labels={{
                 toggle: (name, expanded) =>
                     translate(expanded ? labels.collapse : labels.expand, { name }),
