@@ -131,3 +131,17 @@ vehicle, fodder, V5 core (`systems/v5/core/templates.ts`), and Hunter
    storybook match; save, reopen a document on the page.
 6. Open a page saved before the change and a full sheet → unchanged.
 7. Touch emulation: every edit control reacts to a tap at the edge of its cell (≥32 px).
+
+## Implementation notes
+
+- **Foundation**: `shortForm`, `shortLabel`, and group `layout` are plain optional keys (absent
+  means off/`window`), not keys with defaults, so a page saved before the change parses to exactly
+  the same tree. The editor factories needed no change for the same reason. The sheet root carries
+  `data-template-root` (the template id) so tests measure the sheet itself.
+- **Baseline**: heights recorded in `tests-e2e/smoke/brief-baseline.ts` (dev server, 375 and 1280).
+  The WoD 2e character brief is not in that list yet (added with US1).
+- The area stack is simpler than D3 said: rows when narrow, wrapping chips from `@md/brief`; the
+  multi-column list (`column-width`) is not needed because the chips take over before columns would
+  help.
+- Dev-server runs of the e2e spec report a React "unique key" warning from `Tracker` for the fodder,
+  Hunter, and V5 sheets; it comes from existing code and shows in dev builds only.

@@ -13,30 +13,30 @@ rhythm for the other compact forms), US4 (editor, storybook, guide). Paths are u
 **Check**: saved pages and full sheets parse and draw as before; a group with `layout: 'area'` draws
 three columns from the container width.
 
-- [ ] T001a Before any code change, record the baseline in `tests-e2e/smoke/brief-layout.spec.ts`:
+- [x] T001a Before any code change, record the baseline in `tests-e2e/smoke/brief-layout.spec.ts`:
       the height of every shipped brief (Star Wars character and droid, creature, vehicle, fodder,
       V5 core, Hunter) and of the full sheets at 375 and 1280 px, as constants in
       `tests-e2e/smoke/brief-baseline.ts`; commit with the story's first commit
-- [ ] T001 Extend `tests/sheet_manager/template-schema.test.ts`: a rating field without the new keys
+- [x] T001 Extend `tests/sheet_manager/template-schema.test.ts`: a rating field without the new keys
       parses with `shortForm: false` and no `shortLabel`; a group without `layout` parses to
       `'window'`; `shortLabel` over 4 characters is rejected; a saved template parses to the same
       tree
-- [ ] T002 Add `shortForm` (boolean, default false) and `shortLabel` (1–4 chars) to the field shape
+- [x] T002 Add `shortForm` (boolean, default false) and `shortLabel` (1–4 chars) to the field shape
       and `layout` (`'window' | 'area'`, default `'window'`) to the group shape in
       `types/template.ts`; leave `TEMPLATE_SCHEMA_VERSION` at 3; carry the keys in the builders
       (`templates/builders.ts`: `field` options and `group` options) and the editor factories
       (`features/template-editor/model/factories.ts`)
-- [ ] T003 Wrap the sheet view root in a named size container (`@container/brief`, inline-size) in
+- [x] T003 Wrap the sheet view root in a named size container (`@container/brief`, inline-size) in
       `features/sheet/declarative/DeclarativeSheetView.tsx`; check nothing there depends on the
       root's width from its content
-- [ ] T004 Write `tests/sheet_manager/area-group.test.tsx`: a group with `layout: 'area'` carries
+- [x] T004 Write `tests/sheet_manager/area-group.test.tsx`: a group with `layout: 'area'` carries
       the container-variant column classes (three columns, one below 260 px) and a `window` group
       keeps `columnClasses` exactly; a full sheet render snapshot of class names is unchanged; the
       full sheet heights from T001a stay within 1% in the e2e spec (SC-007, FR-012)
-- [ ] T005 Implement the `area` layout in `DeclarativeSheetView.tsx` (the `columns` branch near
+- [x] T005 Implement the `area` layout in `DeclarativeSheetView.tsx` (the `columns` branch near
       `columnClasses`): `@max-[259px]/brief:grid-cols-1`, column stacks as a multi-column list in
       narrow areas (`[column-width:5.25rem]`) and wrapping flex from `@md/brief` (design D1, D3)
-- [ ] T006 Run `yarn verify` (schema edit) and commit:
+- [x] T006 Run `yarn verify` (schema edit) and commit:
       `feat(sheet): area container and area group layout (spec 033, Foundation)`
 
 ## User Story 1 - Read a character brief on a phone at a glance (P1)

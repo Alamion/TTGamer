@@ -37,7 +37,18 @@ function common(options: CommonOptions) {
     };
 }
 
-interface FieldOptions extends CommonOptions {
+interface ShortFormOptions {
+    /** Brief look of a rating: a short label beside the value (spec 033). */
+    shortForm?: boolean;
+    shortLabel?: string;
+}
+
+const shortFormOf = (options: ShortFormOptions) => ({
+    ...(options.shortForm ? { shortForm: true } : {}),
+    ...(options.shortLabel ? { shortLabel: options.shortLabel } : {}),
+});
+
+interface FieldOptions extends CommonOptions, ShortFormOptions {
     compact?: boolean;
     hideLabel?: boolean;
     description?: string;
@@ -47,6 +58,7 @@ function fieldCommon(options: FieldOptions) {
     return {
         compact: options.compact ?? false,
         required: false,
+        ...shortFormOf(options),
         ...common(options),
         ...(options.hideLabel ? { hideLabel: true } : {}),
         ...(options.description ? { description: options.description } : {}),
@@ -159,26 +171,28 @@ export function reference(
 export function primitive(
     id: string,
     bindingKey: string,
-    options: CommonOptions & {
-        compact?: boolean;
-        hideLabel?: boolean;
-        label?: string;
-        maxFrom?: string;
-        minFrom?: string;
-        part?: 'current' | 'max';
-        /** Pool resources drawn as a tracker (spec 020), with the maximum's minimum. */
-        poolTracker?: PoolTrackerOverride;
-        maxMinFrom?: string;
-        maxMembers?: number;
-        /** Track bindings: the page's tracker settings (spec 018). */
-        tracker?: TrackerOverride;
-    } = {}
+    options: CommonOptions &
+        ShortFormOptions & {
+            compact?: boolean;
+            hideLabel?: boolean;
+            label?: string;
+            maxFrom?: string;
+            minFrom?: string;
+            part?: 'current' | 'max';
+            /** Pool resources drawn as a tracker (spec 020), with the maximum's minimum. */
+            poolTracker?: PoolTrackerOverride;
+            maxMinFrom?: string;
+            maxMembers?: number;
+            /** Track bindings: the page's tracker settings (spec 018). */
+            tracker?: TrackerOverride;
+        } = {}
 ): PrimitiveNode {
     return {
         id,
         type: 'primitive',
         bindingKey,
         compact: options.compact ?? false,
+        ...shortFormOf(options),
         ...common(options),
         ...(options.hideLabel ? { hideLabel: true } : {}),
         ...(options.label ? { label: options.label } : {}),
@@ -235,6 +249,8 @@ export interface GroupOptions extends CommonOptions {
     collapsible?: boolean;
     hideTitle?: boolean;
     docsPath?: string;
+    /** `area`: columns follow the width of the area the page is drawn in (spec 033). */
+    layout?: 'window' | 'area';
 }
 
 export function group(
@@ -254,6 +270,7 @@ export function group(
         ...(options.columnWidths ? { columnWidths: options.columnWidths } : {}),
         ...(options.hideTitle ? { hideTitle: true } : {}),
         ...(options.docsPath ? { docsPath: options.docsPath } : {}),
+        ...(options.layout === 'area' ? { layout: 'area' as const } : {}),
         ...(options.defaultCollapsed ? { collapsible: true, defaultCollapsed: true } : {}),
     };
 }

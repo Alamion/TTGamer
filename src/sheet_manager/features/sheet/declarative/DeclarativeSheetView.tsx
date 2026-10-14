@@ -72,6 +72,15 @@ const columnClasses: Record<number, string> = {
 };
 
 /**
+ * Area groups (spec 033) take their columns from the width of the sheet area (the named
+ * `brief` container), never the window: three columns, one when the area is under 260 px; a
+ * column's cells are rows until the area passes the `md` container width, then wrapping chips.
+ */
+const AREA_COLUMNS = 'grid gap-2 grid-cols-3 @max-[259px]/brief:grid-cols-1';
+const AREA_STACK =
+    'grid grid-cols-1 content-start gap-0.5 @md/brief:flex @md/brief:flex-wrap @md/brief:gap-1';
+
+/**
  * Column span classes per breakpoint, matching `columnClasses`: 3- and 4-column grids have two
  * columns at `md`, so a wide span there covers the whole row; proportional grids have every
  * column from `md`.
@@ -597,6 +606,7 @@ const NodeView = memo(function NodeView({
                     pageApi={pageApi}
                     columns={node.columns}
                     columnWidths={node.columnWidths}
+                    area={node.layout === 'area'}
                 />
             </SectionCard>
         );
@@ -669,12 +679,15 @@ function ChildrenGrid({
     pageApi,
     columns,
     columnWidths,
+    area = false,
 }: {
     parentId?: string | null;
     nodes: readonly TemplateNode[];
     pageApi: UseTemplatePageResult;
     columns?: number;
     columnWidths?: readonly number[];
+    /** Spec 033: columns and cells follow the width of the sheet area, not the window. */
+    area?: boolean;
 }) {
     const overlay = useTemplateEditorOverlay();
     const version = useContext(OverlayVersionContext);
@@ -739,10 +752,12 @@ function ChildrenGrid({
         return (
             <div
                 className={
-                    proportional?.className ??
-                    clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])
+                    area
+                        ? AREA_COLUMNS
+                        : (proportional?.className ??
+                          clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1]))
                 }
-                style={proportional?.style}
+                style={area ? undefined : proportional?.style}
             >
                 {stacks.map((stack, columnIndex) => {
                     const column = columnIndex + 1;
@@ -755,7 +770,7 @@ function ChildrenGrid({
                     return (
                         <div
                             key={columnIndex}
-                            className="grid grid-cols-1 content-start gap-4"
+                            className={area ? AREA_STACK : 'grid grid-cols-1 content-start gap-4'}
                             data-column={column}
                         >
                             {stack.map(({ node, index }) => renderNode(node, index, column))}
@@ -843,8 +858,11 @@ export function DeclarativeSheetView({
 
     return (
         <div
+            data-template-root={template.id}
             className={
-                embedded ? 'min-w-0 space-y-6' : 'mx-auto min-w-0 max-w-7xl space-y-6 p-4 lg:p-6'
+                embedded
+                    ? '@container/brief min-w-0 space-y-6'
+                    : '@container/brief mx-auto min-w-0 max-w-7xl space-y-6 p-4 lg:p-6'
             }
         >
             <TermHintProvider>
