@@ -136,6 +136,7 @@ estimates, open questions. Priority ordering lives only in the section grouping.
     - 2026-10-14: queued by the maintainer right after the denser brief cards (T-056); builds on the documents window of T-052.
 - [ ] ⬜ **T-113 — Shared window management for editing** (T-112) — GMs and players move, resize, stack, and dock the windows they edit documents in through one shared behavior, instead of each window handling it alone. (task for roadmap path `note-showcase`)
     - 2026-10-14: queued by the maintainer after T-112; the window of T-052 is the first user of the behavior and is built so it can be generalized.
+    - 2026-10-14: the maintainer wants the library and the dice panel to use the same window too. Later the window look becomes an option, with side panels (left/right) as the default. The dice panel also works outside `universal_sheet` (docs pages), so its host must not depend on the sheet.
     - 2026-10-14: includes collapsing a pane by dragging its divider below a threshold; the shared splitter of T-052 leaves it out on purpose.
 - [ ] ⬜ **T-114 — Remove the version 4 document storage migration** (T-052) — maintainers delete the one-time move of stored documents from the single-value layout to one record each after 2027-04-13: `migrateToIndexedState` and its backup and launch counter in `store/documentStore.ts` and `store/documentContent.ts`, and the tests and guidance that name them. (task for roadmap path `note-tree`)
     - 2026-10-14: the backup itself is deleted earlier by the app, after two clean launches following the migration.
