@@ -28,6 +28,8 @@ A section is a large block with a heading and a colored bar. Readers fold and un
 
 A card is a titled box inside a page or section. **Show title** hides the heading while keeping the card; **Collapsible** lets readers fold it (only with a visible title).
 
+**Brief look** draws the card for brief pages: no box, a small heading over a line, and columns that follow the width of the area the page is drawn in (a phone, a window beside others, a full screen) instead of the browser window. Cells placed in columns stay three across down to a narrow area, then fold into one column.
+
 ## Documentation link \{#documentation-link}
 
 Sections and cards take a **Documentation link**: a **?** next to the heading opens that page in a new tab. Two forms are accepted:
@@ -68,6 +70,8 @@ A rating reads like an attribute row on the shipped sheets: the label on the lef
 - **Show current / maximum** writes "3 / 5" after the dots; with **Number** it adds "/ 5" inside the number box, like a resource whose maximum cannot be edited.
 - **Die symbol (roll the rating)** rolls the value the way the document's game rolls an attribute of the same value; the roll names the rating.
 - **Flags** (dots only): **S** (specialization), **P** (practiced), and **E** (experienced) add the same switches as a trait row. They change the roll only where the game's dice rule uses them: the Star Wars sheet does, V5 does not.
+
+**Short label (brief format)** shows the rating as a few capital letters and its number instead of its full name, so many ratings fit one screen. The letters default to the first three of the label; **Short label text** sets your own (up to four). In a narrow area each rating is a row (letters, number); in a wider one it is a small chip, and chips flow inside their card. The full name stays the name for screen readers and appears as a hint on hover, focus, and tap. A short label that would repeat another one in the same card falls back to the full label. On a free rating only the number shows in this form: its dots, text, flags, and die are not part of it.
 
 Formulas and display conditions read the rating's number; its text and flags do not change it. Ratings with the same [shared value key](./values.mdx#shared-value-key) share the number, the text, and the flags.
 

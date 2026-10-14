@@ -77,7 +77,9 @@ function ShortRating({
                 BRIEF.cellHeight,
                 'hover:bg-bgBase focus-within:outline-2 focus-within:outline-primary',
                 '@md/brief:h-[26px] @md/brief:w-fit @md/brief:gap-0 @md/brief:overflow-hidden @md/brief:bg-border/30 @md/brief:px-0',
-                "[@media(pointer:coarse)]:before:absolute [@media(pointer:coarse)]:before:inset-x-0 [@media(pointer:coarse)]:before:-inset-y-1 [@media(pointer:coarse)]:before:content-['']"
+                // A finger needs 32 px: the row itself grows on touch screens, so no target
+                // overlaps its neighbour's.
+                '[@media(pointer:coarse)]:h-8 @md/brief:[@media(pointer:coarse)]:h-8'
             )}
         >
             <span className="shrink-0 text-[11px] font-semibold tracking-wider @md/brief:grid @md/brief:h-full @md/brief:place-items-center @md/brief:bg-border/70 @md/brief:px-1 @md/brief:text-[10.5px]">

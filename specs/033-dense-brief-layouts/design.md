@@ -183,3 +183,12 @@ vehicle, fodder, V5 core (`systems/v5/core/templates.ts`), and Hunter
   group's brief look is a toggle in the group's Look settings. A free rating field with the short
   form draws the same short cell (number only: its dots, text, flags, and die are not part of the
   short look). The storybook shows both forms and an area group.
+- **Touch (D8 changed)**: the extended pseudo-element could not give a 32 px target in a column of
+  26 px rows (neighbours' extensions overlap). On a coarse pointer the rows are 32 px tall instead,
+  with no gap, so every target is exactly its own; measured on a touch emulation at 375 px: Star
+  Wars character 721 px, Hunter 779 px.
+- **Walk (T029, automated on the production build, light and dark, 375/640/1280 px, English)**:
+  cells and chips read in both themes; the hint popover shows the full name on tap; weapons and
+  edges headings stay; the page's own Russian text and the Russian hint were checked by tests
+  (`brief-short-render.test.tsx`), not by eye. The maintainer's dev server on :3000 showed "Page Not
+  Found" after `yarn build` rewrote `.docusaurus`; restarting it clears that.

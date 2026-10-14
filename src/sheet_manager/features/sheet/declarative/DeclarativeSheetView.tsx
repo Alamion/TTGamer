@@ -85,7 +85,7 @@ const AREA_COLUMNS: Record<number, string> = {
 };
 const AREA_FLOW = 'flex flex-wrap items-center gap-x-3 gap-y-1';
 const AREA_STACK =
-    'grid min-w-0 grid-cols-1 content-start gap-0.5 @md/brief:flex @md/brief:flex-wrap @md/brief:gap-1';
+    'grid min-w-0 grid-cols-1 content-start gap-0.5 [@media(pointer:coarse)]:gap-0 @md/brief:flex @md/brief:flex-wrap @md/brief:gap-1';
 
 /**
  * Column span classes per breakpoint, matching `columnClasses`: 3- and 4-column grids have two

@@ -141,14 +141,14 @@ save, and open a document on that page.
 
 ## Finish
 
-- [ ] T026 Update the module notes and skill this feature changes (one owner per rule):
+- [x] T026 Update the module notes and skill this feature changes (one owner per rule):
       `src/sheet_manager/AGENTS.md` (briefs, area container, short labels), the `sheet-templates`
       skill (new settings, glossary abbreviations), `.agents/skills/ui-i18n` (glossary `abbr` keys)
-- [ ] T027 Update the user guide: `docs/template-editor/types-and-settings.mdx` and its Russian
+- [x] T027 Update the user guide: `docs/template-editor/types-and-settings.mdx` and its Russian
       mirror (short label, compact forms, area layout) (FR-011); `yarn validate:i18n`
-- [ ] T028 Mark T-056 in `TODO.md` as done with the spec reference; note in T-051/T-059/T-112
+- [x] T028 Mark T-056 in `TODO.md` as done with the spec reference; note in T-051/T-059/T-112
       entries that briefs now fit their area
-- [ ] T029 Run `yarn verify:full`; walk the steps in design.md "Manual walk" on the dev server
+- [x] T029 Run `yarn verify:full`; walk the steps in design.md "Manual walk" on the dev server
       (phone and desktop, light and dark); record results in design.md
 
 ## Coverage

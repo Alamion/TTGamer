@@ -133,7 +133,9 @@ Prefix view ids with the system (`v5-hunter-sheet`). Strings go to per-layer YAM
 `tests/sheet_manager/systems/<system>/`. No generic file changes are needed for data addressing.
 
 **Terminology**: _full_ and _brief_ are views (shipped templates); _compact_ is a primitive display
-mode used inside brief views (for trackers it reads as the `line` display).
+mode used inside brief views (for trackers it reads as the `line` display). A brief also sets
+`layout: 'area'` on its groups (columns from the sheet area's width, no box) and `shortForm` on
+ratings (a short label; the full name stays the input's name); see `src/sheet_manager/AGENTS.md`.
 
 **New catalog**: `defineCatalog` in the owning system's `catalogs.ts`, listed on
 `SystemPlugin.catalogs` (closed fillable-detail set, optional system-owned `resolveDetails`); lists,

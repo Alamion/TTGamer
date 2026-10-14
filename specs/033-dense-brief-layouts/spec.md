@@ -208,7 +208,8 @@ storybook, save, and open a document on that page.
   colors the application already defines, and each text and background pair has a contrast ratio of
   at least 4.5:1 (checked by a calculation over the palette tokens).
 - **SC-006**: Every edit control in a brief has a pointer target of at least 32 px on a touch
-  screen.
+  screen. To give each control its own target, rows grow to 32 px there, so the Star Wars character
+  brief is about 720 px tall on a touch screen at 375 px (SC-001 is measured with a mouse pointer).
 - **SC-007**: The full sheet views and saved pages are unchanged: their heights at 375 and 1280 px
   differ by less than 1% from before this change, and a page saved before it opens identically.
 - **SC-008**: The existing browser timings (opening the sheet, an edit, a move preview) stay within
