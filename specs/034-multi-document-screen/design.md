@@ -183,3 +183,15 @@ rolls and focus checks, strings, guide.
   reconciles first. A pane has its own close button besides its tab's, both named `Close <name>`.
   Deleting the current document is still the documents window's job (it picks the survivor), as
   before.
+- **US2.** Dividers are the shared `Splitter` in 6 px tracks (as in the editor), so a pane count is
+  `floor((width + 6) / 326)` for 768 px and wider (`layout.ts`); a pane keeps at least 320 px after
+  a window resize because widths are fitted from the weights, never stored in px. The grid uses px
+  tracks from those widths; a drag previews by rewriting the tracks and stores weights on release.
+  Maximize follows the focused tab and clears with fewer than two panes. A full sheet in a pane
+  needed its group columns to follow the pane, not the window: `AreaLayoutContext`
+  (`declarative/areaLayout.ts`) swaps the `md`/`xl` column classes for `@3xl`/`@7xl` of the sheet's
+  named container, at the same widths (768 and 1280 px); outside a pane nothing changes. Other small
+  `sm:`/`md:` styles inside elements still follow the window. The brief heights per pane width
+  (SC-007) are measured with US3, when a pane first starts in the brief. Walk at 1280 (light, dark),
+  960, and 375 px: three panes of 400 px, two of 470 px, and one pane with the tabs; no sideways
+  scroll.

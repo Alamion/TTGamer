@@ -1,3 +1,5 @@
+import type { Page } from '@playwright/test';
+
 import { createDocument, measureView, showView } from '../brief';
 import { expect, test } from '../fixtures';
 import { SINGLE_DOCUMENT_BASELINE } from './panes-baseline';
@@ -16,4 +18,84 @@ test('with one document the page keeps its height (spec 034, SC-005)', async ({ 
         }
     }
     await expect(page.getByRole('tablist')).toHaveCount(0);
+});
+
+/** Makes `count` characters (the last stays open), then opens the others beside it. */
+async function openSeveralBeside(page: Page, count: number): Promise<void> {
+    for (let index = 0; index < count; index += 1)
+        await createDocument(page, 'star-wars-wod/character');
+    for (let index = 0; index < count - 1; index += 1) {
+        await page.getByRole('button', { name: 'Manage', exact: true }).click();
+        const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+        // A click on a row opens the document, so the row's own menu is the way to open beside.
+        await window
+            .getByRole('button', { name: /^Actions for / })
+            .nth(index)
+            .click();
+        await page.getByRole('menuitem', { name: 'Open beside' }).click();
+        if (page.viewportSize()!.width < 768) continue;
+        await window.getByRole('button', { name: 'Close the documents window' }).click();
+    }
+}
+
+const panes = (page: Page) => page.locator('section[data-pane]');
+const noSideways = (page: Page) =>
+    page.evaluate(
+        () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
+    );
+
+test('three documents share a 1280 px window, each at least 320 px, with no sideways scroll', async ({
+    page,
+}) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openSeveralBeside(page, 3);
+    await expect(panes(page)).toHaveCount(3);
+    await expect(page.getByRole('tab')).toHaveCount(3);
+    for (const box of await Promise.all(
+        (await panes(page).all()).map((pane) => pane.boundingBox())
+    )) {
+        expect(box!.width).toBeGreaterThanOrEqual(320);
+    }
+    expect(await noSideways(page)).toBe(true);
+});
+
+test('a window that fits two panes shows two and keeps the third as a tab', async ({ page }) => {
+    await page.setViewportSize({ width: 960, height: 800 });
+    await openSeveralBeside(page, 3);
+    await expect(panes(page)).toHaveCount(2);
+    await expect(page.getByRole('tab')).toHaveCount(3);
+    await page.getByRole('tab').first().click();
+    await expect(panes(page)).toHaveCount(2);
+    expect(await noSideways(page)).toBe(true);
+});
+
+test('a 375 px phone shows one pane and the tabs list every open document', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 700 });
+    await openSeveralBeside(page, 3);
+    await expect(panes(page)).toHaveCount(1);
+    await expect(page.getByRole('tab')).toHaveCount(3);
+    await expect(page.getByRole('separator')).toHaveCount(0);
+    expect(await noSideways(page)).toBe(true);
+    await page.getByRole('tab').first().click();
+    await expect(panes(page)).toHaveCount(1);
+});
+
+test('double click on a tab gives a pane the whole window and a second one brings the rest back', async ({
+    page,
+}) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openSeveralBeside(page, 3);
+    const widths = async () =>
+        Promise.all(
+            (await panes(page).all()).map(async (pane) => (await pane.boundingBox())!.width)
+        );
+    const before = await widths();
+
+    await page.getByRole('tab').nth(1).dblclick();
+    await expect(panes(page)).toHaveCount(1);
+    expect((await widths())[0]).toBeGreaterThan(before[0]! * 2);
+
+    await page.getByRole('tab').nth(1).dblclick();
+    await expect(panes(page)).toHaveCount(3);
+    expect(await widths()).toEqual(before);
 });

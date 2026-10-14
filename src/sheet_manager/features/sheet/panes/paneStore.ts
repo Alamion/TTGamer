@@ -8,9 +8,13 @@ export interface PaneArrangement {
     ids: string[];
     /** Focus history, the most recently focused first. */
     recent: string[];
+    /** Relative widths of panes the reader has resized (average 1); a missing one is 1. */
+    weights: Record<string, number>;
+    /** The pane that has the whole area while the others are hidden. */
+    maximized: string | null;
 }
 
-const EMPTY: PaneArrangement = { ids: [], recent: [] };
+const EMPTY: PaneArrangement = { ids: [], recent: [], weights: {}, maximized: null };
 
 export const usePaneStore = create<PaneArrangement>(() => EMPTY);
 
@@ -57,7 +61,25 @@ export function reconcilePanes(
         ...(currentId && ids.includes(currentId) ? [currentId] : []),
         ...state.recent.filter((id) => id !== currentId && ids.includes(id)),
     ];
-    return sameList(ids, state.ids) && sameList(recent, state.recent) ? state : { ids, recent };
+    const weightIds = Object.keys(state.weights);
+    const weights = weightIds.every((id) => ids.includes(id))
+        ? state.weights
+        : Object.fromEntries(Object.entries(state.weights).filter(([id]) => ids.includes(id)));
+    // The tab of another pane takes the whole area over; a pane that is gone gives it up.
+    const maximized =
+        state.maximized === null || ids.length < 2
+            ? null
+            : currentId && ids.includes(currentId)
+              ? currentId
+              : ids.includes(state.maximized)
+                ? state.maximized
+                : null;
+    return sameList(ids, state.ids) &&
+        sameList(recent, state.recent) &&
+        weights === state.weights &&
+        maximized === state.maximized
+        ? state
+        : { ids, recent, weights, maximized };
 }
 
 /**
@@ -83,7 +105,7 @@ export function openBeside(id: string): string | null {
             ids = [...ids.slice(0, after + 1), id, ...ids.slice(after + 1)];
         }
     }
-    usePaneStore.setState({ ids, recent: state.recent });
+    usePaneStore.setState({ ids, recent: state.recent, weights: state.weights, maximized: null });
     documents.setCurrentDocument(id);
     return replaced;
 }
@@ -108,4 +130,19 @@ export function closePane(id: string): void {
 export function focusPane(id: string): void {
     const documents = useDocumentStore.getState();
     if (documents.currentDocumentId !== id) documents.setCurrentDocument(id);
+}
+
+/** Gives the pane the whole area, or gives it back when it already has it (spec 034, FR-018). */
+export function toggleMaximized(id: string): void {
+    const { ids, maximized } = usePaneStore.getState();
+    if (!ids.includes(id) || ids.length < 2) return;
+    usePaneStore.setState({ maximized: maximized === id ? null : id });
+    focusPane(id);
+}
+
+/** Stores the widths of the panes shown (`ids`, in order) as weights. */
+export function setPaneWeights(ids: readonly string[], weights: readonly number[]): void {
+    usePaneStore.setState((state) => ({
+        weights: { ...state.weights, ...Object.fromEntries(ids.map((id, i) => [id, weights[i]!])) },
+    }));
 }

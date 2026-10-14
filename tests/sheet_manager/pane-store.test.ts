@@ -4,6 +4,7 @@ import {
     focusPane,
     openBeside,
     reconcilePanes,
+    toggleMaximized,
     usePaneStore,
 } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
@@ -14,11 +15,18 @@ import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
 const names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 const ids = () => usePaneStore.getState().ids;
 const current = () => useDocumentStore.getState().currentDocumentId;
+const arranged = (ids: string[], recent: string[], extra = {}) => ({
+    ids,
+    recent,
+    weights: {},
+    maximized: null,
+    ...extra,
+});
 const entryIds = (list: readonly string[] = names) => new Set(list);
 
 beforeEach(() => {
     resetDocuments();
-    usePaneStore.setState({ ids: [], recent: [] });
+    usePaneStore.setState(arranged([], []));
     seedDocuments(names, { current: 'a' });
 });
 
@@ -65,7 +73,7 @@ describe('opening documents beside each other (spec 034, US1)', () => {
     });
 
     it('does not close the last pane', () => {
-        usePaneStore.setState({ ids: ['a'] });
+        usePaneStore.setState(arranged(['a'], []));
         closePane('a');
         expect(ids()).toEqual(['a']);
     });
@@ -79,34 +87,61 @@ describe('opening documents beside each other (spec 034, US1)', () => {
 
 describe('the arrangement that is true now', () => {
     it('shows the current document alone when nothing was arranged', () => {
-        expect(reconcilePanes({ ids: [], recent: [] }, 'a', entryIds())).toEqual({
-            ids: ['a'],
-            recent: ['a'],
-        });
+        expect(reconcilePanes(arranged([], []), 'a', entryIds())).toEqual(arranged(['a'], ['a']));
     });
 
     it('lets Open take the place of the pane that was focused last', () => {
-        const state = { ids: ['a', 'b'], recent: ['b', 'a'] };
-        expect(reconcilePanes(state, 'c', entryIds())).toEqual({
-            ids: ['a', 'c'],
-            recent: ['c', 'a'],
-        });
+        const state = arranged(['a', 'b'], ['b', 'a']);
+        expect(reconcilePanes(state, 'c', entryIds())).toEqual(arranged(['a', 'c'], ['c', 'a']));
     });
 
     it('moves the focus history when a pane is focused, without changing the panes', () => {
-        const state = { ids: ['a', 'b'], recent: ['b', 'a'] };
-        expect(reconcilePanes(state, 'a', entryIds())).toEqual({
-            ids: ['a', 'b'],
-            recent: ['a', 'b'],
-        });
+        const state = arranged(['a', 'b'], ['b', 'a']);
+        expect(reconcilePanes(state, 'a', entryIds())).toEqual(arranged(['a', 'b'], ['a', 'b']));
     });
 
     it('drops documents that no longer exist and returns the same object when unchanged', () => {
-        const state = { ids: ['a', 'b', 'c'], recent: ['a', 'b', 'c'] };
-        expect(reconcilePanes(state, 'a', entryIds(['a', 'c']))).toEqual({
-            ids: ['a', 'c'],
-            recent: ['a', 'c'],
-        });
+        const state = arranged(['a', 'b', 'c'], ['a', 'b', 'c']);
+        expect(reconcilePanes(state, 'a', entryIds(['a', 'c']))).toEqual(
+            arranged(['a', 'c'], ['a', 'c'])
+        );
         expect(reconcilePanes(state, 'a', entryIds())).toBe(state);
+    });
+
+    it('prunes the weights and the maximized pane of panes that are gone', () => {
+        const state = arranged(['a', 'b', 'c'], ['a'], {
+            weights: { a: 1.5, b: 1, c: 0.5 },
+            maximized: 'b',
+        });
+        const next = reconcilePanes(state, 'b', entryIds(['a', 'b']));
+        expect(next.weights).toEqual({ a: 1.5, b: 1 });
+        expect(next.maximized).toBe('b');
+        expect(reconcilePanes(state, 'b', entryIds(['b'])).maximized).toBeNull();
+    });
+});
+
+describe('giving a pane the whole area (spec 034, FR-018)', () => {
+    it('toggles, and follows the pane that is focused through its tab', () => {
+        openBeside('b');
+        openBeside('c');
+        toggleMaximized('b');
+        expect(usePaneStore.getState().maximized).toBe('b');
+        expect(current()).toBe('b');
+        focusPane('c');
+        const next = reconcilePanes(usePaneStore.getState(), current(), entryIds());
+        expect(next.maximized).toBe('c');
+        usePaneStore.setState(next);
+        toggleMaximized('c');
+        expect(usePaneStore.getState().maximized).toBeNull();
+    });
+
+    it('is not offered with one pane, and opening beside restores the others', () => {
+        usePaneStore.setState(arranged(['a'], ['a']));
+        toggleMaximized('a');
+        expect(usePaneStore.getState().maximized).toBeNull();
+        openBeside('b');
+        toggleMaximized('b');
+        openBeside('c');
+        expect(usePaneStore.getState().maximized).toBeNull();
     });
 });

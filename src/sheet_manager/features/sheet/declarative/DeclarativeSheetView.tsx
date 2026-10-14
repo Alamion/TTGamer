@@ -46,6 +46,7 @@ import {
 } from '../../../types/templateValues';
 import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
+import { AreaLayoutContext, forArea } from './areaLayout';
 import { useBoundDocument } from './boundDocument';
 import { BRIEF } from './briefRhythm';
 import { useCatalogSuggestions } from './catalogSuggestions';
@@ -731,6 +732,7 @@ function ChildrenGrid({
 }) {
     const overlay = useTemplateEditorOverlay();
     const version = useContext(OverlayVersionContext);
+    const byArea = useContext(AreaLayoutContext);
     if (nodes.length === 0 && !overlay) return null;
     const renderNode = (node: TemplateNode, index: number, column: number | null = null) => {
         const content = (
@@ -754,7 +756,7 @@ function ChildrenGrid({
             const rendered = renderNode(node, index);
             const span =
                 columns && columns > 1 && node.span
-                    ? spanClass(node.span, columns, isProportional)
+                    ? forArea(spanClass(node.span, columns, isProportional) ?? '', byArea)
                     : undefined;
             return span ? (
                 <div key={node.id} className={span}>
@@ -770,8 +772,10 @@ function ChildrenGrid({
     const proportional =
         columns && columns > 1 && columnWidths?.length === columns
             ? {
-                  className:
+                  className: forArea(
                       'grid grid-cols-1 gap-4 md:[grid-template-columns:var(--template-columns)]',
+                      byArea
+                  ),
                   style: {
                       '--template-columns': columnWidths
                           .map((width) => `minmax(0, ${width}fr)`)
@@ -799,7 +803,10 @@ function ChildrenGrid({
                     area
                         ? (AREA_COLUMNS[Math.min(columns, 3)] ?? AREA_COLUMNS[3])
                         : (proportional?.className ??
-                          clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1]))
+                          clsx(
+                              'grid gap-4',
+                              forArea(columnClasses[columns] ?? columnClasses[1]!, byArea)
+                          ))
                 }
                 style={area ? undefined : proportional?.style}
             >
@@ -833,7 +840,7 @@ function ChildrenGrid({
             <div
                 className={
                     proportional?.className ??
-                    clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1])
+                    clsx('grid gap-4', forArea(columnClasses[columns] ?? columnClasses[1]!, byArea))
                 }
                 style={proportional?.style}
             >

@@ -18,11 +18,14 @@ export function PaneTabs({
     focusedId,
     onClose,
     onFocus,
+    onMaximize,
     tabs,
 }: {
     focusedId: string | null;
     onClose: (id: string) => void;
     onFocus: (id: string) => void;
+    /** Double click on a tab; absent where a pane cannot take the whole area. */
+    onMaximize?: (id: string) => void;
     tabs: readonly PaneTab[];
 }) {
     const move = (event: KeyboardEvent<HTMLButtonElement>, from: number) => {
@@ -69,6 +72,7 @@ export function PaneTabs({
                             aria-selected={selected}
                             tabIndex={selected ? 0 : -1}
                             onClick={() => onFocus(tab.id)}
+                            onDoubleClick={() => onMaximize?.(tab.id)}
                             onKeyDown={(event) => move(event, index)}
                             className="max-w-48 truncate px-3 py-1.5 text-sm pointer-coarse:min-h-8"
                         >

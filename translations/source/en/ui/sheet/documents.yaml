@@ -22,6 +22,10 @@ panes:
     close: 'Close {name}'
     unreadable: This document could not be read.
     replaced: 'At most {max} documents stay open: "{name}" replaced "{replaced}".'
+    resize: 'Resize {left} and {right}'
+    maximize: 'Show only {name}'
+    restore: 'Show all open documents again'
+
 conflict:
     typeTitle: This document type is already installed
     typePrompt: The file carries a different version of an installed document type. Replace the installed type, keep both (the imported one gets a new identity), or cancel.

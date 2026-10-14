@@ -84,29 +84,29 @@ the other and its values are unchanged.
 
 **Check**: three documents at 1280 px and at 375 px; nothing scrolls sideways.
 
-- [ ] T016 [US2] Write `tests/sheet_manager/pane-layout.test.ts` for a pure
+- [x] T016 [US2] Write `tests/sheet_manager/pane-layout.test.ts` for a pure
       `features/sheet/panes/layout.ts`: `visibleCount` at 375, 767, 768, 1280, 1920 (1 below 768,
       never above six, each pane at least 320 px); visible set is the most recently focused, drawn
       in pane order; choosing a hidden tab replaces the least recently focused visible pane; weights
       sum to 1 and clamp so both neighbours stay at least 320 px (D6, D7; FR-005, FR-006)
-- [ ] T017 [US2] Implement `layout.ts` and use it in `PaneArea.tsx`: measure the width with
+- [x] T017 [US2] Implement `layout.ts` and use it in `PaneArea.tsx`: measure the width with
       `useMeasuredElement`, grid columns from weights, hidden panes not mounted; `Splitter` between
       neighbours (`onPreview` CSS variable, `onChange` stores fractions, Home resets) with the
       divider label string; phone shows one pane and the tabs only
-- [ ] T018 [US2] Implement maximize: double click on a tab and a header button (named, keyboard
+- [x] T018 [US2] Implement maximize: double click on a tab and a header button (named, keyboard
       operable) toggle `maximized`; ignored when one pane is visible; the restore brings back the
       same panes and weights; add cases to `pane-store.test.ts` and `pane-tabs.test.tsx` (FR-018,
       SC-002)
-- [ ] T019 [US2] Write `tests-e2e/smoke/panes.spec.ts` layout cases: 1280 px three panes, each at
+- [x] T019 [US2] Write `tests-e2e/smoke/panes.spec.ts` layout cases: 1280 px three panes, each at
       least 320 px, no sideways page scroll; 375 px exactly one pane and the tab strip listing all;
       a third pane at 960 px goes to tabs only; maximize then restore returns the same panes and
       sizes (SC-002); brief heights at pane widths 700 and 400 stay within spec 033 limits (SC-007);
       with one document the page height at 375 and 1280 px stays within 1% of the T001 baseline
       (SC-005); no layout jump on reload
-- [ ] T020 [US2] Walk the layout on the dev server on a phone viewport and desktop, light and dark
+- [x] T020 [US2] Walk the layout on the dev server on a phone viewport and desktop, light and dark
       (Chrome devtools device mode, touch), tune gaps, header height, and strip scrolling; record
       the numbers in `design.md` "Implementation notes"
-- [ ] T021 [US2] Run `yarn verify:full` (shared page layout and a new e2e) and commit:
+- [x] T021 [US2] Run `yarn verify:full` (shared page layout and a new e2e) and commit:
       `feat(sheet): panes fit the screen with a divider, tabs, and maximize (spec 034, US2)`
 
 ## User Story 3 - Choose what each pane shows (P3)

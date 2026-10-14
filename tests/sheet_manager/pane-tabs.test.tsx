@@ -14,12 +14,19 @@ vi.setConfig({ testTimeout: 30_000 });
 const current = () => useDocumentStore.getState().currentDocumentId;
 const tabs = () => within(screen.getByRole('tablist')).getAllByRole('tab');
 
+/** happy-dom lays nothing out; the area is as wide as a desktop window. */
+function stubWidth(width: number) {
+    return vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(width);
+}
+
 beforeEach(() => {
+    stubWidth(1280);
     usePaneStore.setState({ ids: [], recent: [] });
     seedDocuments(['Ana', 'Bruno', 'Cleo'], { current: 'Ana' });
     render(createElement(CharacterSheet));
 });
 afterEach(() => {
+    vi.restoreAllMocks();
     cleanup();
     resetDocuments();
 });
