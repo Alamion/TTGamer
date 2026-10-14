@@ -2455,6 +2455,7 @@
                 ],
                 "columns": 3,
                 "hideTitle": true,
+                "layout": "area",
                 "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
             },
             {
@@ -3042,7 +3043,6 @@
                         "compact": true,
                         "required": false,
                         "shortForm": true,
-                        "column": 1,
                         "labelMessage": "catalog:virtues/conscience"
                     },
                     {
@@ -3056,7 +3056,6 @@
                         "compact": true,
                         "required": false,
                         "shortForm": true,
-                        "column": 1,
                         "labelMessage": "catalog:virtues/passion"
                     },
                     {
@@ -3070,7 +3069,6 @@
                         "compact": true,
                         "required": false,
                         "shortForm": true,
-                        "column": 1,
                         "labelMessage": "catalog:virtues/self-control"
                     },
                     {
@@ -3079,7 +3077,6 @@
                         "bindingKey": "resource:willpower",
                         "compact": true,
                         "label": "Willpower",
-                        "column": 2,
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                     },
                     {
@@ -3088,7 +3085,6 @@
                         "bindingKey": "resource:force-points",
                         "compact": true,
                         "label": "Force Points",
-                        "column": 2,
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.forcePoints"
                     },
                     {
@@ -3096,8 +3092,8 @@
                         "type": "primitive",
                         "bindingKey": "resource:dark-side-resistance",
                         "compact": true,
+                        "shortForm": true,
                         "label": "Dark Side Resistance",
-                        "column": 2,
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.darkSideResistance"
                     },
                     {
@@ -3107,7 +3103,6 @@
                         "formula": "wits + alertness",
                         "compact": true,
                         "required": false,
-                        "column": 3,
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard"
                     },
                     {
@@ -3117,11 +3112,10 @@
                         "formula": "wits + alertness + control",
                         "compact": true,
                         "required": false,
-                        "column": 3,
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeLightsaber"
                     }
                 ],
-                "columns": 3,
+                "layout": "area",
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve"
             },
             {
@@ -3140,6 +3134,7 @@
                     }
                 ],
                 "hideTitle": true,
+                "layout": "area",
                 "labelMessage": "ttgamer.ui.sheet.documents.fields.health"
             },
             {
@@ -3155,6 +3150,8 @@
                         "compact": false
                     }
                 ],
+                "layout": "area",
+                "defaultCollapsed": true,
                 "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
             }
         ]
@@ -3205,6 +3202,7 @@
                 ],
                 "columns": 3,
                 "hideTitle": true,
+                "layout": "area",
                 "labelMessage": "ttgamer.ui.sheet.documents.fields.identity"
             },
             {
@@ -3792,7 +3790,6 @@
                         "compact": true,
                         "required": false,
                         "shortForm": true,
-                        "column": 1,
                         "labelMessage": "catalog:virtues/conscience"
                     },
                     {
@@ -3806,7 +3803,6 @@
                         "compact": true,
                         "required": false,
                         "shortForm": true,
-                        "column": 1,
                         "labelMessage": "catalog:virtues/passion"
                     },
                     {
@@ -3820,7 +3816,6 @@
                         "compact": true,
                         "required": false,
                         "shortForm": true,
-                        "column": 1,
                         "labelMessage": "catalog:virtues/self-control"
                     },
                     {
@@ -3829,7 +3824,6 @@
                         "bindingKey": "resource:willpower",
                         "compact": true,
                         "label": "Willpower",
-                        "column": 2,
                         "labelMessage": "ttgamer.ui.sheet.documents.fields.willpower"
                     },
                     {
@@ -3839,11 +3833,10 @@
                         "formula": "wits + alertness",
                         "compact": true,
                         "required": false,
-                        "column": 3,
                         "labelMessage": "ttgamer.ui.sheet.templates.defaults.initiativeStandard"
                     }
                 ],
-                "columns": 3,
+                "layout": "area",
                 "labelMessage": "ttgamer.ui.sheet.templates.defaults.resolve"
             },
             {
@@ -3862,6 +3855,7 @@
                     }
                 ],
                 "hideTitle": true,
+                "layout": "area",
                 "labelMessage": "ttgamer.ui.sheet.documents.fields.damage"
             },
             {
@@ -3877,6 +3871,8 @@
                         "compact": false
                     }
                 ],
+                "layout": "area",
+                "defaultCollapsed": true,
                 "labelMessage": "ttgamer.ui.sheet.documents.fields.weapons"
             }
         ]

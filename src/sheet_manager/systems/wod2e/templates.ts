@@ -1,6 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { formula, group, primitive } from '../../templates/builders';
+import { denseBrief, formula, group, primitive } from '../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../types/document';
 import {
     type CustomTemplate,
@@ -273,5 +273,5 @@ export const wod2eTemplates: readonly CustomTemplate[] = [
             otherSection(),
         ])
     ),
-    translatable(template('wod2e-brief', 'Brief', briefChildren())),
+    translatable(denseBrief(template('wod2e-brief', 'Brief', briefChildren()), ['brief-weapons'])),
 ];

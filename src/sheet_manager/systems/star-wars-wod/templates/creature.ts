@@ -1,6 +1,7 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import {
+    denseBrief,
     formula,
     group,
     list,
@@ -375,5 +376,5 @@ function creatureBrief(): CustomTemplate {
 
 export const starWarsCreatureTemplates: readonly CustomTemplate[] = [
     creatureSheet(),
-    creatureBrief(),
+    denseBrief(creatureBrief()),
 ];

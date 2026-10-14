@@ -1,6 +1,7 @@
 import { NumberInput } from '@site/src/shared/components/NumberInput';
 import { clsx } from 'clsx';
 
+import { BRIEF } from '../../features/sheet/declarative/briefRhythm';
 import type { ConditionMark } from '../../types/condition';
 import { resolveTerm } from '../terms/resolveTerm';
 import { useTermHintSettings } from '../terms/TermHintContext';
@@ -17,15 +18,16 @@ interface CompactTextFieldProps extends CompactFieldProps {
     onChange: (value: string) => void;
 }
 
+/** A text field in a brief: a small label over an underlined value, sharing a row with its kin. */
 export function CompactTextField({ disabled, label, onChange, value }: CompactTextFieldProps) {
     return (
-        <label className="grid min-w-0 grid-cols-[auto_1fr] items-end gap-2 text-xs text-textSecondary">
-            <span className="pb-1 font-medium">{label}</span>
+        <label className="grid min-w-24 flex-1 basis-24 gap-0">
+            <span className={BRIEF.caption}>{label}</span>
             <input
                 value={value}
                 disabled={disabled}
                 onChange={(event) => onChange(event.target.value)}
-                className="min-w-0 border-0 border-b border-border bg-transparent px-1 py-0.5 text-sm text-textPrimary outline-hidden focus:border-primary disabled:opacity-70"
+                className="min-w-0 border-0 border-b border-border bg-transparent px-0.5 py-0 text-sm font-semibold text-textPrimary outline-hidden focus:border-primary disabled:opacity-70"
             />
         </label>
     );
@@ -73,11 +75,11 @@ function ShortRating({
             className={clsx(
                 'term-label relative flex h-6 min-w-0 items-center gap-1.5 rounded-sm px-1 text-xs text-textSecondary',
                 'hover:bg-bgBase focus-within:outline-2 focus-within:outline-primary',
-                '@md/brief:h-[26px] @md/brief:w-fit @md/brief:gap-0 @md/brief:overflow-hidden @md/brief:bg-bgBase @md/brief:px-0',
+                '@md/brief:h-[26px] @md/brief:w-fit @md/brief:gap-0 @md/brief:overflow-hidden @md/brief:bg-border/40 @md/brief:px-0',
                 "[@media(pointer:coarse)]:before:absolute [@media(pointer:coarse)]:before:inset-x-0 [@media(pointer:coarse)]:before:-inset-y-1 [@media(pointer:coarse)]:before:content-['']"
             )}
         >
-            <span className="shrink-0 text-[11px] font-semibold tracking-wider @md/brief:grid @md/brief:h-full @md/brief:place-items-center @md/brief:bg-border @md/brief:px-1.5 @md/brief:text-[10.5px]">
+            <span className="shrink-0 text-[11px] font-semibold tracking-wider @md/brief:grid @md/brief:h-full @md/brief:place-items-center @md/brief:bg-border @md/brief:px-1 @md/brief:text-[10.5px]">
                 {shortLabel}
             </span>
             <NumberInput
@@ -89,7 +91,7 @@ function ShortRating({
                 disabled={disabled}
                 onChange={(next) => onChange(next ?? value)}
                 label={label}
-                className="h-full w-6 min-w-0 border-0 bg-transparent p-0 text-left text-[15px] font-bold text-textPrimary outline-hidden disabled:opacity-70 @md/brief:w-7 @md/brief:text-center"
+                className="h-full w-6 min-w-0 border-0 bg-transparent p-0 text-left text-[15px] font-bold text-textPrimary outline-hidden disabled:opacity-70 @md/brief:w-6 @md/brief:text-center"
             />
         </label>
     );
@@ -138,8 +140,8 @@ export function CompactResource({
     onChange,
 }: CompactResourceProps) {
     return (
-        <div className="flex items-center gap-1.5 text-xs">
-            <span className="min-w-0 flex-1 truncate text-textSecondary">{label}</span>
+        <div className="flex items-center gap-1 text-xs">
+            <span className="min-w-0 truncate text-textSecondary">{label}</span>
             <NumberInput
                 min={0}
                 max={maximum}
@@ -149,7 +151,7 @@ export function CompactResource({
                 disabled={disabled}
                 onChange={(next) => onChange(next ?? current, maximum)}
                 label={`${label}: ${currentLabel}`}
-                className="h-7 w-10 rounded-sm border border-border bg-bgBase px-1 text-center text-sm text-textPrimary disabled:opacity-70"
+                className="h-6 w-7 min-w-0 rounded-sm border border-border bg-bgBase px-0.5 text-center text-sm font-semibold text-textPrimary disabled:opacity-70"
             />
             <span className="text-textSecondary">/</span>
             <NumberInput
@@ -164,7 +166,7 @@ export function CompactResource({
                     onChange(Math.min(current, nextMaximum), nextMaximum);
                 }}
                 label={`${label}: ${maximumLabel}`}
-                className="h-7 w-10 rounded-sm border border-border bg-bgBase px-1 text-center text-sm text-textPrimary disabled:opacity-70"
+                className="h-6 w-7 min-w-0 rounded-sm border border-border bg-bgBase px-0.5 text-center text-sm font-semibold text-textPrimary disabled:opacity-70"
             />
         </div>
     );

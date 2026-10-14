@@ -1,6 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { group, section } from '../../../templates/builders';
+import { dense, group, section } from '../../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../../types/document';
 import { type CustomTemplate, TEMPLATE_SCHEMA_VERSION } from '../../../types/template';
 import {
@@ -79,23 +79,25 @@ export const v5CoreSheetTemplate = page('v5-core-sheet', 'Mortal — Full sheet'
 ]);
 
 export const v5CoreBriefTemplate = page('v5-core-brief', 'Mortal — Brief', [
-    identity(true),
-    group(
-        'condition',
-        v5.sections.condition.message,
-        [
-            ...trackGroup('health', { compact: true }).children.map((node) => ({
-                ...node,
-                column: 1,
-            })),
-            ...trackGroup('willpower', { compact: true }).children.map((node) => ({
-                ...node,
-                column: 2,
-            })),
-        ],
-        { columns: 2, labelMessage: v5.sections.condition }
+    dense(identity(true)),
+    dense(
+        group(
+            'condition',
+            v5.sections.condition.message,
+            [
+                ...trackGroup('health', { compact: true }).children.map((node) => ({
+                    ...node,
+                    column: 1,
+                })),
+                ...trackGroup('willpower', { compact: true }).children.map((node) => ({
+                    ...node,
+                    column: 2,
+                })),
+            ],
+            { columns: 2, labelMessage: v5.sections.condition }
+        )
     ),
     compactTraitsGroup('attributes'),
     compactTraitsGroup('skills', { collapsible: true }),
-    equipmentGroup('weapons'),
+    dense(equipmentGroup('weapons'), { collapsed: true }),
 ]);

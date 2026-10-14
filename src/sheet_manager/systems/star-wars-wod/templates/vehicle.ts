@@ -1,6 +1,7 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
 import {
+    denseBrief,
     group,
     primitive,
     reference,
@@ -410,4 +411,7 @@ function vehicleBrief(): CustomTemplate {
     };
 }
 
-export const starWarsVehicleTemplates: readonly CustomTemplate[] = [vehicleSheet(), vehicleBrief()];
+export const starWarsVehicleTemplates: readonly CustomTemplate[] = [
+    vehicleSheet(),
+    denseBrief(vehicleBrief()),
+];

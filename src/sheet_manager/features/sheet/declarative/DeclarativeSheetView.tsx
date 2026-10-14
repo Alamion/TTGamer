@@ -23,6 +23,7 @@ import {
 } from '../../../components/controls/RowMoveControls';
 import { CollapsibleBlock } from '../../../components/sections/CollapsibleBlock';
 import { SectionCard } from '../../../components/sections/SectionCard';
+import { CompactTextField } from '../../../components/stat-fields/CompactSheetFields';
 import { TermHintProvider } from '../../../components/terms/TermHintProvider';
 import { termLinkOf } from '../../../components/terms/termLink';
 import { reportSheetIssue } from '../../../diagnostics';
@@ -46,6 +47,7 @@ import {
 import { readCatalogDetails } from '../data/catalogBindings';
 import { templateFieldControl } from '../registry/declarativeFieldRegistry';
 import { useBoundDocument } from './boundDocument';
+import { BRIEF } from './briefRhythm';
 import { useCatalogSuggestions } from './catalogSuggestions';
 import {
     OverlayVersionContext,
@@ -77,9 +79,13 @@ const columnClasses: Record<number, string> = {
  * `brief` container), never the window: three columns, one when the area is under 260 px; a
  * column's cells are rows until the area passes the `md` container width, then wrapping chips.
  */
-const AREA_COLUMNS = 'grid gap-2 grid-cols-3 @max-[259px]/brief:grid-cols-1';
+const AREA_COLUMNS: Record<number, string> = {
+    2: 'grid gap-2 grid-cols-2 @max-[259px]/brief:grid-cols-1',
+    3: 'grid gap-2 grid-cols-3 @max-[259px]/brief:grid-cols-1',
+};
+const AREA_FLOW = 'flex flex-wrap items-center gap-x-3 gap-y-1';
 const AREA_STACK =
-    'grid grid-cols-1 content-start gap-0.5 @md/brief:flex @md/brief:flex-wrap @md/brief:gap-1';
+    'grid min-w-0 grid-cols-1 content-start gap-0.5 @md/brief:flex @md/brief:flex-wrap @md/brief:gap-1';
 
 /**
  * Column span classes per breakpoint, matching `columnClasses`: 3- and 4-column grids have two
@@ -308,6 +314,34 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
         bound.update(fieldBindingUpdate(binding, bound.data, typed));
         if (binding.syncsTitle && typeof typed === 'string') bound.setTitle(typed);
     };
+    if (field.compact && field.type === 'text' && !binding.suggestions) {
+        return (
+            <CompactTextField
+                label={field.label}
+                value={typeof value === 'string' ? value : ''}
+                disabled={readOnly}
+                onChange={onChange}
+            />
+        );
+    }
+    if (field.compact && field.type === 'text' && binding.suggestions) {
+        return (
+            <label className="grid min-w-24 flex-1 basis-24 gap-0">
+                <span className={BRIEF.caption}>{field.label}</span>
+                <CatalogSuggest
+                    catalog={suggestions}
+                    value={typeof value === 'string' ? value : ''}
+                    onChange={onChange}
+                    onSelect={(entry) => onChange(entry.name)}
+                    disabled={readOnly}
+                    ariaLabel={field.label}
+                    placeholder={field.placeholder}
+                    className="w-full border-0 border-b border-border bg-transparent px-0.5 py-0 text-sm font-semibold text-textPrimary focus:outline-hidden focus:border-primary disabled:opacity-60"
+                    showAllWhenEmpty
+                />
+            </label>
+        );
+    }
     return (
         <LabeledField field={field}>
             {binding.suggestions && field.type === 'text' ? (
@@ -602,6 +636,7 @@ const NodeView = memo(function NodeView({
                 docsPath={node.hideTitle ? undefined : node.docsPath}
                 storageKey={node.collapsible && !node.hideTitle ? collapseKey : undefined}
                 defaultExpanded={!(node.collapsible && node.defaultCollapsed)}
+                dense={node.layout === 'area'}
             >
                 <ShortLabelScope nodes={node.children}>
                     <ChildrenGrid
@@ -748,6 +783,10 @@ function ChildrenGrid({
     // An empty container in the editor stacks too, so each column offers a drop zone.
     const stacked =
         nodes.some((node) => node.column !== undefined) || (overlay !== null && nodes.length === 0);
+    // Area groups with no column placements flow their cells (chips, fields) by natural width.
+    if (area && !(columns && columns > 1 && stacked)) {
+        return <div className={AREA_FLOW}>{children}</div>;
+    }
     if (columns && columns > 1 && stacked) {
         const stacks = Array.from({ length: columns }, (_, columnIndex) =>
             nodes
@@ -758,7 +797,7 @@ function ChildrenGrid({
             <div
                 className={
                     area
-                        ? AREA_COLUMNS
+                        ? (AREA_COLUMNS[Math.min(columns, 3)] ?? AREA_COLUMNS[3])
                         : (proportional?.className ??
                           clsx('grid gap-4', columnClasses[columns] ?? columnClasses[1]))
                 }
@@ -802,7 +841,12 @@ function ChildrenGrid({
             </div>
         );
     }
-    return <div className="grid grid-cols-1 gap-4">{children}</div>;
+    const denseList = nodes.some((node) => node.type === 'group' && node.layout === 'area');
+    return (
+        <div className={clsx('grid grid-cols-1', denseList ? BRIEF.groupGap : 'gap-4')}>
+            {children}
+        </div>
+    );
 }
 
 /** Counts unfilled required fields for the FR-4a soft-advisory note (walks the whole tree). */

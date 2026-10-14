@@ -29,6 +29,10 @@ export const BASELINE: Readonly<Record<string, KindHeights>> = {
         sheet: { 375: 2647, 1280: 1605 },
         brief: { 375: 1547, 1280: 952 },
     },
+    'wod-2e/wod2e-character': {
+        sheet: { 375: 6871, 1280: 3113 },
+        brief: { 375: 2553, 1280: 1274 },
+    },
     'wod-v5/hunter': {
         sheet: { 375: 6223, 1280: 3023 },
         brief: { 375: 2700, 1280: 1306 },

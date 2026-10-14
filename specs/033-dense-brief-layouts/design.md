@@ -155,3 +155,19 @@ vehicle, fodder, V5 core (`systems/v5/core/templates.ts`), and Hunter
   nothing from the glossary and keep full labels. Shipped-page fixtures
   (`character-templates.pre-007.json`, `star-wars-parity.json`, zod baselines) were regenerated:
   they differ only by the new `shortForm` and `layout` keys.
+- **US3 (done before US2: the targets need the dense look)**: an `area` group is now the whole brief
+  look: no box, a small heading over a hairline (`SectionCard dense`), and cells that flow by
+  natural width when the group places none in columns. Gaps between groups tighten to the rhythm
+  when a list holds an area group. `denseBrief()` and `dense()` in `templates/builders.ts` put a
+  shipped brief into that look; the weapons list starts collapsed in every brief, and the fodder
+  abilities list too (its entries keep their full editing row; a compact list row is not built
+  here). `.term-row` is an inline-size container, so a full-label rating collapses in a flowing
+  group; Dark Side Resistance therefore uses a derived short label (`DAR`, `СОП`), the only
+  glossary-less short label in the shipped briefs.
+- **Measured** (dev server, root height with its padding, 375 / 640 / 1280 px window): Star Wars
+  character 623 / 398 / 333; droid 595 / 377 / 333; creature 374 / 302 / 299; vehicle 511 / 359 /
+  375 (the 16 px more at 1280 is the page's own `lg:p-6`; the test compares content heights); fodder
+  group 395 / 332 / 329; WoD 2e 619 / 377 / 333; Hunter 707 / 418 / 396; V5 core 529 / 313 / 299.
+  The WoD 2e brief joined the baseline list (2553 px at 375 before).
+- The e2e spec applies the area through the sheet root's own width (`max-width`) because the root is
+  the named container: a 640 px root in a 1280 px window lays out like a 640 px window.

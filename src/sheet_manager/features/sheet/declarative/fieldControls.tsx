@@ -889,7 +889,11 @@ function FormulaFieldControlRender({
     return (
         <div
             className={clsx(
-                top ? 'grid gap-1' : 'flex items-baseline justify-between gap-3',
+                top
+                    ? 'grid gap-1'
+                    : field.compact
+                      ? 'flex items-baseline gap-1.5'
+                      : 'flex items-baseline justify-between gap-3',
                 field.compact ? 'text-xs' : 'text-sm'
             )}
         >

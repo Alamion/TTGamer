@@ -1,6 +1,6 @@
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 
-import { group } from '../../../../../templates/builders';
+import { dense, group } from '../../../../../templates/builders';
 import { DocumentKindSchema, SystemIdSchema } from '../../../../../types/document';
 import { type CustomTemplate, TEMPLATE_SCHEMA_VERSION } from '../../../../../types/template';
 import { compactTraitsGroup, equipmentGroup, trackGroup } from '../../../ruleset/templateParts';
@@ -19,25 +19,27 @@ export const hunterBriefTemplate: CustomTemplate = {
     documentKind: DocumentKindSchema.parse('character'),
     schemaVersion: TEMPLATE_SCHEMA_VERSION,
     children: [
-        hunterIdentityGroup({ compact: true }),
-        group(
-            'condition',
-            v5.sections.condition.message,
-            [
-                ...[
-                    ...trackGroup('health', { compact: true }).children,
-                    ...trackGroup('willpower', { compact: true }).children,
-                ].map((node) => ({ ...node, column: 1 })),
-                ...hunterCellGroup({ compact: true }).children.map((node) => ({
-                    ...node,
-                    column: 2,
-                })),
-            ],
-            { columns: 2, labelMessage: v5.sections.condition }
+        dense(hunterIdentityGroup({ compact: true })),
+        dense(
+            group(
+                'condition',
+                v5.sections.condition.message,
+                [
+                    ...[
+                        ...trackGroup('health', { compact: true }).children,
+                        ...trackGroup('willpower', { compact: true }).children,
+                    ].map((node) => ({ ...node, column: 1 })),
+                    ...hunterCellGroup({ compact: true }).children.map((node) => ({
+                        ...node,
+                        column: 2,
+                    })),
+                ],
+                { columns: 2, labelMessage: v5.sections.condition }
+            )
         ),
         compactTraitsGroup('attributes'),
         compactTraitsGroup('skills', { collapsible: true }),
-        hunterEdgesGroup(),
-        equipmentGroup('weapons'),
+        dense(hunterEdgesGroup()),
+        dense(equipmentGroup('weapons'), { collapsed: true }),
     ],
 };

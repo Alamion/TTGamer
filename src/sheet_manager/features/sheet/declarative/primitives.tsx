@@ -753,7 +753,7 @@ function PrimitiveResourceBody({
     }
     if (node.compact) {
         return (
-            <div className="grid gap-1">
+            <div className="grid min-w-0 grid-cols-1 gap-1">
                 {descriptor.mode === 'pool' && !node.part ? (
                     <CompactResource
                         label={label}

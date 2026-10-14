@@ -10,14 +10,44 @@ export async function createDocument(page: Page, definition: string): Promise<vo
     await page.getByLabel('View mode').first().waitFor();
 }
 
-/** Switches the view (`sheet` is the first option, `brief` the one named Brief) and measures it. */
-export async function viewHeight(page: Page, view: 'sheet' | 'brief'): Promise<number> {
+export interface ViewSize {
+    /** The sheet root's height, its own padding included. */
+    height: number;
+    /** The height without the root's padding (which the page, not the brief, decides). */
+    content: number;
+    /** Something sticks out of the window sideways. */
+    overflows: boolean;
+}
+
+/** Switches the view (`sheet` is the first option, `brief` the one named Brief). */
+export async function showView(page: Page, view: 'sheet' | 'brief'): Promise<void> {
     const select = page.getByLabel('View mode').first();
     const options = await select.locator('option').allTextContents();
     const label = view === 'sheet' ? options[0] : options.find((name) => /brief/i.test(name));
     if (!label) throw new Error(`No ${view} view among: ${options.join(', ')}`);
     await select.selectOption({ label });
-    const root = page.locator('[data-template-root]').first();
-    await root.waitFor();
-    return Math.round((await root.boundingBox())?.height ?? 0);
+    await page.locator('[data-template-root]').first().waitFor();
+}
+
+/** Measures the open view at the current window size; `areaWidth` narrows only the sheet root. */
+export async function measureView(page: Page, areaWidth?: number): Promise<ViewSize> {
+    return page.evaluate((width) => {
+        const root = document.querySelector<HTMLElement>('[data-template-root]')!;
+        root.style.maxWidth = width ? `${width}px` : '';
+        root.style.marginInline = width ? '0' : '';
+        const box = root.getBoundingClientRect();
+        const style = getComputedStyle(root);
+        const padding = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+        const limit = document.documentElement.clientWidth + 0.5;
+        const overflows =
+            document.documentElement.scrollWidth > document.documentElement.clientWidth ||
+            [...root.querySelectorAll('*')].some(
+                (node) => node.getBoundingClientRect().right > limit
+            );
+        return {
+            height: Math.round(box.height),
+            content: Math.round(box.height - padding),
+            overflows,
+        };
+    }, areaWidth);
 }

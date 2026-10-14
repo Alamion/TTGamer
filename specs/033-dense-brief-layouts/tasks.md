@@ -83,16 +83,16 @@ and every short label has its full name as accessible name and hint, in en and r
 
 **Check**: the same brief at 320, 375, 640, and 1280 px areas inside a larger window.
 
-- [ ] T015 [US3] Extend `tests-e2e/smoke/brief-layout.spec.ts`: draw the Star Wars character brief
+- [x] T015 [US3] Extend `tests-e2e/smoke/brief-layout.spec.ts`: draw the Star Wars character brief
       in areas of 320, 375, 640, 1280 px inside a 1280 px window; assert ≤700 px at 375, ≤400 px at
       640, not taller at 1280 than at 640, no horizontal scroll and no clipped value at any width
       (SC-001 – SC-003), for the other shipped briefs at least 50% shorter than the baseline from
       T001a at 375 px (SC-001); full sheet heights at 375 and 1280 within 1% of that baseline
       (SC-007); a test hook mounts a brief in a fixed-width wrapper
-- [ ] T016 [US3] Tune the narrow/wide thresholds and gaps until T015 passes on the dev server in
+- [x] T016 [US3] Tune the narrow/wide thresholds and gaps until T015 passes on the dev server in
       light and dark and on a phone viewport; record the final numbers in `design.md`
       "Implementation notes"
-- [ ] T017 [US3] Run `yarn verify:full` (shared sheet styles) and commit:
+- [x] T017 [US3] Run `yarn verify:full` (shared sheet styles) and commit:
       `test(sheet): brief fits its area at four widths (spec 033, US3)`
 
 ## User Story 2 - Every element kind tightens the same way (P2)

@@ -10,20 +10,19 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { setTestLocale } from '../stubs/testLocale';
 
+type Rated = ShortLabelNode & { type: string };
+
 const briefs = systemRegistry
     .getSystems()
     .flatMap((system) => system.defaultTemplates ?? [])
     .filter(({ id }) => id.endsWith('brief') || id === 'brief');
 
 /** Every container's direct ratings in short form, with the container's id. */
-function shortGroups(
-    children: readonly TemplateNode[],
-    found: Array<[string, ShortLabelNode[]]> = []
-) {
+function shortGroups(children: readonly TemplateNode[], found: Array<[string, Rated[]]> = []) {
     for (const node of children) {
         if (node.type !== 'group' && node.type !== 'section') continue;
         const ratings = node.children.filter(
-            (child): child is TemplateNode & ShortLabelNode =>
+            (child): child is TemplateNode & Rated =>
                 (child.type === 'primitive' || child.type === 'rating') &&
                 (child as ShortLabelNode).shortForm === true
         );
@@ -62,10 +61,15 @@ describe('shipped briefs in short form (spec 033)', () => {
                         const where = `${template.id}/${groupId}/${rating.id}`;
                         const short = labels.get(rating.id);
                         expect(short, where).toBeDefined();
-                        // Shipped terms carry hand-written abbreviations in both languages.
+                        // Shipped terms carry hand-written abbreviations in both languages; a resource
+                        // outside the glossary (Dark Side Resistance) takes the derived letters.
                         const ref = rating.termRef ?? rating.labelMessage;
-                        expect(bookTerms[ref ?? '']?.abbr, `${where} abbr`).toBeDefined();
-                        expect(bookTerms[ref ?? '']?.ruAbbr, `${where} ruAbbr`).toBeDefined();
+                        if (bookTerms[ref ?? '']) {
+                            expect(bookTerms[ref ?? '']?.abbr, `${where} abbr`).toBeDefined();
+                            expect(bookTerms[ref ?? '']?.ruAbbr, `${where} ruAbbr`).toBeDefined();
+                        } else {
+                            expect(rating.type, `${where} is a resource`).toBe('primitive');
+                        }
                         // A short label that equals the full label means a clash fell back.
                         expect(short, where).not.toBe(rating.label);
                         expect(short!.length, where).toBeGreaterThanOrEqual(2);

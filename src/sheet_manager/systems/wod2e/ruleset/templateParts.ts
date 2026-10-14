@@ -46,6 +46,7 @@ export function resource(
         maxFrom?: string;
         minFrom?: string;
         compact?: boolean;
+        shortForm?: boolean;
         part?: 'current' | 'max';
         poolTracker?: PoolTrackerOverride;
         maxMinFrom?: string;

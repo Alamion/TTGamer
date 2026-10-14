@@ -1,5 +1,6 @@
 import type {
     CatalogBinding,
+    CustomTemplate,
     GroupNode,
     ListNode,
     PoolTrackerOverride,
@@ -273,6 +274,36 @@ export function group(
         ...(options.layout === 'area' ? { layout: 'area' as const } : {}),
         ...(options.defaultCollapsed ? { collapsible: true, defaultCollapsed: true } : {}),
     };
+}
+
+/**
+ * A group drawn in the brief look (spec 033): area columns, no box. `collapsed` starts a
+ * collapsible group closed, so a long list (weapons) costs one heading line until opened.
+ */
+export function dense(node: GroupNode, options: { collapsed?: boolean } = {}): GroupNode {
+    return {
+        ...node,
+        layout: 'area',
+        ...(options.collapsed ? { collapsible: true, defaultCollapsed: true } : {}),
+    };
+}
+
+/** Every group of a brief page in the brief look; `collapsed` names the ones that start closed. */
+export function denseAll(
+    children: TemplateNode[],
+    collapsed: readonly string[] = []
+): TemplateNode[] {
+    return children.map((node) =>
+        node.type === 'group' ? dense(node, { collapsed: collapsed.includes(node.id) }) : node
+    );
+}
+
+/** A shipped brief page with every group in the brief look. */
+export function denseBrief(
+    template: CustomTemplate,
+    collapsed: readonly string[] = []
+): CustomTemplate {
+    return { ...template, children: denseAll(template.children, collapsed) };
 }
 
 export function section(
