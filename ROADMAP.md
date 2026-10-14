@@ -155,6 +155,10 @@ dependencies — they are not identifiers; slugs are.
   regions inside worlds, sessions inside arcs, and so on.
 - **Relates to**: `map-notes` (map points can link to notes; the direction of the
   dependency between the two paths is decided during their planning).
+- **Notes**:
+    - 2026-10-14: first slice: a draggable, resizable window with a folder tree, replacing
+      the document manager; documents and folders now, markdown and canvas as they arrive.
+      Search, filter, and sort work over the fields every entity has.
 - **Open questions**: none recorded.
 
 ### `campaigns` — Campaigns
@@ -291,3 +295,12 @@ dependencies — they are not identifiers; slugs are.
     - LLM as a player character at the table.
 - **Open questions**: which sub-capability ships first; how each respects the
   offline-first guarantee for shipped functionality.
+- **Notes**:
+    - 2026-10-14: the sub-capabilities are grouped as three roles that share one base: an
+      **assistant** (answers questions about the tool, the rules, and the open document),
+      a **scriptwriter** (drafts and revises campaign material as notes and folders), and a
+      **narrator** (runs a scene as the game master, or plays a character, for solo or
+      improvised play). All three read and change the same documents players open
+      (a tree of entities with search and filters), show a change for acceptance before it is
+      applied, and stay optional. `note-tree` is built with that in mind: its entities and
+      folders are the material these roles read and write.
