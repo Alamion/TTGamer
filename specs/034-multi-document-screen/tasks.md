@@ -47,37 +47,37 @@ is never evicted from the loaded cache.
 **Check**: with two documents, open the second beside the first, edit a value in each, close one;
 the other and its values are unchanged.
 
-- [ ] T009 [US1] Write `tests/sheet_manager/pane-store.test.ts`: `openBeside` adds a pane and
+- [x] T009 [US1] Write `tests/sheet_manager/pane-store.test.ts`: `openBeside` adds a pane and
       focuses it; the same document focuses its pane (no duplicate); the seventh replaces the least
       recently focused pane, never the focused one, and reports the replaced id; `close` keeps the
       document in `entries`; `recent` order; focus calls `setCurrentDocument` (FR-001 – FR-004,
       FR-011)
-- [ ] T010 [US1] Implement `openBeside`, `focus`, `close`, `recent`, and the limit in
+- [x] T010 [US1] Implement `openBeside`, `focus`, `close`, `recent`, and the limit in
       `features/sheet/panes/paneStore.ts`; `pinDocuments(ids)` follows `ids`; "Open" and reference
       fields (`setCurrentDocument`) replace the focused pane's document or focus the pane that shows
       it (D3)
-- [ ] T011 [US1] Write `tests/sheet_manager/pane-tabs.test.tsx`: strip only with two or more panes;
+- [x] T011 [US1] Write `tests/sheet_manager/pane-tabs.test.tsx`: strip only with two or more panes;
       roles `tablist`, `tab`, `aria-selected` on the focused one; ←/→/Home/End move focus and
       select; each tab has a named close button; each pane is a `region` labelled by its tab;
       closing a pane moves focus to the neighbouring tab; a pane whose record cannot be read shows
       an error notice with a close control (reported through `reportSheetIssue`, consumed with
       `takeSheetIssues()`); an unavailable type shows the existing notice for that pane only
       (FR-002, FR-013, FR-017, edge cases)
-- [ ] T012 [US1] Create `features/sheet/panes/PaneTabs.tsx` and `Pane.tsx` (header with title, view
+- [x] T012 [US1] Create `features/sheet/panes/PaneTabs.tsx` and `Pane.tsx` (header with title, view
       selector slot, maximize slot, close; provider and `CurrentDocumentSheet` inside) and render
       them from `PaneArea.tsx` for two or more panes, panes stacked one under another until the
       layout of US2; touch targets of tab and close at least 32 px on coarse pointers
-- [ ] T013 [US1] Add **Open beside** to the row menu and the details pane in
+- [x] T013 [US1] Add **Open beside** to the row menu and the details pane in
       `components/documents/DocumentsWindow.tsx` and `DocumentDetails.tsx` (window stays open on
       desktop, closes on a phone like Open); toast through `react-hot-toast` (`role="status"`) when
       a pane was replaced; on a phone it adds a tab and focuses it, and **Open** replaces the
       focused pane's document or focuses the pane that already shows it (FR-019); extend
       `tests/sheet_manager/documents-window.test.tsx` and `documents-window.touch.test.tsx` (FR-001,
       FR-004, SC-001)
-- [ ] T014 [US1] Add the strings (`ttgamer.ui.sheet.panes.*`: tabs label, close, open beside,
+- [x] T014 [US1] Add the strings (`ttgamer.ui.sheet.panes.*`: tabs label, close, open beside,
       replaced notice, gone, unavailable) to `translations/source/en/ui/sheet/documents.yaml` and
       the ru mirror (FR-015); run `yarn build:translations`
-- [ ] T015 [US1] Run `yarn verify` and commit:
+- [x] T015 [US1] Run `yarn verify` and commit:
       `feat(sheet): open a document beside another, with a tab strip (spec 034, US1)`
 
 ## User Story 2 - The panes fit the screen they are on (P2)

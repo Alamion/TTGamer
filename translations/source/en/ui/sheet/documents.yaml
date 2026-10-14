@@ -17,6 +17,11 @@ toolbar:
     exportSuccess: Exported "{title}"
     importSuccess: Imported "{title}"
     importError: Failed to import "{filename}"
+panes:
+    tabsLabel: Open documents
+    close: 'Close {name}'
+    unreadable: This document could not be read.
+    replaced: 'At most {max} documents stay open: "{name}" replaced "{replaced}".'
 conflict:
     typeTitle: This document type is already installed
     typePrompt: The file carries a different version of an installed document type. Replace the installed type, keep both (the imported one gets a new identity), or cancel.
@@ -91,6 +96,7 @@ manager:
         unknown: Unknown
         top: Top level
         open: Open
+        openBeside: Open beside
         delete: Delete
         rename: Rename
         move: Move to…

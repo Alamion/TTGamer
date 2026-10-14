@@ -18,6 +18,7 @@ import { useTreeSelection } from '@site/src/shared/hooks/useTreeSelection';
 import { generateId } from '@site/src/shared/utils/random';
 import clsx from 'clsx';
 import {
+    Columns2,
     ExternalLink,
     FilePlus,
     FolderInput,
@@ -28,6 +29,7 @@ import {
     Undo2,
 } from 'lucide-react';
 import { type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import { documentLabeler } from '../../features/documents/labeler';
 import {
@@ -57,6 +59,8 @@ import {
     undoTreeChange,
     useDocumentsHistory,
 } from '../../features/documents/treeActions';
+import { openBeside } from '../../features/sheet/panes/paneStore';
+import { MAX_PANES } from '../../features/sheet/panes/types';
 import { useDocumentStore } from '../../store/documentStore';
 import { ConfirmDialog } from '../dialogs/ConfirmDialog';
 import { DocumentCreateDialog } from '../dialogs/DocumentCreateDialog';
@@ -201,6 +205,23 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
 
     const openDocument = (id: string) => {
         setCurrentDocument(id);
+        if (narrow) onOpenChange(false);
+    };
+    const openDocumentBeside = (id: string) => {
+        const replaced = openBeside(id);
+        if (replaced) {
+            const nameOf = (candidate: string) => {
+                const entry = entries.find(({ id: entryId }) => entryId === candidate);
+                return entry ? documentLabeler.title(entry) : candidate;
+            };
+            toast(
+                translate(uiMessages.sheet.documents.panes.replaced, {
+                    max: MAX_PANES,
+                    name: nameOf(id),
+                    replaced: nameOf(replaced),
+                })
+            );
+        }
         if (narrow) onOpenChange(false);
     };
     const activate = (item: TreeRowItem<DocumentsNode>) => {
@@ -385,6 +406,11 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
         ? menuItem.node.type === 'document'
             ? [
                   { id: 'open', label: translate(labels.details.open), icon: ExternalLink },
+                  {
+                      id: 'openBeside',
+                      label: translate(labels.details.openBeside),
+                      icon: Columns2,
+                  },
                   { id: 'rename', label: translate(labels.details.rename), icon: Pencil },
                   { id: 'move', label: translate(labels.details.move), icon: FolderInput },
                   {
@@ -412,6 +438,8 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
         const keys = keysFor(menuItem.key);
         if (id === 'open' && menuItem.node.type === 'document')
             openDocument(menuItem.node.entry.id);
+        else if (id === 'openBeside' && menuItem.node.type === 'document')
+            openDocumentBeside(menuItem.node.entry.id);
         else if (id === 'rename') startRename(menuItem.key);
         else if (id === 'newFolder' && menuItem.node.type === 'folder') {
             createFolderIn(menuItem.node.folder.id);
@@ -656,6 +684,7 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                             folders={folders}
                             entries={entries}
                             onOpen={(entry) => openDocument(entry.id)}
+                            onOpenBeside={(entry) => openDocumentBeside(entry.id)}
                             onRename={renameRow}
                             onMove={() => startMove(selectedKeys)}
                             onDelete={() => startDelete(selectedKeys)}

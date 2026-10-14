@@ -177,3 +177,9 @@ rolls and focus checks, strings, guide.
   (US3 and US1): an export nothing imports fails the dead-code gate. The baseline in
   `tests-e2e/smoke/panes-baseline.ts` holds the heights after spec 033 (full sheet 7926/3473, brief
   623/333 at 375/1280 px), since SC-005 compares with the page as it is now.
+- **US1.** The store has no separate focus: `reconcilePanes(state, currentId, entryIds)` derives the
+  panes from the current document (a document opened with **Open** takes the place of the pane
+  focused last; deleted documents drop out), used in render and committed by an effect; `openBeside`
+  reconciles first. A pane has its own close button besides its tab's, both named `Close <name>`.
+  Deleting the current document is still the documents window's job (it picks the survivor), as
+  before.

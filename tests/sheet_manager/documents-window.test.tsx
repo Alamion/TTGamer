@@ -1,6 +1,9 @@
 // @vitest-environment happy-dom
+import { usePaneStore } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { createElement } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { folder, openWindow, resetDocuments, seedDocuments } from './helpers/documentsWindow';
@@ -187,9 +190,55 @@ describe('the documents window (spec 032, US1)', () => {
         expect(screen.queryByRole('button', { name: 'Actions for Campaign' })).toBeNull();
     });
 
+    it('opens beside from the row menu and from the details, keeping the window open', () => {
+        usePaneStore.setState({ ids: [], recent: [] });
+        seedDocuments(['Ana', 'Bruno', 'Cleo'], { current: 'Ana' });
+        const onOpenChange = vi.fn();
+        openWindow(onOpenChange);
+        fireEvent.click(screen.getByRole('button', { name: 'Actions for Bruno' }));
+        fireEvent.click(screen.getByRole('menuitem', { name: 'Open beside' }));
+        expect(usePaneStore.getState().ids).toEqual(['Ana', 'Bruno']);
+        expect(current()).toBe('Bruno');
+
+        fireEvent.click(row('Cleo'), { ctrlKey: true });
+        fireEvent.click(
+            within(screen.getByRole('region', { name: 'Details' })).getByRole('button', {
+                name: 'Open beside',
+            })
+        );
+        expect(usePaneStore.getState().ids).toEqual(['Ana', 'Bruno', 'Cleo']);
+        expect(onOpenChange).not.toHaveBeenCalled();
+    });
+
+    it('says which pane a seventh document replaced', async () => {
+        const names = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+        usePaneStore.setState({ ids: [], recent: [] });
+        seedDocuments(names, { current: 'A' });
+        openWindow();
+        render(createElement(Toaster));
+        for (const name of names.slice(1)) {
+            fireEvent.click(screen.getByRole('button', { name: `Actions for ${name}` }));
+            fireEvent.click(screen.getByRole('menuitem', { name: 'Open beside' }));
+        }
+        expect(usePaneStore.getState().ids).toHaveLength(6);
+        expect(usePaneStore.getState().ids).not.toContain('A');
+        expect(screen.getByText('At most 6 documents stay open: "G" replaced "A".')).toBeTruthy();
+    });
+
     describe('on a phone', () => {
         beforeEach(() => {
             narrow = true;
+        });
+
+        it('closes the window after opening beside, as Open does', () => {
+            usePaneStore.setState({ ids: [], recent: [] });
+            seedDocuments(['Ana', 'Bruno'], { current: 'Ana' });
+            const onOpenChange = vi.fn();
+            openWindow(onOpenChange);
+            fireEvent.click(screen.getByRole('button', { name: 'Actions for Bruno' }));
+            fireEvent.click(screen.getByRole('menuitem', { name: 'Open beside' }));
+            expect(current()).toBe('Bruno');
+            expect(onOpenChange).toHaveBeenCalledWith(false);
         });
 
         it('fills the screen, offers the list and the details as tabs, and closes once a document opens', () => {
