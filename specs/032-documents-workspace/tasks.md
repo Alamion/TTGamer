@@ -15,10 +15,14 @@ every document intact; boot reads only the slim state and the open record.
 - [ ] T001 Write `tests/sheet_manager/document-store-v5.test.ts`: migration of a v4 value (every
       envelope becomes a record and an entry, `currentDocumentId` and `recoveryEntries` kept, backup
       key written first, a rerun after a simulated crash gives the same result), a missing record
-      rebuilds its entry, orphan records are purged by the sweep (portrait included)
-- [ ] T002 Create `store/documentIndex.ts`: `DocumentIndexEntrySchema` and `FolderSchema` (Zod;
-      fields in design D1), `entryOf(envelope)`, `STORE_KEYS` (`doc:<id>`, backup key); no store
-      access
+      rebuilds its entry, the sweep removes only `pendingPurge` ids (portrait included) and never an
+      unlisted record, boot and a name search read no record but the open one (spy on `readRecord`)
+- [ ] T002 Create `store/documentIndex.ts`: `DocumentIndexEntrySchema` (with `updatedAt`) and
+      `FolderSchema` (Zod; fields in design D1), `entryOf(envelope)`, `mergeById`, `STORE_KEYS`
+      (`doc:<id>`, backup key); no store access
+- [ ] T002a Write `tests/sheet_manager/document-index.test.ts`: write-through keeps entries equal to
+      envelopes, the `changedAt` throttle, two store instances over one storage (a stale tab) merge
+      by id and lose no row
 - [ ] T003 Create `store/documentContent.ts`: `readRecord`, `writeRecord`, `removeRecord`,
       `listRecordIds` over localForage; the debounced writer (300 ms, flush on `pagehide`, one write
       per changed envelope identity); the boot sweep; a loaded-cache LRU of 8 that never evicts the
@@ -29,24 +33,29 @@ every document intact; boot reads only the slim state and the open record.
       (`createDocument`, `importDocument`, `updateDocumentData`, `updateDocumentMetadata`,
       `relocateDocuments`, `updateTemplateValues`, `deleteDocument`) updates envelope and entry in
       one `set`, with `changedAt` moving at most once per 5 s and `createdAt` set on create;
-      `deleteDocument` removes the entry and leaves the record to the sweep;
-      `migrateDocumentStoreState` writes the `universal-character-storage:v4-backup` copy, then
-      records and entries; imports land at the top level
+      `deleteDocument` removes the entry and adds its id to `pendingPurge` (the sweep purges only
+      those ids; an unlisted record without an entry is reported and its entry rebuilt); entries and
+      folders merge by id when the index is rehydrated or saved; `migrateDocumentStoreState` writes
+      the `universal-character-storage:v4-backup` copy, then records and entries; imports land at
+      the top level
 - [ ] T005 Move the metadata-only readers to `entries`: `features/sheet/data/libraryActions.ts`,
       `libraryMoves.ts`, `templateRetarget.ts`, `components/dialogs/LibraryDialog.tsx` (counts),
-      `features/sheet/data/libraryTree.ts` callers; load by id where data is needed
-      (`features/template-editor/components/EditorPreview.tsx`, `EditorPage.tsx`, retarget
-      compatibility)
+      `features/sheet/data/libraryTree.ts` callers; `isTemplateCompatible` and
+      `templateMatchesSetting` read only system, kind, and setting, so planners use entries (an
+      adapter maps `settingId`); only the open document's preview
+      (`features/template-editor/components/EditorPreview.tsx`, `EditorPage.tsx`) loads by id
 - [ ] T006 Make the sheet shell wait for the open record: `features/sheet/shell/SheetWorkspace.tsx`
       and the callers of `setCurrentDocument` (`DocumentCreateDialog`, import path, manager) use
       `openDocument`; show the existing loading feedback while it reads
 - [ ] T007 Fix the tests that set `documents` directly (`tests/sheet_manager/**`,
       `tests/integrations/**`) through a small helper `tests/sheet_manager/helpers/seedDocuments.ts`
       that fills `documents` and `entries` together; no assertion is weakened
-- [ ] T008 Add the backlog entry for removing the v4 backup after 2027-01-14 (`TODO.md`, same
-      pattern as T-108) and a test that fails after that date naming what to delete
-- [ ] T009 Run `yarn verify` (schema and persistence change) and commit:
-      `feat(store): one record per document and a light index (spec 032, Foundation A)`
+- [ ] T008 Delete the v4 backup after the second launch that opened the app and its open document
+      without a reported storage issue (counter in `localStorage`, `store/documentContent.ts`), with
+      a test of the counter; record the removal of this migration code in `TODO.md` (same pattern as
+      T-108) and the folders-to-cloud mapping as a new backlog entry (contract change)
+- [ ] T009 Run `yarn verify` and `yarn contract:report` (persistence change; list differences), and
+      commit: `feat(store): one record per document and a light index (spec 032, Foundation A)`
 
 ## Foundation B - Shared splitter (D8)
 
@@ -57,18 +66,19 @@ has a draggable divider.
       editor panes, the library dialog, a bare host for the documents window): pointer drag stores
       once on release and previews while moving, `pointercancel` reverts, arrows move by 10 and
       Shift by 40, Home and double click reset, `role="separator"` with value, min and max, bounds,
-      the remembered size, a container that shrinks, collapse below a threshold where enabled
+      the remembered size, a container that shrinks (no pane collapses in this slice)
 - [ ] T011 Create `src/shared/components/Splitter.tsx` from
-      `features/template-editor/components/PaneDivider.tsx` (vertical; adds `collapseBelow` and the
-      `pointercancel` revert; keeps `data-pane-divider`) and `src/shared/hooks/usePaneSizes.ts`
-      (storage key, limits, container width, minimum for the rest); no import from `sheet_manager`
+      `features/template-editor/components/PaneDivider.tsx` (vertical; adds the `pointercancel`
+      revert; keeps `data-pane-divider`) and `src/shared/hooks/usePaneSizes.ts` (storage key,
+      limits, container width, minimum for the rest); no import from `sheet_manager`
 - [ ] T012 Make `features/template-editor/components/usePaneWidths.ts` a wrapper of `usePaneSizes`
       with the same key (`template-editor-panes`), limits, and results for `readPaneWidths` and
       `fitPaneWidths`; `EditorPanes.tsx` uses `Splitter`; delete `PaneDivider.tsx`
 - [ ] T013 Put a `Splitter` between the tree and the details of
       `components/dialogs/LibraryDialog.tsx` (key `library-panes`, replacing `md:max-w-[26rem]`);
       the narrow tab layout stays
-- [ ] T014 Run `yarn verify` and commit:
+- [ ] T014 Run `yarn verify:full` (new shared component), compare the `yarn build` bundle size with
+      master, and commit:
       `refactor(ui): one splitter for the editor and the library (spec 032, Foundation B)`
 
 ## Foundation C - Shared tree (D7)
@@ -86,7 +96,7 @@ has a draggable divider.
 - [ ] T017 Rebuild `components/dialogs/library/LibraryTree.tsx` and `TreeRow.tsx` on the shared
       tree: they keep node content (icon per level, badges, counts, drag, checkbox) and
       `features/sheet/data/libraryTree.ts` flatten; rename `data-library-row` in the library tests
-- [ ] T018 Run `yarn verify` and commit:
+- [ ] T018 Run `yarn verify:full`, compare the bundle size with master, and commit:
       `refactor(ui): shared tree view for the library (spec 032, Foundation C)`
 
 ## User Story 1 - A documents window beside the sheet (P1)
@@ -99,12 +109,13 @@ reload, reopen; the same at 375 px.
       Ctrl/Cmd and Shift click select without opening; drag by the title bar stays on screen; resize
       within bounds; layout restored and repaired when the screen shrinks; the sheet behind stays
       operable; narrow layout (mocked media query) is full screen with tabs, closes on open; Escape
-      closes
+      closes; open and closed folders are remembered across reloads; the window and the library
+      dialog pass the tree and splitter contract suites of T010 and T015 (SC-008, SC-009)
 - [ ] T020 [US1] Create `src/shared/components/FloatingWindow.tsx` (D9: non-modal dialog, pointer
       drag, eight resize handles, viewport clamp, layout in `useLocalStorageState`, `id` and
       `onFocus` props, full-screen below `md`)
 - [ ] T021 [US1] Create `features/documents/rows.ts` (entries and folders to flat rows with names,
-      icons, expanded set) and
+      icons, expanded set kept with the window layout) and
       `components/documents/{DocumentsWindow,DocumentsTree,DocumentDetails}.tsx`: the tree on
       `TreeView` with open-on-click, the details pane with name, kind, system, setting, place,
       times, Open, Delete, and the rejected-files section moved from the old manager; `Splitter`
@@ -115,7 +126,7 @@ reload, reopen; the same at 375 px.
       multi-delete with `ConfirmDialog`
 - [ ] T023 [US1] Add en and ru translations in `translations/source/{en,ru}` (window, details, empty
       states, announcements) and run `yarn validate:i18n`
-- [ ] T024 [US1] Run `yarn verify` and commit:
+- [ ] T024 [US1] Run `yarn verify:full`, compare the bundle size with master, and commit:
       `feat(documents): documents window with a tree (spec 032, US1)`
 
 ## User Story 2 - Organize with folders (P2)
@@ -128,11 +139,12 @@ reload, reopen; the same at 375 px.
       schema rejects malformed input
 - [ ] T026 [US2] Create `features/documents/operations.ts` (`TreeOperationSchema`, `apply`,
       `describe`, problems) and `features/documents/history.ts` (in-memory 50-step undo and redo of
-      inverses); wire `documentStore` folder actions that persist `folders` and entry placement
+      inverses); wire `documentStore` folder actions that persist `folders` and entry placement (a
+      saved and reloaded tree equals the one before, tested in `tree-operations.test.ts`)
 - [ ] T027 [US2] Add to the window: create, rename, delete of folders; HTML5 drag with the drop
       position shown before the drop and a refusal message for illegal targets; the row menu and
-      keyboard commands (F2 rename, Delete, Ctrl+X and Ctrl+V or "Move to…"); the `MoveToPicker.tsx`
-      folder picker on the shared tree; undo and redo buttons and Ctrl+Z (`components/documents/`)
+      keyboard commands (F2 rename, Delete, "Move to…"); the `MoveToPicker.tsx` folder picker on the
+      shared tree; undo and redo buttons and Ctrl+Z (`components/documents/`)
 - [ ] T028 [US2] Folder delete: a confirmation listing counts and the open document, then the delete
       as one operation; deleting the open document moves the sheet to the nearest remaining one or
       the empty state; sweep behaviour from T003 verified by a test
@@ -169,7 +181,8 @@ reload, reopen; the same at 375 px.
 
 - [ ] T036 [US4] Write `tests/sheet_manager/documents.perf.test.ts`: 3,000 entries in nested
       folders; building rows, a search, a sort, and a move compared with a baseline measured in the
-      same run (SC-002); a unit test that a closed window adds no subscription to the page
+      same run (SC-002); a unit test that a closed window adds no subscription to the page and that
+      a name search reads no record (FR-022)
 - [ ] T037 [US4] Write `tests-e2e/timings/documents.spec.ts` (seed 3,000 records through the page's
       storage; time open, scroll frames, search; budgets from SC-001 and SC-002; reported only) and
       `tests-e2e/smoke/documents.spec.ts` (create a folder, move, search, undo, reload at 1280 px
@@ -192,20 +205,20 @@ reload, reopen; the same at 375 px.
 
 ## Coverage
 
-| Requirement                    | Tasks                        |
-| ------------------------------ | ---------------------------- |
-| FR-001, FR-002, FR-003, FR-004 | T019–T022                    |
-| FR-005, FR-006                 | T021, T004                   |
-| FR-007, FR-008, FR-009         | T025–T029                    |
-| FR-010, FR-011, FR-012         | T025–T028                    |
-| FR-013, FR-014, FR-015         | T031–T034                    |
-| FR-016                         | T004, T031                   |
-| FR-017, FR-022                 | T003, T004, T016, T036–T038  |
-| FR-018, FR-019                 | T015, T019, T023, T030, T035 |
-| FR-020                         | T002, T004                   |
-| FR-021                         | T010–T013                    |
-| FR-023                         | T015–T017                    |
-| FR-024                         | T021, T022                   |
-| SC-001, SC-002, SC-003         | T036, T037, T039             |
-| SC-004, SC-005, SC-006         | T029, T001, T037             |
-| SC-007, SC-008, SC-009         | T019, T034, T010, T015       |
+| Requirement                    | Tasks                                  |
+| ------------------------------ | -------------------------------------- |
+| FR-001, FR-002, FR-003, FR-004 | T019–T022 (FR-003 folders: T019, T021) |
+| FR-005, FR-006                 | T021, T004                             |
+| FR-007, FR-008, FR-009         | T025–T029                              |
+| FR-010, FR-011, FR-012         | T025–T028                              |
+| FR-013, FR-014, FR-015         | T031–T034                              |
+| FR-016                         | T004, T031                             |
+| FR-017, FR-022                 | T003, T004, T016, T036–T038            |
+| FR-018, FR-019                 | T015, T019, T023, T030, T035           |
+| FR-020                         | T002, T004                             |
+| FR-021                         | T010–T013                              |
+| FR-023                         | T015–T017                              |
+| FR-024                         | T021, T022                             |
+| SC-001, SC-002, SC-003         | T036, T037, T039                       |
+| SC-004, SC-005, SC-006         | T029, T001, T037                       |
+| SC-007, SC-008, SC-009         | T019, T034, T010, T015                 |

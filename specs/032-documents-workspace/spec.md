@@ -193,8 +193,8 @@ and a move (browser timings, reported next to their budgets).
 - **FR-004**: On narrow screens the window MUST fill the screen with a visible close control, show
   the tree and the details as two tabs, close itself when a document is opened, and offer every
   action without dragging (selection and a "Move to…" picker); touch targets are at least 44 px.
-- **FR-005**: The tree MUST show folders and documents; folders MUST nest without a fixed depth
-  limit beyond a stated safety bound, and MUST expand and collapse.
+- **FR-005**: The tree MUST show folders and documents; folders MUST nest up to a depth of 32, and
+  MUST expand and collapse.
 - **FR-006**: A document MUST belong to exactly one place (a folder or the top level); documents
   saved before this feature MUST appear at the top level with no change to their content.
 - **FR-007**: Users MUST be able to create, rename, and delete folders and to move documents and
@@ -217,8 +217,8 @@ and a move (browser timings, reported next to their budgets).
 - **FR-015**: Sorting MUST cover name, type, game system, created time, and changed time in both
   directions, plus a manual order; folders sort before documents in every sorted view.
 - **FR-016**: Every document MUST get a created time when it is made and a changed time when its
-  content, name, or place changes (edits within a few seconds of each other update it once);
-  documents that predate this MUST show an unknown time.
+  content, name, or place changes (edits within 5 seconds of each other update it once); documents
+  that predate this MUST show an unknown time.
 - **FR-017**: The tree MUST draw only the rows in view and MUST NOT make the sheet page slower while
   the window is closed.
 - **FR-018**: The window MUST be fully usable by keyboard and by assistive technology: the tree has
@@ -232,9 +232,9 @@ and a move (browser timings, reported next to their budgets).
 - **FR-021**: Panes that sit side by side MUST use one shared divider behavior: dragged with the
   pointer, moved by keyboard with a stated step, reset by double click or Home, announced as a
   separator with its size, bounded by a minimum and maximum, remembered, repaired when the container
-  shrinks, and collapsible by dragging below a threshold where the pane allows it. The documents
-  window, the library dialog (the template manager), and the template editor MUST all use it, with
-  no change to what the editor's dividers do today.
+  shrinks. Collapsing a pane by dragging is not part of this slice (it arrives with several windows,
+  T-113). The documents window, the library dialog (the template manager), and the template editor
+  MUST all use it, with no change to what the editor's dividers do today.
 - **FR-023**: The tree MUST be built on the same shared tree component as the library dialog's tree
   (row layout, keys, focus, type-ahead, context menu, tree semantics), taking its rows through a
   generic row description; differences between the two are options, not forks. A plain click or

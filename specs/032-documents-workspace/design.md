@@ -38,16 +38,22 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
 - **D3 — write-through, one writer**: every store mutation updates the loaded envelope and its entry
   in one `set`; a subscriber saves changed envelopes after 300 ms (flushed on `pagehide`).
   `changedAt` moves at most once per 5 s per document. `rebuildIndex()` (reads every record) runs
-  only on migration or when an entry has no record.
+  only on migration or when an entry has no record. Entries carry `updatedAt` so a save merges by id
+  instead of replacing the whole index (D13).
 - **D4 — migration v4 → v5 with a backup**: the raw v4 value is copied to
   `universal-character-storage:v4-backup` first; then each envelope becomes a record and an entry
-  (times unknown, top level). Idempotent, so a crash mid-way reruns. The backup is deleted after
-  2027-01-14 (backlog entry, same pattern as T-108). _Rejected_: migrating in place — a failed
-  migrate followed by the next write would overwrite the only copy.
-- **D5 — delete removes entries, not content**: undo restores entries from the history; records
-  without an entry are purged by a sweep at the next boot (portraits of those documents with them).
-  _Why_: undo of a 3,000-document folder holds nothing heavy; "history until reload" (clarified)
-  needs no disk. _Rejected_: reading deleted envelopes into the history — memory spike.
+  (times unknown, top level). Idempotent, so a crash mid-way reruns. The backup is deleted after the
+  second launch that opened the app and its open document without a reported storage issue (a
+  counter in `localStorage`), so it does not double the stored size for long. _Rejected_: migrating
+  in place — a failed migrate followed by the next write would overwrite the only copy; a fixed date
+  — keeps the copy for months on a device that opens the app daily.
+- **D5 — delete removes entries, not content**: undo restores entries from the history; a delete
+  also appends the ids to `pendingPurge` in the persisted state, and the next boot's sweep removes
+  exactly those records (and their portraits). A record with no entry that is not in `pendingPurge`
+  is never deleted: it is reported and its entry rebuilt (`rebuildIndex`), so a stale tab cannot
+  turn a lost index row into a lost document. _Why_: undo of a 3,000-document folder holds nothing
+  heavy; "history until reload" (clarified) needs no disk. _Rejected_: reading deleted envelopes
+  into the history — memory spike.
 - **D6 — tree operations are data**: `TreeOperation` (Zod, JSON) =
   `createFolder | rename | move | delete`; `apply(state, ops)` returns
   `{ state, inverse, problems }`; `describe(op, state)` gives the preview line; reorder is a `move`
@@ -64,8 +70,9 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
 - **D8 — shared splitter**: `shared/components/Splitter` (vertical divider) plus
   `usePaneSizes(storageKey, limits, containerWidth, minRest)`; the editor's `usePaneWidths`,
   `readPaneWidths`, and `fitPaneWidths` become wrappers with the same storage key and results.
-  Added: collapse below a threshold (opt-in per pane) and size revert on `pointercancel`. Library
-  tree pane gets a splitter (`library-panes`) replacing its fixed `md:max-w-[26rem]`.
+  Added: size revert on `pointercancel`. Collapsing a pane below a threshold is not built here; it
+  arrives with several windows (T-113). Library tree pane gets a splitter (`library-panes`)
+  replacing its fixed `md:max-w-[26rem]`.
 - **D9 — window**: `shared/components/FloatingWindow` (non-modal `role="dialog"`, `aria-modal` off,
   no focus trap, Escape closes while focus is inside). Pointer-capture drag by the title bar, eight
   resize handles, clamped to the viewport, layout in `useLocalStorageState('documents-window')` and
@@ -84,14 +91,17 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   (distinct kinds, systems, settings); time filters are presets (24 h, 7 d, 30 d, older, unknown).
   _Rejected_: BM25 or a worker — names only, 3,000 rows scan in under a millisecond; the perf test
   is the check, a worker is the fallback.
-- **D13 — other tabs**: on window focus the index is rehydrated (entries and folders only); a record
-  saved by another tab is read when opened. Last write per document wins.
+- **D13 — other tabs**: on window focus the index is rehydrated (entries and folders only) and
+  merged by id with the newer `updatedAt` winning; saving the index merges the same way, so a stale
+  tab never drops another tab's rows. A record saved by another tab is read when opened. Last write
+  per document wins.
 
 ## Changed types and data
 
-- New: `features/documents/{model,operations,history,query,rows}.ts`,
+- New: `features/documents/{operations,history,query,rows}.ts`,
   `components/documents/{DocumentsWindow,DocumentsTree,DocumentDetails,DocumentsToolbar,MoveToPicker}.tsx`,
-  `store/documentContent.ts` (records, writer, sweep), `store/documentIndex.ts` (entry type, Zod).
+  `store/documentContent.ts` (records, writer, sweep), `store/documentIndex.ts` (entry and folder
+  types, Zod). The persisted state also holds `pendingPurge` (ids).
 - `documentStore.ts`: persisted version 5; `entries`, `folders`, `openDocument`, folder and tree
   actions; `createDocument`, `importDocument`, `deleteDocument`, metadata and value writers keep
   their signatures. Imports (spec 031) arrive at the top level.
@@ -100,7 +110,7 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   announcements.
 - Guidance: `src/sheet_manager/AGENTS.md` (storage, tree, window), sheet-manager skill, `AGENTS.md`
   §6 and §8, `TODO.md`/`ROADMAP.md` (T-052 first slice done; backup removal; cloud mapping of
-  folders), a short user guide page (en + ru).
+  folders to the cloud contract), a short user guide page (en + ru).
 
 ## Principles at risk
 
@@ -112,20 +122,25 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   systems through the registry like `documentLabels`; the boundary test stays green.
 - **VI**: tree and splitter semantics, labels, alerts, themes, en/ru; the storybook rule covers
   template elements only, so it does not apply.
-- **V**: persistence and schema edits run `yarn verify`; the window and shared parts `verify:full`.
+- **V**: persistence and schema edits run `yarn verify` plus `yarn contract:report`; every step that
+  adds a shared component runs `yarn verify:full` and compares the bundle size (VII).
 
 ## Tests
 
 - `document-store-v5.test.ts`: migration of v4 (all envelopes, current id, recovery entries, backup
-  written, idempotent rerun); a record missing for an entry rebuilds it; sweep purges orphans.
-- `document-index.test.ts`: write-through keeps entries equal to envelopes; `changedAt` throttle.
+  written, idempotent rerun); a record missing for an entry rebuilds it; the sweep removes only
+  `pendingPurge` ids and never an unlisted record; the backup goes after the second clean launch;
+  boot and a name search read no record but the open one (spy on `readRecord`).
+- `document-index.test.ts`: write-through keeps entries equal to envelopes; `changedAt` throttle;
+  two store instances over one storage (stale tab) merge by id and lose no row.
 - `tree-operations.test.ts`: create, rename, move, reorder, delete, cycle refusal, depth bound,
-  batch with inverse equals identity, rank renormalization.
+  batch with inverse equals identity, rank renormalization; saved and reloaded folders and order
+  equal the state before.
 - `documents-query.test.ts`: search (case, `ё`, accents), ancestors kept, filters combine, sort with
   folders first, unknown times kept apart.
 - `splitter.contract.test.tsx`: one suite over the documents window, library dialog, template editor
-  (pointer, keys, reset, bounds, remember, container shrink, collapse); the editor's existing tests
-  stay unchanged.
+  (pointer, keys, reset, bounds, remember, container shrink); the editor's existing tests stay
+  unchanged. The documents-window host is the real window once US1 exists.
 - `tree-view.contract.test.tsx`: keys, type-ahead, multi-select, windowing over the library and
   documents trees; library tests keep passing with the new row attribute.
 - `documents-window.test.tsx`: open/move/resize/restore/repair layout, click opens, Ctrl/Shift

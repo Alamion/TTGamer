@@ -136,6 +136,7 @@ estimates, open questions. Priority ordering lives only in the section grouping.
     - 2026-10-14: queued by the maintainer right after the denser brief cards (T-056); builds on the documents window of T-052.
 - [ ] ⬜ **T-113 — Shared window management for editing** (T-112) — GMs and players move, resize, stack, and dock the windows they edit documents in through one shared behavior, instead of each window handling it alone. (task for roadmap path `note-showcase`)
     - 2026-10-14: queued by the maintainer after T-112; the window of T-052 is the first user of the behavior and is built so it can be generalized.
+    - 2026-10-14: includes collapsing a pane by dragging its divider below a threshold; the shared splitter of T-052 leaves it out on purpose.
 - [ ] ⬜ **T-058 — System/custom template field parity** (none) — system-defined fields offer exactly the same settings as custom template fields (for example a maximum on an attribute such as Strength) and are indistinguishable in the editor UI.
     - Includes writing the parity rule into the constitution as an amendment (Sync Impact Report, version bump, mirrored into `AGENTS.md` and the sheet skills).
 - [ ] ⬜ **T-059 — Embedded documentation briefs in sheets** (T-051) — sheet hints show the chosen documentation fragment in place instead of only linking out to it, reusing the brief-embed mechanism and its on-demand loading budget. (task for roadmap path `core-book-docs`)
