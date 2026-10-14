@@ -1,5 +1,17 @@
 # Changelog
 
+## v3.27.0
+
+### Minor feat
+
+- **Briefs fit one phone screen (spec 033, T-056)**: ratings in a brief now show a short label of three capital letters beside the value (STR, ALR, МОЩ…) instead of the whole name, and groups stand without boxes under a small heading, so the Star Wars character brief is about 620 px tall on a phone instead of about 2,750, and about 400 px in a quarter of a desktop screen. The full name stays the name for screen readers and appears as a hint when you hover, focus, or tap a label. The short letters are written by hand for every book trait in English and Russian
+- **Briefs follow the area they are drawn in (spec 033)**: columns and the look of a rating (a row in a narrow area, a small chip in a wider one) now depend on the width of the space the brief is in, not the browser window, so the same brief fits a phone, a window beside others, and a full screen; this prepares embedded brief cards and several documents on one screen. Every shipped brief (Star Wars character, droid, creature, vehicle, fodder group, WoD 2e, V5, Hunter) was re-laid out the same way; the weapons list starts folded. Full sheets are unchanged. On a touch screen the rows grow to 32 px so a finger hits one control
+- **Dense briefs in the template editor (spec 033)**: a rating has a **Short label** setting (with your own letters, up to four, if the first three are not enough), and a card has a **Brief look** setting. Your own pages use the same settings as the shipped ones; pages saved before open exactly as they were. The element storybook shows both forms
+
+### Fix
+
+- **A tracker's length buttons (spec 033)**: the buttons next to a health track no longer trigger a React warning in development builds
+
 ## v3.26.0
 
 ### Minor feat
