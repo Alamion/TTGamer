@@ -215,4 +215,33 @@ describe('folders in the documents window (spec 032, US2)', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Create' }));
         expect(state().folders.find((item) => item.name === 'New folder')!.parentId).toBe('f1');
     });
+
+    it('adds a document from the window without showing it, inside the selected folder', () => {
+        seedDocuments(['Ana'], { folders: [folder('f1', 'Campaign')], current: 'Ana' });
+        openWindow();
+        fireEvent.click(row('Campaign'));
+        fireEvent.click(screen.getByRole('button', { name: 'Add a document' }));
+        fireEvent.click(screen.getAllByRole('button').at(-1)!);
+        expect(state().entries).toHaveLength(2);
+        const created = state().entries.find((entry) => entry.id !== 'Ana')!;
+        expect(created.parentId).toBe('f1');
+        expect(state().currentDocumentId).toBe('Ana');
+        expect(row('Campaign').getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('moves a row to the end of the top level when it is dropped under the last row', () => {
+        seedDocuments(['Ana', 'Bruno'], {
+            folders: [folder('f1', 'Campaign')],
+            placed: { Ana: 'f1' },
+        });
+        localStorage.setItem('documents-window-open-folders', JSON.stringify(['folder:f1']));
+        openWindow();
+        const transfer = dataTransfer();
+        fireEvent.dragStart(row('Ana'), { dataTransfer: transfer });
+        const end = document.querySelector('[aria-hidden="true"].flex-1') as HTMLElement;
+        fireEvent.dragOver(end, { dataTransfer: transfer });
+        fireEvent.drop(end, { dataTransfer: transfer });
+        expect(placeOf('Ana')).toBeNull();
+        expect(rowNames()).toEqual(['Campaign', 'Bruno', 'Ana']);
+    });
 });

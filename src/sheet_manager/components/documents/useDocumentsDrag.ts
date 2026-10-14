@@ -38,6 +38,7 @@ export function useDocumentsDrag({ rows, folders, selection, onDrop }: Documents
     const [target, setTarget] = useState<{ key: string; mode: Mode; blocked: boolean } | null>(
         null
     );
+    const [atEnd, setAtEnd] = useState(false);
     const known = useMemo(() => new Set(folders.map(({ id }) => id)), [folders]);
     const parents = useMemo(
         () => new Map(folders.map((folder) => [folder.id, folder.parentId])),
@@ -48,6 +49,7 @@ export function useDocumentsDrag({ rows, folders, selection, onDrop }: Documents
     const finish = useCallback(() => {
         dragged.current = null;
         setTarget(null);
+        setAtEnd(false);
     }, []);
     useEffect(() => {
         document.addEventListener('dragend', finish);
@@ -60,9 +62,9 @@ export function useDocumentsDrag({ rows, folders, selection, onDrop }: Documents
             const fraction = rect.height > 0 ? (event.clientY - rect.top) / rect.height : 0.5;
             const isFolder = item.node.type === 'folder';
             const mode: Mode = isFolder
-                ? fraction < 0.25
+                ? fraction < 0.3
                     ? 'before'
-                    : fraction > 0.75
+                    : fraction > 0.7
                       ? 'after'
                       : 'into'
                 : fraction < 0.5
@@ -164,5 +166,27 @@ export function useDocumentsDrag({ rows, folders, selection, onDrop }: Documents
         [blockedPlace, finish, onDrop, resolve, selection, target]
     );
 
-    return { dragFor, refused: target?.blocked ?? false };
+    /** The empty space under the last row: a drop there puts the rows last at the top level. */
+    const endZone = useMemo(
+        () => ({
+            onDragOver: (event: DragEvent<HTMLElement>) => {
+                if (!dragged.current) return;
+                event.preventDefault();
+                event.dataTransfer.dropEffect = 'move';
+                setTarget(null);
+                setAtEnd(true);
+            },
+            onDragLeave: () => setAtEnd(false),
+            onDrop: (event: DragEvent<HTMLElement>) => {
+                const active = dragged.current;
+                if (!active) return;
+                event.preventDefault();
+                finish();
+                onDrop(active.ids, null, null);
+            },
+        }),
+        [finish, onDrop]
+    );
+
+    return { dragFor, endZone, atEnd, refused: target?.blocked ?? false };
 }

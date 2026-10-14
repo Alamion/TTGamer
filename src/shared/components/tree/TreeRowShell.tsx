@@ -123,14 +123,12 @@ export const TreeRowShell = memo(function TreeRowShell({
             onDragLeave={drag?.onDragLeave}
             onDrop={drag?.onDrop}
             className={clsx(
-                'group flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm border pr-1 text-sm outline-hidden transition-colors [@media(pointer:coarse)]:min-h-11',
+                'group relative flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm border pr-1 text-sm outline-hidden transition-colors [@media(pointer:coarse)]:min-h-11',
                 'focus-visible:ring-2 focus-visible:ring-primary',
                 selected
                     ? 'border-primary/60 bg-primary/10 text-textPrimary'
                     : 'border-transparent text-textPrimary hover:bg-secondary/10',
                 drag?.over && 'border-primary bg-primary/5',
-                drag?.edge === 'before' && 'border-t-2 border-t-primary',
-                drag?.edge === 'after' && 'border-b-2 border-b-primary',
                 flash && 'bg-secondary/20',
                 dimmed && 'opacity-60',
                 drag?.draggable && 'active:cursor-grabbing'
@@ -158,6 +156,15 @@ export const TreeRowShell = memo(function TreeRowShell({
                     aria-hidden="true"
                 />
             </button>
+            {drag?.edge && (
+                <span
+                    aria-hidden="true"
+                    className={clsx(
+                        'pointer-events-none absolute inset-x-0 h-0.5 bg-primary',
+                        drag.edge === 'before' ? '-top-px' : '-bottom-px'
+                    )}
+                />
+            )}
             {checkbox}
             {icon}
             <span className="min-w-0 flex-1 truncate">{name}</span>

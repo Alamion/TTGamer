@@ -99,6 +99,7 @@ manager:
         hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range. A click on a document opens it.
     toolbar:
         label: Tree actions
+        newDocument: Add a document
         newFolder: New folder
         undo: Undo
         redo: Redo

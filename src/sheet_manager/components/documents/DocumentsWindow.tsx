@@ -15,7 +15,16 @@ import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { useTreeSelection } from '@site/src/shared/hooks/useTreeSelection';
 import { generateId } from '@site/src/shared/utils/random';
 import clsx from 'clsx';
-import { ExternalLink, FolderInput, FolderPlus, Pencil, Redo2, Trash2, Undo2 } from 'lucide-react';
+import {
+    ExternalLink,
+    FilePlus,
+    FolderInput,
+    FolderPlus,
+    Pencil,
+    Redo2,
+    Trash2,
+    Undo2,
+} from 'lucide-react';
 import { type KeyboardEvent, useCallback, useMemo, useRef, useState } from 'react';
 
 import {
@@ -23,7 +32,13 @@ import {
     MAX_TREE_DEPTH,
     type TreeProblem,
 } from '../../features/documents/operations';
-import { buildRows, type DocumentsNode, folderKey, idOfKey } from '../../features/documents/rows';
+import {
+    buildRows,
+    documentKey,
+    type DocumentsNode,
+    folderKey,
+    idOfKey,
+} from '../../features/documents/rows';
 import {
     redoTreeChange,
     runTreeChange,
@@ -32,6 +47,7 @@ import {
 } from '../../features/documents/treeActions';
 import { useDocumentStore } from '../../store/documentStore';
 import { ConfirmDialog } from '../dialogs/ConfirmDialog';
+import { DocumentCreateDialog } from '../dialogs/DocumentCreateDialog';
 import { DocumentDetails } from './DocumentDetails';
 import { DocumentsTree } from './DocumentsTree';
 import { FolderNameDialog } from './FolderNameDialog';
@@ -84,6 +100,7 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
     const [acting, setActing] = useState<string[]>([]);
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [picking, setPicking] = useState(false);
+    const [creatingIn, setCreatingIn] = useState<{ parentId: string | null }>();
     const [nameDialog, setNameDialog] = useState<NameDialog>();
     const [status, setStatus] = useState<{ text: string; alert: boolean }>();
     const treeRegion = useRef<HTMLDivElement>(null);
@@ -173,16 +190,14 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
         setActing(keys);
         setPicking(true);
     };
-    const startCreate = () => {
+    /** Where a new row goes: inside the selected folder, beside the selected document, else top. */
+    const newRowPlace = (): string | null => {
         const [only] = selectedItems;
-        const parentId =
-            selectedItems.length === 1 && only
-                ? only.type === 'folder'
-                    ? only.folder.id
-                    : only.entry.parentId
-                : null;
-        setNameDialog({ mode: 'create', parentId });
+        if (selectedItems.length !== 1 || !only) return null;
+        return only.type === 'folder' ? only.folder.id : only.entry.parentId;
     };
+    const startCreate = () => setNameDialog({ mode: 'create', parentId: newRowPlace() });
+    const startCreateDocument = () => setCreatingIn({ parentId: newRowPlace() });
     const startRename = (folderId: string, name: string) =>
         setNameDialog({ mode: 'rename', id: folderId, name });
 
@@ -378,6 +393,15 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                             </button>
                             <button
                                 type="button"
+                                onClick={startCreateDocument}
+                                aria-label={translate(labels.toolbar.newDocument)}
+                                title={translate(labels.toolbar.newDocument)}
+                                className={iconButton}
+                            >
+                                <FilePlus className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                            <button
+                                type="button"
                                 onClick={undo}
                                 disabled={history.undoLabel === null}
                                 aria-label={
@@ -420,7 +444,10 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                         >
                             {drag.refused ? translate(labels.refused.cycle) : status?.text}
                         </div>
-                        <div ref={treeRegion} className="min-h-0 flex-1 overflow-y-auto p-2">
+                        <div
+                            ref={treeRegion}
+                            className="flex min-h-0 flex-1 flex-col overflow-y-auto p-2"
+                        >
                             {rows.length === 0 ? (
                                 <p className="p-4 text-sm text-textSecondary">
                                     {translate(labels.empty)}
@@ -446,6 +473,14 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                                     scrollRef={treeRegion}
                                 />
                             )}
+                            <div
+                                aria-hidden="true"
+                                {...drag.endZone}
+                                className={clsx(
+                                    'min-h-10 flex-1 border-t-2 border-transparent',
+                                    drag.atEnd && 'border-primary'
+                                )}
+                            />
                         </div>
                     </div>
                     <Splitter
@@ -522,6 +557,16 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                     onSubmit={submitName}
                 />
             )}
+            <DocumentCreateDialog
+                open={creatingIn !== undefined}
+                onOpenChange={(next) => !next && setCreatingIn(undefined)}
+                activate={false}
+                parentId={creatingIn?.parentId ?? null}
+                onCreated={(id) => {
+                    revealFolder(creatingIn?.parentId ?? null);
+                    reset([documentKey(id)]);
+                }}
+            />
             {picking && (
                 <MoveToPicker
                     open

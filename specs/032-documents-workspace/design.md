@@ -264,3 +264,8 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
 
 - **Bundle size after US2**: 24,256,804 bytes of JS and 179,307 of CSS (master 23,510,686 and
   178,097).
+- **US2 follow-up after review**: the drop line is now a bar inside the row (a border colour could
+  be overridden by the row's transparent border), the edge zones of a folder are 30% each, and the
+  empty space under the last row is a drop target (last at the top level). The window can add a
+  document without showing it (`createDocument` options `activate: false` and `parentId`; the create
+  dialog takes `activate`, `parentId`, `onCreated`), into the selected folder.

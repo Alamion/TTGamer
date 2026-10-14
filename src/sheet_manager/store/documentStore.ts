@@ -127,7 +127,15 @@ export interface DocumentStoreState {
     createDocument: (
         systemId: string,
         definitionId: string,
-        options?: { settingId?: string; templateId?: string; preferredViewId?: DocumentViewId }
+        options?: {
+            settingId?: string;
+            templateId?: string;
+            preferredViewId?: DocumentViewId;
+            /** Show it on the sheet (the default); false only adds it. */
+            activate?: boolean;
+            /** The folder it goes into (last there); the top level when absent. */
+            parentId?: string | null;
+        }
     ) => UnknownDocumentEnvelope;
     updateDocumentData: (id: string, updater: (data: unknown) => unknown) => void;
     updateDocumentMetadata: (id: string, updates: Partial<DocumentMetadata>) => void;
@@ -429,16 +437,20 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
         const now = Date.now();
         const stamp = new Date(now).toISOString();
         lastTouch.set(document.id, now);
-        set(({ documents, entries }) => ({
+        set(({ documents, entries, folders, currentDocumentId }) => ({
             documents: [...documents, document],
             entries: [
                 ...entries,
                 {
                     ...entryOf(document, undefined, { createdAt: stamp, changedAt: stamp }, now),
+                    parentId:
+                        options.parentId && folders.some(({ id }) => id === options.parentId)
+                            ? options.parentId
+                            : null,
                     rank: nextRank(entries),
                 },
             ],
-            currentDocumentId: document.id,
+            currentDocumentId: options.activate === false ? currentDocumentId : document.id,
         }));
         return document;
     },

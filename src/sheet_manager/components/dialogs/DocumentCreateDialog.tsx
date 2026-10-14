@@ -13,6 +13,11 @@ import { isUserKind, type UserSetting } from '../../systems/userTypes';
 interface DocumentCreateDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    /** Show the new document on the sheet (the default); false only creates it. */
+    activate?: boolean;
+    /** The folder the new document goes into; the top level when absent. */
+    parentId?: string | null;
+    onCreated?: (id: string) => void;
 }
 
 type DefinitionEntry = ReturnType<typeof systemRegistry.listDefinitions>[number];
@@ -68,7 +73,13 @@ function createGroups(settings: Readonly<Record<string, UserSetting>>): CreateGr
 }
 
 /** Lists every registered document definition, grouped by setting. */
-export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialogProps) {
+export function DocumentCreateDialog({
+    open,
+    onOpenChange,
+    activate = true,
+    parentId = null,
+    onCreated,
+}: DocumentCreateDialogProps) {
     const createDocument = useDocumentStore((state) => state.createDocument);
     // The registry lists installed user types; subscribing re-renders when they change.
     const userTypes = useDocumentTypeStore((state) => state.types);
@@ -91,11 +102,14 @@ export function DocumentCreateDialog({ open, onOpenChange }: DocumentCreateDialo
             templates: useTemplateStore.getState().templates,
             defaultPages: useDocumentTypeStore.getState().defaultPages,
         });
-        createDocument(systemId, definitionId, {
+        const created = createDocument(systemId, definitionId, {
+            activate,
+            parentId,
             settingId,
             templateId: templateId ?? page.templateId,
             ...(page.preferredViewId ? { preferredViewId: page.preferredViewId } : {}),
         });
+        onCreated?.(created.id);
         onOpenChange(false);
     };
 
