@@ -281,6 +281,8 @@ catalogTable:
     confirm: Continue
     cancel: Cancel
 bulk:
+    touchHint: On a touch screen, hold a row to start selecting, then tap the rows you need.
+    stop: Stop selecting
     title:
         message: '{count} item selected|{count} items selected'
         plural: true

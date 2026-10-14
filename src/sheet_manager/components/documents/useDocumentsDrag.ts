@@ -21,6 +21,8 @@ export interface DocumentsDragOptions {
     selection: ReadonlySet<string>;
     /** Rows may be put above or below others (manual order); a sorted view allows only "into". */
     reorderable: boolean;
+    /** Rows can be picked up; off on a touch screen, where a hold selects instead. */
+    enabled: boolean;
     /** Rows were dropped: where they go and before which sibling (null: last). */
     onDrop: (ids: string[], parentId: string | null, before: string | null) => void;
 }
@@ -40,6 +42,7 @@ export function useDocumentsDrag({
     folders,
     selection,
     reorderable,
+    enabled,
     onDrop,
 }: DocumentsDragOptions) {
     const dragged = useRef<{ ids: string[]; folderIds: Set<string> } | null>(null);
@@ -129,7 +132,7 @@ export function useDocumentsDrag({
         (item: TreeRowItem<DocumentsNode>): TreeRowDrag => {
             const hovering = target?.key === item.key ? target : null;
             return {
-                draggable: true,
+                draggable: enabled,
                 over: hovering?.mode === 'into' && hovering.blocked === null,
                 edge:
                     hovering && hovering.mode !== 'into' && hovering.blocked === null
@@ -181,7 +184,7 @@ export function useDocumentsDrag({
                 },
             };
         },
-        [finish, onDrop, refusal, resolve, selection, target]
+        [enabled, finish, onDrop, refusal, resolve, selection, target]
     );
 
     /** The empty space under the last row: a drop there puts the rows last at the top level. */

@@ -34,6 +34,9 @@ export interface DocumentsTreeProps {
     onRenameCancel: (key: string) => void;
     /** The search text: matches in names are marked. */
     highlight: string;
+    /** A finger-started selection is on (a tap toggles). */
+    selecting: boolean;
+    onLongPress: (key: string) => void;
     scrollRef: RefObject<HTMLElement | null>;
 }
 
@@ -57,6 +60,8 @@ export function DocumentsTree({
     onRename,
     onRenameCancel,
     highlight,
+    selecting,
+    onLongPress,
     scrollRef,
 }: DocumentsTreeProps) {
     const byKey = new Map(rows.map((row) => [row.key, row]));
@@ -76,6 +81,8 @@ export function DocumentsTree({
             onDelete={onDelete}
             onMenu={onMenu}
             onCommand={onCommand}
+            selecting={selecting}
+            onLongPress={onLongPress}
             onSpace={(item) => onSelect(item.key, 'toggle')}
             renderRow={(item) => {
                 const { node, expanded } = item;

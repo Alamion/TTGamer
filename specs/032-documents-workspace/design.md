@@ -328,3 +328,10 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
         clears itself after five seconds.
 - **Bundle size at the end**: 24332970 bytes of JS and 179959 of CSS (master 23,510,686 and
   178,097).
+- **Touch selection** (the gap left from FR-025): `TreeRowShell` turns a touch held 500 ms (drift
+  under 10 px, buttons and fields excluded) into `onLongPress`; the long press's own tap is not a
+  click, and the context menu a phone raises with it is dropped (the row's button is the menu).
+  `TreeView` takes `selecting`: while on, a tap toggles instead of opening. The owner shows a
+  `SelectionBar` (count, optional actions, a close icon). Used by the documents window (with Move
+  and Delete in the bar; rows are not draggable on a coarse pointer) and the library dialog. Checked
+  with real touch events in headless Chromium.

@@ -53,6 +53,12 @@ export interface TreeViewProps<T> {
     scrollRef?: RefObject<HTMLElement | null>;
     windowAbove?: number;
     emptyMessage?: ReactNode;
+    /**
+     * A long press on a row (touch). The owner starts a selecting mode: it passes `selecting`, and
+     * while it is on, a tap toggles a row instead of opening it.
+     */
+    onLongPress?: (key: string) => void;
+    selecting?: boolean;
 }
 
 const TYPE_AHEAD_MS = 600;
@@ -82,6 +88,8 @@ export function TreeView<T>({
     scrollRef,
     windowAbove = WINDOW_ABOVE,
     emptyMessage,
+    onLongPress,
+    selecting = false,
 }: TreeViewProps<T>) {
     const containerRef = useRef<HTMLDivElement>(null);
     const focusPending = useRef(false);
@@ -229,10 +237,11 @@ export function TreeView<T>({
 
     const clickRow = useCallback(
         (key: string, extend: SelectExtend) => {
-            onSelect(key, extend);
-            onRowClick?.(key, extend);
+            // Selecting: every tap toggles, and nothing opens.
+            onSelect(key, selecting && extend === 'none' ? 'toggle' : extend);
+            if (!selecting) onRowClick?.(key, extend);
         },
-        [onSelect, onRowClick]
+        [onSelect, onRowClick, selecting]
     );
 
     if (rows.length === 0 && emptyMessage) return <>{emptyMessage}</>;
@@ -274,6 +283,7 @@ export function TreeView<T>({
                     onMenu={onMenu}
                     onContext={openContext}
                     onKeyDown={handleKeyDown}
+                    onLongPress={onLongPress}
                 />
             ))}
         </div>

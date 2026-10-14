@@ -98,7 +98,7 @@ manager:
         selected:
             message: '{count} item selected|{count} items selected'
             plural: true
-        hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range. A click on a document opens it.
+        hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range, and on a touch screen a long press starts selecting. A click on a document opens it.
     search:
         label: Search names
         placeholder: Search names…
@@ -130,6 +130,7 @@ manager:
         noMatch: Nothing matches the search and filters.
         results: 'Showing {count} of {total}'
     toolbar:
+        stopSelecting: Stop selecting
         label: Tree actions
         newDocument: Add a document
         newFolder: New folder

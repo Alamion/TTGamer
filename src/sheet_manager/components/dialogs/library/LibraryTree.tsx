@@ -40,6 +40,9 @@ export interface LibraryTreeProps {
     hasMenu?: (node: LibraryNode) => boolean;
     /** The scrolling region around the tree, so a long library draws only the rows in view. */
     scrollRef?: RefObject<HTMLElement | null>;
+    /** A finger-started selection is on (a tap toggles), and the long press that starts it. */
+    selecting?: boolean;
+    onLongPress?: (key: string) => void;
 }
 
 /**
@@ -62,6 +65,8 @@ export function LibraryTree({
     rowExtras,
     hasMenu,
     scrollRef,
+    selecting,
+    onLongPress,
 }: LibraryTreeProps) {
     const plural = usePluralMessage();
     const rows = useMemo<TreeRowItem<LibraryNode>[]>(() => {
@@ -112,6 +117,8 @@ export function LibraryTree({
             labels={libraryTreeLabels}
             idPrefix="library-row-"
             scrollRef={scrollRef}
+            selecting={selecting}
+            onLongPress={onLongPress}
         />
     );
 }

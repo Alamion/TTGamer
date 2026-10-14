@@ -2,6 +2,7 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { FloatingWindow } from '@site/src/shared/components/FloatingWindow';
 import { Splitter } from '@site/src/shared/components/Splitter';
+import { SelectionBar } from '@site/src/shared/components/tree/SelectionBar';
 import { TreeContextMenu } from '@site/src/shared/components/tree/TreeContextMenu';
 import type { TreeRowItem } from '@site/src/shared/components/tree/TreeView';
 import { useLocalStorageState } from '@site/src/shared/hooks/useLocalStorageState';
@@ -153,6 +154,9 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
     const [creatingIn, setCreatingIn] = useState<{ parentId: string | null }>();
     /** The row whose name is being typed in place. */
     const [editing, setEditing] = useState<string | null>(null);
+    /** A finger-started selection: a tap toggles a row until it is stopped. */
+    const [selecting, setSelecting] = useState(false);
+    const coarse = useMediaQuery('(pointer: coarse)');
     const [status, setStatus] = useState<{ text: string; alert: boolean }>();
     // What was just done is said for a few seconds, not left standing.
     useEffect(() => {
@@ -238,10 +242,19 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
         folders,
         selection,
         reorderable: query.sort === 'manual',
+        enabled: !coarse,
         onDrop: moveRows,
     });
 
     /** The rows a menu or a button acts on: the selection when the row is in it, else the row. */
+    const startSelecting = (key: string) => {
+        setSelecting(true);
+        reset([key]);
+    };
+    const stopSelecting = () => {
+        setSelecting(false);
+        reset([]);
+    };
     const keysFor = (key: string) => (selection.has(key) ? [...selection] : [key]);
     const startDelete = (keys: string[]) => {
         if (keys.length === 0) return;
@@ -522,6 +535,37 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                             shown={found.matches}
                             total={entries.length}
                         />
+                        {selecting && (
+                            <SelectionBar
+                                text={plural(labels.details.selected, selectedKeys.length)}
+                                cancelLabel={translate(labels.toolbar.stopSelecting)}
+                                onCancel={stopSelecting}
+                                actions={
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={() => startMove(selectedKeys)}
+                                            disabled={selectedKeys.length === 0}
+                                            aria-label={translate(labels.details.move)}
+                                            title={translate(labels.details.move)}
+                                            className={iconButton}
+                                        >
+                                            <FolderInput className="h-4 w-4" aria-hidden="true" />
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => startDelete(selectedKeys)}
+                                            disabled={selectedKeys.length === 0}
+                                            aria-label={translate(labels.details.delete)}
+                                            title={translate(labels.details.delete)}
+                                            className={iconButton}
+                                        >
+                                            <Trash2 className="h-4 w-4" aria-hidden="true" />
+                                        </button>
+                                    </>
+                                }
+                            />
+                        )}
                         <div
                             role={drag.refused || status?.alert ? 'alert' : 'status'}
                             className={clsx(
@@ -576,6 +620,8 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                                     onRename={renameRow}
                                     onRenameCancel={stopEditing}
                                     highlight={query.text}
+                                    selecting={selecting}
+                                    onLongPress={startSelecting}
                                     scrollRef={treeRegion}
                                 />
                             )}

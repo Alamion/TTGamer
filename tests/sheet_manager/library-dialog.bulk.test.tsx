@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
-import { cleanup, fireEvent, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ASHEN_ID, resetLibraryStores, seedLibrary, userSetting } from './helpers/library';
@@ -40,6 +40,27 @@ describe('library dialog — several selected rows', () => {
     afterEach(() => {
         cleanup();
         resetLibraryStores();
+    });
+
+    it('selects with a long press and taps, and stops with the icon in the bar', () => {
+        vi.useFakeTimers();
+        try {
+            openLibrary();
+            const press = new Event('pointerdown', { bubbles: true });
+            Object.assign(press, { pointerType: 'touch', clientX: 0, clientY: 0 });
+            fireEvent(mustRow(ashen), press);
+            act(() => vi.advanceTimersByTime(600));
+            expect(screen.getByRole('button', { name: 'Stop selecting' })).toBeTruthy();
+            fireEvent.click(mustRow(ashen));
+            fireEvent.click(mustRow(mist));
+            expect(selected().sort()).toEqual([ashen, mist].sort());
+            expect(screen.getByRole('region', { name: '2 items selected' })).toBeTruthy();
+            fireEvent.click(screen.getByRole('button', { name: 'Stop selecting' }));
+            expect(screen.queryByRole('button', { name: 'Stop selecting' })).toBeNull();
+            expect(screen.queryByRole('region', { name: '2 items selected' })).toBeNull();
+        } finally {
+            vi.useRealTimers();
+        }
     });
 
     it('adds and removes rows with Ctrl or Cmd click and shows them together', () => {

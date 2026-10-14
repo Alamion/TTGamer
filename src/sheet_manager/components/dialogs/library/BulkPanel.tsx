@@ -40,7 +40,9 @@ export function BulkPanel({
                 <h3 id="library-bulk-title" className="text-lg font-semibold text-textPrimary">
                     {plural(labels.bulk.title, subjects.length)}
                 </h3>
-                <p className="text-xs text-textSecondary">{translate(labels.bulk.hint)}</p>
+                <p className="text-xs text-textSecondary">
+                    {translate(labels.bulk.hint)} {translate(labels.bulk.touchHint)}
+                </p>
             </header>
             <ul
                 aria-label={translate(labels.bulk.names)}

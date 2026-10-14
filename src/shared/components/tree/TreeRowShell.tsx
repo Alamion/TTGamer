@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { ChevronRight, MoreHorizontal } from 'lucide-react';
-import type { DragEvent, KeyboardEvent, MouseEvent, ReactNode } from 'react';
-import { memo } from 'react';
+import type { DragEvent, KeyboardEvent, MouseEvent, PointerEvent, ReactNode } from 'react';
+import { memo, useRef } from 'react';
 
 /** What extends the selection: a plain click or key replaces it; Ctrl/Cmd toggles; Shift ranges. */
 export type SelectExtend = 'none' | 'toggle' | 'range';
@@ -62,7 +62,13 @@ export interface TreeRowShellProps extends TreeRowSlots {
     /** A right click: selects the row (without the click's side effects), then opens the menu. */
     onContext: (key: string, anchor: { x: number; y: number }) => void;
     onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
+    /** A finger held on the row (touch only): the way to start selecting several rows. */
+    onLongPress?: (key: string) => void;
 }
+
+/** How long a finger must rest on a row, and how far it may drift, to count as a long press. */
+const LONG_PRESS_MS = 500;
+const LONG_PRESS_SLOP = 10;
 
 const extendOf = (event: MouseEvent<HTMLElement>): SelectExtend =>
     event.ctrlKey || event.metaKey ? 'toggle' : event.shiftKey ? 'range' : 'none';
@@ -99,7 +105,32 @@ export const TreeRowShell = memo(function TreeRowShell({
     onMenu,
     onContext,
     onKeyDown,
+    onLongPress,
 }: TreeRowShellProps) {
+    const press = useRef<{ timer: number; x: number; y: number } | null>(null);
+    const swallowClick = useRef(false);
+    const endPress = () => {
+        if (press.current) window.clearTimeout(press.current.timer);
+        press.current = null;
+    };
+    const beginPress = (event: PointerEvent<HTMLDivElement>) => {
+        if (!onLongPress || event.pointerType !== 'touch') return;
+        // The row's own buttons and fields keep their taps.
+        if ((event.target as HTMLElement).closest('button, input')) return;
+        endPress();
+        const timer = window.setTimeout(() => {
+            press.current = null;
+            swallowClick.current = true;
+            onLongPress(rowKey);
+        }, LONG_PRESS_MS);
+        press.current = { timer, x: event.clientX, y: event.clientY };
+    };
+    const movePress = (event: PointerEvent<HTMLDivElement>) => {
+        const start = press.current;
+        if (!start) return;
+        if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > LONG_PRESS_SLOP)
+            endPress();
+    };
     const openMenu = (event: MouseEvent<HTMLElement>, open: TreeRowShellProps['onMenu']) => {
         event.preventDefault();
         event.stopPropagation();
@@ -117,8 +148,30 @@ export const TreeRowShell = memo(function TreeRowShell({
             aria-selected={selected}
             aria-expanded={expandable ? expanded : undefined}
             tabIndex={tabbable ? 0 : -1}
-            onClick={(event) => onSelect(rowKey, extendOf(event))}
-            onContextMenu={menu ? (event) => openMenu(event, onContext) : undefined}
+            onClick={(event) => {
+                if (swallowClick.current) {
+                    // The tap that ends a long press is not a click on the row.
+                    swallowClick.current = false;
+                    return;
+                }
+                onSelect(rowKey, extendOf(event));
+            }}
+            onPointerDown={beginPress}
+            onPointerMove={movePress}
+            onPointerUp={endPress}
+            onPointerCancel={endPress}
+            onPointerLeave={endPress}
+            onContextMenu={(event) => {
+                // A long press on a phone also asks for a context menu; the row's button is that menu.
+                if (
+                    onLongPress &&
+                    (event.nativeEvent as globalThis.PointerEvent).pointerType === 'touch'
+                ) {
+                    event.preventDefault();
+                    return;
+                }
+                if (menu) openMenu(event, onContext);
+            }}
             onKeyDown={onKeyDown}
             draggable={drag?.draggable ?? false}
             onDragStart={drag?.onDragStart}
@@ -126,7 +179,7 @@ export const TreeRowShell = memo(function TreeRowShell({
             onDragLeave={drag?.onDragLeave}
             onDrop={drag?.onDrop}
             className={clsx(
-                'group relative flex min-h-8 cursor-pointer items-center gap-1.5 rounded-sm border pr-1 text-sm outline-hidden transition-colors [@media(pointer:coarse)]:min-h-11',
+                'group relative flex min-h-8 [@media(pointer:coarse)]:select-none [@media(pointer:coarse)]:[-webkit-touch-callout:none] cursor-pointer items-center gap-1.5 rounded-sm border pr-1 text-sm outline-hidden transition-colors [@media(pointer:coarse)]:min-h-11',
                 'focus-visible:ring-2 focus-visible:ring-primary',
                 selected
                     ? 'border-primary/60 bg-primary/10 text-textPrimary'

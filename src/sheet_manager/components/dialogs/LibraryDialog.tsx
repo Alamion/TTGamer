@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
 import { Splitter } from '@site/src/shared/components/Splitter';
+import { SelectionBar } from '@site/src/shared/components/tree/SelectionBar';
 import type { SelectExtend } from '@site/src/shared/components/tree/TreeRowShell';
 import {
     type PaneLimits,
@@ -170,6 +171,8 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
     // Rows selected together (Ctrl/Cmd click, Shift click); empty while one row is selected.
     const [selection, setSelection] = useState<ReadonlySet<string>>(new Set());
     const [bulkMove, setBulkMove] = useState<{ target?: string }>();
+    /** A finger-started selection: a tap toggles a row until it is stopped. */
+    const [selecting, setSelecting] = useState(false);
     const anchorKey = useRef<string | undefined>(undefined);
     const setSelectedKey = useCallback((key: string | undefined) => {
         setSelectedKeyOnly(key);
@@ -652,6 +655,17 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
             setSelection(next);
         }
     };
+    const startSelecting = (key: string) => {
+        setSelecting(true);
+        selectRow(key, 'none');
+    };
+    const stopSelecting = () => {
+        setSelecting(false);
+        setSelection(new Set());
+        setBulkMove(undefined);
+    };
+    const shownSelection =
+        selection.size > 0 ? selection : new Set(selectedKey ? [selectedKey] : []);
     const bulkDelete = bulk ? planBulkDelete(subjects, state()) : undefined;
     const bulkTargets = bulk ? bulkMoveTargets(subjects, tree) : undefined;
     const bulkMovePlan =
@@ -865,6 +879,15 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                 narrowTab === 'tree' ? 'block' : 'hidden'
                             )}
                         >
+                            {mode === 'browse' && selecting && (
+                                <div className="sticky top-0 z-10 -mx-2 -mt-2 mb-2 bg-bgSurface">
+                                    <SelectionBar
+                                        text={plural(labels.bulk.title, shownSelection.size)}
+                                        cancelLabel={translate(labels.bulk.stop)}
+                                        onCancel={stopSelecting}
+                                    />
+                                </div>
+                            )}
                             {mode === 'import' ? (
                                 importMode.tree
                             ) : displayedTree.length === 0 ? (
@@ -891,7 +914,11 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                     tree={displayedTree}
                                     expanded={effectiveExpanded}
                                     selectedKey={selectedKey}
-                                    selectedKeys={bulk ? selection : undefined}
+                                    selectedKeys={
+                                        bulk ? selection : selecting ? shownSelection : undefined
+                                    }
+                                    selecting={mode === 'browse' && selecting}
+                                    onLongPress={mode === 'browse' ? startSelecting : undefined}
                                     onSelect={selectRow}
                                     onRowClick={() => setNarrowTab('details')}
                                     onToggle={toggle}
