@@ -250,7 +250,7 @@ describe('folders in the documents window (spec 032, US2)', () => {
         expect(screen.getByRole('menuitem', { name: 'Rename' })).toBeTruthy();
     });
 
-    it('adds a document from the window without showing it, inside the selected folder', () => {
+    it('adds a document from the window without showing it, inside the selected folder', async () => {
         seedDocuments(['Ana'], { folders: [folder('f1', 'Campaign')], current: 'Ana' });
         openWindow();
         fireEvent.click(row('Campaign'));
@@ -261,6 +261,20 @@ describe('folders in the documents window (spec 032, US2)', () => {
         expect(created.parentId).toBe('f1');
         expect(state().currentDocumentId).toBe('Ana');
         expect(row('Campaign').getAttribute('aria-expanded')).toBe('true');
+        // The new document asks for its name in place.
+        await waitFor(() => expect(inline()).toBeTruthy());
+        fireEvent.change(inline(), { target: { value: 'Fresh' } });
+        fireEvent.keyDown(inline(), { key: 'Enter' });
+        expect(state().entries.find((entry) => entry.id === created.id)!.name).toBe('Fresh');
+    });
+
+    it('takes the cursor to the name field from the Rename button of the details', () => {
+        seedDocuments(['Ana']);
+        openWindow();
+        fireEvent.click(row('Ana'), { ctrlKey: true });
+        const details = within(screen.getByRole('region', { name: 'Details' }));
+        fireEvent.click(details.getByRole('button', { name: 'Rename' }));
+        expect(document.activeElement).toBe(details.getByRole('textbox', { name: 'Name' }));
     });
 
     it('moves a row to the end of the top level when it is dropped under the last row', () => {

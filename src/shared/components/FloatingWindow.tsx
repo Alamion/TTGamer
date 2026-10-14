@@ -117,6 +117,19 @@ export function FloatingWindow({
         if (open) frame.current?.focus({ preventScroll: true });
     }, [open]);
 
+    // On a phone the window is a modal sheet: the page behind it must not scroll.
+    useEffect(() => {
+        if (!open || !narrow) return;
+        const { body, documentElement } = document;
+        const before = [body.style.overflow, documentElement.style.overflow];
+        body.style.overflow = 'hidden';
+        documentElement.style.overflow = 'hidden';
+        return () => {
+            body.style.overflow = before[0]!;
+            documentElement.style.overflow = before[1]!;
+        };
+    }, [open, narrow]);
+
     const begin = (event: PointerEvent<HTMLElement>) => {
         if (narrow || event.button !== 0) return;
         if ((event.target as HTMLElement).closest('button, a, input, select, textarea')) return;

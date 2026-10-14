@@ -126,6 +126,18 @@ describe('floating window (spec 032, FR-002 to FR-004)', () => {
         root.remove();
     });
 
+    it('keeps the page behind a phone window from scrolling, and lets it scroll again', () => {
+        narrow = true;
+        const view = mount();
+        expect(document.body.style.overflow).toBe('hidden');
+        expect(document.documentElement.style.overflow).toBe('hidden');
+        view.unmount();
+        expect(document.body.style.overflow).toBe('');
+        narrow = false;
+        mount();
+        expect(document.body.style.overflow).toBe('');
+    });
+
     it('closes from its button and with Escape inside it, not with Escape that was handled', () => {
         const { onClose } = mount();
         fireEvent.click(screen.getByRole('button', { name: 'Close the window' }));

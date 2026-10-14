@@ -638,6 +638,10 @@ export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                     if (narrowing) clearQuery();
                     revealFolder(creatingIn?.parentId ?? null);
                     reset([documentKey(id)]);
+                    setTab('tree');
+                    // A new document asks for its name at once, like a new folder.
+                    // After the dialog has let go of the focus, or its trap would take it back.
+                    window.setTimeout(() => setEditing(documentKey(id)), 0);
                 }}
             />
             {picking && (

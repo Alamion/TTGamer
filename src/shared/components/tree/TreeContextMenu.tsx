@@ -39,6 +39,7 @@ export function TreeContextMenu({
 }: TreeContextMenuProps) {
     const origin = container?.getBoundingClientRect();
     const listRef = useRef<HTMLDivElement>(null);
+    const chosen = useRef(false);
     const items = () =>
         Array.from(listRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []);
 
@@ -92,6 +93,10 @@ export function TreeContextMenu({
                 <Popover.Content
                     align="start"
                     sideOffset={4}
+                    onCloseAutoFocus={(event) => {
+                        // A chosen action places the focus itself (a name to type, a dialog).
+                        if (chosen.current) event.preventDefault();
+                    }}
                     onOpenAutoFocus={(event) => {
                         event.preventDefault();
                         items()[0]?.focus();
@@ -113,6 +118,7 @@ export function TreeContextMenu({
                                     role="menuitem"
                                     tabIndex={-1}
                                     onClick={() => {
+                                        chosen.current = true;
                                         onClose();
                                         onAction(id);
                                     }}

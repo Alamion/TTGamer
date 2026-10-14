@@ -1,7 +1,7 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
-import { ExternalLink, FolderInput, Trash2 } from 'lucide-react';
+import { ExternalLink, FolderInput, Pencil, Trash2 } from 'lucide-react';
 import { type KeyboardEvent, useState } from 'react';
 
 import { collectDeletion } from '../../features/documents/operations';
@@ -72,7 +72,7 @@ function NameField({
     };
     return (
         <input
-            id="documents-details-title"
+            id={NAME_FIELD_ID}
             value={draft}
             placeholder={placeholder}
             maxLength={200}
@@ -83,6 +83,17 @@ function NameField({
             className="w-full rounded-sm border border-transparent bg-transparent px-1 py-0.5 text-lg font-semibold text-textPrimary hover:border-border focus:border-primary focus:outline-hidden"
         />
     );
+}
+
+const NAME_FIELD_ID = 'documents-details-title';
+
+/** Rename lives in the name field above: the button only takes the cursor there. */
+function focusName() {
+    const field = document.getElementById(NAME_FIELD_ID);
+    if (field instanceof HTMLInputElement) {
+        field.focus();
+        field.select();
+    }
 }
 
 const rowName = (item: DocumentsNode) =>
@@ -106,6 +117,12 @@ export function DocumentDetails({
             <p className="p-4 text-sm text-textSecondary">{translate(labels.details.nothing)}</p>
         );
     }
+    const renameButton = (
+        <button type="button" onClick={focusName} className={neutralButton}>
+            <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+            {translate(labels.details.rename)}
+        </button>
+    );
     const moveButton = (
         <button type="button" onClick={onMove} className={neutralButton}>
             <FolderInput className="h-3.5 w-3.5" aria-hidden="true" />
@@ -180,6 +197,7 @@ export function DocumentDetails({
                     />
                 </dl>
                 <div className="flex flex-wrap gap-2">
+                    {renameButton}
                     {moveButton}
                     {deleteButton}
                 </div>
@@ -224,6 +242,7 @@ export function DocumentDetails({
                     <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                     {translate(labels.details.open)}
                 </button>
+                {renameButton}
                 {moveButton}
                 {deleteButton}
             </div>

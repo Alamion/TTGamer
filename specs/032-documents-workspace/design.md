@@ -285,3 +285,9 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   its title; an unloaded document is read first). The inverse of a batch restores a row's place but
   renames through `rename`, so undoing a move keeps a rename made since.
 - **Bundle size after US3**: 24321993 bytes of JS and 179959 of CSS (master 23,510,686 and 178,097).
+- **US3 follow-up after review**: a phone window locks the page behind it (`overflow: hidden` on
+  `html` and `body` while it is open); the details have a Rename button that takes the cursor to the
+  name field; a document made from the window asks for its name in place. Two focus rules came with
+  it: the create dialog does not give the focus back after creating (`onCloseAutoFocus`), and the
+  shared row menu does not either after an action was chosen, or the focus return would end the
+  typing at once.
