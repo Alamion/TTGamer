@@ -36,10 +36,10 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   load by id. _Why_: principle VII; 3,000 sheets of tens of KB each must not sit in memory at boot.
   _Rejected_: index beside whole-array persistence — boot still parses every sheet.
 - **D3 — write-through, one writer**: every store mutation updates the loaded envelope and its entry
-  in one `set`; a subscriber saves changed envelopes after 300 ms (flushed on `pagehide`).
-  `changedAt` moves at most once per 5 s per document. `rebuildIndex()` (reads every record) runs
-  only on migration or when an entry has no record. Entries carry `updatedAt` so a save merges by id
-  instead of replacing the whole index (D13).
+  in one `set`; a subscriber saves changed envelopes at once, coalesced within a task (flushed on
+  `pagehide`; see Implementation notes). `changedAt` moves at most once per 5 s per document.
+  `rebuildIndex()` (reads every record) runs only on migration or when an entry has no record.
+  Entries carry `updatedAt` so a save merges by id instead of replacing the whole index (D13).
 - **D4 — migration v4 → v5 with a backup**: the raw v4 value is copied to
   `universal-character-storage:v4-backup` first; then each envelope becomes a record and an entry
   (times unknown, top level). Idempotent, so a crash mid-way reruns. The backup is deleted after the
@@ -182,3 +182,13 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   them loaded. Retargeted documents are released through `relocateDocuments`.
 - **Merging two tabs**: `pendingPurge` is a union; a tombstone already carried out (`purgedIds`)
   does not come back, and an undo here wins over an older stored tombstone.
+- **Records are saved at once, not after 300 ms** (D3 changed): a reload right after an edit lost
+  the edit (the smoke test `sheet.spec.ts` caught it). The writer now coalesces within one task and
+  still flushes on `pagehide`.
+- **Bundle size after Foundation A and B** (`yarn build`, all `assets/**/*.js`): 23,922,397 bytes
+  against 23,510,686 on `master` (+1.7%); the entry chunk `main` grew 334 bytes, and the growth sits
+  in the sheet-manager chunks (about +12 KB each in the two largest). CSS is 115 bytes smaller.
+- **Splitter in the shared layer**: `Splitter`, `usePaneSizes`, and `useMeasuredElement` replaced
+  `PaneDivider` and the editor's measuring; the editor keeps its storage key and its wrappers
+  (`readPaneWidths`, `fitPaneWidths`). Fitting rounds each size, so the sum may pass the room by 1
+  px (as it did before).

@@ -24,9 +24,9 @@ every document intact; boot reads only the slim state and the open record.
       envelopes, the `changedAt` throttle, two store instances over one storage (a stale tab) merge
       by id and lose no row
 - [x] T003 Create `store/documentContent.ts`: `readRecord`, `writeRecord`, `removeRecord`,
-      `listRecordIds` over localForage; the debounced writer (300 ms, flush on `pagehide`, one write
-      per changed envelope identity); the boot sweep; a loaded-cache LRU of 8 that never evicts the
-      open or an unsaved document; failures reported with
+      `listRecordIds` over localForage; the coalescing writer (same task, flush on `pagehide`, one
+      write per changed envelope identity); the boot sweep; a loaded-cache LRU of 8 that never
+      evicts the open or an unsaved document; failures reported with
       `reportSheetIssue('document-write-failed')`
 - [x] T004 Rework `store/documentStore.ts` to persisted version 5: add `entries`, `folders`,
       `openDocument(id)`, `rebuildIndex()`; `documents` becomes the loaded cache; every mutation
@@ -62,22 +62,22 @@ every document intact; boot reads only the slim state and the open record.
 **Check**: the template editor behaves as before (its existing tests unchanged); the library dialog
 has a draggable divider.
 
-- [ ] T010 Write `tests/shared/splitter.contract.test.tsx`: one suite run against three hosts (the
+- [x] T010 Write `tests/shared/splitter.contract.test.tsx`: one suite run against three hosts (the
       editor panes, the library dialog, a bare host for the documents window): pointer drag stores
       once on release and previews while moving, `pointercancel` reverts, arrows move by 10 and
       Shift by 40, Home and double click reset, `role="separator"` with value, min and max, bounds,
       the remembered size, a container that shrinks (no pane collapses in this slice)
-- [ ] T011 Create `src/shared/components/Splitter.tsx` from
+- [x] T011 Create `src/shared/components/Splitter.tsx` from
       `features/template-editor/components/PaneDivider.tsx` (vertical; adds the `pointercancel`
       revert; keeps `data-pane-divider`) and `src/shared/hooks/usePaneSizes.ts` (storage key,
       limits, container width, minimum for the rest); no import from `sheet_manager`
-- [ ] T012 Make `features/template-editor/components/usePaneWidths.ts` a wrapper of `usePaneSizes`
+- [x] T012 Make `features/template-editor/components/usePaneWidths.ts` a wrapper of `usePaneSizes`
       with the same key (`template-editor-panes`), limits, and results for `readPaneWidths` and
       `fitPaneWidths`; `EditorPanes.tsx` uses `Splitter`; delete `PaneDivider.tsx`
-- [ ] T013 Put a `Splitter` between the tree and the details of
+- [x] T013 Put a `Splitter` between the tree and the details of
       `components/dialogs/LibraryDialog.tsx` (key `library-panes`, replacing `md:max-w-[26rem]`);
       the narrow tab layout stays
-- [ ] T014 Run `yarn verify:full` (new shared component), compare the `yarn build` bundle size with
+- [x] T014 Run `yarn verify:full` (new shared component), compare the `yarn build` bundle size with
       master, and commit:
       `refactor(ui): one splitter for the editor and the library (spec 032, Foundation B)`
 

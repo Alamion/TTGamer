@@ -2,10 +2,16 @@ import { translate } from '@docusaurus/Translate';
 import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
+import { Splitter } from '@site/src/shared/components/Splitter';
+import {
+    type PaneLimits,
+    useMeasuredElement,
+    usePaneSizes,
+} from '@site/src/shared/hooks/usePaneSizes';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import clsx from 'clsx';
 import { Search, X } from 'lucide-react';
-import type { DragEvent, ReactNode } from 'react';
+import type { CSSProperties, DragEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
@@ -67,6 +73,10 @@ import { LibraryTree, type RowExtras } from './library/LibraryTree';
 import { MovePanel } from './library/MovePanel';
 
 const labels = uiMessages.sheet.library;
+
+/** The tree pane of the dialog; the details take the rest, at least `restMin` wide. */
+const TREE_LIMITS: Record<'tree', PaneLimits> = { tree: { min: 220, max: 560, initial: 384 } };
+const TREE_ROOM = { restMin: 320, dividers: 6 };
 const LIBRARY_MIME = 'application/x-ttgamer-library-node';
 
 export type LibraryMode = 'browse' | 'export' | 'import';
@@ -159,6 +169,13 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
     const modalRoot =
         typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
     const treeRegion = useRef<HTMLDivElement>(null);
+    const { ref: bodyRef, node: body, width: bodyWidth } = useMeasuredElement<HTMLDivElement>();
+    const panes = usePaneSizes('library-panes', TREE_LIMITS, bodyWidth, TREE_ROOM);
+    // Only the CSS variable moves while the divider is dragged; the width is stored on release.
+    const previewTree = useCallback(
+        (width: number) => body?.style.setProperty('--tree', `${width}px`),
+        [body]
+    );
     const [content, setContent] = useState<HTMLDivElement | null>(null);
 
     const filtering = query.trim() !== '' || filter !== 'all';
@@ -709,11 +726,15 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                         ))}
                     </div>
 
-                    <div className="flex min-h-0 flex-1">
+                    <div
+                        ref={bodyRef}
+                        style={{ '--tree': `${panes.sizes.tree}px` } as CSSProperties}
+                        className="flex min-h-0 flex-1"
+                    >
                         <div
                             ref={treeRegion}
                             className={clsx(
-                                'min-h-0 flex-1 overflow-y-auto p-2 md:block md:max-w-[26rem] md:border-r md:border-border',
+                                'min-h-0 flex-1 overflow-y-auto p-2 md:block md:w-[var(--tree)] md:flex-none',
                                 narrowTab === 'tree' ? 'block' : 'hidden'
                             )}
                         >
@@ -763,9 +784,19 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                 />
                             )}
                         </div>
+                        <Splitter
+                            label={translate(labels.resizeTree)}
+                            min={TREE_LIMITS.tree.min}
+                            max={TREE_LIMITS.tree.max}
+                            value={panes.sizes.tree}
+                            clamp={(width) => panes.clamp('tree', width)}
+                            onPreview={previewTree}
+                            onChange={(width) => panes.setSize('tree', width)}
+                            onReset={() => panes.reset('tree')}
+                        />
                         <div
                             className={clsx(
-                                'min-h-0 flex-1 overflow-y-auto md:block',
+                                'min-h-0 min-w-0 flex-1 overflow-y-auto md:block',
                                 narrowTab === 'details' ? 'block' : 'hidden'
                             )}
                         >

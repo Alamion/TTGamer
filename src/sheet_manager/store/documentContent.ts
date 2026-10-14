@@ -136,11 +136,12 @@ export interface RecordWriter {
 }
 
 /**
- * Saves changed documents after a pause, one write per document however often it changed. A
- * failed write stays queued for the next flush and is reported.
+ * Saves changed documents once the current task ends, one write per document however often it
+ * changed within it. Saving at once (as the whole collection was before) keeps a reload right after
+ * an edit from losing it. A failed write stays queued for the next flush and is reported.
  */
 export function createRecordWriter({
-    delay = 300,
+    delay = 0,
     write = writeRecord,
 }: {
     delay?: number;

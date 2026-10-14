@@ -1,8 +1,10 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { Splitter } from '@site/src/shared/components/Splitter';
+import { useMeasuredElement } from '@site/src/shared/hooks/usePaneSizes';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import { clsx } from 'clsx';
-import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type CSSProperties, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { isContainerNode } from '../../../types/template';
 import { type CommandContext } from '../commands/list';
@@ -19,7 +21,6 @@ import { useEditorSession, useEditorState } from '../session/context';
 import { EditorContextMenu, EditorMenuContext, type EditorMenuSource } from './EditorContextMenu';
 import { EditorPage } from './EditorPage';
 import { OutlineTree } from './OutlineTree';
-import { PaneDivider } from './PaneDivider';
 import { EditorDragContext, useEditorDrag } from './useEditorDrag';
 import { type Pane, PANE_LIMITS, usePaneWidths } from './usePaneWidths';
 
@@ -87,20 +88,12 @@ export function EditorPanes({
 }) {
     const session = useEditorSession();
     const plural = usePluralMessage();
-    const gridRef = useRef<HTMLDivElement | null>(null);
-    const [gridWidth, setGridWidth] = useState<number | undefined>(undefined);
-    useEffect(() => {
-        const measure = () => setGridWidth(gridRef.current?.clientWidth || undefined);
-        measure();
-        window.addEventListener('resize', measure);
-        return () => window.removeEventListener('resize', measure);
-    }, []);
+    const { ref: gridRef, node: grid, width: gridWidth } = useMeasuredElement<HTMLDivElement>();
     const { widths, setWidth, reset, clamp } = usePaneWidths(gridWidth);
     // Only the CSS variable moves while a divider is dragged; the width is stored on release.
     const previewPane = useCallback(
-        (pane: Pane, width: number) =>
-            gridRef.current?.style.setProperty(`--${pane}`, `${width}px`),
-        []
+        (pane: Pane, width: number) => grid?.style.setProperty(`--${pane}`, `${width}px`),
+        [grid]
     );
     const dividerProps = (pane: Pane) => ({
         value: widths[pane],
@@ -201,7 +194,7 @@ export function EditorPanes({
                             <OutlineTree nodes={shownDraft.children} />
                         </EditorContextMenu>
                     </section>
-                    <PaneDivider
+                    <Splitter
                         label={translate(editor.resizeOutline)}
                         {...dividerProps('outline')}
                     />
@@ -214,7 +207,7 @@ export function EditorPanes({
                             <EditorPage draft={shownDraft} />
                         </EditorContextMenu>
                     </section>
-                    <PaneDivider
+                    <Splitter
                         label={translate(editor.resizeSettings)}
                         invert
                         {...dividerProps('settings')}
