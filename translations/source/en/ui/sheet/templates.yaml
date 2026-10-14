@@ -120,6 +120,10 @@ editor:
     helpAbout: 'Help: {setting}'
     guide: Template editor guide
     groupCollapsible: Collapsible (expanded state is remembered)
+    shortForm: Short label (brief format)
+    shortLabel: Short label text
+    shortLabelPlaceholder: 'Default: {derived}'
+    areaLayout: Brief look (columns follow the width of the area)
     tableTitle: Table title (optional)
     listTitle: List title (optional)
     tableValueKey: Shared value key (table rows)

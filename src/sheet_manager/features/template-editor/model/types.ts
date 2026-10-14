@@ -37,6 +37,9 @@ export type NodeUpdates = {
     maxFrom?: string;
     label?: string;
     compact?: boolean;
+    shortForm?: boolean;
+    shortLabel?: string;
+    layout?: 'window' | 'area';
     multiline?: boolean;
     track?: PrimitiveTrackOverride;
     trackLayout?: 'table' | 'strip';

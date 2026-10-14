@@ -125,18 +125,18 @@ than today with no value, label, or control lost.
 **Check**: in the editor, switch a rating to its short form, see the preview and the storybook,
 save, and open a document on that page.
 
-- [ ] T022 [US4] Extend `tests/sheet_manager/editor-shared-settings.test.tsx` for `shortForm`
+- [x] T022 [US4] Extend `tests/sheet_manager/editor-shared-settings.test.tsx` for `shortForm`
       (toggle, ratings only), `shortLabel` (text, shown while `shortForm` is on, derived value as
       placeholder, over 4 characters refused), and group `layout`; a user trait without a short
       label shows the derived one (FR-009, US4 scenario 2)
-- [ ] T023 [US4] Register `shortForm`, `shortLabel`, and `layout` in
+- [x] T023 [US4] Register `shortForm`, `shortLabel`, and `layout` in
       `features/template-editor/settings/registry.ts` (look group; `appliesTo` ratings and groups),
       the field panel in `features/template-editor/panels/PrimitiveConfig.tsx`, outline labels if
       needed; strings in `translations/source/en/ui/…` and `ru/ui/…` (FR-013)
-- [ ] T024 [US4] Show each changed element in its short and regular form, light and dark, in the
+- [x] T024 [US4] Show each changed element in its short and regular form, light and dark, in the
       storybook (`storybook/stories.ts`, `features/docs/ElementStorybook.tsx`), and extend
       `tests/sheet_manager/storybook.test.tsx` (FR-010)
-- [ ] T025 [US4] Run `yarn verify` and commit:
+- [x] T025 [US4] Run `yarn verify` and commit:
       `feat(template-editor): short label and area layout settings (spec 033, US4)`
 
 ## Finish

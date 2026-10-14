@@ -178,3 +178,8 @@ vehicle, fodder, V5 core (`systems/v5/core/templates.ts`), and Hunter
   in the dark one) because the plain primary red fell under 4.5:1 (4.4 light, 3.7 dark); chip cells
   use `border/70` and `border/30` for the same reason. `brief-contrast.test.ts` computes every pair
   from the palette.
+- **US4**: `ShortFormSettings` (switch plus the author's letters, the derived ones as the
+  placeholder) sits in the primitive panel (when compact) and in a rating field's switches; the
+  group's brief look is a toggle in the group's Look settings. A free rating field with the short
+  form draws the same short cell (number only: its dots, text, flags, and die are not part of the
+  short look). The storybook shows both forms and an area group.

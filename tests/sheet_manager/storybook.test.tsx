@@ -49,6 +49,7 @@ function variantsOf(node: TemplateNode): string[] {
             if (node.type === 'group') {
                 flag('hideTitle');
                 flag('collapsible');
+                flag('layout');
             }
             if (node.docsPath) {
                 tags.push(
@@ -85,6 +86,8 @@ function variantsOf(node: TemplateNode): string[] {
             flag('hideLabel');
             flag('textInput');
             flag('showNumbers');
+            flag('shortForm');
+            flag('shortLabel');
             flag('dice');
             if (node.dice && node.presentation === 'number') tags.push('rating:dice-number');
             if (node.showNumbers && node.presentation === 'number') {
@@ -181,6 +184,9 @@ const REQUIRED_VARIANTS = [
     'text:span',
     'group:hideTitle',
     'group:collapsible',
+    'group:layout',
+    'rating:shortForm',
+    'rating:shortLabel',
     'group:defaultCollapsed',
     'group:visibleWhen',
     'section:visibleWhen',
