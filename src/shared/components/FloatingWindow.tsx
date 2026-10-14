@@ -168,6 +168,7 @@ export function FloatingWindow({
 
     if (!open || typeof document === 'undefined') return null;
 
+    // Tailwind utilities exist only under .tailwind-root; #modal-root (theme/Root) carries it.
     return createPortal(
         // A dialog takes Escape without being a widget itself.
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
@@ -237,6 +238,6 @@ export function FloatingWindow({
                     />
                 ))}
         </div>,
-        document.body
+        document.getElementById('modal-root') ?? document.body
     );
 }

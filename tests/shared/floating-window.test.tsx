@@ -116,6 +116,16 @@ describe('floating window (spec 032, FR-002 to FR-004)', () => {
         expect(document.querySelector('[data-radix-focus-guard]')).toBeNull();
     });
 
+    it('draws inside the Tailwind root so its utility classes apply', () => {
+        const root = document.createElement('div');
+        root.id = 'modal-root';
+        root.className = 'tailwind-root';
+        document.body.append(root);
+        mount();
+        expect(frame().closest('.tailwind-root')).toBe(root);
+        root.remove();
+    });
+
     it('closes from its button and with Escape inside it, not with Escape that was handled', () => {
         const { onClose } = mount();
         fireEvent.click(screen.getByRole('button', { name: 'Close the window' }));

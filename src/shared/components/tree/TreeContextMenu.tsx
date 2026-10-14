@@ -86,7 +86,9 @@ export function TreeContextMenu({
                     }}
                 />
             </Popover.Anchor>
-            <Popover.Portal container={container ?? undefined}>
+            <Popover.Portal
+                container={container ?? document.getElementById('modal-root') ?? undefined}
+            >
                 <Popover.Content
                     align="start"
                     sideOffset={4}
