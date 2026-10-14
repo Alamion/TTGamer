@@ -134,35 +134,37 @@ export function createScratchDocumentSource(
     };
 }
 
-export function useDocumentSource(): DocumentSource {
-    const override = useContext(DocumentSourceContext);
-    const {
-        currentDocumentId,
-        documents,
-        entries,
-        updateDocumentData,
-        updateDocumentMetadata,
-        updateTemplateValues,
-    } = useDocumentStore();
-    const storeSource = useMemo<DocumentSource>(
+/**
+ * The editable store as a source: the document with `documentId` (a pane's), or the current one.
+ * It subscribes by selector, so a write to another document does not re-render this source's
+ * readers (spec 034, D2).
+ */
+export function useStoreDocumentSource(documentId?: string): DocumentSource {
+    const id = useDocumentStore((state) => documentId ?? state.currentDocumentId);
+    const document = useDocumentStore((state) =>
+        state.documents.find((candidate) => candidate.id === id)
+    );
+    const entries = useDocumentStore((state) => state.entries);
+    const updateDocumentData = useDocumentStore((state) => state.updateDocumentData);
+    const updateDocumentMetadata = useDocumentStore((state) => state.updateDocumentMetadata);
+    const updateTemplateValues = useDocumentStore((state) => state.updateTemplateValues);
+    return useMemo<DocumentSource>(
         () => ({
             documents: documentRefs(entries),
-            document: documents.find(({ id }) => id === currentDocumentId),
+            document,
             readOnly: false,
             preview: false,
             updateDocumentData,
             updateDocumentMetadata,
             updateTemplateValues,
         }),
-        [
-            currentDocumentId,
-            documents,
-            entries,
-            updateDocumentData,
-            updateDocumentMetadata,
-            updateTemplateValues,
-        ]
+        [document, entries, updateDocumentData, updateDocumentMetadata, updateTemplateValues]
     );
+}
+
+export function useDocumentSource(): DocumentSource {
+    const override = useContext(DocumentSourceContext);
+    const storeSource = useStoreDocumentSource();
     return override ?? storeSource;
 }
 

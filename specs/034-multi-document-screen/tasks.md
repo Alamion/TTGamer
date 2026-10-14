@@ -14,32 +14,32 @@ they start with `src/shared/`, `src/integrations/`, `translations/`, `tests/`, `
 **Check**: the sheet page with one document looks and behaves exactly as before; a pane's document
 is never evicted from the loaded cache.
 
-- [ ] T001 Before any code change, record the baseline in `tests-e2e/smoke/panes-baseline.ts`: page
+- [x] T001 Before any code change, record the baseline in `tests-e2e/smoke/panes-baseline.ts`: page
       heights of the Star Wars character in brief and full view at 375 and 1280 px, as constants
       (the spec 033 baseline files are reused where they already hold them); commit with the first
       commit
-- [ ] T002 Write `tests/sheet_manager/pane-cache.test.ts`: with six pinned ids and nine loaded
+- [x] T002 Write `tests/sheet_manager/pane-cache.test.ts`: with six pinned ids and nine loaded
       documents, `loadInto` evicts none of the pinned or the current one; `loadIntoCache(ids)` reads
       records into `documents` without changing `currentDocumentId`; unknown ids are skipped
-- [ ] T003 Add `pinnedIds`, `pinDocuments(ids)` (not persisted, at most six) and
+- [x] T003 Add `pinnedIds`, `pinDocuments(ids)` (not persisted, at most six) and
       `loadIntoCache(ids)` to `store/documentStore.ts`; `loadInto` keeps pinned ids beside the
       current one (design D4)
-- [ ] T004 Factor `useStoreDocumentSource(documentId?)` out of `useDocumentSource` in
+- [x] T004 Factor `useStoreDocumentSource(documentId?)` out of `useDocumentSource` in
       `hooks/useDocumentSource.ts` (the public hook behaves as before; it subscribes by selector to
       its own document and entry, not to the whole store, design D2); create
       `features/sheet/panes/PaneSourceProvider.tsx` providing it through `DocumentSourceContext`
       with `preview: false` (D1, D2)
-- [ ] T005 Give `CurrentDocumentSheet` in `features/sheet/CharacterSheet.tsx` the props `documentId`
+- [x] T005 Give `CurrentDocumentSheet` in `features/sheet/CharacterSheet.tsx` the props `documentId`
       and optional `viewId` instead of reading `currentDocumentId`; the view id overrides
       `preferredViewId` only when given; `CharacterSheet` passes the current id
-- [ ] T006 Create `features/sheet/panes/types.ts` (`PaneArrangement`, Zod schema, limit constant 6,
+- [x] T006 Create `features/sheet/panes/types.ts` (`PaneArrangement`, Zod schema, limit constant 6,
       min width 320) and `features/sheet/panes/paneStore.ts` with the empty state only; create
       `PaneArea.tsx` rendering exactly today's `children` for zero or one pane (D12); use it in
       `features/sheet/shell/SheetWorkspace.tsx`
-- [ ] T007 Write `tests/sheet_manager/pane-single.test.tsx`: with one document the page markup
+- [x] T007 Write `tests/sheet_manager/pane-single.test.tsx`: with one document the page markup
       (class-name snapshot) has no strip, divider, header, or wrapper added; run the existing sheet
       and workspace tests unchanged
-- [ ] T008 Run `yarn verify:full` (store edit, shared page shell, baseline in e2e) and commit:
+- [x] T008 Run `yarn verify:full` (store edit, shared page shell, baseline in e2e) and commit:
       `feat(sheet): pinned document cache and pane source (spec 034, Foundation)`
 
 ## User Story 1 - Keep a second document open beside the first (P1)

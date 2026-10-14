@@ -89,14 +89,15 @@ function FallbackReport({
     return null;
 }
 
-function CurrentDocumentSheet() {
-    const { currentDocumentId, documents } = useDocumentStore();
+function DocumentSheet({ documentId }: { documentId: string }) {
+    const document = useDocumentStore((state) =>
+        state.documents.find(({ id }) => id === documentId)
+    );
     const { templates, defaultOverrides } = useTemplateStore();
     // Subscribed so the page follows installed or removed user types (the registry overlay).
     useDocumentTypeStore((state) => state.types);
     const settings = useDocumentTypeStore((state) => state.settings);
     const typesHydrated = useDocumentTypesHydrated();
-    const document = documents.find(({ id }) => id === currentDocumentId);
     if (!document) return null;
     const definition = systemRegistry.getDocumentDefinition(
         document.systemId,
@@ -184,8 +185,8 @@ function CurrentDocumentSheet() {
 
 export function CharacterSheet() {
     return (
-        <SheetWorkspace>
-            <CurrentDocumentSheet />
-        </SheetWorkspace>
+        <SheetWorkspace
+            renderDocument={(documentId) => <DocumentSheet documentId={documentId} />}
+        />
     );
 }

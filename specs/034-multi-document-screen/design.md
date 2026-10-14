@@ -168,3 +168,12 @@ rolls and focus checks, strings, guide.
 6. Double-click a tab → only that pane at full width; again → the previous panes and sizes; the
    maximize button and Tab/Enter do the same.
 7. Close down to one pane → no strip, no divider, page identical to before this feature.
+
+## Implementation notes
+
+- **Foundation.** `SheetWorkspace` takes `renderDocument(documentId)` instead of `children`, so
+  `PaneArea` can draw one document per pane; `CurrentDocumentSheet` became `DocumentSheet` with a
+  `documentId` prop. The `viewId` prop and the pane store file arrive with the stories that use them
+  (US3 and US1): an export nothing imports fails the dead-code gate. The baseline in
+  `tests-e2e/smoke/panes-baseline.ts` holds the heights after spec 033 (full sheet 7926/3473, brief
+  623/333 at 375/1280 px), since SC-005 compares with the page as it is now.

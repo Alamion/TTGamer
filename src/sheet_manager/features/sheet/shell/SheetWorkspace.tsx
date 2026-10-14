@@ -22,6 +22,7 @@ import {
 } from '../../../systems';
 import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
+import { PaneArea } from '../panes/PaneArea';
 import { exportFileName, serializeDocumentExport } from './documentFile';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { type BatchSummary, type ConflictAnswer, runImportBatch } from './importBatch';
@@ -30,10 +31,11 @@ import { SheetToolbar } from './SheetToolbar';
 import { selectableViews, templateSelectValue, ViewModeSelect } from './ViewModeSelect';
 
 interface SheetWorkspaceProps {
-    children: React.ReactNode;
+    /** Draws one document's page; the workspace decides how many documents are shown. */
+    renderDocument: (documentId: string) => React.ReactNode;
 }
 
-export function SheetWorkspace({ children }: SheetWorkspaceProps) {
+export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
     const {
         currentDocumentId,
         documents,
@@ -256,7 +258,9 @@ export function SheetWorkspace({ children }: SheetWorkspaceProps) {
                 onResolve={resolveConflict}
             />
 
-            {currentDocument && children}
+            {currentDocument && (
+                <PaneArea documentId={currentDocument.id} renderDocument={renderDocument} />
+            )}
             {/* Outside the template tree: no page template, shipped or custom, can remove it. */}
             {currentDocument && (
                 <PolicyBadges policies={resolveDocumentPolicies(systemRegistry, currentDocument)} />
