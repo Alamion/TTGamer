@@ -124,7 +124,9 @@ describe('template editor responsiveness (SC-002)', () => {
             // (SC-003) is checked on the dev server (quickstart §4). Calibrated in spec 024 (the
             // earlier 2× held only while cold first-render costs inflated the commit) and spec 025:
             // per-element selection marks made the commit ~20% cheaper, the preview stayed put.
-            expect(preview).toBeLessThan(commit * 3.5);
+            // Spec 032: 14 idle runs on `master` and on the branch measured 3.4× to 4.2× (the
+            // bound failed about one run in six without any code cause), so it is 4.5×.
+            expect(preview).toBeLessThan(commit * 4.5);
             expect(release).toBeLessThan(commit * 2);
         } finally {
             vi.useRealTimers();

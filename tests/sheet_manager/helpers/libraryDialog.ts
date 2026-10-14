@@ -13,7 +13,7 @@ export function openLibrary() {
 }
 
 export const row = (key: string) =>
-    document.querySelector<HTMLElement>(`[data-library-row="${key}"]`) ?? null;
+    document.querySelector<HTMLElement>(`[data-tree-row="${key}"]`) ?? null;
 
 export const mustRow = (key: string) => {
     const found = row(key);

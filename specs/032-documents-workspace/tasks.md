@@ -85,18 +85,18 @@ has a draggable divider.
 
 **Check**: library tests pass with the new row attribute only; the generic tree windows long lists.
 
-- [ ] T015 Write `tests/shared/tree-view.contract.test.tsx`: roving focus, arrows, Home, End, Left
+- [x] T015 Write `tests/shared/tree-view.contract.test.tsx`: roving focus, arrows, Home, End, Left
       and Right on branches, type-ahead, Enter, Space, Delete, ContextMenu and Shift+F10, single and
       multi selection (Ctrl/Cmd, Shift range), `aria-level`, `aria-setsize`, `aria-posinset`,
       windowing above 200 rows (only visible rows in the DOM, keyboard reaches an unrendered row)
-- [ ] T016 Create `src/shared/components/tree/TreeView.tsx`, `TreeRowShell.tsx` (chevron, selection,
+- [x] T016 Create `src/shared/components/tree/TreeView.tsx`, `TreeRowShell.tsx` (chevron, selection,
       menu button, drag slots), and `VirtualRows.tsx` (measured fixed height; 32 px, 44 px on coarse
       pointers) from `components/dialogs/library/LibraryTree.tsx` and `TreeRow.tsx`; flat rows carry
       their own `setSize` and `position`
-- [ ] T017 Rebuild `components/dialogs/library/LibraryTree.tsx` and `TreeRow.tsx` on the shared
+- [x] T017 Rebuild `components/dialogs/library/LibraryTree.tsx` and `TreeRow.tsx` on the shared
       tree: they keep node content (icon per level, badges, counts, drag, checkbox) and
       `features/sheet/data/libraryTree.ts` flatten; rename `data-library-row` in the library tests
-- [ ] T018 Run `yarn verify:full`, compare the bundle size with master, and commit:
+- [x] T018 Run `yarn verify:full`, compare the bundle size with master, and commit:
       `refactor(ui): shared tree view for the library (spec 032, Foundation C)`
 
 ## User Story 1 - A documents window beside the sheet (P1)

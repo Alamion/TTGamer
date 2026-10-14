@@ -192,3 +192,19 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   `PaneDivider` and the editor's measuring; the editor keeps its storage key and its wrappers
   (`readPaneWidths`, `fitPaneWidths`). Fitting rounds each size, so the sum may pass the room by 1
   px (as it did before).
+- **Foundation C, shared tree**: `shared/components/tree/{TreeView,TreeRowShell,useRowWindow}`. Rows
+  come flat from the owner (`TreeRowItem`), the owner fills the row through `TreeRowSlots` (icon,
+  badges, count, checkbox, drag), and `onSelect(key, extend)` carries `none | toggle | range`
+  (Ctrl/Cmd click, Shift click, Shift with arrows; `selectedKeys` turns on `aria-multiselectable`).
+  The library keeps its node content in `library/TreeRow.tsx` (`libraryRowSlots`; `TreeRow` stays
+  for the storybook) and its flatten in `libraryTree.ts`. Row attribute is now `data-tree-row`
+  (tests renamed). Rows are 44 px and the menu button always shows on coarse pointers (phones).
+- **Windowing**: above 200 rows, with a `scrollRef`, only rows in view plus 8 either side are drawn
+  (row height measured, padding stands in for the rest); a row outside the window is made tabbable
+  by drawing the first one instead, and keyboard moves scroll the target into view first.
+- **Bundle size after Foundation C**: 23,940,334 bytes of JS against 23,510,686 on `master` (+1.8%);
+  CSS 178,420 against 178,097.
+- **Perf test recalibrated** (`template-editor.perf.test.tsx`): the preview-to-commit bound failed
+  about one run in six on `master` as well (measured 3.4× to 4.2× over 14 idle runs against 3.5×);
+  it is 4.5× now. More warm runs made the ratio worse (the commit's best time falls), so the run
+  count stayed.

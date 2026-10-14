@@ -222,7 +222,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
 
     const focusRow = (key: string) => {
         window.setTimeout(() => {
-            treeRegion.current?.querySelector<HTMLElement>(`[data-library-row="${key}"]`)?.focus();
+            treeRegion.current?.querySelector<HTMLElement>(`[data-tree-row="${key}"]`)?.focus();
         }, 0);
     };
 
@@ -781,6 +781,7 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                     }
                                     onSpace={modePanels?.onSpace}
                                     rowExtras={modePanels?.rowExtras ?? browseExtras}
+                                    scrollRef={treeRegion}
                                 />
                             )}
                         </div>
