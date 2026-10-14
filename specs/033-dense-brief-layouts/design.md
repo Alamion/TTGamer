@@ -20,7 +20,8 @@ element before adding one). Three layers, in delivery order:
    guide.
 
 Shipped briefs to re-lay out: Star Wars character and droid (`templates/character.ts`), creature,
-vehicle, fodder, and Hunter (`systems/v5/modules/hunter/templates/brief.ts`).
+vehicle, fodder, V5 core (`systems/v5/core/templates.ts`), and Hunter
+(`systems/v5/modules/hunter/templates/brief.ts`); V5 core and Hunter share `compactTraitsGroup`.
 
 ## Decisions
 
@@ -44,7 +45,8 @@ vehicle, fodder, and Hunter (`systems/v5/modules/hunter/templates/brief.ts`).
   the glossary (clarification), user traits get the rule and can override. _Rejected_: a second
   translated label per node — doubles every `labelMessage` for no benefit; deriving only by rule —
   wrong for Russian (the glossary has «Мощь» for Strength, so «СИЛ» in the concept was wrong; the
-  glossary is authoritative: МОЩ).
+  glossary is authoritative: МОЩ). A shipped rating that is not a glossary term (creature pools,
+  vehicle stats) leaves `shortForm` off unless its node sets `shortLabel`.
 - **D5 — Abbreviations live in the glossary** (`translations/glossary/*.yaml`, spec 009): new
   optional keys `abbr` (English) and `ruAbbr`, generated into `bookTerms` next to `ruShort`. _Why_:
   the glossary already owns per-term short forms, refs, and the verifier. A verifier rule checks
@@ -93,7 +95,7 @@ vehicle, fodder, and Hunter (`systems/v5/modules/hunter/templates/brief.ts`).
   changed element in both forms and both themes; strings in en and ru.
 - **VII (performance)**: container queries are CSS only; the label map is computed once per group
   render (memoized on nodes and locale); the existing sheet timings are the guard (SC-008).
-- **II/IX-style compatibility**: additive schema defaults (above); a perf/regression test pins full
+- **Compatibility (II, V)**: additive schema defaults (above); a perf/regression test pins full
   sheet heights.
 - **VIII (third-party material)**: abbreviations are short labels of game terms, not book text; the
   glossary notes stay paraphrased.

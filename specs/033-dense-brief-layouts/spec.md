@@ -152,9 +152,10 @@ storybook, save, and open a document on that page.
 
 ### Functional Requirements
 
-- **FR-001**: A rating in its short form MUST show a label of three uppercase letters (or the whole
-  label when it has fewer) and its value with no more space between them than one gap of the shared
-  rhythm; the label is the language's own (English and Russian).
+- **FR-001**: A rating in its short form MUST show a label of three uppercase letters by default (up
+  to four when its author sets one; the whole label when it has fewer) and its value with no more
+  space between them than one gap of the shared rhythm; the label is the language's own (English and
+  Russian).
 - **FR-002**: The full name of a short label MUST remain available: as the accessible name of the
   control, as a hint on hover and focus, and on tap, together with the book-term hint the label
   already has.
@@ -168,8 +169,8 @@ storybook, save, and open a document on that page.
   drawn in, not from the browser window, so that the same brief drawn in a narrow window, a card, or
   a full screen lays out for that width.
 - **FR-007**: The shipped character briefs of every shipped system (Star Wars character, droid,
-  creature, vehicle, fodder group, Hunter) MUST be re-laid out under these rules and MUST keep the
-  headings and groups they have.
+  creature, vehicle, fodder group, V5 core, Hunter) MUST be re-laid out under these rules and MUST
+  keep the headings and groups they have.
 - **FR-008**: On a touch screen, every edit control in a brief MUST keep a hit area of at least 32
   px in its smaller side, even where its visible cell is smaller.
 - **FR-009**: A rating MUST offer its short form as a setting in the template editor, and the other
@@ -183,11 +184,14 @@ storybook, save, and open a document on that page.
   template ids, and saved pages need no migration, and the full sheet views keep their layout.
 - **FR-013**: All text added by this change (hints, settings, descriptions) MUST exist in English
   and Russian.
+- **FR-014**: In an area narrower than one threshold (about 450 px) a short-form rating MUST be
+  drawn as one row per rating, groups side by side as columns; from that width up, as a chip holding
+  the label and the value, chips flowing inside their group. One threshold decides both looks.
 
 ### Key Entities
 
-- **Short label**: the three-letter form of a rating's label in one language, defined beside the
-  full label, unique within a group.
+- **Short label**: the short (three-letter by default) form of a rating's label in one language,
+  defined beside the full label, unique within a group.
 - **Brief**: the compact view of a document, drawn in an area of any width; a shipped template per
   document kind.
 
@@ -200,8 +204,9 @@ storybook, save, and open a document on that page.
   clipped value, and at 1280 px it is not taller than at 640 px.
 - **SC-004**: For every short label, 100% have the full name as their accessible name and as a hint,
   checked by one test over every shipped brief in both languages.
-- **SC-005**: In the light and the dark theme, every label and value of a shipped brief keeps the
-  text contrast it has today, using no color the application does not already define.
+- **SC-005**: In the light and the dark theme, every label and value of a shipped brief uses only
+  colors the application already defines, and each text and background pair has a contrast ratio of
+  at least 4.5:1 (checked by a calculation over the palette tokens).
 - **SC-006**: Every edit control in a brief has a pointer target of at least 32 px on a touch
   screen.
 - **SC-007**: The full sheet views and saved pages are unchanged: their heights at 375 and 1280 px
@@ -213,11 +218,12 @@ storybook, save, and open a document on that page.
 
 - Density is the brief's own character: the brief is always compact; there is no per-user comfort
   setting in this change.
-- The width that decides the layout is the area the brief is drawn in; the sheet page itself is such
-  an area, so a brief on the sheet page behaves as before the change would on a phone-wide window.
+- The width that decides the layout is the area the brief is drawn in; the sheet page is such an
+  area too, so a brief shown there follows the same rules, and full sheet views keep their layout.
 - A trait with no authored short label gets one from the first three letters of its label, shown in
   the editor so the author can change it; shipped traits get authored short labels where the first
-  three letters would clash or read badly.
+  three letters would clash or read badly. A shipped rating that is not a glossary term (for example
+  creature pools) keeps its full label unless its node sets a short label.
 - The documents window, embedded cards, and several documents on one screen are not built here
   (T-051, T-059, T-112); this change only makes the brief fit their areas.
 - Printing and export of briefs, and the Hunter v5 dice-roll behavior of ratings, are unchanged.

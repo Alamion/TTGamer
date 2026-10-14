@@ -13,6 +13,10 @@ rhythm for the other compact forms), US4 (editor, storybook, guide). Paths are u
 **Check**: saved pages and full sheets parse and draw as before; a group with `layout: 'area'` draws
 three columns from the container width.
 
+- [ ] T001a Before any code change, record the baseline in `tests-e2e/smoke/brief-layout.spec.ts`:
+      the height of every shipped brief (Star Wars character and droid, creature, vehicle, fodder,
+      V5 core, Hunter) and of the full sheets at 375 and 1280 px, as constants in
+      `tests-e2e/smoke/brief-baseline.ts`; commit with the story's first commit
 - [ ] T001 Extend `tests/sheet_manager/template-schema.test.ts`: a rating field without the new keys
       parses with `shortForm: false` and no `shortLabel`; a group without `layout` parses to
       `'window'`; `shortLabel` over 4 characters is rejected; a saved template parses to the same
@@ -27,12 +31,13 @@ three columns from the container width.
       root's width from its content
 - [ ] T004 Write `tests/sheet_manager/area-group.test.tsx`: a group with `layout: 'area'` carries
       the container-variant column classes (three columns, one below 260 px) and a `window` group
-      keeps `columnClasses` exactly; a full sheet render snapshot of class names is unchanged
+      keeps `columnClasses` exactly; a full sheet render snapshot of class names is unchanged; the
+      full sheet heights from T001a stay within 1% in the e2e spec (SC-007, FR-012)
 - [ ] T005 Implement the `area` layout in `DeclarativeSheetView.tsx` (the `columns` branch near
       `columnClasses`): `@max-[259px]/brief:grid-cols-1`, column stacks as a multi-column list in
       narrow areas (`[column-width:5.25rem]`) and wrapping flex from `@md/brief` (design D1, D3)
-- [ ] T006 [Foundation] Run `yarn verify` (schema edit) and commit:
-      `feat(sheet): area container and     area group layout (spec 033, Foundation)`
+- [ ] T006 Run `yarn verify` (schema edit) and commit:
+      `feat(sheet): area container and area group layout (spec 033, Foundation)`
 
 ## User Story 1 - Read a character brief on a phone at a glance (P1)
 
@@ -52,12 +57,13 @@ and every short label has its full name as accessible name and hint, in en and r
       `abbreviation` check): a term with a rating ref lacks `abbr` or `ruAbbr`, or one is outside
       2–4 characters; extend the verifier test file for it
 - [ ] T010 [US1] Create `features/sheet/declarative/shortLabels.ts`:
-      `shortLabelFor(node, label,     locale)` and `shortLabelsFor(nodes, locale)`; a
+      `shortLabelFor(node, label, locale)` and `shortLabelsFor(nodes, locale)`; a
       `ShortLabelContext` the area group provides per group (memoized on the nodes and locale)
 - [ ] T011 [US1] Write `tests/sheet_manager/brief-short-labels.test.tsx`: for every shipped brief
-      (Star Wars character, droid, creature, vehicle, fodder, Hunter) in en and ru, no short-label
-      clash per group, each short control has the full name as accessible name and a hint (SC-004),
-      the value input is present, `shortForm` ratings keep `NumberInput` labels (FR-005)
+      (Star Wars character, droid, creature, vehicle, fodder, V5 core, Hunter) in en and ru, no
+      short-label clash per group, each short control has the full name as accessible name and a
+      hint (SC-004), the value input is present, `shortForm` ratings keep `NumberInput` labels
+      (FR-005)
 - [ ] T012 [US1] Rework `CompactRating` in `components/stat-fields/CompactSheetFields.tsx`: a
       `shortLabel` prop; cell look (label, value, 24 px row, hover tint) in narrow areas and pill
       look (label and value chip, 26 px) from `@md/brief`; full name stays in `aria-label`, `title`
@@ -66,8 +72,10 @@ and every short label has its full name as accessible name and hint, in en and r
       near `traitRowKind`)
 - [ ] T013 [US1] Turn on `shortForm: true` and `layout: 'area'` in the shipped briefs: Star Wars
       `systems/star-wars-wod/templates/character.ts` (`briefSheet`, also droid), `creature.ts`,
-      `vehicle.ts`, `fodder.ts`, and Hunter `systems/v5/modules/hunter/templates/brief.ts`
-      (`compactTraitsGroup` in `systems/v5/ruleset/templateParts.ts`); keep headings and groups
+      `vehicle.ts`, `fodder.ts`, V5 core `systems/v5/core/templates.ts`, and Hunter
+      `systems/v5/modules/hunter/templates/brief.ts` (both through `compactTraitsGroup` in
+      `systems/v5/ruleset/templateParts.ts`); ratings that are not glossary terms (creature pools,
+      vehicle stats) keep the full label unless the node sets `shortLabel`; keep headings and groups
 - [ ] T014 [US1] Run `yarn verify` (translations and glossary edits) and commit:
       `feat(sheet): three-letter labels and cell/pill looks in briefs (spec 033, US1)`
 
@@ -75,12 +83,12 @@ and every short label has its full name as accessible name and hint, in en and r
 
 **Check**: the same brief at 320, 375, 640, and 1280 px areas inside a larger window.
 
-- [ ] T015 [US3] Write `tests-e2e/smoke/brief-layout.spec.ts`: draw the Star Wars character brief in
-      areas of 320, 375, 640, 1280 px inside a 1280 px window; assert ≤700 px at 375, ≤400 px at
+- [ ] T015 [US3] Extend `tests-e2e/smoke/brief-layout.spec.ts`: draw the Star Wars character brief
+      in areas of 320, 375, 640, 1280 px inside a 1280 px window; assert ≤700 px at 375, ≤400 px at
       640, not taller at 1280 than at 640, no horizontal scroll and no clipped value at any width
-      (SC-001 – SC-003), for the other shipped briefs at least 50% shorter than the recorded
-      baseline at 375 px (SC-001); full sheet heights at 375 and 1280 within 1% of the baseline
-      recorded in the test (SC-007); a test hook mounts a brief in a fixed-width wrapper
+      (SC-001 – SC-003), for the other shipped briefs at least 50% shorter than the baseline from
+      T001a at 375 px (SC-001); full sheet heights at 375 and 1280 within 1% of that baseline
+      (SC-007); a test hook mounts a brief in a fixed-width wrapper
 - [ ] T016 [US3] Tune the narrow/wide thresholds and gaps until T015 passes on the dev server in
       light and dark and on a phone viewport; record the final numbers in `design.md`
       "Implementation notes"
@@ -101,12 +109,14 @@ than today with no value, label, or control lost.
 - [ ] T019 [US2] Create `features/sheet/declarative/briefRhythm.ts` (class constants: cell gap,
       group gap, heading, label style) and apply them in `CompactResource` (one chip),
       `CompactTextField`, `CompactConditionTrack` (box size and gaps), the compact tracker
-      (`features/sheet/declarative/BuiltInTracker.tsx`, `trackerModel`), list and table rows,
-      section headings and the helper banner (`features/sheet/declarative/RowsBody.tsx`,
-      section/group headings in `DeclarativeSheetView.tsx`)
+      (`features/sheet/declarative/BuiltInTracker.tsx`, `features/sheet/data/trackerModel.ts`), list
+      and table rows, section headings and the helper banner
+      (`features/sheet/declarative/RowsBody.tsx`, section/group headings in
+      `DeclarativeSheetView.tsx`)
 - [ ] T020 [US2] Re-check every shipped brief (T015 limits still hold) and light and dark colors use
       only palette tokens (SC-005): add a style test that fails on a hard-coded color in the touched
-      files
+      files and computes the contrast ratio (≥4.5:1) of each text and background token pair used by
+      the brief in both themes
 - [ ] T021 [US2] Run `yarn verify:full` and commit:
       `feat(sheet): one spacing rhythm for compact elements (spec 033, US2)`
 
@@ -143,18 +153,19 @@ save, and open a document on that page.
 
 ## Coverage
 
-| Requirement            | Task                                          |
-| ---------------------- | --------------------------------------------- |
-| FR-001, FR-003         | T007, T010, T012                              |
-| FR-002, SC-004         | T011, T012                                    |
-| FR-004, FR-005         | T018, T019                                    |
-| FR-006, SC-002, SC-003 | T004, T005, T015                              |
-| FR-007, SC-001         | T013, T015                                    |
-| FR-008, SC-006         | T012 (pseudo-element), T029 (touch walk)      |
-| FR-009                 | T002, T022, T023                              |
-| FR-010                 | T024                                          |
-| FR-011                 | T027                                          |
-| FR-012, SC-007         | T001, T004, T015                              |
-| FR-013                 | T008, T023                                    |
-| SC-005                 | T020                                          |
-| SC-008                 | T017, T021, T029 (existing timings, reported) |
+| Requirement            | Task                                                   |
+| ---------------------- | ------------------------------------------------------ |
+| FR-001, FR-003         | T007, T010, T012 (four-character override: T001, T022) |
+| FR-002, SC-004         | T011, T012                                             |
+| FR-004, FR-005         | T018, T019                                             |
+| FR-014                 | T005, T012, T015                                       |
+| FR-006, SC-002, SC-003 | T004, T005, T015                                       |
+| FR-007, SC-001         | T013, T015                                             |
+| FR-008, SC-006         | T012 (pseudo-element), T029 (touch walk)               |
+| FR-009                 | T002, T022, T023                                       |
+| FR-010                 | T024                                                   |
+| FR-011                 | T027                                                   |
+| FR-012, SC-007         | T001, T001a, T004, T015                                |
+| FR-013                 | T008, T023                                             |
+| SC-005                 | T020                                                   |
+| SC-008                 | T017, T021, T029 (existing timings, reported)          |
