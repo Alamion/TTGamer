@@ -110,29 +110,29 @@ has a draggable divider.
 **Check**: open the window with existing documents, move, resize, open a document by click, close,
 reload, reopen; the same at 375 px.
 
-- [ ] T019 [US1] Write `tests/sheet_manager/documents-window.test.tsx`: lists old documents at the
+- [x] T019 [US1] Write `tests/sheet_manager/documents-window.test.tsx`: lists old documents at the
       top level with name or type label and marks the open one; click and Enter open on the sheet,
       Ctrl/Cmd and Shift click select without opening; drag by the title bar stays on screen; resize
       within bounds; layout restored and repaired when the screen shrinks; the sheet behind stays
       operable; narrow layout (mocked media query) is full screen with tabs, closes on open; Escape
       closes; open and closed folders are remembered across reloads; the window and the library
       dialog pass the tree and splitter contract suites of T010 and T015 (SC-008, SC-009)
-- [ ] T020 [US1] Create `src/shared/components/FloatingWindow.tsx` (D9: non-modal dialog, pointer
+- [x] T020 [US1] Create `src/shared/components/FloatingWindow.tsx` (D9: non-modal dialog, pointer
       drag, eight resize handles, viewport clamp, layout in `useLocalStorageState`, `id` and
       `onFocus` props, full-screen below `md`)
-- [ ] T021 [US1] Create `features/documents/rows.ts` (entries and folders to flat rows with names,
+- [x] T021 [US1] Create `features/documents/rows.ts` (entries and folders to flat rows with names,
       icons, expanded set kept with the window layout) and
       `components/documents/{DocumentsWindow,DocumentsTree,DocumentDetails}.tsx`: the tree on
       `TreeView` with open-on-click, the details pane with name, kind, system, setting, place,
       times, Open, Delete, and the rejected-files section moved from the old manager; `Splitter`
       between them (`documents-panes`)
-- [ ] T022 [US1] Replace `DocumentManagerDialog` in `features/sheet/shell/SheetWorkspace.tsx`
+- [x] T022 [US1] Replace `DocumentManagerDialog` in `features/sheet/shell/SheetWorkspace.tsx`
       (toolbar "Manage" opens the window), delete `components/dialogs/DocumentManagerDialog.tsx`,
       move `tests/sheet_manager/rejected-files-manager.test.tsx` to the new window, and keep
       multi-delete with `ConfirmDialog`
-- [ ] T023 [US1] Add en and ru translations in `translations/source/{en,ru}` (window, details, empty
+- [x] T023 [US1] Add en and ru translations in `translations/source/{en,ru}` (window, details, empty
       states, announcements) and run `yarn validate:i18n`
-- [ ] T024 [US1] Run `yarn verify:full`, compare the bundle size with master, and commit:
+- [x] T024 [US1] Run `yarn verify:full`, compare the bundle size with master, and commit:
       `feat(documents): documents window with a tree (spec 032, US1)`
 
 ## User Story 2 - Organize with folders (P2)

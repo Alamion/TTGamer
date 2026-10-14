@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 
-import { DocumentManagerDialog } from '@site/src/sheet_manager/components/dialogs/DocumentManagerDialog';
+import { DocumentsWindow } from '@site/src/sheet_manager/components/documents/DocumentsWindow';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
@@ -8,8 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
 
-const open = () =>
-    render(createElement(DocumentManagerDialog, { open: true, onOpenChange: () => {} }));
+const open = () => render(createElement(DocumentsWindow, { open: true, onOpenChange: () => {} }));
 
 beforeEach(() => useDocumentStore.setState({ documents: [], recoveryEntries: [] }));
 afterEach(() => {
@@ -18,7 +17,7 @@ afterEach(() => {
     takeSheetIssues();
 });
 
-describe('rejected files in the document manager', () => {
+describe('rejected files in the documents window', () => {
     it('shows nothing when no file was rejected', () => {
         open();
         expect(screen.queryByRole('button', { name: 'Download rejected files' })).toBeNull();

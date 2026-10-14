@@ -5,6 +5,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { useRef, useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { folder, openWindow, seedDocuments } from '../sheet_manager/helpers/documentsWindow';
 import { resetLibraryStores } from '../sheet_manager/helpers/library';
 import { openLibrary } from '../sheet_manager/helpers/libraryDialog';
 
@@ -25,6 +26,8 @@ interface TreeHost {
     open: () => void;
     prepare?: () => void;
     menuRequested: () => boolean;
+    /** The row whose menu key is tried (the first one unless a row type has no menu). */
+    menuRow?: (all: HTMLElement[]) => HTMLElement;
 }
 
 function describeTreeContract(host: TreeHost) {
@@ -91,7 +94,7 @@ function describeTreeContract(host: TreeHost) {
         });
 
         it('asks for the row menu from the keyboard', () => {
-            focusRow(rows()[0]!);
+            focusRow(host.menuRow ? host.menuRow(rows()) : rows()[0]!);
             press('ContextMenu');
             expect(host.menuRequested()).toBe(true);
         });
@@ -103,6 +106,20 @@ describeTreeContract({
     prepare: resetLibraryStores,
     open: () => void openLibrary(),
     menuRequested: () => screen.queryByRole('menu') !== null,
+});
+
+describeTreeContract({
+    title: 'the documents window',
+    prepare: () => {
+        localStorage.clear();
+        seedDocuments(['Ana', 'Bruno', 'Cleo'], {
+            folders: [folder('camp', 'Campaign')],
+            placed: { Bruno: 'camp' },
+        });
+    },
+    open: () => void openWindow(),
+    menuRequested: () => screen.queryByRole('menu') !== null,
+    menuRow: (all) => all.at(-1)!,
 });
 
 interface Sample {

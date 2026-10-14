@@ -6,6 +6,7 @@ import { render, screen } from '@testing-library/react';
 import { createElement, useCallback, useRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
+import { openWindow, seedDocuments } from '../sheet_manager/helpers/documentsWindow';
 import { renderEditor, resetEditorStores } from '../sheet_manager/helpers/editor';
 import { resetLibraryStores } from '../sheet_manager/helpers/library';
 import { openLibrary } from '../sheet_manager/helpers/libraryDialog';
@@ -91,7 +92,21 @@ describeSplitterContract({
 });
 
 describeSplitterContract({
-    title: 'the documents window (own divider)',
+    title: 'the documents window',
+    open: () => {
+        seedDocuments(['Ana']);
+        openWindow();
+    },
+    divider: () => screen.getByRole('separator', { name: 'Resize the document list' }),
+    previewTarget: () => document.querySelector<HTMLElement>('[style*="--tree"]'),
+    cssVariable: '--tree',
+    storageKey: 'documents-panes',
+    pane: 'tree',
+    limits: { min: 180, max: 520, initial: 280 },
+});
+
+describeSplitterContract({
+    title: 'a bare divider (the shared hook and component alone)',
     open: () => void render(createElement(BareHost)),
     divider: () => screen.getByRole('separator', { name: 'Resize the tree' }),
     previewTarget: () => screen.getByTestId('bare-host'),

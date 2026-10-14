@@ -215,3 +215,20 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   planner (`libraryBulk.ts`: subjects drop rows whose parent is selected, one kind to move, the
   delete waits while any row is shipped). Not built: a touch way to select several rows (the
   modifiers need a keyboard).
+- **US1, the window**: `shared/components/FloatingWindow.tsx` (layout rules in
+  `shared/utils/windowLayout.ts`: a layout is kept inside the screen with 96 px of the title bar in
+  reach, never below its minimum, and a stored layout that no longer fits is repaired for display
+  only; a double click on the title bar resets it). The documents window sits at z 900, under every
+  dialog (9998 and up), so its confirmations and the library show over it. Below `md` it is a modal
+  full-screen dialog with the list and the details as tabs.
+- **US1, rows and selection**: `features/documents/rows.ts` builds the flat rows (folders before
+  documents, each by rank; a missing parent shows its children at the top level) and
+  `shared/hooks/useTreeSelection.ts` holds the focused and selected rows. A plain click on a
+  document opens it; Ctrl/Cmd and Shift click, and Shift with arrows, only select; Space toggles.
+  Open folders are stored in `documents-window-open-folders`.
+- **US1, row menu**: the shared `TreeContextMenu` (the library's menu, generalized) offers Open and
+  Delete on a document row; a folder row has none until US2. Documents are not renamed from the
+  window: their name is the sheet's (T-109, T-110).
+- **US1, deleting**: the confirmation lists the count; deleting the open document opens the next
+  document in the list (else the one before), or empties the sheet.
+- **Bundle size after US1**: 23955076 bytes of JS and 178825 of CSS (master 23,510,686 and 178,097).
