@@ -113,6 +113,8 @@
     --on-primary: 255 255 255;
     /* How much surface color tones down large or emphatic red fills (buttons, editor selection). */
     --primary-mute: 8%;
+    /* Brief headings: the primary red, darkened here so the small text keeps 4.5:1 (spec 033). */
+    --brief-heading: color-mix(in srgb, rgb(var(--primary)), black 25%);
     --secondary: 202 138 4;
     --on-secondary: 0 0 0;
 
@@ -147,6 +149,7 @@
     --border: 51 65 85;
     --border-more-contrast: 71 85 105;
     --primary-mute: 30%;
+    --brief-heading: color-mix(in srgb, rgb(var(--primary)), white 25%);
     --tertiary: 129 140 248;
 }
 

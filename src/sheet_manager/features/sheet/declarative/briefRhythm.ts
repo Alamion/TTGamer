@@ -12,7 +12,7 @@ export const BRIEF = {
     flowGap: 'gap-x-3 gap-y-1',
     /** A group's title: small, bold capitals over a hairline. */
     heading:
-        'border-b border-border pb-0.5 text-[11px] font-bold leading-3.5 uppercase tracking-wider text-primary',
+        'border-b border-border pb-0.5 text-[11px] font-bold leading-3.5 uppercase tracking-wider text-[color:var(--brief-heading)]',
     /** The small caption over or beside a cell. */
     caption: 'text-[10.5px] font-semibold uppercase tracking-wider text-textSecondary',
     /** A control a finger edits: the visible cell stays small, the hit area grows. */

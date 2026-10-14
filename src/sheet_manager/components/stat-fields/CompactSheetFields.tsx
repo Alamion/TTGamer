@@ -73,13 +73,14 @@ function ShortRating({
         <label
             {...hint}
             className={clsx(
-                'term-label relative flex h-6 min-w-0 items-center gap-1.5 rounded-sm px-1 text-xs text-textSecondary',
+                'term-label relative flex min-w-0 items-center gap-1.5 rounded-sm px-1 text-xs text-textSecondary',
+                BRIEF.cellHeight,
                 'hover:bg-bgBase focus-within:outline-2 focus-within:outline-primary',
-                '@md/brief:h-[26px] @md/brief:w-fit @md/brief:gap-0 @md/brief:overflow-hidden @md/brief:bg-border/40 @md/brief:px-0',
+                '@md/brief:h-[26px] @md/brief:w-fit @md/brief:gap-0 @md/brief:overflow-hidden @md/brief:bg-border/30 @md/brief:px-0',
                 "[@media(pointer:coarse)]:before:absolute [@media(pointer:coarse)]:before:inset-x-0 [@media(pointer:coarse)]:before:-inset-y-1 [@media(pointer:coarse)]:before:content-['']"
             )}
         >
-            <span className="shrink-0 text-[11px] font-semibold tracking-wider @md/brief:grid @md/brief:h-full @md/brief:place-items-center @md/brief:bg-border @md/brief:px-1 @md/brief:text-[10.5px]">
+            <span className="shrink-0 text-[11px] font-semibold tracking-wider @md/brief:grid @md/brief:h-full @md/brief:place-items-center @md/brief:bg-border/70 @md/brief:px-1 @md/brief:text-[10.5px]">
                 {shortLabel}
             </span>
             <NumberInput
@@ -140,7 +141,7 @@ export function CompactResource({
     onChange,
 }: CompactResourceProps) {
     return (
-        <div className="flex items-center gap-1 text-xs">
+        <div className={clsx('flex items-center text-xs', BRIEF.cellGap)}>
             <span className="min-w-0 truncate text-textSecondary">{label}</span>
             <NumberInput
                 min={0}

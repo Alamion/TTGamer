@@ -171,3 +171,10 @@ vehicle, fodder, V5 core (`systems/v5/core/templates.ts`), and Hunter
   The WoD 2e brief joined the baseline list (2553 px at 375 before).
 - The e2e spec applies the area through the sheet root's own width (`max-width`) because the root is
   the named container: a 640 px root in a 1280 px window lays out like a 640 px window.
+- **US2**: the rhythm file is applied to the rating, resource, text field, group heading, and dense
+  group; the condition track and the tracker strips already draw as a line of small boxes in a brief
+  and keep their own spacing; list rows and tables have no compact form here. The heading colour is
+  a derived token `--brief-heading` in `custom.css` (primary darkened in the light theme, lightened
+  in the dark one) because the plain primary red fell under 4.5:1 (4.4 light, 3.7 dark); chip cells
+  use `border/70` and `border/30` for the same reason. `brief-contrast.test.ts` computes every pair
+  from the palette.

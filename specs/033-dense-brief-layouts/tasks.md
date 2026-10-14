@@ -100,24 +100,24 @@ and every short label has its full name as accessible name and hint, in en and r
 **Check**: a brief with a resource, a track, a text field, and a list in compact form is shorter
 than today with no value, label, or control lost.
 
-- [ ] T018 [US2] Write `tests/sheet_manager/compact-elements.test.tsx`: compact resource shows
+- [x] T018 [US2] Write `tests/sheet_manager/compact-elements.test.tsx`: compact resource shows
       `short label current / max` with both inputs named `label: current` and `label: maximum`;
       compact text field, condition track, tracker, list, and banner keep their value, label, and
       edit control; read-only, hidden-by-condition, and empty forms take no more room than filled
       ones (FR-004, FR-005); a collapsible section keeps heading, `aria-expanded`, and keyboard
       behavior
-- [ ] T019 [US2] Create `features/sheet/declarative/briefRhythm.ts` (class constants: cell gap,
+- [x] T019 [US2] Create `features/sheet/declarative/briefRhythm.ts` (class constants: cell gap,
       group gap, heading, label style) and apply them in `CompactResource` (one chip),
       `CompactTextField`, `CompactConditionTrack` (box size and gaps), the compact tracker
       (`features/sheet/declarative/BuiltInTracker.tsx`, `features/sheet/data/trackerModel.ts`), list
       and table rows, section headings and the helper banner
       (`features/sheet/declarative/RowsBody.tsx`, section/group headings in
       `DeclarativeSheetView.tsx`)
-- [ ] T020 [US2] Re-check every shipped brief (T015 limits still hold) and light and dark colors use
+- [x] T020 [US2] Re-check every shipped brief (T015 limits still hold) and light and dark colors use
       only palette tokens (SC-005): add a style test that fails on a hard-coded color in the touched
       files and computes the contrast ratio (≥4.5:1) of each text and background token pair used by
       the brief in both themes
-- [ ] T021 [US2] Run `yarn verify:full` and commit:
+- [x] T021 [US2] Run `yarn verify:full` and commit:
       `feat(sheet): one spacing rhythm for compact elements (spec 033, US2)`
 
 ## User Story 4 - Author a dense brief in the template editor (P4)
