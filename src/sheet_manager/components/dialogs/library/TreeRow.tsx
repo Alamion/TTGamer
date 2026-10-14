@@ -144,6 +144,7 @@ export function TreeRow({
             drag={drag}
             flash={flash}
             onSelect={(key, extend) => onSelect(key, extend)}
+            onContext={rest.onMenu}
             {...rest}
         />
     );

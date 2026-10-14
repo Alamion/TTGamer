@@ -185,12 +185,12 @@ export function TreeView<T>({
                 return;
             case 'ContextMenu':
                 handled();
-                openMenuAtRow(current.key);
+                if (renderRow(current)?.menu !== false) openMenuAtRow(current.key);
                 return;
             case 'F10':
                 if (!event.shiftKey) return;
                 handled();
-                openMenuAtRow(current.key);
+                if (renderRow(current)?.menu !== false) openMenuAtRow(current.key);
                 return;
             default:
                 break;
@@ -209,6 +209,14 @@ export function TreeView<T>({
             }
         }
     };
+
+    const openContext = useCallback(
+        (key: string, anchor: { x: number; y: number }) => {
+            onSelect(key, 'none');
+            onMenu(key, anchor);
+        },
+        [onSelect, onMenu]
+    );
 
     const clickRow = useCallback(
         (key: string, extend: SelectExtend) => {
@@ -255,6 +263,7 @@ export function TreeView<T>({
                     onSelect={clickRow}
                     onToggle={onToggle}
                     onMenu={onMenu}
+                    onContext={openContext}
                     onKeyDown={handleKeyDown}
                 />
             ))}

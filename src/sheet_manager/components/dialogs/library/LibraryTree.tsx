@@ -34,6 +34,8 @@ export interface LibraryTreeProps {
     /** Space on a row (export and import modes tick it). */
     onSpace?: (node: LibraryNode) => void;
     rowExtras?: (node: LibraryNode) => RowExtras | undefined;
+    /** Whether a row has a menu (a row with no action to offer shows no menu button). */
+    hasMenu?: (node: LibraryNode) => boolean;
     /** The scrolling region around the tree, so a long library draws only the rows in view. */
     scrollRef?: RefObject<HTMLElement | null>;
 }
@@ -55,6 +57,7 @@ export function LibraryTree({
     onMenu,
     onSpace,
     rowExtras,
+    hasMenu,
     scrollRef,
 }: LibraryTreeProps) {
     const plural = usePluralMessage();
@@ -98,6 +101,7 @@ export function LibraryTree({
             renderRow={({ node }) => ({
                 ...libraryRowSlots(node, plural),
                 ...rowExtras?.(node),
+                menu: hasMenu ? hasMenu(node) : true,
             })}
             labels={libraryTreeLabels}
             idPrefix="library-row-"

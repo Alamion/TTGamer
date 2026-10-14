@@ -781,6 +781,9 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                                     }
                                     onSpace={modePanels?.onSpace}
                                     rowExtras={modePanels?.rowExtras ?? browseExtras}
+                                    hasMenu={(node) =>
+                                        mode === 'browse' && actionsFor(node).length > 0
+                                    }
                                     scrollRef={treeRegion}
                                 />
                             )}

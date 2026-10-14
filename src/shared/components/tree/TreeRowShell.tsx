@@ -32,6 +32,8 @@ export interface TreeRowSlots {
     flash?: boolean;
     /** Shown dimmed (its owner is not available). */
     dimmed?: boolean;
+    /** Whether the row has a menu: its button and its keys; `false` when it has nothing to offer. */
+    menu?: boolean;
 }
 
 export interface TreeRowShellProps extends TreeRowSlots {
@@ -51,7 +53,10 @@ export interface TreeRowShellProps extends TreeRowSlots {
     actionsLabel: string;
     onSelect: (key: string, extend: SelectExtend) => void;
     onToggle: (key: string) => void;
+    /** The menu button: opens the menu and nothing else (no selection, no click on the row). */
     onMenu: (key: string, anchor: { x: number; y: number }) => void;
+    /** A right click: selects the row (without the click's side effects), then opens the menu. */
+    onContext: (key: string, anchor: { x: number; y: number }) => void;
     onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
 }
 
@@ -83,16 +88,17 @@ export const TreeRowShell = memo(function TreeRowShell({
     drag,
     flash,
     dimmed,
+    menu = true,
     onSelect,
     onToggle,
     onMenu,
+    onContext,
     onKeyDown,
 }: TreeRowShellProps) {
-    const openMenu = (event: MouseEvent<HTMLElement>) => {
+    const openMenu = (event: MouseEvent<HTMLElement>, open: TreeRowShellProps['onMenu']) => {
         event.preventDefault();
         event.stopPropagation();
-        onSelect(rowKey, 'none');
-        onMenu(rowKey, { x: event.clientX, y: event.clientY });
+        open(rowKey, { x: event.clientX, y: event.clientY });
     };
 
     return (
@@ -107,7 +113,7 @@ export const TreeRowShell = memo(function TreeRowShell({
             aria-expanded={expandable ? expanded : undefined}
             tabIndex={tabbable ? 0 : -1}
             onClick={(event) => onSelect(rowKey, extendOf(event))}
-            onContextMenu={openMenu}
+            onContextMenu={menu ? (event) => openMenu(event, onContext) : undefined}
             onKeyDown={onKeyDown}
             draggable={drag?.draggable ?? false}
             onDragStart={drag?.onDragStart}
@@ -158,15 +164,17 @@ export const TreeRowShell = memo(function TreeRowShell({
                     {count}
                 </span>
             )}
-            <button
-                type="button"
-                tabIndex={-1}
-                aria-label={actionsLabel}
-                onClick={openMenu}
-                className="rounded-sm p-1 text-textSecondary opacity-60 hover:bg-bgBase hover:text-textPrimary group-hover:opacity-100 [@media(pointer:coarse)]:p-2.5 [@media(pointer:coarse)]:opacity-100"
-            >
-                <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
-            </button>
+            {menu && (
+                <button
+                    type="button"
+                    tabIndex={-1}
+                    aria-label={actionsLabel}
+                    onClick={(event) => openMenu(event, onMenu)}
+                    className="rounded-sm p-1 text-textSecondary opacity-60 hover:bg-bgBase hover:text-textPrimary group-hover:opacity-100 [@media(pointer:coarse)]:p-2.5 [@media(pointer:coarse)]:opacity-100"
+                >
+                    <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+                </button>
+            )}
         </div>
     );
 });

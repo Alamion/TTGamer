@@ -151,6 +151,7 @@ function flatten(
 }
 
 let menuAsked = false;
+let rowClicks: string[] = [];
 let lastSelection = new Set<string>();
 
 /** The documents window's tree before the window exists (US1 runs this contract on the window). */
@@ -198,10 +199,11 @@ function SampleTree({ multi = false }: { multi?: boolean }) {
                     return next;
                 })
             }
+            onRowClick={(key) => rowClicks.push(key)}
             onMenu={() => {
                 menuAsked = true;
             }}
-            renderRow={() => undefined}
+            renderRow={(item) => (item.key === 'zeta' ? { menu: false } : undefined)}
             labels={{ toggle: (name) => `Toggle ${name}`, actions: (name) => `Actions ${name}` }}
             idPrefix="sample-"
         />
@@ -224,6 +226,47 @@ describeTreeContract({
     },
     open: () => void render(<SampleTree multi />),
     menuRequested: () => menuAsked,
+});
+
+describe('the row menu', () => {
+    beforeEach(() => {
+        menuAsked = false;
+        rowClicks = [];
+    });
+    afterEach(cleanup);
+
+    it('opens from its button without selecting the row or counting as a click on it', () => {
+        render(<SampleTree />);
+        fireEvent.click(screen.getByRole('button', { name: 'Actions Notes' }));
+        expect(menuAsked).toBe(true);
+        expect(rowClicks).toEqual([]);
+        expect(rows().filter((row) => row.getAttribute('aria-selected') === 'true')).toEqual([]);
+    });
+
+    it('selects the row on a right click, without counting it as a click', () => {
+        render(<SampleTree />);
+        fireEvent.contextMenu(rows()[1]!);
+        expect(menuAsked).toBe(true);
+        expect(rows()[1]!.getAttribute('aria-selected')).toBe('true');
+        expect(rowClicks).toEqual([]);
+    });
+
+    it('is absent on a row with nothing to offer, whose keys and right click do nothing', () => {
+        render(<SampleTree />);
+        const zeta = rows().find((row) => row.getAttribute('data-tree-row') === 'zeta')!;
+        expect(screen.queryByRole('button', { name: 'Actions Zeta' })).toBeNull();
+        focusRow(zeta);
+        press('ContextMenu');
+        press('F10', { shiftKey: true });
+        fireEvent.contextMenu(zeta);
+        expect(menuAsked).toBe(false);
+    });
+
+    it('a click on the row still counts as a click on it', () => {
+        render(<SampleTree />);
+        fireEvent.click(rows()[0]!);
+        expect(rowClicks).toEqual(['campaign']);
+    });
 });
 
 describe('selecting several rows', () => {
