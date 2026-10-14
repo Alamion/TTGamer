@@ -200,13 +200,13 @@ reload, reopen; the same at 375 px.
 
 ## Finish
 
-- [ ] T040 Update the module notes and skills (one owner per rule): `src/sheet_manager/AGENTS.md`
+- [x] T040 Update the module notes and skills (one owner per rule): `src/sheet_manager/AGENTS.md`
       (storage, index, folders, window, tree operations), the sheet-manager skill, root `AGENTS.md`
       §6 and §8 (shared tree, splitter, window), the T-052 entries in `TODO.md` and `ROADMAP.md`,
       and a historical banner on specs that this one supersedes
-- [ ] T041 Write the user guide page for the documents window in `docs/` with its ru mirror
+- [x] T041 Write the user guide page for the documents window in `docs/` with its ru mirror
       (folders, search, filters, phone use) and run `yarn validate:i18n`
-- [ ] T042 Run `yarn verify:full`; walk the ten steps in design.md "Manual walk" on the dev server
+- [x] T042 Run `yarn verify:full`; walk the ten steps in design.md "Manual walk" on the dev server
       at 1280 px and 375 px; record results in design.md
 
 ## Coverage

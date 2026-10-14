@@ -139,6 +139,8 @@ export function DocumentsToolbar({
         });
     }
     const narrowing = isNarrowing(query);
+    // The filters and a sort other than the manual order, counted on the button that holds them.
+    const badge = chips.length + (query.sort === 'manual' ? 0 : 1);
     const presetOptions = (
         <>
             <option value="">{translate(labels.any)}</option>
@@ -192,16 +194,12 @@ export function DocumentsToolbar({
                     aria-controls={panelId}
                     aria-label={translate(labels.filters)}
                     title={translate(labels.filters)}
-                    className={clsx(
-                        iconButton,
-                        'relative',
-                        chips.length > 0 && 'border-primary/60'
-                    )}
+                    className={clsx(iconButton, 'relative', badge > 0 && 'border-primary/60')}
                 >
                     <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
-                    {chips.length > 0 && (
+                    {badge > 0 && (
                         <span className="absolute -right-1 -top-1 min-w-4 rounded-full bg-primary px-1 text-[10px] leading-4 text-white">
-                            {chips.length}
+                            {badge}
                         </span>
                     )}
                 </button>
@@ -250,37 +248,39 @@ export function DocumentsToolbar({
                 >
                     {presetOptions}
                 </Select>
-            </div>
-            <div className="flex items-center gap-1.5">
-                <div className="min-w-0 flex-1">
-                    <Select
-                        label={translate(labels.sort.label)}
-                        hideLabel
-                        value={query.sort}
-                        onChange={(value) => onChange({ sort: value as SortKey })}
+                <div className="col-span-2 flex items-end gap-1.5">
+                    <div className="min-w-0 flex-1">
+                        <Select
+                            label={translate(labels.sort.label)}
+                            value={query.sort}
+                            onChange={(value) => onChange({ sort: value as SortKey })}
+                        >
+                            {SORT_KEYS.map((key) => (
+                                <option key={key} value={key}>
+                                    {translate(labels.sort[key])}
+                                </option>
+                            ))}
+                        </Select>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => onChange({ descending: !query.descending })}
+                        disabled={query.sort === 'manual'}
+                        aria-pressed={query.descending}
+                        aria-label={translate(labels.sort.descending)}
+                        title={translate(labels.sort.descending)}
+                        className={clsx(
+                            iconButton,
+                            'disabled:cursor-not-allowed disabled:opacity-40'
+                        )}
                     >
-                        {SORT_KEYS.map((key) => (
-                            <option key={key} value={key}>
-                                {translate(labels.sort[key])}
-                            </option>
-                        ))}
-                    </Select>
+                        {query.descending ? (
+                            <ArrowDown className="h-4 w-4" aria-hidden="true" />
+                        ) : (
+                            <ArrowUp className="h-4 w-4" aria-hidden="true" />
+                        )}
+                    </button>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => onChange({ descending: !query.descending })}
-                    disabled={query.sort === 'manual'}
-                    aria-pressed={query.descending}
-                    aria-label={translate(labels.sort.descending)}
-                    title={translate(labels.sort.descending)}
-                    className={clsx(iconButton, 'disabled:cursor-not-allowed disabled:opacity-40')}
-                >
-                    {query.descending ? (
-                        <ArrowDown className="h-4 w-4" aria-hidden="true" />
-                    ) : (
-                        <ArrowUp className="h-4 w-4" aria-hidden="true" />
-                    )}
-                </button>
             </div>
             {(chips.length > 0 || narrowing) && (
                 <ul className="m-0 flex list-none flex-wrap items-center gap-1 p-0">

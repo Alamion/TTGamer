@@ -89,6 +89,18 @@ describe('the documents window (spec 032, US1)', () => {
         expect(within(details).getByRole('button', { name: 'Open' })).toBeTruthy();
     });
 
+    it('reacts to keys on a row reached with Tab, before anything was clicked', async () => {
+        seedDocuments(['Ana', 'Bruno']);
+        openWindow();
+        row('Ana').focus();
+        fireEvent.keyDown(row('Ana'), { key: 'ArrowDown' });
+        await waitFor(() => expect(row('Bruno').getAttribute('aria-selected')).toBe('true'));
+        fireEvent.keyDown(row('Bruno'), { key: 'F2' });
+        expect(
+            within(screen.getByRole('tree')).getByRole('textbox', { name: 'Name' })
+        ).toBeTruthy();
+    });
+
     it('keeps the sheet usable: no overlay, and the window does not trap the page', () => {
         seedDocuments(['Ana']);
         openWindow();

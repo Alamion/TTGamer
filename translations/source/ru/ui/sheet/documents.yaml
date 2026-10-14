@@ -103,7 +103,7 @@ manager:
         label: Поиск по названиям
         placeholder: Поиск по названиям…
         clear: Очистить поиск
-        filters: Фильтры
+        filters: Фильтры и сортировка
         kind: Тип
         system: Игровая система
         setting: Сеттинг

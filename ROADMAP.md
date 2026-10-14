@@ -159,6 +159,8 @@ dependencies — they are not identifiers; slugs are.
     - 2026-10-14: first slice: a draggable, resizable window with a folder tree, replacing
       the document manager; documents and folders now, markdown and canvas as they arrive.
       Search, filter, and sort work over the fields every entity has.
+    - 2026-10-14: the first slice is built on a feature branch (spec 032) and awaits the
+      merge; the status changes to in progress with it.
 - **Open questions**: none recorded.
 
 ### `campaigns` — Campaigns

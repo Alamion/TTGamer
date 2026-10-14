@@ -103,7 +103,7 @@ manager:
         label: Search names
         placeholder: Search names…
         clear: Clear search
-        filters: Filters
+        filters: Filters and sort
         kind: Type
         system: Game system
         setting: Setting

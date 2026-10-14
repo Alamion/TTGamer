@@ -301,3 +301,30 @@ and every layout is checked at 375 px and at 1280 px (manual walk, steps 9–10)
   null; its body mounts when opened), so the sheet pays nothing for it (FR-017). The filter panel
   had shown always on a phone (`hidden` lost to `grid`); a test now guards it, and the sort row is
   one line.
+- **Manual walk (2026-10-14, scripted in headless Chromium against the dev server, plus unit and
+  browser tests; screenshots read at 1280 px light and dark and at 375 px)**:
+    1. Old documents at the top level, content unchanged, backup key: covered by
+       `document-store-v5.test.ts` (migration, backup, countdown), not walked by hand.
+    2. Drag by the title bar and resize by the corner, reload: same place and size. A viewport of
+       700 px turns the window into the full-screen sheet, so it stays visible. OK.
+    3. Nested folders, a drag into a folder, a drag of a document into a nested folder, undo: the
+       structure returns. A folder made while another is selected goes inside it (by design). OK.
+    4. Deleting a folder that holds the open document: the confirmation names it ("Delete 2 folders
+       and 1 document? ... The open document is among them"); undo restores everything. OK.
+    5. Search ("bruno": the folders above it stay open), filter by type and age, sort by changed:
+       rows and ancestors match. OK.
+    6. F2 and Escape work from the keyboard; "Move to…" is in the smoke test. Found and fixed: a row
+       reached with Tab did not react to keys until it was clicked (`TreeView` now acts on the row
+       the key was pressed on).
+    7. 3,000 documents: open 75 ms, search 24 ms, 60 frames per second (timings spec).
+    8. Library divider: ArrowRight moves it by 10 px (384 to 394) and Home resets it; the editor
+       divider is covered by the shared contract test.
+    9. 375 px: full screen, tabs, rows 44 px high, no horizontal scroll (scroll width equals client
+       width), page behind locked. The filter panel is closed until asked for.
+    10. 1280 px: the toolbar answers while the window is open (the library opens over it); light and
+        dark themes read well. Also changed after the walk: the sort control moved into the filters
+        panel (it took tree room on a window 560 px high), the button is "Filters and sort" and
+        counts active filters plus a sort, and a status line ("Moved 1 item", "Undone: Delete")
+        clears itself after five seconds.
+- **Bundle size at the end**: 24332970 bytes of JS and 179959 of CSS (master 23,510,686 and
+  178,097).

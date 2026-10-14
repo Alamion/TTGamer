@@ -134,7 +134,9 @@ export function TreeView<T>({
 
     const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
         if (event.target !== event.currentTarget) return;
-        const index = rows.findIndex(({ key }) => key === selectedKey);
+        // The row the key was pressed on: a row reached with Tab is focused before it is selected.
+        const focusedKey = event.currentTarget.dataset.treeRow ?? selectedKey;
+        const index = rows.findIndex(({ key }) => key === focusedKey);
         const current = rows[index];
         if (!current) return;
         const handled = () => {

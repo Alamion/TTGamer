@@ -79,7 +79,7 @@ describe('search, filters, and sort in the documents window (spec 032, US3)', ()
 
     it('filters by type with a visible chip that clears one filter at a time', () => {
         openWindow();
-        const toggle = screen.getByRole('button', { name: 'Filters' });
+        const toggle = screen.getByRole('button', { name: 'Filters and sort' });
         expect(toggle.getAttribute('aria-expanded')).toBe('false');
         const panel = document.getElementById(toggle.getAttribute('aria-controls')!)!;
         expect(panel.classList.contains('hidden')).toBe(true);

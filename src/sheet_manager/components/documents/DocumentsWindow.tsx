@@ -26,7 +26,7 @@ import {
     Trash2,
     Undo2,
 } from 'lucide-react';
-import { type KeyboardEvent, useCallback, useMemo, useRef, useState } from 'react';
+import { type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { documentLabeler } from '../../features/documents/labeler';
 import {
@@ -69,6 +69,7 @@ import { useDocumentsDrag } from './useDocumentsDrag';
 const labels = uiMessages.sheet.documents.manager;
 
 const TREE_LIMITS: Record<'tree', PaneLimits> = { tree: { min: 180, max: 520, initial: 280 } };
+const STATUS_MS = 5000;
 const TREE_ROOM = { restMin: 240, dividers: 6 };
 
 export interface DocumentsWindowProps {
@@ -153,6 +154,12 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
     /** The row whose name is being typed in place. */
     const [editing, setEditing] = useState<string | null>(null);
     const [status, setStatus] = useState<{ text: string; alert: boolean }>();
+    // What was just done is said for a few seconds, not left standing.
+    useEffect(() => {
+        if (!status || status.alert) return;
+        const timer = window.setTimeout(() => setStatus(undefined), STATUS_MS);
+        return () => window.clearTimeout(timer);
+    }, [status]);
     const treeRegion = useRef<HTMLDivElement>(null);
     const { ref: bodyRef, node: body, width: bodyWidth } = useMeasuredElement<HTMLDivElement>();
     const panes = usePaneSizes('documents-panes', TREE_LIMITS, bodyWidth, TREE_ROOM);
