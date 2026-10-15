@@ -4,7 +4,7 @@ import { createDocument, measureView, showView } from '../brief';
 import { expect, test } from '../fixtures';
 import { SINGLE_DOCUMENT_BASELINE } from './panes-baseline';
 
-test('with one document the page keeps its height (spec 034, SC-005)', async ({ page }) => {
+test('with one document the page keeps its height (specs 034, 036: SC-004)', async ({ page }) => {
     await createDocument(page, 'star-wars-wod/character');
     for (const view of ['sheet', 'brief'] as const) {
         await showView(page, view);
@@ -39,12 +39,14 @@ async function openSeveralBeside(page: Page, count: number): Promise<void> {
 }
 
 const panes = (page: Page) => page.locator('section[data-pane]');
+/** A group's frame: its strip (with the view selector) and its page. */
+const groups = (page: Page) => page.locator('[data-group-frame]');
 const noSideways = (page: Page) =>
     page.evaluate(
         () => document.documentElement.scrollWidth <= document.documentElement.clientWidth
     );
 
-test('three documents share a 1280 px window, each at least 320 px, with no sideways scroll', async ({
+test('three documents share a 1280 px window, each group at least 320 px, with no sideways scroll', async ({
     page,
 }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
@@ -52,21 +54,25 @@ test('three documents share a 1280 px window, each at least 320 px, with no side
     await expect(panes(page)).toHaveCount(3);
     await expect(page.getByRole('tab')).toHaveCount(3);
     for (const box of await Promise.all(
-        (await panes(page).all()).map((pane) => pane.boundingBox())
+        (await groups(page).all()).map((group) => group.boundingBox())
     )) {
         expect(box!.width).toBeGreaterThanOrEqual(320);
     }
     expect(await noSideways(page)).toBe(true);
 });
 
-test('a window that fits two panes shows two and keeps the third as a tab', async ({ page }) => {
+test('a window too narrow for every group shows one document and a strip of all (spec 036)', async ({
+    page,
+}) => {
     await page.setViewportSize({ width: 960, height: 800 });
     await openSeveralBeside(page, 3);
-    await expect(panes(page)).toHaveCount(2);
+    await expect(panes(page)).toHaveCount(1);
     await expect(page.getByRole('tab')).toHaveCount(3);
     await page.getByRole('tab').first().click();
-    await expect(panes(page)).toHaveCount(2);
+    await expect(panes(page)).toHaveCount(1);
     expect(await noSideways(page)).toBe(true);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await expect(panes(page)).toHaveCount(3);
 });
 
 test('a 375 px phone shows one pane and the tabs list every open document', async ({ page }) => {
@@ -95,7 +101,8 @@ test('double click on a tab gives a pane the whole window and a second one bring
     await expect(panes(page)).toHaveCount(1);
     expect((await widths())[0]).toBeGreaterThan(before[0]! * 2);
 
-    await page.getByRole('tab').nth(1).dblclick();
+    // Only the maximized group's strip is drawn: its one tab gives the area back.
+    await page.getByRole('tab').first().dblclick();
     await expect(panes(page)).toHaveCount(3);
     expect(await widths()).toEqual(before);
 });
@@ -139,7 +146,7 @@ test('changing the view of one pane leaves the other pane alone', async ({ page 
     await openSeveralBeside(page, 2);
     const second = page.locator('section[data-pane]').nth(1);
     const first = page.locator('section[data-pane]').nth(0);
-    const select = second.getByRole('combobox');
+    const select = groups(page).nth(1).getByRole('combobox');
     const options = await select.locator('option').allTextContents();
     const firstPage = await first
         .locator('[data-template-root]')
@@ -159,7 +166,7 @@ test('the panes, their order, sizes, and views come back after a reload', async 
     await page.setViewportSize({ width: 1280, height: 800 });
     await openSeveralBeside(page, 3);
     const panes = page.locator('section[data-pane]');
-    const select = panes.nth(1).getByRole('combobox');
+    const select = groups(page).nth(1).getByRole('combobox');
     const options = await select.locator('option').allTextContents();
     await select.selectOption({ label: options.find((name) => !/brief/i.test(name))! });
     const divider = page.getByRole('separator').first();
@@ -222,7 +229,7 @@ test('a roll started in a pane names the character of that pane', async ({ page 
 
     for (const name of ['Kyla Venn', 'Orrin Dace', 'Kyla Venn']) {
         const pane = page.getByRole('region', { name });
-        const select = pane.getByRole('combobox');
+        const select = groups(page).filter({ has: pane }).getByRole('combobox');
         const options = await select.locator('option').allTextContents();
         await select.selectOption({ label: options.find((label) => !/brief/i.test(label))! });
         await pane

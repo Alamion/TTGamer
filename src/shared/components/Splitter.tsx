@@ -5,9 +5,10 @@ const KEY_STEP = 10;
 const KEY_STEP_LARGE = 40;
 
 /**
- * A vertical divider between two side-by-side panes, the one behavior of every such place (the
- * template editor, the library dialog, the documents window; specs 022 and 032): drag it, use ←/→
- * (Shift for bigger steps), Home or a double click for the default. While dragging only
+ * A divider between two side-by-side panes (or, `horizontal`, between rows), the one behavior of
+ * every such place (the template editor, the library dialog, the documents window, the sheet's
+ * layout; specs 022, 032, 036): drag it, use ←/→ or ↑/↓ (Shift for bigger steps), Home or a double
+ * click for the default. While dragging only
  * `onPreview` runs (a CSS variable), the size is stored once on release, and a cancelled drag
  * puts the preview back. It shows from the `md` breakpoint up; narrower layouts use tabs.
  */
@@ -21,6 +22,7 @@ export function Splitter({
     onChange,
     onPreview,
     onReset,
+    orientation = 'vertical',
     value,
 }: {
     /** No visible line at rest (the panes it separates have borders of their own). */
@@ -35,12 +37,17 @@ export function Splitter({
     onChange: (width: number) => void;
     onPreview: (width: number) => void;
     onReset: () => void;
+    /** `horizontal` lies between rows: dragged and moved with ↑/↓ (spec 036). */
+    orientation?: 'vertical' | 'horizontal';
     value: number;
 }) {
-    const drag = useRef<{ startX: number; startWidth: number; width: number } | null>(null);
-    const widthAt = (clientX: number) => {
+    const horizontal = orientation === 'horizontal';
+    const drag = useRef<{ start: number; startWidth: number; width: number } | null>(null);
+    const along = (event: { clientX: number; clientY: number }) =>
+        horizontal ? event.clientY : event.clientX;
+    const widthAt = (position: number) => {
         const current = drag.current!;
-        const delta = clientX - current.startX;
+        const delta = position - current.start;
         return clamp(current.startWidth + (invert ? -delta : delta));
     };
 
@@ -49,7 +56,7 @@ export function Splitter({
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
         <div
             role="separator"
-            aria-orientation="vertical"
+            aria-orientation={orientation}
             aria-label={label}
             aria-valuenow={value}
             aria-valuemin={min}
@@ -61,16 +68,16 @@ export function Splitter({
                 if (event.button !== 0) return;
                 event.preventDefault();
                 event.currentTarget.setPointerCapture?.(event.pointerId);
-                drag.current = { startX: event.clientX, startWidth: value, width: value };
+                drag.current = { start: along(event), startWidth: value, width: value };
             }}
             onPointerMove={(event) => {
                 if (!drag.current) return;
-                drag.current.width = widthAt(event.clientX);
+                drag.current.width = widthAt(along(event));
                 onPreview(drag.current.width);
             }}
             onPointerUp={(event) => {
                 if (!drag.current) return;
-                const width = widthAt(event.clientX);
+                const width = widthAt(along(event));
                 drag.current = null;
                 if (width !== value) onChange(width);
             }}
@@ -85,17 +92,26 @@ export function Splitter({
                     onReset();
                     return;
                 }
-                if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+                const [back, forward] = horizontal
+                    ? ['ArrowUp', 'ArrowDown']
+                    : ['ArrowLeft', 'ArrowRight'];
+                if (event.key !== back && event.key !== forward) return;
                 event.preventDefault();
                 const step = event.shiftKey ? KEY_STEP_LARGE : KEY_STEP;
-                const right = event.key === 'ArrowRight';
+                const right = event.key === forward;
                 onChange(clamp(value + (right !== invert ? step : -step)));
             }}
-            className="group hidden cursor-col-resize touch-none select-none items-stretch justify-center focus:outline-hidden md:flex"
+            className={clsx(
+                'group hidden touch-none select-none items-stretch justify-center focus:outline-hidden md:flex',
+                horizontal ? 'cursor-row-resize flex-col' : 'cursor-col-resize'
+            )}
         >
             <span
                 className={clsx(
-                    'w-px transition-colors group-hover:w-0.5 group-hover:bg-primary group-focus-visible:w-0.5 group-focus-visible:bg-primary',
+                    'transition-colors group-hover:bg-primary group-focus-visible:bg-primary',
+                    horizontal
+                        ? 'h-px group-hover:h-0.5 group-focus-visible:h-0.5'
+                        : 'w-px group-hover:w-0.5 group-focus-visible:w-0.5',
                     bare ? 'bg-transparent' : 'bg-border'
                 )}
             />

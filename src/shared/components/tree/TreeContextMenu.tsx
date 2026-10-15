@@ -9,6 +9,8 @@ export interface TreeMenuItem {
     label: string;
     icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean | 'true' }>;
     danger?: boolean;
+    /** Listed but not available now; choosing it calls `onDisabled` instead (to say why). */
+    disabled?: boolean;
 }
 
 export interface TreeContextMenuProps {
@@ -23,6 +25,7 @@ export interface TreeContextMenuProps {
     actions: readonly TreeMenuItem[];
     onAction: (id: string) => void;
     onClose: () => void;
+    onDisabled?: (id: string) => void;
 }
 
 /**
@@ -36,6 +39,7 @@ export function TreeContextMenu({
     actions,
     onAction,
     onClose,
+    onDisabled,
 }: TreeContextMenuProps) {
     const origin = container?.getBoundingClientRect();
     const listRef = useRef<HTMLDivElement>(null);
@@ -110,22 +114,28 @@ export function TreeContextMenu({
                         tabIndex={-1}
                         onKeyDown={onKeyDown}
                     >
-                        {actions.map(({ id, label: itemLabel, icon: Icon, danger }) => {
+                        {actions.map(({ id, label: itemLabel, icon: Icon, danger, disabled }) => {
                             return (
                                 <button
                                     key={id}
                                     type="button"
                                     role="menuitem"
                                     tabIndex={-1}
+                                    aria-disabled={disabled || undefined}
                                     onClick={() => {
-                                        chosen.current = true;
+                                        chosen.current = !disabled;
                                         onClose();
-                                        onAction(id);
+                                        if (disabled) onDisabled?.(id);
+                                        else onAction(id);
                                     }}
                                     className={clsx(
                                         'flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-hidden',
                                         'hover:bg-secondary/15 focus:bg-secondary/15',
-                                        danger ? 'text-error' : 'text-textPrimary'
+                                        disabled
+                                            ? 'text-textSecondary opacity-60'
+                                            : danger
+                                              ? 'text-error'
+                                              : 'text-textPrimary'
                                     )}
                                 >
                                     <Icon className="h-4 w-4" aria-hidden="true" />

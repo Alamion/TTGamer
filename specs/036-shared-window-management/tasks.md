@@ -102,33 +102,33 @@ second unchanged.
 **Check**: reorder tabs, move one to another group, drop one on a bottom edge, drag the new
 horizontal divider.
 
-- [ ] T019 [US2] Add a horizontal host to `tests/shared/splitter.contract.test.tsx` (↑/↓, Shift
+- [x] T019 [US2] Add a horizontal host to `tests/shared/splitter.contract.test.tsx` (↑/↓, Shift
       steps, Home resets, preview then one store, cancel restores, `aria-orientation`), then add
       `orientation` to `src/shared/components/Splitter.tsx` (`clientY`, `cursor-row-resize`)
-- [ ] T020 [US2] Write `tests/sheet_manager/pane-drop-targets.test.ts`: `hitTest` gives the strip
+- [x] T020 [US2] Write `tests/sheet_manager/pane-drop-targets.test.ts`: `hitTest` gives the strip
       gap from tab midpoints, the middle, each edge (outer quarter), and the float zone outside
       groups; no edge at six groups or when `minSizeOf` would not fit; its own single tab on its own
       edge gives nothing
-- [ ] T021 [US2] Write `tests/sheet_manager/pane-drag.test.tsx`: C before A gives C, A, B; a drop on
+- [x] T021 [US2] Write `tests/sheet_manager/pane-drag.test.tsx`: C before A gives C, A, B; a drop on
       another strip or middle moves the tab there, shown and focused; a drop on each edge splits
       that way; the overlay shows during the drag; `dragend` without a drop changes nothing
-- [ ] T022 [US2] Write `tests/sheet_manager/pane-keyboard.test.tsx`: Shift+F10, the ContextMenu key,
+- [x] T022 [US2] Write `tests/sheet_manager/pane-keyboard.test.tsx`: Shift+F10, the ContextMenu key,
       right click, and the strip's **Actions** button open the tab menu; **Move left**, **Move
       right**, **Move to next group** (reading order, wraps), **Split right**, **Split down**
       (disabled at six groups with `panes.groupLimit`), **Maximize**, **Close**; arrows on a
       vertical and a horizontal divider; each move announced in the live line
-- [ ] T023 [US2] Create `features/sheet/panes/dropTargets.ts` (`hitTest`, overlay state) and
+- [x] T023 [US2] Create `features/sheet/panes/dropTargets.ts` (`hitTest`, overlay state) and
       `useTabDrag.ts` (HTML drag and drop, `application/x-ttg-tab`; no drag on a coarse pointer);
       add `moveTab`, `splitWith` (area size from `PaneArea`) to `paneStore.ts`; **Open beside** that
       cannot split adds a tab with `panes.openedAsTab`, except in the narrow view where only the
       group count is checked
-- [ ] T024 [US2] Add the tab menu with `src/shared/components/tree/TreeContextMenu.tsx` in
+- [x] T024 [US2] Add the tab menu with `src/shared/components/tree/TreeContextMenu.tsx` in
       `PaneTabs.tsx`, the `sr-only` `aria-live="polite"` announcer and horizontal dividers between
       column children (previews write the groups' `style` directly, `setSplitWeights` on release) in
       `PaneArea.tsx`
-- [ ] T025 [US2] Strings (en + ru):
+- [x] T025 [US2] Strings (en + ru):
       `panes.{actions, moveLeft, moveRight, moveToNextGroup, splitRight, splitDown, groupLimit, openedAsTab, moved, split, resizeRows}`
-- [ ] T026 [US2] Run `yarn verify:full` (shared component); restart-check on the dev server; commit
+- [x] T026 [US2] Run `yarn verify:full` (shared component); restart-check on the dev server; commit
       `feat(sheet): drag tabs and split groups in any direction (spec 036, US2)`
 
 ## User Story 3 - Tools are tabs or floating windows (P3)

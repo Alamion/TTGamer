@@ -25,6 +25,16 @@ panes:
     closedHidden: 'At most {max} documents stay open: "{closed}" was closed to make room for "{name}".'
     openedAsTab: 'Six groups are open, so "{name}" opened as a tab.'
     resize: 'Resize {left} and {right}'
+    resizeRows: 'Resize {top} and {bottom}'
+    actions: 'Actions for {name}'
+    moveLeft: Move left
+    moveRight: Move right
+    moveToNextGroup: Move to next group
+    splitRight: Split right
+    splitDown: Split down
+    groupLimit: 'There is no room for another group: at most six, each at least 320 × 200 px.'
+    moved: '"{name}" moved to group {number}.'
+    split: '"{name}" opened in a new group.'
     maximize: 'Show only the group of {name}'
     restore: 'Show all groups again'
 

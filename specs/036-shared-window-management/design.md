@@ -172,3 +172,10 @@ restore at the browser level → **Finish**.
   of spec 034 is gone, and the shown document's view selector and the maximize button sit at the end
   of the strip. One group with tabs keeps the page scroll and no frame. The dev server was down
   during this story, so the 1280/375 px check waits for the maintainer.
+- **US2**: tab drops are computed from the event target, not a central `hitTest`: a strip finds its
+  gap from its tabs' boxes, a group's page finds its edge (`edgeAt`) or middle; the float zone comes
+  with floating windows in US3. The shared tree menu gained `disabled` items (`onDisabled` says
+  why). happy-dom's `DragEvent` takes no coordinates, so the tests set them on the event
+  (`tests/sheet_manager/helpers/tabDrag.ts`). Browser timing "open a second document beside (3,000)"
+  read 305 ms against its 200 ms budget in this run (spec 034 saw 169–567 ms on the same machine);
+  it is reported, and looked at again in US7.

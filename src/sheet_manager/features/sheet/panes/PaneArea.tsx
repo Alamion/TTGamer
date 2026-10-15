@@ -1,13 +1,13 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Splitter } from '@site/src/shared/components/Splitter';
+import { useMediaQuery } from '@site/src/shared/hooks/useMediaQuery';
 import { useMeasuredElement } from '@site/src/shared/hooks/usePaneSizes';
-import { clsx } from 'clsx';
-import { Maximize2, Minimize2 } from 'lucide-react';
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { type DragEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useDocumentStore } from '../../../store/documentStore';
 import { documentLabeler } from '../../documents/labeler';
+import { bodyTarget, type DropTarget, edgeAt } from './dropTargets';
 import { MIN_GROUP_HEIGHT, moveDivider, SIDE_BY_SIDE_WIDTH, weightsOf } from './layout';
 import {
     type DividerPlace,
@@ -20,20 +20,27 @@ import {
     reconcileLayout,
     type Rect,
     rectsOf,
+    splitGroup,
+    type SplitSide,
 } from './layoutTree';
 import { Pane } from './Pane';
+import { MaximizeButton, PaneGroup } from './PaneGroup';
 import { PaneSourceProvider } from './PaneSourceProvider';
 import {
     closeTab,
     focusTab,
+    moveTab,
     setPaneView,
     setSplitWeights,
-    toggleMaximized,
+    splitWith,
     usePaneStore,
 } from './paneStore';
 import { PaneTabs } from './PaneTabs';
 import { PaneViewSelect } from './PaneViewSelect';
 import { docKey, documentIdOf, tabKindOf } from './tabKeys';
+import { TabMenu } from './TabMenu';
+import { MAX_GROUPS } from './types';
+import { useTabDrag } from './useTabDrag';
 
 const labels = uiMessages.sheet.documents.panes;
 
@@ -44,9 +51,16 @@ const placeStyle = (rect: Rect) => ({
     height: rect.height,
 });
 
+const pixels = (rect: Rect) => ({
+    left: `${rect.left}px`,
+    top: `${rect.top}px`,
+    width: `${rect.width}px`,
+    height: `${rect.height}px`,
+});
+
 /**
  * The height from the element's top to the bottom of the window, at the page's top (spec 036,
- * FR-007): the layout fills the window below the toolbar and each group scrolls its own document.
+ * FR-007): the layout fills the window below the toolbar and each group scrolls its own page.
  */
 function useFillHeight(node: HTMLElement | null): number {
     const [height, setHeight] = useState(MIN_GROUP_HEIGHT * 2);
@@ -77,9 +91,10 @@ function childAt(root: LayoutNode | null, path: readonly number[]): LayoutNode |
 
 /**
  * Where the open documents are drawn (spec 036). One document is drawn exactly as the page always
- * drew it: no strip, divider, or wrapper. Otherwise the groups of the layout fill the window below
- * the toolbar, placed by the tree; when they do not fit (a phone, a narrow window) one document
- * shows at a time with a strip of every open document.
+ * drew it: no strip, divider, or wrapper. One group with several tabs gets its strip and keeps the
+ * page scroll. Several groups fill the window below the toolbar, placed by the layout tree. When
+ * they do not fit (a phone, a narrow window) one document shows at a time with a strip of every
+ * open document.
  */
 export function PaneArea({
     documentId,
@@ -96,6 +111,11 @@ export function PaneArea({
     const { ref: areaRef, node: area, width } = useMeasuredElement<HTMLDivElement>();
     const height = useFillHeight(area);
     const placed = useRef(new Map<string, HTMLElement>());
+    const coarse = useMediaQuery('(pointer: coarse)');
+    const [menu, setMenu] = useState<{ key: string; anchor: { x: number; y: number } } | null>(
+        null
+    );
+    const [announcement, setAnnouncement] = useState('');
 
     const entryIds = useMemo(() => new Set(entries.map(({ id }) => id)), [entries]);
     const layout = useMemo(
@@ -105,6 +125,30 @@ export function PaneArea({
     useEffect(() => {
         if (layout !== stored) usePaneStore.setState(layout);
     }, [layout, stored]);
+
+    const nameOf = (id: string) => {
+        const entry = entries.find((candidate) => candidate.id === id);
+        return entry ? documentLabeler.title(entry) : id;
+    };
+    const titleOf = (key: string | undefined) => {
+        if (!key) return '';
+        const id = documentIdOf(key);
+        return id ? nameOf(id) : (tabKindOf(key)?.title() ?? key);
+    };
+    const groupNumberOf = (key: string) =>
+        groupsInOrder(usePaneStore.getState().root).findIndex((group) => group.tabs.includes(key)) +
+        1;
+    const drag = useTabDrag((key: string, target: DropTarget) => {
+        const name = titleOf(key);
+        if (target.kind === 'edge') {
+            if (splitWith(key, target.groupId, target.side)) {
+                setAnnouncement(translate(labels.split, { name }));
+            }
+            return;
+        }
+        moveTab(key, target.groupId, target.kind === 'strip' ? target.gap : undefined);
+        setAnnouncement(translate(labels.moved, { name, number: String(groupNumberOf(key)) }));
+    });
 
     const groups = groupsInOrder(layout.root);
     const documentIds = openKeys(layout)
@@ -149,15 +193,6 @@ export function PaneArea({
         );
     }
 
-    const nameOf = (id: string) => {
-        const entry = entries.find((candidate) => candidate.id === id);
-        return entry ? documentLabeler.title(entry) : id;
-    };
-    const titleOf = (key: string | undefined) => {
-        if (!key) return '';
-        const id = documentIdOf(key);
-        return id ? nameOf(id) : (tabKindOf(key)?.title() ?? key);
-    };
     const minimum = minSizeOf(layout.root);
     const sideBySide =
         width !== undefined &&
@@ -191,88 +226,91 @@ export function PaneArea({
             />
         ) : null;
     };
+    const announcer = (
+        <p className="sr-only" aria-live="polite" data-pane-announcer="">
+            {announcement}
+        </p>
+    );
 
     if (!sideBySide) {
-        const shownKey = docKey(documentId);
         return (
             <div className="space-y-2 px-4 pb-4 pt-3" data-panes="">
                 <PaneTabs
                     label={translate(labels.tabsLabel)}
                     tabs={documentIds.map((id) => ({ key: docKey(id), name: nameOf(id) }))}
-                    selected={shownKey}
+                    selected={currentKey}
                     onSelect={focusTab}
                     onClose={closeTab}
-                    end={viewSelect(shownKey)}
+                    end={viewSelect(currentKey)}
                 />
-                <div ref={areaRef}>{body(shownKey, false)}</div>
+                <div ref={areaRef}>{body(currentKey, false)}</div>
             </div>
         );
     }
 
-    const group = (node: GroupNode, number: number, fill: boolean) => {
-        const focused = node.tabs.includes(layout.recent[0] ?? currentKey);
-        const maximized = layout.maximized === node.id;
-        const name = titleOf(node.shown);
-        return (
-            <div
-                className={clsx(
-                    'flex min-h-0 min-w-0 flex-col',
-                    fill && 'h-full',
-                    several &&
-                        clsx(
-                            'rounded-lg border-2',
-                            focused ? 'border-primary' : 'border-borderMoreContrast'
-                        )
-                )}
-                data-group-frame=""
-                onPointerDownCapture={() => {
-                    if (!focused) focusTab(node.shown);
-                }}
-                onFocusCapture={() => {
-                    if (!focused) focusTab(node.shown);
-                }}
-            >
-                <PaneTabs
-                    label={translate(labels.groupLabel, { number })}
-                    tabs={node.tabs.map((key) => ({ key, name: titleOf(key) }))}
-                    selected={node.shown}
-                    onSelect={focusTab}
-                    onClose={closeTab}
-                    onMaximize={several ? () => toggleMaximized(node.id) : undefined}
-                    end={
-                        <>
-                            {viewSelect(node.shown)}
-                            {several && (
-                                <button
-                                    type="button"
-                                    aria-label={
-                                        maximized
-                                            ? translate(labels.restore)
-                                            : translate(labels.maximize, { name })
-                                    }
-                                    aria-pressed={maximized}
-                                    onClick={() => toggleMaximized(node.id)}
-                                    className="rounded-sm p-1 text-textSecondary hover:text-textPrimary pointer-coarse:min-h-8 pointer-coarse:min-w-8"
-                                >
-                                    {maximized ? (
-                                        <Minimize2 className="h-4 w-4" aria-hidden="true" />
-                                    ) : (
-                                        <Maximize2 className="h-4 w-4" aria-hidden="true" />
-                                    )}
-                                </button>
-                            )}
-                        </>
-                    }
-                />
-                {body(node.shown, fill)}
-            </div>
-        );
+    /** A split there keeps under seven groups, and every group at its minimum in this area. */
+    const canSplit = (groupId: string, side: SplitSide, key: string) => {
+        if (groups.length >= MAX_GROUPS) return false;
+        const probe = splitGroup(layout.root, groupId, side, key, 'probe');
+        if (probe === layout.root) return false;
+        const needed = minSizeOf(probe);
+        return needed.width <= width! && needed.height <= height;
     };
+    const targetIn = (node: GroupNode) => (event: DragEvent<HTMLElement>) => {
+        const key = drag.dragged.current;
+        if (!key) return null;
+        const box = event.currentTarget.getBoundingClientRect();
+        const target = bodyTarget(node.id, edgeAt(box, event.clientX, event.clientY), (side) =>
+            canSplit(node.id, side, key)
+        );
+        return target.kind === 'middle' && node.tabs.includes(key) ? null : target;
+    };
+    const group = (node: GroupNode, number: number, fill: boolean) => (
+        <PaneGroup
+            node={node}
+            number={number}
+            fill={fill}
+            framed={several}
+            focused={node.tabs.includes(layout.recent[0] ?? currentKey)}
+            maximizable={several}
+            titleOf={titleOf}
+            onClose={closeTab}
+            onMenu={(key, anchor) => setMenu({ key, anchor })}
+            drag={coarse ? null : drag}
+            bodyTarget={targetIn(node)}
+            body={body(node.shown, fill)}
+            end={
+                <>
+                    {viewSelect(node.shown)}
+                    {several && (
+                        <MaximizeButton
+                            groupId={node.id}
+                            maximized={layout.maximized === node.id}
+                            name={titleOf(node.shown)}
+                        />
+                    )}
+                </>
+            }
+        />
+    );
+    const tabMenu = menu && (
+        <TabMenu
+            tabKey={menu.key}
+            anchor={menu.anchor}
+            layout={layout}
+            canSplit={canSplit}
+            titleOf={titleOf}
+            onClose={() => setMenu(null)}
+            onDone={setAnnouncement}
+        />
+    );
 
     if (!several) {
         return (
             <div ref={areaRef} className="px-4 pb-4 pt-3" data-panes="">
                 {group(groups[0]!, 1, false)}
+                {tabMenu}
+                {announcer}
             </div>
         );
     }
@@ -324,11 +362,12 @@ export function PaneArea({
                 ))}
                 {placement.dividers.map((divider) => {
                     const parent = childAt(layout.root, divider.path);
-                    if (!parent || parent.type === 'group' || divider.direction !== 'row') {
-                        return null;
-                    }
+                    if (!parent || parent.type === 'group') return null;
                     const { sizes, mins, index } = divider;
                     const key = `v:${divider.path.join('.')}:${index}`;
+                    const before = titleOf(shownOf(parent.children[index]!));
+                    const after = titleOf(shownOf(parent.children[index + 1]!));
+                    const rows = divider.direction === 'column';
                     return (
                         <div
                             key={key}
@@ -338,16 +377,21 @@ export function PaneArea({
                         >
                             <Splitter
                                 bare
-                                label={translate(labels.resize, {
-                                    left: titleOf(shownOf(parent.children[index]!)),
-                                    right: titleOf(shownOf(parent.children[index + 1]!)),
-                                })}
+                                orientation={rows ? 'horizontal' : 'vertical'}
+                                label={
+                                    rows
+                                        ? translate(labels.resizeRows, {
+                                              top: before,
+                                              bottom: after,
+                                          })
+                                        : translate(labels.resize, { left: before, right: after })
+                                }
                                 min={mins[index]!}
                                 max={sizes[index]! + sizes[index + 1]! - mins[index + 1]!}
                                 value={sizes[index]!}
-                                clamp={(before) => moveDivider(sizes, index, before, mins)[index]!}
-                                onPreview={(before) => preview(divider, before)}
-                                onChange={(before) => commit(divider, before)}
+                                clamp={(next) => moveDivider(sizes, index, next, mins)[index]!}
+                                onPreview={(next) => preview(divider, next)}
+                                onChange={(next) => commit(divider, next)}
                                 onReset={() =>
                                     setSplitWeights(
                                         divider.path,
@@ -359,13 +403,8 @@ export function PaneArea({
                     );
                 })}
             </div>
+            {tabMenu}
+            {announcer}
         </div>
     );
 }
-
-const pixels = (rect: Rect) => ({
-    left: `${rect.left}px`,
-    top: `${rect.top}px`,
-    width: `${rect.width}px`,
-    height: `${rect.height}px`,
-});

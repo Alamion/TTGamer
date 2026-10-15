@@ -16,6 +16,7 @@ import {
     removeTab,
     setWeightsAt,
     splitGroup,
+    type SplitSide,
 } from './layoutTree';
 import { docKey, documentIdOf, type TabKey, tabKindOf } from './tabKeys';
 import {
@@ -266,4 +267,45 @@ export function setPaneView(id: string, view: string | undefined): void {
         const rest = Object.fromEntries(Object.entries(state.views).filter(([key]) => key !== id));
         return { views: view === undefined ? rest : { ...rest, [id]: view } };
     });
+}
+
+/** Puts the tab in group `groupId` at gap `gap` of its strip, shown and focused (spec 036, US2). */
+export function moveTab(key: TabKey, groupId: string, gap?: number): void {
+    const state = reconciled();
+    const root = placeTab(state.root, key, groupId, gap);
+    if (root === state.root) return;
+    usePaneStore.setState({ ...state, root, maximized: null });
+    focusTab(key);
+}
+
+/** Moves the tab one place left (`-1`) or right (`1`) in its strip. */
+export function moveTabBy(key: TabKey, offset: -1 | 1): void {
+    const group = groupOf(usePaneStore.getState().root, key);
+    if (!group) return;
+    const from = group.tabs.indexOf(key);
+    const gap = offset < 0 ? from - 1 : from + 2;
+    if (gap < 0 || gap > group.tabs.length) return;
+    moveTab(key, group.id, gap);
+}
+
+/** Moves the tab to the next group in reading order (the first after the last). */
+export function moveToNextGroup(key: TabKey): void {
+    const groups = groupsInOrder(usePaneStore.getState().root);
+    const index = groups.findIndex((group) => group.tabs.includes(key));
+    if (index === -1 || groups.length < 2) return;
+    moveTab(key, groups[(index + 1) % groups.length]!.id);
+}
+
+/**
+ * Splits group `groupId` on `side` and puts the tab alone in the new group. Refused at six groups;
+ * whether the new group fits is checked by the caller, which knows the area.
+ */
+export function splitWith(key: TabKey, groupId: string, side: SplitSide): boolean {
+    const state = reconciled();
+    if (groupsInOrder(state.root).length >= MAX_GROUPS) return false;
+    const root = splitGroup(state.root, groupId, side, key);
+    if (root === state.root) return false;
+    usePaneStore.setState({ ...state, root, maximized: null });
+    focusTab(key);
+    return true;
 }
