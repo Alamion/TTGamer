@@ -161,6 +161,7 @@ export function PaneArea({
                             documentId={id}
                             name={nameOf(id)}
                             focused={id === documentId}
+                            framed={shown.length > 1}
                             maximized={sideBySide ? panes.maximized === id : undefined}
                             onFocus={() => focusPane(id)}
                             onToggleMaximized={() => toggleMaximized(id)}

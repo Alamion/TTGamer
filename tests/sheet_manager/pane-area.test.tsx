@@ -36,6 +36,12 @@ describe('panes side by side (spec 034, US2)', () => {
     describe('on a desktop window', () => {
         beforeEach(() => openAll(1280));
 
+        it('frames every pane and marks the focused one', () => {
+            const frames = screen.getAllByRole('region').map((pane) => pane.className);
+            expect(frames.every((name) => name.includes('border-2'))).toBe(true);
+            expect(frames.filter((name) => name.includes('border-primary'))).toHaveLength(1);
+        });
+
         it('shows as many panes as fit at 320 px and keeps the rest as tabs', () => {
             expect(regions()).toEqual(['Bruno', 'Cleo', 'Dora']);
             expect(screen.getAllByRole('tab')).toHaveLength(4);
@@ -77,6 +83,11 @@ describe('panes side by side (spec 034, US2)', () => {
 
     describe('on a phone', () => {
         beforeEach(() => openAll(343));
+
+        it('draws the one pane without a frame or a focus mark', () => {
+            const [pane] = screen.getAllByRole('region');
+            expect(pane!.className).not.toContain('border');
+        });
 
         it('shows one pane and the tabs, with no divider and no maximize', () => {
             expect(regions()).toEqual(['Dora']);

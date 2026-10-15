@@ -18,6 +18,7 @@ const buttonClass =
 export function Pane({
     documentId,
     focused,
+    framed,
     maximized,
     name,
     onClose,
@@ -30,6 +31,8 @@ export function Pane({
 }: {
     documentId: string;
     focused: boolean;
+    /** Several panes are drawn, so each is framed and the focused one marked; alone it is neither. */
+    framed: boolean;
     /** Whether the pane has the whole area; `undefined` where it cannot (a phone). */
     maximized: boolean | undefined;
     name: string;
@@ -52,8 +55,12 @@ export function Pane({
             onFocusCapture={onFocus}
             onPointerDownCapture={onFocus}
             className={clsx(
-                'min-w-0 rounded-lg border-2',
-                focused ? 'border-primary' : 'border-borderMoreContrast'
+                'min-w-0',
+                framed &&
+                    clsx(
+                        'rounded-lg border-2',
+                        focused ? 'border-primary' : 'border-borderMoreContrast'
+                    )
             )}
         >
             <header className="flex items-center justify-between gap-2 border-b border-border px-3 py-1.5">
