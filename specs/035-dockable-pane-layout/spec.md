@@ -1,6 +1,7 @@
 # Feature Specification: Dockable Layout of Document Panes
 
-**Branch**: `035-dockable-pane-layout` | **Created**: 2026-10-15 | **Status**: Draft
+**Branch**: `035-dockable-pane-layout` | **Created**: 2026-10-15 | **Status**: Paused (resumes after
+T-113)
 
 **Input**: "T-117 Dockable layout of document panes: GMs and players arrange open documents like the
 tabs and groups of a code editor: every pane group has its own tabs, tabs move between groups by
@@ -9,6 +10,12 @@ three more). Builds on the panes of spec 034 (T-112), which has one global tab s
 side-by-side panes that only grow to the right, no several tabs per pane, and no rows below. Phone
 keeps one document at a time with tabs. T-113 (shared window management, Library and dice panel as
 windows) is related and may follow."
+
+> **Paused 2026-10-15.** The plan is analyzed and committed, nothing is built. The layout needs
+> documents dragged from the documents window onto a group's edge (SC-001: a 3 × 2 grid in at most
+> 12 actions is out of reach with menus alone, and the maintainer wants no extra buttons). That drag
+> belongs to T-113, so this spec resumes after T-113: re-check design.md against T-113's window and
+> drag code, then run `/ttg-speckit-analyze` again before implementing.
 
 ## Context
 
@@ -180,7 +187,7 @@ three panes and check three groups side by side.
 - **FR-005**: Dropping a tab on a group's edge MUST split that group in the edge's direction and put
   the document in the new group; dropping on its middle MUST move it into that group.
 - **FR-006**: Every move and split MUST also be possible from a tab's menu with the keyboard (move
-  left or right, move to the next group, split right, split down, close).
+  left or right, move to the next group, split right, split down, maximize, close).
 - **FR-007**: Dividers between groups, vertical and horizontal, MUST resize the groups by pointer
   and by keyboard and MUST keep every group at least 320 px wide and 200 px tall.
 - **FR-008**: With two or more groups the layout MUST fill the area below the toolbar to the bottom
@@ -198,7 +205,8 @@ three panes and check three groups side by side.
 - **FR-013**: At most 12 documents MUST be open and at most 6 groups exist at once. Opening a 13th
   document MUST close the least recently focused tab that no group shows, with a notice (with at
   most six shown, such a tab always exists). A 7th group MUST NOT be offered: no edge drop target,
-  split entries disabled, and a notice on the attempt.
+  split entries disabled, and a notice on the attempt; **Open beside** that cannot make a group
+  opens the document as a new tab of the focused group and says why.
 - **FR-014**: Tab strips, tabs, drop targets, and dividers MUST be operable by keyboard and named
   for assistive technology; a move or split MUST be announced.
 - **FR-015**: All text added by this change MUST exist in English and Russian, and the user guide of
@@ -209,13 +217,14 @@ three panes and check three groups side by side.
 - **Group**: a rectangle of the layout with its own tabs, one shown; it has a size inside its row or
   column.
 - **Tab**: one open document in one group, with its own view.
-- **Layout**: the nesting of rows and columns of groups, their sizes, the focused group, and the
-  maximized group, kept per device.
+- **Layout**: the nesting of rows and columns of groups, their sizes, and the maximized group, kept
+  per device; the focused group is the one whose shown tab is the current document.
 
 ## Success Criteria
 
 - **SC-001**: On a 1920 × 1080 window a reader builds a grid of three groups over three groups in at
-  most 12 actions, every group at least 320 × 200 px and all six visible without scrolling the page.
+  most 12 actions, using the drag from the documents window that T-113 adds, every group at least
+  320 × 200 px and all six visible without scrolling the page.
 - **SC-002**: Moving a tab to another group or splitting takes one drag or two menu choices.
 - **SC-003**: After a reload, groups, tabs, shown tabs, sizes, and views come back in 100% of
   attempts, including with one stored document deleted.
@@ -234,3 +243,7 @@ three panes and check three groups side by side.
 - Dragging a document from the documents window into the layout, floating windows, docking the
   Library or the dice panel, and tabs of other kinds than documents belong to T-113.
 - Read-only panes remain deferred to the online part (spec 034).
+- Only the shown tab of each group is drawn; a tab shown again starts at its top (its scroll is not
+  kept).
+- This spec depends on T-113 for dragging documents from the documents window into the layout; it
+  adds no buttons of its own for building a grid.

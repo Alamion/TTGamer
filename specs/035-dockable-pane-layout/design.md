@@ -1,6 +1,6 @@
 # Design: Dockable Layout of Document Panes
 
-**Spec**: [spec.md](spec.md) | **Date**: 2026-10-15
+**Spec**: [spec.md](spec.md) | **Date**: 2026-10-15 | **Status**: paused until T-113 (see spec)
 
 ## Approach
 
@@ -32,9 +32,10 @@ loses panes) → **US1** groups with their own strips, **Open in new tab**, grou
   nested pairs.
 - **D3 — Groups drawn flat, placed by computed rectangles**: `rectsOf(root, area)` gives each group
   and divider a rectangle; `PaneArea` renders all groups as siblings, keyed by group id, absolutely
-  placed. _Why_: splitting or moving a neighbour reshapes the tree; nested elements would remount
-  the open sheets and lose focus, scroll, and an edit in progress. _Rejected_: nested CSS grids —
-  simpler CSS, but every split remounts its subtree.
+  placed, in reading order (`groupsInOrder`) so Tab and screen readers follow the screen. _Why_:
+  splitting or moving a neighbour reshapes the tree; nested elements would remount the open sheets
+  and lose focus, scroll, and an edit in progress. _Rejected_: nested CSS grids — simpler CSS, but
+  every split remounts its subtree.
 - **D4 — Sizes**: weights per split (average 1, as spec 034) fitted to the area; a child's minimum
   is its subtree's (a row of three groups is at least 3 × 320 + 2 × 6 px wide), from
   `minSizeOf(node)`. `paneWidths`/`moveDivider` in `layout.ts` take per-child minimums instead of
@@ -78,6 +79,11 @@ loses panes) → **US1** groups with their own strips, **Open in new tab**, grou
 - **D13 — Announcements (FR-014)**: a `sr-only` `aria-live="polite"` line in `PaneArea` says what a
   move or split did (the template editor's announcer pattern).
 
+- **D14 — Grid building waits for T-113**: SC-001 counts on dragging a document from the documents
+  window onto a group's edge (one drag per group). _Why_: with menus alone a 3 × 2 grid takes about
+  17 actions, and the maintainer wants no extra buttons. _Rejected_: an **Open below** entry in the
+  documents window; relaxing SC-001.
+
 ## Changed types and data
 
 - `panes/layoutTree.ts` (new, pure): types, `normalize`, `groupsInOrder`, `groupOf(docId)`,
@@ -87,7 +93,9 @@ loses panes) → **US1** groups with their own strips, **Open in new tab**, grou
   `rectsOf`, `dropZone`. Returns the same object when nothing changes.
 - `panes/types.ts`: Zod schema of the stored layout (recursive, `z.lazy`), `readLayout` sanitizes
   (duplicate tabs: first wins; over 12 tabs or 6 groups: the rest dropped in reading order; weights
-  fixed to the children's count; then `normalize`). `PANES_STORAGE_KEY` = `ttgamer:panes:v2`.
+  fixed to the children's count; then `normalize`); anything dropped other than deleted documents
+  reports `pane-arrangement-invalid` with what was dropped (constitution III). `PANES_STORAGE_KEY` =
+  `ttgamer:panes:v2`.
 - `paneStore.ts`: state `{root, recent, views, maximized}` (`views` stays keyed by document id;
   `maximized` is a group id). Actions: `openInNewTab`, `openBeside`, `moveTab`, `splitWith`,
   `closeTab`, `focusTab`, `toggleMaximized`, `setSplitWeights(path, weights)`, `setPaneView`.
@@ -121,7 +129,7 @@ loses panes) → **US1** groups with their own strips, **Open in new tab**, grou
   follows current), 13th tab closes the least recent hidden one, 7th group refused, Open beside
   falls back to a tab.
 - `pane-restore.test.tsx`: v2 round trip; v1 → one row (order, widths within 1 %, views, maximized);
-  deleted document; invalid value reports once.
+  deleted document quietly; a sanitized or invalid value reports once.
 - `pane-tabs.test.tsx`, `pane-area.test.tsx`: strips per group, switching a tab changes one group,
   close shows the neighbour, last tab removes the group, frames (D12), group scroll vs page scroll.
 - `pane-drag.test.tsx` (new): reorder, move to another strip and body, edge split, Escape, refused
@@ -131,9 +139,9 @@ loses panes) → **US1** groups with their own strips, **Open in new tab**, grou
   renders of other groups when one changes).
 - `tests/shared/splitter.contract.test.tsx`: a horizontal host.
 - `documents-window.test.tsx`: **Open in new tab**, the limit notices.
-- `tests-e2e/smoke/panes.spec.ts`: 3 × 2 grid at 1920 × 1080 by menu (SC-001), drag a tab between
-  groups, reload, narrow to 375 px and back, SC-005 baseline. `tests-e2e/timings/panes.spec.ts`:
-  show a tab and move one between groups (SC-007, reported).
+- `tests-e2e/smoke/panes.spec.ts`: 3 × 2 grid at 1920 × 1080 by dragging from the documents window
+  (SC-001, D14), drag a tab between groups, reload, narrow to 375 px and back, SC-005 baseline.
+  `tests-e2e/timings/panes.spec.ts`: show a tab and move one between groups (SC-007, reported).
 
 ## Manual walk
 

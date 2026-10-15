@@ -2,6 +2,9 @@
 
 **Input**: [spec.md](spec.md), [design.md](design.md)
 
+**Paused until T-113** (spec.md banner): before implementing, check these tasks against T-113's
+documents-window drag and run `/ttg-speckit-analyze` again.
+
 Delivery order follows design.md "Approach": Foundation (layout tree, rectangles, store v2 with the
 spec 034 migration, so no story ever loses a reader's panes), then US1 (tabs per group), US2 (drag
 and the tab menu), US3 (splits in both directions), US4 (flattened narrow view), US5 (restore and
@@ -35,27 +38,30 @@ and behaves as on branch 034 (three panes become one row of three one-tab groups
 - [ ] T004 Rewrite `features/sheet/panes/paneStore.ts` to state `{root, recent, views, maximized}`
       with `reconcileLayout` in `layoutTree.ts`, actions `focusTab`, `closeTab`, `toggleMaximized`
       (group id), `setSplitWeights(path, weights)`, `setPaneView`, and `openBeside` (a new group
-      right of the focused one; split rules arrive in US3, until then a row up to six groups)
+      right of the focused one; split rules arrive in US3, until then a row up to six groups and at
+      six a new tab of the focused group with the old `panes.replaced` notice, which US1 replaces)
 - [ ] T005 Write `tests/sheet_manager/pane-restore.test.tsx` (rewrite): a v2 layout round-trips;
       `readLayout` sanitizes duplicates (first wins), over 12 tabs or 6 groups (rest dropped in
-      reading order), wrong weight counts, unknown maximized; a stored `ttgamer:panes:v1` of three
+      reading order), wrong weight counts, unknown maximized, each reporting
+      `pane-arrangement-invalid` once with what was dropped; a stored `ttgamer:panes:v1` of three
       panes becomes one row with the same order, weights (within 1 %), views, and maximized group,
       and `v1` is removed; an invalid value reports `pane-arrangement-invalid` once and one document
       shows
 - [ ] T006 In `features/sheet/panes/types.ts` add the recursive Zod schema (`z.lazy`) and
-      `readLayout`, set `PANES_STORAGE_KEY = 'ttgamer:panes:v2'`, keep `readArrangement` for the
-      migration under `PANES_V1_STORAGE_KEY`; in `paneStore.ts` `merge` migrates v1 when v2 is
-      absent (design "Migration")
+      `readLayout` (reports what it drops, design "Changed types"), set
+      `PANES_STORAGE_KEY = 'ttgamer:panes:v2'`, keep `readArrangement` for the migration under
+      `PANES_V1_STORAGE_KEY`; in `paneStore.ts` `merge` migrates v1 when v2 is absent (design
+      "Migration")
 - [ ] T007 Raise the pin limit to `MAX_TABS` in `store/documentStore.ts` (`pinDocuments`) and its
       test in `tests/sheet_manager/pane-cache.test.ts`
 - [ ] T008 Rewrite `features/sheet/panes/PaneArea.tsx` to draw the tree: one group with one tab →
       the document only (no wrapper); otherwise groups as absolutely placed siblings keyed by group
-      id from `rectsOf` over the measured area, vertical dividers between row children (design D3);
-      each group renders only its shown tab; pins every open tab and loads the shown ones (D11);
-      update `DocumentsWindow.tsx` to the new `openBeside` and `MAX_TABS`, and
-      `shell/SheetWorkspace.tsx` (`several` = more than one tab)
+      id from `rectsOf` over the measured area, in reading order in the DOM, vertical dividers
+      between row children (design D3); each group renders only its shown tab; pins every open tab
+      and loads the shown ones (D11); update `DocumentsWindow.tsx` to the new `openBeside` and
+      `MAX_TABS`, and `shell/SheetWorkspace.tsx` (`several` = more than one tab)
 - [ ] T009 Adapt
-      `tests/sheet_manager/{pane-single,pane-area,pane-renders,pane-view,pane-source,     pane-tabs}.test.tsx`
+      `tests/sheet_manager/{pane-single,pane-area,pane-renders,pane-view,pane-source,pane-tabs}.test.tsx`
       and `documents-window.test.tsx` to the tree (same guarantees: one document unchanged, a change
       in one group renders no other group)
 - [ ] T010 Run `yarn verify` (store and persistence change) and commit:
@@ -71,7 +77,9 @@ leaves the second unchanged.
       makes it current; closing the shown tab shows the neighbour; closing a group's last tab
       removes the group and the others take its room; frames per design D12 (one group with tabs:
       strip, no frame; several groups: frame each, focused marked); with two or more groups the area
-      height is the viewport below it and each group body scrolls (D6)
+      height is the viewport below it and each group body scrolls (D6); the DOM and Tab order of
+      groups follow reading order after a split (D3); double click on a tab and the maximize button
+      give its group the whole area, and again restore it
 - [ ] T012 [US1] Write tests in `tests/sheet_manager/pane-store.test.ts`: `openInNewTab` adds after
       the shown tab of the focused group and makes it current; a 13th tab closes the least recently
       focused tab that no group shows and returns it; opening a document already in a tab focuses
@@ -89,7 +97,7 @@ leaves the second unchanged.
       `tests/sheet_manager/documents-window.test.tsx` (replace the six-pane notice test)
 - [ ] T016 [US1] Add strings `manager.details.openInNewTab`, `panes.groupLabel`,
       `panes.closedHidden` to `translations/source/{en,ru}/ui/sheet/documents.yaml`; remove
-      `panes.replaced`
+      `panes.replaced`; reword `panes.maximize` and `panes.restore` for groups (en + ru)
 - [ ] T017 [US1] Run the targeted tests and `yarn verify`; check at 1280 and 375 px on the dev
       server; commit `feat(sheet): tabs per group and Open in new tab (spec 035, US1)`
 
@@ -104,7 +112,8 @@ are right.
       gap mark shows during the drag; `dragend` without a drop (Escape) changes nothing
 - [ ] T019 [US2] Write `tests/sheet_manager/pane-keyboard.test.tsx` (moves): Shift+F10 and the
       strip's **Actions** button open the tab menu; **Move left**, **Move right**, **Move to next
-      group** (reading order, wraps), **Close**; each move is announced in the live line
+      group** (reading order, wraps), **Maximize**, **Close**; each move is announced in the live
+      line
 - [ ] T020 [US2] Create `features/sheet/panes/useTabDrag.ts` (HTML drag and drop,
       `application/x-ttg-tab`, gap from tab midpoints, `dropZone` middle for bodies; edges come in
       US3) and wire it into `PaneTabs.tsx` and `Pane.tsx` with the overlay; no drag on a coarse
@@ -115,9 +124,9 @@ are right.
       `paneStore.ts`
 - [ ] T022 [US2] Add strings `panes.{actions, moveLeft, moveRight, moveToNextGroup, moved}` (en +
       ru) to `translations/source/{en,ru}/ui/sheet/documents.yaml`
-- [ ] T023 [US2] Run the targeted tests and `yarn verify:fast`; check drag and menus on the dev
-      server (desktop and phone); commit
-      `feat(sheet): move tabs by dragging or from their menu     (spec 035, US2)`
+- [ ] T023 [US2] Run the targeted tests and `yarn verify` (store action added); check drag and menus
+      on the dev server (desktop and phone); commit
+      `feat(sheet): move tabs by dragging or from their menu (spec 035, US2)`
 
 ## User Story 3 - Split groups in any direction (P3)
 
@@ -131,22 +140,25 @@ divider drag resizes them within the minimums.
       `src/shared/components/Splitter.tsx` (`clientY`, ↑/↓, `cursor-row-resize`, a horizontal line;
       vertical stays the default)
 - [ ] T026 [US3] Write tests: in `tests/sheet_manager/pane-store.test.ts`
-      `splitWith(doc, groupId,     side)` and **Open beside** refuse a 7th group or a split that
-      would not fit `minSizeOf` in the measured area (Open beside then adds a tab with
-      `panes.openedAsTab`); in `pane-drag.test.tsx` a drop on each edge splits that way, its own
-      single tab on its own edge does nothing, and no edge is offered at six groups or without room;
-      in `pane-keyboard.test.tsx` **Split right**, **Split down** (disabled entries at the limit
-      with `panes.groupLimit`), and arrows on a horizontal and a vertical divider
+      `splitWith(doc, groupId, side)` and **Open beside** refuse a 7th group or a split that would
+      not fit `minSizeOf` in the measured area (Open beside then adds a tab with
+      `panes.openedAsTab`); in the flattened view only the group count is checked, so on a phone
+      **Open beside** still makes a group (design D7); in `pane-drag.test.tsx` a drop on each edge
+      splits that way, its own single tab on its own edge does nothing, and no edge is offered at
+      six groups or without room; in `pane-keyboard.test.tsx` **Split right**, **Split down**
+      (disabled entries at the limit with `panes.groupLimit`), and arrows on a horizontal and a
+      vertical divider
 - [ ] T027 [US3] Add `splitWith` to `paneStore.ts` (the area size is passed from `PaneArea`), the
       edge zones to `useTabDrag.ts`, **Split right**/**Split down** to the tab menu, and horizontal
       dividers between column children in `PaneArea.tsx` with previews that write the groups'
       `style` directly and `setSplitWeights` on release (design D4, D5)
 - [ ] T028 [US3] Add strings
-      `panes.{splitRight, splitDown, groupLimit, openedAsTab, split,     resizeRows}` (en + ru) to
+      `panes.{splitRight, splitDown, groupLimit, openedAsTab, split, resizeRows}` (en + ru) to
       `translations/source/{en,ru}/ui/sheet/documents.yaml`
-- [ ] T029 [US3] Extend `tests-e2e/smoke/panes.spec.ts`: build a 3 × 2 grid at 1920 × 1080 by menu
-      in at most 12 actions, every group at least 320 × 200 and all visible without page scroll
-      (SC-001); drag a tab to another group (SC-002)
+- [ ] T029 [US3] Extend `tests-e2e/smoke/panes.spec.ts`: build a 3 × 2 grid at 1920 × 1080 by
+      dragging documents from the documents window onto group edges (T-113, design D14) in at most
+      12 actions, every group at least 320 × 200 and all visible without page scroll (SC-001); drag
+      a tab to another group (SC-002)
 - [ ] T030 [US3] Run `yarn verify:full` (shared component changed); check on the dev server after
       restarting it; commit `feat(sheet): split groups in any direction (spec 035, US3)`
 
@@ -185,10 +197,9 @@ three side-by-side groups.
 ## Finish
 
 - [ ] T039 Update `src/sheet_manager/AGENTS.md` ("Several documents on one screen": groups, tree,
-      current = focused group's shown tab, limits, flattened view, storage v2 and migration),
-      `.agents/skills/sheet-manager/SKILL.md`, and the `Splitter` orientation in the shared-UI line
-      of root `AGENTS.md` §8 if it names its options; give `specs/034-multi-document-screen/spec.md`
-      a historical banner for its pane layout
+      current = focused group's shown tab, limits, flattened view, storage v2 and migration), and
+      `.agents/skills/sheet-manager/SKILL.md`; give `specs/034-multi-document-screen/spec.md` a
+      historical banner for its pane layout
 - [ ] T040 Rewrite "Several documents side by side" in `docs/documents/index.mdx` and its ru mirror
       in `i18n/ru/` (groups, Open in new tab, dragging, splitting, the tab menu, limits, phone)
       (FR-015); run `yarn validate:i18n`
@@ -206,7 +217,7 @@ three side-by-side groups.
 | FR-003         | T012–T013, T015, T026                                                       |
 | FR-004         | T018, T020                                                                  |
 | FR-005         | T018, T020, T026–T027                                                       |
-| FR-006         | T019, T021, T026–T027                                                       |
+| FR-006         | T019, T021, T026–T027 (maximize: T011, T019)                                |
 | FR-007         | T024–T027                                                                   |
 | FR-008         | T011, T014                                                                  |
 | FR-009         | T003–T004, T011                                                             |
@@ -216,7 +227,7 @@ three side-by-side groups.
 | FR-013         | T012–T013, T026–T027                                                        |
 | FR-014         | T019, T021, T024 (labels, keyboard, announcements)                          |
 | FR-015         | T016, T022, T028, T040                                                      |
-| SC-001, SC-002 | T029                                                                        |
+| SC-001, SC-002 | T029 (SC-001 needs the T-113 drag, design D14)                              |
 | SC-003, SC-004 | T005, T035–T036                                                             |
 | SC-005         | T033                                                                        |
 | SC-006         | T019, T024, T026 (one test per action and divider direction)                |
