@@ -32,6 +32,7 @@ export interface StripDrag {
 export function PaneTabs({
     drag,
     end,
+    inset = false,
     label,
     onClose,
     onMaximize,
@@ -42,6 +43,8 @@ export function PaneTabs({
 }: {
     drag?: StripDrag;
     end?: ReactNode;
+    /** Inside a rounded frame: the strip keeps off its corners. */
+    inset?: boolean;
     label: string;
     onClose: (key: string) => void;
     /** Opens a tab's menu at a point: right click, Shift+F10, or the ContextMenu key. */
@@ -84,7 +87,12 @@ export function PaneTabs({
     };
 
     return (
-        <div className="flex items-end gap-2 border-b border-border">
+        <div
+            className={clsx(
+                'flex items-end gap-2 border-b border-border',
+                inset && 'px-1.5 pt-1.5'
+            )}
+        >
             {/* The drop area is the strip's whole width, also after its last tab. */}
             <div
                 className="flex min-w-0 flex-1"

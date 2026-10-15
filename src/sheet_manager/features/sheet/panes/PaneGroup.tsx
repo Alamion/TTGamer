@@ -64,7 +64,8 @@ export function PaneGroup({
                 fill && 'h-full',
                 framed &&
                     clsx(
-                        'rounded-lg border',
+                        // Clipped to its rounded corners: the first tab sits in the top left one.
+                        'overflow-hidden rounded-lg border',
                         focused ? 'border-primary-muted' : 'border-borderMoreContrast'
                     )
             )}
@@ -77,6 +78,7 @@ export function PaneGroup({
             }}
         >
             <PaneTabs
+                inset={framed}
                 label={translate(labels.groupLabel, { number })}
                 tabs={node.tabs.map((key) => ({ key, name: titleOf(key) }))}
                 selected={node.shown}
