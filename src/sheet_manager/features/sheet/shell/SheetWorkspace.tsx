@@ -23,6 +23,7 @@ import {
 import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
 import { PaneArea } from '../panes/PaneArea';
+import { usePaneStore } from '../panes/paneStore';
 import { exportFileName, serializeDocumentExport } from './documentFile';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { type BatchSummary, type ConflictAnswer, runImportBatch } from './importBatch';
@@ -32,7 +33,7 @@ import { selectableViews, templateSelectValue, ViewModeSelect } from './ViewMode
 
 interface SheetWorkspaceProps {
     /** Draws one document's page; the workspace decides how many documents are shown. */
-    renderDocument: (documentId: string) => React.ReactNode;
+    renderDocument: (documentId: string, viewId?: string) => React.ReactNode;
 }
 
 export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
@@ -49,6 +50,8 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
     // The registry lists installed user types; subscribing re-renders when they change.
     useDocumentTypeStore((state) => state.types);
     const settings = useDocumentTypeStore((state) => state.settings);
+    // With several documents each pane has its own view selector (spec 034, D8).
+    const several = usePaneStore((state) => state.ids.length > 1);
     const currentDocument = documents.find(({ id }) => id === currentDocumentId) ?? null;
     useShownDocumentPublisher(currentDocument);
     const currentDefinition = currentDocument
@@ -195,25 +198,30 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
                     viewMode={
                         currentDocument && currentDefinition && currentView ? (
                             <>
-                                <ViewModeSelect
-                                    views={selectableViews(
-                                        currentDefinition,
-                                        currentDocument,
-                                        settings
-                                    )}
-                                    value={templateSelectValue(activeTemplateId, currentView.id)}
-                                    onChangeTemplate={(templateId) =>
-                                        updateDocumentMetadata(currentDocument.id, {
-                                            templateId: templateId ?? undefined,
-                                        })
-                                    }
-                                    onChangeView={(preferredViewId) =>
-                                        updateDocumentMetadata(currentDocument.id, {
-                                            preferredViewId,
-                                        })
-                                    }
-                                    templateOptions={templateOptions}
-                                />
+                                {!several && (
+                                    <ViewModeSelect
+                                        views={selectableViews(
+                                            currentDefinition,
+                                            currentDocument,
+                                            settings
+                                        )}
+                                        value={templateSelectValue(
+                                            activeTemplateId,
+                                            currentView.id
+                                        )}
+                                        onChangeTemplate={(templateId) =>
+                                            updateDocumentMetadata(currentDocument.id, {
+                                                templateId: templateId ?? undefined,
+                                            })
+                                        }
+                                        onChangeView={(preferredViewId) =>
+                                            updateDocumentMetadata(currentDocument.id, {
+                                                preferredViewId,
+                                            })
+                                        }
+                                        templateOptions={templateOptions}
+                                    />
+                                )}
                                 <GameTermsMenu />
                             </>
                         ) : undefined

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 import { useDocumentStore } from '../../../store/documentStore';
 import { MAX_PANES } from './types';
+import { defaultPaneView } from './views';
 
 export interface PaneArrangement {
     /** The open documents in pane order; empty means only the current document is shown. */
@@ -10,11 +11,13 @@ export interface PaneArrangement {
     recent: string[];
     /** Relative widths of panes the reader has resized (average 1); a missing one is 1. */
     weights: Record<string, number>;
+    /** A pane's own view (a view id or `tpl:<template id>`); a missing one shows the preferred. */
+    views: Record<string, string>;
     /** The pane that has the whole area while the others are hidden. */
     maximized: string | null;
 }
 
-const EMPTY: PaneArrangement = { ids: [], recent: [], weights: {}, maximized: null };
+const EMPTY: PaneArrangement = { ids: [], recent: [], weights: {}, views: {}, maximized: null };
 
 export const usePaneStore = create<PaneArrangement>(() => EMPTY);
 
@@ -30,6 +33,13 @@ function leastRecentlyFocused(ids: readonly string[], recent: readonly string[],
             (victim, id) => (victim === undefined || rank(id) > rank(victim) ? id : victim),
             undefined
         );
+}
+
+/** The record without the entries of ids that are not panes; the same object when none go. */
+function keepOnly<T>(record: Record<string, T>, ids: readonly string[]): Record<string, T> {
+    return Object.keys(record).every((id) => ids.includes(id))
+        ? record
+        : Object.fromEntries(Object.entries(record).filter(([id]) => ids.includes(id)));
 }
 
 function sameList(a: readonly string[], b: readonly string[]) {
@@ -61,10 +71,8 @@ export function reconcilePanes(
         ...(currentId && ids.includes(currentId) ? [currentId] : []),
         ...state.recent.filter((id) => id !== currentId && ids.includes(id)),
     ];
-    const weightIds = Object.keys(state.weights);
-    const weights = weightIds.every((id) => ids.includes(id))
-        ? state.weights
-        : Object.fromEntries(Object.entries(state.weights).filter(([id]) => ids.includes(id)));
+    const weights = keepOnly(state.weights, ids);
+    const views = keepOnly(state.views, ids);
     // The tab of another pane takes the whole area over; a pane that is gone gives it up.
     const maximized =
         state.maximized === null || ids.length < 2
@@ -77,9 +85,10 @@ export function reconcilePanes(
     return sameList(ids, state.ids) &&
         sameList(recent, state.recent) &&
         weights === state.weights &&
+        views === state.views &&
         maximized === state.maximized
         ? state
-        : { ids, recent, weights, maximized };
+        : { ids, recent, weights, views, maximized };
 }
 
 /**
@@ -105,7 +114,15 @@ export function openBeside(id: string): string | null {
             ids = [...ids.slice(0, after + 1), id, ...ids.slice(after + 1)];
         }
     }
-    usePaneStore.setState({ ids, recent: state.recent, weights: state.weights, maximized: null });
+    const entry = documents.entries.find((candidate) => candidate.id === id);
+    const brief = !state.ids.includes(id) && entry ? defaultPaneView(entry) : undefined;
+    usePaneStore.setState({
+        ids,
+        recent: state.recent,
+        weights: state.weights,
+        views: brief ? { ...keepOnly(state.views, ids), [id]: brief } : state.views,
+        maximized: null,
+    });
     documents.setCurrentDocument(id);
     return replaced;
 }
@@ -145,4 +162,12 @@ export function setPaneWeights(ids: readonly string[], weights: readonly number[
     usePaneStore.setState((state) => ({
         weights: { ...state.weights, ...Object.fromEntries(ids.map((id, i) => [id, weights[i]!])) },
     }));
+}
+
+/** Sets a pane's own view; `undefined` goes back to the document's preferred one. */
+export function setPaneView(id: string, view: string | undefined): void {
+    usePaneStore.setState((state) => {
+        const rest = Object.fromEntries(Object.entries(state.views).filter(([key]) => key !== id));
+        return { views: view === undefined ? rest : { ...rest, [id]: view } };
+    });
 }

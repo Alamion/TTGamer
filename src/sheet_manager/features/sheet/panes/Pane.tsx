@@ -8,6 +8,7 @@ import { useDocumentStore } from '../../../store/documentStore';
 import { AreaLayoutContext } from '../declarative/areaLayout';
 import { tabId } from './paneIds';
 import { PaneSourceProvider } from './PaneSourceProvider';
+import { PaneViewSelect } from './PaneViewSelect';
 
 const labels = uiMessages.sheet.documents.panes;
 const buttonClass =
@@ -22,8 +23,10 @@ export function Pane({
     onClose,
     onFocus,
     onToggleMaximized,
+    onView,
     render,
     unreadable,
+    view,
 }: {
     documentId: string;
     focused: boolean;
@@ -33,8 +36,11 @@ export function Pane({
     onClose: () => void;
     onFocus: () => void;
     onToggleMaximized: () => void;
-    render: (documentId: string) => ReactNode;
+    onView: (view: string) => void;
+    render: (documentId: string, viewId?: string) => ReactNode;
     unreadable: boolean;
+    /** The pane's own view; none shows what the document prefers. */
+    view: string | undefined;
 }) {
     const loaded = useDocumentStore((state) =>
         state.documents.some((document) => document.id === documentId)
@@ -52,7 +58,10 @@ export function Pane({
         >
             <header className="flex items-center justify-between gap-2 border-b border-border px-3 py-1.5">
                 <h2 className="truncate text-sm font-semibold text-textPrimary">{name}</h2>
-                <div className="flex shrink-0 items-center">
+                <div className="flex shrink-0 items-center gap-1">
+                    {loaded && !unreadable && (
+                        <PaneViewSelect documentId={documentId} view={view} onChange={onView} />
+                    )}
                     {maximized !== undefined && (
                         <button
                             type="button"
@@ -89,7 +98,7 @@ export function Pane({
             ) : loaded ? (
                 <AreaLayoutContext.Provider value={true}>
                     <PaneSourceProvider documentId={documentId}>
-                        {render(documentId)}
+                        {render(documentId, view)}
                     </PaneSourceProvider>
                 </AreaLayoutContext.Provider>
             ) : (

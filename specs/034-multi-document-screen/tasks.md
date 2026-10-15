@@ -114,16 +114,16 @@ the other and its values are unchanged.
 **Check**: switch the right pane from brief to full sheet; the left pane and the documents' stored
 preferences do not change.
 
-- [ ] T022 [US3] Write `tests/sheet_manager/pane-view.test.tsx`: a new pane starts in the brief when
+- [x] T022 [US3] Write `tests/sheet_manager/pane-view.test.tsx`: a new pane starts in the brief when
       the definition has a view with id `brief` or ending `-brief`, else with no override; every
       shipped definition's brief view matches that rule; changing a pane's view writes the pane
       store and never `preferredViewId`; a custom page option (`tpl:<id>`) works in a pane (FR-008)
-- [ ] T023 [US3] Add `views` to the pane store and `briefViewOf(definition)` in
+- [x] T023 [US3] Add `views` to the pane store and `briefViewOf(definition)` in
       `features/sheet/panes/views.ts`; in `Pane.tsx` use `ViewModeSelect` and `selectableViews`
       unchanged with handlers writing the pane store, passing `viewId` to `CurrentDocumentSheet`;
       with two or more panes the toolbar selector in `SheetWorkspace.tsx` is hidden with two or more
       panes (each pane header has its own), with one pane it keeps writing the preferred view (D8)
-- [ ] T024 [US3] Run `yarn verify` and commit:
+- [x] T024 [US3] Run `yarn verify` and commit:
       `feat(sheet): each pane has its own view (spec 034, US3)`
 
 ## User Story 4 - The arrangement is remembered (P4)

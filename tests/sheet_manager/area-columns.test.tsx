@@ -67,6 +67,14 @@ describe('full sheet columns in a pane (spec 034, FR-007)', () => {
         expect(container.innerHTML).toContain('@7xl/brief:col-span-3');
     });
 
+    it('keeps the padding of the sheet from growing with the window inside a pane', () => {
+        const outside = draw(false).container.querySelector('[data-template-root]')!;
+        expect(outside.className).toContain('lg:p-6');
+        cleanup();
+        const inside = draw(true).container.querySelector('[data-template-root]')!;
+        expect(inside.className).not.toContain('lg:p-6');
+    });
+
     it('maps only the column classes', () => {
         expect(forArea('grid gap-4 md:grid-cols-2 p-2', true)).toBe(
             'grid gap-4 @3xl/brief:grid-cols-2 p-2'

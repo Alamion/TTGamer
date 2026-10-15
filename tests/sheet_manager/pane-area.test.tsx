@@ -17,7 +17,7 @@ const regions = () => screen.queryAllByRole('region').map((region) => region.dat
 /** happy-dom lays nothing out: the area is as wide as the test says. */
 async function openAll(width: number) {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(width);
-    usePaneStore.setState({ ids: [], recent: [], weights: {}, maximized: null });
+    usePaneStore.setState({ ids: [], recent: [], weights: {}, views: {}, maximized: null });
     seedDocuments(NAMES, { current: 'Ana' });
     render(createElement(CharacterSheet));
     act(() => {

@@ -195,3 +195,12 @@ rolls and focus checks, strings, guide.
   (SC-007) are measured with US3, when a pane first starts in the brief. Walk at 1280 (light, dark),
   960, and 375 px: three panes of 400 px, two of 470 px, and one pane with the tabs; no sideways
   scroll.
+- **US3.** The view of a pane is `views[id]` in the pane store, written only when a document is
+  opened beside (its brief, unless a user setting gives its type a page) or the pane's own selector
+  changes; with one pane the overrides are ignored, so the page is as before, and a closed or
+  replaced pane forgets its view. `DocumentSheet` takes the override as `viewId` (a built-in view
+  id, or `tpl:<page>` for a custom page); `PaneViewSelect` reuses `ViewModeSelect` (new `compact`
+  option) in each pane header and the toolbar's selector hides with two or more panes. A sheet in a
+  pane also drops its `lg:p-6` padding (it follows the window, not the pane), which cost 16 px of
+  brief height at 1400 px; the brief heights now measure 398 px at a 650 px pane and under 700 px at
+  400 px (`panes.spec.ts`, SC-007).

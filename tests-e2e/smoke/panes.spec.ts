@@ -99,3 +99,58 @@ test('double click on a tab gives a pane the whole window and a second one bring
     await expect(panes(page)).toHaveCount(3);
     expect(await widths()).toEqual(before);
 });
+
+const briefHeights = (page: Page) =>
+    page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>('section[data-pane] [data-template-root]')]
+            .filter((root) => root.dataset.templateRoot!.includes('brief'))
+            .map((root) => ({
+                width: Math.round(root.getBoundingClientRect().width),
+                height: Math.round(root.getBoundingClientRect().height),
+            }))
+    );
+
+test('a document opened beside starts in its brief, as tall as spec 033 allows for the pane width', async ({
+    page,
+}) => {
+    await page.setViewportSize({ width: 1400, height: 800 });
+    await openSeveralBeside(page, 2);
+    const wide = await briefHeights(page);
+    expect(wide).toHaveLength(1);
+    expect(wide[0]!.width).toBeGreaterThanOrEqual(640);
+    expect(wide[0]!.height).toBeLessThanOrEqual(400);
+});
+
+test('briefs in panes about 400 px wide stay under the phone limit of spec 033', async ({
+    page,
+}) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openSeveralBeside(page, 3);
+    const narrow = await briefHeights(page);
+    expect(narrow).toHaveLength(2);
+    for (const { height, width } of narrow) {
+        expect(width).toBeLessThan(560);
+        expect(height).toBeLessThanOrEqual(700);
+    }
+});
+
+test('changing the view of one pane leaves the other pane alone', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openSeveralBeside(page, 2);
+    const second = page.locator('section[data-pane]').nth(1);
+    const first = page.locator('section[data-pane]').nth(0);
+    const select = second.getByRole('combobox');
+    const options = await select.locator('option').allTextContents();
+    const firstPage = await first
+        .locator('[data-template-root]')
+        .getAttribute('data-template-root');
+    await select.selectOption({ label: options.find((name) => !/brief/i.test(name))! });
+    await expect(second.locator('[data-template-root]')).not.toHaveAttribute(
+        'data-template-root',
+        /brief/
+    );
+    await expect(first.locator('[data-template-root]')).toHaveAttribute(
+        'data-template-root',
+        firstPage!
+    );
+});

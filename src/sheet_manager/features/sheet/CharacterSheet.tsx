@@ -14,8 +14,10 @@ import {
     systemRegistry,
 } from '../../systems';
 import { assignedTemplateId, isUserKind, STORED_VALUES_VIEW_ID } from '../../systems/userTypes';
+import type { DocumentViewId } from '../../types/document';
 import { buildOrphanPage } from './data/orphanPage';
 import { DeclarativeSheetView } from './declarative/DeclarativeSheetView';
+import { TEMPLATE_VIEW_PREFIX } from './panes/views';
 import { SheetWorkspace } from './shell/SheetWorkspace';
 
 const page = uiMessages.sheet.templates.page;
@@ -89,7 +91,11 @@ function FallbackReport({
     return null;
 }
 
-function DocumentSheet({ documentId }: { documentId: string }) {
+/**
+ * One document's page. `viewId` (a pane's own view: a view id or `tpl:<page id>`) replaces what
+ * the document prefers; the document itself is never changed by it.
+ */
+function DocumentSheet({ documentId, viewId }: { documentId: string; viewId?: string }) {
     const document = useDocumentStore((state) =>
         state.documents.find(({ id }) => id === documentId)
     );
@@ -126,7 +132,13 @@ function DocumentSheet({ documentId }: { documentId: string }) {
         );
     }
 
-    const assignedId = assignedTemplateId(document, settings);
+    const pageOverride = viewId?.startsWith(TEMPLATE_VIEW_PREFIX)
+        ? viewId.slice(TEMPLATE_VIEW_PREFIX.length)
+        : undefined;
+    const viewOverride = viewId && pageOverride === undefined ? viewId : undefined;
+    const assignedId = viewOverride
+        ? undefined
+        : (pageOverride ?? assignedTemplateId(document, settings));
     const resolved = resolveCustomTemplate(assignedId, templates, document.kind, document.systemId);
 
     if (resolved && !('reason' in resolved)) {
@@ -135,7 +147,8 @@ function DocumentSheet({ documentId }: { documentId: string }) {
     const customFallback = resolved && 'reason' in resolved && (
         <FallbackReport documentId={document.id} reason={resolved.reason} requested={assignedId} />
     );
-    const preferredViewId = document.metadata.preferredViewId;
+    const preferredViewId =
+        (viewOverride as DocumentViewId | undefined) ?? document.metadata.preferredViewId;
     const viewFallback = preferredViewId &&
         !definition.views.some(
             (view) => view.id === preferredViewId || view.legacyIds?.includes(preferredViewId)
@@ -151,10 +164,10 @@ function DocumentSheet({ documentId }: { documentId: string }) {
     // persisted override applied (no migration, no special-case mapping).
     // Resolve through the document's own definition: several definitions share a kind (character
     // and droid), and legacy aliases map to that definition's canonical view.
-    const viewId = resolveDocumentView(definition, document.metadata.preferredViewId)?.id;
-    if (viewId) {
+    const shownViewId = resolveDocumentView(definition, preferredViewId)?.id;
+    if (shownViewId) {
         const effective = resolveEffectiveTemplate(
-            viewId,
+            shownViewId,
             { templates, defaultOverrides },
             document.systemId,
             document.kind
@@ -177,7 +190,7 @@ function DocumentSheet({ documentId }: { documentId: string }) {
         <>
             {customFallback}
             {viewFallback}
-            <FallbackReport documentId={document.id} reason="no-default" requested={viewId} />
+            <FallbackReport documentId={document.id} reason="no-default" requested={shownViewId} />
             <FallbackNotice />
         </>
     );
@@ -186,7 +199,9 @@ function DocumentSheet({ documentId }: { documentId: string }) {
 export function CharacterSheet() {
     return (
         <SheetWorkspace
-            renderDocument={(documentId) => <DocumentSheet documentId={documentId} />}
+            renderDocument={(documentId, viewId) => (
+                <DocumentSheet documentId={documentId} viewId={viewId} />
+            )}
         />
     );
 }

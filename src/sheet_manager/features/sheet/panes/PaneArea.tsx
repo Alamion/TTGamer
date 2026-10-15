@@ -22,6 +22,7 @@ import {
     closePane,
     focusPane,
     reconcilePanes,
+    setPaneView,
     setPaneWeights,
     toggleMaximized,
     usePaneStore,
@@ -43,7 +44,7 @@ export function PaneArea({
     renderDocument,
 }: {
     documentId: string;
-    renderDocument: (documentId: string) => ReactNode;
+    renderDocument: (documentId: string, viewId?: string) => ReactNode;
 }) {
     const arrangement = usePaneStore();
     const entries = useDocumentStore((state) => state.entries);
@@ -163,6 +164,8 @@ export function PaneArea({
                             onFocus={() => focusPane(id)}
                             onToggleMaximized={() => toggleMaximized(id)}
                             onClose={() => closePane(id)}
+                            onView={(view) => setPaneView(id, view)}
+                            view={panes.views[id]}
                             render={renderDocument}
                             unreadable={unreadable.has(id)}
                         />

@@ -19,6 +19,7 @@ const arranged = (ids: string[], recent: string[], extra = {}) => ({
     ids,
     recent,
     weights: {},
+    views: {},
     maximized: null,
     ...extra,
 });

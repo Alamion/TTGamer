@@ -191,7 +191,7 @@ describe('the documents window (spec 032, US1)', () => {
     });
 
     it('opens beside from the row menu and from the details, keeping the window open', () => {
-        usePaneStore.setState({ ids: [], recent: [] });
+        usePaneStore.setState({ ids: [], recent: [], weights: {}, views: {}, maximized: null });
         seedDocuments(['Ana', 'Bruno', 'Cleo'], { current: 'Ana' });
         const onOpenChange = vi.fn();
         openWindow(onOpenChange);
@@ -212,7 +212,7 @@ describe('the documents window (spec 032, US1)', () => {
 
     it('says which pane a seventh document replaced', async () => {
         const names = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-        usePaneStore.setState({ ids: [], recent: [] });
+        usePaneStore.setState({ ids: [], recent: [], weights: {}, views: {}, maximized: null });
         seedDocuments(names, { current: 'A' });
         openWindow();
         render(createElement(Toaster));
@@ -231,7 +231,7 @@ describe('the documents window (spec 032, US1)', () => {
         });
 
         it('closes the window after opening beside, as Open does', () => {
-            usePaneStore.setState({ ids: [], recent: [] });
+            usePaneStore.setState({ ids: [], recent: [], weights: {}, views: {}, maximized: null });
             seedDocuments(['Ana', 'Bruno'], { current: 'Ana' });
             const onOpenChange = vi.fn();
             openWindow(onOpenChange);

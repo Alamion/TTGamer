@@ -895,6 +895,7 @@ export function DeclarativeSheetView({
     embedded?: boolean;
 }) {
     const locale = useDocusaurusContext().i18n.currentLocale;
+    const inPane = useContext(AreaLayoutContext);
     // Translated display copy; ids and storage coordinates are identical to the source.
     const localized = useMemo(() => localizeTemplate(template, locale), [template, locale]);
     const pageApi = useTemplatePage(localized, { seedPresets: !embedded });
@@ -918,7 +919,11 @@ export function DeclarativeSheetView({
             className={
                 embedded
                     ? '@container/brief min-w-0 space-y-6'
-                    : '@container/brief mx-auto min-w-0 max-w-7xl space-y-6 p-4 lg:p-6'
+                    : clsx(
+                          '@container/brief mx-auto min-w-0 max-w-7xl space-y-6 p-4',
+                          // A pane is not the window: its padding does not grow with the window.
+                          !inPane && 'lg:p-6'
+                      )
             }
         >
             <TermHintProvider>

@@ -21,7 +21,7 @@ function stubWidth(width: number) {
 
 beforeEach(() => {
     stubWidth(1280);
-    usePaneStore.setState({ ids: [], recent: [] });
+    usePaneStore.setState({ ids: [], recent: [], weights: {}, views: {}, maximized: null });
     seedDocuments(['Ana', 'Bruno', 'Cleo'], { current: 'Ana' });
     render(createElement(CharacterSheet));
 });
