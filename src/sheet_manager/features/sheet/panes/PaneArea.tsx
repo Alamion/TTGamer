@@ -125,7 +125,7 @@ export function PaneArea({
         setPaneWeights(shown, weightsOf(moveDivider(widths, index, left)));
 
     return (
-        <div className="space-y-2 px-4 pb-4" data-panes="">
+        <div className="space-y-2 px-4 pb-4 pt-3" data-panes="">
             <PaneTabs
                 tabs={tabs}
                 focusedId={documentId}
@@ -138,6 +138,7 @@ export function PaneArea({
                     <Fragment key={id}>
                         {index > 0 && (
                             <Splitter
+                                bare
                                 label={translate(labels.resize, {
                                     left: nameOf(shown[index - 1]!),
                                     right: nameOf(id),

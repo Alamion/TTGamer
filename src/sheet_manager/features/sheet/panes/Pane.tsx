@@ -52,8 +52,8 @@ export function Pane({
             onFocusCapture={onFocus}
             onPointerDownCapture={onFocus}
             className={clsx(
-                'min-w-0 rounded-lg border bg-bgSurface',
-                focused ? 'border-primary' : 'border-border'
+                'min-w-0 rounded-lg border-2',
+                focused ? 'border-primary' : 'border-borderMoreContrast'
             )}
         >
             <header className="flex items-center justify-between gap-2 border-b border-border px-3 py-1.5">

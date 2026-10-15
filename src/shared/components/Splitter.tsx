@@ -1,3 +1,4 @@
+import { clsx } from 'clsx';
 import { type KeyboardEvent, type PointerEvent, useRef } from 'react';
 
 const KEY_STEP = 10;
@@ -11,6 +12,7 @@ const KEY_STEP_LARGE = 40;
  * puts the preview back. It shows from the `md` breakpoint up; narrower layouts use tabs.
  */
 export function Splitter({
+    bare = false,
     clamp,
     invert = false,
     label,
@@ -21,6 +23,8 @@ export function Splitter({
     onReset,
     value,
 }: {
+    /** No visible line at rest (the panes it separates have borders of their own). */
+    bare?: boolean;
     /** Bounds a width the way the stored value will be bounded. */
     clamp: (width: number) => number;
     /** The pane lies right of the divider: moving it right makes the pane narrower. */
@@ -89,7 +93,12 @@ export function Splitter({
             }}
             className="group hidden cursor-col-resize touch-none select-none items-stretch justify-center focus:outline-hidden md:flex"
         >
-            <span className="w-px bg-border transition-colors group-hover:w-0.5 group-hover:bg-primary group-focus-visible:w-0.5 group-focus-visible:bg-primary" />
+            <span
+                className={clsx(
+                    'w-px transition-colors group-hover:w-0.5 group-hover:bg-primary group-focus-visible:w-0.5 group-focus-visible:bg-primary',
+                    bare ? 'bg-transparent' : 'bg-border'
+                )}
+            />
         </div>
     );
 }
