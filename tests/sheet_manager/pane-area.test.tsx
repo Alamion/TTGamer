@@ -88,6 +88,34 @@ describe('groups side by side (spec 036, Foundation)', () => {
         expect(regions()).toEqual(['Ana']);
     });
 
+    it('keeps a docked tool in the strip when the layout does not fit a wide window', async () => {
+        vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(900);
+        resetLayout();
+        seedDocuments(['Ana', 'Bruno'], { current: 'Ana' });
+        usePaneStore.setState({
+            root: {
+                type: 'split',
+                direction: 'row',
+                children: ['t:library', 'd:Ana', 'd:Bruno'].map((key) => ({
+                    type: 'group' as const,
+                    id: key,
+                    tabs: [key],
+                    shown: key,
+                })),
+                weights: [1, 1, 1],
+            },
+            recent: ['d:Ana'],
+        });
+        render(createElement(CharacterSheet));
+        await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(3));
+        expect(regions()).toEqual(['Ana']);
+        fireEvent.click(screen.getByRole('tab', { name: 'Library' }));
+        expect(screen.getByRole('region', { name: 'Library' })).toBeTruthy();
+        expect(screen.queryByRole('region', { name: 'Ana' })).toBeNull();
+        fireEvent.click(screen.getByRole('tab', { name: 'Bruno' }));
+        expect(regions()).toEqual(['Bruno']);
+    });
+
     it('gives a group the whole area and gives it back, from the tab and from the button', async () => {
         await open(['Ana', 'Bruno', 'Cleo'], 1280);
         fireEvent.doubleClick(screen.getByRole('tab', { name: 'Bruno' }));

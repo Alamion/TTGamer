@@ -2,7 +2,7 @@
 export const MIN_GROUP_WIDTH = 320;
 export const MIN_GROUP_HEIGHT = 200;
 export const DIVIDER_SIZE = 6;
-/** Below this width (the `md` breakpoint) one document shows at a time. */
+/** A window below this width (the `md` breakpoint) is a phone: one document shows at a time. */
 export const SIDE_BY_SIDE_WIDTH = 768;
 
 /**

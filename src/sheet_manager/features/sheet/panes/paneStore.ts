@@ -202,16 +202,12 @@ export function setLayoutArea(size: { width: number; height: number } | null): v
 
 /**
  * Whether every group of `root` keeps its minimum size in the layout area (the window's size
- * until the area is drawn). Below the side-by-side width only the group count matters: the narrow
- * view shows one document anyway (design D7).
+ * until the area is drawn). On a phone only the group count matters: the narrow view shows one
+ * document anyway (design D7).
  */
 function hasRoomFor(root: LayoutNode | null): boolean {
-    const area =
-        measuredArea ??
-        (typeof window === 'undefined'
-            ? null
-            : { width: window.innerWidth, height: window.innerHeight });
-    if (!area || area.width < SIDE_BY_SIDE_WIDTH) return true;
+    if (typeof window === 'undefined' || window.innerWidth < SIDE_BY_SIDE_WIDTH) return true;
+    const area = measuredArea ?? { width: window.innerWidth, height: window.innerHeight };
     const needed = minSizeOf(root);
     return needed.width <= area.width && needed.height <= area.height;
 }

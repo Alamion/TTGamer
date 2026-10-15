@@ -118,6 +118,7 @@ export function PaneArea({
     const height = useFillHeight(area);
     const placed = useRef(new Map<string, HTMLElement>());
     const coarse = useMediaQuery('(pointer: coarse)');
+    const phone = useMediaQuery(`(max-width: ${SIDE_BY_SIDE_WIDTH - 1}px)`);
     const [menu, setMenu] = useState<{ key: string; anchor: { x: number; y: number } } | null>(
         null
     );
@@ -217,10 +218,7 @@ export function PaneArea({
 
     const minimum = minSizeOf(layout.root);
     const sideBySide =
-        width !== undefined &&
-        width >= SIDE_BY_SIDE_WIDTH &&
-        width >= minimum.width &&
-        height >= minimum.height;
+        !phone && width !== undefined && width >= minimum.width && height >= minimum.height;
     const currentKey = docKey(documentId);
     const several = groups.length > 1;
 
@@ -266,17 +264,24 @@ export function PaneArea({
     );
 
     if (!sideBySide) {
+        // A phone shows a tool over the page; a window too narrow for the layout keeps its docked
+        // tools in the strip, or they could not be reached.
+        const grouped = new Set(groups.flatMap((candidate) => candidate.tabs));
+        const stripKeys = openKeys(layout).filter(
+            (key) => documentIdOf(key) !== null || (!phone && grouped.has(key))
+        );
+        const selected = layout.recent.find((key) => stripKeys.includes(key)) ?? currentKey;
         return (
             <div className="space-y-2 px-4 pb-4 pt-3" data-panes="">
                 <PaneTabs
                     label={translate(labels.tabsLabel)}
-                    tabs={documentIds.map((id) => ({ key: docKey(id), name: nameOf(id) }))}
-                    selected={currentKey}
+                    tabs={stripKeys.map((key) => ({ key, name: titleOf(key) }))}
+                    selected={selected}
                     onSelect={focusTab}
                     onClose={closeTab}
-                    end={viewSelect(currentKey)}
+                    end={viewSelect(selected)}
                 />
-                <div ref={areaRef}>{body(currentKey, false)}</div>
+                <div ref={areaRef}>{body(selected, false)}</div>
                 {floatingLayer}
             </div>
         );

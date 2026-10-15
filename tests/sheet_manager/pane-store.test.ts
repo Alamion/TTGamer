@@ -169,9 +169,22 @@ describe('opening documents', () => {
     });
 
     it('beside on a phone still makes a group: the narrow view shows one document anyway', () => {
-        roomyArea(375, 700);
-        for (const id of ['b', 'c', 'd']) openBeside(id);
-        expect(groupsInOrder(layout().root)).toHaveLength(4);
+        const wide = window.innerWidth;
+        Object.defineProperty(window, 'innerWidth', { value: 375, configurable: true });
+        try {
+            roomyArea(343, 700);
+            for (const id of ['b', 'c', 'd']) openBeside(id);
+            expect(groupsInOrder(layout().root)).toHaveLength(4);
+        } finally {
+            Object.defineProperty(window, 'innerWidth', { value: wide, configurable: true });
+        }
+    });
+
+    it('beside in a window too narrow for the area makes a tab, phone or not by the window', () => {
+        roomyArea(740, 700);
+        expect(openBeside('b').asTab).toBe(false);
+        expect(openBeside('c').asTab).toBe(true);
+        expect(tabsByGroup()).toEqual([['d:a'], ['d:b', 'd:c']]);
     });
 
     it('in a new tab: after the shown tab of the last used group, made current', () => {

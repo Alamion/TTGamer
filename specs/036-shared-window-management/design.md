@@ -206,3 +206,11 @@ restore at the browser level → **Finish**.
       once as where it floats, then removed.
     - The dice panel on a phone: closing the full-screen panel keeps its tab; the navbar toggle then
       closes the tab, so reopening takes a second press.
+- **US3 follow-up (maintainer's walk)**:
+    - A tool the reader switches to in the group of the current document stays shown; reconciling
+      showed the current document again on every render.
+    - A phone is told by the **window** width (below 768 px), not the layout area: the area is the
+      window less its padding, so 768–800 px windows fell into the narrow view with one group.
+    - The narrow view of a window that is not a phone but too narrow for the layout keeps the docked
+      tools in its strip, after D11 left them out: there the full-screen tool of a phone does not
+      exist, so tools could not be reached. A phone keeps the strip of documents only.
