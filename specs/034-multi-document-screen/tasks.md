@@ -130,22 +130,22 @@ preferences do not change.
 
 **Check**: arrange three panes, reload, the same three; delete one document and reload again.
 
-- [ ] T025 [US4] Write `tests/sheet_manager/pane-restore.test.ts`: persisted panes, order, weights,
+- [x] T025 [US4] Write `tests/sheet_manager/pane-restore.test.ts`: persisted panes, order, weights,
       views, and maximized restore; ids with no entry are dropped without an error; broken or
       old-version storage falls back to the current document alone and reports once; a normal
       deletion reports nothing; the current document missing from the stored panes replaces the
       focused one; deleting a document (tree delete or another tab's index merge) removes its pane
       and focuses the survivor (FR-012, D11)
-- [ ] T026 [US4] Persist the pane store (Zustand `persist` with `skipHydration`, rehydrated after
+- [x] T026 [US4] Persist the pane store (Zustand `persist` with `skipHydration`, rehydrated after
       mount, on localStorage key `ttgamer:panes:v1`, Zod parse on read, `partialize` without
       transient fields); restore after the documents index hydrates in
       `features/sheet/panes/useRestorePanes.ts`: filter against `entries`, `loadIntoCache`, ensure
       the current document is a pane, call `pinDocuments`; subscribe to `entries` for deletions; use
       it in `PaneArea.tsx`
-- [ ] T027 [US4] Extend `tests-e2e/smoke/panes.spec.ts`: three panes reload to the same panes,
+- [x] T027 [US4] Extend `tests-e2e/smoke/panes.spec.ts`: three panes reload to the same panes,
       order, sizes, and views; delete one document through the documents window, reload, the other
       two come back (SC-004); a store with nothing stored shows the current document alone
-- [ ] T028 [US4] Run `yarn verify` and commit:
+- [x] T028 [US4] Run `yarn verify` and commit:
       `feat(sheet): the pane arrangement is kept per device (spec 034, US4)`
 
 ## User Story 5 - Rolls and the dice panel know their document (P5)

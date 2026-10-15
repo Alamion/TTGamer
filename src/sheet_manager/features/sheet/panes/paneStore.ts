@@ -1,7 +1,9 @@
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentStore } from '../../../store/documentStore';
-import { MAX_PANES } from './types';
+import { MAX_PANES, PANES_STORAGE_KEY, readArrangement } from './types';
 import { defaultPaneView } from './views';
 
 export interface PaneArrangement {
@@ -19,7 +21,64 @@ export interface PaneArrangement {
 
 const EMPTY: PaneArrangement = { ids: [], recent: [], weights: {}, views: {}, maximized: null };
 
-export const usePaneStore = create<PaneArrangement>(() => EMPTY);
+/** The device's storage when it works; the arrangement is a convenience, losing it is fine. */
+const safeStorage = {
+    getItem: (name: string) => {
+        try {
+            return globalThis.localStorage?.getItem(name) ?? null;
+        } catch {
+            return null;
+        }
+    },
+    setItem: (name: string, value: string) => {
+        try {
+            globalThis.localStorage?.setItem(name, value);
+        } catch {
+            // See above.
+        }
+    },
+    removeItem: (name: string) => {
+        try {
+            globalThis.localStorage?.removeItem(name);
+        } catch {
+            // See above.
+        }
+    },
+};
+
+/**
+ * The panes of this device (spec 034, FR-012): kept in localStorage, not in the documents' storage,
+ * because they are a reading preference that is neither exported nor synced. They are read when the
+ * module loads; the sheet draws them only after the documents are loaded, so the server render,
+ * which has no documents, never differs from the first browser render.
+ */
+export const usePaneStore = create<PaneArrangement>()(
+    persist(() => EMPTY, {
+        name: PANES_STORAGE_KEY,
+        version: 1,
+        storage: createJSONStorage(() => safeStorage),
+        partialize: ({ ids, recent, weights, views, maximized }) => ({
+            ids,
+            recent,
+            weights,
+            views,
+            maximized,
+        }),
+        merge: (persisted, current) => {
+            if (persisted === undefined || persisted === null) return current;
+            const stored = readArrangement(persisted);
+            if (!stored) {
+                reportSheetIssue({
+                    code: 'pane-arrangement-invalid',
+                    message:
+                        'The stored arrangement of panes could not be read; one document shows',
+                });
+                return current;
+            }
+            return { ...current, ...stored };
+        },
+    })
+);
 
 /** The pane to give up when the limit is reached: never the current one. */
 function leastRecentlyFocused(ids: readonly string[], recent: readonly string[], keep: string) {

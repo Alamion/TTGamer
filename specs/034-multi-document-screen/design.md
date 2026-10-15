@@ -204,3 +204,11 @@ rolls and focus checks, strings, guide.
   pane also drops its `lg:p-6` padding (it follows the window, not the pane), which cost 16 px of
   brief height at 1400 px; the brief now stays within 400 px at a pane of 640 px or more and within
   700 px at about 400 px (`panes.spec.ts`, SC-007).
+- **US4.** The pane store is read when the module loads (Zustand `persist` on `localStorage`,
+  `ttgamer:panes:v1`), not with `skipHydration` as D5 planned: the sheet draws panes only after the
+  documents are loaded in the browser, so the server render never differs, and reading at once
+  avoids a first frame with one pane. `readArrangement` (Zod shape plus sanitizing: no duplicates,
+  at most six, only known panes) guards the value; one that is not an arrangement reports
+  `pane-arrangement-invalid` and one document shows. A deleted or missing document drops out
+  silently when the area mounts or its entry goes. The restore needed no separate hook: the
+  reconcile that runs in render also guarantees the current document is a pane.

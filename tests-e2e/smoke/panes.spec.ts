@@ -154,3 +154,53 @@ test('changing the view of one pane leaves the other pane alone', async ({ page 
         firstPage!
     );
 });
+
+test('the panes, their order, sizes, and views come back after a reload', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await openSeveralBeside(page, 3);
+    const panes = page.locator('section[data-pane]');
+    const select = panes.nth(1).getByRole('combobox');
+    const options = await select.locator('option').allTextContents();
+    await select.selectOption({ label: options.find((name) => !/brief/i.test(name))! });
+    const divider = page.getByRole('separator').first();
+    await divider.focus();
+    await divider.press('Shift+ArrowRight');
+    const snapshot = async () => ({
+        tabs: await page.getByRole('tab').allTextContents(),
+        ids: await panes.evaluateAll((nodes) =>
+            nodes.map((node) => (node as HTMLElement).dataset.pane)
+        ),
+        widths: await panes.evaluateAll((nodes) =>
+            nodes.map((node) => Math.round(node.getBoundingClientRect().width))
+        ),
+        pages: await panes.evaluateAll((nodes) =>
+            nodes.map((node) =>
+                node.querySelector('[data-template-root]')?.getAttribute('data-template-root')
+            )
+        ),
+    });
+    const before = await snapshot();
+    expect(before.widths[0]).not.toBe(before.widths[1]);
+
+    await page.reload();
+    await expect(page.locator('section[data-pane]')).toHaveCount(3);
+    expect(await snapshot()).toEqual(before);
+
+    // A document deleted meanwhile simply drops out.
+    await page.getByRole('button', { name: 'Manage', exact: true }).click();
+    const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+    await window
+        .getByRole('treeitem')
+        .first()
+        .click({ modifiers: ['ControlOrMeta'] });
+    await window.getByRole('button', { name: 'Delete', exact: true }).click();
+    await page
+        .getByRole('dialog')
+        .last()
+        .getByRole('button', { name: 'Delete', exact: true })
+        .click();
+    await window.getByRole('button', { name: 'Close the documents window' }).click();
+    await page.reload();
+    await expect(page.locator('section[data-pane]')).toHaveCount(2);
+    await expect(page.getByRole('tab')).toHaveCount(2);
+});
