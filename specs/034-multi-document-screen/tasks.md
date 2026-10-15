@@ -173,15 +173,15 @@ follows.
 
 ## Finish
 
-- [ ] T033 Update the module notes and skills this feature changes (one owner per rule):
+- [x] T033 Update the module notes and skills this feature changes (one owner per rule):
       `src/sheet_manager/AGENTS.md` (panes, pinned cache, "current = focused pane", per-pane view),
       the `sheet-manager` skill note, root `AGENTS.md` structure line if it lists panes
-- [ ] T034 Update the user guide `docs/documents/index.mdx` and its Russian mirror
+- [x] T034 Update the user guide `docs/documents/index.mdx` and its Russian mirror
       `i18n/ru/docusaurus-plugin-content-docs/current/documents/index.mdx` (open beside, tabs,
       maximize, phone behavior) (FR-016); run `yarn validate:i18n`
-- [ ] T035 Mark T-112 in `TODO.md` as done with the spec reference; note in T-113 what panes leave
+- [x] T035 Mark T-112 in `TODO.md` as done with the spec reference; note in T-113 what panes leave
       open (floating windows, docks, Library and dice in windows)
-- [ ] T036 Run `yarn verify:full`; walk the steps in design.md "Manual walk" on the dev server
+- [x] T036 Run `yarn verify:full`; walk the steps in design.md "Manual walk" on the dev server
       (phone and desktop, light and dark); record results in design.md
 
 ## Coverage

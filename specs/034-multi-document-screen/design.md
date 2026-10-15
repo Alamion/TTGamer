@@ -221,3 +221,25 @@ rolls and focus checks, strings, guide.
   which re-renders the panes once then. Browser: opening a second document beside the first with
   3,000 documents took 169 ms (budget 200 ms, reported); the roll test names the character of the
   pane for two characters.
+
+## Walk results
+
+Run on the built site (not the maintainer's dev server) through the browser tests and screenshots at
+1280 px (light and dark), 960 px, and 375 px with touch:
+
+1. Open beside from the row menu: two panes, the new one in its brief, strip shown, focus on it
+   (`panes.spec.ts`, `pane-tabs.test.tsx`).
+2. Edit and roll in each pane: only that document changes, the roll carries that pane's character
+   name (`panes.spec.ts`, `pane-source.test.tsx`).
+3. Divider and reload: sizes, order, views come back; a deleted document drops out silently
+   (`panes.spec.ts`, `pane-restore.test.tsx`).
+4. A seventh document replaces the least recently focused pane with a notice
+   (`documents-window.test.tsx`).
+5. Below 768 px one pane and the tabs; no sideways scroll (`panes.spec.ts`, screenshot at 375 px).
+6. Double click on a tab: only that pane, again: the same panes and widths (`panes.spec.ts`).
+7. Closing down to one pane: no strip, no divider, the page as before (`pane-single.test.tsx`,
+   height within 1% of the baseline in `panes.spec.ts`).
+
+Left for the maintainer: the same on the dev server, a real phone (touch targets of tabs and close
+buttons are 32 px on coarse pointers by class, checked only in an emulated touch context), and
+dragging the divider by hand.

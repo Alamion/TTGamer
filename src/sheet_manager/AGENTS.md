@@ -189,6 +189,33 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   closed, it renders nothing. Phone: full screen, modal, page behind it locked, tree and details as
   tabs, drag replaced by "Move to…". Names are typed in place (`InlineName`), never in a dialog.
 
+### Several documents on one screen (spec 034)
+
+- **Panes** (`features/sheet/panes/`): `PaneArea` replaces the single page of `SheetWorkspace`
+  (`renderDocument(documentId, viewId)`); with one document it renders exactly what the page always
+  drew (no strip, divider, or wrapper). Two or more get `PaneTabs` and one `Pane` each.
+- **Source per pane.** A pane wraps its page in `PaneSourceProvider`, a `DocumentSourceContext`
+  value from `useStoreDocumentSource(documentId)` (selector subscriptions), so every bound element,
+  roll, and write reads the pane's own document. `AreaLayoutContext` (`declarative/areaLayout.ts`)
+  makes the sheet's group columns follow the pane width (`@3xl`/`@7xl` of the `brief` container at
+  the window's `md`/`xl` widths) and drops the window-sized padding.
+- **Current = focused.** `currentDocumentId` stays the one "current" fact: clicking or typing in a
+  pane calls `setCurrentDocument`, and `reconcilePanes(state, currentId, entryIds)` derives the
+  panes from it (**Open** takes the place of the pane focused last, deleted documents drop out).
+  **Open beside** is `openBeside(id)` (at most `MAX_PANES` = 6; the least recently focused is
+  replaced and reported). The documents window and the shown-document publisher need no pane code.
+- **Cache.** The loaded cache keeps `pinnedIds` (the panes' documents) beside the current one;
+  `loadIntoCache(ids)` reads documents without making them current.
+- **Layout** (`layout.ts`): below 768 px one pane and the tabs; from 768 px as many panes as fit at
+  320 px (`floor((width + 6) / 326)`, 6 px dividers), the most recently focused ones, drawn in pane
+  order; widths are weights (average 1) fitted to the area, never stored in px. Double click on a
+  tab or the pane's button maximizes it (desktop only).
+- **Views.** A pane's view is `views[id]` (a view id or `tpl:<page>`): a document opened beside
+  starts in its brief (`briefViewOf`: `brief` or `*-brief`), the document's own preferred view is
+  never written, and with two or more panes the toolbar's view selector gives way to one per pane.
+- **Persistence.** The arrangement is the device's (`ttgamer:panes:v1` in localStorage, read when
+  the module loads, `readArrangement` sanitizes it); it is not exported, synced, or undoable.
+
 ## Schema and Import/Export
 
 - `DocumentEnvelopeSchema` plus the registered definition schema are the runtime boundary for

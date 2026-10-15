@@ -172,3 +172,10 @@ penalty (Bruised 0 → Crippled −5; Incapacitated none).
   aliases, template-backed views).
 - Checks by change size: `AGENTS.md` §11 (schema, persistence, and import changes run
   `yarn verify`).
+
+## Several documents on one screen
+
+Panes (spec 034): the sheet page can show up to six documents, each in a pane with its own document
+source and view; `currentDocumentId` is the focused pane. Read `src/sheet_manager/AGENTS.md`
+("Several documents on one screen") before touching `features/sheet/panes/`, `useDocumentSource`, or
+the loaded-document cache (`pinnedIds`, `loadIntoCache`).
