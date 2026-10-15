@@ -157,3 +157,14 @@ restore at the browser level → **Finish**.
 8. 375 px → one document, one strip; tools full screen; widen → layout back.
 9. Open a documentation page → dice slide panel as today; back to the sheet → dice tab in place.
 10. Reload → same; dark mode and a real phone readable.
+
+## Implementation notes
+
+- **Foundation**: groups are already drawn by `rectsOf` in an area that fills the window (D6 moved
+  up from US1), since absolute placement needs a height; a global strip of every document stays
+  until US1 replaces it with strips per group. Spec 034's "as many panes as fit, the rest as tabs"
+  is gone: when the groups do not fit, the narrow single view of D11 shows (its tests move up from
+  US6). The notices `panes.closedHidden` and `panes.openedAsTab` replace `panes.replaced` in this
+  phase, because **Open beside** no longer replaces a pane. The `tabKinds` registry holds tools
+  only; documents are drawn by the sheet's `renderDocument`. Reading `window-layout:documents` into
+  `lastRect` moves to US3 (T033): until then the documents window still uses that key itself.

@@ -45,9 +45,10 @@ describe('the pinned part of the loaded cache (spec 034)', () => {
         expect(loaded.length).toBeLessThanOrEqual(8);
     });
 
-    it('pins at most six ids', () => {
-        useDocumentStore.getState().pinDocuments(ids);
-        expect(useDocumentStore.getState().pinnedIds).toEqual(ids.slice(0, 6));
+    it('pins at most twelve ids, every open document of the layout', () => {
+        const many = Array.from({ length: 14 }, (_, index) => `pin-${index}`);
+        useDocumentStore.getState().pinDocuments(many);
+        expect(useDocumentStore.getState().pinnedIds).toEqual(many.slice(0, 12));
     });
 
     it('reads entries into the cache without changing the current document', async () => {

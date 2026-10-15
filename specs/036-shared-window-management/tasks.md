@@ -15,11 +15,11 @@ maintainer a concept as an artifact before building it.
 **Check**: with one document, and with a stored spec 034 arrangement of three panes, the page looks
 and behaves as on branch 034 (three panes become one row of three one-tab groups).
 
-- [ ] T001 Write `tests/sheet_manager/pane-tab-keys.test.ts`: `d:`/`t:` keys round-trip, unknown
+- [x] T001 Write `tests/sheet_manager/pane-tab-keys.test.ts`: `d:`/`t:` keys round-trip, unknown
       prefixes are rejected, `tabKinds` lookup by key
-- [ ] T002 Create `features/sheet/panes/tabKeys.ts` (`docKey`, `toolKey`, `parseTabKey`, the
+- [x] T002 Create `features/sheet/panes/tabKeys.ts` (`docKey`, `toolKey`, `parseTabKey`, the
       `tabKinds` registry with `title`, `render`, `onClose`, `minSize`; design D1)
-- [ ] T003 Write `tests/sheet_manager/pane-layout-tree.test.ts`: `normalize` (emptied group removed,
+- [x] T003 Write `tests/sheet_manager/pane-layout-tree.test.ts`: `normalize` (emptied group removed,
       one-child split replaced, same-direction nested split merged, weights per child);
       `groupsInOrder` (depth-first reading order); `groupOf(key)`; `addTab` (after the shown tab);
       `moveTab` within and between groups; `closeTab` (right neighbour shown, else left);
@@ -27,44 +27,44 @@ and behaves as on branch 034 (three panes become one row of three one-tab groups
       one (wrapped); `minSizeOf` (row of three = 3 × 320 + 2 × 6 wide; column of two = 2 × 200 \+ 6
       tall; a collapsed group counts as its 28 px strip); `rectsOf` for 3 × 2 in 1920 × 880 (whole
       pixels, none under the minimum); the same object back when nothing changes
-- [ ] T004 Create `features/sheet/panes/layoutTree.ts` (types `LayoutNode`, `SplitNode`, `GroupNode`
+- [x] T004 Create `features/sheet/panes/layoutTree.ts` (types `LayoutNode`, `SplitNode`, `GroupNode`
       with `collapsed`, `SplitSide`; the functions of T003; group ids from `randomToken()`) and
       generalize `paneWidths`/`moveDivider` in `layout.ts` to per-child minimums;
       `MAX_DOCUMENTS = 12`, `MAX_GROUPS = 6`, `MAX_FLOATING = 4` in `types.ts` replace `MAX_PANES`
-- [ ] T005 Write `tests/sheet_manager/pane-store.test.ts` (rewrite): `reconcileLayout` drops deleted
+- [x] T005 Write `tests/sheet_manager/pane-store.test.ts` (rewrite): `reconcileLayout` drops deleted
       documents and empty groups; `currentDocumentId` is the source and its key leads `recent` (a
       stale stored `recent` is corrected, never trusted); a current document in no tab replaces the
       shown tab of the group holding the most recent grouped `d:` key (never a floating one; none →
       first group); a current document in a tab makes its group show it; an empty layout with a
       current document becomes one group; maximized follows its group and is cleared when it goes
-- [ ] T006 Rewrite `features/sheet/panes/paneStore.ts` to state
+- [x] T006 Rewrite `features/sheet/panes/paneStore.ts` to state
       `{root, recent, views, maximized, floating, lastRect, lastSide}` with `reconcileLayout`,
       `focusTab`, `closeTab`, `toggleMaximized` (group id), `setSplitWeights(path, weights)`,
       `setPaneView`, and `openBeside` (a new group right of the focused one; until US2 a row of up
       to six groups, then a new tab with the old `panes.replaced` notice, which US1 replaces)
-- [ ] T007 Write `tests/sheet_manager/pane-restore.test.tsx` (rewrite): v2 round-trips; `readLayout`
+- [x] T007 Write `tests/sheet_manager/pane-restore.test.tsx` (rewrite): v2 round-trips; `readLayout`
       drops duplicates (first wins), over 12 documents, 6 groups, or 4 floating windows (rest
       dropped in reading order), wrong weight counts, unknown keys and maximized, each reporting
       `pane-arrangement-invalid` once with what was dropped; a stored `ttgamer:panes:v1` of three
       panes becomes one row with the same order, weights (within 1 %), views, maximized, and `v1` is
       removed; an invalid value reports once and one document shows
-- [ ] T008 In `features/sheet/panes/types.ts` add the recursive Zod schema (`z.lazy`) and
+- [x] T008 In `features/sheet/panes/types.ts` add the recursive Zod schema (`z.lazy`) and
       `readLayout`, `PANES_STORAGE_KEY = 'ttgamer:panes:v2'`, `readArrangement` kept under
       `PANES_V1_STORAGE_KEY`; `paneStore.ts` `merge` migrates v1 when v2 is absent and reads
       `window-layout:documents` once as `lastRect` of `t:documents`, then removes it
-- [ ] T009 Raise the pin limit in `store/documentStore.ts` (`pinDocuments`) to `MAX_DOCUMENTS`; its
+- [x] T009 Raise the pin limit in `store/documentStore.ts` (`pinDocuments`) to `MAX_DOCUMENTS`; its
       test in `tests/sheet_manager/pane-cache.test.ts`
-- [ ] T010 Rewrite `features/sheet/panes/PaneArea.tsx` to draw the tree: one group with one document
+- [x] T010 Rewrite `features/sheet/panes/PaneArea.tsx` to draw the tree: one group with one document
       → the document only (no wrapper); otherwise groups absolutely placed from `rectsOf` over the
       measured area, siblings keyed by group id in reading order in the DOM, vertical dividers
       between row children; each group renders only its shown tab through `tabKinds`; pins every
       open document and loads the shown ones; update `DocumentsWindow.tsx` (new `openBeside`,
       `MAX_DOCUMENTS`) and `shell/SheetWorkspace.tsx` (`several` = more than one tab)
-- [ ] T011 Adapt `tests/sheet_manager/pane-single.test.tsx`, `pane-area.test.tsx`,
+- [x] T011 Adapt `tests/sheet_manager/pane-single.test.tsx`, `pane-area.test.tsx`,
       `pane-renders.test.tsx`, `pane-view.test.tsx`, `pane-source.test.tsx`, `pane-tabs.test.tsx`,
       and `documents-window.test.tsx` to the tree (one document unchanged; a change in one group
       renders no other group)
-- [ ] T012 Run `yarn verify` and commit
+- [x] T012 Run `yarn verify` and commit
       `feat(sheet): layout tree over tab keys and stored layout v2 with the spec 034 migration (spec 036, Foundation)`
 
 ## User Story 1 - Groups with their own tabs (P1)

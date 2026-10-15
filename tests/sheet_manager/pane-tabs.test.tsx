@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
-import { openBeside, usePaneStore } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
+import { openBeside } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createElement } from 'react';
@@ -8,6 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
+import { openDocumentIds, resetLayout } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 30_000 });
 
@@ -21,7 +22,7 @@ function stubWidth(width: number) {
 
 beforeEach(() => {
     stubWidth(1280);
-    usePaneStore.setState({ ids: [], recent: [], weights: {}, views: {}, maximized: null });
+    resetLayout();
     seedDocuments(['Ana', 'Bruno', 'Cleo'], { current: 'Ana' });
     render(createElement(CharacterSheet));
 });
@@ -97,7 +98,7 @@ describe('the tab strip and panes (spec 034, US1)', () => {
 
         act(() => useDocumentStore.getState().deleteDocument('Ana'));
         await waitFor(() => expect(screen.queryByRole('tablist')).toBeNull());
-        expect(usePaneStore.getState().ids).toEqual(['Bruno']);
+        expect(openDocumentIds()).toEqual(['Bruno']);
     });
 
     it('shows a notice in the pane of a document whose record cannot be read', async () => {

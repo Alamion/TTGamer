@@ -1,29 +1,30 @@
 // @vitest-environment happy-dom
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
+import { type SplitNode } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
 import { openBeside, usePaneStore } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createElement } from 'react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
+import { resetLayout } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 30_000 });
 
-const NAMES = ['Ana', 'Bruno', 'Cleo', 'Dora'];
 const current = () => useDocumentStore.getState().currentDocumentId;
 const regions = () => screen.queryAllByRole('region').map((region) => region.dataset.pane);
 
 /** happy-dom lays nothing out: the area is as wide as the test says. */
-async function openAll(width: number) {
+async function open(names: string[], width: number) {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(width);
-    usePaneStore.setState({ ids: [], recent: [], weights: {}, views: {}, maximized: null });
-    seedDocuments(NAMES, { current: 'Ana' });
+    resetLayout();
+    seedDocuments(names, { current: names[0]! });
     render(createElement(CharacterSheet));
     act(() => {
-        for (const name of NAMES.slice(1)) openBeside(name);
+        for (const name of names.slice(1)) openBeside(name);
     });
-    await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(4));
+    await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(names.length));
 }
 
 afterEach(() => {
@@ -32,66 +33,66 @@ afterEach(() => {
     resetDocuments();
 });
 
-describe('panes side by side (spec 034, US2)', () => {
-    describe('on a desktop window', () => {
-        beforeEach(() => openAll(1280));
+describe('groups side by side (spec 036, Foundation)', () => {
+    it('frames every group, marks the focused one, and puts a divider between each pair', async () => {
+        await open(['Ana', 'Bruno', 'Cleo'], 1280);
+        expect(regions()).toEqual(['Ana', 'Bruno', 'Cleo']);
+        const frames = screen.getAllByRole('region').map((pane) => pane.className);
+        expect(frames.every((name) => name.includes('border-2'))).toBe(true);
+        expect(frames.filter((name) => name.includes('border-primary'))).toHaveLength(1);
+        expect(screen.getAllByRole('separator')).toHaveLength(2);
+    });
 
-        it('frames every pane and marks the focused one', () => {
-            const frames = screen.getAllByRole('region').map((pane) => pane.className);
-            expect(frames.every((name) => name.includes('border-2'))).toBe(true);
-            expect(frames.filter((name) => name.includes('border-primary'))).toHaveLength(1);
-        });
+    it('places the groups by the layout, in reading order, each at least 320 px wide', async () => {
+        await open(['Ana', 'Bruno', 'Cleo'], 1280);
+        const groups = [...document.querySelectorAll<HTMLElement>('[data-group]')];
+        expect(
+            groups.map((group) => group.querySelector<HTMLElement>('[data-pane]')?.dataset.pane)
+        ).toEqual(['Ana', 'Bruno', 'Cleo']);
+        for (const group of groups) expect(parseInt(group.style.width)).toBeGreaterThanOrEqual(320);
+    });
 
-        it('shows as many panes as fit at 320 px and keeps the rest as tabs', () => {
-            expect(regions()).toEqual(['Bruno', 'Cleo', 'Dora']);
-            expect(screen.getAllByRole('tab')).toHaveLength(4);
-            expect(screen.getAllByRole('separator')).toHaveLength(2);
-        });
+    it('shows one document and every tab when the groups do not fit', async () => {
+        await open(['Ana', 'Bruno', 'Cleo', 'Dora'], 1280);
+        expect(regions()).toEqual(['Dora']);
+        expect(screen.getAllByRole('tab')).toHaveLength(4);
+        fireEvent.click(screen.getByRole('tab', { name: 'Ana' }));
+        expect(current()).toBe('Ana');
+        expect(regions()).toEqual(['Ana']);
+    });
 
-        it('shows a hidden pane in place of the least recently focused one when its tab is chosen', () => {
-            fireEvent.click(screen.getByRole('tab', { name: 'Ana' }));
-            expect(current()).toBe('Ana');
-            expect(regions()).toEqual(['Ana', 'Cleo', 'Dora']);
-        });
+    it('gives a group the whole area and gives it back, from the tab and from the button', async () => {
+        await open(['Ana', 'Bruno', 'Cleo'], 1280);
+        fireEvent.doubleClick(screen.getByRole('tab', { name: 'Bruno' }));
+        expect(regions()).toEqual(['Bruno']);
+        expect(screen.queryAllByRole('separator')).toHaveLength(0);
+        fireEvent.doubleClick(screen.getByRole('tab', { name: 'Bruno' }));
+        expect(regions()).toEqual(['Ana', 'Bruno', 'Cleo']);
 
-        it('gives a pane the whole area and gives it back, from the tab and from the button', async () => {
-            fireEvent.doubleClick(screen.getByRole('tab', { name: 'Cleo' }));
-            expect(regions()).toEqual(['Cleo']);
-            expect(screen.queryAllByRole('separator')).toHaveLength(0);
-            fireEvent.doubleClick(screen.getByRole('tab', { name: 'Cleo' }));
-            expect(regions()).toEqual(['Bruno', 'Cleo', 'Dora']);
+        const region = screen.getByRole('region', { name: 'Cleo' });
+        fireEvent.click(within(region).getByRole('button', { name: 'Show only Cleo' }));
+        expect(regions()).toEqual(['Cleo']);
+        fireEvent.click(screen.getByRole('button', { name: 'Show all open documents again' }));
+        expect(regions()).toEqual(['Ana', 'Bruno', 'Cleo']);
+    });
 
-            const region = screen.getByRole('region', { name: 'Dora' });
-            fireEvent.click(within(region).getByRole('button', { name: 'Show only Dora' }));
-            expect(regions()).toEqual(['Dora']);
-            fireEvent.click(screen.getByRole('button', { name: 'Show all open documents again' }));
-            expect(regions()).toEqual(['Bruno', 'Cleo', 'Dora']);
-        });
-
-        it('keeps the pane widths a divider was moved to, and every pane at 320 px or more', () => {
-            const divider = screen.getAllByRole('separator')[0]!;
-            expect(Number(divider.getAttribute('aria-valuenow'))).toBeGreaterThanOrEqual(320);
-            fireEvent.keyDown(divider, { key: 'ArrowRight', shiftKey: true });
-            expect(Number(screen.getAllByRole('separator')[0]!.getAttribute('aria-valuenow'))).toBe(
-                Number(divider.getAttribute('aria-valuenow'))
-            );
-            const weights = usePaneStore.getState().weights;
-            expect(Object.keys(weights).sort()).toEqual(['Bruno', 'Cleo', 'Dora']);
-            expect(weights.Bruno).toBeGreaterThan(weights.Cleo!);
-        });
+    it('keeps the sizes a divider was moved to, and every group at 320 px or more', async () => {
+        await open(['Ana', 'Bruno', 'Cleo'], 1280);
+        const divider = screen.getAllByRole('separator')[0]!;
+        expect(Number(divider.getAttribute('aria-valuenow'))).toBeGreaterThanOrEqual(320);
+        fireEvent.keyDown(divider, { key: 'ArrowRight', shiftKey: true });
+        const { weights } = usePaneStore.getState().root as SplitNode;
+        expect(weights[0]).toBeGreaterThan(weights[1]!);
+        expect(Number(screen.getAllByRole('separator')[0]!.getAttribute('aria-valuenow'))).toBe(
+            Number(divider.getAttribute('aria-valuenow'))
+        );
     });
 
     describe('on a phone', () => {
-        beforeEach(() => openAll(343));
-
-        it('draws the one pane without a frame or a focus mark', () => {
-            const [pane] = screen.getAllByRole('region');
-            expect(pane!.className).not.toContain('border');
-        });
-
-        it('shows one pane and the tabs, with no divider and no maximize', () => {
-            expect(regions()).toEqual(['Dora']);
-            expect(screen.getAllByRole('tab')).toHaveLength(4);
+        it('draws one document without a frame, with the tabs and no divider or maximize', async () => {
+            await open(['Ana', 'Bruno', 'Cleo'], 343);
+            expect(regions()).toEqual(['Cleo']);
+            expect(screen.getAllByRole('region')[0]!.className).not.toContain('border');
             expect(screen.queryAllByRole('separator')).toHaveLength(0);
             expect(screen.queryByRole('button', { name: /Show only/ })).toBeNull();
             fireEvent.click(screen.getByRole('tab', { name: 'Bruno' }));

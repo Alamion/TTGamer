@@ -59,8 +59,8 @@ import {
     undoTreeChange,
     useDocumentsHistory,
 } from '../../features/documents/treeActions';
-import { openBeside } from '../../features/sheet/panes/paneStore';
-import { MAX_PANES } from '../../features/sheet/panes/types';
+import { openBeside, type OpenOutcome } from '../../features/sheet/panes/paneStore';
+import { MAX_DOCUMENTS } from '../../features/sheet/panes/types';
 import { useDocumentStore } from '../../store/documentStore';
 import { ConfirmDialog } from '../dialogs/ConfirmDialog';
 import { DocumentCreateDialog } from '../dialogs/DocumentCreateDialog';
@@ -207,21 +207,27 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
         setCurrentDocument(id);
         if (narrow) onOpenChange(false);
     };
-    const openDocumentBeside = (id: string) => {
-        const replaced = openBeside(id);
-        if (replaced) {
-            const nameOf = (candidate: string) => {
-                const entry = entries.find(({ id: entryId }) => entryId === candidate);
-                return entry ? documentLabeler.title(entry) : candidate;
-            };
+    /** Says which tab gave way, or that no group could be made (spec 036, FR-012). */
+    const announceOpening = (id: string, { closed, asTab }: OpenOutcome) => {
+        const nameOf = (candidate: string) => {
+            const entry = entries.find(({ id: entryId }) => entryId === candidate);
+            return entry ? documentLabeler.title(entry) : candidate;
+        };
+        if (closed) {
             toast(
-                translate(uiMessages.sheet.documents.panes.replaced, {
-                    max: MAX_PANES,
+                translate(uiMessages.sheet.documents.panes.closedHidden, {
+                    max: MAX_DOCUMENTS,
                     name: nameOf(id),
-                    replaced: nameOf(replaced),
+                    closed: nameOf(closed),
                 })
             );
         }
+        if (asTab) {
+            toast(translate(uiMessages.sheet.documents.panes.openedAsTab, { name: nameOf(id) }));
+        }
+    };
+    const openDocumentBeside = (id: string) => {
+        announceOpening(id, openBeside(id));
         if (narrow) onOpenChange(false);
     };
     const activate = (item: TreeRowItem<DocumentsNode>) => {

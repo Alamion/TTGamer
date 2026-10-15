@@ -187,7 +187,8 @@ interface SlimDocumentState {
 }
 
 const MAX_LOADED_DOCUMENTS = 8;
-const MAX_PINNED_DOCUMENTS = 6;
+/** Every open document of the layout (spec 036, `MAX_DOCUMENTS`). */
+const MAX_PINNED_DOCUMENTS = 12;
 /** A document's changed time moves at most this often while it is edited (spec 032, D3). */
 const TOUCH_INTERVAL_MS = 5000;
 const lastTouch = new Map<string, number>();

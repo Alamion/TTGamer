@@ -21,7 +21,8 @@ panes:
     tabsLabel: Open documents
     close: 'Close {name}'
     unreadable: This document could not be read.
-    replaced: 'At most {max} documents stay open: "{name}" replaced "{replaced}".'
+    closedHidden: 'At most {max} documents stay open: "{closed}" was closed to make room for "{name}".'
+    openedAsTab: 'Six groups are open, so "{name}" opened as a tab.'
     resize: 'Resize {left} and {right}'
     maximize: 'Show only {name}'
     restore: 'Show all open documents again'

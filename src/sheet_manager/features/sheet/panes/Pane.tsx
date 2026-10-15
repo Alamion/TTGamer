@@ -17,6 +17,7 @@ const buttonClass =
 /** One open document: a labelled region with its title, a close button, and its page. */
 export function Pane({
     documentId,
+    fill,
     focused,
     framed,
     maximized,
@@ -30,6 +31,8 @@ export function Pane({
     view,
 }: {
     documentId: string;
+    /** The pane fills a group of the layout: its page scrolls inside it, under its header. */
+    fill: boolean;
     focused: boolean;
     /** Several panes are drawn, so each is framed and the focused one marked; alone it is neither. */
     framed: boolean;
@@ -56,6 +59,7 @@ export function Pane({
             onPointerDownCapture={onFocus}
             className={clsx(
                 'min-w-0',
+                fill && 'flex min-h-0 flex-1 flex-col',
                 framed &&
                     clsx(
                         'rounded-lg border-2',
@@ -98,21 +102,23 @@ export function Pane({
                     </button>
                 </div>
             </header>
-            {unreadable ? (
-                <p role="alert" className="p-4 text-sm text-error">
-                    {translate(labels.unreadable)}
-                </p>
-            ) : loaded ? (
-                <AreaLayoutContext.Provider value={true}>
-                    <PaneSourceProvider documentId={documentId}>
-                        {render(documentId, view)}
-                    </PaneSourceProvider>
-                </AreaLayoutContext.Provider>
-            ) : (
-                <p role="status" className="p-4 text-sm text-textSecondary">
-                    {translate(uiMessages.sheet.documents.toolbar.openingDocument)}
-                </p>
-            )}
+            <div className={clsx(fill && 'min-h-0 flex-1 overflow-auto')}>
+                {unreadable ? (
+                    <p role="alert" className="p-4 text-sm text-error">
+                        {translate(labels.unreadable)}
+                    </p>
+                ) : loaded ? (
+                    <AreaLayoutContext.Provider value={true}>
+                        <PaneSourceProvider documentId={documentId}>
+                            {render(documentId, view)}
+                        </PaneSourceProvider>
+                    </AreaLayoutContext.Provider>
+                ) : (
+                    <p role="status" className="p-4 text-sm text-textSecondary">
+                        {translate(uiMessages.sheet.documents.toolbar.openingDocument)}
+                    </p>
+                )}
+            </div>
         </section>
     );
 }

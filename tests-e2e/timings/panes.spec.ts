@@ -67,7 +67,7 @@ test('opening a second document beside the first with 3,000 documents in the col
 
     const times: number[] = [];
     for (let run = 0; run <= RUNS; run++) {
-        await page.evaluate(() => localStorage.removeItem('ttgamer:panes:v1'));
+        await page.evaluate(() => localStorage.removeItem('ttgamer:panes:v2'));
         await page.reload({ waitUntil: 'networkidle' });
         // The first document is shown before a second one opens beside it.
         const shown = page.getByRole('textbox', { name: 'Name', exact: true });

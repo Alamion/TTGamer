@@ -9,6 +9,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
+import { resetLayout } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 30_000 });
 
@@ -47,7 +48,7 @@ describe('which view a pane starts in (spec 034, FR-008)', () => {
 describe('a pane has its own view', () => {
     beforeEach(() => {
         vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1280);
-        usePaneStore.setState({ ids: [], recent: [], weights: {}, views: {}, maximized: null });
+        resetLayout();
         seedDocuments(['Ana', 'Bruno'], { current: 'Ana' });
         render(createElement(CharacterSheet));
     });

@@ -22,8 +22,10 @@ import {
 } from '../../../systems';
 import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
+import { openKeys } from '../panes/layoutTree';
 import { PaneArea } from '../panes/PaneArea';
 import { usePaneStore } from '../panes/paneStore';
+import { documentIdOf } from '../panes/tabKeys';
 import { exportFileName, serializeDocumentExport } from './documentFile';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { type BatchSummary, type ConflictAnswer, runImportBatch } from './importBatch';
@@ -51,7 +53,9 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
     useDocumentTypeStore((state) => state.types);
     const settings = useDocumentTypeStore((state) => state.settings);
     // With several documents each pane has its own view selector (spec 034, D8).
-    const several = usePaneStore((state) => state.ids.length > 1);
+    const several = usePaneStore(
+        (state) => openKeys(state).filter((key) => documentIdOf(key) !== null).length > 1
+    );
     const currentDocument = documents.find(({ id }) => id === currentDocumentId) ?? null;
     useShownDocumentPublisher(currentDocument);
     const currentDefinition = currentDocument

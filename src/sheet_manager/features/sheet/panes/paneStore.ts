@@ -3,25 +3,33 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentStore } from '../../../store/documentStore';
-import { MAX_PANES, PANES_STORAGE_KEY, readArrangement } from './types';
+import {
+    EMPTY_LAYOUT,
+    findGroup,
+    focusedGroup,
+    groupOf,
+    groupsInOrder,
+    type LayoutState,
+    openKeys,
+    placeTab,
+    reconcileLayout,
+    removeTab,
+    setWeightsAt,
+    splitGroup,
+} from './layoutTree';
+import { docKey, documentIdOf, type TabKey, tabKindOf } from './tabKeys';
+import {
+    layoutFromArrangement,
+    MAX_DOCUMENTS,
+    MAX_GROUPS,
+    PANES_STORAGE_KEY,
+    PANES_V1_STORAGE_KEY,
+    readArrangement,
+    readLayout,
+} from './types';
 import { defaultPaneView } from './views';
 
-export interface PaneArrangement {
-    /** The open documents in pane order; empty means only the current document is shown. */
-    ids: string[];
-    /** Focus history, the most recently focused first. */
-    recent: string[];
-    /** Relative widths of panes the reader has resized (average 1); a missing one is 1. */
-    weights: Record<string, number>;
-    /** A pane's own view (a view id or `tpl:<template id>`); a missing one shows the preferred. */
-    views: Record<string, string>;
-    /** The pane that has the whole area while the others are hidden. */
-    maximized: string | null;
-}
-
-const EMPTY: PaneArrangement = { ids: [], recent: [], weights: {}, views: {}, maximized: null };
-
-/** The device's storage when it works; the arrangement is a convenience, losing it is fine. */
+/** The device's storage when it works; the layout is a convenience, losing it is fine. */
 const safeStorage = {
     getItem: (name: string) => {
         try {
@@ -46,184 +54,213 @@ const safeStorage = {
     },
 };
 
+const invalid = (message: string) =>
+    reportSheetIssue({ code: 'pane-arrangement-invalid', message });
+
+/** The spec 034 arrangement as a layout, once: the old value is removed after it is read. */
+function migrateArrangement(): LayoutState | null {
+    const raw = safeStorage.getItem(PANES_V1_STORAGE_KEY);
+    if (raw === null) return null;
+    safeStorage.removeItem(PANES_V1_STORAGE_KEY);
+    let arrangement = null;
+    try {
+        arrangement = readArrangement((JSON.parse(raw) as { state?: unknown }).state);
+    } catch {
+        // Reported below.
+    }
+    if (!arrangement) {
+        invalid('The stored panes of spec 034 could not be read; one document shows');
+        return null;
+    }
+    return layoutFromArrangement(arrangement);
+}
+
 /**
- * The panes of this device (spec 034, FR-012): kept in localStorage, not in the documents' storage,
- * because they are a reading preference that is neither exported nor synced. They are read when the
- * module loads; the sheet draws them only after the documents are loaded, so the server render,
+ * The layout of this device (spec 036, FR-015): kept in localStorage, not in the documents'
+ * storage, because it is a reading preference that is neither exported nor synced. It is read when
+ * the module loads; the sheet draws it only after the documents are loaded, so the server render,
  * which has no documents, never differs from the first browser render.
  */
-export const usePaneStore = create<PaneArrangement>()(
-    persist(() => EMPTY, {
+export const usePaneStore = create<LayoutState>()(
+    persist(() => EMPTY_LAYOUT, {
         name: PANES_STORAGE_KEY,
-        version: 1,
+        version: 2,
         storage: createJSONStorage(() => safeStorage),
-        partialize: ({ ids, recent, weights, views, maximized }) => ({
-            ids,
+        partialize: ({ root, recent, views, maximized, floating, lastRect, lastSide }) => ({
+            root,
             recent,
-            weights,
             views,
             maximized,
+            floating,
+            lastRect,
+            lastSide,
         }),
         merge: (persisted, current) => {
-            if (persisted === undefined || persisted === null) return current;
-            const stored = readArrangement(persisted);
+            if (persisted === undefined || persisted === null) {
+                const migrated = migrateArrangement();
+                return migrated ? { ...current, ...migrated } : current;
+            }
+            const stored = readLayout(persisted);
             if (!stored) {
-                reportSheetIssue({
-                    code: 'pane-arrangement-invalid',
-                    message:
-                        'The stored arrangement of panes could not be read; one document shows',
-                });
+                invalid('The stored layout could not be read; one document shows');
                 return current;
             }
-            return { ...current, ...stored };
+            if (stored.dropped.length > 0) {
+                invalid(`Parts of the stored layout were dropped: ${stored.dropped.join('; ')}`);
+            }
+            return { ...current, ...stored.layout };
         },
     })
 );
 
-/** The pane to give up when the limit is reached: never the current one. */
-function leastRecentlyFocused(ids: readonly string[], recent: readonly string[], keep: string) {
-    const rank = (id: string) => {
-        const position = recent.indexOf(id);
-        return position === -1 ? Number.POSITIVE_INFINITY : position;
-    };
-    return ids
-        .filter((id) => id !== keep)
-        .reduce<string | undefined>(
-            (victim, id) => (victim === undefined || rank(id) > rank(victim) ? id : victim),
-            undefined
-        );
-}
-
-/** The record without the entries of ids that are not panes; the same object when none go. */
-function keepOnly<T>(record: Record<string, T>, ids: readonly string[]): Record<string, T> {
-    return Object.keys(record).every((id) => ids.includes(id))
-        ? record
-        : Object.fromEntries(Object.entries(record).filter(([id]) => ids.includes(id)));
-}
-
-function sameList(a: readonly string[], b: readonly string[]) {
-    return a.length === b.length && a.every((id, index) => id === b[index]);
-}
-
-/**
- * The arrangement that is true now: documents that are gone are dropped, the current document is
- * a pane (a document opened with **Open** takes the place of the one last focused), and it leads
- * the focus history. Pure; the same object comes back when nothing changes.
- */
-export function reconcilePanes(
-    state: PaneArrangement,
-    currentId: string | null,
-    entryIds: ReadonlySet<string>
-): PaneArrangement {
-    let ids = state.ids.filter((id) => entryIds.has(id));
-    if (currentId && !ids.includes(currentId)) {
-        const last = state.recent[0];
-        if (ids.length === 0) ids = [currentId];
-        else if (last && ids.includes(last)) ids = ids.map((id) => (id === last ? currentId : id));
-        else if (ids.length < MAX_PANES) ids = [...ids, currentId];
-        else {
-            const victim = leastRecentlyFocused(ids, state.recent, currentId);
-            ids = ids.map((id) => (id === victim ? currentId : id));
-        }
-    }
-    const recent = [
-        ...(currentId && ids.includes(currentId) ? [currentId] : []),
-        ...state.recent.filter((id) => id !== currentId && ids.includes(id)),
-    ];
-    const weights = keepOnly(state.weights, ids);
-    const views = keepOnly(state.views, ids);
-    // The tab of another pane takes the whole area over; a pane that is gone gives it up.
-    const maximized =
-        state.maximized === null || ids.length < 2
-            ? null
-            : currentId && ids.includes(currentId)
-              ? currentId
-              : ids.includes(state.maximized)
-                ? state.maximized
-                : null;
-    return sameList(ids, state.ids) &&
-        sameList(recent, state.recent) &&
-        weights === state.weights &&
-        views === state.views &&
-        maximized === state.maximized
-        ? state
-        : { ids, recent, weights, views, maximized };
-}
-
-/**
- * Shows `id` beside the current document and makes it current; at the limit the least recently
- * focused pane is replaced. Returns the replaced id, if any.
- */
-export function openBeside(id: string): string | null {
+/** The layout made true for the current document and the documents that exist. */
+function reconciled(): LayoutState {
     const documents = useDocumentStore.getState();
-    const current = documents.currentDocumentId;
-    const state = reconcilePanes(
+    return reconcileLayout(
         usePaneStore.getState(),
-        current,
+        documents.currentDocumentId,
         new Set(documents.entries.map((entry) => entry.id))
     );
-    let ids = state.ids.length > 0 ? state.ids : current ? [current] : [];
-    let replaced: string | null = null;
-    if (!ids.includes(id)) {
-        if (ids.length >= MAX_PANES) {
-            replaced = leastRecentlyFocused(ids, state.recent, current ?? '') ?? null;
-            ids = ids.map((candidate) => (candidate === replaced ? id : candidate));
-        } else {
-            const after = current ? ids.indexOf(current) : -1;
-            ids = [...ids.slice(0, after + 1), id, ...ids.slice(after + 1)];
-        }
+}
+
+const rankIn = (recent: readonly TabKey[]) => (key: TabKey) => {
+    const position = recent.indexOf(key);
+    return position === -1 ? Number.POSITIVE_INFINITY : position;
+};
+
+/**
+ * Makes room for one more document (FR-012): at the limit the least recently used document tab
+ * that no group shows and no window holds is closed. Returns the layout and the closed document.
+ */
+function admitDocument(state: LayoutState): { state: LayoutState; closed: string | null } {
+    const documents = openKeys(state).filter((key) => documentIdOf(key) !== null);
+    if (documents.length < MAX_DOCUMENTS) return { state, closed: null };
+    const shown = new Set([
+        ...groupsInOrder(state.root).map((group) => group.shown),
+        ...state.floating.map(({ key }) => key),
+    ]);
+    const rank = rankIn(state.recent);
+    const victim = documents
+        .filter((key) => !shown.has(key))
+        .reduce<TabKey | undefined>(
+            (oldest, key) => (oldest === undefined || rank(key) > rank(oldest) ? key : oldest),
+            undefined
+        );
+    if (!victim) return { state, closed: null };
+    return {
+        state: { ...state, root: removeTab(state.root, victim) },
+        closed: documentIdOf(victim),
+    };
+}
+
+const startView = (id: string) => {
+    const entry = useDocumentStore.getState().entries.find((candidate) => candidate.id === id);
+    return entry ? defaultPaneView(entry) : undefined;
+};
+
+/** What happened when a document was opened: a tab that gave way, or a group that could not be. */
+export interface OpenOutcome {
+    closed: string | null;
+    asTab: boolean;
+}
+
+function openDocument(id: string, place: 'beside' | 'tab'): OpenOutcome {
+    const documents = useDocumentStore.getState();
+    const key = docKey(id);
+    let state = reconciled();
+    if (openKeys(state).includes(key)) {
+        focusTab(key);
+        return { closed: null, asTab: false };
     }
-    const entry = documents.entries.find((candidate) => candidate.id === id);
-    const brief = !state.ids.includes(id) && entry ? defaultPaneView(entry) : undefined;
+    const admitted = admitDocument(state);
+    state = admitted.state;
+    const group = focusedGroup(state);
+    const asTab = place === 'tab' || groupsInOrder(state.root).length >= MAX_GROUPS;
+    const root = !group
+        ? state.root
+        : asTab
+          ? placeTab(state.root, key, group.id)
+          : splitGroup(state.root, group.id, 'right', key);
+    const view = place === 'beside' ? startView(id) : undefined;
     usePaneStore.setState({
-        ids,
-        recent: state.recent,
-        weights: state.weights,
-        views: brief ? { ...keepOnly(state.views, ids), [id]: brief } : state.views,
+        ...state,
+        root,
+        recent: [key, ...state.recent],
+        views: view ? { ...state.views, [id]: view } : state.views,
         maximized: null,
     });
     documents.setCurrentDocument(id);
-    return replaced;
+    return { closed: admitted.closed, asTab: asTab && place === 'beside' };
 }
 
-/** Closes a pane (the document stays); the neighbouring pane takes the focus. */
-export function closePane(id: string): void {
-    const documents = useDocumentStore.getState();
-    const { ids, recent } = usePaneStore.getState();
-    const position = ids.indexOf(id);
-    if (position === -1 || ids.length < 2) return;
-    const remaining = ids.filter((candidate) => candidate !== id);
-    usePaneStore.setState({
-        ids: remaining,
-        recent: recent.filter((candidate) => candidate !== id),
-    });
-    if (documents.currentDocumentId === id) {
-        documents.setCurrentDocument(remaining[Math.min(position, remaining.length - 1)]!);
+/** **Open beside**: a new group right of the last used one, starting in the document's brief. */
+export const openBeside = (id: string) => openDocument(id, 'beside');
+
+/** **Open in new tab**: a tab of the last used group, after its shown tab (spec 036, FR-003). */
+export const openInNewTab = (id: string) => openDocument(id, 'tab');
+
+/** Shows the tab in its group and makes it the one used last; a document becomes current. */
+export function focusTab(key: TabKey): void {
+    const state = reconciled();
+    const group = groupOf(state.root, key);
+    const root =
+        group && group.shown !== key
+            ? placeTab(state.root, key, group.id, group.tabs.indexOf(key))
+            : state.root;
+    const recent = [key, ...state.recent.filter((candidate) => candidate !== key)];
+    usePaneStore.setState({ ...state, root, recent });
+    const id = documentIdOf(key);
+    if (id && useDocumentStore.getState().currentDocumentId !== id) {
+        useDocumentStore.getState().setCurrentDocument(id);
     }
 }
 
-/** Makes the pane's document the current one (the dice panel and the documents window follow). */
-export function focusPane(id: string): void {
-    const documents = useDocumentStore.getState();
-    if (documents.currentDocumentId !== id) documents.setCurrentDocument(id);
+/**
+ * Closes a tab (a document stays in the collection, a tool closes); the group's neighbour tab is
+ * shown. The last open document is not closed: the sheet always shows one.
+ */
+export function closeTab(key: TabKey): void {
+    const state = reconciled();
+    const id = documentIdOf(key);
+    const documents = openKeys(state).filter((candidate) => documentIdOf(candidate) !== null);
+    if (!openKeys(state).includes(key) || (id !== null && documents.length < 2)) return;
+    const floating = state.floating.filter((entry) => entry.key !== key);
+    const root =
+        floating.length === state.floating.length ? removeTab(state.root, key) : state.root;
+    const recent = state.recent.filter((candidate) => candidate !== key);
+    usePaneStore.setState({ ...state, root, floating, recent });
+    if (id === null) {
+        tabKindOf(key)?.onClose?.();
+        return;
+    }
+    const current = useDocumentStore.getState();
+    if (current.currentDocumentId !== id) return;
+    const before = groupOf(state.root, key);
+    const neighbour = before ? findGroup(root, before.id)?.shown : undefined;
+    const firstDocument = (keys: readonly TabKey[]) =>
+        keys.map(documentIdOf).find((candidate) => candidate !== null) ?? null;
+    const next =
+        (neighbour ? documentIdOf(neighbour) : null) ??
+        firstDocument(recent) ??
+        firstDocument(openKeys({ root, floating }));
+    if (next) current.setCurrentDocument(next);
 }
 
-/** Gives the pane the whole area, or gives it back when it already has it (spec 034, FR-018). */
-export function toggleMaximized(id: string): void {
-    const { ids, maximized } = usePaneStore.getState();
-    if (!ids.includes(id) || ids.length < 2) return;
-    usePaneStore.setState({ maximized: maximized === id ? null : id });
-    focusPane(id);
+/** Gives the group the whole area, or gives it back when it already has it. */
+export function toggleMaximized(groupId: string): void {
+    const state = reconciled();
+    const group = findGroup(state.root, groupId);
+    if (!group || groupsInOrder(state.root).length < 2) return;
+    usePaneStore.setState({ ...state, maximized: state.maximized === groupId ? null : groupId });
+    focusTab(group.shown);
 }
 
-/** Stores the widths of the panes shown (`ids`, in order) as weights. */
-export function setPaneWeights(ids: readonly string[], weights: readonly number[]): void {
-    usePaneStore.setState((state) => ({
-        weights: { ...state.weights, ...Object.fromEntries(ids.map((id, i) => [id, weights[i]!])) },
-    }));
+/** Stores the sizes of the children of the split at `path` as weights. */
+export function setSplitWeights(path: readonly number[], weights: readonly number[]): void {
+    usePaneStore.setState((state) => ({ root: setWeightsAt(state.root, path, weights) }));
 }
 
-/** Sets a pane's own view; `undefined` goes back to the document's preferred one. */
+/** Sets a document tab's own view; `undefined` goes back to the document's preferred one. */
 export function setPaneView(id: string, view: string | undefined): void {
     usePaneStore.setState((state) => {
         const rest = Object.fromEntries(Object.entries(state.views).filter(([key]) => key !== id));

@@ -2,17 +2,14 @@
 import { getCharacterName, getRollSource } from '@site/src/dice_roller/utils/sessionStorage';
 import { getShownDocument } from '@site/src/integrations/sheet-dice/shownDocument';
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
-import {
-    openBeside,
-    setPaneView,
-    usePaneStore,
-} from '@site/src/sheet_manager/features/sheet/panes/paneStore';
+import { openBeside, setPaneView } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
+import { openDocumentIds, resetLayout } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 40_000 });
 
@@ -23,7 +20,7 @@ const titleOf = (id: string) =>
 beforeEach(async () => {
     sessionStorage.clear();
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1280);
-    usePaneStore.setState({ ids: [], recent: [], weights: {}, views: {}, maximized: null });
+    resetLayout();
     seedDocuments(['Ana', 'Bruno'], { current: 'Ana' });
     for (const name of ['Ana', 'Bruno']) {
         useDocumentStore
@@ -75,9 +72,9 @@ describe('rolls and the dice panel follow the pane (spec 034, US5)', () => {
         const names = ['C', 'D', 'E', 'F'];
         seedMore(names);
         for (const name of names) act(() => void openBeside(name));
-        await waitFor(() => expect(usePaneStore.getState().ids).toHaveLength(6));
+        await waitFor(() => expect(openDocumentIds()).toHaveLength(6));
         const loaded = useDocumentStore.getState().documents.map(({ id }) => id);
-        for (const id of usePaneStore.getState().ids) expect(loaded).toContain(id);
+        for (const id of openDocumentIds()) expect(loaded).toContain(id);
     });
 });
 
