@@ -153,22 +153,22 @@ preferences do not change.
 **Check**: roll a stat in each of two panes; focus the left pane; the dice panel's shown document
 follows.
 
-- [ ] T029 [US5] Write `tests/sheet_manager/pane-source.test.tsx`: two panes edit only their own
+- [x] T029 [US5] Write `tests/sheet_manager/pane-source.test.tsx`: two panes edit only their own
       document; a roll queued from the right pane carries the right document's `rollSource` and
       character name through `useSheetDiceActions`; focusing or editing in a pane sets
       `currentDocumentId` and the published shown document (`getShownDocument`); the documents
       window marks the focused pane's document as current; with six panes no pane's document leaves
       the cache; a write to one document does not re-render the other panes (render count) (FR-009 –
       FR-011, SC-006)
-- [ ] T030 [US5] Focus on pointer down, focus-in, and edit inside a pane calls `focus(id)`; fix what
+- [x] T030 [US5] Focus on pointer down, focus-in, and edit inside a pane calls `focus(id)`; fix what
       T029 finds in `useBoundDocument` / `useDocumentRollSource` paths
       (`features/sheet/declarative/boundDocument.ts`, `hooks/useDocumentSource.ts`) so every element
       reads the pane's document, including `useCharacterContext` overrides
-- [ ] T031 [US5] Extend `tests-e2e/smoke/panes.spec.ts`: roll a stat in each pane with two
+- [x] T031 [US5] Extend `tests-e2e/smoke/panes.spec.ts`: roll a stat in each pane with two
       characters of different names and read the history entry names (SC-006); add a browser timing
       for opening a second pane on 3,000 documents next to the existing documents timings (SC-003,
       reported); no console error in any smoke case
-- [ ] T032 [US5] Run `yarn verify:full` and commit:
+- [x] T032 [US5] Run `yarn verify:full` and commit:
       `feat(sheet): rolls and the dice panel follow the focused pane (spec 034, US5)`
 
 ## Finish

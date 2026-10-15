@@ -212,3 +212,12 @@ rolls and focus checks, strings, guide.
   `pane-arrangement-invalid` and one document shows. A deleted or missing document drops out
   silently when the area mounts or its entry goes. The restore needed no separate hook: the
   reconcile that runs in render also guarantees the current document is a pane.
+- **US5.** The pane source already carried everything: every bound element reads its document
+  through `useDocumentSource`, and focus calls `setCurrentDocument`, so the published shown document
+  and the documents window follow the focused pane. The tests found nothing to fix
+  (`pane-source.test.tsx`: values, roll name and source, focus, six pinned documents;
+  `pane-renders.test.tsx`: a write to one document leaves the other pane's source alone while its
+  entry is unchanged). An entry's changed time still moves once per 5 s while a document is edited,
+  which re-renders the panes once then. Browser: opening a second document beside the first with
+  3,000 documents took 169 ms (budget 200 ms, reported); the roll test names the character of the
+  pane for two characters.

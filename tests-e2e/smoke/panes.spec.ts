@@ -204,3 +204,34 @@ test('the panes, their order, sizes, and views come back after a reload', async 
     await expect(page.locator('section[data-pane]')).toHaveCount(2);
     await expect(page.getByRole('tab')).toHaveCount(2);
 });
+
+test('a roll started in a pane names the character of that pane', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    for (const name of ['Kyla Venn', 'Orrin Dace']) {
+        await createDocument(page, 'wod-v5/hunter');
+        const field = page.getByRole('textbox', { name: 'Name', exact: true });
+        await field.fill(name);
+        await field.blur();
+    }
+    await page.getByRole('button', { name: 'Manage', exact: true }).click();
+    const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+    await window.getByRole('button', { name: 'Actions for Kyla Venn' }).click();
+    await page.getByRole('menuitem', { name: 'Open beside' }).click();
+    await window.getByRole('button', { name: 'Close the documents window' }).click();
+    await expect(page.locator('section[data-pane]')).toHaveCount(2);
+
+    for (const name of ['Kyla Venn', 'Orrin Dace', 'Kyla Venn']) {
+        const pane = page.getByRole('region', { name });
+        const select = pane.getByRole('combobox');
+        const options = await select.locator('option').allTextContents();
+        await select.selectOption({ label: options.find((label) => !/brief/i.test(label))! });
+        await pane
+            .getByRole('button', { name: /^Roll / })
+            .first()
+            .click();
+        const rolled = await page.evaluate(() =>
+            sessionStorage.getItem('dice_roller_character_name')
+        );
+        expect(rolled).toBe(name);
+    }
+});
