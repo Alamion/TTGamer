@@ -219,8 +219,10 @@ rolls and focus checks, strings, guide.
   `pane-renders.test.tsx`: a write to one document leaves the other pane's source alone while its
   entry is unchanged). An entry's changed time still moves once per 5 s while a document is edited,
   which re-renders the panes once then. Browser: opening a second document beside the first with
-  3,000 documents took 169 ms (budget 200 ms, reported); the roll test names the character of the
-  pane for two characters.
+  3,000 documents took 169 ms on the quietest run and 211–567 ms on loaded ones (load average 5–8;
+  budget 200 ms, reported only). The measure includes the documents window, still open and
+  re-drawing its 3,000 rows when the current document changes, so it over-states what the panes add.
+  The roll test names the character of the pane for two characters.
 
 ## Walk results
 
