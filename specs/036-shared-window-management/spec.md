@@ -208,6 +208,8 @@ three panes.
 - The current document is the one the reader used last: the shown document of the focused group, or
   a focused floating document; focusing a tool keeps the last current document. **Open** always
   replaces the shown document of the last focused group, never a floating window.
+- Opening a tool when six groups exist puts it as a tab into the edge group of its side; opening a
+  tool is never refused.
 - Closing a tool tab closes the tool; opening it again brings it back to the group side it had (a
   new group on that edge if its group is gone).
 - Maximize (spec 034) applies to a group: double click on a tab or its button.
@@ -217,7 +219,8 @@ three panes.
   to its place, and a notice says four windows are open.
 - Floating documents count toward the 12 documents; in the narrow view they join the one strip and
   float again when there is room.
-- A 13th document closes the least recently focused document tab that no group shows, with a notice.
+- A 13th document closes the least recently focused document tab that is shown neither in a group
+  nor in a floating window, with a notice (at most 10 are visible, so one always exists).
 - Modal dialogs (confirmations, import, the library's own dialogs) open above everything and block.
 
 ## Requirements
@@ -242,12 +245,13 @@ three panes.
 - **FR-008**: Every tab, a document or one of the tools (the documents window, the library, the dice
   panel), MUST be in a group or a floating window, never both, and MUST move between the two by
   dragging and by menu.
-- **FR-009**: Floating windows MUST move by their title bar, resize by edges and corners, stay on
-  screen, stack with the last pressed in front, and not block the page.
+- **FR-009**: Floating windows MUST move by their title bar, resize by edges and corners (and both
+  by keyboard), offer **Dock** in the title bar (back to the tab's last side), stay on screen, stack
+  with the last pressed in front, and not block the page.
 - **FR-010**: Document rows of the documents window MUST be draggable onto strips, middles, and
   edges of groups with the same results as dragging a tab.
-- **FR-011**: Dragging a divider more than 80 px past a group's minimum MUST collapse it to a named
-  strip that reopens it at its former size by pointer and keyboard.
+- **FR-011**: Dragging a divider more than 80 px past a group's minimum, or Enter on the divider,
+  MUST collapse it to a named strip that reopens it at its former size by pointer and keyboard.
 - **FR-012**: At most 12 documents, 6 groups, and 4 floating windows MUST exist; limits behave as in
   the edge cases.
 - **FR-013**: Below 768 px, or when the groups cannot keep their minimum sizes, one document MUST
@@ -264,7 +268,7 @@ three panes.
 ### Key Entities
 
 - **Group**: a rectangle of the layout with its tabs, the shown one, and a collapsed state.
-- **Tab**: a document (with its own view) or a tool, in exactly one group.
+- **Tab**: a document (with its own view) or a tool, in exactly one group or one floating window.
 - **Tool**: the documents window, the library, or the dice panel.
 - **Floating window**: one tab above the page, with its place, size, and place in the stack; a tab
   remembers its last floating place and size and its last side.
@@ -276,8 +280,9 @@ three panes.
 - **SC-001**: From a first visit, a reader builds the four-part layout (documents window left, dice
   right, two documents one above the other in the middle) in at most 8 actions on a 1920 × 1080
   window.
-- **SC-002**: A 3 × 2 grid of documents takes at most 12 actions, every group at least 320 × 200 px
-  and all visible without scrolling the page.
+- **SC-002**: A 3 × 2 grid of documents takes at most 12 actions, counting opening the documents
+  window and floating it (docked, it would take one of the six groups), every group at least 320 ×
+  200 px and all visible without scrolling the page.
 - **SC-003**: After a reload the layout and tool places come back in 100% of attempts, including
   with one stored document deleted; a spec 034 arrangement keeps order, widths (within 1%), and
   views.

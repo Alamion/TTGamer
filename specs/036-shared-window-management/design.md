@@ -4,9 +4,9 @@
 
 ## Approach
 
-The panes of spec 034 (`features/sheet/panes/`) become the **workspace layout** of spec 035's design
-(input, not repeated here: its D1–D13 hold unless changed below): a tree of row/column splits with
-group leaves, groups drawn flat by computed rectangles, `currentDocumentId` as the one current fact,
+The panes of spec 034 (`features/sheet/panes/`) become the **layout** of spec 035's design (input,
+not repeated here: its D1–D13 hold unless changed below): a tree of row/column splits with group
+leaves, groups drawn flat by computed rectangles, `currentDocumentId` as the one current fact,
 storage v2 with the spec 034 migration. This design adds three things: **tabs of several kinds**
 (documents, the three tools, later documentation fragments) through a small tab-kind registry;
 **floating windows** for any tab through the shared `FloatingWindow`, stacked; and **one drop-target
@@ -26,15 +26,21 @@ restore at the browser level → **Finish**.
   arrays of strings keep dedup, order, and storage trivial, and a later `f:<docsPath>` kind (spec
   Assumptions) plugs in without a schema change. _Rejected_: tagged objects — every comparison and
   the stored shape get heavier for no gain.
-- **D2 — Focus and current**: the store keeps `recent` (tab keys, last used first). The current
-  document is the first `d:` key in `recent`, written to `currentDocumentId`; focusing a tool keeps
-  it. **Open** replaces the shown tab of the group holding the most recent `d:` key that is in a
-  group (never a floating one, clarification 3); with none, the first group in reading order.
+- **D2 — Focus and current**: `currentDocumentId` stays the one current fact (as spec 034); a
+  focused document tab, grouped or floating, calls `setCurrentDocument`, focusing a tool keeps it.
+  `recent` (tab keys, last used first) is derived: `reconcileLayout` puts the current document's key
+  first, so a reload cannot make them disagree. **Open** replaces the shown tab of the group holding
+  the most recent `d:` key that is in a group (never a floating one, clarification 3); with none,
+  the first group in reading order.
 - **D3 — Floating windows**: state `floating: {key, rect}[]` (at most `MAX_FLOATING = 4`), front
   last; `lastRect` and `lastSide` remembered for tools only (documents float at a cascaded default).
   `FloatingWindow` gains a controlled mode (`layout`, `onLayoutChange`, `zIndex`) so the store owns
   the rects instead of one `window-layout:<id>` key per window; its uncontrolled mode stays for
-  other users. _Rejected_: a storage key per floating document — unbounded keys.
+  other users. The documents window's spec 032 rect (`window-layout:documents`) is read once as
+  `lastRect` of `t:documents` and removed. Keyboard: arrows on the focused title bar move the
+  window, Shift + arrows resize it, Home puts it back to its default; a **Dock** button in the title
+  bar of a floating tab sends it to its last side (D10). _Rejected_: a storage key per floating
+  document — unbounded keys.
 - **D4 — Stacking**: a shared `useWindowStack` (`src/shared/hooks/`, not persisted) orders the open
   floating windows; `FloatingWindow.onFocus` (already reserved for T-113) raises one. Z-indexes stay
   between the layout and modal dialogs (`z-[900]`–`z-[949]`; modals keep `z-[9998]`+, FR-013).
@@ -48,7 +54,10 @@ restore at the browser level → **Finish**.
   `diceRollerStore`; while claimed, `DiceRollerPanel` draws no `SlidePanel`. A new adapter
   `integrations/sheet-dice/diceTab.tsx` registers the `t:dice` kind and, mounted on the sheet page,
   claims the host and maps `panelOpen` to opening (at its last place) or closing the tab. Off the
-  sheet page nothing claims it, so the dice panel is as today (FR-014). _Why_: constitution III —
+  sheet page nothing claims it, so the dice panel is as today (FR-014). Contract: `claimPanelHost`
+  and `panelOpen` in `diceRollerStore`. Success: the dice open as a tab or window at their place;
+  failure (the tab kind cannot render): the adapter releases the claim so the slide panel opens as
+  today, and reports `dice-tab-unavailable` through the sheet diagnostics. _Why_: constitution III —
   the sheet and the dice module meet only in `integrations/`.
 - **D7 — One drop-target model**: `PaneArea` registers group rects; `hitTest(point)` returns
   `{groupId, zone: 'strip' + index | 'middle' | 'left' | 'right' | 'top' | 'bottom'}` or the **float
@@ -56,22 +65,25 @@ restore at the browser level → **Finish**.
   `application/x-ttg-tab` (tabs) and of document rows (`useDocumentsDrag` adds the type
   `application/x-ttg-document` only when exactly one document is dragged, since types are readable
   during `dragover` and data is not); and the pointer drag of a floating window's title bar, which
-  calls the same `hitTest` and docks on release over a group. A tab dropped in the float zone floats
-  at the drop point; Escape fires no drop, so nothing changes. _Rejected_: pointer drag for tabs too
-  — more code, and rows of the documents tree already use HTML drag and drop.
+  calls the same `hitTest` and docks on release over a group. A **tab** dropped in the float zone
+  floats at the drop point (document rows have no float zone, so a stray row drop does nothing);
+  Escape fires no drop, so nothing changes. _Rejected_: pointer drag for tabs too — more code, and
+  rows of the documents tree already use HTML drag and drop.
 - **D8 — Splits and limits**: as spec 035 D4, D10: `MAX_DOCUMENTS = 12`, `MAX_GROUPS = 6`; a split
   is offered only under seven groups and while `minSizeOf` still fits the area; **Open beside** that
   cannot split adds a tab with a notice. The float zone and **Float** are disabled at four windows
   (clarification 2).
 - **D9 — Collapse in the shared `Splitter`**: options `orientation` (spec 035 D5) and
-  `collapseAfter` (80 px past `min` calls `onCollapse` instead of clamping). A collapsed group keeps
-  its weight and draws a 28 px strip button named by its shown tab (`aria-expanded="false"`);
-  `minSizeOf` counts it as the strip. _Rejected_: collapse inside `PaneArea` only — the backlog asks
-  for the splitter behavior, and the contract tests then cover it for every user.
+  `collapseAfter` (80 px past `min`, or Enter on the divider, calls `onCollapse` instead of
+  clamping; the WAI-ARIA window splitter pattern). A collapsed group keeps its weight and draws a 28
+  px strip button named by its shown tab (`aria-expanded="false"`); `minSizeOf` counts it as the
+  strip. _Rejected_: collapse inside `PaneArea` only — the backlog asks for the splitter behavior,
+  and the contract tests then cover it for every user.
 - **D10 — First places**: a tool opened with no remembered place makes a group at the left edge
   (`documents`, `library`: as tabs of one group if both are open) or the right edge (`dice`) of the
   root; later it opens at `lastSide`, in the group of that side's outermost edge if one holds a
-  tool, else a new edge group.
+  tool, else a new edge group; at six groups it becomes a tab of the outermost group of its side, so
+  opening a tool is never refused.
 - **D11 — Narrow view (FR-013)**: spec 035 D7, plus: floating documents join the one strip in
   reading order after the groups; tools are not in the strip and open full screen one at a time (the
   existing `FloatingWindow` below `md`); closing that view hides the tool without changing its
@@ -92,7 +104,8 @@ restore at the browser level → **Finish**.
   `toggleMaximized`, `setSplitWeights`, `setPaneView`.
 - `src/shared/components/FloatingWindow.tsx`: controlled mode, `zIndex`; `Splitter.tsx`:
   `orientation`, `collapseAfter`/`onCollapse`; `src/shared/hooks/useWindowStack.ts` (new).
-- `dice_roller/store/diceRollerStore.ts`: `claimPanelHost` (not persisted).
+- `dice_roller/store/diceRollerStore.ts`: `claimPanelHost` (not persisted); `diagnostics.ts`: code
+  `dice-tab-unavailable`.
 - `SheetWorkspace.tsx`: `managerDialogOpen`/`templatesDialogOpen` become
   `openTool('documents' | 'library')`.
 - Translations (`ui/sheet/documents.yaml`, en + ru): spec 035's list plus

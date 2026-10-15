@@ -32,11 +32,11 @@ and behaves as on branch 034 (three panes become one row of three one-tab groups
       generalize `paneWidths`/`moveDivider` in `layout.ts` to per-child minimums;
       `MAX_DOCUMENTS = 12`, `MAX_GROUPS = 6`, `MAX_FLOATING = 4` in `types.ts` replace `MAX_PANES`
 - [ ] T005 Write `tests/sheet_manager/pane-store.test.ts` (rewrite): `reconcileLayout` drops deleted
-      documents and empty groups; the current document is the first `d:` key of `recent`; a current
-      document in no tab replaces the shown tab of the group holding the most recent grouped `d:`
-      key (never a floating one; none → first group); a current document in a tab makes its group
-      show it; an empty layout with a current document becomes one group; maximized follows its
-      group and is cleared when it goes
+      documents and empty groups; `currentDocumentId` is the source and its key leads `recent` (a
+      stale stored `recent` is corrected, never trusted); a current document in no tab replaces the
+      shown tab of the group holding the most recent grouped `d:` key (never a floating one; none →
+      first group); a current document in a tab makes its group show it; an empty layout with a
+      current document becomes one group; maximized follows its group and is cleared when it goes
 - [ ] T006 Rewrite `features/sheet/panes/paneStore.ts` to state
       `{root, recent, views, maximized, floating, lastRect, lastSide}` with `reconcileLayout`,
       `focusTab`, `closeTab`, `toggleMaximized` (group id), `setSplitWeights(path, weights)`,
@@ -50,7 +50,8 @@ and behaves as on branch 034 (three panes become one row of three one-tab groups
       removed; an invalid value reports once and one document shows
 - [ ] T008 In `features/sheet/panes/types.ts` add the recursive Zod schema (`z.lazy`) and
       `readLayout`, `PANES_STORAGE_KEY = 'ttgamer:panes:v2'`, `readArrangement` kept under
-      `PANES_V1_STORAGE_KEY`; `paneStore.ts` `merge` migrates v1 when v2 is absent
+      `PANES_V1_STORAGE_KEY`; `paneStore.ts` `merge` migrates v1 when v2 is absent and reads
+      `window-layout:documents` once as `lastRect` of `t:documents`, then removes it
 - [ ] T009 Raise the pin limit in `store/documentStore.ts` (`pinDocuments`) to `MAX_DOCUMENTS`; its
       test in `tests/sheet_manager/pane-cache.test.ts`
 - [ ] T010 Rewrite `features/sheet/panes/PaneArea.tsx` to draw the tree: one group with one document
@@ -136,11 +137,12 @@ horizontal divider.
 float the dice; click the window behind.
 
 - [ ] T027 [US3] Extend `tests/shared/floating-window.test.tsx`: controlled mode (`layout`,
-      `onLayoutChange`, `zIndex`) keeps no storage key; pressing a window calls `onFocus`; write
-      `tests/shared/window-stack.test.ts` for `useWindowStack` (raise, remove, order, z-indexes
-      within `900`–`949`)
-- [ ] T028 [US3] Add the controlled mode to `src/shared/components/FloatingWindow.tsx` and create
-      `src/shared/hooks/useWindowStack.ts`
+      `onLayoutChange`, `zIndex`) keeps no storage key; pressing a window calls `onFocus`; arrows on
+      the focused title bar move it, Shift + arrows resize it within its limits, Home restores the
+      default; write `tests/shared/window-stack.test.ts` for `useWindowStack` (raise, remove, order,
+      z-indexes within `900`–`949`)
+- [ ] T028 [US3] Add the controlled mode and keyboard move/resize to
+      `src/shared/components/FloatingWindow.tsx` and create `src/shared/hooks/useWindowStack.ts`
 - [ ] T029 [US3] Split `components/documents/DocumentsWindow.tsx` into `DocumentsPanel.tsx`
       (content; its narrow list/details tabs follow its container width via `useMeasuredElement`)
       and the host; register `t:documents` in `tabKeys.ts`; test in `documents-window.test.tsx` that
@@ -152,22 +154,26 @@ float the dice; click the window behind.
       320 px group
 - [ ] T031 [US3] Write `tests/integrations/dice-tab.test.tsx`: with the host claimed the slide panel
       is not drawn; the navbar toggle opens the dice tab at its last place and closes it; releasing
-      the claim brings back today's panel; then add `claimPanelHost` to
+      the claim brings back today's panel; a tab kind that fails to render releases the claim and
+      reports `dice-tab-unavailable` once; then add `claimPanelHost` to
       `src/dice_roller/store/diceRollerStore.ts`, `DicePanelContent` out of
       `src/dice_roller/components/DiceRollerPanel.tsx`, and
       `src/integrations/sheet-dice/diceTab.tsx` registering `t:dice` and mounted by
-      `SheetWorkspace.tsx`
+      `SheetWorkspace.tsx`, and the code `dice-tab-unavailable` in `diagnostics.ts`
 - [ ] T032 [US3] Write tests in `tests/sheet_manager/pane-store.test.ts`: `openTool` first places
       (documents and library a left-edge group, together as tabs; dice a right-edge group), later
       `lastSide`; `floatTab` (refused at four with `panes.floatLimit`), `dockFloating`, `raise`;
-      closing a tool tab closes the tool; a tool is in one place only
+      closing a tool tab closes the tool; a tool is in one place only; at six groups `openTool` adds
+      a tab to the outermost group of the tool's side; a 13th document never closes a floating one
 - [ ] T033 [US3] Add `openTool`, `floatTab`, `dockFloating`, `raise` to `paneStore.ts`; draw
       floating windows in `PaneArea.tsx` through the controlled `FloatingWindow` and the stack; dock
       by dropping a title bar (the window's pointer drag calls `hitTest`); a tab dropped in the
-      float zone floats at the drop point; **Float** in the tab menu; replace
-      `managerDialogOpen`/`templatesDialogOpen` in `shell/SheetWorkspace.tsx` with `openTool`
+      float zone floats at the drop point; **Float** in the tab menu and **Dock** in a floating
+      tab's title bar; replace `managerDialogOpen`/`templatesDialogOpen` in
+      `shell/SheetWorkspace.tsx` with `openTool`
 - [ ] T034 [US3] Extend `tests/sheet_manager/pane-drag.test.tsx` and `pane-keyboard.test.tsx`: float
-      by drop and by menu, dock a floating window by title bar onto an edge, raise by focus
+      by drop and by menu, dock a floating window by title bar onto an edge and by its **Dock**
+      button with the keyboard, raise by focus
 - [ ] T035 [US3] Strings (en + ru):
       `panes.{float, dock, floatLimit, toolDocuments, toolLibrary, toolDice}`
 - [ ] T036 [US3] Run `yarn verify:full`; check the tools in groups and windows at 1280 and 1920 px
@@ -179,7 +185,8 @@ float the dice; click the window behind.
 
 - [ ] T037 [US4] Write tests in `tests/sheet_manager/pane-drag.test.tsx`: a single document row
       dropped on a strip, a middle, or an edge acts as a tab drop; a document already in a tab moves
-      that tab; a folder or several rows offer no target
+      that tab; a folder or several rows offer no target; a row dropped outside every group does
+      nothing (no float zone for rows)
 - [ ] T038 [US4] In `components/documents/useDocumentsDrag.ts` add the `application/x-ttg-document`
       type when exactly one document is dragged; accept it in `dropTargets.ts`/`PaneArea.tsx`
 - [ ] T039 [US4] Run the targeted tests and `yarn verify:fast`; commit
@@ -190,11 +197,12 @@ float the dice; click the window behind.
 **Check**: the documents group dragged past its edge collapses to a strip and reopens.
 
 - [ ] T040 [US5] Add a collapse case to `tests/shared/splitter.contract.test.tsx` (80 px past `min`
-      calls `onCollapse`, hosts without it clamp as before), then `collapseAfter`/`onCollapse` in
-      `src/shared/components/Splitter.tsx`
+      or Enter calls `onCollapse`, hosts without it clamp as before), then
+      `collapseAfter`/`onCollapse` in `src/shared/components/Splitter.tsx`
 - [ ] T041 [US5] Write tests in `tests/sheet_manager/pane-area.test.tsx`: collapsing gives a 28 px
       strip button named by the shown tab with `aria-expanded="false"`, the neighbour takes the
-      room; click or Enter expands at the former weight; collapsed state survives a remount
+      room; Enter on the divider collapses too; click or Enter on the strip expands at the former
+      weight; collapsed state survives a remount
 - [ ] T042 [US5] Add `collapseGroup`/`expandGroup` to `paneStore.ts` and the strip in
       `PaneArea.tsx`; strings `panes.{collapse, expand}` (en + ru)
 - [ ] T043 [US5] Run `yarn verify:full`; commit
@@ -222,9 +230,10 @@ dice panel on a documentation page.
       floating windows, a collapsed group, views, and maximized survives a remount; a deleted
       document is dropped quietly (no diagnostics)
 - [ ] T049 [US7] Extend `tests-e2e/smoke/panes.spec.ts`: the four-part layout from a first visit in
-      at most 8 actions (SC-001); a 3 × 2 grid by dragging rows in at most 12 actions, all groups at
-      least 320 × 200 without page scroll (SC-002); reload restores it; a seeded `ttgamer:panes:v1`
-      of three panes loads as three groups with widths within 1 % (SC-003)
+      at most 8 actions (SC-001); a 3 × 2 grid by opening and floating the documents window, then
+      dragging rows, in at most 12 actions, all groups at least 320 × 200 without page scroll
+      (SC-002); reload restores it; a seeded `ttgamer:panes:v1` of three panes loads as three groups
+      with widths within 1 % (SC-003)
 - [ ] T050 [US7] Extend `tests-e2e/timings/panes.spec.ts` with 3,000 documents: show a hidden tab,
       move a tab, and the longest frame of a window and a divider drag (SC-006, reported)
 - [ ] T051 [US7] Fix what the tests find; run `yarn verify`; commit
@@ -258,10 +267,10 @@ dice panel on a documentation page.
 | FR-006      | T019, T022, T024                                              |
 | FR-007      | T013, T015                                                    |
 | FR-008      | T029–T034                                                     |
-| FR-009      | T027–T028, T033–T034                                          |
+| FR-009      | T027–T028, T033–T034 (keyboard move/resize, **Dock**)         |
 | FR-010      | T037–T038                                                     |
 | FR-011      | T040–T042                                                     |
-| FR-012      | T014, T020, T022, T032                                        |
+| FR-012      | T014, T020, T022, T032 (tool at six groups, 13th document)    |
 | FR-013      | T044–T046                                                     |
 | FR-014      | T031, T046                                                    |
 | FR-015      | T007–T008, T048–T049                                          |
