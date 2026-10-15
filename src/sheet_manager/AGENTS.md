@@ -187,7 +187,9 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
   and opened; unknown times are never invented. The window keeps the query in session storage.
 - **The window** (`components/documents/`) is a shared `FloatingWindow` over the shared `TreeView`;
   closed, it renders nothing. Phone: full screen, modal, page behind it locked, tree and details as
-  tabs, drag replaced by "Move to…". Names are typed in place (`InlineName`), never in a dialog.
+  tabs, drag replaced by "Move to…". Names are typed in place (`InlineName`), never in a dialog. A
+  click only selects a row and shows its details (T-116); a document opens by double click, `Enter`,
+  or the Open actions. On a phone a tap selects and switches to the details tab.
 
 ### Several documents on one screen (spec 034)
 

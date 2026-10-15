@@ -53,10 +53,15 @@ describe('the documents window (spec 032, US1)', () => {
         expect(rowNames()).toEqual(['Character']);
     });
 
-    it('opens a document by a click and by Enter, but not by selecting', () => {
+    it('opens a document by a double click and by Enter, never by a click (T-116)', () => {
         seedDocuments(['Ana', 'Bruno', 'Cleo']);
         openWindow();
         fireEvent.click(row('Bruno'));
+        expect(current()).toBeNull();
+        expect(row('Bruno').getAttribute('aria-selected')).toBe('true');
+        fireEvent.doubleClick(row('Bruno'));
+        expect(current()).toBe('Bruno');
+        fireEvent.keyDown(row('Bruno'), { key: 'Enter' });
         expect(current()).toBe('Bruno');
 
         row('Cleo').focus();
@@ -73,9 +78,10 @@ describe('the documents window (spec 032, US1)', () => {
         fireEvent.click(row('Ana'));
         row('Ana').focus();
         fireEvent.keyDown(row('Ana'), { key: 'ArrowDown' });
-        expect(current()).toBe('Ana');
-        fireEvent.keyDown(document.activeElement!, { key: 'Enter' });
         expect(current()).toBe('Bruno');
+        fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' });
+        fireEvent.keyDown(document.activeElement!, { key: 'Enter' });
+        expect(current()).toBe('Cleo');
     });
 
     it("shows the selected document's fields", () => {
@@ -253,7 +259,15 @@ describe('the documents window (spec 032, US1)', () => {
             fireEvent.click(tabs[1]!);
             expect(tabs[1]!.getAttribute('aria-selected')).toBe('true');
             fireEvent.click(tabs[0]!);
+            // A tap selects and shows the details, where the document opens.
             fireEvent.click(row('Ana'));
+            expect(current()).toBeNull();
+            expect(tabs[1]!.getAttribute('aria-selected')).toBe('true');
+            fireEvent.click(
+                within(screen.getByRole('region', { name: 'Details' })).getByRole('button', {
+                    name: 'Open',
+                })
+            );
             expect(current()).toBe('Ana');
             expect(onOpenChange).toHaveBeenCalledWith(false);
         });

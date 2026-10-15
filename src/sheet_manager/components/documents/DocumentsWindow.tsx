@@ -633,9 +633,11 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                                     selection={selection}
                                     currentDocumentId={currentDocumentId}
                                     onSelect={select}
+                                    // A click only selects (T-116); on a phone it shows the details,
+                                    // where Open and Open beside are.
                                     onRowClick={(item) => {
-                                        if (item.node.type === 'document') {
-                                            openDocument(item.node.entry.id);
+                                        if (narrow && item.node.type === 'document') {
+                                            setTab('details');
                                         }
                                     }}
                                     onToggle={toggleFolder}

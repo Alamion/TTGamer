@@ -108,7 +108,7 @@ manager:
         selected:
             message: '{count} item selected|{count} items selected'
             plural: true
-        hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range, and on a touch screen a long press starts selecting. A click on a document opens it.
+        hint: Ctrl or Cmd click adds or removes a row, Shift click selects a range, and on a touch screen a long press starts selecting. A double click or Enter opens a document; a click only selects it.
     search:
         label: Search names
         placeholder: Search names…
