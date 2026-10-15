@@ -1,7 +1,7 @@
 # Feature Specification: Dockable Layout of Document Panes
 
-**Branch**: `035-dockable-pane-layout` | **Created**: 2026-10-15 | **Status**: Paused (resumes after
-T-113)
+**Branch**: `035-dockable-pane-layout` | **Created**: 2026-10-15 | **Status**: Superseded by spec
+036
 
 **Input**: "T-117 Dockable layout of document panes: GMs and players arrange open documents like the
 tabs and groups of a code editor: every pane group has its own tabs, tabs move between groups by
@@ -11,6 +11,10 @@ side-by-side panes that only grow to the right, no several tabs per pane, and no
 keeps one document at a time with tabs. T-113 (shared window management, Library and dice panel as
 windows) is related and may follow."
 
+> **Superseded 2026-10-15 by [spec 036](../036-shared-window-management/spec.md).** The maintainer
+> merged this layout with T-113: documents and tools (documents window, library, dice panel) are
+> tabs of the same groups. Nothing here was built; the design below is input to spec 036's design.
+>
 > **Paused 2026-10-15.** The plan is analyzed and committed, nothing is built. The layout needs
 > documents dragged from the documents window onto a group's edge (SC-001: a 3 × 2 grid in at most
 > 12 actions is out of reach with menus alone, and the maintainer wants no extra buttons). That drag
