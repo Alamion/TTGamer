@@ -202,5 +202,5 @@ rolls and focus checks, strings, guide.
   id, or `tpl:<page>` for a custom page); `PaneViewSelect` reuses `ViewModeSelect` (new `compact`
   option) in each pane header and the toolbar's selector hides with two or more panes. A sheet in a
   pane also drops its `lg:p-6` padding (it follows the window, not the pane), which cost 16 px of
-  brief height at 1400 px; the brief heights now measure 398 px at a 650 px pane and under 700 px at
-  400 px (`panes.spec.ts`, SC-007).
+  brief height at 1400 px; the brief now stays within 400 px at a pane of 640 px or more and within
+  700 px at about 400 px (`panes.spec.ts`, SC-007).
