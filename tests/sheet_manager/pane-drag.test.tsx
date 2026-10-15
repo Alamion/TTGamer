@@ -15,7 +15,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
-import { groupFrameOf, resetLayout } from './helpers/panes';
+import { groupFrameOf, resetLayout, roomyArea } from './helpers/panes';
 import { draggableOf, dragTab, fireDrag, stubBoxes, transfer } from './helpers/tabDrag';
 
 vi.setConfig({ testTimeout: 30_000 });
@@ -123,6 +123,7 @@ describe('dragging tabs (spec 036, US2)', () => {
         cleanup();
         seedDocuments(['Ana', 'Bruno', 'Cleo', 'Dora', 'Emil', 'Fay', 'Gus'], { current: 'Ana' });
         render(createElement(CharacterSheet));
+        roomyArea();
         act(() => {
             for (const name of ['Bruno', 'Cleo', 'Dora', 'Emil', 'Fay']) openBeside(name);
             openInNewTab('Gus');

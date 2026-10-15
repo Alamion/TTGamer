@@ -19,6 +19,7 @@ import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
+import { resetLayout, roomyArea } from './helpers/panes';
 
 const names = 'abcdefghijklmnop'.split('');
 const current = () => useDocumentStore.getState().currentDocumentId;
@@ -50,6 +51,7 @@ const entryIds = (list: readonly string[] = names) => new Set(list);
 
 beforeEach(() => {
     resetDocuments();
+    resetLayout();
     usePaneStore.setState(state({}));
     seedDocuments(names, { current: 'a' });
 });
@@ -134,11 +136,26 @@ describe('opening documents', () => {
     });
 
     it('beside at six groups adds a tab and says so', () => {
+        roomyArea();
         for (const id of ['b', 'c', 'd', 'e', 'f']) openBeside(id);
         expect(groupsInOrder(layout().root)).toHaveLength(6);
         expect(openBeside('g')).toEqual({ closed: null, asTab: true });
         expect(groupsInOrder(layout().root)).toHaveLength(6);
         expect(groupOf(layout().root, 'd:g')?.tabs).toEqual(['d:f', 'd:g']);
+    });
+
+    it('beside adds a tab when another group would not keep its minimum in the area', () => {
+        roomyArea(1280, 800);
+        for (const id of ['b', 'c']) openBeside(id);
+        expect(groupsInOrder(layout().root)).toHaveLength(3);
+        expect(openBeside('d')).toEqual({ closed: null, asTab: true });
+        expect(tabsByGroup()).toEqual([['d:a'], ['d:b'], ['d:c', 'd:d']]);
+    });
+
+    it('beside on a phone still makes a group: the narrow view shows one document anyway', () => {
+        roomyArea(375, 700);
+        for (const id of ['b', 'c', 'd']) openBeside(id);
+        expect(groupsInOrder(layout().root)).toHaveLength(4);
     });
 
     it('in a new tab: after the shown tab of the last used group, made current', () => {

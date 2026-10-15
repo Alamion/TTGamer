@@ -64,8 +64,8 @@ export function PaneGroup({
                 fill && 'h-full',
                 framed &&
                     clsx(
-                        'rounded-lg border-2',
-                        focused ? 'border-primary' : 'border-borderMoreContrast'
+                        'rounded-lg border',
+                        focused ? 'border-primary-muted' : 'border-borderMoreContrast'
                     )
             )}
             data-group-frame=""

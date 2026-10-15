@@ -16,7 +16,7 @@ import { Toaster } from 'react-hot-toast';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
-import { groupFrameOf, resetLayout } from './helpers/panes';
+import { groupFrameOf, resetLayout, roomyArea } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 30_000 });
 
@@ -30,6 +30,7 @@ const announced = () => document.querySelector('[data-pane-announcer]')?.textCon
 
 async function open(setup: () => void, groups: number, width = 1280) {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(width);
+    roomyArea(width, 1000);
     act(setup);
     await waitFor(() => expect(screen.getAllByRole('tablist')).toHaveLength(groups));
 }

@@ -8,7 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { folder, openWindow, resetDocuments, seedDocuments } from './helpers/documentsWindow';
-import { openDocumentIds, resetLayout } from './helpers/panes';
+import { openDocumentIds, resetLayout, roomyArea } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -243,6 +243,7 @@ describe('the documents window (spec 032, US1)', () => {
     it('opens a seventh document beside as a tab, and says so', async () => {
         const names = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
         resetLayout();
+        roomyArea();
         seedDocuments(names, { current: 'A' });
         openWindow();
         render(createElement(Toaster));
@@ -251,7 +252,9 @@ describe('the documents window (spec 032, US1)', () => {
             fireEvent.click(screen.getByRole('menuitem', { name: 'Open beside' }));
         }
         expect(openDocumentIds()).toHaveLength(7);
-        expect(screen.getByText('Six groups are open, so "G" opened as a tab.')).toBeTruthy();
+        expect(
+            screen.getByText('There is no room for another group, so "G" opened as a tab.')
+        ).toBeTruthy();
     });
 
     describe('on a phone', () => {

@@ -54,7 +54,7 @@ describe('each group has its own tabs (spec 036, US1)', () => {
         expect(tabsIn(strips()[0]!)).toEqual(['Ana', 'Bruno']);
         expect(strips()[0]!.getAttribute('aria-label')).toBe('Tabs of group 1');
         expect(shown()).toEqual(['Bruno']);
-        expect(groupFrameOf('Bruno').className).not.toContain('border-2');
+        expect(groupFrameOf('Bruno').className.split(' ')).not.toContain('border');
         expect(document.querySelector('[data-group]')).toBeNull();
         expect(screen.queryByRole('button', { name: /Show only/ })).toBeNull();
     });
@@ -80,11 +80,11 @@ describe('each group has its own tabs (spec 036, US1)', () => {
         act(() => void openBeside('Bruno'));
         await waitFor(() => expect(strips()).toHaveLength(2));
         const frames = [...document.querySelectorAll<HTMLElement>('[data-group-frame]')];
-        expect(frames.every((frame) => frame.className.includes('border-2'))).toBe(true);
-        expect(groupFrameOf('Bruno').className).toContain('border-primary');
+        expect(frames.every((frame) => frame.className.split(' ').includes('border'))).toBe(true);
+        expect(groupFrameOf('Bruno').className).toContain('border-primary-muted');
         fireEvent.pointerDown(screen.getByRole('region', { name: 'Ana' }));
         expect(current()).toBe('Ana');
-        expect(groupFrameOf('Ana').className).toContain('border-primary');
+        expect(groupFrameOf('Ana').className).toContain('border-primary-muted');
     });
 
     it('fills the window below the toolbar with several groups, each scrolling its page', async () => {

@@ -30,6 +30,7 @@ import {
     closeTab,
     focusTab,
     moveTab,
+    setLayoutArea,
     setPaneView,
     setSplitWeights,
     splitWith,
@@ -125,6 +126,9 @@ export function PaneArea({
     useEffect(() => {
         if (layout !== stored) usePaneStore.setState(layout);
     }, [layout, stored]);
+    useEffect(() => {
+        if (width !== undefined) setLayoutArea({ width, height });
+    }, [width, height]);
 
     const nameOf = (id: string) => {
         const entry = entries.find((candidate) => candidate.id === id);

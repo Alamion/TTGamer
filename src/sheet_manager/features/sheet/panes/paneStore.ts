@@ -3,13 +3,16 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentStore } from '../../../store/documentStore';
+import { SIDE_BY_SIDE_WIDTH } from './layout';
 import {
     EMPTY_LAYOUT,
     findGroup,
     focusedGroup,
     groupOf,
     groupsInOrder,
+    type LayoutNode,
     type LayoutState,
+    minSizeOf,
     openKeys,
     placeTab,
     reconcileLayout,
@@ -165,6 +168,29 @@ export interface OpenOutcome {
     asTab: boolean;
 }
 
+let measuredArea: { width: number; height: number } | null = null;
+
+/** The size of the sheet's layout area, as last drawn; `null` before it is drawn. */
+export function setLayoutArea(size: { width: number; height: number } | null): void {
+    measuredArea = size;
+}
+
+/**
+ * Whether every group of `root` keeps its minimum size in the layout area (the window's size
+ * until the area is drawn). Below the side-by-side width only the group count matters: the narrow
+ * view shows one document anyway (design D7).
+ */
+function hasRoomFor(root: LayoutNode | null): boolean {
+    const area =
+        measuredArea ??
+        (typeof window === 'undefined'
+            ? null
+            : { width: window.innerWidth, height: window.innerHeight });
+    if (!area || area.width < SIDE_BY_SIDE_WIDTH) return true;
+    const needed = minSizeOf(root);
+    return needed.width <= area.width && needed.height <= area.height;
+}
+
 function openDocument(id: string, place: 'beside' | 'tab'): OpenOutcome {
     const documents = useDocumentStore.getState();
     const key = docKey(id);
@@ -176,12 +202,12 @@ function openDocument(id: string, place: 'beside' | 'tab'): OpenOutcome {
     const admitted = admitDocument(state);
     state = admitted.state;
     const group = focusedGroup(state);
-    const asTab = place === 'tab' || groupsInOrder(state.root).length >= MAX_GROUPS;
-    const root = !group
-        ? state.root
-        : asTab
-          ? placeTab(state.root, key, group.id)
-          : splitGroup(state.root, group.id, 'right', key);
+    const beside =
+        group && place === 'beside' && groupsInOrder(state.root).length < MAX_GROUPS
+            ? splitGroup(state.root, group.id, 'right', key)
+            : null;
+    const asTab = !beside || !hasRoomFor(beside);
+    const root = !group ? state.root : asTab ? placeTab(state.root, key, group.id) : beside;
     const view = place === 'beside' ? startView(id) : undefined;
     usePaneStore.setState({
         ...state,

@@ -179,3 +179,9 @@ restore at the browser level → **Finish**.
   (`tests/sheet_manager/helpers/tabDrag.ts`). Browser timing "open a second document beside (3,000)"
   read 305 ms against its 200 ms budget in this run (spec 034 saw 169–567 ms on the same machine);
   it is reported, and looked at again in US7.
+- **Follow-up after US2 (maintainer's walk)**: group frames are 1 px, the focused one in
+  `primary-muted` (the toolbar's New button colour). **Open beside** now checks the room: a new
+  group that would leave any group under its minimum in the drawn area (`setLayoutArea`, the
+  window's size until the area is drawn) opens the document as a tab instead, with the notice
+  `panes.openedAsTab`. Before, six documents opened beside on a 1920 px window made groups that did
+  not fit, and the whole layout fell back to the narrow view.

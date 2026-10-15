@@ -40,8 +40,8 @@ describe('groups side by side (spec 036, Foundation)', () => {
         const frames = [...document.querySelectorAll<HTMLElement>('[data-group-frame]')].map(
             (frame) => frame.className
         );
-        expect(frames.every((name) => name.includes('border-2'))).toBe(true);
-        expect(frames.filter((name) => name.includes('border-primary'))).toHaveLength(1);
+        expect(frames.every((name) => name.split(' ').includes('border'))).toBe(true);
+        expect(frames.filter((name) => name.includes('border-primary-muted'))).toHaveLength(1);
         expect(screen.getAllByRole('separator')).toHaveLength(2);
     });
 
@@ -54,8 +54,33 @@ describe('groups side by side (spec 036, Foundation)', () => {
         for (const group of groups) expect(parseInt(group.style.width)).toBeGreaterThanOrEqual(320);
     });
 
-    it('shows one document and every tab when the groups do not fit', async () => {
+    it('opens beside as a tab when another group would not fit', async () => {
         await open(['Ana', 'Bruno', 'Cleo', 'Dora'], 1280);
+        expect(regions()).toEqual(['Ana', 'Bruno', 'Dora']);
+        expect(usePaneStore.getState().root).toMatchObject({ type: 'split' });
+        expect(screen.getAllByRole('tablist')).toHaveLength(3);
+    });
+
+    it('shows one document and every tab when a stored layout does not fit', async () => {
+        vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1280);
+        resetLayout();
+        seedDocuments(['Ana', 'Bruno', 'Cleo', 'Dora'], { current: 'Dora' });
+        usePaneStore.setState({
+            root: {
+                type: 'split',
+                direction: 'row',
+                children: ['Ana', 'Bruno', 'Cleo', 'Dora'].map((name) => ({
+                    type: 'group' as const,
+                    id: name,
+                    tabs: [`d:${name}`],
+                    shown: `d:${name}`,
+                })),
+                weights: [1, 1, 1, 1],
+            },
+            recent: ['d:Dora'],
+        });
+        render(createElement(CharacterSheet));
+        await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(4));
         expect(regions()).toEqual(['Dora']);
         expect(screen.getAllByRole('tab')).toHaveLength(4);
         fireEvent.click(screen.getByRole('tab', { name: 'Ana' }));
