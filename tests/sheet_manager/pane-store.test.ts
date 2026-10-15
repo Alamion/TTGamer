@@ -97,6 +97,16 @@ describe('the layout that is true now (spec 036, D2)', () => {
         expect(next.recent).toEqual(['d:b', 'd:a']);
     });
 
+    it('keeps a tool shown that the reader chose over the current document in its group', () => {
+        const before = state({
+            root: g('A', ['d:a', 'd:b', 't:library'], 't:library'),
+            recent: ['t:library', 'd:a', 'd:b'],
+        });
+        expect(reconcileLayout(before, 'a', entryIds())).toBe(before);
+        // A document made current elsewhere is still shown.
+        expect((reconcileLayout(before, 'b', entryIds()).root as GroupNode).shown).toBe('d:b');
+    });
+
     it('corrects a stale order of use instead of trusting it', () => {
         const before = state({ root: row(g('A', ['d:a']), g('B', ['d:b'])), recent: ['d:a'] });
         expect(reconcileLayout(before, 'b', entryIds()).recent).toEqual(['d:b', 'd:a']);

@@ -430,7 +430,12 @@ export function reconcileLayout(
         const key = docKey(currentId);
         const holder = groupOf(root, key);
         if (holder) {
-            if (holder.shown !== key)
+            // A tool the reader switched to stays shown: the current document is still the last
+            // document used. A document made current elsewhere is shown.
+            const chosenTool =
+                documentIdOf(holder.shown) === null &&
+                state.recent.find((recent) => documentIdOf(recent) !== null) === key;
+            if (holder.shown !== key && !chosenTool)
                 root = placeTab(root, key, holder.id, holder.tabs.indexOf(key));
         } else if (!floating.some((entry) => entry.key === key)) {
             root = openInPlace(root, state.recent, key);

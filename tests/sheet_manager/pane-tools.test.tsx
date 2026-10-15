@@ -2,6 +2,7 @@
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
 import { groupsInOrder } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
 import {
+    moveTab,
     openBeside,
     openInNewTab,
     openTool,
@@ -50,6 +51,22 @@ describe('tools in the layout (spec 036, US3)', () => {
         expect(within(frame).getByRole('tree')).toBeTruthy();
         // A group as narrow as this one shows the list and the details as tabs.
         expect(within(frame).getByRole('tab', { name: 'Details' })).toBeTruthy();
+    });
+
+    it('switches between a tool and a document that share a group', async () => {
+        act(() => openTool('library'));
+        await waitFor(() => expect(tab('Library')).toBeTruthy());
+        const anaGroup = groupsInOrder(usePaneStore.getState().root).find(({ tabs }) =>
+            tabs.includes('d:Ana')
+        )!;
+        act(() => moveTab('t:library', anaGroup.id));
+        fireEvent.click(tab('Ana'));
+        expect(screen.getByRole('region', { name: 'Ana' })).toBeTruthy();
+        fireEvent.click(tab('Library'));
+        expect(screen.getByRole('region', { name: 'Library' })).toBeTruthy();
+        expect(screen.queryByRole('region', { name: 'Ana' })).toBeNull();
+        fireEvent.click(tab('Ana'));
+        expect(screen.getByRole('region', { name: 'Ana' })).toBeTruthy();
     });
 
     it('opens the library without blocking the page', async () => {
