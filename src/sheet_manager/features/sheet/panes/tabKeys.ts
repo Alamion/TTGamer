@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useSyncExternalStore } from 'react';
 
 /** The tools that can be tabs of the layout or floating windows (spec 036). */
 export const TOOL_IDS = ['documents', 'library', 'dice'] as const;
@@ -31,19 +31,43 @@ export const documentIdOf = (key: TabKey): string | null =>
 /** How a tool tab is drawn; documents are drawn by the sheet itself. */
 export interface TabKind {
     title: () => string;
-    render: () => ReactNode;
+    /** Names the close button of the tool's floating window. */
+    closeLabel: () => string;
+    /** The tool's content; `onClose` closes it wherever it is held. */
+    render: (host: { onClose: () => void }) => ReactNode;
     /** The tab was closed (the tool closes with it). */
     onClose?: () => void;
 }
 
 const kinds = new Map<ToolId, TabKind>();
+const listeners = new Set<() => void>();
+let version = 0;
+const changed = () => {
+    version += 1;
+    for (const listener of listeners) listener();
+};
 
 /** Registers how a tool is drawn; returns the release (for adapters mounted with a page). */
 export function registerTabKind(toolId: ToolId, kind: TabKind): () => void {
     kinds.set(toolId, kind);
+    changed();
     return () => {
-        if (kinds.get(toolId) === kind) kinds.delete(toolId);
+        if (kinds.get(toolId) !== kind) return;
+        kinds.delete(toolId);
+        changed();
     };
+}
+
+/** Redraws the caller when a tool registers or goes (a page's adapter mounts after the sheet). */
+export function useTabKinds(): number {
+    return useSyncExternalStore(
+        (listener) => {
+            listeners.add(listener);
+            return () => listeners.delete(listener);
+        },
+        () => version,
+        () => version
+    );
 }
 
 export function tabKindOf(key: TabKey): TabKind | undefined {

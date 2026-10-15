@@ -1,7 +1,6 @@
 // @vitest-environment happy-dom
 
 import { DocumentCreateDialog } from '@site/src/sheet_manager/components/dialogs/DocumentCreateDialog';
-import { LibraryDialog } from '@site/src/sheet_manager/components/dialogs/LibraryDialog';
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
@@ -16,6 +15,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetEditorStores } from './helpers/editor';
+import { LibraryWindow } from './helpers/toolWindows';
 
 // Full sheets and the editor render slowly under a loaded test run.
 vi.setConfig({ testTimeout: 30_000 });
@@ -34,7 +34,7 @@ function setting(id: string, name: string, systemId: string): UserSetting {
 }
 
 const openLibrary = () =>
-    render(createElement(LibraryDialog, { open: true, onOpenChange: () => {} }));
+    render(createElement(LibraryWindow, { open: true, onOpenChange: () => {} }));
 const clickRow = (key: string) =>
     fireEvent.click(document.querySelector(`[data-tree-row="${key}"]`)!);
 const clickAction = (id: string) =>

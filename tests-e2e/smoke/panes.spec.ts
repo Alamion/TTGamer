@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 
 import { createDocument, measureView, showView } from '../brief';
 import { expect, test } from '../fixtures';
+import { closeDocumentsTool, documentsTool, openDocumentsFloating } from '../tools';
 import { SINGLE_DOCUMENT_BASELINE } from './panes-baseline';
 
 test('with one document the page keeps its height (specs 034, 036: SC-004)', async ({ page }) => {
@@ -25,8 +26,8 @@ async function openSeveralBeside(page: Page, count: number): Promise<void> {
     for (let index = 0; index < count; index += 1)
         await createDocument(page, 'star-wars-wod/character');
     for (let index = 0; index < count - 1; index += 1) {
-        await page.getByRole('button', { name: 'Manage', exact: true }).click();
-        const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+        // Floating, the documents window takes no group the documents need (spec 036).
+        const window = await openDocumentsFloating(page);
         // A click on a row opens the document, so the row's own menu is the way to open beside.
         await window
             .getByRole('button', { name: /^Actions for / })
@@ -34,7 +35,7 @@ async function openSeveralBeside(page: Page, count: number): Promise<void> {
             .click();
         await page.getByRole('menuitem', { name: 'Open beside' }).click();
         if (page.viewportSize()!.width < 768) continue;
-        await window.getByRole('button', { name: 'Close the documents window' }).click();
+        await closeDocumentsTool(page);
     }
 }
 
@@ -64,8 +65,10 @@ test('three documents share a 1280 px window, each group at least 320 px, with n
 test('a window too narrow for every group shows one document and a strip of all (spec 036)', async ({
     page,
 }) => {
-    await page.setViewportSize({ width: 960, height: 800 });
+    await page.setViewportSize({ width: 1280, height: 800 });
     await openSeveralBeside(page, 3);
+    await expect(panes(page)).toHaveCount(3);
+    await page.setViewportSize({ width: 960, height: 800 });
     await expect(panes(page)).toHaveCount(1);
     await expect(page.getByRole('tab')).toHaveCount(3);
     await page.getByRole('tab').first().click();
@@ -194,8 +197,7 @@ test('the panes, their order, sizes, and views come back after a reload', async 
     expect(await snapshot()).toEqual(before);
 
     // A document deleted meanwhile simply drops out.
-    await page.getByRole('button', { name: 'Manage', exact: true }).click();
-    const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+    const window = await openDocumentsFloating(page);
     await window
         .getByRole('treeitem')
         .first()
@@ -206,7 +208,7 @@ test('the panes, their order, sizes, and views come back after a reload', async 
         .last()
         .getByRole('button', { name: 'Delete', exact: true })
         .click();
-    await window.getByRole('button', { name: 'Close the documents window' }).click();
+    await closeDocumentsTool(page);
     await page.reload();
     await expect(page.locator('section[data-pane]')).toHaveCount(2);
     await expect(page.getByRole('tab')).toHaveCount(2);
@@ -221,10 +223,10 @@ test('a roll started in a pane names the character of that pane', async ({ page 
         await field.blur();
     }
     await page.getByRole('button', { name: 'Manage', exact: true }).click();
-    const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+    const window = documentsTool(page);
     await window.getByRole('button', { name: 'Actions for Kyla Venn' }).click();
     await page.getByRole('menuitem', { name: 'Open beside' }).click();
-    await window.getByRole('button', { name: 'Close the documents window' }).click();
+    await closeDocumentsTool(page);
     await expect(page.locator('section[data-pane]')).toHaveCount(2);
 
     for (const name of ['Kyla Venn', 'Orrin Dace', 'Kyla Venn']) {

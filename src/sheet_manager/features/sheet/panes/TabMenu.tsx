@@ -11,6 +11,7 @@ import {
     Maximize2,
     Minimize2,
     MoveRight,
+    PictureInPicture2,
     Rows2,
     X,
 } from 'lucide-react';
@@ -25,6 +26,7 @@ import {
     toggleMaximized,
     usePaneStore,
 } from './paneStore';
+import { MAX_FLOATING } from './types';
 
 const labels = uiMessages.sheet.documents.panes;
 
@@ -39,6 +41,7 @@ export function TabMenu({
     layout,
     onClose,
     onDone,
+    onFloat,
     tabKey,
     titleOf,
 }: {
@@ -48,6 +51,8 @@ export function TabMenu({
     onClose: () => void;
     /** A move or split happened: what to announce. */
     onDone: (announcement: string) => void;
+    /** Takes the tab into a floating window (it says why when four already float). */
+    onFloat: (key: string) => void;
     tabKey: string;
     titleOf: (key: string) => string;
 }) {
@@ -88,6 +93,12 @@ export function TabMenu({
             icon: Rows2,
             disabled: !canSplit(group.id, 'bottom', tabKey),
         },
+        {
+            id: 'float',
+            label: translate(labels.float),
+            icon: PictureInPicture2,
+            disabled: layout.floating.length >= MAX_FLOATING,
+        },
         ...(groups.length > 1
             ? [
                   {
@@ -111,6 +122,7 @@ export function TabMenu({
             onClose={onClose}
             onDisabled={(id) => {
                 if (id === 'splitRight' || id === 'splitDown') toast(translate(labels.groupLimit));
+                if (id === 'float') toast(translate(labels.floatLimit));
             }}
             onAction={(id) => {
                 if (id === 'left' || id === 'right') {
@@ -123,7 +135,8 @@ export function TabMenu({
                     if (splitWith(tabKey, group.id, id === 'splitRight' ? 'right' : 'bottom')) {
                         onDone(translate(labels.split, { name }));
                     }
-                } else if (id === 'maximize') toggleMaximized(group.id);
+                } else if (id === 'float') onFloat(tabKey);
+                else if (id === 'maximize') toggleMaximized(group.id);
                 else if (id === 'close') closeTab(tabKey);
             }}
         />

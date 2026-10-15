@@ -37,6 +37,7 @@ export function PaneGroup({
     maximizable,
     node,
     number,
+    target,
     onClose,
     onMenu,
     titleOf,
@@ -52,11 +53,12 @@ export function PaneGroup({
     maximizable: boolean;
     node: GroupNode;
     number: number;
+    /** Where a dragged tab or window would land in this group, shown over it. */
+    target: DropTarget | null;
     onClose: (key: string) => void;
     onMenu: (key: string, anchor: { x: number; y: number }) => void;
     titleOf: (key: string) => string;
 }) {
-    const target = drag?.target?.groupId === node.id ? drag.target : null;
     return (
         <div
             className={clsx(
@@ -77,49 +79,52 @@ export function PaneGroup({
                 if (!focused) focusTab(node.shown);
             }}
         >
-            <PaneTabs
-                inset={framed}
-                label={translate(labels.groupLabel, { number })}
-                tabs={node.tabs.map((key) => ({ key, name: titleOf(key) }))}
-                selected={node.shown}
-                onSelect={focusTab}
-                onClose={onClose}
-                onMaximize={maximizable ? () => toggleMaximized(node.id) : undefined}
-                onMenu={onMenu}
-                drag={
-                    drag
-                        ? {
-                              onStart: drag.start,
-                              onEnd: drag.end,
-                              onOver: (gap, event) =>
-                                  drag.over({ kind: 'strip', groupId: node.id, gap }, event),
-                              onDrop: (gap, event) =>
-                                  drag.drop({ kind: 'strip', groupId: node.id, gap }, event),
-                              gap: target?.kind === 'strip' ? target.gap : null,
-                          }
-                        : undefined
-                }
-                end={
-                    <>
-                        {end}
-                        <button
-                            type="button"
-                            aria-label={translate(labels.actions, {
-                                name: titleOf(node.shown),
-                            })}
-                            aria-haspopup="menu"
-                            onClick={(event) => {
-                                const box = event.currentTarget.getBoundingClientRect();
-                                onMenu(node.shown, { x: box.left, y: box.bottom });
-                            }}
-                            className={iconButton}
-                        >
-                            <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
-                        </button>
-                    </>
-                }
-            />
+            <div data-group-strip={node.id}>
+                <PaneTabs
+                    inset={framed}
+                    label={translate(labels.groupLabel, { number })}
+                    tabs={node.tabs.map((key) => ({ key, name: titleOf(key) }))}
+                    selected={node.shown}
+                    onSelect={focusTab}
+                    onClose={onClose}
+                    onMaximize={maximizable ? () => toggleMaximized(node.id) : undefined}
+                    onMenu={onMenu}
+                    drag={
+                        drag
+                            ? {
+                                  onStart: drag.start,
+                                  onEnd: drag.end,
+                                  onOver: (gap, event) =>
+                                      drag.over({ kind: 'strip', groupId: node.id, gap }, event),
+                                  onDrop: (gap, event) =>
+                                      drag.drop({ kind: 'strip', groupId: node.id, gap }, event),
+                                  gap: target?.kind === 'strip' ? target.gap : null,
+                              }
+                            : undefined
+                    }
+                    end={
+                        <>
+                            {end}
+                            <button
+                                type="button"
+                                aria-label={translate(labels.actions, {
+                                    name: titleOf(node.shown),
+                                })}
+                                aria-haspopup="menu"
+                                onClick={(event) => {
+                                    const box = event.currentTarget.getBoundingClientRect();
+                                    onMenu(node.shown, { x: box.left, y: box.bottom });
+                                }}
+                                className={iconButton}
+                            >
+                                <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+                            </button>
+                        </>
+                    }
+                />
+            </div>
             <div
+                data-group-body={node.id}
                 className={clsx('relative', fill && 'flex min-h-0 flex-1 flex-col')}
                 onDragOver={drag ? (event) => drag.over(bodyTarget(event), event) : undefined}
                 onDrop={drag ? (event) => drag.drop(bodyTarget(event), event) : undefined}

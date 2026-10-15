@@ -136,23 +136,23 @@ horizontal divider.
 **Check**: from a first visit build documents left, dice right, two documents in the middle; reload;
 float the dice; click the window behind.
 
-- [ ] T027 [US3] Extend `tests/shared/floating-window.test.tsx`: controlled mode (`layout`,
+- [x] T027 [US3] Extend `tests/shared/floating-window.test.tsx`: controlled mode (`layout`,
       `onLayoutChange`, `zIndex`) keeps no storage key; pressing a window calls `onFocus`; arrows on
       the focused title bar move it, Shift + arrows resize it within its limits, Home restores the
       default; write `tests/shared/window-stack.test.ts` for `useWindowStack` (raise, remove, order,
       z-indexes within `900`–`949`)
-- [ ] T028 [US3] Add the controlled mode and keyboard move/resize to
+- [x] T028 [US3] Add the controlled mode and keyboard move/resize to
       `src/shared/components/FloatingWindow.tsx` and create `src/shared/hooks/useWindowStack.ts`
-- [ ] T029 [US3] Split `components/documents/DocumentsWindow.tsx` into `DocumentsPanel.tsx`
+- [x] T029 [US3] Split `components/documents/DocumentsWindow.tsx` into `DocumentsPanel.tsx`
       (content; its narrow list/details tabs follow its container width via `useMeasuredElement`)
       and the host; register `t:documents` in `tabKeys.ts`; test in `documents-window.test.tsx` that
       the panel works in a 320 px group and in a window
-- [ ] T030 [US3] Split `components/dialogs/LibraryDialog.tsx` into `LibraryPanel.tsx` (content,
+- [x] T030 [US3] Split `components/dialogs/LibraryDialog.tsx` into `LibraryPanel.tsx` (content,
       container-width narrow layout; its confirm and editor dialogs stay modal above everything) and
       register `t:library`; test that it no longer traps focus and that its inner dialogs block;
       before building its narrow layout, show the maintainer a concept artifact of the library in a
       320 px group
-- [ ] T031 [US3] Write `tests/integrations/dice-tab.test.tsx`: with the host claimed the slide panel
+- [x] T031 [US3] Write `tests/integrations/dice-tab.test.tsx`: with the host claimed the slide panel
       is not drawn; the navbar toggle opens the dice tab at its last place and closes it; releasing
       the claim brings back today's panel; a tab kind that fails to render releases the claim and
       reports `dice-tab-unavailable` once; then add `claimPanelHost` to
@@ -160,23 +160,23 @@ float the dice; click the window behind.
       `src/dice_roller/components/DiceRollerPanel.tsx`, and
       `src/integrations/sheet-dice/diceTab.tsx` registering `t:dice` and mounted by
       `SheetWorkspace.tsx`, and the code `dice-tab-unavailable` in `diagnostics.ts`
-- [ ] T032 [US3] Write tests in `tests/sheet_manager/pane-store.test.ts`: `openTool` first places
+- [x] T032 [US3] Write tests in `tests/sheet_manager/pane-store.test.ts`: `openTool` first places
       (documents and library a left-edge group, together as tabs; dice a right-edge group), later
       `lastSide`; `floatTab` (refused at four with `panes.floatLimit`), `dockFloating`, `raise`;
       closing a tool tab closes the tool; a tool is in one place only; at six groups `openTool` adds
       a tab to the outermost group of the tool's side; a 13th document never closes a floating one
-- [ ] T033 [US3] Add `openTool`, `floatTab`, `dockFloating`, `raise` to `paneStore.ts`; draw
+- [x] T033 [US3] Add `openTool`, `floatTab`, `dockFloating`, `raise` to `paneStore.ts`; draw
       floating windows in `PaneArea.tsx` through the controlled `FloatingWindow` and the stack; dock
       by dropping a title bar (the window's pointer drag calls `hitTest`); a tab dropped in the
       float zone floats at the drop point; **Float** in the tab menu and **Dock** in a floating
       tab's title bar; replace `managerDialogOpen`/`templatesDialogOpen` in
       `shell/SheetWorkspace.tsx` with `openTool`
-- [ ] T034 [US3] Extend `tests/sheet_manager/pane-drag.test.tsx` and `pane-keyboard.test.tsx`: float
+- [x] T034 [US3] Extend `tests/sheet_manager/pane-drag.test.tsx` and `pane-keyboard.test.tsx`: float
       by drop and by menu, dock a floating window by title bar onto an edge and by its **Dock**
       button with the keyboard, raise by focus
-- [ ] T035 [US3] Strings (en + ru):
+- [x] T035 [US3] Strings (en + ru):
       `panes.{float, dock, floatLimit, toolDocuments, toolLibrary, toolDice}`
-- [ ] T036 [US3] Run `yarn verify:full`; check the tools in groups and windows at 1280 and 1920 px
+- [x] T036 [US3] Run `yarn verify:full`; check the tools in groups and windows at 1280 and 1920 px
       and on a phone; commit `feat(sheet): tools as tabs or floating windows (spec 036, US3)`
 
 ## User Story 4 - Drag documents from the documents window (P4)

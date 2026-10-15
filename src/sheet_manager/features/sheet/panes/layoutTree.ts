@@ -386,6 +386,24 @@ export function focusedGroup(state: Pick<LayoutState, 'root' | 'recent'>): Group
     return groupsInOrder(state.root)[0];
 }
 
+/**
+ * The group documents open in (spec 036, D2): the one holding the most recently used document that
+ * is in a group, else the first group holding a document, else the last used group. A tool's group
+ * takes a document only when no group holds one.
+ */
+export function documentGroup(state: Pick<LayoutState, 'root' | 'recent'>): GroupNode | undefined {
+    for (const key of state.recent) {
+        if (documentIdOf(key) === null) continue;
+        const group = groupOf(state.root, key);
+        if (group) return group;
+    }
+    return (
+        groupsInOrder(state.root).find((group) =>
+            group.tabs.some((tab) => documentIdOf(tab) !== null)
+        ) ?? focusedGroup(state)
+    );
+}
+
 const sameJson = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b);
 
 /**

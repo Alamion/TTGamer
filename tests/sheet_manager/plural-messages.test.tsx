@@ -1,6 +1,5 @@
 // @vitest-environment happy-dom
 
-import { DocumentsWindow } from '@site/src/sheet_manager/components/documents/DocumentsWindow';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod/schema';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
@@ -8,6 +7,7 @@ import { createElement } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { setTestLocale } from '../stubs/testLocale';
+import { DocumentsWindow } from './helpers/toolWindows';
 
 afterEach(() => {
     cleanup();

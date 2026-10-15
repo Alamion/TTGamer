@@ -1,10 +1,16 @@
+import {
+    readLayout as readWindowLayout,
+    type WindowLayout,
+} from '@site/src/shared/utils/windowLayout';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { reportSheetIssue } from '../../../diagnostics';
 import { useDocumentStore } from '../../../store/documentStore';
+import type { DropTarget } from './dropTargets';
 import { SIDE_BY_SIDE_WIDTH } from './layout';
 import {
+    documentGroup,
     EMPTY_LAYOUT,
     findGroup,
     focusedGroup,
@@ -12,7 +18,9 @@ import {
     groupsInOrder,
     type LayoutNode,
     type LayoutState,
+    makeGroup,
     minSizeOf,
+    normalize,
     openKeys,
     placeTab,
     reconcileLayout,
@@ -21,10 +29,19 @@ import {
     splitGroup,
     type SplitSide,
 } from './layoutTree';
-import { docKey, documentIdOf, type TabKey, tabKindOf } from './tabKeys';
+import {
+    docKey,
+    documentIdOf,
+    parseTabKey,
+    type TabKey,
+    tabKindOf,
+    type ToolId,
+    toolKey,
+} from './tabKeys';
 import {
     layoutFromArrangement,
     MAX_DOCUMENTS,
+    MAX_FLOATING,
     MAX_GROUPS,
     PANES_STORAGE_KEY,
     PANES_V1_STORAGE_KEY,
@@ -85,8 +102,16 @@ function migrateArrangement(): LayoutState | null {
  * the module loads; the sheet draws it only after the documents are loaded, so the server render,
  * which has no documents, never differs from the first browser render.
  */
-export const usePaneStore = create<LayoutState>()(
-    persist(() => EMPTY_LAYOUT, {
+/** The layout plus what lives only while the page is open. */
+export interface PaneState extends LayoutState {
+    /** The tool a phone shows over the page (the narrow view draws no groups). */
+    shownTool: TabKey | null;
+    /** Where a floating window's title bar would dock, while it is dragged. */
+    dockHint: DropTarget | null;
+}
+
+export const usePaneStore = create<PaneState>()(
+    persist((): PaneState => ({ ...EMPTY_LAYOUT, shownTool: null, dockHint: null }), {
         name: PANES_STORAGE_KEY,
         version: 2,
         storage: createJSONStorage(() => safeStorage),
@@ -201,7 +226,7 @@ function openDocument(id: string, place: 'beside' | 'tab'): OpenOutcome {
     }
     const admitted = admitDocument(state);
     state = admitted.state;
-    const group = focusedGroup(state);
+    const group = documentGroup(state);
     const beside =
         group && place === 'beside' && groupsInOrder(state.root).length < MAX_GROUPS
             ? splitGroup(state.root, group.id, 'right', key)
@@ -334,4 +359,202 @@ export function splitWith(key: TabKey, groupId: string, side: SplitSide): boolea
     usePaneStore.setState({ ...state, root, maximized: null });
     focusTab(key);
     return true;
+}
+
+const isTool = (key: TabKey) => parseTabKey(key)?.kind === 'tool';
+
+/** A new window: as wide as the documents window always was, so tools show their full layout. */
+/**
+ * Where the documents window of spec 032 was, read once from its own key and then removed: it
+ * becomes where the documents tool floats (spec 036).
+ */
+function legacyRect(key: TabKey): WindowLayout | undefined {
+    if (key !== toolKey('documents')) return undefined;
+    const raw = safeStorage.getItem('window-layout:documents');
+    if (raw === null) return undefined;
+    safeStorage.removeItem('window-layout:documents');
+    try {
+        const rect = readWindowLayout(JSON.parse(raw), { x: 0, y: 0, width: 0, height: 0 });
+        return rect.width > 0 && rect.height > 0 ? rect : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
+const DEFAULT_FLOAT = { width: 720, height: 560 };
+
+/** Where a tool goes the first time it opens (spec 036, D10). */
+const FIRST_SIDE: Record<ToolId, 'left' | 'right'> = {
+    documents: 'left',
+    library: 'left',
+    dice: 'right',
+};
+
+/** A tool's share of the width beside the rest, as a weight against an average group of 1. */
+const TOOL_WEIGHT = 0.7;
+
+/**
+ * The layout with the tool docked on `side`: as a tab of the outermost group there when that one
+ * holds a tool, or when no other group fits (six groups, or no room); else in a new group at that
+ * edge of the whole layout.
+ */
+function dockTool(root: LayoutNode | null, key: TabKey, side: 'left' | 'right'): LayoutNode | null {
+    if (!root) return makeGroup([key]);
+    const groups = groupsInOrder(root);
+    const edge = side === 'left' ? groups[0]! : groups.at(-1)!;
+    const fresh = makeGroup([key]);
+    const rest = root.type === 'split' && root.direction === 'row' ? root.children.length : 1;
+    const beside = normalize({
+        type: 'split',
+        direction: 'row',
+        children: side === 'left' ? [fresh, root] : [root, fresh],
+        weights: side === 'left' ? [TOOL_WEIGHT, rest] : [rest, TOOL_WEIGHT],
+    });
+    const joinEdge = edge.tabs.some(isTool) || groups.length >= MAX_GROUPS || !hasRoomFor(beside);
+    return joinEdge ? placeTab(root, key, edge.id) : beside;
+}
+
+/** The side of the layout a grouped tab is on: the first half of the groups is the left. */
+function sideOf(state: LayoutState, key: TabKey): 'left' | 'right' | undefined {
+    const groups = groupsInOrder(state.root);
+    const index = groups.findIndex((group) => group.tabs.includes(key));
+    if (index === -1 || groups.length < 2) return undefined;
+    return index < groups.length / 2 ? 'left' : 'right';
+}
+
+/**
+ * Opens a tool (spec 036, US3): one that is open is shown and brought forward; otherwise it docks
+ * on its last side (first time: documents and library left, dice right). A phone shows it over
+ * the page.
+ */
+export function openTool(toolId: ToolId): void {
+    const key = toolKey(toolId);
+    const state = reconciled();
+    if (openKeys(state).includes(key)) {
+        if (state.floating.some((entry) => entry.key === key)) raise(key);
+        else focusTab(key);
+        usePaneStore.setState({ shownTool: key });
+        return;
+    }
+    const side = state.lastSide[key] ?? FIRST_SIDE[toolId];
+    if (!useDocumentStore.getState().currentDocumentId) {
+        // No document, no layout to dock in: the tool floats where it last did.
+        const offset = 32 * state.floating.length;
+        const rect = state.lastRect[key] ??
+            legacyRect(key) ?? { x: 160 + offset, y: 120 + offset, ...DEFAULT_FLOAT };
+        usePaneStore.setState({
+            floating: [...state.floating.filter((entry) => entry.key !== key), { key, rect }],
+            recent: [key, ...state.recent],
+            shownTool: key,
+        });
+        return;
+    }
+    usePaneStore.setState({
+        ...state,
+        root: dockTool(state.root, key, side),
+        recent: [key, ...state.recent],
+        lastSide: { ...state.lastSide, [key]: side },
+        maximized: null,
+        shownTool: key,
+    });
+}
+
+/** Whether a tool is open (in a group or a window). */
+export const isToolOpen = (state: LayoutState, toolId: ToolId) =>
+    openKeys(state).includes(toolKey(toolId));
+
+/** The phone's view of a tool is put away; the tool keeps its place on a wide screen. */
+export const hideShownTool = () => usePaneStore.setState({ shownTool: null });
+
+/**
+ * Takes a tab out of its group into a window above the page (at `at`, else where the tool last
+ * floated, else a cascaded default). Refused at four windows: `false`.
+ */
+export function floatTab(key: TabKey, at?: { x: number; y: number }): boolean {
+    const state = reconciled();
+    if (state.floating.length >= MAX_FLOATING) return false;
+    if (!groupOf(state.root, key)) return false;
+    const offset = 32 * state.floating.length;
+    const rect: WindowLayout = at
+        ? { x: Math.max(0, at.x - 120), y: Math.max(0, at.y - 16), ...DEFAULT_FLOAT }
+        : (state.lastRect[key] ??
+          legacyRect(key) ?? { x: 160 + offset, y: 120 + offset, ...DEFAULT_FLOAT });
+    const side = sideOf(state, key);
+    usePaneStore.setState({
+        ...state,
+        root: removeTab(state.root, key),
+        floating: [...state.floating, { key, rect }],
+        recent: [key, ...state.recent.filter((candidate) => candidate !== key)],
+        lastSide: isTool(key) && side ? { ...state.lastSide, [key]: side } : state.lastSide,
+        maximized: null,
+    });
+    return true;
+}
+
+/** Brings a floating window to the front and makes it the one used last. */
+export function raise(key: TabKey): void {
+    const state = usePaneStore.getState();
+    const entry = state.floating.find((candidate) => candidate.key === key);
+    if (!entry) return;
+    const front = state.floating.at(-1)?.key === key && state.recent[0] === key;
+    if (!front) {
+        usePaneStore.setState({
+            floating: [...state.floating.filter((candidate) => candidate.key !== key), entry],
+            recent: [key, ...state.recent.filter((candidate) => candidate !== key)],
+        });
+    }
+    const id = documentIdOf(key);
+    if (id && useDocumentStore.getState().currentDocumentId !== id) {
+        useDocumentStore.getState().setCurrentDocument(id);
+    }
+}
+
+/** Stores where a floating window is (`null`: back to its default place). */
+export function setFloatingRect(key: TabKey, rect: WindowLayout | null): void {
+    usePaneStore.setState((state) => {
+        const next = rect ?? { x: 160, y: 120, ...DEFAULT_FLOAT };
+        return {
+            floating: state.floating.map((entry) =>
+                entry.key === key ? { key, rect: next } : entry
+            ),
+            lastRect: isTool(key) ? { ...state.lastRect, [key]: next } : state.lastRect,
+        };
+    });
+}
+
+/**
+ * Puts a floating window back into the layout: at `target` (its title bar was dropped there),
+ * else a tool on its last side and a document as a tab of the last used group.
+ */
+export function dockFloating(key: TabKey, target?: DropTarget): void {
+    const state = reconciled();
+    if (!state.floating.some((entry) => entry.key === key)) return;
+    const floating = state.floating.filter((entry) => entry.key !== key);
+    let root: LayoutNode | null;
+    if (target?.kind === 'edge') {
+        root = splitGroup(state.root, target.groupId, target.side, key);
+    } else if (target) {
+        root = placeTab(
+            state.root,
+            key,
+            target.groupId,
+            target.kind === 'strip' ? target.gap : undefined
+        );
+    } else if (isTool(key)) {
+        const toolId = parseTabKey(key)!.id as ToolId;
+        root = dockTool(state.root, key, state.lastSide[key] ?? FIRST_SIDE[toolId]);
+    } else {
+        const group = focusedGroup(state);
+        root = group ? placeTab(state.root, key, group.id) : makeGroup([key]);
+    }
+    usePaneStore.setState({ ...state, root, floating, dockHint: null });
+    focusTab(key);
+}
+
+/** Whether splitting the group on `side` for `key` keeps under seven groups that all fit. */
+export function canSplitAt(groupId: string, side: SplitSide, key: TabKey): boolean {
+    const { root } = usePaneStore.getState();
+    if (groupsInOrder(root).length >= MAX_GROUPS) return false;
+    const probe = splitGroup(root, groupId, side, key, 'probe');
+    return probe !== root && hasRoomFor(probe);
 }

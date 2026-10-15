@@ -3,11 +3,14 @@ import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Splitter } from '@site/src/shared/components/Splitter';
 import { useMediaQuery } from '@site/src/shared/hooks/useMediaQuery';
 import { useMeasuredElement } from '@site/src/shared/hooks/usePaneSizes';
+import { clsx } from 'clsx';
 import { type DragEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
 
 import { useDocumentStore } from '../../../store/documentStore';
 import { documentLabeler } from '../../documents/labeler';
 import { bodyTarget, type DropTarget, edgeAt } from './dropTargets';
+import { FloatingTabs } from './FloatingTabs';
 import { MIN_GROUP_HEIGHT, moveDivider, SIDE_BY_SIDE_WIDTH, weightsOf } from './layout';
 import {
     type DividerPlace,
@@ -25,9 +28,11 @@ import {
 } from './layoutTree';
 import { Pane } from './Pane';
 import { MaximizeButton, PaneGroup } from './PaneGroup';
+import { tabId } from './paneIds';
 import { PaneSourceProvider } from './PaneSourceProvider';
 import {
     closeTab,
+    floatTab,
     focusTab,
     moveTab,
     setLayoutArea,
@@ -38,7 +43,7 @@ import {
 } from './paneStore';
 import { PaneTabs } from './PaneTabs';
 import { PaneViewSelect } from './PaneViewSelect';
-import { docKey, documentIdOf, tabKindOf } from './tabKeys';
+import { docKey, documentIdOf, tabKindOf, useTabKinds } from './tabKeys';
 import { TabMenu } from './TabMenu';
 import { MAX_GROUPS } from './types';
 import { useTabDrag } from './useTabDrag';
@@ -117,6 +122,8 @@ export function PaneArea({
         null
     );
     const [announcement, setAnnouncement] = useState('');
+    const dockHint = usePaneStore((state) => state.dockHint);
+    useTabKinds();
 
     const entryIds = useMemo(() => new Set(entries.map(({ id }) => id)), [entries]);
     const layout = useMemo(
@@ -142,7 +149,11 @@ export function PaneArea({
     const groupNumberOf = (key: string) =>
         groupsInOrder(usePaneStore.getState().root).findIndex((group) => group.tabs.includes(key)) +
         1;
-    const drag = useTabDrag((key: string, target: DropTarget) => {
+    const float = (key: string, at?: { x: number; y: number }) => {
+        if (floatTab(key, at)) setAnnouncement(translate(labels.floated, { name: titleOf(key) }));
+        else toast(translate(labels.floatLimit));
+    };
+    const drag = useTabDrag(float, (key: string, target: DropTarget) => {
         const name = titleOf(key);
         if (target.kind === 'edge') {
             if (splitWith(key, target.groupId, target.side)) {
@@ -189,11 +200,18 @@ export function PaneArea({
         };
     }, [shownKey, loadIntoCache]);
 
-    if (documentIds.length < 2 && groups.length < 2) {
+    const floatingLayer = (
+        <FloatingTabs renderDocument={renderDocument} titleOf={(key: string) => titleOf(key)} />
+    );
+    const only = groups.length === 1 && groups[0]!.tabs.length === 1 ? groups[0]!.tabs[0] : null;
+    if (only === docKey(documentId)) {
         return (
-            <PaneSourceProvider documentId={documentId}>
-                {renderDocument(documentId)}
-            </PaneSourceProvider>
+            <>
+                <PaneSourceProvider documentId={documentId}>
+                    {renderDocument(documentId)}
+                </PaneSourceProvider>
+                {floatingLayer}
+            </>
         );
     }
 
@@ -208,7 +226,18 @@ export function PaneArea({
 
     const body = (key: string, fill: boolean) => {
         const id = documentIdOf(key);
-        if (id === null) return tabKindOf(key)?.render() ?? null;
+        if (id === null) {
+            return (
+                <section
+                    key={key}
+                    aria-labelledby={tabId(key)}
+                    data-tool={key}
+                    className={clsx('flex min-w-0 flex-col', fill ? 'min-h-0 flex-1' : 'h-[70dvh]')}
+                >
+                    {tabKindOf(key)?.render({ onClose: () => closeTab(key) })}
+                </section>
+            );
+        }
         return (
             <Pane
                 key={key}
@@ -248,6 +277,7 @@ export function PaneArea({
                     end={viewSelect(currentKey)}
                 />
                 <div ref={areaRef}>{body(currentKey, false)}</div>
+                {floatingLayer}
             </div>
         );
     }
@@ -281,6 +311,7 @@ export function PaneArea({
             onClose={closeTab}
             onMenu={(key, anchor) => setMenu({ key, anchor })}
             drag={coarse ? null : drag}
+            target={[dockHint, drag.target].find((hint) => hint?.groupId === node.id) ?? null}
             bodyTarget={targetIn(node)}
             body={body(node.shown, fill)}
             end={
@@ -306,15 +337,25 @@ export function PaneArea({
             titleOf={titleOf}
             onClose={() => setMenu(null)}
             onDone={setAnnouncement}
+            onFloat={float}
         />
     );
 
+    if (groups.length === 0) {
+        return (
+            <div ref={areaRef} data-panes="">
+                {floatingLayer}
+                {announcer}
+            </div>
+        );
+    }
     if (!several) {
         return (
             <div ref={areaRef} className="px-4 pb-4 pt-3" data-panes="">
                 {group(groups[0]!, 1, false)}
                 {tabMenu}
                 {announcer}
+                {floatingLayer}
             </div>
         );
     }
@@ -409,6 +450,7 @@ export function PaneArea({
             </div>
             {tabMenu}
             {announcer}
+            {floatingLayer}
         </div>
     );
 }

@@ -30,7 +30,7 @@ describe('tab keys (spec 036, D1)', () => {
 
     it('find the kind registered for a tool', () => {
         expect(tabKindOf('t:dice')).toBeUndefined();
-        const kind = { title: () => 'Dice', render: () => null };
+        const kind = { title: () => 'Dice', closeLabel: () => 'Close', render: () => null };
         release = registerTabKind('dice', kind);
         expect(tabKindOf('t:dice')).toBe(kind);
         expect(tabKindOf('d:abc')).toBeUndefined();

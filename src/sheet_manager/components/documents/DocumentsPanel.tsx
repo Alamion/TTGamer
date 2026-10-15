@@ -1,6 +1,5 @@
 import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
-import { FloatingWindow } from '@site/src/shared/components/FloatingWindow';
 import { Splitter } from '@site/src/shared/components/Splitter';
 import { SelectionBar } from '@site/src/shared/components/tree/SelectionBar';
 import { TreeContextMenu } from '@site/src/shared/components/tree/TreeContextMenu';
@@ -78,9 +77,9 @@ const TREE_LIMITS: Record<'tree', PaneLimits> = { tree: { min: 180, max: 520, in
 const STATUS_MS = 5000;
 const TREE_ROOM = { restMin: 240, dividers: 6 };
 
-export interface DocumentsWindowProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
+export interface DocumentsPanelProps {
+    /** Closes the documents tool (on a phone, opening a document does too). */
+    onClose: () => void;
 }
 
 const iconButton =
@@ -90,16 +89,13 @@ const iconButton =
 const pickSort = ({ sort, descending }: DocumentsQuery) => ({ sort, descending });
 
 /**
- * The documents window (spec 032): the tree of folders and documents on the left, the selected
- * rows' details on the right, over the sheet page and not blocking it. On a phone it fills the
- * screen with the tree and the details as two tabs, and opening a document closes it.
+ * The documents tool (specs 032, 036): the tree of folders and documents beside the selected rows'
+ * details, drawn in whatever holds it (a group of the layout or a floating window). Narrower than
+ * a dialog's width it shows the tree and the details as two tabs; on a phone it fills the screen,
+ * and opening a document closes it. Only mounted while the tool is open, so the sheet pays nothing
+ * for it while it is closed.
  */
-export function DocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
-    // Closed, it holds no subscription and builds no rows: the sheet pays nothing for it (FR-017).
-    return open ? <OpenDocumentsWindow open onOpenChange={onOpenChange} /> : null;
-}
-
-function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
+export function DocumentsPanel({ onClose }: DocumentsPanelProps) {
     const plural = usePluralMessage();
     const narrow = useMediaQuery('(max-width: 767px)');
     const entries = useDocumentStore((state) => state.entries);
@@ -206,7 +202,7 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
 
     const openDocument = (id: string) => {
         setCurrentDocument(id);
-        if (narrow) onOpenChange(false);
+        if (narrow) onClose();
     };
     /** Says which tab gave way, or that no group could be made (spec 036, FR-012). */
     const announceOpening = (id: string, { closed, asTab }: OpenOutcome) => {
@@ -229,11 +225,11 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
     };
     const openDocumentInNewTab = (id: string) => {
         announceOpening(id, openInNewTab(id));
-        if (narrow) onOpenChange(false);
+        if (narrow) onClose();
     };
     const openDocumentBeside = (id: string) => {
         announceOpening(id, openBeside(id));
-        if (narrow) onOpenChange(false);
+        if (narrow) onClose();
     };
     const activate = (item: TreeRowItem<DocumentsNode>) => {
         if (item.node.type === 'document') openDocument(item.node.entry.id);
@@ -476,17 +472,11 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
 
     return (
         <>
-            <FloatingWindow
-                open={open}
-                onClose={() => onOpenChange(false)}
-                title={translate(labels.title)}
-                closeLabel={translate(labels.close)}
-                id="documents"
-            >
+            <div className="@container/documents flex min-h-0 flex-1 flex-col">
                 <div
                     role="tablist"
                     aria-label={translate(labels.tabs.label)}
-                    className="flex border-b border-border md:hidden"
+                    className="flex border-b border-border @2xl/documents:hidden"
                 >
                     {(['tree', 'details'] as const).map((value) => (
                         <button
@@ -513,7 +503,7 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                 >
                     <div
                         className={clsx(
-                            'min-h-0 min-w-0 flex-1 flex-col md:flex md:w-[var(--tree)] md:flex-none',
+                            'min-h-0 min-w-0 flex-1 flex-col @2xl/documents:flex @2xl/documents:w-[var(--tree)] @2xl/documents:flex-none',
                             tab === 'tree' ? 'flex' : 'hidden'
                         )}
                     >
@@ -683,19 +673,21 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                             />
                         </div>
                     </div>
-                    <Splitter
-                        label={translate(labels.resizeTree)}
-                        min={TREE_LIMITS.tree.min}
-                        max={TREE_LIMITS.tree.max}
-                        value={panes.sizes.tree}
-                        clamp={(width) => panes.clamp('tree', width)}
-                        onPreview={previewTree}
-                        onChange={(width) => panes.setSize('tree', width)}
-                        onReset={() => panes.reset('tree')}
-                    />
+                    <div className="hidden @2xl/documents:flex">
+                        <Splitter
+                            label={translate(labels.resizeTree)}
+                            min={TREE_LIMITS.tree.min}
+                            max={TREE_LIMITS.tree.max}
+                            value={panes.sizes.tree}
+                            clamp={(width) => panes.clamp('tree', width)}
+                            onPreview={previewTree}
+                            onChange={(width) => panes.setSize('tree', width)}
+                            onReset={() => panes.reset('tree')}
+                        />
+                    </div>
                     <div
                         className={clsx(
-                            'min-h-0 min-w-0 flex-1 overflow-y-auto md:block',
+                            'min-h-0 min-w-0 flex-1 overflow-y-auto @2xl/documents:block',
                             tab === 'details' ? 'block' : 'hidden'
                         )}
                     >
@@ -713,8 +705,8 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                     </div>
                 </div>
                 <RejectedFiles />
-            </FloatingWindow>
-            {open && menu && menuItem && (
+            </div>
+            {menu && menuItem && (
                 <TreeContextMenu
                     label={translate(labels.rowActions, { name: menuItem.name })}
                     container={null}

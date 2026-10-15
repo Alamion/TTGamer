@@ -1,5 +1,4 @@
 import { translate } from '@docusaurus/Translate';
-import * as Dialog from '@radix-ui/react-dialog';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { DocsHelpLink } from '@site/src/shared/components/DocsHelpLink';
 import { Splitter } from '@site/src/shared/components/Splitter';
@@ -12,7 +11,7 @@ import {
 } from '@site/src/shared/hooks/usePaneSizes';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
 import clsx from 'clsx';
-import { Search, X } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { CSSProperties, DragEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -114,11 +113,6 @@ interface Confirmation {
     run: () => void;
 }
 
-export interface LibraryDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-}
-
 function useLibraryTree() {
     const types = useDocumentTypeStore((state) => state.types);
     const settings = useDocumentTypeStore((state) => state.settings);
@@ -153,10 +147,12 @@ const modeButton = (active: boolean) =>
     );
 
 /**
- * The library (spec 013): rules → settings → document types → pages, with details and actions
- * beside the tree. Replaces the page-template list (FR-001).
+ * The library (specs 013, 036): rules → settings → document types → pages, with details and
+ * actions beside the tree, drawn in whatever holds the tool (a group of the layout or a floating
+ * window). It no longer blocks the page; its own confirmations and the template editor still do.
+ * Narrower than a dialog's width it shows the tree and the details as two tabs.
  */
-export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
+export function LibraryPanel() {
     const plural = usePluralMessage();
     const tree = useLibraryTree();
     const exportMode = useExportMode(tree);
@@ -187,8 +183,6 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
     const [flashKey, setFlashKey] = useState<string>();
     const [dragged, setDragged] = useState<string>();
     const [overKey, setOverKey] = useState<string>();
-    const modalRoot =
-        typeof document === 'undefined' ? undefined : document.getElementById('modal-root');
     const treeRegion = useRef<HTMLDivElement>(null);
     const { ref: bodyRef, node: body, width: bodyWidth } = useMeasuredElement<HTMLDivElement>();
     const panes = usePaneSizes('library-panes', TREE_LIMITS, bodyWidth, TREE_ROOM);
@@ -197,7 +191,6 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
         (width: number) => body?.style.setProperty('--tree', `${width}px`),
         [body]
     );
-    const [content, setContent] = useState<HTMLDivElement | null>(null);
 
     const filtering = query.trim() !== '' || filter !== 'all';
     const shown = useMemo(
@@ -748,204 +741,179 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
         ));
 
     return (
-        <Dialog.Root open={open} onOpenChange={onOpenChange}>
-            <Dialog.Portal container={modalRoot ?? undefined}>
-                <Dialog.Overlay className="fixed inset-0 z-[9998] bg-black/50" />
-                <Dialog.Content
-                    ref={setContent}
-                    onEscapeKeyDown={(event) => {
-                        if (panel) {
-                            event.preventDefault();
-                            setPanel(undefined);
-                        }
-                    }}
-                    className="fixed left-1/2 top-1/2 z-[9999] flex h-[min(46rem,calc(100%-2rem))] w-[min(64rem,calc(100%-1rem))] -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg border border-border bg-bgSurface shadow-xl focus:outline-hidden"
-                >
-                    <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
-                        <Dialog.Title className="text-lg font-semibold text-textPrimary">
-                            {translate(labels.title)}
-                        </Dialog.Title>
-                        <DocsHelpLink
-                            docsPath={EDITOR_GUIDE.library}
-                            label={translate(labels.help)}
-                        />
-                        <Dialog.Description className="sr-only">
-                            {translate(labels.subtitle)}
-                        </Dialog.Description>
-                        {
-                            <div
-                                role="group"
-                                aria-label={translate(labels.modes.label)}
-                                className="ml-2 flex rounded-sm border border-border p-0.5"
-                            >
-                                {(['browse', 'export', 'import'] as const).map((value) => (
-                                    <button
-                                        key={value}
-                                        type="button"
-                                        aria-pressed={mode === value}
-                                        onClick={() => {
-                                            if (value === 'export') exportMode.start();
-                                            setMode(value);
-                                            setPanel(undefined);
-                                        }}
-                                        className={modeButton(mode === value)}
-                                    >
-                                        {translate(labels.modes[value])}
-                                    </button>
-                                ))}
-                            </div>
-                        }
-                        <div className="ml-auto flex items-center gap-2">
-                            <Dialog.Close asChild>
-                                <button
-                                    type="button"
-                                    aria-label={translate(labels.close)}
-                                    className="rounded-sm p-1 text-textSecondary hover:bg-bgBase hover:text-textPrimary"
-                                >
-                                    <X className="h-5 w-5" aria-hidden="true" />
-                                </button>
-                            </Dialog.Close>
-                        </div>
-                    </div>
-
-                    {mode !== 'import' && (
-                        <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2">
-                            <label className="relative flex min-w-0 flex-1 items-center">
-                                <span className="sr-only">{translate(labels.search.label)}</span>
-                                <Search
-                                    className="pointer-events-none absolute left-2 h-4 w-4 text-textSecondary"
-                                    aria-hidden="true"
-                                />
-                                <input
-                                    type="search"
-                                    value={query}
-                                    placeholder={translate(labels.search.placeholder)}
-                                    onChange={(event) => setQuery(event.target.value)}
-                                    className="w-full rounded-sm border border-border bg-bgBase py-1 pl-8 pr-2 text-sm text-textPrimary focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
-                                />
-                            </label>
-                            <label className="flex items-center gap-1.5 text-xs text-textSecondary">
-                                {translate(labels.filters.label)}
-                                <select
-                                    value={filter}
-                                    onChange={(event) =>
-                                        setFilter(event.target.value as LibraryFilter)
-                                    }
-                                    className="rounded-sm border border-border bg-bgBase px-2 py-1 text-sm text-textPrimary"
-                                >
-                                    <option value="all">{translate(labels.filters.all)}</option>
-                                    <option value="yours">{translate(labels.filters.yours)}</option>
-                                    <option value="edited">
-                                        {translate(labels.filters.edited)}
-                                    </option>
-                                </select>
-                            </label>
-                        </div>
-                    )}
-
-                    <div
-                        role="tablist"
-                        aria-label={translate(labels.tabs.label)}
-                        className="flex border-b border-border md:hidden"
-                    >
-                        {(['tree', 'details'] as const).map((tab) => (
-                            <button
-                                key={tab}
-                                type="button"
-                                role="tab"
-                                aria-selected={narrowTab === tab}
-                                onClick={() => setNarrowTab(tab)}
-                                className={clsx(
-                                    'flex-1 border-b-2 px-3 py-2 text-sm',
-                                    narrowTab === tab
-                                        ? 'border-primary text-textPrimary'
-                                        : 'border-transparent text-textSecondary'
-                                )}
-                            >
-                                {translate(labels.tabs[tab])}
-                            </button>
-                        ))}
-                    </div>
-
-                    <div
-                        ref={bodyRef}
-                        style={{ '--tree': `${panes.sizes.tree}px` } as CSSProperties}
-                        className="flex min-h-0 flex-1"
-                    >
+        <>
+            {/* Escape first closes an open side panel; the host closes the library after that. */}
+            {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+            <div
+                onKeyDown={(event) => {
+                    if (event.key === 'Escape' && panel) {
+                        event.preventDefault();
+                        setPanel(undefined);
+                    }
+                }}
+                className="@container/library flex min-h-0 flex-1 flex-col"
+            >
+                <div className="flex flex-wrap items-center gap-2 border-b border-border p-3">
+                    <DocsHelpLink docsPath={EDITOR_GUIDE.library} label={translate(labels.help)} />
+                    <p className="sr-only">{translate(labels.subtitle)}</p>
+                    {
                         <div
-                            ref={treeRegion}
+                            role="group"
+                            aria-label={translate(labels.modes.label)}
+                            className="ml-2 flex rounded-sm border border-border p-0.5"
+                        >
+                            {(['browse', 'export', 'import'] as const).map((value) => (
+                                <button
+                                    key={value}
+                                    type="button"
+                                    aria-pressed={mode === value}
+                                    onClick={() => {
+                                        if (value === 'export') exportMode.start();
+                                        setMode(value);
+                                        setPanel(undefined);
+                                    }}
+                                    className={modeButton(mode === value)}
+                                >
+                                    {translate(labels.modes[value])}
+                                </button>
+                            ))}
+                        </div>
+                    }
+                </div>
+
+                {mode !== 'import' && (
+                    <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2">
+                        <label className="relative flex min-w-0 flex-1 items-center">
+                            <span className="sr-only">{translate(labels.search.label)}</span>
+                            <Search
+                                className="pointer-events-none absolute left-2 h-4 w-4 text-textSecondary"
+                                aria-hidden="true"
+                            />
+                            <input
+                                type="search"
+                                value={query}
+                                placeholder={translate(labels.search.placeholder)}
+                                onChange={(event) => setQuery(event.target.value)}
+                                className="w-full rounded-sm border border-border bg-bgBase py-1 pl-8 pr-2 text-sm text-textPrimary focus:border-primary focus:outline-hidden focus:ring-1 focus:ring-primary"
+                            />
+                        </label>
+                        <label className="flex items-center gap-1.5 text-xs text-textSecondary">
+                            {translate(labels.filters.label)}
+                            <select
+                                value={filter}
+                                onChange={(event) => setFilter(event.target.value as LibraryFilter)}
+                                className="rounded-sm border border-border bg-bgBase px-2 py-1 text-sm text-textPrimary"
+                            >
+                                <option value="all">{translate(labels.filters.all)}</option>
+                                <option value="yours">{translate(labels.filters.yours)}</option>
+                                <option value="edited">{translate(labels.filters.edited)}</option>
+                            </select>
+                        </label>
+                    </div>
+                )}
+
+                <div
+                    role="tablist"
+                    aria-label={translate(labels.tabs.label)}
+                    className="flex border-b border-border @2xl/library:hidden"
+                >
+                    {(['tree', 'details'] as const).map((tab) => (
+                        <button
+                            key={tab}
+                            type="button"
+                            role="tab"
+                            aria-selected={narrowTab === tab}
+                            onClick={() => setNarrowTab(tab)}
                             className={clsx(
-                                'min-h-0 flex-1 overflow-y-auto p-2 md:block md:w-[var(--tree)] md:flex-none',
-                                narrowTab === 'tree' ? 'block' : 'hidden'
+                                'flex-1 border-b-2 px-3 py-2 text-sm',
+                                narrowTab === tab
+                                    ? 'border-primary text-textPrimary'
+                                    : 'border-transparent text-textSecondary'
                             )}
                         >
-                            {mode === 'browse' && selecting && (
-                                <div className="sticky top-0 z-10 -mx-2 -mt-2 mb-2 bg-bgSurface">
-                                    <SelectionBar
-                                        text={plural(labels.bulk.title, shownSelection.size)}
-                                        cancelLabel={translate(labels.bulk.stop)}
-                                        onCancel={stopSelecting}
-                                    />
-                                </div>
-                            )}
-                            {mode === 'import' ? (
-                                importMode.tree
-                            ) : displayedTree.length === 0 ? (
-                                <div className="space-y-2 p-4 text-sm text-textSecondary">
-                                    <p>
-                                        {query.trim()
-                                            ? translate(labels.search.empty, { query })
-                                            : translate(labels.search.emptyFilter)}
-                                    </p>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setQuery('');
-                                            setFilter('all');
-                                        }}
-                                        className="rounded-sm border border-border px-2 py-1 text-xs text-textPrimary hover:bg-secondary/10"
-                                    >
-                                        {translate(labels.search.clear)}
-                                    </button>
-                                </div>
-                            ) : (
-                                <LibraryTree
-                                    label={translate(labels.treeLabel)}
-                                    tree={displayedTree}
-                                    expanded={effectiveExpanded}
-                                    selectedKey={selectedKey}
-                                    selectedKeys={
-                                        bulk ? selection : selecting ? shownSelection : undefined
-                                    }
-                                    selecting={mode === 'browse' && selecting}
-                                    onLongPress={mode === 'browse' ? startSelecting : undefined}
-                                    onSelect={selectRow}
-                                    onRowClick={() => setNarrowTab('details')}
-                                    onToggle={toggle}
-                                    onOpenPage={openPage}
-                                    onDelete={
-                                        mode === 'browse'
-                                            ? (node) => {
-                                                  if (bulk && selection.has(node.key)) {
-                                                      requestBulkDelete();
-                                                  } else if (node.ownership === 'user') {
-                                                      requestDelete(node);
-                                                  }
-                                              }
-                                            : undefined
-                                    }
-                                    onMenu={(key, anchor) =>
-                                        mode === 'browse' && setMenu({ key, ...anchor })
-                                    }
-                                    onSpace={modePanels?.onSpace}
-                                    rowExtras={modePanels?.rowExtras ?? browseExtras}
-                                    hasMenu={(node) =>
-                                        mode === 'browse' && actionsFor(node).length > 0
-                                    }
-                                    scrollRef={treeRegion}
+                            {translate(labels.tabs[tab])}
+                        </button>
+                    ))}
+                </div>
+
+                <div
+                    ref={bodyRef}
+                    style={{ '--tree': `${panes.sizes.tree}px` } as CSSProperties}
+                    className="flex min-h-0 flex-1"
+                >
+                    <div
+                        ref={treeRegion}
+                        className={clsx(
+                            'min-h-0 flex-1 overflow-y-auto p-2 @2xl/library:block @2xl/library:w-[var(--tree)] @2xl/library:flex-none',
+                            narrowTab === 'tree' ? 'block' : 'hidden'
+                        )}
+                    >
+                        {mode === 'browse' && selecting && (
+                            <div className="sticky top-0 z-10 -mx-2 -mt-2 mb-2 bg-bgSurface">
+                                <SelectionBar
+                                    text={plural(labels.bulk.title, shownSelection.size)}
+                                    cancelLabel={translate(labels.bulk.stop)}
+                                    onCancel={stopSelecting}
                                 />
-                            )}
-                        </div>
+                            </div>
+                        )}
+                        {mode === 'import' ? (
+                            importMode.tree
+                        ) : displayedTree.length === 0 ? (
+                            <div className="space-y-2 p-4 text-sm text-textSecondary">
+                                <p>
+                                    {query.trim()
+                                        ? translate(labels.search.empty, { query })
+                                        : translate(labels.search.emptyFilter)}
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setQuery('');
+                                        setFilter('all');
+                                    }}
+                                    className="rounded-sm border border-border px-2 py-1 text-xs text-textPrimary hover:bg-secondary/10"
+                                >
+                                    {translate(labels.search.clear)}
+                                </button>
+                            </div>
+                        ) : (
+                            <LibraryTree
+                                label={translate(labels.treeLabel)}
+                                tree={displayedTree}
+                                expanded={effectiveExpanded}
+                                selectedKey={selectedKey}
+                                selectedKeys={
+                                    bulk ? selection : selecting ? shownSelection : undefined
+                                }
+                                selecting={mode === 'browse' && selecting}
+                                onLongPress={mode === 'browse' ? startSelecting : undefined}
+                                onSelect={selectRow}
+                                onRowClick={() => setNarrowTab('details')}
+                                onToggle={toggle}
+                                onOpenPage={openPage}
+                                onDelete={
+                                    mode === 'browse'
+                                        ? (node) => {
+                                              if (bulk && selection.has(node.key)) {
+                                                  requestBulkDelete();
+                                              } else if (node.ownership === 'user') {
+                                                  requestDelete(node);
+                                              }
+                                          }
+                                        : undefined
+                                }
+                                onMenu={(key, anchor) =>
+                                    mode === 'browse' && setMenu({ key, ...anchor })
+                                }
+                                onSpace={modePanels?.onSpace}
+                                rowExtras={modePanels?.rowExtras ?? browseExtras}
+                                hasMenu={(node) => mode === 'browse' && actionsFor(node).length > 0}
+                                scrollRef={treeRegion}
+                            />
+                        )}
+                    </div>
+                    <div className="hidden @2xl/library:flex">
                         <Splitter
                             label={translate(labels.resizeTree)}
                             min={TREE_LIMITS.tree.min}
@@ -956,40 +924,40 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                             onChange={(width) => panes.setSize('tree', width)}
                             onReset={() => panes.reset('tree')}
                         />
-                        <div
-                            className={clsx(
-                                'min-h-0 min-w-0 flex-1 overflow-y-auto md:block',
-                                narrowTab === 'details' ? 'block' : 'hidden'
-                            )}
-                        >
-                            <button
-                                type="button"
-                                onClick={() => setNarrowTab('tree')}
-                                className="m-3 mb-0 text-xs text-primary underline md:hidden"
-                            >
-                                {translate(labels.tabs.back)}
-                            </button>
-                            {details}
-                        </div>
                     </div>
-                    {menu && menuNode && (
-                        <ContextMenu
-                            container={content}
-                            label={translate(labels.row.actions, { name: menuNode.name })}
-                            anchor={menu}
-                            actions={actionsFor(menuNode)}
-                            onAction={(id) => {
-                                setNarrowTab('details');
-                                runAction(id, menuNode);
-                            }}
-                            onClose={() => {
-                                setMenu(undefined);
-                                focusRow(menuNode.key);
-                            }}
-                        />
-                    )}
-                </Dialog.Content>
-            </Dialog.Portal>
+                    <div
+                        className={clsx(
+                            'min-h-0 min-w-0 flex-1 overflow-y-auto @2xl/library:block',
+                            narrowTab === 'details' ? 'block' : 'hidden'
+                        )}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setNarrowTab('tree')}
+                            className="m-3 mb-0 text-xs text-primary underline @2xl/library:hidden"
+                        >
+                            {translate(labels.tabs.back)}
+                        </button>
+                        {details}
+                    </div>
+                </div>
+                {menu && menuNode && (
+                    <ContextMenu
+                        container={null}
+                        label={translate(labels.row.actions, { name: menuNode.name })}
+                        anchor={menu}
+                        actions={actionsFor(menuNode)}
+                        onAction={(id) => {
+                            setNarrowTab('details');
+                            runAction(id, menuNode);
+                        }}
+                        onClose={() => {
+                            setMenu(undefined);
+                            focusRow(menuNode.key);
+                        }}
+                    />
+                )}
+            </div>
 
             {editor && (
                 <TemplateEditorDialog
@@ -1018,6 +986,6 @@ export function LibraryDialog({ open, onOpenChange }: LibraryDialogProps) {
                 cancelLabel={translate(labels.actions.cancel)}
                 variant={confirmation?.danger ? 'danger' : 'default'}
             />
-        </Dialog.Root>
+        </>
     );
 }

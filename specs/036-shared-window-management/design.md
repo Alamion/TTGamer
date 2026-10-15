@@ -185,3 +185,24 @@ restore at the browser level → **Finish**.
   window's size until the area is drawn) opens the document as a tab instead, with the notice
   `panes.openedAsTab`. Before, six documents opened beside on a 1920 px window made groups that did
   not fit, and the whole layout fell back to the narrow view.
+- **US3**:
+    - No `useWindowStack`: the stack is the order of `floating` in the layout store (front last,
+      kept across reloads), and `FloatingWindow` takes a `zIndex`; it also gained the owned mode
+      (`layout`, `onLayoutChange`), keyboard move and resize on its title bar (`moveLabel`), and
+      `onDragMove`/`onDragEnd` for docking by the title bar.
+    - The documents window and the library are `DocumentsPanel` and `LibraryPanel`; their narrow
+      layouts (tree and details as tabs) follow their container (`@container/documents`,
+      `@container/library`, switching at `@2xl`) instead of the viewport. The library already had
+      that narrow layout, so no new concept was drawn for it. Tests host the panels in a floating
+      window (`tests/sheet_manager/helpers/toolWindows.tsx`).
+    - Documents open into the group of the last used document, never a tool's (`documentGroup`),
+      also for **Open in new tab** and **Open beside**.
+    - With no document there is no layout: a tool opened then floats.
+    - A tool in a group is a region named by its tab, like a document; browser tests find a tool as
+      that region or as a dialog (`tests-e2e/tools.ts`) and float the documents window before
+      building grids of documents at 1280 px.
+    - New floating windows are 720 × 560, the documents window's old size, so tools open in their
+      full layout. The spec 032 place of the documents window (`window-layout:documents`) is read
+      once as where it floats, then removed.
+    - The dice panel on a phone: closing the full-screen panel keeps its tab; the navbar toggle then
+      closes the tab, so reopening takes a second press.

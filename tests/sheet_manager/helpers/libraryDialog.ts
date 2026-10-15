@@ -1,15 +1,15 @@
-import { LibraryDialog } from '@site/src/sheet_manager/components/dialogs/LibraryDialog';
 import { useDocumentTypeStore } from '@site/src/sheet_manager/store/documentTypeStore';
 import type { UserSetting } from '@site/src/sheet_manager/systems/userTypes';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 
 import { userSetting } from './library';
+import { LibraryWindow } from './toolWindows';
 
 export const MIST_ID = 'user-setting-mist0001';
 
 export function openLibrary() {
-    return render(createElement(LibraryDialog, { open: true, onOpenChange: () => undefined }));
+    return render(createElement(LibraryWindow, { open: true, onOpenChange: () => undefined }));
 }
 
 export const row = (key: string) =>

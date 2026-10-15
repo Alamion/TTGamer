@@ -51,7 +51,9 @@ export type SheetIssueCode =
     | 'document-folders-repaired'
     | 'document-boot-failed'
     /** The stored arrangement of panes is not readable; the current document shows alone (spec 034). */
-    | 'pane-arrangement-invalid';
+    | 'pane-arrangement-invalid'
+    /** The dice panel could not be drawn as a tab; it slides in as on other pages (spec 036). */
+    | 'dice-tab-unavailable';
 
 export interface SheetIssue {
     code: SheetIssueCode;

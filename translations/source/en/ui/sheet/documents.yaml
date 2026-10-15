@@ -35,6 +35,11 @@ panes:
     groupLimit: 'There is no room for another group: at most six, each at least 320 × 200 px.'
     moved: '"{name}" moved to group {number}.'
     split: '"{name}" opened in a new group.'
+    float: Float
+    floatLimit: 'Four windows already float: dock or close one first.'
+    floated: '"{name}" floats above the page.'
+    dock: 'Dock {name}'
+    moveWindow: 'Move {name}: arrows move it, Shift and arrows resize it, Home puts it back'
     maximize: 'Show only the group of {name}'
     restore: 'Show all groups again'
 

@@ -1,16 +1,15 @@
 import Translate, { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
+import { useDiceTab } from '@site/src/integrations/sheet-dice/diceTab';
 import { useShownDocumentPublisher } from '@site/src/integrations/sheet-dice/shownDocument';
 import { usePluralMessage } from '@site/src/shared/hooks/usePluralMessage';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { ConfirmDialog } from '../../../components/dialogs/ConfirmDialog';
 import { DocumentCreateDialog } from '../../../components/dialogs/DocumentCreateDialog';
 import { ImportConflictDialog } from '../../../components/dialogs/ImportConflictDialog';
 import { ImportSummaryDialog } from '../../../components/dialogs/ImportSummaryDialog';
-import { LibraryDialog } from '../../../components/dialogs/LibraryDialog';
-import { DocumentsWindow } from '../../../components/documents/DocumentsWindow';
 import { useDocumentStore } from '../../../store/documentStore';
 import { useDocumentTypeStore } from '../../../store/documentTypeStore';
 import { useTemplateStore } from '../../../store/templateStore';
@@ -22,10 +21,12 @@ import {
 } from '../../../systems';
 import { assignedTemplateId, templateMatchesSetting } from '../../../systems/userTypes';
 import { countUnfilledRequired } from '../declarative/DeclarativeSheetView';
+import { FloatingTabs } from '../panes/FloatingTabs';
 import { openKeys } from '../panes/layoutTree';
 import { PaneArea } from '../panes/PaneArea';
-import { usePaneStore } from '../panes/paneStore';
-import { documentIdOf } from '../panes/tabKeys';
+import { openTool, usePaneStore } from '../panes/paneStore';
+import { registerSheetTools } from '../panes/sheetTools';
+import { documentIdOf, tabKindOf } from '../panes/tabKeys';
 import { exportFileName, serializeDocumentExport } from './documentFile';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { type BatchSummary, type ConflictAnswer, runImportBatch } from './importBatch';
@@ -89,9 +90,10 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
         : [];
     const [resetDialogOpen, setResetDialogOpen] = useState(false);
     const pluralMessage = usePluralMessage();
-    const [managerDialogOpen, setManagerDialogOpen] = useState(false);
+    // The documents window and the library are tools of the layout (spec 036).
+    useEffect(() => registerSheetTools(), []);
+    useDiceTab();
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
-    const [templatesDialogOpen, setTemplatesDialogOpen] = useState(false);
     const [importConflict, setImportConflict] = useState<'document' | 'type' | null>(null);
     const [offerApplyToRest, setOfferApplyToRest] = useState(false);
     const [importSummary, setImportSummary] = useState<BatchSummary | null>(null);
@@ -196,9 +198,9 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
                     onCreate={() => setCreateDialogOpen(true)}
                     onExport={handleExport}
                     onImport={handleImport}
-                    onManage={() => setManagerDialogOpen(true)}
+                    onManage={() => openTool('documents')}
                     onReset={() => setResetDialogOpen(true)}
-                    onManageTemplates={() => setTemplatesDialogOpen(true)}
+                    onManageTemplates={() => openTool('library')}
                     viewMode={
                         currentDocument && currentDefinition && currentView ? (
                             <>
@@ -259,9 +261,7 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
                 cancelLabel={translate(uiMessages.sheet.documents.create.cancel)}
                 variant="danger"
             />
-            <DocumentsWindow open={managerDialogOpen} onOpenChange={setManagerDialogOpen} />
             <DocumentCreateDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
-            <LibraryDialog open={templatesDialogOpen} onOpenChange={setTemplatesDialogOpen} />
             <ImportSummaryDialog summary={importSummary} onClose={() => setImportSummary(null)} />
             <ImportConflictDialog
                 offerApplyToRest={offerApplyToRest}
@@ -270,8 +270,14 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
                 onResolve={resolveConflict}
             />
 
-            {currentDocument && (
+            {currentDocument ? (
                 <PaneArea documentId={currentDocument.id} renderDocument={renderDocument} />
+            ) : (
+                // With no document there is no layout to dock in: the tools float.
+                <FloatingTabs
+                    renderDocument={renderDocument}
+                    titleOf={(key) => tabKindOf(key)?.title() ?? key}
+                />
             )}
             {/* Outside the template tree: no page template, shipped or custom, can remove it. */}
             {currentDocument && (

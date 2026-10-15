@@ -15,6 +15,12 @@ import {
     toggleMaximized,
     usePaneStore,
 } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
+import {
+    dockFloating,
+    floatTab,
+    openTool,
+    raise,
+} from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -224,5 +230,113 @@ describe('giving a group the whole area (spec 034, FR-018)', () => {
         toggleMaximized(groupOf(layout().root, 'd:b')!.id);
         openBeside('c');
         expect(layout().maximized).toBeNull();
+    });
+});
+
+describe('tools and floating windows (spec 036, US3)', () => {
+    const keysOf = () => tabsByGroup();
+    const floatingKeys = () => layout().floating.map(({ key }) => key);
+
+    it('opens the documents and the library together on the left, the dice on the right', () => {
+        roomyArea(1920, 1000);
+        openTool('documents');
+        openTool('library');
+        openTool('dice');
+        expect(keysOf()).toEqual([['t:documents', 't:library'], ['d:a'], ['t:dice']]);
+        expect(layout().lastSide).toEqual({
+            't:documents': 'left',
+            't:library': 'left',
+            't:dice': 'right',
+        });
+        expect(current()).toBe('a');
+    });
+
+    it('shows a tool that is open instead of adding it again, and keeps it in one place', () => {
+        openTool('dice');
+        focusTab('d:a');
+        openTool('dice');
+        expect(
+            keysOf()
+                .flat()
+                .filter((key) => key === 't:dice')
+        ).toHaveLength(1);
+        expect(layout().recent[0]).toBe('t:dice');
+        expect(layout().shownTool).toBe('t:dice');
+    });
+
+    it('opens documents in the group of the last used document, never in a tool’s', () => {
+        roomyArea(1920, 1000);
+        openTool('dice');
+        expect(layout().recent[0]).toBe('t:dice');
+        openInNewTab('b');
+        expect(keysOf()).toEqual([['d:a', 'd:b'], ['t:dice']]);
+        openBeside('c');
+        expect(keysOf()).toEqual([['d:a', 'd:b'], ['d:c'], ['t:dice']]);
+    });
+
+    it('opens a tool on the side it was last on', () => {
+        roomyArea(1920, 1000);
+        openTool('dice');
+        closeTab('t:dice');
+        usePaneStore.setState({ lastSide: { 't:dice': 'left' } });
+        openTool('dice');
+        expect(keysOf()).toEqual([['t:dice'], ['d:a']]);
+    });
+
+    it('never refuses a tool: at six groups it joins the outermost group of its side', () => {
+        roomyArea();
+        for (const id of ['b', 'c', 'd', 'e', 'f']) openBeside(id);
+        openTool('documents');
+        expect(groupsInOrder(layout().root)).toHaveLength(6);
+        expect(keysOf()[0]).toEqual(['d:a', 't:documents']);
+    });
+
+    it('floats a tab, at most four, and docks it back where it belongs', () => {
+        roomyArea(1920, 1000);
+        openTool('dice');
+        for (const id of ['b', 'c', 'd']) openInNewTab(id);
+        expect(floatTab('t:dice')).toBe(true);
+        expect(floatingKeys()).toEqual(['t:dice']);
+        expect(keysOf().flat()).not.toContain('t:dice');
+        for (const key of ['d:b', 'd:c', 'd:d']) expect(floatTab(key)).toBe(true);
+        expect(floatTab('d:a')).toBe(false);
+        expect(floatingKeys()).toHaveLength(4);
+
+        raise('t:dice');
+        expect(floatingKeys().at(-1)).toBe('t:dice');
+        raise('d:b');
+        expect(current()).toBe('b');
+
+        dockFloating('t:dice');
+        expect(keysOf().at(-1)).toEqual(['t:dice']);
+        dockFloating('d:c', {
+            kind: 'edge',
+            groupId: groupsInOrder(layout().root)[0]!.id,
+            side: 'bottom',
+        });
+        expect(keysOf()).toContainEqual(['d:c']);
+        expect(current()).toBe('c');
+    });
+
+    it('closes a tool with its tab; a 13th document never closes a floating one', () => {
+        roomyArea(1920, 1000);
+        for (const id of names.slice(1, 12)) openInNewTab(id);
+        expect(floatTab('d:a')).toBe(true);
+        focusTab('d:l');
+        expect(openInNewTab('m').closed).not.toBe('a');
+        expect(floatingKeys()).toEqual(['d:a']);
+    });
+});
+
+describe('the documents window of spec 032 carries its place over', () => {
+    it('floats where it was, once, and its old key goes', () => {
+        localStorage.setItem(
+            'window-layout:documents',
+            JSON.stringify({ x: 300, y: 90, width: 760, height: 600 })
+        );
+        openTool('documents');
+        expect(floatTab('t:documents')).toBe(true);
+        expect(layout().floating[0]!.rect).toEqual({ x: 300, y: 90, width: 760, height: 600 });
+        expect(localStorage.getItem('window-layout:documents')).toBeNull();
     });
 });

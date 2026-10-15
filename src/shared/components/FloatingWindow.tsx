@@ -33,7 +33,27 @@ export interface FloatingWindowProps {
     minHeight?: number;
     initialWidth?: number;
     initialHeight?: number;
+    /**
+     * The owner keeps the place (spec 036): with `onLayoutChange` the window shows `layout`
+     * (`null`: the default place) and reports changes instead of storing them itself.
+     */
+    layout?: WindowLayout | null;
+    onLayoutChange?: (layout: WindowLayout | null) => void;
+    /** The window's place in a stack of windows; the owner raises it on `onFocus`. */
+    zIndex?: number;
+    /**
+     * Names the title bar as a handle the keyboard can move (arrows) and resize (Shift and
+     * arrows); Home puts the window back to its default place. Without it the title bar is not
+     * focusable.
+     */
+    moveLabel?: string;
+    /** The title bar is being dragged to this point (the pointer). */
+    onDragMove?: (point: { x: number; y: number }) => void;
+    /** The title bar was let go here; `true` when the owner took the window (it is not stored). */
+    onDragEnd?: (point: { x: number; y: number }) => boolean;
 }
+
+const KEY_STEP = 10;
 
 const NAVBAR = 72;
 const EDGES: readonly ResizeEdge[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
@@ -80,6 +100,12 @@ export function FloatingWindow({
     minHeight = 320,
     initialWidth = 720,
     initialHeight = 560,
+    layout: ownLayout,
+    onLayoutChange,
+    zIndex,
+    moveLabel,
+    onDragMove,
+    onDragEnd,
 }: FloatingWindowProps) {
     const titleId = useId();
     const narrow = useMediaQuery('(max-width: 767px)');
@@ -89,7 +115,11 @@ export function FloatingWindow({
         [minWidth, minHeight]
     );
     const [viewport, setViewport] = useState<Viewport>(currentViewport);
-    const [stored, setStored] = useLocalStorageState<unknown>(`window-layout:${id}`, null);
+    const [kept, setKept] = useLocalStorageState<unknown>(`window-layout:${id}`, null);
+    const controlled = onLayoutChange !== undefined;
+    const stored = controlled ? (ownLayout ?? null) : kept;
+    const setStored = (next: WindowLayout | null) =>
+        controlled ? onLayoutChange(next) : setKept(next);
     const initial = useMemo(
         () => defaultLayout(viewport, limits, { width: initialWidth, height: initialHeight }),
         [viewport, limits, initialWidth, initialHeight]
@@ -149,6 +179,7 @@ export function FloatingWindow({
         if (!active) return;
         const dx = event.clientX - active.startX;
         const dy = event.clientY - active.startY;
+        if (active.kind === 'move') onDragMove?.({ x: event.clientX, y: event.clientY });
         const next =
             active.kind === 'move'
                 ? { ...active.start, x: active.start.x + dx, y: active.start.y + dy }
@@ -157,10 +188,36 @@ export function FloatingWindow({
         apply(frame.current, active.latest);
     };
 
-    const release = () => {
+    const release = (event: PointerEvent<HTMLElement>) => {
         const active = gesture.current;
         gesture.current = null;
-        if (active) setStored(active.latest);
+        if (!active) return;
+        const taken =
+            active.kind === 'move' && onDragEnd?.({ x: event.clientX, y: event.clientY }) === true;
+        if (!taken) setStored(active.latest);
+    };
+
+    /** Arrows move the window, Shift and arrows resize it, Home puts it back (spec 036). */
+    const onHandleKey = (event: KeyboardEvent<HTMLElement>) => {
+        if (event.target !== event.currentTarget) return;
+        if (event.key === 'Home') {
+            event.preventDefault();
+            setStored(null);
+            return;
+        }
+        const step = {
+            ArrowLeft: [-1, 0],
+            ArrowRight: [1, 0],
+            ArrowUp: [0, -1],
+            ArrowDown: [0, 1],
+        }[event.key];
+        if (!step) return;
+        event.preventDefault();
+        const [dx, dy] = [step[0]! * KEY_STEP, step[1]! * KEY_STEP];
+        const next = event.shiftKey
+            ? resizeLayout(layout, 'se', dx, dy, limits)
+            : { ...layout, x: layout.x + dx, y: layout.y + dy };
+        setStored(fitLayout(next, viewport, limits));
     };
 
     const cancel = () => {
@@ -194,6 +251,7 @@ export function FloatingWindow({
             data-floating-window={id}
             onKeyDown={onKeyDown}
             onPointerDownCapture={() => onFocus?.()}
+            onFocusCapture={() => onFocus?.()}
             style={
                 narrow
                     ? undefined
@@ -202,6 +260,7 @@ export function FloatingWindow({
                           top: layout.y,
                           width: layout.width,
                           height: layout.height,
+                          zIndex,
                       }
             }
             className={clsx(
@@ -209,9 +268,13 @@ export function FloatingWindow({
                 narrow ? 'inset-0 h-dvh w-screen' : 'rounded-lg'
             )}
         >
+            {/* A focusable title bar is the keyboard's handle for moving the window. */}
             <div
                 data-window-titlebar=""
                 data-gesture="move"
+                tabIndex={moveLabel && !narrow ? 0 : undefined}
+                aria-label={moveLabel && !narrow ? moveLabel : undefined}
+                onKeyDown={moveLabel && !narrow ? onHandleKey : undefined}
                 onPointerDown={begin}
                 onPointerMove={move}
                 onPointerUp={release}

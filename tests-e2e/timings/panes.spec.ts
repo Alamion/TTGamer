@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { createDocument } from '../brief';
+import { documentsTool } from '../tools';
 import { best, recordTiming, RUNS } from './record';
 
 const FILLER = 3000;
@@ -74,7 +75,7 @@ test('opening a second document beside the first with 3,000 documents in the col
         await expect(shown).toHaveValue(/^Real [AB]$/);
         const other = (await shown.inputValue()) === 'Real A' ? 'Real B' : 'Real A';
         await page.getByRole('button', { name: 'Manage', exact: true }).click();
-        const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+        const window = documentsTool(page);
         await window.getByRole('searchbox', { name: 'Search names' }).fill(other);
         await window.getByRole('button', { name: `Actions for ${other}` }).click();
         const started = Date.now();

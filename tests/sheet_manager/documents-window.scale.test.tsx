@@ -1,5 +1,4 @@
 // @vitest-environment happy-dom
-import { DocumentsWindow } from '@site/src/sheet_manager/components/documents/DocumentsWindow';
 import {
     configureRecordStorage,
     createMemoryRecordStorage,
@@ -11,6 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { makeScaleTree } from './helpers/documentsScale';
 import { resetDocuments } from './helpers/documentsWindow';
+import { DocumentsWindow } from './helpers/toolWindows';
 
 vi.setConfig({ testTimeout: 30_000 });
 

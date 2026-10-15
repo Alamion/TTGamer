@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import { expect, test } from '../fixtures';
+import { documentsTool } from '../tools';
 
 const sizes = [
     { name: '1280 px', viewport: { width: 1280, height: 800 } },
@@ -9,7 +10,7 @@ const sizes = [
 
 async function openWindow(page: Page) {
     await page.getByRole('button', { name: 'Manage', exact: true }).click();
-    const window = page.getByRole('dialog', { name: 'Documents', exact: true });
+    const window = documentsTool(page);
     await expect(window).toBeVisible();
     return window;
 }
