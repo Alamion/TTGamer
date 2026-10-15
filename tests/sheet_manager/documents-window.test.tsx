@@ -1,4 +1,6 @@
 // @vitest-environment happy-dom
+import { groupsInOrder } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
+import { usePaneStore } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createElement } from 'react';
@@ -210,6 +212,28 @@ describe('the documents window (spec 032, US1)', () => {
         fireEvent.click(
             within(screen.getByRole('region', { name: 'Details' })).getByRole('button', {
                 name: 'Open beside',
+            })
+        );
+        expect(openDocumentIds()).toEqual(['Ana', 'Bruno', 'Cleo']);
+        expect(onOpenChange).not.toHaveBeenCalled();
+    });
+
+    it('opens in a new tab of the same group from the row menu and from the details', () => {
+        resetLayout();
+        seedDocuments(['Ana', 'Bruno', 'Cleo'], { current: 'Ana' });
+        const onOpenChange = vi.fn();
+        openWindow(onOpenChange);
+        fireEvent.click(screen.getByRole('button', { name: 'Actions for Bruno' }));
+        fireEvent.click(screen.getByRole('menuitem', { name: 'Open in new tab' }));
+        expect(groupsInOrder(usePaneStore.getState().root).map(({ tabs }) => tabs)).toEqual([
+            ['d:Ana', 'd:Bruno'],
+        ]);
+        expect(current()).toBe('Bruno');
+
+        fireEvent.click(row('Cleo'), { ctrlKey: true });
+        fireEvent.click(
+            within(screen.getByRole('region', { name: 'Details' })).getByRole('button', {
+                name: 'Open in new tab',
             })
         );
         expect(openDocumentIds()).toEqual(['Ana', 'Bruno', 'Cleo']);

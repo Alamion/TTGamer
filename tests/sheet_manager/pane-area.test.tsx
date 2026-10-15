@@ -3,7 +3,7 @@ import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/Character
 import { type SplitNode } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
 import { openBeside, usePaneStore } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
-import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -37,7 +37,9 @@ describe('groups side by side (spec 036, Foundation)', () => {
     it('frames every group, marks the focused one, and puts a divider between each pair', async () => {
         await open(['Ana', 'Bruno', 'Cleo'], 1280);
         expect(regions()).toEqual(['Ana', 'Bruno', 'Cleo']);
-        const frames = screen.getAllByRole('region').map((pane) => pane.className);
+        const frames = [...document.querySelectorAll<HTMLElement>('[data-group-frame]')].map(
+            (frame) => frame.className
+        );
         expect(frames.every((name) => name.includes('border-2'))).toBe(true);
         expect(frames.filter((name) => name.includes('border-primary'))).toHaveLength(1);
         expect(screen.getAllByRole('separator')).toHaveLength(2);
@@ -69,10 +71,9 @@ describe('groups side by side (spec 036, Foundation)', () => {
         fireEvent.doubleClick(screen.getByRole('tab', { name: 'Bruno' }));
         expect(regions()).toEqual(['Ana', 'Bruno', 'Cleo']);
 
-        const region = screen.getByRole('region', { name: 'Cleo' });
-        fireEvent.click(within(region).getByRole('button', { name: 'Show only Cleo' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Show only the group of Cleo' }));
         expect(regions()).toEqual(['Cleo']);
-        fireEvent.click(screen.getByRole('button', { name: 'Show all open documents again' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Show all groups again' }));
         expect(regions()).toEqual(['Ana', 'Bruno', 'Cleo']);
     });
 

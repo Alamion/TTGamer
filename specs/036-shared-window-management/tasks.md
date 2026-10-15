@@ -72,29 +72,29 @@ and behaves as on branch 034 (three panes become one row of three one-tab groups
 **Check**: three documents in two groups (two tabs and one); switching a tab in the first leaves the
 second unchanged.
 
-- [ ] T013 [US1] Write tests in `tests/sheet_manager/pane-tabs.test.tsx` and `pane-area.test.tsx`: a
+- [x] T013 [US1] Write tests in `tests/sheet_manager/pane-tabs.test.tsx` and `pane-area.test.tsx`: a
       `tablist` per group named by group; choosing a tab changes only its group and makes its
       document current; closing the shown tab shows the neighbour; a group's last tab closed removes
       the group; frames (one group with tabs: strip, no frame; several: frame each, the focused
       marked); with two or more groups the area is the viewport below the toolbar and each group
       scrolls, one group keeps page scroll; DOM and Tab order follow reading order; double click on
       a tab and the maximize button give the group the whole area and restore it
-- [ ] T014 [US1] Write tests in `tests/sheet_manager/pane-store.test.ts`: `openInNewTab` adds after
+- [x] T014 [US1] Write tests in `tests/sheet_manager/pane-store.test.ts`: `openInNewTab` adds after
       the shown tab of the last focused group and makes it current; a 13th document closes the least
       recently used document tab that no group shows and returns it; opening a document already in a
       tab or floating focuses it
-- [ ] T015 [US1] Add `openInNewTab(id)` to `paneStore.ts`; turn `PaneTabs.tsx` into a per-group
+- [x] T015 [US1] Add `openInNewTab(id)` to `paneStore.ts`; turn `PaneTabs.tsx` into a per-group
       strip (`panes.groupLabel`, the shown document's view selector and maximize button at its end)
       and `Pane.tsx` into the group body (`overflow-auto` with several groups); set the area height
       with several groups in `PaneArea.tsx`
-- [ ] T016 [US1] Add **Open in new tab** to the row menu and details of
+- [x] T016 [US1] Add **Open in new tab** to the row menu and details of
       `components/documents/DocumentsWindow.tsx` (window stays open on desktop, closes on a phone)
       with the `panes.closedHidden` notice; test it in
       `tests/sheet_manager/documents-window.test.tsx` (replacing the six-pane notice test)
-- [ ] T017 [US1] Strings in `translations/source/{en,ru}/ui/sheet/documents.yaml`:
+- [x] T017 [US1] Strings in `translations/source/{en,ru}/ui/sheet/documents.yaml`:
       `manager.details.openInNewTab`, `panes.groupLabel`, `panes.closedHidden`; reword
       `panes.maximize`/`panes.restore` for groups; remove `panes.replaced`
-- [ ] T018 [US1] Run the targeted tests and `yarn verify`; check 1280 and 375 px on the dev server;
+- [x] T018 [US1] Run the targeted tests and `yarn verify`; check 1280 and 375 px on the dev server;
       commit `feat(sheet): tabs per group and Open in new tab (spec 036, US1)`
 
 ## User Story 2 - Drag tabs and split groups in any direction (P2)

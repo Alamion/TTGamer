@@ -19,13 +19,14 @@ toolbar:
     importError: Не удалось импортировать «{filename}»
 panes:
     tabsLabel: Открытые документы
+    groupLabel: 'Вкладки группы {number}'
     close: 'Закрыть «{name}»'
     unreadable: Не удалось прочитать этот документ.
     closedHidden: 'Одновременно открыто не больше {max} документов: «{closed}» закрыт, чтобы открыть «{name}».'
     openedAsTab: 'Уже открыто шесть групп, поэтому «{name}» открыт вкладкой.'
     resize: 'Изменить ширину: {left} и {right}'
-    maximize: 'Показать только «{name}»'
-    restore: 'Снова показать все открытые документы'
+    maximize: 'Показать только группу «{name}»'
+    restore: 'Снова показать все группы'
 
 conflict:
     typeTitle: Этот тип документа уже установлен
@@ -102,6 +103,7 @@ manager:
         top: Верхний уровень
         open: Открыть
         openBeside: Открыть рядом
+        openInNewTab: Открыть в новой вкладке
         delete: Удалить
         rename: Переименовать
         move: Переместить в…

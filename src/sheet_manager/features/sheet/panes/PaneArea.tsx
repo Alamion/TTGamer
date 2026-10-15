@@ -2,6 +2,8 @@ import { translate } from '@docusaurus/Translate';
 import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import { Splitter } from '@site/src/shared/components/Splitter';
 import { useMeasuredElement } from '@site/src/shared/hooks/usePaneSizes';
+import { clsx } from 'clsx';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useDocumentStore } from '../../../store/documentStore';
@@ -10,7 +12,7 @@ import { MIN_GROUP_HEIGHT, moveDivider, SIDE_BY_SIDE_WIDTH, weightsOf } from './
 import {
     type DividerPlace,
     findGroup,
-    groupOf,
+    type GroupNode,
     groupsInOrder,
     type LayoutNode,
     minSizeOf,
@@ -30,7 +32,8 @@ import {
     usePaneStore,
 } from './paneStore';
 import { PaneTabs } from './PaneTabs';
-import { docKey, documentIdOf } from './tabKeys';
+import { PaneViewSelect } from './PaneViewSelect';
+import { docKey, documentIdOf, tabKindOf } from './tabKeys';
 
 const labels = uiMessages.sheet.documents.panes;
 
@@ -151,8 +154,9 @@ export function PaneArea({
         return entry ? documentLabeler.title(entry) : id;
     };
     const titleOf = (key: string | undefined) => {
-        const id = key ? documentIdOf(key) : null;
-        return id ? nameOf(id) : '';
+        if (!key) return '';
+        const id = documentIdOf(key);
+        return id ? nameOf(id) : (tabKindOf(key)?.title() ?? key);
     };
     const minimum = minSizeOf(layout.root);
     const sideBySide =
@@ -160,53 +164,115 @@ export function PaneArea({
         width >= SIDE_BY_SIDE_WIDTH &&
         width >= minimum.width &&
         height >= minimum.height;
-    const groupIdOf = (id: string) => groupOf(layout.root, docKey(id))?.id;
-    const tabs = documentIds.map((id) => ({ id, name: nameOf(id) }));
+    const currentKey = docKey(documentId);
+    const several = groups.length > 1;
 
-    const pane = (id: string, framed: boolean, fill: boolean) => {
-        const groupId = groupIdOf(id);
+    const body = (key: string, fill: boolean) => {
+        const id = documentIdOf(key);
+        if (id === null) return tabKindOf(key)?.render() ?? null;
         return (
             <Pane
-                key={id}
+                key={key}
                 documentId={id}
-                name={nameOf(id)}
-                focused={id === documentId}
-                framed={framed}
                 fill={fill}
-                maximized={sideBySide && groupId ? layout.maximized === groupId : undefined}
-                onFocus={() => focusTab(docKey(id))}
-                onToggleMaximized={() => groupId && toggleMaximized(groupId)}
-                onClose={() => closeTab(docKey(id))}
-                onView={(view) => setPaneView(id, view)}
-                view={layout.views[id]}
                 render={renderDocument}
                 unreadable={unreadable.has(id)}
+                view={layout.views[id]}
             />
         );
     };
-
-    const strip = (
-        <PaneTabs
-            tabs={tabs}
-            focusedId={documentId}
-            onFocus={(id) => focusTab(docKey(id))}
-            onClose={(id) => closeTab(docKey(id))}
-            onMaximize={
-                sideBySide
-                    ? (id) => {
-                          const groupId = groupIdOf(id);
-                          if (groupId) toggleMaximized(groupId);
-                      }
-                    : undefined
-            }
-        />
-    );
+    const viewSelect = (key: string) => {
+        const id = documentIdOf(key);
+        return id && !unreadable.has(id) ? (
+            <PaneViewSelect
+                documentId={id}
+                view={layout.views[id]}
+                onChange={(view) => setPaneView(id, view)}
+            />
+        ) : null;
+    };
 
     if (!sideBySide) {
+        const shownKey = docKey(documentId);
         return (
             <div className="space-y-2 px-4 pb-4 pt-3" data-panes="">
-                {strip}
-                <div ref={areaRef}>{pane(documentId, false, false)}</div>
+                <PaneTabs
+                    label={translate(labels.tabsLabel)}
+                    tabs={documentIds.map((id) => ({ key: docKey(id), name: nameOf(id) }))}
+                    selected={shownKey}
+                    onSelect={focusTab}
+                    onClose={closeTab}
+                    end={viewSelect(shownKey)}
+                />
+                <div ref={areaRef}>{body(shownKey, false)}</div>
+            </div>
+        );
+    }
+
+    const group = (node: GroupNode, number: number, fill: boolean) => {
+        const focused = node.tabs.includes(layout.recent[0] ?? currentKey);
+        const maximized = layout.maximized === node.id;
+        const name = titleOf(node.shown);
+        return (
+            <div
+                className={clsx(
+                    'flex min-h-0 min-w-0 flex-col',
+                    fill && 'h-full',
+                    several &&
+                        clsx(
+                            'rounded-lg border-2',
+                            focused ? 'border-primary' : 'border-borderMoreContrast'
+                        )
+                )}
+                data-group-frame=""
+                onPointerDownCapture={() => {
+                    if (!focused) focusTab(node.shown);
+                }}
+                onFocusCapture={() => {
+                    if (!focused) focusTab(node.shown);
+                }}
+            >
+                <PaneTabs
+                    label={translate(labels.groupLabel, { number })}
+                    tabs={node.tabs.map((key) => ({ key, name: titleOf(key) }))}
+                    selected={node.shown}
+                    onSelect={focusTab}
+                    onClose={closeTab}
+                    onMaximize={several ? () => toggleMaximized(node.id) : undefined}
+                    end={
+                        <>
+                            {viewSelect(node.shown)}
+                            {several && (
+                                <button
+                                    type="button"
+                                    aria-label={
+                                        maximized
+                                            ? translate(labels.restore)
+                                            : translate(labels.maximize, { name })
+                                    }
+                                    aria-pressed={maximized}
+                                    onClick={() => toggleMaximized(node.id)}
+                                    className="rounded-sm p-1 text-textSecondary hover:text-textPrimary pointer-coarse:min-h-8 pointer-coarse:min-w-8"
+                                >
+                                    {maximized ? (
+                                        <Minimize2 className="h-4 w-4" aria-hidden="true" />
+                                    ) : (
+                                        <Maximize2 className="h-4 w-4" aria-hidden="true" />
+                                    )}
+                                </button>
+                            )}
+                        </>
+                    }
+                />
+                {body(node.shown, fill)}
+            </div>
+        );
+    };
+
+    if (!several) {
+        return (
+            <div ref={areaRef} className="px-4 pb-4 pt-3" data-panes="">
+                {group(groups[0]!, 1, false)}
             </div>
         );
     }
@@ -239,24 +305,23 @@ export function PaneArea({
     };
 
     return (
-        <div className="space-y-2 px-4 pt-3" data-panes="">
-            {strip}
+        <div className="px-4 pt-3" data-panes="">
             <div ref={areaRef} className="relative" style={{ height }}>
-                {placement.groups.map(({ id, rect }) => {
-                    const group = findGroup(layout.root, id)!;
-                    const shown = documentIdOf(group.shown);
-                    return (
-                        <div
-                            key={id}
-                            ref={keep(`g:${id}`)}
-                            data-group={id}
-                            className="absolute flex flex-col"
-                            style={placeStyle(rect)}
-                        >
-                            {shown && pane(shown, placement.groups.length > 1, true)}
-                        </div>
-                    );
-                })}
+                {placement.groups.map(({ id, rect }) => (
+                    <div
+                        key={id}
+                        ref={keep(`g:${id}`)}
+                        data-group={id}
+                        className="absolute"
+                        style={placeStyle(rect)}
+                    >
+                        {group(
+                            findGroup(layout.root, id)!,
+                            groups.findIndex((candidate) => candidate.id === id) + 1,
+                            true
+                        )}
+                    </div>
+                ))}
                 {placement.dividers.map((divider) => {
                     const parent = childAt(layout.root, divider.path);
                     if (!parent || parent.type === 'group' || divider.direction !== 'row') {

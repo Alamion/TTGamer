@@ -168,3 +168,7 @@ restore at the browser level → **Finish**.
   phase, because **Open beside** no longer replaces a pane. The `tabKinds` registry holds tools
   only; documents are drawn by the sheet's `renderDocument`. Reading `window-layout:documents` into
   `lastRect` moves to US3 (T033): until then the documents window still uses that key itself.
+- **US1**: a group is a frame (`data-group-frame`) holding its strip and its page; the pane header
+  of spec 034 is gone, and the shown document's view selector and the maximize button sit at the end
+  of the strip. One group with tabs keeps the page scroll and no frame. The dev server was down
+  during this story, so the 1280/375 px check waits for the maintainer.

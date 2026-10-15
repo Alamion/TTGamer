@@ -1,6 +1,15 @@
 // @vitest-environment happy-dom
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
-import { openBeside } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
+import {
+    type GroupNode,
+    type LayoutNode,
+    type SplitNode,
+} from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
+import {
+    openBeside,
+    openInNewTab,
+    usePaneStore,
+} from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { createElement } from 'react';
@@ -8,20 +17,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { takeSheetIssues } from '../setup/sheetIssues';
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
-import { openDocumentIds, resetLayout } from './helpers/panes';
+import { groupFrameOf, openDocumentIds, resetLayout } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 30_000 });
 
 const current = () => useDocumentStore.getState().currentDocumentId;
-const tabs = () => within(screen.getByRole('tablist')).getAllByRole('tab');
-
-/** happy-dom lays nothing out; the area is as wide as a desktop window. */
-function stubWidth(width: number) {
-    return vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(width);
-}
+const strips = () => screen.queryAllByRole('tablist');
+const tabsIn = (strip: HTMLElement) =>
+    within(strip)
+        .getAllByRole('tab')
+        .map((tab) => tab.textContent);
+const shown = () => screen.queryAllByRole('region').map((region) => region.dataset.pane);
+const g = (id: string, tabs: string[]): GroupNode => ({ type: 'group', id, tabs, shown: tabs[0]! });
 
 beforeEach(() => {
-    stubWidth(1280);
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1280);
     resetLayout();
     seedDocuments(['Ana', 'Bruno', 'Cleo'], { current: 'Ana' });
     render(createElement(CharacterSheet));
@@ -32,31 +42,69 @@ afterEach(() => {
     resetDocuments();
 });
 
-describe('the tab strip and panes (spec 034, US1)', () => {
-    it('has no strip until a second document is opened beside', () => {
-        expect(screen.queryByRole('tablist')).toBeNull();
-        expect(screen.queryByRole('region', { name: 'Ana' })).toBeNull();
+describe('each group has its own tabs (spec 036, US1)', () => {
+    it('has no strip with one document', () => {
+        expect(strips()).toHaveLength(0);
+        expect(screen.queryByRole('region')).toBeNull();
     });
 
-    it('shows one tab and one labelled region per document, the focused one selected', async () => {
-        act(() => void openBeside('Bruno'));
-        await waitFor(() => expect(tabs()).toHaveLength(2));
+    it('opens in a new tab: one strip with both, the new one shown, no frame, page scroll', async () => {
+        act(() => void openInNewTab('Bruno'));
+        await waitFor(() => expect(strips()).toHaveLength(1));
+        expect(tabsIn(strips()[0]!)).toEqual(['Ana', 'Bruno']);
+        expect(strips()[0]!.getAttribute('aria-label')).toBe('Tabs of group 1');
+        expect(shown()).toEqual(['Bruno']);
+        expect(groupFrameOf('Bruno').className).not.toContain('border-2');
+        expect(document.querySelector('[data-group]')).toBeNull();
+        expect(screen.queryByRole('button', { name: /Show only/ })).toBeNull();
+    });
 
-        expect(tabs().map((tab) => tab.textContent)).toEqual(['Ana', 'Bruno']);
-        expect(tabs().map((tab) => tab.getAttribute('aria-selected'))).toEqual(['false', 'true']);
-        expect(screen.getByRole('tablist').getAttribute('aria-label')).toBe('Open documents');
-        for (const name of ['Ana', 'Bruno']) {
-            expect(screen.getByRole('region', { name })).toBeTruthy();
+    it('switches a tab in one group only, and makes its document current', async () => {
+        act(() => {
+            openInNewTab('Bruno');
+            openBeside('Cleo');
+        });
+        await waitFor(() => expect(strips()).toHaveLength(2));
+        expect(strips().map(tabsIn)).toEqual([['Ana', 'Bruno'], ['Cleo']]);
+        expect(strips().map((strip) => strip.getAttribute('aria-label'))).toEqual([
+            'Tabs of group 1',
+            'Tabs of group 2',
+        ]);
+
+        fireEvent.click(within(strips()[0]!).getByRole('tab', { name: 'Ana' }));
+        expect(current()).toBe('Ana');
+        expect(shown()).toEqual(['Ana', 'Cleo']);
+    });
+
+    it('frames every group when there are several, the focused one marked', async () => {
+        act(() => void openBeside('Bruno'));
+        await waitFor(() => expect(strips()).toHaveLength(2));
+        const frames = [...document.querySelectorAll<HTMLElement>('[data-group-frame]')];
+        expect(frames.every((frame) => frame.className.includes('border-2'))).toBe(true);
+        expect(groupFrameOf('Bruno').className).toContain('border-primary');
+        fireEvent.pointerDown(screen.getByRole('region', { name: 'Ana' }));
+        expect(current()).toBe('Ana');
+        expect(groupFrameOf('Ana').className).toContain('border-primary');
+    });
+
+    it('fills the window below the toolbar with several groups, each scrolling its page', async () => {
+        act(() => void openBeside('Bruno'));
+        await waitFor(() => expect(strips()).toHaveLength(2));
+        const area = document.querySelector<HTMLElement>('[data-group]')!.parentElement!;
+        expect(area.style.height).toBe(`${window.innerHeight}px`);
+        for (const region of screen.getAllByRole('region')) {
+            expect(region.className).toContain('overflow-auto');
         }
-        expect(current()).toBe('Bruno');
     });
 
     it('moves between tabs with the arrow keys, Home, and End', async () => {
         act(() => {
-            openBeside('Bruno');
-            openBeside('Cleo');
+            openInNewTab('Bruno');
+            openInNewTab('Cleo');
         });
-        await waitFor(() => expect(tabs()).toHaveLength(3));
+        await waitFor(() => expect(screen.getAllByRole('tab')).toHaveLength(3));
+        const tabs = () => screen.getAllByRole('tab');
+        expect(tabs().map((tab) => tab.textContent)).toEqual(['Ana', 'Bruno', 'Cleo']);
 
         fireEvent.keyDown(tabs()[2]!, { key: 'ArrowLeft' });
         expect(current()).toBe('Bruno');
@@ -69,39 +117,68 @@ describe('the tab strip and panes (spec 034, US1)', () => {
         expect(document.activeElement).toBe(tabs()[0]);
     });
 
-    it('closes a pane from its tab and keeps the document', async () => {
-        act(() => void openBeside('Bruno'));
-        await waitFor(() => expect(tabs()).toHaveLength(2));
-
-        fireEvent.click(
-            within(screen.getByRole('tablist')).getByRole('button', { name: 'Close Bruno' })
-        );
-        await waitFor(() => expect(screen.queryByRole('tablist')).toBeNull());
+    it('closing the shown tab shows the neighbour; closing a group’s last tab removes the group', async () => {
+        act(() => {
+            openInNewTab('Bruno');
+            openBeside('Cleo');
+        });
+        await waitFor(() => expect(strips()).toHaveLength(2));
+        fireEvent.click(within(strips()[0]!).getByRole('tab', { name: 'Bruno' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Close Bruno' }));
+        expect(shown()).toEqual(['Ana', 'Cleo']);
         expect(current()).toBe('Ana');
-        expect(useDocumentStore.getState().entries.map(({ id }) => id)).toContain('Bruno');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Close Cleo' }));
+        await waitFor(() => expect(strips()).toHaveLength(0));
+        expect(useDocumentStore.getState().entries.map(({ id }) => id)).toContain('Cleo');
     });
 
-    it('focuses a pane when it is clicked, and every close button has a name', async () => {
-        act(() => void openBeside('Bruno'));
-        await waitFor(() => expect(tabs()).toHaveLength(2));
+    it('gives a group the whole area by double click or its button, and gives it back', async () => {
+        act(() => {
+            openBeside('Bruno');
+            openBeside('Cleo');
+        });
+        await waitFor(() => expect(strips()).toHaveLength(3));
+        fireEvent.doubleClick(screen.getByRole('tab', { name: 'Bruno' }));
+        expect(shown()).toEqual(['Bruno']);
+        fireEvent.doubleClick(screen.getByRole('tab', { name: 'Bruno' }));
+        expect(shown()).toEqual(['Ana', 'Bruno', 'Cleo']);
 
-        fireEvent.pointerDown(screen.getByRole('region', { name: 'Ana' }));
-        expect(current()).toBe('Ana');
-        for (const button of screen.getAllByRole('button', { name: /^Close / })) {
-            expect(button.getAttribute('aria-label')).toMatch(/^Close (Ana|Bruno)$/);
-        }
+        fireEvent.click(screen.getByRole('button', { name: 'Show only the group of Cleo' }));
+        expect(shown()).toEqual(['Cleo']);
+        fireEvent.click(screen.getByRole('button', { name: 'Show all groups again' }));
+        expect(shown()).toEqual(['Ana', 'Bruno', 'Cleo']);
     });
 
-    it('removes the pane of a document that is deleted, and the strip when one is left', async () => {
-        act(() => void openBeside('Bruno'));
-        await waitFor(() => expect(tabs()).toHaveLength(2));
+    it('draws the groups in reading order, so Tab follows the screen', async () => {
+        const root: LayoutNode = {
+            type: 'split',
+            direction: 'row',
+            children: [
+                {
+                    type: 'split',
+                    direction: 'column',
+                    children: [g('A', ['d:Cleo']), g('B', ['d:Ana'])],
+                    weights: [1, 1],
+                },
+                g('C', ['d:Bruno']),
+            ],
+            weights: [1, 1],
+        } satisfies SplitNode;
+        act(() => usePaneStore.setState({ root, recent: ['d:Ana'] }));
+        await waitFor(() => expect(strips()).toHaveLength(3));
+        expect(shown()).toEqual(['Cleo', 'Ana', 'Bruno']);
+    });
 
+    it('removes the tab of a document that is deleted, and the strip when one is left', async () => {
+        act(() => void openBeside('Bruno'));
+        await waitFor(() => expect(strips()).toHaveLength(2));
         act(() => useDocumentStore.getState().deleteDocument('Ana'));
-        await waitFor(() => expect(screen.queryByRole('tablist')).toBeNull());
+        await waitFor(() => expect(strips()).toHaveLength(0));
         expect(openDocumentIds()).toEqual(['Bruno']);
     });
 
-    it('shows a notice in the pane of a document whose record cannot be read', async () => {
+    it('shows a notice in the group of a document whose record cannot be read', async () => {
         useDocumentStore.setState((state) => ({
             entries: [...state.entries, { ...state.entries[0]!, id: 'Ghost', name: 'Ghost' }],
         }));
@@ -110,9 +187,7 @@ describe('the tab strip and panes (spec 034, US1)', () => {
         const alert = await screen.findByRole('alert');
         expect(alert.textContent).toBe('This document could not be read.');
         expect(takeSheetIssues().length).toBeGreaterThan(0);
-        fireEvent.click(
-            within(screen.getByRole('tablist')).getByRole('button', { name: 'Close Ghost' })
-        );
-        await waitFor(() => expect(screen.queryByRole('tablist')).toBeNull());
+        fireEvent.click(screen.getByRole('button', { name: 'Close Ghost' }));
+        await waitFor(() => expect(strips()).toHaveLength(0));
     });
 });

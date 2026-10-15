@@ -25,6 +25,7 @@ import {
     FolderPlus,
     Pencil,
     Redo2,
+    SquarePlus,
     Trash2,
     Undo2,
 } from 'lucide-react';
@@ -59,7 +60,7 @@ import {
     undoTreeChange,
     useDocumentsHistory,
 } from '../../features/documents/treeActions';
-import { openBeside, type OpenOutcome } from '../../features/sheet/panes/paneStore';
+import { openBeside, openInNewTab, type OpenOutcome } from '../../features/sheet/panes/paneStore';
 import { MAX_DOCUMENTS } from '../../features/sheet/panes/types';
 import { useDocumentStore } from '../../store/documentStore';
 import { ConfirmDialog } from '../dialogs/ConfirmDialog';
@@ -225,6 +226,10 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
         if (asTab) {
             toast(translate(uiMessages.sheet.documents.panes.openedAsTab, { name: nameOf(id) }));
         }
+    };
+    const openDocumentInNewTab = (id: string) => {
+        announceOpening(id, openInNewTab(id));
+        if (narrow) onOpenChange(false);
     };
     const openDocumentBeside = (id: string) => {
         announceOpening(id, openBeside(id));
@@ -413,6 +418,11 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
             ? [
                   { id: 'open', label: translate(labels.details.open), icon: ExternalLink },
                   {
+                      id: 'openInNewTab',
+                      label: translate(labels.details.openInNewTab),
+                      icon: SquarePlus,
+                  },
+                  {
                       id: 'openBeside',
                       label: translate(labels.details.openBeside),
                       icon: Columns2,
@@ -444,6 +454,8 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
         const keys = keysFor(menuItem.key);
         if (id === 'open' && menuItem.node.type === 'document')
             openDocument(menuItem.node.entry.id);
+        else if (id === 'openInNewTab' && menuItem.node.type === 'document')
+            openDocumentInNewTab(menuItem.node.entry.id);
         else if (id === 'openBeside' && menuItem.node.type === 'document')
             openDocumentBeside(menuItem.node.entry.id);
         else if (id === 'rename') startRename(menuItem.key);
@@ -693,6 +705,7 @@ function OpenDocumentsWindow({ open, onOpenChange }: DocumentsWindowProps) {
                             entries={entries}
                             onOpen={(entry) => openDocument(entry.id)}
                             onOpenBeside={(entry) => openDocumentBeside(entry.id)}
+                            onOpenInNewTab={(entry) => openDocumentInNewTab(entry.id)}
                             onRename={renameRow}
                             onMove={() => startMove(selectedKeys)}
                             onDelete={() => startDelete(selectedKeys)}

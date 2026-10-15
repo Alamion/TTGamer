@@ -9,7 +9,7 @@ import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
-import { resetLayout } from './helpers/panes';
+import { groupFrameOf, resetLayout } from './helpers/panes';
 
 vi.setConfig({ testTimeout: 30_000 });
 
@@ -29,7 +29,7 @@ const preferred = (id: string) =>
     useDocumentStore.getState().documents.find((document) => document.id === id)?.metadata
         .preferredViewId;
 const selectIn = (name: string) =>
-    within(screen.getByRole('region', { name })).getByRole('combobox') as HTMLSelectElement;
+    within(groupFrameOf(name)).getByRole('combobox') as HTMLSelectElement;
 
 describe('which view a pane starts in (spec 034, FR-008)', () => {
     it.each(SHIPPED_BRIEFS)('finds the brief of %s %s by the naming rule', (system, id) => {
@@ -105,7 +105,7 @@ describe('a pane has its own view', () => {
         act(() => void openBeside('Bruno'));
         await waitFor(() => expect(screen.getAllByRole('region')).toHaveLength(2));
         fireEvent.click(
-            within(screen.getByRole('region', { name: 'Bruno' })).getByRole('button', {
+            within(groupFrameOf('Bruno')).getByRole('button', {
                 name: 'Close Bruno',
             })
         );

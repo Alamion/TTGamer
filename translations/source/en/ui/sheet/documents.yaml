@@ -19,13 +19,14 @@ toolbar:
     importError: Failed to import "{filename}"
 panes:
     tabsLabel: Open documents
+    groupLabel: 'Tabs of group {number}'
     close: 'Close {name}'
     unreadable: This document could not be read.
     closedHidden: 'At most {max} documents stay open: "{closed}" was closed to make room for "{name}".'
     openedAsTab: 'Six groups are open, so "{name}" opened as a tab.'
     resize: 'Resize {left} and {right}'
-    maximize: 'Show only {name}'
-    restore: 'Show all open documents again'
+    maximize: 'Show only the group of {name}'
+    restore: 'Show all groups again'
 
 conflict:
     typeTitle: This document type is already installed
@@ -102,6 +103,7 @@ manager:
         top: Top level
         open: Open
         openBeside: Open beside
+        openInNewTab: Open in new tab
         delete: Delete
         rename: Rename
         move: Move to…
