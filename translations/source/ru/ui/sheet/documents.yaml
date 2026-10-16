@@ -225,7 +225,7 @@ views:
     storedValues: Сохранённые значения
     label: Режим отображения
     fullSheet: Полный лист
-    brief: Краткий
+    brief: Краткий лист
     droidSheet: Лист дроида
     creatureSheet: Лист существа
     vehicleSheet: Лист транспорта

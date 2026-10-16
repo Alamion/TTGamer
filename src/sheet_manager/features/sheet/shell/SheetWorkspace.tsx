@@ -45,8 +45,8 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
         documents,
         forgetRecoveryEntry,
         importDocument,
+        resetDocument,
         retainImportForRecovery,
-        updateDocumentData,
         updateDocumentMetadata,
     } = useDocumentStore();
     const { templates } = useTemplateStore();
@@ -143,14 +143,7 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
     };
 
     const handleResetConfirm = () => {
-        if (!currentDocument) return;
-        const definition = systemRegistry.getDocumentDefinition(
-            currentDocument.systemId,
-            currentDocument.definitionId
-        );
-        if (!definition) return;
-        updateDocumentData(currentDocument.id, () => definition.createDefault());
-        updateDocumentMetadata(currentDocument.id, { title: '' });
+        if (currentDocument) resetDocument(currentDocument.id);
         setResetDialogOpen(false);
     };
 

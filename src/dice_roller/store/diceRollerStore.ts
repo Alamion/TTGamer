@@ -1,3 +1,5 @@
+import { translate } from '@docusaurus/Translate';
+import { uiMessages } from '@site/src/i18n/generated/uiMessages';
 import type { SharingServiceId } from '@site/src/integrations/roll-sharing';
 import { warn } from '@site/src/shared/utils/logging';
 import type { StateCreator } from 'zustand';
@@ -189,6 +191,10 @@ const stateCreator: StateCreator<DiceRollerState, [], []> = (set, get) => {
                 timeToReactSeconds: s.timeToReactSeconds,
                 diceLiveliness: s.diceLiveliness,
                 specialDiceColor: s.specialDiceColor,
+                rollControlLabels: {
+                    accept: translate(uiMessages.dice.panel.acceptRoll),
+                    cancel: translate(uiMessages.dice.panel.cancelRoll),
+                },
             };
             const rolledNotation = prepared?.notation ?? notation;
             await handleRollEvent(

@@ -153,6 +153,8 @@ export interface DocumentStoreState {
         template: CustomTemplate,
         updater: (values: TemplatePageValues) => TemplatePageValues
     ) => void;
+    /** Puts the system data back to its defaults, clears page values and the name. */
+    resetDocument: (id: string) => void;
     deleteDocument: (id: string) => void;
     /**
      * Runs tree operations (folders, moves, deletes) on the index in one write; nothing is
@@ -652,6 +654,24 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             documents: documents.map((document) => (document.id === id ? next : document)),
             entries: syncEntry(entries, next, { touch: true }),
         }));
+    },
+
+    resetDocument: (id) => {
+        const current = get().documents.find((document) => document.id === id);
+        if (!current || isPresetId(id)) return;
+        const definition = systemRegistry.getDocumentDefinition(
+            current.systemId,
+            current.definitionId
+        );
+        if (!definition) return;
+        const { updateDocumentData, updateDocumentMetadata } = get();
+        updateDocumentData(id, () => definition.createDefault());
+        set(({ documents }) => ({
+            documents: documents.map((document) =>
+                document.id === id ? { ...document, templateValues: {} } : document
+            ),
+        }));
+        updateDocumentMetadata(id, { title: '' });
     },
 
     deleteDocument: (id) => {

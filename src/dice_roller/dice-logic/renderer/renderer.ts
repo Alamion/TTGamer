@@ -15,6 +15,7 @@ import {
     VELOCITY_THRESHOLD,
 } from '../../utils/constants';
 import { RollCancelledError } from '../errors';
+import type { RollControlLabels } from '../types';
 import { applyCrowdCollisions } from './crowd';
 import { releaseDiceGeometry } from './factory';
 import type { DiceGeometryData } from './geometries';
@@ -37,6 +38,8 @@ export interface DiceRendererConfig {
     timeToReactSeconds?: number;
     /** 0 (heavy: dice stop where they land) to 100 (lively, the default). */
     liveliness?: number;
+    /** Localized names of the accept and cancel buttons shown while dice roll. */
+    labels?: RollControlLabels;
 }
 
 type SessionPhase =
@@ -113,6 +116,10 @@ export class DiceRenderer {
     setLiveliness(liveliness: number): void {
         this.profile = physicsProfile(liveliness);
         this.physicsWorld.applyProfile(this.profile);
+    }
+
+    setLabels(labels: RollControlLabels | undefined): void {
+        if (labels) this.config = { ...this.config, labels };
     }
 
     setTimeToReact(enabled: boolean, seconds: number): void {
@@ -343,13 +350,16 @@ export class DiceRenderer {
 
         this.acceptBtn = document.createElement('button');
         this.acceptBtn.className = 'ddr-loading-btn ddr-accept-btn';
-        this.acceptBtn.title = 'Accept roll';
+        const labels = this.config.labels ?? { accept: 'Accept roll', cancel: 'Cancel roll' };
+        this.acceptBtn.title = labels.accept;
+        this.acceptBtn.setAttribute('aria-label', labels.accept);
         this.acceptBtn.textContent = '✓';
         bar.appendChild(this.acceptBtn);
 
         this.cancelBtn = document.createElement('button');
         this.cancelBtn.className = 'ddr-loading-btn ddr-cancel-btn';
-        this.cancelBtn.title = 'Cancel roll';
+        this.cancelBtn.title = labels.cancel;
+        this.cancelBtn.setAttribute('aria-label', labels.cancel);
         this.cancelBtn.textContent = '✗';
         bar.appendChild(this.cancelBtn);
 
