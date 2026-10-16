@@ -1,6 +1,9 @@
 // @vitest-environment happy-dom
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
-import { type SplitNode } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
+import {
+    groupsInOrder,
+    type SplitNode,
+} from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
 import { openBeside, usePaneStore } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
@@ -89,7 +92,7 @@ describe('groups side by side (spec 036, Foundation)', () => {
     });
 
     it('keeps a docked tool in the strip when the layout does not fit a wide window', async () => {
-        vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(900);
+        vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(500);
         resetLayout();
         seedDocuments(['Ana', 'Bruno'], { current: 'Ana' });
         usePaneStore.setState({
@@ -152,5 +155,80 @@ describe('groups side by side (spec 036, Foundation)', () => {
             fireEvent.click(screen.getByRole('tab', { name: 'Bruno' }));
             expect(regions()).toEqual(['Bruno']);
         });
+    });
+});
+
+describe('collapsing a group (spec 036, US5)', () => {
+    const collapsed = () =>
+        groupsInOrder(usePaneStore.getState().root)
+            .filter((group) => group.collapsed)
+            .map((group) => group.shown);
+    const stripOf = (name: string) =>
+        screen.getByRole('button', { name: `Open the group of ${name}` });
+
+    it('collapses the group a divider is dragged far past, and opens it from its strip', async () => {
+        await open(['Ana', 'Bruno'], 1280);
+        const divider = screen.getByRole('separator');
+        const size = Number(divider.getAttribute('aria-valuenow'));
+        const to = 1000 - (size - 320 + 81);
+        fireEvent.pointerDown(divider, { button: 0, pointerId: 1, clientX: 1000 });
+        fireEvent.pointerMove(divider, { pointerId: 1, clientX: to });
+        fireEvent.pointerUp(divider, { pointerId: 1, clientX: to });
+        expect(collapsed()).toEqual(['d:Ana']);
+        expect(stripOf('Ana').getAttribute('aria-expanded')).toBe('false');
+        expect(regions()).toEqual(['Bruno']);
+        expect(screen.queryAllByRole('separator')).toHaveLength(0);
+        const { weights } = usePaneStore.getState().root as SplitNode;
+
+        fireEvent.click(stripOf('Ana'));
+        expect(collapsed()).toEqual([]);
+        expect(regions()).toEqual(['Ana', 'Bruno']);
+        expect((usePaneStore.getState().root as SplitNode).weights).toEqual(weights);
+    });
+
+    it('collapses with Enter on the divider, and stays collapsed after a remount', async () => {
+        await open(['Ana', 'Bruno'], 1280);
+        fireEvent.keyDown(screen.getByRole('separator'), { key: 'Enter' });
+        expect(collapsed()).toHaveLength(1);
+        cleanup();
+        render(createElement(CharacterSheet));
+        await waitFor(() =>
+            expect(screen.getAllByRole('button', { name: /^Open the group/ })).toHaveLength(1)
+        );
+        fireEvent.keyDown(screen.getByRole('button', { name: /^Open the group/ }), {
+            key: 'Enter',
+        });
+        fireEvent.click(screen.getByRole('button', { name: /^Open the group/ }));
+        expect(collapsed()).toEqual([]);
+    });
+
+    it('draws groups of tools as strips when the layout does not fit, the least used first', async () => {
+        vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(900);
+        resetLayout();
+        seedDocuments(['Ana'], { current: 'Ana' });
+        usePaneStore.setState({
+            root: {
+                type: 'split',
+                direction: 'row',
+                children: ['t:library', 'd:Ana', 't:dice'].map((key) => ({
+                    type: 'group' as const,
+                    id: key,
+                    tabs: [key],
+                    shown: key,
+                })),
+                weights: [1, 1, 1],
+            },
+            recent: ['d:Ana'],
+        });
+        render(createElement(CharacterSheet));
+        await waitFor(() => expect(stripOf('Library')).toBeTruthy());
+        // Only the drawing gives way: the stored layout keeps every group open.
+        expect(collapsed()).toEqual([]);
+        expect(screen.queryByRole('region', { name: 'Library' })).toBeNull();
+        expect(screen.getByRole('region', { name: 'Dice Roller' })).toBeTruthy();
+
+        fireEvent.click(stripOf('Library'));
+        expect(screen.getByRole('region', { name: 'Library' })).toBeTruthy();
+        expect(stripOf('Dice Roller')).toBeTruthy();
     });
 });

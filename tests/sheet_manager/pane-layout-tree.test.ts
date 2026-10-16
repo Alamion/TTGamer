@@ -1,5 +1,6 @@
 import {
     COLLAPSED_SIZE,
+    fitByCollapsing,
     type GroupNode,
     groupOf,
     groupsInOrder,
@@ -10,6 +11,7 @@ import {
     placeTab,
     rectsOf,
     removeTab,
+    setCollapsed,
     setWeightsAt,
     splitGroup,
     type SplitNode,
@@ -192,5 +194,42 @@ describe('sizes and places', () => {
         expect((next.children[1] as SplitNode).weights).toEqual([2, 1]);
         expect(next.children[0]).toBe(tree.children[0]);
         expect(setWeightsAt(tree, [1], [1])).toBe(tree);
+    });
+});
+
+describe('collapsed groups (spec 036, US5)', () => {
+    const collapsedIds = (node: LayoutNode | null) =>
+        groupsInOrder(node)
+            .filter((group) => group.collapsed)
+            .map(({ id }) => id);
+
+    it('collapse and expand, keeping the weight; a split keeps one open child', () => {
+        const tree = row([g('A', ['d:a']), column([g('B', ['d:b']), g('C', ['d:c'])])], [2, 1]);
+        const once = setCollapsed(tree, 'B', true)!;
+        expect(collapsedIds(once)).toEqual(['B']);
+        expect((once as SplitNode).weights).toEqual([2, 1]);
+        expect(setCollapsed(once, 'C', true)).toBe(once);
+        expect(setCollapsed(g('A', ['d:a']), 'A', true)).toEqual(g('A', ['d:a']));
+        expect(collapsedIds(setCollapsed(once, 'B', false))).toEqual([]);
+    });
+
+    it('opens a group a tab is placed or shown in', () => {
+        const tree = setCollapsed(row([g('A', ['d:a', 'd:x']), g('B', ['d:b'])]), 'A', true);
+        expect(collapsedIds(placeTab(tree, 'd:x', 'A'))).toEqual([]);
+        expect(collapsedIds(placeTab(tree, 'd:b', 'A'))).toEqual([]);
+    });
+
+    it('fits a layout that does not fit by collapsing tool groups, least recently used first', () => {
+        const tree = row([g('L', ['t:library']), g('A', ['d:a']), g('D', ['t:dice'])]);
+        const area = { width: 800, height: 600 };
+        expect(fitByCollapsing(tree, { width: 1200, height: 600 }, [])).toBe(tree);
+        expect(collapsedIds(fitByCollapsing(tree, area, ['t:dice', 'd:a', 't:library']))).toEqual([
+            'L',
+        ]);
+        expect(collapsedIds(fitByCollapsing(tree, area, ['t:library', 'd:a']))).toEqual(['D']);
+        // Never the tab used last, and never a group with a document.
+        expect(fitByCollapsing(tree, { width: 500, height: 600 }, ['t:dice'])).toBeNull();
+        const documents = row([g('A', ['d:a']), g('B', ['d:b']), g('C', ['d:c'])]);
+        expect(fitByCollapsing(documents, area, [])).toBeNull();
     });
 });

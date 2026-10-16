@@ -95,6 +95,17 @@ export function describeSplitterContract(host: SplitterHost) {
             expect(value()).toBe(limits.initial + 30 * direction);
         });
 
+        it('clamps a drag far past its bounds, and Enter changes nothing', () => {
+            host.open();
+            const divider = host.divider();
+            fireEvent.pointerDown(divider, { button: 0, pointerId: 1, ...at(1000) });
+            fireEvent.pointerMove(divider, { pointerId: 1, ...at(1000 - 600 * direction) });
+            fireEvent.pointerUp(divider, { pointerId: 1, ...at(1000 - 600 * direction) });
+            expect(value()).toBe(limits.min);
+            press('Enter');
+            expect(value()).toBe(limits.min);
+        });
+
         it('puts the preview back when a drag is cancelled', () => {
             host.open();
             const divider = host.divider();

@@ -196,16 +196,16 @@ float the dice; click the window behind.
 
 **Check**: the documents group dragged past its edge collapses to a strip and reopens.
 
-- [ ] T040 [US5] Add a collapse case to `tests/shared/splitter.contract.test.tsx` (80 px past `min`
+- [x] T040 [US5] Add a collapse case to `tests/shared/splitter.contract.test.tsx` (80 px past `min`
       or Enter calls `onCollapse`, hosts without it clamp as before), then
       `collapseAfter`/`onCollapse` in `src/shared/components/Splitter.tsx`
-- [ ] T041 [US5] Write tests in `tests/sheet_manager/pane-area.test.tsx`: collapsing gives a 28 px
+- [x] T041 [US5] Write tests in `tests/sheet_manager/pane-area.test.tsx`: collapsing gives a 28 px
       strip button named by the shown tab with `aria-expanded="false"`, the neighbour takes the
       room; Enter on the divider collapses too; click or Enter on the strip expands at the former
       weight; collapsed state survives a remount
-- [ ] T042 [US5] Add `collapseGroup`/`expandGroup` to `paneStore.ts` and the strip in
+- [x] T042 [US5] Add `collapseGroup`/`expandGroup` to `paneStore.ts` and the strip in
       `PaneArea.tsx`; strings `panes.{collapse, expand}` (en + ru)
-- [ ] T043 [US5] Run `yarn verify:full`; commit
+- [x] T043 [US5] Run `yarn verify:full`; commit
       `feat(sheet): collapse a group by dragging its divider (spec 036, US5)`
 
 ## User Story 6 - Phones, narrow windows, and other pages (P6)

@@ -42,6 +42,8 @@ panes:
     moveWindow: 'Move {name}: arrows move it, Shift and arrows resize it, Home puts it back'
     maximize: 'Show only the group of {name}'
     restore: 'Show all groups again'
+    expand: 'Open the group of {name}'
+    collapsed: 'The group of {name} is collapsed'
 
 conflict:
     typeTitle: This document type is already installed

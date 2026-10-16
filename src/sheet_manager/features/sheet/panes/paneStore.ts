@@ -13,18 +13,19 @@ import {
     documentGroup,
     EMPTY_LAYOUT,
     findGroup,
+    fitByCollapsing,
     focusedGroup,
     groupOf,
     groupsInOrder,
     type LayoutNode,
     type LayoutState,
     makeGroup,
-    minSizeOf,
     normalize,
     openKeys,
     placeTab,
     reconcileLayout,
     removeTab,
+    setCollapsed,
     setWeightsAt,
     splitGroup,
     type SplitSide,
@@ -201,15 +202,15 @@ export function setLayoutArea(size: { width: number; height: number } | null): v
 }
 
 /**
- * Whether every group of `root` keeps its minimum size in the layout area (the window's size
- * until the area is drawn). On a phone only the group count matters: the narrow view shows one
- * document anyway (design D7).
+ * Whether `root` can be drawn side by side in the layout area (the window's size until the area
+ * is drawn) with the tab `used` in view: every group at its minimum once groups of other tools
+ * give way to strips (`fitByCollapsing`). On a phone only the group count matters: the narrow view
+ * shows one document anyway (design D7).
  */
-function hasRoomFor(root: LayoutNode | null): boolean {
+function hasRoomFor(root: LayoutNode | null, used: TabKey): boolean {
     if (typeof window === 'undefined' || window.innerWidth < SIDE_BY_SIDE_WIDTH) return true;
     const area = measuredArea ?? { width: window.innerWidth, height: window.innerHeight };
-    const needed = minSizeOf(root);
-    return needed.width <= area.width && needed.height <= area.height;
+    return fitByCollapsing(root, area, [used]) !== null;
 }
 
 function openDocument(id: string, place: 'beside' | 'tab'): OpenOutcome {
@@ -227,7 +228,7 @@ function openDocument(id: string, place: 'beside' | 'tab'): OpenOutcome {
         group && place === 'beside' && groupsInOrder(state.root).length < MAX_GROUPS
             ? splitGroup(state.root, group.id, 'right', key)
             : null;
-    const asTab = !beside || !hasRoomFor(beside);
+    const asTab = !beside || !hasRoomFor(beside, key);
     const root = !group ? state.root : asTab ? placeTab(state.root, key, group.id) : beside;
     const view = place === 'beside' ? startView(id) : undefined;
     usePaneStore.setState({
@@ -252,7 +253,7 @@ export function focusTab(key: TabKey): void {
     const state = reconciled();
     const group = groupOf(state.root, key);
     const root =
-        group && group.shown !== key
+        group && (group.shown !== key || group.collapsed)
             ? placeTab(state.root, key, group.id, group.tabs.indexOf(key))
             : state.root;
     const recent = [key, ...state.recent.filter((candidate) => candidate !== key)];
@@ -304,6 +305,24 @@ export function toggleMaximized(groupId: string): void {
 }
 
 /** Stores the sizes of the children of the split at `path` as weights. */
+/**
+ * Collapses a group to a strip (spec 036, US5); `false` when that would leave a split with no open
+ * group.
+ */
+export function collapseGroup(groupId: string): boolean {
+    const state = reconciled();
+    const root = setCollapsed(state.root, groupId, true);
+    if (root === state.root) return false;
+    usePaneStore.setState({ ...state, root, maximized: null });
+    return true;
+}
+
+/** Opens a collapsed group at its former size and shows its tab. */
+export function expandGroup(groupId: string): void {
+    const group = findGroup(usePaneStore.getState().root, groupId);
+    if (group) focusTab(group.shown);
+}
+
 export function setSplitWeights(path: readonly number[], weights: readonly number[]): void {
     usePaneStore.setState((state) => ({ root: setWeightsAt(state.root, path, weights) }));
 }
@@ -406,7 +425,8 @@ function dockTool(root: LayoutNode | null, key: TabKey, side: 'left' | 'right'):
         children: side === 'left' ? [fresh, root] : [root, fresh],
         weights: side === 'left' ? [TOOL_WEIGHT, rest] : [rest, TOOL_WEIGHT],
     });
-    const joinEdge = edge.tabs.some(isTool) || groups.length >= MAX_GROUPS || !hasRoomFor(beside);
+    const joinEdge =
+        edge.tabs.some(isTool) || groups.length >= MAX_GROUPS || !hasRoomFor(beside, key);
     return joinEdge ? placeTab(root, key, edge.id) : beside;
 }
 
@@ -552,5 +572,5 @@ export function canSplitAt(groupId: string, side: SplitSide, key: TabKey): boole
     const { root } = usePaneStore.getState();
     if (groupsInOrder(root).length >= MAX_GROUPS) return false;
     const probe = splitGroup(root, groupId, side, key, 'probe');
-    return probe !== root && hasRoomFor(probe);
+    return probe !== root && hasRoomFor(probe, key);
 }

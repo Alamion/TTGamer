@@ -145,8 +145,11 @@ export function placeTab(
     const same =
         tabs.length === target.tabs.length &&
         tabs.every((tab, position) => tab === target.tabs[position]) &&
-        target.shown === key;
-    return same ? tree : normalize(replaceNode(tree, target, { ...target, tabs, shown: key }));
+        target.shown === key &&
+        !target.collapsed;
+    // A tab placed or shown in a collapsed group opens it.
+    const placed: GroupNode = { type: 'group', id: target.id, tabs, shown: key };
+    return same ? tree : normalize(replaceNode(tree, target, placed));
 }
 
 const axisOf = (side: SplitSide): SplitDirection =>
@@ -331,6 +334,73 @@ export function setWeightsAt(
     const children = [...node.children];
     children[head!] = next;
     return { ...node, children };
+}
+
+/** A group drawn as a strip, or a split of nothing else: it cannot take the room of its split. */
+const folded = (node: LayoutNode): boolean =>
+    node.type === 'group' ? node.collapsed === true : node.children.every(folded);
+
+const hasFoldedSplit = (node: LayoutNode): boolean =>
+    node.type === 'split' && (node.children.every(folded) || node.children.some(hasFoldedSplit));
+
+/**
+ * The tree with group `groupId` collapsed to a strip or opened again (spec 036, US5); its weight
+ * is kept for when it opens. A collapse that would leave a split, or the whole layout, with no
+ * open group changes nothing.
+ */
+export function setCollapsed(
+    root: LayoutNode | null,
+    groupId: string,
+    collapsed: boolean
+): LayoutNode | null {
+    const target = findGroup(root, groupId);
+    if (!root || !target || (target.collapsed === true) === collapsed) return root;
+    const next = replaceNode(root, target, {
+        type: 'group',
+        id: target.id,
+        tabs: target.tabs,
+        shown: target.shown,
+        ...(collapsed ? { collapsed: true } : {}),
+    });
+    return collapsed && (folded(next) || hasFoldedSplit(next)) ? root : next;
+}
+
+/**
+ * The layout as it can be drawn in `area` (spec 036, US5): itself when it fits, else with groups
+ * of tools only collapsed, the least recently used first and never the group of the tab used last;
+ * `null` when that is not enough. Only the drawing changes: widened, the layout is back as it was.
+ */
+export function fitByCollapsing(
+    root: LayoutNode | null,
+    area: { width: number; height: number },
+    recent: readonly TabKey[]
+): LayoutNode | null {
+    const fits = (node: LayoutNode | null) => {
+        const needed = minSizeOf(node);
+        return needed.width <= area.width && needed.height <= area.height;
+    };
+    if (fits(root)) return root;
+    const rank = (group: GroupNode) =>
+        Math.min(
+            ...group.tabs.map((tab) => {
+                const position = recent.indexOf(tab);
+                return position === -1 ? Number.POSITIVE_INFINITY : position;
+            })
+        );
+    const candidates = groupsInOrder(root)
+        .filter(
+            (group) =>
+                !group.collapsed &&
+                group.tabs.every((tab) => documentIdOf(tab) === null) &&
+                !group.tabs.includes(recent[0] ?? '')
+        )
+        .sort((a, b) => rank(b) - rank(a));
+    let tree = root;
+    for (const group of candidates) {
+        tree = setCollapsed(tree, group.id, true);
+        if (fits(tree)) return tree;
+    }
+    return null;
 }
 
 /** A tab above the page, with its place and size. */

@@ -260,6 +260,13 @@ describe('tools and floating windows (spec 036, US3)', () => {
     const keysOf = () => tabsByGroup();
     const floatingKeys = () => layout().floating.map(({ key }) => key);
 
+    it('gives a tool its own group where the other tools can give way to strips', () => {
+        roomyArea(900, 800);
+        openTool('library');
+        openTool('dice');
+        expect(keysOf()).toEqual([['t:library'], ['d:a'], ['t:dice']]);
+    });
+
     it('opens the documents and the library together on the left, the dice on the right', () => {
         roomyArea(1920, 1000);
         openTool('documents');

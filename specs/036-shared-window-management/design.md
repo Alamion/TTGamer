@@ -214,3 +214,16 @@ restore at the browser level → **Finish**.
     - The narrow view of a window that is not a phone but too narrow for the layout keeps the docked
       tools in its strip, after D11 left them out: there the full-screen tool of a phone does not
       exist, so tools could not be reached. A phone keeps the strip of documents only.
+- **US5**:
+    - `Splitter` collapses by side (`onCollapse('start' | 'end')`): a drag ending 80 px past either
+      neighbour's minimum collapses that neighbour; Enter collapses the `primary` side, which the
+      layout sets to the smaller group (a split next to a group is never collapsed). The divider
+      next to a strip is not drawn: the strip opens with a click or Enter.
+    - A tab placed or shown in a collapsed group opens it, so opening a document or a tool there
+      never leaves it hidden.
+    - Agreed with the maintainer during the US3 walk: when the layout does not fit, groups of tools
+      only are drawn as strips (the least recently used first, never the group used last) before the
+      narrow view takes over (`fitByCollapsing`). It changes only the drawing; a click on such a
+      strip uses its tool, and another tool group gives way. Opening beside, docking a tool, and the
+      split targets count that room too, so a third group of tools opens at about 700 px of area
+      instead of 980.
