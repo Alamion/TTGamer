@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 
 import { useDocumentStore } from '../../../store/documentStore';
 import { documentLabeler } from '../../documents/labeler';
-import { bodyTarget, type DropTarget, edgeAt } from './dropTargets';
+import { bodyTarget, documentIn, type DropTarget, edgeAt, useRowDragging } from './dropTargets';
 import { FloatingTabs } from './FloatingTabs';
 import { MIN_GROUP_HEIGHT, moveDivider, SIDE_BY_SIDE_WIDTH, weightsOf } from './layout';
 import {
@@ -17,6 +17,7 @@ import {
     findGroup,
     fitByCollapsing,
     type GroupNode,
+    groupOf,
     groupsInOrder,
     type LayoutNode,
     openKeys,
@@ -28,12 +29,13 @@ import {
     type SplitSide,
 } from './layoutTree';
 import { Pane } from './Pane';
-import { MaximizeButton, PaneGroup } from './PaneGroup';
+import { DropOverlay, MaximizeButton, PaneGroup } from './PaneGroup';
 import { tabId } from './paneIds';
 import { PaneSourceProvider } from './PaneSourceProvider';
 import {
     closeTab,
     collapseGroup,
+    dropDocument,
     expandGroup,
     floatTab,
     focusTab,
@@ -46,9 +48,9 @@ import {
 } from './paneStore';
 import { PaneTabs } from './PaneTabs';
 import { PaneViewSelect } from './PaneViewSelect';
-import { docKey, documentIdOf, tabKindOf, useTabKinds } from './tabKeys';
+import { docKey, documentIdOf, tabKindOf, toolKey, useTabKinds } from './tabKeys';
 import { TabMenu } from './TabMenu';
-import { MAX_GROUPS } from './types';
+import { MAX_DOCUMENTS, MAX_GROUPS } from './types';
 import { useTabDrag } from './useTabDrag';
 
 const labels = uiMessages.sheet.documents.panes;
@@ -127,6 +129,7 @@ export function PaneArea({
     );
     const [announcement, setAnnouncement] = useState('');
     const dockHint = usePaneStore((state) => state.dockHint);
+    const rowDragging = useRowDragging();
     useTabKinds();
 
     const entryIds = useMemo(() => new Set(entries.map(({ id }) => id)), [entries]);
@@ -157,8 +160,27 @@ export function PaneArea({
         if (floatTab(key, at)) setAnnouncement(translate(labels.floated, { name: titleOf(key) }));
         else toast(translate(labels.floatLimit));
     };
-    const drag = useTabDrag(float, (key: string, target: DropTarget) => {
+    const drag = useTabDrag(float, (key: string, target: DropTarget, fromRow: boolean) => {
         const name = titleOf(key);
+        const id = documentIdOf(key);
+        if (fromRow && id) {
+            const closed = dropDocument(id, target);
+            if (closed) {
+                toast(
+                    translate(labels.closedHidden, {
+                        max: MAX_DOCUMENTS,
+                        name,
+                        closed: nameOf(closed),
+                    })
+                );
+            }
+            if (groupOf(usePaneStore.getState().root, key)) {
+                setAnnouncement(
+                    translate(labels.moved, { name, number: String(groupNumberOf(key)) })
+                );
+            }
+            return;
+        }
         if (target.kind === 'edge') {
             if (splitWith(key, target.groupId, target.side)) {
                 setAnnouncement(translate(labels.split, { name }));
@@ -207,17 +229,6 @@ export function PaneArea({
     const floatingLayer = (
         <FloatingTabs renderDocument={renderDocument} titleOf={(key: string) => titleOf(key)} />
     );
-    const only = groups.length === 1 && groups[0]!.tabs.length === 1 ? groups[0]!.tabs[0] : null;
-    if (only === docKey(documentId)) {
-        return (
-            <>
-                <PaneSourceProvider documentId={documentId}>
-                    {renderDocument(documentId)}
-                </PaneSourceProvider>
-                {floatingLayer}
-            </>
-        );
-    }
 
     // Groups of tools give way to strips before the layout falls back to one tab at a time.
     const drawn =
@@ -227,6 +238,65 @@ export function PaneArea({
     const sideBySide = drawn !== null;
     const currentKey = docKey(documentId);
     const several = groups.length > 1;
+
+    /** A split there keeps under seven groups, and every group at its minimum in this area. */
+    const canSplit = (groupId: string, side: SplitSide, key: string) => {
+        if (groups.length >= MAX_GROUPS || drawn === null) return false;
+        const probe = splitGroup(drawn, groupId, side, key, 'probe');
+        if (probe === drawn) return false;
+        return fitByCollapsing(probe, { width: width!, height }, [key]) !== null;
+    };
+    const targetIn = (node: GroupNode) => (event: DragEvent<HTMLElement>) => {
+        const key = drag.keyOf(event);
+        if (!key) return null;
+        // A row over the documents window itself is moved within its tree, not into the layout.
+        if (
+            documentIn(event) !== null &&
+            (event.target as Element).closest?.(`[data-tool="${toolKey('documents')}"]`)
+        ) {
+            return null;
+        }
+        const box = event.currentTarget.getBoundingClientRect();
+        const target = bodyTarget(node.id, edgeAt(box, event.clientX, event.clientY), (side) =>
+            canSplit(node.id, side, key)
+        );
+        return target.kind === 'middle' && node.tabs.includes(key) ? null : target;
+    };
+    const targetOf = (groupId: string) =>
+        [dockHint, drag.target].find((hint) => hint?.groupId === groupId) ?? null;
+
+    const only = groups.length === 1 && groups[0]!.tabs.length === 1 ? groups[0]! : null;
+    if (only?.shown === currentKey) {
+        // One document is drawn as the page always drew it; a dragged row still lands on it.
+        return (
+            <>
+                {/* Measures the area without wrapping the page (spec 034, FR-014). */}
+                <div ref={areaRef} aria-hidden="true" />
+                <PaneSourceProvider documentId={documentId}>
+                    {renderDocument(documentId)}
+                </PaneSourceProvider>
+                {rowDragging && area && (
+                    // While a row is dragged, a layer over the page takes it (floating windows
+                    // stay above, so the row can be picked up there).
+                    <div
+                        data-group-body={only.id}
+                        className="fixed bottom-0 z-[800]"
+                        style={{
+                            left: area.getBoundingClientRect().left,
+                            width: area.getBoundingClientRect().width,
+                            top: Math.max(0, area.getBoundingClientRect().top),
+                        }}
+                        onDragOver={(event) => drag.over(targetIn(only)(event), event)}
+                        onDrop={(event) => drag.drop(targetIn(only)(event), event)}
+                        onDragLeave={drag.clear}
+                    >
+                        <DropOverlay target={targetOf(only.id)} />
+                    </div>
+                )}
+                {floatingLayer}
+            </>
+        );
+    }
 
     const body = (key: string, fill: boolean) => {
         const id = documentIdOf(key);
@@ -293,22 +363,6 @@ export function PaneArea({
         );
     }
 
-    /** A split there keeps under seven groups, and every group at its minimum in this area. */
-    const canSplit = (groupId: string, side: SplitSide, key: string) => {
-        if (groups.length >= MAX_GROUPS) return false;
-        const probe = splitGroup(drawn, groupId, side, key, 'probe');
-        if (probe === drawn) return false;
-        return fitByCollapsing(probe, { width: width!, height }, [key]) !== null;
-    };
-    const targetIn = (node: GroupNode) => (event: DragEvent<HTMLElement>) => {
-        const key = drag.dragged.current;
-        if (!key) return null;
-        const box = event.currentTarget.getBoundingClientRect();
-        const target = bodyTarget(node.id, edgeAt(box, event.clientX, event.clientY), (side) =>
-            canSplit(node.id, side, key)
-        );
-        return target.kind === 'middle' && node.tabs.includes(key) ? null : target;
-    };
     const group = (node: GroupNode, number: number, fill: boolean) => (
         <PaneGroup
             node={node}
@@ -321,7 +375,7 @@ export function PaneArea({
             onClose={closeTab}
             onMenu={(key, anchor) => setMenu({ key, anchor })}
             drag={coarse ? null : drag}
-            target={[dockHint, drag.target].find((hint) => hint?.groupId === node.id) ?? null}
+            target={targetOf(node.id)}
             bodyTarget={targetIn(node)}
             body={body(node.shown, fill)}
             end={

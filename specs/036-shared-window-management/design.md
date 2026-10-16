@@ -214,6 +214,16 @@ restore at the browser level → **Finish**.
     - The narrow view of a window that is not a phone but too narrow for the layout keeps the docked
       tools in its strip, after D11 left them out: there the full-screen tool of a phone does not
       exist, so tools could not be reached. A phone keeps the strip of documents only.
+- **US4**:
+    - A single document row carries `application/x-ttg-document`; its id is held in the page
+      (`setDraggedDocument` in `dropTargets.ts`), because a drag's data cannot be read before the
+      drop. `useTabDrag` takes it as that document's tab; `dropDocument` moves an open tab, docks a
+      floating one, or opens the document there (the limit of 12 applies, with its notice).
+    - The one document drawn without a frame is a drop target too, without wrapping the page (spec
+      034, FR-014): while a row is dragged (`useRowDragging`), a fixed layer over the page takes it,
+      with the same edges and middle; floating windows stay above it. A zero-height element before
+      the page measures the area. The overlay is shared (`DropOverlay`).
+    - A row over the documents window's own tree is left to the tree (moving it between folders).
 - **US5**:
     - `Splitter` collapses by side (`onCollapse('start' | 'end')`): a drag ending 80 px past either
       neighbour's minimum collapses that neighbour; Enter collapses the `primary` side, which the

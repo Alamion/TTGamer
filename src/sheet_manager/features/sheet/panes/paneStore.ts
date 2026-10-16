@@ -567,6 +567,47 @@ export function dockFloating(key: TabKey, target?: DropTarget): void {
     focusTab(key);
 }
 
+/**
+ * A document row dropped on the layout (spec 036, US4) lands as its tab would: an open document's
+ * tab moves (a floating one docks), another one opens there and becomes current. Returns the
+ * document that gave way to it, if the limit of open documents closed one.
+ */
+export function dropDocument(id: string, target: DropTarget): string | null {
+    const key = docKey(id);
+    const state = reconciled();
+    if (state.floating.some((entry) => entry.key === key)) {
+        dockFloating(key, target);
+        return null;
+    }
+    if (groupOf(state.root, key)) {
+        if (target.kind === 'edge') splitWith(key, target.groupId, target.side);
+        else moveTab(key, target.groupId, target.kind === 'strip' ? target.gap : undefined);
+        return null;
+    }
+    const admitted = admitDocument(state);
+    const next = admitted.state;
+    const root =
+        target.kind === 'edge'
+            ? groupsInOrder(next.root).length < MAX_GROUPS
+                ? splitGroup(next.root, target.groupId, target.side, key)
+                : next.root
+            : placeTab(
+                  next.root,
+                  key,
+                  target.groupId,
+                  target.kind === 'strip' ? target.gap : undefined
+              );
+    if (root === next.root) return null;
+    usePaneStore.setState({
+        ...next,
+        root,
+        recent: [key, ...next.recent],
+        maximized: null,
+    });
+    useDocumentStore.getState().setCurrentDocument(id);
+    return admitted.closed;
+}
+
 /** Whether splitting the group on `side` for `key` keeps under seven groups that all fit. */
 export function canSplitAt(groupId: string, side: SplitSide, key: TabKey): boolean {
     const { root } = usePaneStore.getState();

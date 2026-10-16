@@ -183,13 +183,13 @@ float the dice; click the window behind.
 
 **Check**: with one document open, three rows dropped on edges make a 2 × 2 grid.
 
-- [ ] T037 [US4] Write tests in `tests/sheet_manager/pane-drag.test.tsx`: a single document row
+- [x] T037 [US4] Write tests in `tests/sheet_manager/pane-drag.test.tsx`: a single document row
       dropped on a strip, a middle, or an edge acts as a tab drop; a document already in a tab moves
       that tab; a folder or several rows offer no target; a row dropped outside every group does
       nothing (no float zone for rows)
-- [ ] T038 [US4] In `components/documents/useDocumentsDrag.ts` add the `application/x-ttg-document`
+- [x] T038 [US4] In `components/documents/useDocumentsDrag.ts` add the `application/x-ttg-document`
       type when exactly one document is dragged; accept it in `dropTargets.ts`/`PaneArea.tsx`
-- [ ] T039 [US4] Run the targeted tests and `yarn verify:fast`; commit
+- [x] T039 [US4] Run the targeted tests and `yarn verify:fast`; commit
       `feat(sheet): drag documents from the documents window into the layout (spec 036, US4)`
 
 ## User Story 5 - Collapse by dragging a divider (P5)

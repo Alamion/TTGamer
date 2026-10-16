@@ -5,8 +5,10 @@ import {
     type SplitNode,
 } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
 import {
+    floatTab,
     openBeside,
     openInNewTab,
+    openTool,
     usePaneStore,
 } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
@@ -14,7 +16,7 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { resetDocuments, seedDocuments } from './helpers/documentsWindow';
+import { folder, resetDocuments, seedDocuments } from './helpers/documentsWindow';
 import { groupFrameOf, resetLayout, roomyArea } from './helpers/panes';
 import { draggableOf, dragTab, fireDrag, stubBoxes, transfer } from './helpers/tabDrag';
 
@@ -137,5 +139,81 @@ describe('dragging tabs (spec 036, US2)', () => {
                 .dropOverlay
         ).toBe('middle');
         fireEvent.dragEnd(draggableOf(tab('Gus')), { dataTransfer });
+    });
+});
+
+describe('dragging document rows from the documents window (spec 036, US4)', () => {
+    const row = (name: string) => screen.getByRole('treeitem', { name: new RegExp(`^${name}`) });
+    const bodyOf =
+        (groupIndex = 0) =>
+        () =>
+            document.querySelectorAll<HTMLElement>('[data-group-body]')[groupIndex]!;
+    const floatingKeys = () => usePaneStore.getState().floating.map(({ key }) => key);
+    /** Drags a row over a place of the layout and drops it there; returns whether it was taken. */
+    const dragRow = (
+        source: HTMLElement,
+        to: HTMLElement | (() => HTMLElement),
+        point: { clientX: number; clientY: number }
+    ) => {
+        const dataTransfer = transfer();
+        fireEvent.dragStart(source, { dataTransfer });
+        // The one document's drop layer exists only while a row is dragged.
+        const target = typeof to === 'function' ? to() : to;
+        fireDrag('dragOver', target, dataTransfer, point);
+        const overlay = document.querySelector('[data-drop-overlay], [data-drop-gap]');
+        fireDrag('drop', target, dataTransfer, point);
+        fireEvent.dragEnd(source, { dataTransfer });
+        return overlay !== null;
+    };
+    const floatDocuments = async () => {
+        act(() => {
+            openTool('documents');
+            floatTab('t:documents');
+        });
+        await waitFor(() => expect(row('Bruno')).toBeTruthy());
+    };
+
+    it('opens a row dropped on an edge of the one document in a new group, current', async () => {
+        await floatDocuments();
+        expect(dragRow(row('Bruno'), bodyOf(), { clientX: 390, clientY: 200 })).toBe(true);
+        expect(tabsByGroup()).toEqual([['d:Ana'], ['d:Bruno']]);
+        expect(current()).toBe('Bruno');
+        dragRow(row('Cleo'), bodyOf(1), { clientX: 200, clientY: 390 });
+        expect(usePaneStore.getState().root).toMatchObject({
+            direction: 'row',
+            children: [{ tabs: ['d:Ana'] }, { direction: 'column' }],
+        });
+    });
+
+    it('adds a row dropped on a strip or a middle as a tab there', async () => {
+        act(() => void openInNewTab('Bruno'));
+        await floatDocuments();
+        dragRow(row('Cleo'), stripOf('Bruno'), { clientX: 10, clientY: 10 });
+        expect(tabsByGroup()).toEqual([['d:Cleo', 'd:Ana', 'd:Bruno']]);
+        expect(current()).toBe('Cleo');
+    });
+
+    it('moves the tab of a document that is already open', async () => {
+        act(() => void openBeside('Bruno'));
+        await floatDocuments();
+        dragRow(row('Bruno'), pageOf('Ana'), { clientX: 200, clientY: 200 });
+        expect(tabsByGroup()).toEqual([['d:Ana', 'd:Bruno']]);
+    });
+
+    it('offers nothing for a folder or several rows, and never floats a row', async () => {
+        act(() => useDocumentStore.setState({ folders: [folder('f1', 'Campaign')] }));
+        await floatDocuments();
+        // No layer is laid over the page for them, so nothing there takes them.
+        const page = () =>
+            document.querySelector<HTMLElement>('[data-group-body]') ?? document.body;
+        expect(dragRow(row('Campaign'), page, { clientX: 390, clientY: 200 })).toBe(false);
+        fireEvent.click(row('Bruno'));
+        fireEvent.click(row('Cleo'), { ctrlKey: true });
+        expect(dragRow(row('Cleo'), page, { clientX: 390, clientY: 200 })).toBe(false);
+        expect(document.querySelector('[data-group-body]')).toBeNull();
+        fireEvent.click(row('Bruno'));
+        dragRow(row('Bruno'), document.body, { clientX: 900, clientY: 500 });
+        expect(tabsByGroup()).toEqual([['d:Ana']]);
+        expect(floatingKeys()).toEqual(['t:documents']);
     });
 });

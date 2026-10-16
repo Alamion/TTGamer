@@ -139,18 +139,25 @@ export function PaneGroup({
                 }
             >
                 {body}
-                {target && target.kind !== 'strip' && (
-                    <div
-                        aria-hidden="true"
-                        data-drop-overlay={target.kind === 'edge' ? target.side : 'middle'}
-                        className={clsx(
-                            'pointer-events-none absolute z-10 rounded-md border-2 border-primary bg-primary/15',
-                            OVERLAY[target.kind === 'edge' ? target.side : 'middle']
-                        )}
-                    />
-                )}
+                <DropOverlay target={target} />
             </div>
         </div>
+    );
+}
+
+/** Where a dragged tab would land on a group's page: its middle, or the half at an edge. */
+export function DropOverlay({ target }: { target: DropTarget | null }) {
+    if (!target || target.kind === 'strip') return null;
+    const place = target.kind === 'edge' ? target.side : 'middle';
+    return (
+        <div
+            aria-hidden="true"
+            data-drop-overlay={place}
+            className={clsx(
+                'pointer-events-none absolute z-10 rounded-md border-2 border-primary bg-primary/15',
+                OVERLAY[place]
+            )}
+        />
     );
 }
 

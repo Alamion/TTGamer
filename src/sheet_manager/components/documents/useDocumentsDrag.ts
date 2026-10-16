@@ -3,6 +3,7 @@ import type { TreeRowItem } from '@site/src/shared/components/tree/TreeView';
 import { type DragEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { type DocumentsNode, idOfKey } from '../../features/documents/rows';
+import { DOCUMENT_MIME, setDraggedDocument } from '../../features/sheet/panes/dropTargets';
 import type { Folder } from '../../store/documentIndex';
 
 const MIME = 'application/x-ttg-documents';
@@ -35,7 +36,8 @@ const parentOf = (item: TreeRowItem<DocumentsNode>, known: ReadonlySet<string>):
 
 /**
  * Mouse drag of tree rows (touch has "Move to…" instead, spec 032 D11). Shows where the rows would
- * land before they are dropped; a place inside a dragged folder is refused and says why.
+ * land before they are dropped; a place inside a dragged folder is refused and says why. A single
+ * document row also carries `DOCUMENT_MIME`, so the sheet's layout can take it (spec 036, US4).
  */
 export function useDocumentsDrag({
     rows,
@@ -61,6 +63,7 @@ export function useDocumentsDrag({
 
     const finish = useCallback(() => {
         dragged.current = null;
+        setDraggedDocument(null);
         setTarget(null);
         setAtEnd(false);
     }, []);
@@ -148,6 +151,10 @@ export function useDocumentsDrag({
                         ),
                     };
                     event.dataTransfer.setData(MIME, JSON.stringify(ids));
+                    if (keys.length === 1 && !keys[0]!.startsWith('folder:')) {
+                        event.dataTransfer.setData(DOCUMENT_MIME, ids[0]!);
+                        setDraggedDocument(ids[0]!);
+                    }
                     event.dataTransfer.effectAllowed = 'move';
                 },
                 onDragOver: (event) => {

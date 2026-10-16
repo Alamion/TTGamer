@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from 'react';
+
 import type { SplitSide } from './layoutTree';
 
 /** Where a dragged tab would land (spec 036, D7). */
@@ -8,6 +10,40 @@ export type DropTarget =
 
 /** The type a dragged tab carries; its key travels in the page, not in the data. */
 export const TAB_MIME = 'application/x-ttg-tab';
+
+/**
+ * The type a document row of the documents window carries when it is the only row dragged (spec
+ * 036, US4); its id also travels in the page, since a drag's data cannot be read until the drop.
+ */
+export const DOCUMENT_MIME = 'application/x-ttg-document';
+
+let draggedDocument: string | null = null;
+const rowDragListeners = new Set<() => void>();
+
+/** A single document row is picked up (`null`: the drag is over). */
+export function setDraggedDocument(id: string | null): void {
+    if (draggedDocument === id) return;
+    draggedDocument = id;
+    for (const listener of rowDragListeners) listener();
+}
+
+/** Whether a single document row is being dragged now. */
+export const useRowDragging = () =>
+    useSyncExternalStore(
+        (listener) => {
+            rowDragListeners.add(listener);
+            return () => rowDragListeners.delete(listener);
+        },
+        () => draggedDocument !== null,
+        () => false
+    );
+
+/** The document row being dragged, if the event carries one. */
+export function documentIn(event: { dataTransfer: DataTransfer | null }): string | null {
+    return Array.from(event.dataTransfer?.types ?? []).includes(DOCUMENT_MIME)
+        ? draggedDocument
+        : null;
+}
 
 /** The share of a group's width or height, from each side, that splits it. */
 const EDGE_SHARE = 0.25;
