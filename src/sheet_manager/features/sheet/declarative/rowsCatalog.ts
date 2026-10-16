@@ -11,6 +11,8 @@ type Catalogs = Pick<ReadonlyMap<string, CatalogBindingEntry>, 'get'>;
 /** A name-column suggestion; `parentId` is set when the catalog declares a parent. */
 export interface RowSuggestion extends CatalogEntry {
     parentId?: string;
+    /** The entry's level when the parent declares a `limit`. */
+    level?: number;
 }
 
 const normalize = normalizeSearchText;
@@ -39,9 +41,13 @@ export function rowSuggestions(
             const parentId = catalog.parent
                 ? readDetailValue(entry, catalog.parent.entryKey)
                 : undefined;
+            const level = catalog.parent?.limit
+                ? Number(readDetailValue(entry, catalog.parent.limit.entryKey))
+                : NaN;
             return {
                 id: `${catalogId}/${entry.id}`,
                 name: binding!.pickLabel(entry, locale),
+                ...(Number.isFinite(level) ? { level } : {}),
                 ...(catalog.parent && parentId !== undefined
                     ? {
                           parentId: String(parentId),
@@ -63,13 +69,26 @@ function parentIdsNamed(
     names: readonly string[],
     locale: string
 ): Set<string> {
+    return entryIdsNamed(catalogs, parent.catalogId, names, locale);
+}
+
+/**
+ * Entry ids of a catalog named in `names`: by the English, localized, or picker name, or by the
+ * book name in trailing parentheses.
+ */
+export function entryIdsNamed(
+    catalogs: Catalogs,
+    catalogId: string,
+    names: readonly string[],
+    locale: string
+): Set<string> {
     const wanted = new Set(
         names
             .flatMap((name) => [name, bookNameOf(name) ?? ''])
             .map(normalize)
             .filter(Boolean)
     );
-    const binding = catalogs.get(parent.catalogId);
+    const binding = catalogs.get(catalogId);
     const ids = new Set<string>();
     for (const entry of binding?.entries ?? []) {
         const labels = [
@@ -84,6 +103,55 @@ function parentIdsNamed(
 
 const cellText = (row: Readonly<Record<string, unknown>>, key: string) =>
     typeof row[key] === 'string' ? (row[key] as string) : '';
+
+const namedRecords = (parent: RowsCatalogParent, data: Readonly<Record<string, unknown>>) =>
+    parent.namedBy && Array.isArray(data[parent.namedBy.dataKey])
+        ? (data[parent.namedBy.dataKey] as Array<Record<string, unknown>>)
+        : [];
+
+/** Dots of each parent named on the sheet, by parent entry id (the highest when named twice). */
+function parentValues(
+    catalogs: Catalogs,
+    parent: RowsCatalogParent,
+    data: Readonly<Record<string, unknown>>,
+    locale: string
+): Map<string, { name: string; value: number }> {
+    const values = new Map<string, { name: string; value: number }>();
+    if (!parent.limit || !parent.namedBy) return values;
+    for (const record of namedRecords(parent, data)) {
+        const name = cellText(record, parent.namedBy.column);
+        const value = Number(record[parent.limit.parentValue]);
+        if (!name.trim() || !Number.isFinite(value)) continue;
+        for (const id of parentIdsNamed(catalogs, parent, [name], locale)) {
+            const known = values.get(id);
+            if (!known || known.value < value) values.set(id, { name, value });
+        }
+    }
+    return values;
+}
+
+/**
+ * The parent a stored row exceeds (its level above the parent's dots on the sheet), or `null`
+ * — also when the parent is typed freely or has no dots on the sheet.
+ */
+export function rowAboveLimit(
+    catalogs: Catalogs,
+    catalog: RowsCatalog,
+    row: Readonly<Record<string, unknown>>,
+    data: Readonly<Record<string, unknown>>,
+    locale: string
+): { parent: string; dots: number } | null {
+    const parent = catalog.parent;
+    if (!parent?.limit) return null;
+    const level = Number(cellText(row, parent.limit.column));
+    if (!Number.isFinite(level) || level <= 0) return null;
+    const values = parentValues(catalogs, parent, data, locale);
+    for (const id of parentIdsNamed(catalogs, parent, [cellText(row, parent.column)], locale)) {
+        const known = values.get(id);
+        if (known && level > known.value) return { parent: known.name, dots: known.value };
+    }
+    return null;
+}
 
 /**
  * Suggestions for one row: entries of the parents named in the row's parent cell or, when it is
@@ -102,12 +170,13 @@ export function suggestionsForRow(
     const own = cellText(row, parent.column);
     const names = own.trim()
         ? [own]
-        : parent.namedBy && Array.isArray(data[parent.namedBy.dataKey])
-          ? (data[parent.namedBy.dataKey] as Array<Record<string, unknown>>).map((named) =>
-                cellText(named, parent.namedBy!.column)
-            )
-          : [];
+        : namedRecords(parent, data).map((named) => cellText(named, parent.namedBy!.column));
     const ids = parentIdsNamed(catalogs, parent, names, locale);
     if (ids.size === 0) return all;
-    return all.filter((suggestion) => suggestion.parentId && ids.has(suggestion.parentId));
+    const values = parentValues(catalogs, parent, data, locale);
+    return all.filter((suggestion) => {
+        if (!suggestion.parentId || !ids.has(suggestion.parentId)) return false;
+        const dots = values.get(suggestion.parentId)?.value;
+        return dots === undefined || suggestion.level === undefined || suggestion.level <= dots;
+    });
 }

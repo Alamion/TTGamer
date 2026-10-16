@@ -16,6 +16,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 const HUNTER: RollSource = { systemId: 'wod-v5', definitionId: 'hunter' };
 const STAR_WARS: RollSource = { systemId: 'star-wars-wod', definitionId: 'character' };
+const VAMPIRE: RollSource = { systemId: 'wod-v5', definitionId: 'vampire' };
 
 const WOD_V5 = { mode: 'v5' as const, line: 'desperation' as const, difficulty: null };
 
@@ -226,6 +227,47 @@ describe('roll reading integration', () => {
                 (await roll('2d10@6,1>=6', panel('wod', { ...header, wod: hungerTab }))).reading
                     ?.line
             ).toBe('hunger');
+        });
+    });
+
+    describe('Hunger replaces dice of a vampire’s pool (spec 037, US2)', () => {
+        it('turns as many dice as the Hunger into Hunger dice', async () => {
+            const result = await roll('5d10>=6', {
+                kind: 'sheet',
+                source: { ...VAMPIRE, specialDice: 2 },
+            });
+            expect(result.notation).toBe('(3d10>=6 + 2d10:h>=6)x2=10');
+            expect(result.reading).toMatchObject({ readingId: 'v5', line: 'hunger' });
+            expect(result.diceGroups.filter((group) => group.label === 'h')).toHaveLength(1);
+        });
+
+        it('never adds Hunger dice beyond the pool', async () => {
+            const result = await roll('2d10>=6', {
+                kind: 'sheet',
+                source: { ...VAMPIRE, specialDice: 4 },
+            });
+            expect(result.notation).toBe('2d10:h>=6x2=10');
+        });
+
+        it('adds none for hunters, for Hunger 0, or for a source without Hunger', async () => {
+            const hunter = await roll('3d10>=6', {
+                kind: 'sheet',
+                source: { ...HUNTER, specialDice: 0 },
+            });
+            expect(hunter.notation).toBe('3d10>=6x2=10');
+            const sated = await roll('3d10>=6', {
+                kind: 'sheet',
+                source: { ...VAMPIRE, specialDice: 0 },
+            });
+            expect(sated.notation).toBe('3d10>=6x2=10');
+            const unknown = await roll('3d10>=6', { kind: 'sheet', source: VAMPIRE });
+            expect(unknown.notation).toBe('3d10>=6x2=10');
+        });
+
+        it('follows the shown vampire for the header’s pending roll', async () => {
+            shown = { ...VAMPIRE, specialDice: 1 };
+            const result = await roll('4d10>=6', panel('', { control: 'header' }));
+            expect(result.notation).toBe('(3d10>=6 + 1d10:h>=6)x2=10');
         });
     });
 });

@@ -170,3 +170,33 @@ that catalog).
 7. Library → Vampire: the Masquerade 5e → copy the full sheet, move the Hunger block, save → the
    sheet keeps values and still rolls Hunger.
 8. Switch to Russian → labels, catalog names, summaries in Russian; export → file has the notice.
+
+## Implementation notes
+
+- T001 baseline (2026-10-17, `yarn ci:e2e` on `037-vampire-character` before any code): the timings
+  report "sheet JS and CSS: 3958167 bytes" — uncompressed bytes as served by `docusaurus serve`. The
+  D9 budget is therefore checked as at most +80 KB of these bytes (about 25 KB gzip).
+- **Kind `vampire`, not `character`.** Hunter and vampire share the V5 plugin; with one kind their
+  bindings (`field:concept`, the ruleset's bindings) would collide by key. The vampire definition
+  and its pages use document kind `vampire` (the label stays "Character"), as the V5 mortal uses
+  `mortal`.
+- **D7 as a resource mode.** Humanity is `ResourceBinding.mode: 'score'` with `score.marksKey`
+  (`components/stat-fields/ScoreTrack.tsx`) rather than a `TrackBinding` option: built-in tracks
+  carry the spec 018 tracker overrides, which a score with stains does not need. Numbers read as for
+  `rating` (`readBoundNumber`), so `humanity` is a formula coordinate; `stains` is a number field
+  binding.
+- **D9 marker in the English YAML.** `_lazy: [fields]` in `translations/source/en/data/<id>.yaml`
+  (not a `defineCatalog` option): `scripts/translation-build.ts` reads only the sources, and the
+  catalog code needs no flag. The vampire entries in code hold names and structure only.
+- **Computed fields everywhere numbers are read.** `readBoundNumber` and `visibleWhen` read a field
+  binding through its `adapter` (the rituals block shows by the read-only `ritual-dots` coordinate,
+  the sum of Blood Sorcery, Oblivion, and Thin-Blood Alchemy dots).
+- **US1–US5 in one commit.** The stories share files (the bindings, the sheet test, the roll source,
+  the translations), so they were verified and committed together; T040's storybook coverage comes
+  from binding signatures that now include `readOnly`, `fallback`, the rows `limit`, and `actions`,
+  so every new shape gets an automatic story; `vampireExampleDocument` waits for the VtM
+  documentation (T-121), since nothing would import it yet.
+- **Tests folded.** T013's fallback and read-only checks run on the real vampire sheet
+  (`vampire-sheet.test.tsx`); the shared post of a vampire roll needs no own test (the message is
+  built from the generic reading, covered by `roll-sharing.test.ts`; `roll-reading.test.ts` checks
+  the `hunger` reading).

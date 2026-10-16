@@ -10,13 +10,26 @@ import {
     RowMoveControls,
     rowMoveKeys,
 } from '../../../components/controls/RowMoveControls';
-import type { BindingOption, RowsBinding, RowsColumn } from '../../../systems/templateBindings';
-import { createRowId } from '../../../systems/templateBindings';
+import { useDocumentSource } from '../../../hooks/useDocumentSource';
+import type {
+    ActionBinding,
+    BindingOption,
+    RowsBinding,
+    RowsColumn,
+} from '../../../systems/templateBindings';
+import { createRowId, resolveDocumentBinding } from '../../../systems/templateBindings';
 import type { PrimitiveNode } from '../../../types/template';
 import { CATALOG_LOOKUP, readCatalogDetails } from '../data/catalogBindings';
+import { ActionButton } from './ActionButton';
 import { useBoundDocument } from './boundDocument';
 import { moveItem } from './rowOrder';
-import { parentName, type RowSuggestion, rowSuggestions, suggestionsForRow } from './rowsCatalog';
+import {
+    parentName,
+    rowAboveLimit,
+    type RowSuggestion,
+    rowSuggestions,
+    suggestionsForRow,
+} from './rowsCatalog';
 
 const fields = uiMessages.sheet.documents.fields;
 const rowMessages = uiMessages.sheet.documents.rows;
@@ -106,8 +119,15 @@ function columnLabel(column: RowsColumn): string {
 /** A bound array of records edited as a table; the name column may suggest catalog entries. */
 export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor: RowsBinding }) {
     const bound = useBoundDocument();
+    const { document } = useDocumentSource();
     const locale = useDocusaurusContext().i18n.currentLocale;
     const catalog = descriptor.catalog;
+    // Actions shown on each row (spec 037 D6, a power's Rouse check).
+    const actions = (descriptor.actions ?? [])
+        .map((key) =>
+            document ? resolveDocumentBinding(document.systemId, document.kind, key) : undefined
+        )
+        .filter((binding): binding is ActionBinding => binding?.kind === 'action');
     const suggestions = useMemo(
         () => (catalog ? rowSuggestions(CATALOG_LOOKUP, catalog, locale) : []),
         [catalog, locale]
@@ -178,6 +198,15 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                     {columnLabel(column)}
                                 </th>
                             ))}
+                            {actions.length > 0 && (
+                                <th
+                                    scope="col"
+                                    aria-label={actions
+                                        .map((action) => translate(action.translation))
+                                        .join(', ')}
+                                    className="w-8 border-b border-border"
+                                />
+                            )}
                             {!disabled && (
                                 <th
                                     scope="col"
@@ -210,6 +239,16 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                     </td>
                                 )}
                                 {visibleColumns.map((column) => {
+                                    const above =
+                                        catalog && column.key === catalog.column
+                                            ? rowAboveLimit(
+                                                  CATALOG_LOOKUP,
+                                                  catalog,
+                                                  row,
+                                                  bound.data,
+                                                  locale
+                                              )
+                                            : null;
                                     const cell =
                                         typeof row[column.key] === 'string'
                                             ? (row[column.key] as string)
@@ -272,9 +311,34 @@ export function RowsBody({ node, descriptor }: { node: PrimitiveNode; descriptor
                                                     }
                                                 />
                                             )}
+                                            {above && (
+                                                <p
+                                                    data-row-above=""
+                                                    className="mt-0.5 text-xs text-warning"
+                                                >
+                                                    {translate(rowMessages.aboveParent, {
+                                                        parent: above.parent,
+                                                        dots: above.dots,
+                                                    })}
+                                                </p>
+                                            )}
                                         </td>
                                     );
                                 })}
+                                {actions.length > 0 && (
+                                    <td className="whitespace-nowrap px-1 py-1 align-top">
+                                        {actions.map((action) => (
+                                            <ActionButton
+                                                key={action.key}
+                                                binding={action}
+                                                row={row}
+                                                rowName={
+                                                    typeof row.name === 'string' ? row.name : ''
+                                                }
+                                            />
+                                        ))}
+                                    </td>
+                                )}
                                 {!disabled && (
                                     <td className="whitespace-nowrap px-1 py-1 align-top">
                                         <button

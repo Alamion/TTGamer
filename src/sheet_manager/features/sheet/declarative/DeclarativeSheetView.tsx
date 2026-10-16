@@ -55,6 +55,7 @@ import {
     type TemplateEditorOverlay,
     useTemplateEditorOverlay,
 } from './editorOverlay';
+import { boundValueText, useFieldFallback } from './fieldFallback';
 import { formulaErrorMessage } from './formulaMessages';
 import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
@@ -266,6 +267,7 @@ function FieldCell({
 function BoundFieldCell({ field, binding }: { field: TemplateField; binding: FieldBinding }) {
     const bound = useBoundDocument();
     const suggestions = useCatalogSuggestions(binding.suggestions?.catalogId);
+    const fallback = useFieldFallback(binding, bound?.data);
     const stored = bound
         ? binding.adapter
             ? binding.adapter.read(bound.data)
@@ -281,6 +283,21 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
     }, [binding.syncsTitle, unnamed, setTitle, stored]);
     if (!bound) return null;
     const { readOnly } = bound;
+    if (binding.readOnly) {
+        const text = boundValueText(stored) || fallback || '';
+        return field.compact ? (
+            <div className="grid min-w-24 flex-1 basis-24 gap-0">
+                <span className={BRIEF.caption}>{field.label}</span>
+                <output className="text-sm font-semibold text-textPrimary">{text || '—'}</output>
+            </div>
+        ) : (
+            <LabeledField field={field}>
+                <output className="block py-1.5 text-sm text-textPrimary">{text || '—'}</output>
+            </LabeledField>
+        );
+    }
+    // A catalog text stands in, muted, while the field is empty (spec 037 D5).
+    const shown = fallback ? { ...field, placeholder: fallback } : field;
     // Document-owned images follow the portrait rules (site-relative paths allowed; the image
     // control still checks safety), not the stricter HTTPS-only template value rules.
     const value = binding.valueType === 'image' ? stored : coerceStoredValue(field, stored);
@@ -344,7 +361,7 @@ function BoundFieldCell({ field, binding }: { field: TemplateField; binding: Fie
                 />
             ) : (
                 createElement(templateFieldControl(field.type), {
-                    field,
+                    field: shown,
                     value,
                     onChange,
                     disabled: readOnly,

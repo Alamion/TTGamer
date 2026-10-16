@@ -1,0 +1,94 @@
+module: 'Vampire: the Masquerade 5e'
+views:
+    sheet: Full sheet
+    brief: Brief
+sections:
+    vampire: Vampire
+    blood: Blood
+    bane: Clan bane
+    disciplines: Disciplines
+    disciplineList: Disciplines
+    powers: Powers
+    rituals: Rituals, ceremonies, and formulas
+    purpose: Aims and convictions
+    aims: Aims
+    bloodPotency: Blood Potency
+fields:
+    concept: Concept
+    chronicle: Chronicle
+    sire: Sire
+    clan: Clan
+    generation: Generation
+    predatorType: Predator type
+    predatorGrants: What the predator type gives
+    ambition: Ambition
+    desire: Desire
+    hunger: Hunger
+    humanity: Humanity
+    stains: Stains
+    bloodPotency: Blood Potency
+    baneVariant: Bane
+    bane: Bane
+    compulsion: Compulsion
+    discipline: Discipline
+    power: Power
+    ritual: Ritual
+    level: Level
+    note: Notes
+    bloodSurge: Blood surge
+    mend: Mend per Rouse
+    powerBonus: Discipline bonus
+    rouseReroll: Re-roll Rouse up to level
+    baneSeverity: Bane severity
+    feedingPenalty: Feeding
+    potencyRange: For this generation
+    bloodSorceryDots: Blood Sorcery dots
+    oblivionDots: Oblivion dots
+    alchemyDots: Thin-Blood Alchemy dots
+baneVariants:
+    usual: Usual
+    variant: Variant
+marks:
+    humanity: Humanity
+    stain: Stain
+    stainRefused: 'A stain goes on an empty box: lower Humanity first.'
+potency:
+    dice: '+{count} dice'
+    noDice: none
+    superficial: '{count} Superficial'
+    noReroll: none
+    rerollLevel: 'level {level}'
+    range: '{min}–{max}'
+    outOfRange: '{value} is outside {min}–{max} for generation {generation}'
+    feeding:
+        none: No penalty
+        animalHalf: Animal and bagged blood slake half Hunger
+        animalNone: Animal and bagged blood slake no Hunger
+        humanLess: 'Human blood slakes {count} less Hunger'
+        mustKill: 'Only a kill brings Hunger below {limit}'
+rouse:
+    action: Rouse check
+    actionFor: 'Rouse check for {name}'
+    passed: Rouse check passed — Hunger stays at {hunger}
+    failed: Rouse check failed — Hunger rises to {hunger}
+    atMax: Hunger is already 5 — a failure cannot raise it further
+    rerolled: 'Blood Potency re-rolled a failed check'
+    cancelled: Rouse check cancelled
+    checks: '{passed} of {count} checks passed'
+catalogColumns:
+    summary: Summary
+    level: Level
+    discipline: Discipline
+    rouse: Rouse checks
+    amalgam: Amalgam
+    kind: Kind
+    bane: Bane
+    variantBane: Variant bane
+    compulsion: Compulsion
+    disciplines: Disciplines
+    grants: Grants
+    powers: Powers
+ritualKinds:
+    ritual: Ritual
+    ceremony: Ceremony
+    formula: Formula

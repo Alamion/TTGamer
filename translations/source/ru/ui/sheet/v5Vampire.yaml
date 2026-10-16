@@ -1,0 +1,94 @@
+module: 'Вампир: Маскарад, 5-я редакция'
+views:
+    sheet: Полный лист
+    brief: Краткий лист
+sections:
+    vampire: Вампир
+    blood: Кровь
+    bane: Проклятие клана
+    disciplines: Дисциплины
+    disciplineList: Дисциплины
+    powers: Способности
+    rituals: Ритуалы, церемонии и формулы
+    purpose: Цели и убеждения
+    aims: Цели
+    bloodPotency: Сила крови
+fields:
+    concept: Концепция
+    chronicle: Хроника
+    sire: Сир
+    clan: Клан
+    generation: Поколение
+    predatorType: Тип хищника
+    predatorGrants: Что даёт тип хищника
+    ambition: Цель
+    desire: Желание
+    hunger: Голод
+    humanity: Человечность
+    stains: Пятна
+    bloodPotency: Сила крови
+    baneVariant: Проклятие
+    bane: Проклятие
+    compulsion: Побуждение
+    discipline: Дисциплина
+    power: Способность
+    ritual: Ритуал
+    level: Уровень
+    note: Заметки
+    bloodSurge: Прилив крови
+    mend: Исцеление за проверку
+    powerBonus: Бонус к Дисциплинам
+    rouseReroll: Переброс жажды до уровня
+    baneSeverity: Тяжесть проклятия
+    feedingPenalty: Питание
+    potencyRange: Для этого поколения
+    bloodSorceryDots: Точки Кровавой магии
+    oblivionDots: Точки Забвения
+    alchemyDots: Точки слабокровной алхимии
+baneVariants:
+    usual: Обычное
+    variant: Вариант
+marks:
+    humanity: Человечность
+    stain: Пятно
+    stainRefused: 'Пятно ставится на пустую клетку: сначала уменьшите Человечность.'
+potency:
+    dice: '+{count} к.'
+    noDice: нет
+    superficial: '{count} поверхн.'
+    noReroll: нет
+    rerollLevel: 'уровень {level}'
+    range: '{min}–{max}'
+    outOfRange: '{value} вне {min}–{max} для {generation} поколения'
+    feeding:
+        none: Без ограничений
+        animalHalf: Кровь животных и пакетов утоляет половину Голода
+        animalNone: Кровь животных и пакетов не утоляет Голод
+        humanLess: 'Человеческая кровь утоляет на {count} Голода меньше'
+        mustKill: 'Голод ниже {limit} — только убийством'
+rouse:
+    action: Проверка жажды
+    actionFor: 'Проверка жажды: {name}'
+    passed: Проверка жажды пройдена — Голод остаётся {hunger}
+    failed: Проверка жажды провалена — Голод растёт до {hunger}
+    atMax: Голод уже 5 — провал не может поднять его выше
+    rerolled: 'Сила крови перебросила проваленную проверку'
+    cancelled: Проверка жажды отменена
+    checks: 'Пройдено проверок: {passed} из {count}'
+catalogColumns:
+    summary: Описание
+    level: Уровень
+    discipline: Дисциплина
+    rouse: Проверки жажды
+    amalgam: Амальгама
+    kind: Вид
+    bane: Проклятие
+    variantBane: Вариант проклятия
+    compulsion: Побуждение
+    disciplines: Дисциплины
+    grants: Что даёт
+    powers: Способности
+ritualKinds:
+    ritual: Ритуал
+    ceremony: Церемония
+    formula: Формула

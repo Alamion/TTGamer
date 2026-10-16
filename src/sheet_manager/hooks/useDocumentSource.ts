@@ -6,6 +6,7 @@ import { applyTemplateValueWrites } from '../features/sheet/data/templateValueWr
 import { type DocumentRef, documentRefs, refOf } from '../store/documentIndex';
 import type { DocumentStoreState } from '../store/documentStore';
 import { useDocumentStore } from '../store/documentStore';
+import { systemRegistry } from '../systems';
 import type { DocumentDefinition } from '../systems/types';
 import type { UnknownDocumentEnvelope } from '../types/document';
 import { DocumentMetadataSchema } from '../types/document';
@@ -169,12 +170,23 @@ export function useDocumentSource(): DocumentSource {
 }
 
 /** The shown document's system and definition, handed to the dice roller with each roll. */
-export function useDocumentRollSource(): { systemId: string; definitionId: string } | undefined {
+export function useDocumentRollSource():
+    { systemId: string; definitionId: string; specialDice?: number } | undefined {
     const { document } = useDocumentSource();
     const systemId = document?.systemId;
     const definitionId = document?.definitionId;
+    // Pool dice the document's state turns into special dice (V5 Hunger, spec 037 D2).
+    const specialDice =
+        systemId && definitionId
+            ? systemRegistry
+                  .getSystem(systemId)
+                  ?.dice?.reading?.specialDice?.(definitionId, document?.data)
+            : undefined;
     return useMemo(
-        () => (systemId && definitionId ? { systemId, definitionId } : undefined),
-        [systemId, definitionId]
+        () =>
+            systemId && definitionId
+                ? { systemId, definitionId, ...(specialDice ? { specialDice } : {}) }
+                : undefined,
+        [systemId, definitionId, specialDice]
     );
 }

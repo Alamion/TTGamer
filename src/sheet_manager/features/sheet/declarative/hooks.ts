@@ -382,7 +382,10 @@ export function useTemplatePage(
             );
             let value: unknown;
             if (binding?.kind === 'field') {
-                value = readDataPath(documentData, binding.path);
+                // Computed fields (spec 037 D4) read through their adapter.
+                value = binding.adapter
+                    ? binding.adapter.read(documentData)
+                    : readDataPath(documentData, binding.path);
             } else if (binding?.kind === 'resource' && documentData) {
                 value = documentData[binding.dataKey];
             } else if (binding) {

@@ -132,7 +132,15 @@ export interface RollReadingRules {
      * Rewrites a pool for this reading (e.g. adds the critical set bonus); `null` when the
      * notation is not a pool this reading understands, so no reading applies.
      */
-    prepare(notation: string, options: { criticalPairs: boolean }): string | null;
+    prepare(
+        notation: string,
+        options: { criticalPairs: boolean; specialDice?: number }
+    ): string | null;
+    /**
+     * Pool dice a document's state turns into special dice when it rolls (V5 Hunger replaces
+     * regular dice, spec 037 D2); `undefined` when its line adds none.
+     */
+    specialDice?(definitionId: string, data: unknown): number | undefined;
     interpret(
         result: RollResult,
         options: { line: string; outcomes: boolean; difficulty: number | null }

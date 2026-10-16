@@ -27,6 +27,11 @@ describe('catalog binding registry', () => {
                 'v5-hunter-weapons',
                 'v5-hunter-armor',
                 'v5-hunter-gear',
+                'v5-vampire-clans',
+                'v5-vampire-disciplines',
+                'v5-vampire-powers',
+                'v5-vampire-rituals',
+                'v5-vampire-predator-types',
                 'vehicles',
             ].sort()
         );

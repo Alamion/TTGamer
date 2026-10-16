@@ -33,8 +33,8 @@ describe('sheet → dice handoff', () => {
     });
 
     it('rolls immediately with a sheet origin', async () => {
-        const roll = vi.fn<(notation: string, options?: RollOptions) => Promise<void>>(
-            async () => undefined
+        const roll = vi.fn<(notation: string, options?: RollOptions) => Promise<null>>(
+            async () => null
         );
         useDiceRollerStore.setState({ roll });
         const { result } = renderHook(() =>

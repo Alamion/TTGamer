@@ -10,7 +10,12 @@ import { hunterDefinition } from './modules/hunter/definition';
 import { desperationDiceLine } from './modules/hunter/dice';
 import { hunterBriefTemplate } from './modules/hunter/templates/brief';
 import { hunterSheetTemplate } from './modules/hunter/templates/sheet';
+import { vampireTemplateBindings } from './modules/vampire/bindings';
+import { vampireCatalogs } from './modules/vampire/catalogs';
+import { vampireDefinition } from './modules/vampire/definition';
 import { hungerDiceLine } from './modules/vampire/dice';
+import { vampireBriefTemplate } from './modules/vampire/templates/brief';
+import { vampireSheetTemplate } from './modules/vampire/templates/sheet';
 import { buildV5CoreBindings } from './ruleset/bindings';
 import { createV5DiceRules } from './ruleset/dice';
 
@@ -29,15 +34,21 @@ export const v5System: SystemPlugin = {
     id: V5_SYSTEM_ID,
     label: uiMessages.sheet.v5.system,
     policies: ['dark-pack'],
-    documents: [hunterDefinition, v5CharacterDefinition],
+    documents: [hunterDefinition, vampireDefinition, v5CharacterDefinition],
     defaultTemplates: [
         hunterSheetTemplate,
         hunterBriefTemplate,
+        vampireSheetTemplate,
+        vampireBriefTemplate,
         v5CoreSheetTemplate,
         v5CoreBriefTemplate,
     ],
-    templateBindings: [...hunterTemplateBindings, ...buildV5CoreBindings(new Set(['mortal']))],
-    catalogs: hunterCatalogs,
+    templateBindings: [
+        ...hunterTemplateBindings,
+        ...vampireTemplateBindings,
+        ...buildV5CoreBindings(new Set(['mortal'])),
+    ],
+    catalogs: [...hunterCatalogs, ...vampireCatalogs],
     dice: createV5DiceRules([hungerDiceLine, desperationDiceLine]),
     coreDefinitions: [v5CharacterDefinition.id],
 };

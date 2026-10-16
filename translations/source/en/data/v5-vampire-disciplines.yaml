@@ -1,0 +1,37 @@
+_lazy: [summary]
+animalism:
+    name: 'Animalism'
+    summary: 'Kinship with beasts and the Beast within: speak to and command animals, share their senses, quiet or stir frenzy.'
+auspex:
+    name: 'Auspex'
+    summary: 'Heightened senses and supernatural perception: auras, premonitions, reading objects and minds.'
+blood-sorcery:
+    name: 'Blood Sorcery'
+    summary: 'Blood magic of Tremere and Banu Haqim: shaping vitae as weapon and tool, with rituals of greater reach.'
+celerity:
+    name: 'Celerity'
+    summary: 'Supernatural speed and reflexes, from quick hands to blurring motion.'
+dominate:
+    name: 'Dominate'
+    summary: "Bending minds by gaze and voice: commands, rewritten memories, control of another's body."
+fortitude:
+    name: 'Fortitude'
+    summary: 'Unnatural resilience: shrugging off harm, resisting mental control, even weathering fire and sun.'
+obfuscate:
+    name: 'Obfuscate'
+    summary: 'Escaping notice: vanishing from sight and memory, wearing other faces, hiding others.'
+oblivion:
+    name: 'Oblivion'
+    summary: 'Power of shadow and death: commanding darkness, dealing with ghosts, ceremonies drawing on the Abyss.'
+potence:
+    name: 'Potence'
+    summary: 'Supernatural strength: crushing blows, prodigious leaps, feeding by raw might.'
+presence:
+    name: 'Presence'
+    summary: 'Emotional pull: awe, dread, adoration and a majesty that cows crowds.'
+protean:
+    name: 'Protean'
+    summary: 'Shapeshifting: eyes in the dark, claws, sinking into earth, animal and mist forms.'
+thin-blood-alchemy:
+    name: 'Thin-Blood Alchemy'
+    summary: 'Thin-blood craft of brewing formulas from vitae and odd ingredients to mimic other Disciplines.'

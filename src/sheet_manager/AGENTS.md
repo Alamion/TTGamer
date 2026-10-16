@@ -134,12 +134,25 @@ appropriate for layout/manager operations that explicitly manage the collection.
   (a plugin without it shows no stat dice button; Star Wars declares the classic
   `systems/wod-like/dicePool.ts`, V5 its own 6+ pool), and an optional `reading` (V5:
   `systems/v5/ruleset/dice.ts`) adds critical pairs and reads special-dice outcomes. Each V5 module
-  contributes its dice line (`modules/hunter/dice.ts` Desperation, `modules/vampire/dice.ts` Hunger,
-  awaiting the vampire sheet). Primitives resolve the builder with `useDocumentTraitDiceRoll()`, and
-  so do template ratings with a die; the die is `StatDiceButton` (used by `StatDot` and
-  `RatingRow`), which sends the document as the roll source (`useDocumentRollSource()`), and
-  `SheetWorkspace` publishes the shown document (`integrations/sheet-dice/shownDocument.ts`).
-  Publisher badges never appear on dice surfaces.
+  contributes its dice line (`modules/hunter/dice.ts` Desperation, `modules/vampire/dice.ts`
+  Hunger). A line with `replaces` turns pool dice into its special dice when the pool is rolled
+  (Hunger: as many as the vampire's Hunger, spec 037): the roll source carries `specialDice`
+  (`RollReadingRules.specialDice`, read by `useDocumentRollSource()` and the shown document) and the
+  reading's `prepare` splits the merged pool with `withSpecialDice`. Primitives resolve the builder
+  with `useDocumentTraitDiceRoll()`, and so do template ratings with a die; the die is
+  `StatDiceButton` (used by `StatDot` and `RatingRow`), which sends the document as the roll source
+  (`useDocumentRollSource()`), and `SheetWorkspace` publishes the shown document
+  (`integrations/sheet-dice/shownDocument.ts`). Publisher badges never appear on dice surfaces.
+- Action bindings (`kind: 'action'`, spec 037 D6) are buttons that roll and write: `run` gets the
+  data, an optional row (`RowsBinding.actions`), and `roll()` through `useSheetDiceActions` (the
+  document as source, without special dice); `diceRollerStore.roll` resolves with the result, or
+  `null` when a 3D roll is cancelled, and nothing is written then (`ActionButton.tsx`). The V5 Rouse
+  checks (`modules/vampire/rouse.ts`) are the first.
+- The vampire (`modules/vampire/`, kind `vampire` so its bindings never collide with the hunter's
+  `character`): Humanity is a `score` resource with stains, Blood Potency effects are read-only
+  field bindings computed in `bloodPotency.ts`, bane, compulsion, and predator grants fall back to
+  the catalog texts, powers and rituals are rows under the disciplines list with a level `limit`.
+  Its five catalogs keep names in code and long texts in `catalogText/` (loaded on demand).
 - Shipped view ids are unique across systems (prefix them with the system, e.g. `v5-hunter-sheet`);
   edited defaults are keyed `systemId:viewId` (T-046, template store v5).
 - The Star Wars system is a setting on the WoD 2e ruleset (`systems/wod2e/ruleset/`: engine schema

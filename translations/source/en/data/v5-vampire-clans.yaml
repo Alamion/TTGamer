@@ -1,0 +1,93 @@
+_lazy: [summary, bane, variantBane, compulsion]
+banu-haqim:
+    name: 'Banu Haqim'
+    summary: 'Judges and assassins who hunt the guilty and honor law and lineage, torn between justice and a thirst for Kindred blood.'
+    bane: 'Slaking even one Hunger with vampire blood forces a hunger frenzy test at Difficulty 2 + Bane Severity; on a failure they keep drinking, up to diablerie.'
+    variantBane: 'Noxious Blood: their vitae is poison to mortals, dealing Aggravated damage equal to Bane Severity per Rouse Check of blood drunk, and it cannot heal mortal injuries.'
+    compulsion: 'Judgment: for a scene they must slake at least one Hunger from anyone who acts against one of their Convictions; until then, three dice fewer on every roll.'
+brujah:
+    name: 'Brujah'
+    summary: 'Passionate rebels, brawlers and idealists who rage against every establishment, Kindred or mortal.'
+    bane: 'Their fury barely stays contained: rolls to resist fury frenzy lose dice equal to Bane Severity, never below one die.'
+    variantBane: 'Violence: on a messy critical in any Skill test they also harm whoever they are dealing with, physically or mentally, for Bane Severity Aggravated damage; 1 Willpower makes it Superficial.'
+    compulsion: "Rebellion: they must defy whatever stands for the status quo; two dice fewer on all rolls until they change someone's mind or do the opposite of what was expected."
+gangrel:
+    name: 'Gangrel'
+    summary: 'Feral wanderers closest to the Beast, at home in the wilds and back alleys, who prize survival and freedom over court politics.'
+    bane: 'Each frenzy leaves animal features, as many as Bane Severity, that linger one more night; each lowers one Attribute by 1 (Intelligence or Manipulation by default).'
+    variantBane: 'Survival Instincts: rolls to resist fear frenzy lose dice equal to Bane Severity, never below one die.'
+    compulsion: 'Feral Impulses: for one scene they slide toward the animal: three dice fewer on Manipulation and Intelligence rolls, and they speak only in single words.'
+hecata:
+    name: 'Hecata'
+    summary: 'A union of necromantic families that trade in death, ghosts and the secrets of the afterlife.'
+    bane: 'Their Kiss is agony: they can take only harmful drinks, unrestrained mortals fight to flee, willing ones roll Stamina + Resolve vs 2 + Bane Severity, and Kindred risk terror frenzy.'
+    variantBane: 'Decay: they carry extra Flaw dots equal to Bane Severity among Retainers, Haven and Resources, and buying dots in those Backgrounds costs Bane Severity extra XP.'
+    compulsion: 'Morbidity: they must move something from life to death or back, be it a person, object, idea or conversation; two dice fewer on anything else until they manage it.'
+lasombra:
+    name: 'Lasombra'
+    summary: 'Proud, ruthless masters of shadow who value success and power above every scruple.'
+    bane: 'Mirrors and recordings show them distorted, betraying them to anyone who knows the signs; using modern communication tech needs a Technology test at 2 + Bane Severity.'
+    variantBane: 'Callousness: Remorse rolls lose dice equal to Bane Severity, never below one die.'
+    compulsion: 'Ruthlessness: after their next failed action, two dice fewer on all rolls until a later attempt at that same action succeeds or the scene ends.'
+malkavian:
+    name: 'Malkavian'
+    summary: 'Seers and madmen whose fractured minds catch truths others miss; oracles and wildcards in every sect.'
+    bane: 'Each bears a mental affliction; after a Bestial Failure or a Compulsion, one chosen pool category (Physical, Social or Mental) loses Bane Severity dice for the scene.'
+    variantBane: 'Unnatural Manifestations: when they use a Discipline, nearby mortals grow uneasy, non-intimidation social rolls with them lose Bane Severity dice for a scene; vampires sense them as undead.'
+    compulsion: 'Delusion: for a scene their senses are skewed: two dice fewer on Dexterity, Manipulation, Composure and Wits rolls and on rolls to resist terror frenzy.'
+ministry:
+    name: 'Ministry'
+    summary: 'Serpents of faith and temptation who spread cults and free others from self-made chains, often to bind them anew.'
+    bane: 'They recoil from light: bright light aimed at them costs Bane Severity dice on all pools, and sunlight deals that much extra Aggravated damage.'
+    variantBane: 'Cold-Blooded: Blush of Life works only soon after feeding on a living vessel (same scene or about an hour) and takes Rouse Checks equal to Bane Severity instead of one.'
+    compulsion: 'Transgression: two dice fewer on everything except leading someone, themselves included, to break a Chronicle Tenet or Conviction and take a Stain.'
+nosferatu:
+    name: 'Nosferatu'
+    summary: 'Hideously twisted spies and information brokers who hide in sewers and networks and deal in secrets.'
+    bane: 'Monstrous to behold, they have the Repulsive Flaw and can never raise Looks; any attempt to pass as human, Obfuscate disguises included, loses Bane Severity dice.'
+    variantBane: 'Infestation: vermin follow them; in their haven concentration rolls take a 2 + Bane Severity penalty, Bane Severity anywhere they stay a scene, and Animalism on the pests too.'
+    compulsion: 'Cryptophilia: a hunger for secrets; two dice fewer on anything not aimed at learning one, until they uncover a useful secret (sharing it is optional).'
+ravnos:
+    name: 'Ravnos'
+    summary: 'Restless tricksters and travelers, scattered by the fire that consumed their founder, living by illusion and daring.'
+    bane: 'Sleeping in the same place twice within seven nights, they roll Bane Severity dice and take 1 Aggravated per 10; resting places must be a mile apart. They cannot take No Haven.'
+    variantBane: "Unbirth Name: whoever speaks their unbirth name to their face gains Bane Severity bonus dice to resist their Disciplines, and the Ravnos loses as many to resist that person's powers."
+    compulsion: 'Tempting Fate: their next problem must be met boldly; any solution short of the most daring or dangerous takes two dice fewer until it is solved or out of reach.'
+salubri:
+    name: 'Salubri'
+    summary: 'Rare, hunted healers and seekers marked by a third eye, coveted for their blood and reviled by other Kindred.'
+    bane: 'Kindred slaking Hunger on their blood test hunger frenzy at 2 + Bane Severity (3 + for Banu Haqim); their third eye cannot be hidden by powers and bleeds when they use Disciplines.'
+    variantBane: 'Asceticism: while their Hunger is below 3, Discipline pools lose dice equal to Bane Severity; the third eye still applies.'
+    compulsion: "Affective Empathy: they must ease someone's personal trouble in the scene; two dice fewer on other actions until it is eased, a bigger crisis arises, or the scene ends."
+toreador:
+    name: 'Toreador'
+    summary: 'Artists, aesthetes and socialites at the heart of Elysium, whose love of beauty borders on hunger.'
+    bane: 'In surroundings they find ugly, Discipline pools lose dice equal to Bane Severity; a Bestial Failure often leaves them in a rapt trance.'
+    variantBane: 'Agonizing Empathy: when their feeding injures a mortal they take matching damage, usually Aggravated, at most Bane Severity per feeding, shown as bruises at the bite site.'
+    compulsion: 'Obsession: entranced by one beautiful thing, they talk of nothing else; two dice fewer on other actions until they can no longer perceive it or the scene ends.'
+tremere:
+    name: 'Tremere'
+    summary: "Blood sorcerers of a shattered pyramid, once the Camarilla's wizards, now rival houses chasing occult power."
+    bane: 'Their vitae can no longer Blood Bond other Kindred, and bonding a mortal or ghoul takes additional drinks equal to Bane Severity.'
+    variantBane: 'Stolen Blood: a Blood Surge needs Rouse Checks equal to Bane Severity; if they would push Hunger to 5, they may drop the surge or complete it and end at Hunger 5.'
+    compulsion: 'Perfectionism: two dice fewer on all pools until a critical win on a Skill roll or the end of the scene; repeating an action drops the penalty to one die, then none.'
+tzimisce:
+    name: 'Tzimisce'
+    summary: 'Possessive old-world lords and fleshcrafters, bound to whatever they claim as their own.'
+    bane: 'Each chooses a clearly defined charge (land, people, a group) and must day-sleep surrounded by it, or wakes taking Aggravated Willpower damage equal to Bane Severity.'
+    variantBane: 'Cursed Courtesy: entering an inhabited home uninvited costs Willpower equal to Bane Severity and as many dice off Discipline pools while inside; no Folkloric Block Flaw for it.'
+    compulsion: 'Covetousness: they crave to own something in the scene; two dice fewer on anything else until they possess it or it slips out of reach.'
+ventrue:
+    name: 'Ventrue'
+    summary: 'Aristocrats and leaders who steer the Camarilla, business and politics through duty, wealth and command.'
+    bane: 'Rarefied palates: they keep down only one kind of mortal blood; feeding outside it costs Willpower equal to Bane Severity. Resolve + Awareness (4+) senses the right blood.'
+    variantBane: 'Hierarchy: Discipline pools lose Bane Severity dice when used on a vampire of lower generation, and attacking one directly costs Willpower equal to Bane Severity.'
+    compulsion: 'Arrogance: someone must obey an order they give, without supernatural force; until then, two dice fewer on anything not about leading.'
+caitiff:
+    name: 'Caitiff'
+    summary: 'Clanless vampires whose Blood shows no lineage; scorned by the clans, yet free to learn any Discipline.'
+    bane: 'No clan bane, but they start with the Suspect Flaw and no positive Status, may lose 1-2 dice on Social rolls with Kindred, and Discipline dots cost 6 x the new level in XP.'
+thin-blood:
+    name: 'Thin-blood'
+    summary: 'Weak-blooded vampires of the 14th generation and beyond, half-mortal, able to pass as human and brew alchemy.'
+    bane: 'No clan bane (Bane Severity 0) and no compulsion; instead they take thin-blood Merits and Flaws, have Blood Potency 0, and cannot reliably Bond or Embrace.'

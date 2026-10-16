@@ -207,6 +207,7 @@ examples:
     landspeeder: Luke's landspeeder (example)
     falcon: Millennium Falcon (example)
     lenaVarga: Lena Varga (example)
+    mirelaVoss: Mirela Voss (example)
 create:
     title: Create document
     prompt: Choose the game system and document format to create.
@@ -339,8 +340,11 @@ fields:
         speeder: Speeder
         character: Character
         vermin: Vermin
+scoreTrack:
+    group: '{name} {value} of {length}'
 rows:
     moveUp: 'Move {name} up'
     moveDown: 'Move {name} down'
     reorder: Drag to reorder
     fallbackName: 'row {index}'
+    aboveParent: 'above {parent} {dots}'

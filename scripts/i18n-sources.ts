@@ -1,9 +1,9 @@
 import { codeCatalogs } from './catalogSources.ts';
 import {
-    CATALOG_LABELS_KEY,
     flattenStringLeaves,
     flattenUiMessages,
     interpolationNames,
+    isCatalogMetaKey,
     loadTranslationSources,
 } from './translation-source.ts';
 
@@ -71,7 +71,7 @@ export async function validateTranslationSources() {
             continue;
         }
         const codeIds = new Set(entries.map((entry) => entry.id));
-        const sourceIds = Object.keys(source as object).filter((id) => id !== CATALOG_LABELS_KEY);
+        const sourceIds = Object.keys(source as object).filter((id) => !isCatalogMetaKey(id));
         for (const id of codeIds) {
             if (!sourceIds.includes(id)) {
                 errors.push('data: ' + catalogId + ' is missing catalog id "' + id + '"');

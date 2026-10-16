@@ -1,3 +1,5 @@
+import type { RollResult } from '@site/src/dice_roller/dice-logic';
+
 import { systemRegistry } from './index';
 
 /**
@@ -8,7 +10,7 @@ import { systemRegistry } from './index';
  */
 
 export type DocumentBindingKind =
-    'trait' | 'list' | 'resource' | 'track' | 'field' | 'equipment' | 'rows';
+    'trait' | 'list' | 'resource' | 'track' | 'field' | 'equipment' | 'rows' | 'action';
 
 interface BindingBase {
     key: string;
@@ -39,6 +41,12 @@ export interface TraitBinding extends BindingBase {
 export interface TranslationDescriptor {
     id: string;
     message: string;
+}
+
+/** A message with its placeholder values, translated where it is shown. */
+export interface BoundMessage {
+    descriptor: TranslationDescriptor;
+    values?: Readonly<Record<string, string | number>>;
 }
 
 /** Entry shape of a bound list, selecting the list molecule and its raw↔entry mapping. */
@@ -94,13 +102,23 @@ export function createListEntry(
 export interface ResourceBinding extends BindingBase {
     kind: 'resource';
     resourceId: string;
-    /** `pool` → `{ current, max }` object; `rating` → plain number. */
+    /** `pool` → `{ current, max }` object; `rating` and `score` → plain number. */
     dataKey: string;
-    mode: 'pool' | 'rating';
+    mode: 'pool' | 'rating' | 'score';
     maximum: number;
     coordinate: string;
     /** Pools: raising `current` above `max` raises `max` too (otherwise current is capped). */
     currentRaisesMax?: boolean;
+    /**
+     * `score` mode (V5 Humanity, spec 037 D7): `maximum` boxes, `1..value` filled and the last
+     * `marksKey` boxes marked (stains); a box is never both, so a mark on a filled box is refused.
+     */
+    score?: {
+        marksKey: string;
+        valueName: TranslationDescriptor;
+        markName: TranslationDescriptor;
+        refused: TranslationDescriptor;
+    };
 }
 
 export interface TrackLevel {
@@ -217,6 +235,21 @@ export interface FieldBinding extends BindingBase {
      * and returns the value stored under `path[0]`.
      */
     constrain?: (record: unknown) => unknown;
+    /**
+     * Shown, never edited (spec 037 D4): the value comes from `adapter.read` (or `path`). A
+     * `BoundMessage` value is translated; numbers are formula coordinates.
+     */
+    readOnly?: boolean;
+    /**
+     * Text shown, muted, while the stored value is empty (spec 037 D5): the `field` of the
+     * catalog entry named at `namePath` (any of its names). Typing stores the player's own text;
+     * clearing it returns to the catalog's.
+     */
+    fallback?: {
+        catalogId: string;
+        namePath: readonly string[];
+        field: string | ((data: unknown) => string);
+    };
 }
 
 /** Reads a nested document-data value. */
@@ -302,6 +335,8 @@ export interface RowsBinding extends BindingBase {
         fills: Readonly<Record<string, string>>;
         parent?: RowsCatalogParent;
     };
+    /** Action bindings shown on each row (keys of `action` bindings of the same kinds). */
+    actions?: readonly string[];
 }
 
 /**
@@ -315,10 +350,47 @@ export interface RowsCatalogParent {
     entryKey: string;
     catalogId: string;
     column: string;
+    /** Records naming the parents (rows, or list entries under their `column`). */
     namedBy?: { dataKey: string; column: string };
+    /**
+     * Entries above their parent's value (a power above its discipline's dots, spec 037 D3):
+     * the entry's `entryKey` and the row's `column` hold the level, the `namedBy` record's
+     * `parentValue` the dots. Suggestions above it are hidden; a stored row above it is marked.
+     */
+    limit?: { entryKey: string; column: string; parentValue: string };
+}
+
+/** What an action asks of the sheet while it runs. */
+export interface ActionContext {
+    data: unknown;
+    /** The row the action runs on (`RowsBinding.actions`). */
+    row?: Readonly<Record<string, unknown>>;
+    /** Rolls through the dice roller as a roll of this document; `null` when cancelled. */
+    roll(notation: string): Promise<RollResult | null>;
+}
+
+export interface ActionOutcome {
+    /** Top-level data update to write, if any. */
+    update?: Record<string, unknown>;
+    message: BoundMessage;
+    tone: 'success' | 'error' | 'info';
+}
+
+/**
+ * A button that rolls and writes its result (spec 037 D6, e.g. a V5 Rouse check). `available`
+ * hides it on rows it does not apply to; `run` returns `null` when nothing was rolled.
+ */
+export interface ActionBinding extends BindingBase {
+    kind: 'action';
+    translation: TranslationDescriptor;
+    /** Accessible name on a row: `{name}` is the row's name column. */
+    rowTranslation?: TranslationDescriptor;
+    available?(data: unknown, row?: Readonly<Record<string, unknown>>): boolean;
+    run(context: ActionContext): Promise<ActionOutcome | null>;
 }
 
 export type DocumentBindingDescriptor =
+    | ActionBinding
     | TraitBinding
     | ListBinding
     | ResourceBinding
@@ -422,7 +494,9 @@ export function readBoundNumber(
             };
         }
         if (binding.kind === 'field' && binding.coordinate === path) {
-            const stored = readDataPath(data, binding.path);
+            const stored = binding.adapter
+                ? binding.adapter.read(data)
+                : readDataPath(data, binding.path);
             if (binding.numeric) return { bound: true, value: binding.numeric(stored) };
             if (binding.valueType === 'number') {
                 return { bound: true, value: typeof stored === 'number' ? stored : 0 };
@@ -430,7 +504,7 @@ export function readBoundNumber(
         }
         if (binding.kind === 'resource' && binding.coordinate === head) {
             const stored = data[binding.dataKey];
-            if (binding.mode === 'rating') {
+            if (binding.mode !== 'pool') {
                 return {
                     bound: true,
                     value: part === 'max' || typeof stored !== 'number' ? undefined : stored,
@@ -510,7 +584,7 @@ export function boundWriteUpdate(
             };
         }
         case 'resource': {
-            if (binding.mode === 'rating') {
+            if (binding.mode !== 'pool') {
                 return {
                     [binding.dataKey]:
                         typeof value === 'number' ? clampInt(value, 0, binding.maximum) : 0,

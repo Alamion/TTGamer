@@ -60,4 +60,37 @@ describe('build-translations --check', () => {
         expect(bookTerms).toContain('"ttgamer.ui.sheet.title": {');
         expect(bookTerms).toContain('"ruShort": "Загл."');
     });
+
+    it('moves the long fields of a `_lazy` catalog into its own module (spec 037, D9)', async () => {
+        const root = await writeFixture({
+            'translations/source/en/ui/sheet.yaml': 'title: Title\n',
+            'translations/source/ru/ui/sheet.yaml': 'title: Заголовок\n',
+            'translations/source/en/data/clans.yaml':
+                "_lazy: [summary, bane]\nbrujah:\n    name: 'Brujah'\n    summary: 'Rebels.'\n    bane: 'Fury.'\n",
+            'translations/source/ru/data/clans.yaml':
+                "brujah:\n    name: 'Бруха'\n    summary: 'Бунтари.'\n    bane: 'Ярость.'\n",
+            'translations/source/en/data/plain.yaml':
+                "one:\n    name: 'One'\n    summary: 'Kept.'\n",
+            'translations/source/ru/data/plain.yaml':
+                "one:\n    name: 'Один'\n    summary: 'Да.'\n",
+        });
+        const generatedRoot = path.join(root, 'src/i18n/generated');
+        const { outputs } = await buildTranslationOutputs({
+            sourceRoot: path.join(root, 'translations/source'),
+            glossaryRoot: path.join(root, 'translations/glossary'),
+            i18nRoot: path.join(root, 'i18n'),
+            generatedRoot,
+        });
+        const catalog = outputs.get(path.join(generatedRoot, 'catalogTranslations.ts'))!;
+        expect(catalog).toContain('"Бруха"');
+        expect(catalog).not.toContain('Бунтари');
+        expect(catalog).not.toContain('_lazy');
+        expect(catalog).toContain('"Да."');
+
+        const lazy = outputs.get(path.join(generatedRoot, 'catalogText', 'clans.ts'))!;
+        expect(lazy).toContain('"Rebels."');
+        expect(lazy).toContain('"Ярость."');
+        expect(lazy).not.toContain('"Brujah"');
+        expect(outputs.has(path.join(generatedRoot, 'catalogText', 'plain.ts'))).toBe(false);
+    });
 });

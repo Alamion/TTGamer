@@ -39,6 +39,20 @@ item array through the same molecules (V5 `weapons`, `inventory`).
 | `equipment` | `equipment:inventory\|armor\|weapons\|implants`          | body sections via `useBodyHandlers`, or a `dataKey` item array                                                |
 | `rows`      | `rows:<dataKey>`                                         | arrays of string records (`attacks`, `weapons`, `configuration`)                                              |
 
+- Spec 037 options (all system-neutral):
+    - `FieldBinding.readOnly` shows the value (`adapter.read`, a number or a `BoundMessage`, or a
+      list of them) and never writes; numeric ones are formula and `visibleWhen` coordinates (both
+      read through the adapter). `FieldBinding.fallback` shows a catalog entry's text, muted as the
+      placeholder, while the stored value is empty (the entry named at `namePath` in any language;
+      `field` may depend on the data); long texts load through `useCatalogText`
+      (`features/sheet/data/catalogText.ts`).
+    - `ResourceBinding.mode: 'score'` with `score.marksKey`: a score from the start and marks from
+      the end, never on one box (`components/stat-fields/ScoreTrack.tsx`; V5 Humanity and stains).
+    - `RowsCatalogParent.limit`: suggestions stop at the parent's value (a power's level ≤ its
+      discipline's dots) and a stored row above it is marked with text (`rowAboveLimit`).
+    - `ActionBinding` and `RowsBinding.actions`: see `src/sheet_manager/AGENTS.md` ("Systems").
+    - A catalog's English source may mark long fields `_lazy`: the build writes them to
+      `src/i18n/generated/catalogText/<catalogId>.ts` instead of `catalogTranslations.ts`.
 - Field bindings: `path` + `valueType` (`string`/`number`/`image`/`enum` with `options`); `numeric`
   gives text a formula reading (`'+3D'` → 3, empty → 0); `syncsTitle` renames the document when
   written (entity name/concept; the WoD 2e engine's `field:name`, since it has no character

@@ -1,4 +1,4 @@
-import { CATALOG_LABELS_KEY } from '../../translation-source.ts';
+import { CATALOG_LABELS_KEY, CATALOG_LAZY_KEY } from '../../translation-source.ts';
 import type { Finding, Rule } from '../types.ts';
 
 type Fields = Record<string, unknown>;
@@ -42,6 +42,7 @@ export const catalogRule: Rule = {
                 let withShort = 0;
                 let shortTotal = 0;
                 for (const [entryId, rawFields] of Object.entries(catalog)) {
+                    if (entryId === CATALOG_LAZY_KEY) continue;
                     const location = catalogId + '/' + entryId;
                     const fields = asRecord(rawFields) as Fields;
                     const target = asRecord(localized[entryId]) as Fields;

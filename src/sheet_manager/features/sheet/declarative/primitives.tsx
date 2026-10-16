@@ -12,6 +12,7 @@ import {
     CompactTextField,
 } from '../../../components/stat-fields/CompactSheetFields';
 import { MeritFlawList } from '../../../components/stat-fields/MeritFlawRow';
+import { ScoreTrack } from '../../../components/stat-fields/ScoreTrack';
 import {
     CustomTraitList,
     TraitRow,
@@ -56,6 +57,7 @@ import {
     readCatalogDetails,
 } from '../data/catalogBindings';
 import { useBodyHandlers } from '../hooks/useBodyHandlers';
+import { ActionButton } from './ActionButton';
 import { useBoundDocument, useDocumentTraitDiceRoll } from './boundDocument';
 import { BuiltInTracker, type TrackerPageAccess } from './BuiltInTracker';
 import { PoolTracker } from './PoolTracker';
@@ -693,6 +695,42 @@ function PrimitiveResourceBody({
     }
     const { readOnly } = bound;
     const label = node.label ?? descriptor.label;
+    if (descriptor.mode === 'score' && descriptor.score) {
+        const score = descriptor.score;
+        const value =
+            typeof bound.data[descriptor.dataKey] === 'number'
+                ? (bound.data[descriptor.dataKey] as number)
+                : 0;
+        const marksRaw = bound.data[score.marksKey];
+        const marks = typeof marksRaw === 'number' ? marksRaw : 0;
+        return (
+            <div className="grid gap-1">
+                <span className={node.hideLabel ? 'sr-only' : 'text-sm text-textPrimary'}>
+                    {label}
+                </span>
+                <ScoreTrack
+                    label={translate(score.valueName)}
+                    groupLabel={translate(uiMessages.sheet.documents.scoreTrack.group, {
+                        name: label,
+                        value,
+                        length: descriptor.maximum,
+                    })}
+                    value={value}
+                    marks={marks}
+                    length={descriptor.maximum}
+                    markName={translate(score.markName)}
+                    refusedMessage={translate(score.refused)}
+                    disabled={readOnly}
+                    onChange={(next) =>
+                        bound.update({
+                            [descriptor.dataKey]: next.value,
+                            [score.marksKey]: next.marks,
+                        })
+                    }
+                />
+            </div>
+        );
+    }
     const effectiveMax =
         maxState?.degraded === true || maxState?.resolvedMax === undefined
             ? descriptor.maximum
@@ -954,6 +992,8 @@ export function PrimitiveNodeView({
             return <EquipmentView node={node} descriptor={descriptor} />;
         case 'rows':
             return <RowsBody node={node} descriptor={descriptor} />;
+        case 'action':
+            return <ActionButton binding={descriptor} />;
         case 'list':
             return (
                 <SystemListBody
