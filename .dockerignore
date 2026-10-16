@@ -1,0 +1,20 @@
+# Only what `yarn build` reads goes into the build context (T-118).
+.git
+node_modules
+build
+.docusaurus
+coverage
+playwright-report
+test-results
+context
+tmp
+attachments
+.claude
+.opencode
+.playwright-cli
+.idea
+.vscode
+src/i18n/generated
+i18n/*/code.json
+*.log
+.env*

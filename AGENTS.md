@@ -8,7 +8,8 @@ should integrate through explicit system boundaries instead of adding system con
 shared code.
 
 **Canonical deployment:** `https://ttgamer.vercel.app`. GitHub Pages settings remain only for
-repository links and the optional manual deploy command.
+repository links and the optional manual deploy command. The same site also ships as a Docker image
+for the backend's stack (`deploy/AGENTS.md`).
 
 **Version source:** `package.json`. Docusaurus exposes it through `customFields.version`; do not
 hard-code the current version in UI code.
@@ -73,6 +74,7 @@ check fo it existence before killing processes or creating new one.
 | `yarn check:version`                | Check package/changelog/UI version                                     |
 | `yarn release <minor\|patch>`       | Bump the version and draft the CHANGELOG entry (at merge)              |
 | `yarn ci:*`                         | The runner-independent checks (§11); `verify:*` compose them           |
+| `yarn ci:docker`                    | Build the site image and run the browser smoke tests on the container  |
 | `yarn deploy`                       | Deploy to GitHub Pages                                                 |
 | `yarn clear`                        | Clear Docusaurus cache                                                 |
 
@@ -140,6 +142,7 @@ check fo it existence before killing processes or creating new one.
 ├── tests/                     # Vitest logic, integration, and component tests
 ├── tests-e2e/                 # Playwright: smoke/ (blocking) and timings/ (reported) on the build
 ├── contracts/cloud-api/       # Cloud API contract (OpenAPI), its change log, roll test vectors
+├── deploy/                    # Docker stack: nginx config, Caddy edge proxy, compose (+ Dockerfile at root)
 ├── static/                    # Images, sounds (dice impacts, surfaces)
 └── context/                   # Local, git-ignored reference material (see context/AGENTS.md)
 ```
@@ -231,15 +234,17 @@ This section owns the verification rules; other guidance links here.
 - **Checks** are `package.json` scripts, the only entry points any runner calls (local hooks, GitHub
   Actions in `.github/workflows/ci.yml`, Vercel's `yarn build`, a later Jenkins pipeline):
   `ci:lint`, `ci:typecheck`, `ci:test`, `ci:test:perf`, `ci:deadcode`, `ci:validate`, `ci:build`,
-  `ci:e2e` (build, then the browser tests). `verify:fast` = lint + typecheck + validate; `verify`
-  adds dead code and unit tests; `verify:full` adds the perf tests and `ci:e2e`.
+  `ci:e2e` (build, then the browser tests), `ci:docker` (the site image, then the smoke tests on
+  it). `verify:fast` = lint + typecheck + validate; `verify` adds dead code and unit tests;
+  `verify:full` adds the perf tests and `ci:e2e`.
 - **Commit** (`pre-commit`): lint-staged formats and lints the staged files only (seconds); staged
   backlog or translation files also run their validator.
 - **Push** (`pre-push`): the type check and the unit tests related to the pushed changes.
 - **By change size**, before committing a story:
     - a small code edit runs its targeted tests;
     - dice parser or evaluator, schema, store, or persistence edits run `yarn verify`;
-    - config, dependency, route, generated CSS, or documentation-path edits run `yarn verify:full`.
+    - config, dependency, route, generated CSS, or documentation-path edits run `yarn verify:full`;
+    - `Dockerfile`, `.dockerignore`, or `deploy/` edits run `yarn ci:docker`.
 - **Merge into `master`** requires `yarn verify:full` (§12).
 - **CI** runs every `ci:*` command on push and pull requests. Perf tests there are reported, not
   blocking, because shared runners are noisy.

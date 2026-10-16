@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = 3100;
+// `yarn ci:docker` tests the site image instead of build/ (T-118).
+const IMAGE = process.env.E2E_IMAGE;
 
 export default defineConfig({
     testDir: 'tests-e2e',
@@ -19,7 +21,11 @@ export default defineConfig({
         { name: 'timings', testDir: 'tests-e2e/timings', use: { ...devices['Desktop Chrome'] } },
     ],
     webServer: {
-        command: `node --import tsx tests-e2e/require-build.ts && docusaurus serve --port ${PORT} --no-open`,
+        command: IMAGE
+            ? `docker run --rm --init -p ${PORT}:8080 ${IMAGE}`
+            : `node --import tsx tests-e2e/require-build.ts && docusaurus serve --port ${PORT} --no-open`,
+        // The default kill stops the docker client but leaves the container running.
+        gracefulShutdown: IMAGE ? { signal: 'SIGTERM', timeout: 10_000 } : undefined,
         url: `http://localhost:${PORT}`,
         // Port 3000 is the maintainer's dev server; this one is always our own.
         reuseExistingServer: false,
