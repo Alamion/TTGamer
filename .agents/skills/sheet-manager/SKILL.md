@@ -173,9 +173,10 @@ penalty (Bruised 0 → Crippled −5; Incapacitated none).
 - Checks by change size: `AGENTS.md` §11 (schema, persistence, and import changes run
   `yarn verify`).
 
-## Several documents on one screen
+## Workspace layout
 
-Panes (spec 034): the sheet page can show up to six documents, each in a pane with its own document
-source and view; `currentDocumentId` is the focused pane. Read `src/sheet_manager/AGENTS.md`
-("Several documents on one screen") before touching `features/sheet/panes/`, `useDocumentSource`, or
-the loaded-document cache (`pinnedIds`, `loadIntoCache`).
+The sheet page is a layout of groups with tabs (spec 036): documents and the tools (documents
+window, library, dice) are tabs of groups or floating windows; each document has its own document
+source and view; `currentDocumentId` is the document used last. Read `src/sheet_manager/AGENTS.md`
+("Workspace layout") before touching `features/sheet/panes/`, `useDocumentSource`, a tool's tab
+kind, or the loaded-document cache (`pinnedIds`, `loadIntoCache`).

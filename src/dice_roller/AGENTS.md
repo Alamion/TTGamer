@@ -111,6 +111,15 @@ The public barrel exports only:
 UI outside this module may use that barrel. Dice internals and their unit tests should import the
 owning file directly, so widening the public API is an explicit decision.
 
+## Panel Host
+
+The panel slides in from the side (`DiceRollerPanel`) unless a page claims it: on the sheet page
+`integrations/sheet-dice/diceTab.tsx` calls `claimPanelHost()` and draws `DicePanelContent` as the
+`t:dice` tab of the workspace layout (spec 036). `panelOpen` and the navbar toggle then open and
+close that tab (on a phone a tab put away from the screen is shown again first); closing the tab
+closes the panel. A tab that cannot be drawn gives the panel back and reports
+`dice-tab-unavailable`. The dice module never imports the sheet.
+
 ## Invariants
 
 - Parsing rejects lexer errors, missing operands/parentheses/comparison values, and trailing tokens.

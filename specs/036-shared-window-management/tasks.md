@@ -241,17 +241,17 @@ dice panel on a documentation page.
 
 ## Finish
 
-- [ ] T052 Update `src/sheet_manager/AGENTS.md` (the panes section becomes "Workspace layout":
+- [x] T052 Update `src/sheet_manager/AGENTS.md` (the panes section becomes "Workspace layout":
       groups, tab keys and kinds, current document, floating windows, limits, narrow view, storage
       v2), the dice notes (host claim), `.agents/skills/sheet-manager/SKILL.md`, root `AGENTS.md` §8
       (FloatingWindow stacking and controlled mode, Splitter orientation and collapse); historical
       banner on `specs/034-multi-document-screen/spec.md` for its pane layout
-- [ ] T053 Rewrite "Several documents side by side" in `docs/documents/index.mdx` and its ru mirror
+- [x] T053 Rewrite "Several documents side by side" in `docs/documents/index.mdx` and its ru mirror
       (groups, tools, dragging, splitting, floating, collapsing, limits, phone); update the library
       and dice pages that call them a dialog or a sliding panel; run `yarn validate:i18n`
-- [ ] T054 Mark T-113 and T-117 done in `TODO.md` with dated notes (what was built; documentation
+- [x] T054 Mark T-113 and T-117 done in `TODO.md` with dated notes (what was built; documentation
       fragments as tabs stay a later task)
-- [ ] T055 Run `yarn verify:full`; walk design.md "Manual walk" on the restarted dev server; record
+- [x] T055 Run `yarn verify:full`; walk design.md "Manual walk" on the restarted dev server; record
       results under "Walk results" in design.md; commit
       `docs(sheet): workspace layout guidance, user guide, backlog, and walk results (spec 036, Finish)`
 

@@ -273,3 +273,24 @@ restore at the browser level → **Finish**.
       strip uses its tool, and another tool group gives way. Opening beside, docking a tool, and the
       split targets count that room too, so a third group of tools opens at about 700 px of area
       instead of 980.
+
+## Walk results
+
+2026-10-16, after `yarn verify:full` (green: 2747 unit tests, perf, 47 browser tests).
+
+- The maintainer walked every story on the dev server as it landed (US1–US7) and reported what to
+  change; each report was fixed and recorded above: the tab corner, thinner frames, Open beside
+  stacking into one group, switching to a tool tab, tools unreachable in 760–810 px windows, the
+  dock hitboxes (dock compass), the publisher badge under the layout and under a tool.
+- Steps 1, 2–3, 8, 9, and 10 are also browser tests: one document at 375 and 1280 px within 1 % of
+  the baseline (SC-004); the four-part layout in 3 actions (SC-001); the 3 × 2 grid in 8 actions,
+  all in view, back after a reload (SC-002); 1280 → 375 → 1280 px with the dice; the dice sliding in
+  on a documentation page. Steps 4–7 are covered by component tests (floating limit and stack,
+  docking by title bar and compass, collapse by drag and Enter, every keyboard menu action) and were
+  walked by the maintainer.
+- Timings with 3,000 documents, run alone: open beside 145–164 ms, move a tab 126–181 ms, show a
+  hidden tab 77–97 ms, longest frame 17 ms (divider) and 17–33 ms (window). In the full run after
+  the build, open beside (248 ms) and move a tab (268 ms, one sample) read over their 200 ms budget;
+  they are reported, not failing (§11), and worth watching.
+- Not walked by the agent: dark mode and a real phone (step 10); left to the maintainer before the
+  merge.

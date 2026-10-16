@@ -188,38 +188,66 @@ Spec 032 replaced the manager modal and the one-value document storage. Current 
 - **Query** (`features/documents/query.ts`) is pure and registry-free (labels come from a
   `DocumentLabeler`): normalized names built once per entries list, filters, sort, ancestors kept
   and opened; unknown times are never invented. The window keeps the query in session storage.
-- **The window** (`components/documents/`) is a shared `FloatingWindow` over the shared `TreeView`;
-  closed, it renders nothing. Phone: full screen, modal, page behind it locked, tree and details as
-  tabs, drag replaced by "Move to…". Names are typed in place (`InlineName`), never in a dialog. A
-  click only selects a row and shows its details (T-116); a document opens by double click, `Enter`,
-  or the Open actions. On a phone a tap selects and switches to the details tab.
+- **The documents window** (`components/documents/DocumentsPanel.tsx`) is a tool of the workspace
+  layout (below) over the shared `TreeView`; its list and details become tabs by the width of its
+  container (`@container/documents`), not of the screen. Phone: full screen, drag replaced by "Move
+  to…". Names are typed in place (`InlineName`), never in a dialog. A click only selects a row and
+  shows its details (T-116); a document opens by double click, `Enter`, or the Open actions
+  (**Open**, **Open in new tab**, **Open beside**). On a phone a tap selects and switches to the
+  details tab. A single dragged document row also carries `application/x-ttg-document`, so the
+  layout takes it like a tab.
 
-### Several documents on one screen (spec 034)
+### Workspace layout (spec 036)
 
-- **Panes** (`features/sheet/panes/`): `PaneArea` replaces the single page of `SheetWorkspace`
-  (`renderDocument(documentId, viewId)`); with one document it renders exactly what the page always
-  drew (no strip, divider, or wrapper). Two or more get `PaneTabs` and one `Pane` each.
-- **Source per pane.** A pane wraps its page in `PaneSourceProvider`, a `DocumentSourceContext`
-  value from `useStoreDocumentSource(documentId)` (selector subscriptions), so every bound element,
-  roll, and write reads the pane's own document. `AreaLayoutContext` (`declarative/areaLayout.ts`)
-  makes the sheet's group columns follow the pane width (`@3xl`/`@7xl` of the `brief` container at
-  the window's `md`/`xl` widths) and drops the window-sized padding.
-- **Current = focused.** `currentDocumentId` stays the one "current" fact: clicking or typing in a
-  pane calls `setCurrentDocument`, and `reconcilePanes(state, currentId, entryIds)` derives the
-  panes from it (**Open** takes the place of the pane focused last, deleted documents drop out).
-  **Open beside** is `openBeside(id)` (at most `MAX_PANES` = 6; the least recently focused is
-  replaced and reported). The documents window and the shown-document publisher need no pane code.
-- **Cache.** The loaded cache keeps `pinnedIds` (the panes' documents) beside the current one;
-  `loadIntoCache(ids)` reads documents without making them current.
-- **Layout** (`layout.ts`): below 768 px one pane and the tabs; from 768 px as many panes as fit at
-  320 px (`floor((width + 6) / 326)`, 6 px dividers), the most recently focused ones, drawn in pane
-  order; widths are weights (average 1) fitted to the area, never stored in px. Double click on a
-  tab or the pane's button maximizes it (desktop only).
-- **Views.** A pane's view is `views[id]` (a view id or `tpl:<page>`): a document opened beside
-  starts in its brief (`briefViewOf`: `brief` or `*-brief`), the document's own preferred view is
-  never written, and with two or more panes the toolbar's view selector gives way to one per pane.
-- **Persistence.** The arrangement is the device's (`ttgamer:panes:v1` in localStorage, read when
-  the module loads, `readArrangement` sanitizes it); it is not exported, synced, or undoable.
+- **Tree** (`features/sheet/panes/layoutTree.ts`, pure): groups (`GroupNode`: tabs, the shown one,
+  `collapsed`) in nested row/column splits with weights (average 1, fitted to the area, never px).
+  `normalize` keeps one shape; `groupsInOrder` is the reading order; `rectsOf` places groups and
+  dividers; `minSizeOf` is 320 × 200 a group, 28 px a collapsed one. Every change is a function of
+  the tree (`placeTab`, `removeTab`, `splitGroup`, `setCollapsed`, `setWeightsAt`).
+- **Tab keys** (`tabKeys.ts`): `d:<documentId>` and `t:<tool>` (`documents`, `library`, `dice`).
+  Tools register a kind (`registerTabKind`: title, close label, `render`); `sheetTools.tsx`
+  registers the documents window and the library, `integrations/sheet-dice/diceTab.tsx` the dice.
+  Documents are drawn by the sheet's `renderDocument`.
+- **Store** (`paneStore.ts`): the tree plus `recent` (order of use), `views`, `maximized`,
+  `floating` (at most `MAX_FLOATING` = 4 windows, the front one last), and each tab's `lastRect` and
+  `lastSide`; not persisted: `shownTool` (a phone's full-screen tool), drag hints, and `freshWindow`
+  (the one window that takes focus as it opens). All changes go through its actions (`openBeside`,
+  `openInNewTab`, `openTool`, `focusTab`, `closeTab`, `moveTab`, `splitWith`, `dropDocument`,
+  `floatTab`, `dockFloating`, `raise`, `collapseGroup`, `expandGroup`, ...).
+- **Current = used last.** `currentDocumentId` stays the one "current" fact; `reconcileLayout`
+  derives the layout from it: **Open** puts the document in place of the shown document of the group
+  used last (`documentGroup`, never a tool's group or a floating window), deleted documents drop
+  out, a tool the reader switched to stays shown. At most `MAX_DOCUMENTS` = 12 documents (the least
+  recently used hidden one gives way, with a notice) and `MAX_GROUPS` = 6 groups.
+- **Room.** A split, **Open beside**, or a docked tool needs every group at its minimum once groups
+  of tools only give way to 28 px strips (`fitByCollapsing`, least recently used first, never the
+  group used last); otherwise it becomes a tab with a notice. When the drawn layout does not fit,
+  `PaneArea` shows one tab at a time with a strip.
+- **Drawing** (`PaneArea.tsx`): one group with one document draws the page exactly as before (no
+  frame or wrapper; a drop layer appears over it only while a row or window is dragged). Several
+  groups fill the window below the toolbar, leaving room for what the page lays out below, each
+  scrolling on its own. A phone (window below 768 px) floats nothing: its strip lists the grouped
+  then the floating documents, and tools show full screen over the page. A wider window too narrow
+  for the layout keeps its windows and lists grouped documents and tools. The publisher badge goes
+  once per surface (Systems, above).
+- **Dragging** (`useTabDrag`, `dropTargets.ts`): tabs and single document rows land on a strip (a
+  gap), a group's middle, or an edge quarter (split); a tab dropped outside every group floats. A
+  floating window docks only on a strip or a square of the dock compass in a group's middle; it
+  moves freely anywhere else. Every action is also in the tab's keyboard menu (Shift+F10).
+- **Dividers** use the shared `Splitter` (vertical or horizontal); dragging 80 px past a neighbour's
+  minimum or Enter collapses it to a strip that opens with a click or Enter.
+- **Source per document.** A document region wraps its page in `PaneSourceProvider`, a
+  `DocumentSourceContext` value from `useStoreDocumentSource(documentId)`, so every bound element,
+  roll, and write reads that document. `AreaLayoutContext` (`declarative/areaLayout.ts`) makes the
+  sheet's columns follow the group width. The loaded cache keeps `pinnedIds` (the open documents)
+  beside the current one; `loadIntoCache(ids)` reads documents without making them current.
+- **Views.** A document's view in the layout is `views[id]` (a view id or `tpl:<page>`): one opened
+  beside starts in its brief, the document's preferred view is never written, and with two or more
+  documents the toolbar's view selector gives way to one per group.
+- **Persistence.** The layout is the device's (`ttgamer:panes:v2` in localStorage); `readLayout`
+  sanitizes it and reports dropped parts once (`pane-arrangement-invalid`). A spec 034 value
+  (`ttgamer:panes:v1`) becomes one row of one-tab groups once and is removed. It is not exported,
+  synced, or undoable.
 
 ## Schema and Import/Export
 

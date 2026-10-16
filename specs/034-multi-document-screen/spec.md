@@ -1,5 +1,10 @@
 # Feature Specification: Several Documents on One Screen
 
+> **Historical record (partly superseded).** Its panes (one strip, side by side only) were replaced
+> by the workspace layout of spec 036: groups with tabs, nested splits, tools as tabs, floating
+> windows. Its document source per pane, views, and cache rules still hold. Current behavior:
+> `src/sheet_manager/AGENTS.md` ("Workspace layout").
+
 **Branch**: `034-multi-document-screen` | **Created**: 2026-10-14 | **Status**: Draft
 
 **Input**: "T-112 Several documents on one screen: GMs and players read several documents side by
