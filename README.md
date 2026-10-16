@@ -65,8 +65,20 @@ site that works in the browser and keeps your data on your device.
 
 TTGamer is a free fan project, not affiliated with the publishers of the games it supports. Rules
 are described in the project's own words; names of traits, mechanics, and items are used for
-reference. World of Darkness 5th Edition material appears under Paradox Interactive's Dark Pack
-policy: see the [Dark Pack notice](https://ttgamer.vercel.app/docs/wod-v5/dark-pack).
+reference.
+
+Each game comes with its own terms, and they do not carry over from one game to another:
+
+- **World of Darkness 5th Edition** (including Hunter: the Reckoning) appears under Paradox
+  Interactive's Dark Pack policy: see the
+  [Dark Pack notice](https://ttgamer.vercel.app/docs/wod-v5/dark-pack). Its sheets show the Dark
+  Pack badge, and exported files carry the notice.
+- **The Star Wars conversion and classic World of Darkness 2nd Edition** are outside the Dark Pack.
+  No community policy covers them, so they rely only on the own-words rule above and carry no
+  badge.
+- **A game added later** brings its publisher's own policy (for example, an SRD licence or a
+  homebrew content policy). That policy decides what the site may include, which notices it must
+  show, and where; it can also rule out parts of a game.
 
 ## Development
 
