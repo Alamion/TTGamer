@@ -28,6 +28,7 @@ import { collectTemplateFields, type CustomTemplate, fieldValueKey } from '../ty
 import type { TemplatePageValues } from '../types/templateValues';
 import { bootDocuments } from './documentBoot';
 import {
+    deviceImageIdsOf,
     isCleanEnvelope,
     purgedIds,
     readEnvelope,
@@ -200,12 +201,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function getPortraitId(document: UnknownDocumentEnvelope | undefined) {
-    if (!document || !isRecord(document.data) || !isRecord(document.data.metadata)) {
-        return undefined;
+/**
+ * Deletes the device images `before` names and `after` no longer does (F-009). A deleted document
+ * keeps its images until the purge, so an undo brings them back.
+ */
+function releaseImages(before: UnknownDocumentEnvelope, after: UnknownDocumentEnvelope) {
+    const kept = deviceImageIdsOf(after);
+    for (const id of deviceImageIdsOf(before)) {
+        if (!kept.has(id)) void deletePortrait(id);
     }
-    const portraitId = document.data.metadata.portraitId;
-    return typeof portraitId === 'string' ? portraitId : undefined;
 }
 
 /**
@@ -557,12 +561,7 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             documents: documents.map((document) => (document.id === id ? next : document)),
             entries: syncEntry(entries, next, { touch: true }),
         }));
-
-        const previousPortraitId = getPortraitId(current);
-        const nextPortraitId = getPortraitId(next);
-        if (previousPortraitId && previousPortraitId !== nextPortraitId) {
-            void deletePortrait(previousPortraitId);
-        }
+        releaseImages(current, next);
     },
 
     updateDocumentMetadata: (id, updates) => {
@@ -654,6 +653,7 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             documents: documents.map((document) => (document.id === id ? next : document)),
             entries: syncEntry(entries, next, { touch: true }),
         }));
+        releaseImages(current, next);
     },
 
     resetDocument: (id) => {
@@ -672,6 +672,8 @@ const stateCreator: StateCreator<DocumentStoreState, [], []> = (set, get) => ({
             ),
         }));
         updateDocumentMetadata(id, { title: '' });
+        const reset = get().documents.find((document) => document.id === id);
+        if (reset) releaseImages(current, reset);
     },
 
     deleteDocument: (id) => {

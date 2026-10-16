@@ -40,14 +40,42 @@ export const purgedIds = new Set<string>();
 const cleanEnvelopes = new WeakSet<UnknownDocumentEnvelope>();
 export const isCleanEnvelope = (document: UnknownDocumentEnvelope) => cleanEnvelopes.has(document);
 
-/** The portrait a stored document names, if any. */
-export function portraitIdOf(document: unknown): string | undefined {
-    if (!document || typeof document !== 'object' || !('data' in document)) return undefined;
+function portraitIdOf(document: object): string | undefined {
+    if (!('data' in document)) return undefined;
     const { data } = document;
     if (!data || typeof data !== 'object' || !('metadata' in data)) return undefined;
     const { metadata } = data;
     if (!metadata || typeof metadata !== 'object' || !('portraitId' in metadata)) return undefined;
     return typeof metadata.portraitId === 'string' ? metadata.portraitId : undefined;
+}
+
+// Page values nest images at most in list entries (values → list → entry → value).
+const IMAGE_VALUE_DEPTH = 6;
+
+/**
+ * Every device image a document names: its portrait and the images in its page values, list
+ * entries included. A blob no document names is never shown again.
+ */
+export function deviceImageIdsOf(document: unknown): Set<string> {
+    const ids = new Set<string>();
+    if (!document || typeof document !== 'object') return ids;
+    const portraitId = portraitIdOf(document);
+    if (portraitId) ids.add(portraitId);
+    const visit = (value: unknown, depth: number) => {
+        if (depth > IMAGE_VALUE_DEPTH || !value || typeof value !== 'object') return;
+        if (Array.isArray(value)) {
+            for (const item of value) visit(item, depth + 1);
+            return;
+        }
+        const record = value as Record<string, unknown>;
+        if (record.source === 'device' && typeof record.blobId === 'string') {
+            ids.add(record.blobId);
+            return;
+        }
+        for (const item of Object.values(record)) visit(item, depth + 1);
+    };
+    if ('templateValues' in document) visit(document.templateValues, 0);
+    return ids;
 }
 
 /** Replaces the storage (tests); returns the previous one. */
