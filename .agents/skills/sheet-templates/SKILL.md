@@ -97,9 +97,14 @@ and each of its variants appear in the draft-only docs storybook `docs/dev/story
 stories live in `src/sheet_manager/storybook/stories.ts` (containers, fields, catalog choice,
 collections, on sandbox documents); built-in parts are generated per system from `bindingSignature`
 (a new binding shape needs a case there when it renders differently). A new option or presentation
-also gets a tag in `REQUIRED_VARIANTS` of `tests/sheet_manager/storybook.test.tsx`. A new docs
-widget gets an example on `docs/dev/storybook/docs-widgets.mdx`; colors come from the `@theme`
-tokens in `src/css/custom.css` automatically. States that depend on the reader's own documents get a
+also gets a tag in `REQUIRED_VARIANTS` of `tests/sheet_manager/storybook.test.tsx`. A story whose
+formulas or computed limits read other fields gives those fields sample `values` (the last argument
+of `story()`): an empty field reads as unavailable, so without them the story shows errors nobody
+planned. Only stories titled "Error: …" may fail; the storybook test lists every alert it allows.
+The site guide shows parts of these stories with `ElementExample` (`docsEmbeds`, one top-level node
+of a story); `docs-embeds.test.tsx` checks that every part it names exists. A new docs widget gets
+an example on `docs/dev/storybook/docs-widgets.mdx`; colors come from the `@theme` tokens in
+`src/css/custom.css` automatically. States that depend on the reader's own documents get a
 fixed-sample widget next to the stories (`ReferenceEntryVariants` in
 `features/docs/ElementStorybook.tsx`, on `template-elements.mdx`). A setting's missing element is
 added as an editor-configurable template element, preferably as an option on an existing field or

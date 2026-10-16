@@ -338,6 +338,11 @@ describe('element storybook (constitution VI, T-069)', () => {
         // The deliberate formula errors report; nothing else may.
         const unexpected = takeSheetIssues().filter(({ code }) => code !== 'formula-error');
         expect(unexpected).toEqual([]);
+        // Formulas and computed limits read the sample values; only the two error examples fail.
+        expect(screen.getAllByRole('alert').map((alert) => alert.textContent)).toEqual([
+            'division by zero',
+            'value "missing-value" is unavailable',
+        ]);
     });
 });
 

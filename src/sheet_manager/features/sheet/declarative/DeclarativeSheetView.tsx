@@ -55,7 +55,7 @@ import {
     type TemplateEditorOverlay,
     useTemplateEditorOverlay,
 } from './editorOverlay';
-import type { FormulaEvaluationError } from './formula';
+import { formulaErrorMessage } from './formulaMessages';
 import { type CatalogFieldRuntime, useTemplatePage, type UseTemplatePageResult } from './hooks';
 import { LabeledField } from './LabeledField';
 import { CustomListView } from './listEntries';
@@ -65,7 +65,6 @@ import { ShortLabelScope } from './ShortLabelScope';
 
 const editor = uiMessages.sheet.templates.editor;
 const rowMessages = uiMessages.sheet.documents.rows;
-const page = uiMessages.sheet.templates.page;
 const binding = uiMessages.sheet.templates.binding;
 
 const columnClasses: Record<number, string> = {
@@ -101,22 +100,6 @@ function spanClass(span: number, columns: number, proportional: boolean): string
     return size === 2
         ? 'md:col-span-2'
         : `md:col-span-2 ${size === 3 ? 'xl:col-span-3' : 'xl:col-span-4'}`;
-}
-
-function formulaErrorMessage(reason: FormulaEvaluationError | 'parse', coordinate = ''): string {
-    switch (reason) {
-        case 'circular':
-            return translate(page.formulaReasonCircular);
-        case 'division-by-zero':
-            return translate(page.formulaReasonDivision);
-        case 'non-numeric':
-            return translate(page.formulaReasonNonNumeric);
-        case 'parse':
-            return translate(page.formulaReasonInvalid);
-        case 'unknown-coordinate':
-        default:
-            return translate(page.formulaReasonUnknown).replace('{coordinate}', coordinate);
-    }
 }
 
 function FieldCell({
@@ -239,7 +222,9 @@ function FieldCell({
         onChange: handleChange,
         disabled: pageApi.disabled,
         resolvedMax: maxState?.resolvedMax,
-        maxDegraded: maxState?.degraded,
+        maxDegraded: maxState?.degraded
+            ? formulaErrorMessage(maxState.reason, maxState.coordinate)
+            : undefined,
         formulaResult,
         catalogOptions: runtime?.options,
         documentOptions: pageApi.documentOptions,

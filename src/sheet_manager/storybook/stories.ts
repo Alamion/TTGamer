@@ -9,6 +9,7 @@ import {
 } from '../systems/templateBindings';
 import { type UserCatalog, UserCatalogSchema } from '../systems/userCatalogs';
 import { type CustomTemplate, CustomTemplateSchema, type TemplateNode } from '../types/template';
+import type { TemplatePageValues } from '../types/templateValues';
 
 /**
  * The element storybook (constitution VI, T-069): templates that together show every variant
@@ -23,6 +24,8 @@ export interface ElementStory {
     /** What to look at, for the reviewer. */
     note: string;
     template: CustomTemplate;
+    /** Page values the sandbox starts with, so formulas and limits have something to read. */
+    values?: TemplatePageValues;
 }
 
 type NodeInput = Record<string, unknown>;
@@ -32,12 +35,14 @@ function story(
     title: string,
     note: string,
     target: { systemId: string; documentKind: string },
-    children: NodeInput[]
+    children: NodeInput[],
+    values?: TemplatePageValues
 ): ElementStory {
     return {
         id,
         title,
         note,
+        ...(values ? { values } : {}),
         template: CustomTemplateSchema.parse({
             id: `storybook-${id}`,
             name: `Storybook: ${title}`,
@@ -446,7 +451,9 @@ const fields = story(
                 },
             ],
         },
-    ]
+    ],
+    // The formulas and computed maxima read these; the error examples stay errors on purpose.
+    { 'number-plain': 4, 'rating-dots': 3, 'rating-number': 2 }
 );
 
 const catalogFields = story(

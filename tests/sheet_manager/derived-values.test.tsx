@@ -179,6 +179,21 @@ describe('errors (T-076)', () => {
         expect(alertOf('Total')).toBe('value "missing" is unavailable');
     });
 
+    it('names the value a computed maximum is missing, on numbers and ratings', () => {
+        mount(
+            page([
+                field('cap', 'Cap', 'number'),
+                field('load', 'Load', 'number', { maxFrom: 'cap' }),
+                field('luck', 'Luck', 'rating', { max: 5, maxFrom: 'cap + 1' }),
+            ])
+        );
+        const alerts = screen.getAllByRole('alert').map((alert) => alert.textContent);
+        expect(alerts).toEqual([
+            'Cannot compute "Load": value "cap" is unavailable.',
+            'Cannot compute "Luck": value "cap" is unavailable.',
+        ]);
+    });
+
     it('names a value that is not a number', () => {
         mount(
             page([

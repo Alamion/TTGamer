@@ -77,8 +77,8 @@ export interface TemplateFieldControlProps {
      * absent when no cap or the source is unavailable (labeled degraded state instead).
      */
     resolvedMax?: number;
-    /** True when a `maxFrom` source is unavailable — the control shows the degraded state. */
-    maxDegraded?: boolean;
+    /** Why a `maxFrom` limit has no value; the control shows it as the degraded state. */
+    maxDegraded?: string;
     /** Read-only formula result for formula fields (computed by the hook layer, never stored). */
     formulaResult?: { state: 'ok'; value: number } | { state: 'error'; message: string };
     /** Resolved catalog options for a catalog-backed select (US3); absent → static options. */
@@ -218,7 +218,7 @@ function NumberFieldControlRender({
                 <p role="alert" className="text-xs text-error">
                     {translate(page.formulaDegraded, {
                         field: field.label,
-                        reason: translate(page.formulaReasonUnknown).replace('{coordinate}', ''),
+                        reason: maxDegraded,
                     })}
                 </p>
             )}
@@ -525,7 +525,7 @@ function RatingFieldControlRender({
                 <p role="alert" className="text-xs text-error">
                     {translate(page.formulaDegraded, {
                         field: field.label,
-                        reason: translate(page.formulaReasonUnknown).replace('{coordinate}', ''),
+                        reason: maxDegraded,
                     })}
                 </p>
             )}

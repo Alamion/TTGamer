@@ -14,9 +14,12 @@ Reference for the `sheet-templates` skill: the formula language and sheet embeds
 - Errors are labeled in the UI (`unknown-coordinate` names the coordinate, `circular` for a real
   cycle or a formula reading itself, `division-by-zero`, `non-numeric` for a stored value that is
   not a number, `parse` for a formula that does not parse, which also reports `formula-error`). A
-  missing value is final for the render pass, never a cycle. Behavior tests:
-  `template-formulas.test.ts` (grammar), `derived-values.test.tsx` (sheet), the "derived values"
-  block of `template-editor.references.test.tsx` (draft issues and live preview).
+  missing value is final for the render pass, never a cycle. An empty field reads as unavailable
+  (not 0). A `maxFrom` that cannot be computed shows the same reason, naming the value it lacks
+  (`MaxState` in `hooks.ts`, `formulaErrorMessage` in `formulaMessages.ts`); the static `max` then
+  applies. Behavior tests: `template-formulas.test.ts` (grammar), `derived-values.test.tsx` (sheet),
+  the "derived values" block of `template-editor.references.test.tsx` (draft issues and live
+  preview).
 - Cycles are rejected at authoring (`collectDraftIssues`); at render the evaluator in
   `useTemplatePage` re-orders by dependency with its own cycle guard.
 - `collectFormulaDependencies` in `types/template.ts` uses a regex, not the parser (import cycle

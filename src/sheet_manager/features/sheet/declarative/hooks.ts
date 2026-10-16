@@ -39,7 +39,13 @@ import {
 import { isDocumentInReferenceScope, referenceScopeOf } from '../data/referenceScope';
 import { useBoundDocument } from './boundDocument';
 import type { CatalogOption, DocumentOption } from './fieldControls';
-import { evaluateFormula, type Expr, type FormulaEvaluationError, parseFormula } from './formula';
+import {
+    evaluateFormula,
+    type Expr,
+    type FormulaEvaluationError,
+    type FormulaEvaluationResult,
+    parseFormula,
+} from './formula';
 import { moveTableRow } from './rowOrder';
 
 export type TemplatePageStatus = 'none' | 'ready' | 'missing';
@@ -57,6 +63,19 @@ export interface CatalogFieldRuntime {
     readDetail: (entry: { id: string; name: string }, key: string) => string | number | undefined;
 }
 
+type FormulaResolution =
+    FormulaEvaluationResult | { ok: false; error: 'parse'; coordinate?: string };
+
+/** A `maxFrom` limit: its value, or why it has none. */
+export type MaxState =
+    | { resolvedMax: number; degraded?: undefined }
+    | {
+          resolvedMax?: undefined;
+          degraded: true;
+          reason: FormulaEvaluationError | 'parse';
+          coordinate?: string;
+      };
+
 export interface FormulaState {
     /** Computed result for a formula field; error surfaces as a labeled state (FR-15). */
     results: ReadonlyMap<
@@ -65,7 +84,7 @@ export interface FormulaState {
         | { state: 'error'; reason: FormulaEvaluationError | 'parse'; coordinate?: string }
     >;
     /** Per-node computed maxima for `maxFrom` (FR-12); degraded when the source is unavailable. */
-    maxima: ReadonlyMap<string, { resolvedMax?: number; degraded?: boolean }>;
+    maxima: ReadonlyMap<string, MaxState>;
     /** Per-primitive computed minima for `minFrom` (absent when unset or unresolvable). */
     minima: ReadonlyMap<string, number>;
     /** Per-primitive computed minima of a pool's maximum, `maxMinFrom` (spec 020). */
@@ -406,7 +425,7 @@ export function useTemplatePage(
             | { state: 'ok'; value: number }
             | { state: 'error'; reason: FormulaEvaluationError | 'parse'; coordinate?: string }
         >();
-        const maxima = new Map<string, { resolvedMax?: number; degraded?: boolean }>();
+        const maxima = new Map<string, MaxState>();
         const minima = new Map<string, number>();
         const maxMinima = new Map<string, number>();
         if (!template) return { results, maxima, minima, maxMinima };
@@ -529,7 +548,7 @@ export function useTemplatePage(
             node: { id: string },
             source: string,
             kind: 'maxFrom' | 'minFrom' | 'maxMinFrom'
-        ): number | undefined => {
+        ): FormulaResolution => {
             const parsed = parsedFormula(source);
             if (!parsed.ok) {
                 reportSheetIssue({
@@ -537,7 +556,7 @@ export function useTemplatePage(
                     message: `${kind} formula does not parse`,
                     details: { templateId: template.id, nodeId: node.id, formula: source },
                 });
-                return undefined;
+                return { ok: false, error: 'parse' };
             }
             const resolution = evaluateFormula(parsed.expr, (path) => {
                 if (computed.has(path)) {
@@ -546,35 +565,33 @@ export function useTemplatePage(
                 }
                 return resolveBase(path);
             });
-            return resolution.ok ? resolution.value : undefined;
+            return resolution;
         };
+        const maxStateOf = (resolution: FormulaResolution): MaxState =>
+            resolution.ok
+                ? { resolvedMax: resolution.value }
+                : { degraded: true, reason: resolution.error, coordinate: resolution.coordinate };
+        const valueOf = (resolution: FormulaResolution) =>
+            resolution.ok ? resolution.value : undefined;
         walkTemplateNodes(template.children, (node) => {
             const maxSource =
                 node.type === 'rating' || node.type === 'number' || node.type === 'primitive'
                     ? node.maxFrom
                     : undefined;
             if (maxSource) {
-                const resolvedMax = evaluateBound(node, maxSource, 'maxFrom');
-                maxima.set(
-                    node.id,
-                    resolvedMax === undefined ? { degraded: true } : { resolvedMax }
-                );
+                maxima.set(node.id, maxStateOf(evaluateBound(node, maxSource, 'maxFrom')));
             }
             // A list entry's rating or number takes its range like the same field on the page.
             const item = node.type === 'list' ? node.item : undefined;
             if ((item?.type === 'rating' || item?.type === 'number') && item.maxFrom) {
-                const resolvedMax = evaluateBound(item, item.maxFrom, 'maxFrom');
-                maxima.set(
-                    item.id,
-                    resolvedMax === undefined ? { degraded: true } : { resolvedMax }
-                );
+                maxima.set(item.id, maxStateOf(evaluateBound(item, item.maxFrom, 'maxFrom')));
             }
             if (node.type === 'primitive' && node.minFrom) {
-                const resolvedMin = evaluateBound(node, node.minFrom, 'minFrom');
+                const resolvedMin = valueOf(evaluateBound(node, node.minFrom, 'minFrom'));
                 if (resolvedMin !== undefined) minima.set(node.id, resolvedMin);
             }
             if (node.type === 'primitive' && node.maxMinFrom) {
-                const resolved = evaluateBound(node, node.maxMinFrom, 'maxMinFrom');
+                const resolved = valueOf(evaluateBound(node, node.maxMinFrom, 'maxMinFrom'));
                 if (resolved !== undefined) maxMinima.set(node.id, resolved);
             }
         });

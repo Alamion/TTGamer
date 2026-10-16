@@ -24,8 +24,13 @@ import {
     SAMPLE_DOCUMENT_ID,
 } from '../template-editor/sampleDocuments';
 
-/** A story's sandbox: the definition's first example (else a blank document), never stored. */
-function useStorySource(systemId: string, documentKind: string) {
+/**
+ * A story's sandbox: the definition's first example (else a blank document) with the story's own
+ * page values, never stored.
+ */
+function useStorySource(story: ElementStory) {
+    const { systemId, documentKind } = story.template;
+    const { values } = story;
     return useMemo(() => {
         const definition = findTemplateDefinition(systemId, documentKind);
         if (!definition) return undefined;
@@ -33,8 +38,11 @@ function useStorySource(systemId: string, documentKind: string) {
         const initial = example
             ? { ...structuredClone(example), id: SAMPLE_DOCUMENT_ID }
             : blankDocument(systemId, definition);
-        return createScratchDocumentSource(initial, definition);
-    }, [systemId, documentKind]);
+        const seeded = values
+            ? { ...initial, templateValues: { ...initial.templateValues, ...values } }
+            : initial;
+        return createScratchDocumentSource(seeded, definition);
+    }, [systemId, documentKind, values]);
 }
 
 function ScratchProvider({
@@ -52,7 +60,7 @@ function ScratchProvider({
 }
 
 function StoryView({ story }: { story: ElementStory }) {
-    const scratch = useStorySource(story.template.systemId, story.template.documentKind);
+    const scratch = useStorySource(story);
     if (!scratch) {
         reportSheetIssue({
             code: 'template-reference-invalid',
@@ -105,7 +113,7 @@ export function findStoryPart(storyId: string, nodeId: string): ElementStory | u
 }
 
 function StoryPart({ story }: { story: ElementStory }) {
-    const scratch = useStorySource(story.template.systemId, story.template.documentKind);
+    const scratch = useStorySource(story);
     if (!scratch) return null;
     return (
         <div className="p-3">
