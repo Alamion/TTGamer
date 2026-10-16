@@ -1,5 +1,11 @@
 # Changelog
 
+## v3.28.1
+
+### Chore
+
+- **The site as a Docker image (T-118)**: besides Vercel, the site now builds into a small nginx image that runs as one container of a Docker stack, with a Caddy proxy in front that serves HTTPS, sends `/api` to the backend, and the rest to the site. `SITE_URL` sets the address of a self-hosted copy, and the browser smoke tests now also run against the container in CI. Nothing changes for players
+
 ## v3.28.0
 
 ### Minor feat
