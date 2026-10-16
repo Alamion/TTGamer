@@ -200,3 +200,46 @@ that catalog).
   (`vampire-sheet.test.tsx`); the shared post of a vampire roll needs no own test (the message is
   built from the generic reading, covered by `roll-sharing.test.ts`; `roll-reading.test.ts` checks
   the `hunger` reading).
+- **Catalog review for the maintainer** (written by four parallel agents from the books; every text
+  is our own words, every summary ≤ 140 characters):
+    - _Russian names without a published source_ (about 100): Ministry «Министерство», Oblivion
+      «Забвение» — which collides with the Russian core's name for the Dominate power Cloud Memory,
+      so one of them needs another word —, the four new compulsions, all 14 variant-bane names, the
+      six Players Guide predator types, 20 Players Guide powers of Animalism through Obfuscate, all
+      20 Oblivion powers, 9 Potence/Presence/Protean/Blood Sorcery powers, and 40 rituals,
+      ceremonies, and formulas. The rest follow the Russian core translation and «Малая книга
+      знаний» (some of its choices are loose: «Адские гончие», «Драконье возмездие»).
+    - _Rouse costs given as a range_ use the lowest number ("one or more" = 1, "free on the famulus"
+      = 1 for the power itself, "as per the boosted power" = 0); Necrotic Plague uses the Players
+      Guide's 1.
+    - _Choices_: Valeren is Fortitude 3 (Players Guide; the lore book says 2); Panacea keeps its
+      English name in Russian («Панацея», not «Обеа»); Caitiff and thin-blood `bane` explain what
+      replaces a bane; duplicates of Cults of the Blood Gods and the Players Guide are listed once
+      under the Players Guide name; two Cults powers outside Oblivion and Blood Sorcery (True Love's
+      Face, The Heart of Darkness) are included.
+- **D9 budget measured (T046).** The timings' "sheet JS and CSS" went 3,958,167 → 4,174,350 bytes,
+  but it counts the sheet chunk twice (it is requested twice). Unique files the sheet page loads,
+  built from the commit before and after the feature: 3,137,742 → 3,298,349 bytes raw (+160,607),
+  815,672 → 852,054 bytes gzip (+36,382, about 35.5 KB). The budget was 25 KB gzip, so it is
+  exceeded by about 11 KB. The long texts (about 145 KB raw) do stay out (their chunk loads only
+  when a vampire sheet shows a fallback). What remains is the vampire code, the 300+ entry names and
+  structure in code, and their Russian names in `catalogTranslations`: pickers need names at once.
+  Growth by chunk (gzip): sheet chunk +13.5 KB, `common` +9.2 KB (UI messages), the catalog
+  translations chunk +10.9 KB, `main` +2.7 KB. Open for the maintainer: accept 36 KB, or load
+  catalog names on demand too (pickers would wait for them on first open).
+- **Manual walk (2026-10-17, dev server, English and Russian; scripted with Playwright).**
+    1. New → Vampire: the Masquerade 5e → Character → full sheet with Hunger 1, Blood Potency 1,
+       Humanity 7, generation 13, a Rouse check button — as expected.
+    2. Clan Tremere (picked as «Тремер (Tremere)» in Russian) → bane and compulsion show the clan's
+       text, muted — as expected (variant switch and own text: unit tests).
+    3. Blood Sorcery 2 → the rituals block appears; power suggestions keep to Blood Sorcery up to
+       level 2; picking «Едкая кровь (Corrosive Vitae)» fills discipline and level and shows the
+       row's Rouse button — as expected. Found and fixed: the disciplines list showed the WoD
+       "Custom skill" placeholder and S/P/E flags (`ListBinding.flags` and `placeholder` added).
+    4. Hunger dice in rolls: unit and integration tests (the dev walk did not roll a pool).
+    5. Rouse from a power → "Проверка жажды пройдена — Голод остаётся 1" — as expected. Minor: the
+       Rouse roll's own toast shows `1d10>=6x2=10` (the V5 reading adds critical pairs to a single
+       die; harmless).
+    6. Brief in a 400 px area and on phones: `tests-e2e/smoke/vampire-brief.spec.ts` passes.
+    7. Copied page keeps values and Hunger: unit test.
+    8. No console errors in either language.

@@ -313,6 +313,8 @@ const vampireBindings: DocumentBindingDescriptor[] = [
         dataKey: 'disciplines',
         entryShape: 'named-trait',
         catalog: { catalogId: VAMPIRE_CATALOG_IDS.disciplines },
+        flags: false,
+        placeholder: vampire.fields.discipline,
     },
     powersRows,
     ritualsRows,

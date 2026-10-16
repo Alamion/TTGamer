@@ -153,7 +153,7 @@ the file carries the Dark Pack notice, hunters and mortals are unchanged.
 - [x] T037 [US4] Add the vampire to `tests/sheet_manager/systems/v5/brief-template.test.tsx` and to
       the kinds of `tests-e2e/smoke/brief-layout.spec.ts` (height limits of spec 033); check that a
       die in the brief rolls with Hunger
-- [ ] T038 [US4] Run the targeted tests and `yarn ci:e2e` (route/template change, AGENTS.md §11) and
+- [x] T038 [US4] Run the targeted tests and `yarn ci:e2e` (route/template change, AGENTS.md §11) and
       commit the story
 
 ## User Story 5 - Library, editor, and catalogs (P3)
@@ -181,9 +181,9 @@ and still rolls Hunger; catalogs appear read-only in the library.
       its ru mirror); `docs/guide/sheet.mdx` and `docs/guide/template-editor/library.mdx` name the
       vampire; `docs/guide/dice-roller.mdx` says sheet rolls of a vampire add Hunger dice; run
       `yarn validate:i18n`
-- [ ] T045 Mark T-039 done in `TODO.md` with the result note; add a historical banner to no earlier
+- [x] T045 Mark T-039 done in `TODO.md` with the result note; add a historical banner to no earlier
       spec (none is superseded)
-- [ ] T046 Run `yarn verify:full`; compare the "sheet JS and CSS" size with T001 against the D9
+- [x] T046 Run `yarn verify:full`; compare the "sheet JS and CSS" size with T001 against the D9
       budget (25 KB gzip) and record it in design.md (bundle review, Constitution VII); walk the
       steps in design.md "Manual walk"; record results in design.md
 

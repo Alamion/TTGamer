@@ -77,6 +77,10 @@ export interface ListBinding extends BindingBase {
     positiveTerm?: 'merit' | 'advantage';
     /** Translated list title (the plain `label` is the fallback). */
     translation?: TranslationDescriptor;
+    /** Trait lists: show the specialization/experienced/practiced flags (default true). */
+    flags?: boolean;
+    /** Trait lists: the name input's placeholder (default "Custom skill"). */
+    placeholder?: TranslationDescriptor;
 }
 
 /** Raw document-data entry for a new list item, shaped by the list's entry shape. */

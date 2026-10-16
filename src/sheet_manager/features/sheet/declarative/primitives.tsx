@@ -219,8 +219,8 @@ function TraitListBindingView({
                 onChange(items.map((item) => (item.id === id ? { ...item, label, value } : item)))
             }
             size="md"
-            showFlags
-            placeholder={placeholder}
+            showFlags={binding.flags ?? true}
+            placeholder={binding.placeholder ? translate(binding.placeholder) : placeholder}
             catalog={listCatalog(binding, locale)}
             onCatalogSelect={onCatalogSelect}
             onDiceRoll={traitDiceRoll}
