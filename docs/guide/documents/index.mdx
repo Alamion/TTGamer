@@ -6,6 +6,9 @@ sidebar_label: Documents window
 description: How to find, arrange, and manage your documents — folders, search, filters, sorting, moving, renaming, and undo, on a computer and on a phone.
 ---
 
+import { LayoutSketch } from '@site/src/sheet_manager/docsEmbeds';
+import { LiveDemo } from '@site/src/shared/components/LiveDemo';
+
 # Documents window \{#documents-window}
 
 :::tip[In short]
@@ -50,6 +53,12 @@ Search and filters are kept while you close and reopen the window in the same vi
 ## Several documents side by side \{#layout}
 
 The sheet is a layout of **groups**. Each group has a strip of **tabs**, and a tab is a document or a tool: the documents window, the [library](../template-editor/library), or the dice roller. Groups sit side by side and above one another, as in a code editor.
+
+Try it on a small example layout:
+
+<LiveDemo kind="sketch">
+    <LayoutSketch />
+</LiveDemo>
 
 - **Opening.** **Open** (or a double click) shows a document in place of the one you used last. **Open in new tab** adds it as a tab of that group, and **Open beside** puts it in a new group on the right, in its brief view when it has one. **Manage** and **Library** open as tabs at the left, the dice button at the right; each tool then opens where you last had it.
 - **Dragging.** Drag a tab along its strip to reorder it, onto another strip or the middle of another group to move it there, or onto the edge of a group to split that group: a highlight shows where it will land, and `Escape` cancels. A single document row of the documents window can be dragged onto the layout the same way. A tab dropped away from every group floats.

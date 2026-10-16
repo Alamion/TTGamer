@@ -95,6 +95,44 @@ export function ElementStorybook({ filter }: { filter?: 'handwritten' | 'bound' 
     );
 }
 
+/** One part of a story, by its top-level node id; undefined when either does not exist. */
+export function findStoryPart(storyId: string, nodeId: string): ElementStory | undefined {
+    const story = listElementStories().find(({ id }) => id === storyId);
+    const node = story?.template.children.find(({ id }) => id === nodeId);
+    return story && node
+        ? { ...story, template: { ...story.template, children: [node] } }
+        : undefined;
+}
+
+function StoryPart({ story }: { story: ElementStory }) {
+    const scratch = useStorySource(story.template.systemId, story.template.documentKind);
+    if (!scratch) return null;
+    return (
+        <div className="p-3">
+            <ScratchProvider scratch={scratch}>
+                <DeclarativeSheetView template={story.template} embedded />
+            </ScratchProvider>
+        </div>
+    );
+}
+
+/**
+ * One part of a storybook story for the template editor guide, on its own sandbox document: it
+ * can be tried, and nothing is stored. Labels are the storybook's (English).
+ */
+export function ElementExample({ story: storyId, node }: { story: string; node: string }) {
+    const story = useMemo(() => findStoryPart(storyId, node), [storyId, node]);
+    if (!story) {
+        reportSheetIssue({
+            code: 'template-reference-invalid',
+            message: 'Guide element example references a story part that does not exist',
+            details: { story: storyId, node },
+        });
+        return null;
+    }
+    return <StoryPart story={story} />;
+}
+
 /** The documentation help link in its three states: site page, external page, rejected. */
 export function DocsLinkVariants() {
     const variants = [

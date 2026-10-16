@@ -4,3 +4,6 @@ live:
 example:
     label: Example
     caption: Drawn by the real interface from example data; nothing here is saved.
+sketch:
+    label: Sketch
+    caption: A simple model that moves tabs the way the sheet does; your own layout is not touched.

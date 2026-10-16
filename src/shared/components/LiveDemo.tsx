@@ -7,14 +7,15 @@ const messages = uiMessages.shared.liveDemo;
 
 /**
  * A frame for real interface shown on a documentation page: `live` parts act on the reader's
- * own data (the dice panel), `example` parts show a fixed document that nothing writes to.
+ * own data (the dice panel), `example` parts show a fixed document that nothing writes to, and
+ * `sketch` parts are simple models of a control (the layout).
  */
 export function LiveDemo({
     kind = 'live',
     className,
     children,
 }: {
-    kind?: 'live' | 'example';
+    kind?: 'live' | 'example' | 'sketch';
     className?: string;
     children: ReactNode;
 }) {

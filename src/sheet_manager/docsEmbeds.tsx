@@ -9,10 +9,12 @@ import { reportSheetIssue } from './diagnostics';
 import { CatalogBrowser } from './features/docs/CatalogBrowser';
 import {
     DocsLinkVariants,
+    ElementExample,
     ElementStorybook,
     ReferenceEntryVariants,
     TrackerParity,
 } from './features/docs/ElementStorybook';
+import { LayoutSketch } from './features/docs/LayoutSketch';
 import { LibraryStorybook } from './features/docs/LibraryStorybook';
 import { CATALOG_BINDINGS } from './features/sheet/data/catalogBindings';
 import { DeclarativeSheetView } from './features/sheet/declarative/DeclarativeSheetView';
@@ -226,7 +228,9 @@ export {
     CatalogBrowser,
     CreateCharacterButton,
     DocsLinkVariants,
+    ElementExample,
     ElementStorybook,
+    LayoutSketch,
     LibraryStorybook,
     PolicyStatement,
     ReferenceEntryVariants,

@@ -14,6 +14,7 @@ import {
     vehicleDamagePreviewDocument,
     ViewsPreview,
 } from '@site/src/sheet_manager/docsEmbeds';
+import { findStoryPart } from '@site/src/sheet_manager/features/docs/ElementStorybook';
 import { useDocumentStore } from '@site/src/sheet_manager/store/documentStore';
 import { systemRegistry } from '@site/src/sheet_manager/systems';
 import { createDefaultStarWarsCharacterData } from '@site/src/sheet_manager/systems/star-wars-wod';
@@ -75,6 +76,19 @@ describe('documentation template embeds', () => {
                     STAR_WARS_EXAMPLE_IDS,
                     `${path.relative(ROOT, file)}: ${match[0]}`
                 ).toContain(match[1]);
+            }
+        }
+    });
+
+    it('shows only storybook parts that exist (en + ru)', () => {
+        for (const file of DOC_ROOTS.flatMap(mdxFiles)) {
+            for (const match of readFileSync(file, 'utf8').matchAll(
+                /<ElementExample story="([^"]+)" node="([^"]+)"/g
+            )) {
+                expect(
+                    findStoryPart(match[1]!, match[2]!),
+                    `${path.relative(ROOT, file)}: ${match[0]}`
+                ).toBeDefined();
             }
         }
     });

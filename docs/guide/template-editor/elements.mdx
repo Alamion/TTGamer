@@ -4,6 +4,9 @@ title: Elements
 description: Groups (sections and cards), fields, lists (entries and tables), and trackers — what each element does and the settings it takes.
 ---
 
+import { ElementExample } from '@site/src/sheet_manager/docsEmbeds';
+import { LiveDemo } from '@site/src/shared/components/LiveDemo';
+
 # Elements
 
 :::tip[In short]
@@ -24,11 +27,19 @@ A **Group** holds other elements, as a **Section** or a **Card**. A **List** hol
 
 A section is a large block with a heading and a colored bar. Readers fold and unfold it; **Starts collapsed** keeps it folded until the reader opens it once (the choice is then remembered). Neighbouring sections alternate the bar's color by themselves.
 
+<LiveDemo kind="example">
+    <ElementExample story="containers" node="section-external-link" />
+</LiveDemo>
+
 ## Cards \{#groups}
 
 A card is a titled box inside a page or section. **Show title** hides the heading while keeping the card; **Collapsible** lets readers fold it (only with a visible title).
 
 **Brief look** draws the card for brief pages: no box, a small heading over a line, and columns that follow the width of the area the page is drawn in (a phone, a window beside others, a full screen) instead of the browser window. Cells placed in columns stay three across down to a narrow area, then fold into one column.
+
+<LiveDemo kind="example">
+    <ElementExample story="containers" node="section-groups" />
+</LiveDemo>
 
 ## Documentation link \{#documentation-link}
 
@@ -39,9 +50,17 @@ Sections and cards take a **Documentation link**: a **?** next to the heading op
 
 Anything else — an address without `/docs/`, `http://`, or another scheme — is listed as an issue and is not shown on the page.
 
+<LiveDemo kind="example">
+    <ElementExample story="containers" node="section-site-link" />
+</LiveDemo>
+
 ## Columns \{#columns}
 
 Pages, sections, and cards lay out their elements in 1 to 4 **Columns**. With **Equal column widths** off, each column gets a width: widths are proportional, so 2 and 1 make the first column twice as wide. Without pinned elements, elements fill the columns in order. **Column in parent** pins an element to one column; once any element of a container is pinned, the elements left on **Auto** stack in the first column. **Spans columns** stretches an element over 2 to 4 columns — a wide field beside a narrow one, or a full-width row; spans work while no element of the container is pinned. On a phone every container shows one column. An empty column shows a drop zone in the editor.
+
+<LiveDemo kind="example">
+    <ElementExample story="containers" node="section-widths" />
+</LiveDemo>
 
 ## Fields \{#fields}
 
@@ -60,6 +79,10 @@ A field holds one value. Its **Label** is shown next to it (**Show label** hides
 | **Document reference** | Links to other documents of the allowed types; readers open them from the field; see [Document references](#references).                                                                                 |
 | **Tracker**            | Boxes the reader marks by level, for health, stress, or any other burden; see [Trackers](#trackers).                                                                                                     |
 
+<LiveDemo kind="example">
+    <ElementExample story="fields" node="section-text" />
+</LiveDemo>
+
 ## Ratings \{#rating}
 
 A rating reads like an attribute row on the shipped sheets: the label on the left, the dots on the right. **Presentation** chooses **Dots** (one dot per point) or **Number** (a number box). Templates saved with the older "boxes" presentation open as dots and keep their values.
@@ -75,6 +98,10 @@ A rating reads like an attribute row on the shipped sheets: the label on the lef
 
 Formulas and display conditions read the rating's number; its text and flags do not change it. Ratings with the same [shared value key](./values.mdx#shared-value-key) share the number, the text, and the flags.
 
+<LiveDemo kind="example">
+    <ElementExample story="fields" node="section-numbers" />
+</LiveDemo>
+
 ## Document references \{#references}
 
 **Allowed document kinds** lists the kinds of the page's own setting, each once: the setting's own kinds (a Hunter page offers the hunter), the ruleset's shared kinds (the V5 mortal), and the kinds you created in that setting or for the whole ruleset. Kinds of other games and of your other settings are not offered, even when they have the same name. When two offered kinds would read the same, the setting is added to the name; your own kind of the same name in the same setting is marked "(yours)". A new reference points at the page's own kind.
@@ -85,11 +112,19 @@ On the sheet, the search offers the reader's documents of those kinds from the s
 - A document that was deleted shows "Linked document no longer exists" until the reader removes it.
 - A kind the setting no longer has (a deleted type, or one from another setting) stays checked and is marked "(unavailable)", and the template's problems list names it. Uncheck it to drop it; the last kind cannot be unchecked.
 
+<LiveDemo kind="example">
+    <ElementExample story="fields" node="section-derived" />
+</LiveDemo>
+
 ## Tables \{#tables}
 
 A table is a list of rows with the same columns; every column is a field. **Min rows** and **Max rows** bound how many rows readers can add. Reorder the columns with their grip or their up and down arrows: filled values stay with their column.
 
 On the sheet, readers reorder rows and entries of tables and lists: drag a row by its grip, use its up and down arrows, or press `Alt+↑` / `Alt+↓` in the row. The new order is saved with the document. Read-only documents show no move controls.
+
+<LiveDemo kind="example">
+    <ElementExample story="collections" node="table" />
+</LiveDemo>
 
 ## Lists \{#lists}
 
@@ -102,6 +137,10 @@ A list with its own entries sets up one **Entry**: pick its type — text, numbe
 - Each entry has its own remove button: at the end of the row, or above a block such as a picture or several lines of text.
 
 Changing the entry type or turning names off can hide values readers already stored. **Save** then lists how many values or names each list would stop showing and asks first. The values stay stored: changing the entry back shows them again, except for entries edited in between.
+
+<LiveDemo kind="example">
+    <ElementExample story="list-entries" node="section-entries" />
+</LiveDemo>
 
 ## Trackers \{#trackers}
 
@@ -121,6 +160,10 @@ A tracker is a set of levels (such as Bruised … Incapacitated) with boxes the 
 Removing levels, marks, columns, or copies can hide marks and notes readers already stored. **Save** then says how many each tracker would stop showing and asks first. The values stay stored, but a removed part added again is a new part, so they do not show again.
 
 A tracker cannot be a table column or a list entry: its copies already repeat it.
+
+<LiveDemo kind="example">
+    <ElementExample story="trackers" node="section-tracker-displays" />
+</LiveDemo>
 
 ### Built-in trackers \{#built-in-trackers}
 
