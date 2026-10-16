@@ -1,5 +1,31 @@
 # Changelog
 
+## v3.28.0
+
+### Minor feat
+
+- **Several documents side by side (specs 034 and 036, T-112, T-117)**: the sheet is now a layout of groups, as in a code editor. Each group has its own tabs; **Open beside** puts a document in a new group (in its brief view when it has one) and **Open in new tab** adds it to the group you used last. Drag a tab along its strip to reorder it, onto another group to move it, or near a group's edge to split it in any direction, for example three briefs over three more; a highlight shows where it lands and `Escape` cancels. A single row of the documents window can be dragged onto the layout the same way. Up to twelve documents and six groups stay open; each group has its own view selector, and a double click on a tab gives its group the whole screen
+- **Tools in the layout (spec 036, T-113)**: the documents window, the library, and the dice roller open as tabs of the layout and can float above it as windows (up to four, the last one clicked in front). A floating window docks again by dragging its title bar onto a strip or a square of the dock compass in the middle of a group, or with **Dock**; each tool reopens where you last had it
+- **Layouts that fit the window (spec 036)**: dividers between groups move with the mouse or the arrow keys; dragging one well past a group's edge, or `Enter` on it, folds the group to a thin strip that opens again with a click. When the window is too small, groups of tools fold by themselves, so tools stay reachable on narrow screens
+- **Keyboard for the layout (spec 036)**: `Shift+F10` or the Menu key on a tab opens its menu: move left or right, move to the next group, split right or down, float, show only this group, close. A floating window's title bar moves it with the arrows and resizes it with `Shift` and the arrows
+- **Phones (spec 036)**: a phone shows one document at a time with a strip of every open document, and tools open over the whole screen; when the window is wide again, the layout comes back as it was
+- **The layout is remembered (specs 034 and 036)**: groups, tabs, tool places, and floating windows are kept on this device (not in documents or exports), and the side-by-side panes of the earlier version move over on the first start. Rolls name the character of the document they came from, and the dice roller follows the document you last clicked or typed in
+- **Select, then open (T-116)**: in the documents window a click selects a document and shows its details; a double click or `Enter` opens it
+- **A site guide with live examples**: everything about using the site now lives under **Site guide** (the old addresses redirect), with two new pages, **Character sheet** and **Dice roller**. The guide shows the real interface where it can: the dice panel itself, notation examples that roll in place and show every die (kept, dropped, successes, botches, explosions), a notation field with the panel's own check, an example hunter switching between full sheet and brief, the game-terms menu over a sheet, a sample shared post, a small layout to drag tabs around, and a sandbox of every template element. The ⓘ of a notation error now opens this guide in your language
+
+### Fix
+
+- **Dice with listed faces in 3D**: `d[2,4,6]` no longer rolls as an ordinary d6 when 3D dice are on; dice with listed faces roll without animation
+- **Reset**: also empties the fields of your own pages, not only the system's values
+- **3D roll buttons**: the accept and cancel buttons over rolling dice are translated and named for screen readers
+- **A computed maximum that cannot be computed**: a number or rating whose maximum comes from an empty value now says which value it lacks instead of an empty name
+- **The publisher badge**: it is shown once per surface: under a single document, at the end of the toolbar when several groups fill the screen, and at the foot of a floating window, never in the middle of another tool
+- **The Russian brief** is called «Краткий лист» in every system
+
+### Chore
+
+- **Layout tests in the browser (spec 036)**: restoring and migrating the layout are checked in a real browser, with timings for opening beside, moving tabs, and dragging dividers and windows on 3,000 documents. "Open beside" runs about 200–250 ms on a full run, slightly over its 200 ms budget; it is reported, not failing
+
 ## v3.27.0
 
 ### Minor feat
