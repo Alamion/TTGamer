@@ -239,3 +239,75 @@ describe('the sheet restores the layout', () => {
         act(() => undefined);
     });
 });
+
+describe('a whole layout comes back (spec 036, US7)', () => {
+    const rect = (x: number) => ({ x, y: 80, width: 520, height: 420 });
+    const rich = (extraTab?: string): LayoutState => ({
+        root: {
+            type: 'split',
+            direction: 'column',
+            children: [
+                {
+                    type: 'split',
+                    direction: 'row',
+                    children: [
+                        group('A', ['d:Ana', 't:library']),
+                        group('B', ['d:Bruno', ...(extraTab ? [extraTab] : [])]),
+                    ],
+                    weights: [0.6, 1.4],
+                },
+                {
+                    type: 'split',
+                    direction: 'row',
+                    children: [
+                        { ...group('C', ['d:Cleo']), collapsed: true },
+                        group('D', ['t:dice']),
+                    ],
+                    weights: [1, 1],
+                },
+            ],
+            weights: [1.2, 0.8],
+        },
+        recent: ['d:Bruno', 'd:Ana', 't:dice', 'd:Cleo', 't:library', 'd:Dora', 't:documents'],
+        views: { Bruno: 'v5-hunter-brief' },
+        maximized: 'B',
+        floating: [
+            { key: 'd:Dora', rect: rect(200) },
+            { key: 't:documents', rect: rect(400) },
+        ],
+        lastRect: { 't:documents': rect(400) },
+        lastSide: { 't:library': 'left', 't:dice': 'right', 't:documents': 'left' },
+    });
+    const kept = (state: LayoutState) => ({
+        root: state.root,
+        recent: state.recent,
+        views: state.views,
+        maximized: state.maximized,
+        floating: state.floating,
+        lastRect: state.lastRect,
+        lastSide: state.lastSide,
+    });
+
+    it('rows, tools, windows, a collapsed group, views, and the maximized group', async () => {
+        seedDocuments(['Ana', 'Bruno', 'Cleo', 'Dora'], { current: 'Bruno' });
+        // A tab of a document deleted since is dropped quietly.
+        localStorage.setItem(
+            PANES_STORAGE_KEY,
+            JSON.stringify({ state: rich('d:Gone'), version: 2 })
+        );
+        await usePaneStore.persist.rehydrate();
+        render(createElement(CharacterSheet));
+        await waitFor(() => expect(kept(usePaneStore.getState())).toEqual(kept(rich())));
+        expect(screen.getByRole('dialog', { name: 'Dora' })).toBeTruthy();
+        expect(screen.getByRole('dialog', { name: 'Documents' })).toBeTruthy();
+        expect(takeSheetIssues()).toEqual([]);
+
+        cleanup();
+        await usePaneStore.persist.rehydrate();
+        render(createElement(CharacterSheet));
+        await waitFor(() => expect(screen.getByRole('dialog', { name: 'Dora' })).toBeTruthy());
+        expect(kept(usePaneStore.getState())).toEqual(kept(rich()));
+        expect(useDocumentStore.getState().currentDocumentId).toBe('Bruno');
+        expect(takeSheetIssues()).toEqual([]);
+    });
+});

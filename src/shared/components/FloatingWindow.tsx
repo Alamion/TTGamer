@@ -51,6 +51,8 @@ export interface FloatingWindowProps {
     onDragMove?: (point: { x: number; y: number }) => void;
     /** The title bar was let go here; `true` when the owner took the window (it is not stored). */
     onDragEnd?: (point: { x: number; y: number }) => boolean;
+    /** Takes focus when it opens (default); off for a window restored with the page. */
+    focusOnOpen?: boolean;
 }
 
 const KEY_STEP = 10;
@@ -106,6 +108,7 @@ export function FloatingWindow({
     moveLabel,
     onDragMove,
     onDragEnd,
+    focusOnOpen = true,
 }: FloatingWindowProps) {
     const titleId = useId();
     const narrow = useMediaQuery('(max-width: 767px)');
@@ -144,7 +147,9 @@ export function FloatingWindow({
     }, []);
 
     useEffect(() => {
-        if (open) frame.current?.focus({ preventScroll: true });
+        if (open && focusOnOpen) frame.current?.focus({ preventScroll: true });
+        // Only opening moves focus, not a later change of the option.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open]);
 
     // On a phone the window is a modal sheet: the page behind it must not scroll.

@@ -236,6 +236,17 @@ restore at the browser level → **Finish**.
       strip (found by the new browser test).
     - Tests make a window width with `windowWidth` (media queries and listeners); happy-dom's
       `ResizeObserver` never fires, so the widening test measures on window resizes.
+- **US7** (the tests found two defects):
+    - Every floating window took focus as it mounted, and focus raises a window, so a reload
+      reordered the stack and moved focus into a restored window. Now only the window the reader
+      just opened (`freshWindow`: floated, or a tool opened with no document) takes focus
+      (`FloatingWindow`'s `focusOnOpen`).
+    - The layout filled the window but the publisher notices below it still made the page scroll by
+      their height. The fill height now leaves room for what the page lays out below the area
+      (`flowBelow`), so a 3 × 2 grid at 1920 × 1080 shows whole with no page scroll (SC-002).
+    - Browser checks: the four-part layout takes 3 actions (SC-001), the 3 × 2 grid 8 (SC-002), a
+      spec 034 arrangement keeps its widths (SC-003). Timings with 3,000 documents: show a hidden
+      tab 85 ms, move a tab 181 ms, longest frame 17 ms (divider) and 33 ms (window) (SC-006).
 - **Dock compass (maintainer's walk after US4)**: a floating window docked on whatever group was
   under its title bar, so with several groups it could hardly be moved without docking. Now, while
   it is dragged, a compass of five 36 px squares shows in the middle of the group's page (the

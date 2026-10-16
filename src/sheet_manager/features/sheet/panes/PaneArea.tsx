@@ -69,9 +69,30 @@ const pixels = (rect: Rect) => ({
     height: `${rect.height}px`,
 });
 
+/** The height the page lays out below the element: later siblings and closing padding, upwards. */
+function flowBelow(node: HTMLElement): number {
+    const px = (value: string) => Number.parseFloat(value) || 0;
+    let total = 0;
+    for (let at: Element | null = node; at && at !== document.body; at = at.parentElement) {
+        for (let next = at.nextElementSibling; next; next = next.nextElementSibling) {
+            const style = getComputedStyle(next);
+            if (style.position === 'absolute' || style.position === 'fixed') continue;
+            total +=
+                (next as HTMLElement).offsetHeight + px(style.marginTop) + px(style.marginBottom);
+        }
+        const parent = at.parentElement;
+        if (parent && parent !== document.body) {
+            const style = getComputedStyle(parent);
+            total += px(style.paddingBottom) + px(style.borderBottomWidth);
+        }
+    }
+    return total;
+}
+
 /**
- * The height from the element's top to the bottom of the window, at the page's top (spec 036,
- * FR-007): the layout fills the window below the toolbar and each group scrolls its own page.
+ * The height from the element's top to the bottom of the window, at the page's top, less what the
+ * page shows below it (the publisher notices): the layout fills the window below the toolbar,
+ * each group scrolls its own page, and the page itself does not scroll (spec 036, FR-007).
  */
 function useFillHeight(node: HTMLElement | null): number {
     const [height, setHeight] = useState(MIN_GROUP_HEIGHT * 2);
@@ -79,7 +100,8 @@ function useFillHeight(node: HTMLElement | null): number {
         if (!node) return;
         const measure = () => {
             const top = node.getBoundingClientRect().top + window.scrollY;
-            setHeight(Math.max(MIN_GROUP_HEIGHT * 2, Math.round(window.innerHeight - top)));
+            const below = flowBelow(node);
+            setHeight(Math.max(MIN_GROUP_HEIGHT * 2, Math.round(window.innerHeight - top - below)));
         };
         measure();
         window.addEventListener('resize', measure);

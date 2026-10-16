@@ -3,9 +3,9 @@ import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/Character
 import { groupsInOrder } from '@site/src/sheet_manager/features/sheet/panes/layoutTree';
 import {
     moveTab,
-    openBeside,
     openInNewTab,
     openTool,
+    raise,
     usePaneStore,
 } from '@site/src/sheet_manager/features/sheet/panes/paneStore';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
@@ -109,7 +109,8 @@ describe('tools in the layout (spec 036, US3)', () => {
             );
         }
         expect(floatingKeys()).toHaveLength(4);
-        act(() => void openBeside('Ana'));
+        // With a floating document current, Ana's group shows its strip.
+        act(() => raise('d:Cleo'));
         fireEvent.keyDown(tab('Ana'), { key: 'F10', shiftKey: true });
         const float = within(screen.getByRole('menu')).getByRole('menuitem', { name: 'Float' });
         expect(float.getAttribute('aria-disabled')).toBe('true');

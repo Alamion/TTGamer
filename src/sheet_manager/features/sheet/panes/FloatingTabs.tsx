@@ -80,6 +80,9 @@ export function FloatingTabs({
     const floating = usePaneStore((state) => state.floating);
     const views = usePaneStore((state) => state.views);
     const shownTool = usePaneStore((state) => state.shownTool);
+    // Only the window just opened takes focus: restored ones keep the page's focus and their
+    // place in the stack (spec 036, US7).
+    const freshWindow = usePaneStore((state) => state.freshWindow);
 
     if (phone) {
         const kind = shownTool ? tabKindOf(shownTool) : undefined;
@@ -114,6 +117,7 @@ export function FloatingTabs({
                 layout={rect}
                 onLayoutChange={(next) => setFloatingRect(key, next)}
                 zIndex={900 + index}
+                focusOnOpen={key === freshWindow}
                 onFocus={() => raise(key)}
                 moveLabel={translate(labels.moveWindow, { name: title })}
                 onDragMove={(point) => {

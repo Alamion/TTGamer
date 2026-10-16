@@ -226,17 +226,17 @@ dice panel on a documentation page.
 
 ## User Story 7 - The layout is remembered; spec 034 panes carry over (P7)
 
-- [ ] T048 [US7] Extend `tests/sheet_manager/pane-restore.test.tsx`: a two-row layout with tools,
+- [x] T048 [US7] Extend `tests/sheet_manager/pane-restore.test.tsx`: a two-row layout with tools,
       floating windows, a collapsed group, views, and maximized survives a remount; a deleted
       document is dropped quietly (no diagnostics)
-- [ ] T049 [US7] Extend `tests-e2e/smoke/panes.spec.ts`: the four-part layout from a first visit in
+- [x] T049 [US7] Extend `tests-e2e/smoke/panes.spec.ts`: the four-part layout from a first visit in
       at most 8 actions (SC-001); a 3 × 2 grid by opening and floating the documents window, then
       dragging rows, in at most 12 actions, all groups at least 320 × 200 without page scroll
       (SC-002); reload restores it; a seeded `ttgamer:panes:v1` of three panes loads as three groups
       with widths within 1 % (SC-003)
-- [ ] T050 [US7] Extend `tests-e2e/timings/panes.spec.ts` with 3,000 documents: show a hidden tab,
+- [x] T050 [US7] Extend `tests-e2e/timings/panes.spec.ts` with 3,000 documents: show a hidden tab,
       move a tab, and the longest frame of a window and a divider drag (SC-006, reported)
-- [ ] T051 [US7] Fix what the tests find; run `yarn verify`; commit
+- [x] T051 [US7] Fix what the tests find; run `yarn verify`; commit
       `test(sheet): layout restore, migration, and timings in the browser (spec 036, US7)`
 
 ## Finish

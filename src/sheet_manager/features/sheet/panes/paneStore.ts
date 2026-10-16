@@ -113,6 +113,8 @@ export interface PaneState extends LayoutState {
     dockCompass: { groupId: string; sides: SplitSide[] } | null;
     /** A floating window is being dragged by its title bar. */
     windowDrag: boolean;
+    /** The window the reader just opened: it takes focus; windows restored with the page do not. */
+    freshWindow: TabKey | null;
 }
 
 export const usePaneStore = create<PaneState>()(
@@ -123,6 +125,7 @@ export const usePaneStore = create<PaneState>()(
             dockHint: null,
             dockCompass: null,
             windowDrag: false,
+            freshWindow: null,
         }),
         {
             name: PANES_STORAGE_KEY,
@@ -481,6 +484,7 @@ export function openTool(toolId: ToolId): void {
             floating: [...state.floating.filter((entry) => entry.key !== key), { key, rect }],
             recent: [key, ...state.recent],
             shownTool: overPage(key),
+            freshWindow: key,
         });
         return;
     }
@@ -522,6 +526,7 @@ export function floatTab(key: TabKey, at?: { x: number; y: number }): boolean {
         recent: [key, ...state.recent.filter((candidate) => candidate !== key)],
         lastSide: isTool(key) && side ? { ...state.lastSide, [key]: side } : state.lastSide,
         maximized: null,
+        freshWindow: key,
     });
     return true;
 }
