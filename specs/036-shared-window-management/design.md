@@ -247,6 +247,12 @@ restore at the browser level → **Finish**.
     - Browser checks: the four-part layout takes 3 actions (SC-001), the 3 × 2 grid 8 (SC-002), a
       spec 034 arrangement keeps its widths (SC-003). Timings with 3,000 documents: show a hidden
       tab 85 ms, move a tab 181 ms, longest frame 17 ms (divider) and 33 ms (window) (SC-006).
+- **Publisher badge (maintainer's walk after US7)**: the badge followed the current document and sat
+  under the layout, so groups filling the window pushed it below the fold, and a floating V5
+  document's badge appeared under a tool shown in the page. Now the layout places it once per
+  surface for the documents that surface shows: under the page while one document scrolls with it
+  (as before), at the end of the toolbar over groups that fill the window, and at the foot of each
+  floating document's window (constitution VIII: once, prominent, on the surface with the material).
 - **Dock compass (maintainer's walk after US4)**: a floating window docked on whatever group was
   under its title bar, so with several groups it could hardly be moved without docking. Now, while
   it is dragged, a compass of five 36 px squares shows in the middle of the group's page (the

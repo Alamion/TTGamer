@@ -12,6 +12,8 @@ interface SheetToolbarProps {
     onReset: () => void;
     onManageTemplates: () => void;
     viewMode?: React.ReactNode;
+    /** The end of the toolbar, where the publisher badges of a layout of groups go. */
+    end?: React.ReactNode;
 }
 
 const buttonBase =
@@ -29,6 +31,7 @@ export function SheetToolbar({
     onReset,
     onManageTemplates,
     viewMode,
+    end,
 }: SheetToolbarProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -97,6 +100,7 @@ export function SheetToolbar({
                 <Translate id="ttgamer.ui.sheet.documents.toolbar.new" />
             </button>
             {viewMode}
+            {end}
             <input
                 ref={fileInputRef}
                 type="file"

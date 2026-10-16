@@ -5,6 +5,7 @@ import { useMediaQuery } from '@site/src/shared/hooks/useMediaQuery';
 import { PanelTop } from 'lucide-react';
 import type { ReactNode } from 'react';
 
+import type { BadgePlace } from '../shell/PolicyNotice';
 import { compassAt, type DropTarget, gapAt } from './dropTargets';
 import type { SplitSide } from './layoutTree';
 import { Pane } from './Pane';
@@ -69,9 +70,12 @@ function dockPlaceAt(point: { x: number; y: number }, key: string): DockPlace {
  * floats: the tool the reader opened fills the screen instead, and closing it keeps its place.
  */
 export function FloatingTabs({
+    notices,
     renderDocument,
     titleOf,
 }: {
+    /** The publisher badges of a document, at the foot of its window. */
+    notices: (documentIds: readonly string[], place: BadgePlace) => ReactNode;
     renderDocument: (documentId: string, viewId?: string) => ReactNode;
     titleOf: (key: string) => string;
 }) {
@@ -148,13 +152,16 @@ export function FloatingTabs({
                 }
             >
                 {id ? (
-                    <Pane
-                        documentId={id}
-                        fill
-                        render={renderDocument}
-                        unreadable={false}
-                        view={views[id]}
-                    />
+                    <>
+                        <Pane
+                            documentId={id}
+                            fill
+                            render={renderDocument}
+                            unreadable={false}
+                            view={views[id]}
+                        />
+                        {notices([id], 'window')}
+                    </>
                 ) : (
                     kind!.render({ onClose: close })
                 )}

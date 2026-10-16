@@ -30,7 +30,7 @@ import { documentIdOf, tabKindOf } from '../panes/tabKeys';
 import { exportFileName, serializeDocumentExport } from './documentFile';
 import { GameTermsMenu, TermHintNotice } from './GameTermsMenu';
 import { type BatchSummary, type ConflictAnswer, runImportBatch } from './importBatch';
-import { PolicyBadges } from './PolicyNotice';
+import { type BadgePlace, PolicyBadges } from './PolicyNotice';
 import { SheetToolbar } from './SheetToolbar';
 import { selectableViews, templateSelectValue, ViewModeSelect } from './ViewModeSelect';
 
@@ -58,6 +58,20 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
         (state) => openKeys(state).filter((key) => documentIdOf(key) !== null).length > 1
     );
     const currentDocument = documents.find(({ id }) => id === currentDocumentId) ?? null;
+    const [noticeSlot, setNoticeSlot] = useState<HTMLElement | null>(null);
+    /**
+     * The publisher badges of the shown documents (constitution VIII), outside the template tree
+     * so no page template, shipped or custom, can remove them; the layout says where they go.
+     */
+    const notices = (ids: readonly string[], place: BadgePlace) => (
+        <PolicyBadges
+            place={place}
+            policies={ids.flatMap((id) => {
+                const document = documents.find((candidate) => candidate.id === id);
+                return document ? resolveDocumentPolicies(systemRegistry, document) : [];
+            })}
+        />
+    );
     useShownDocumentPublisher(currentDocument);
     const currentDefinition = currentDocument
         ? systemRegistry.getDocumentDefinition(
@@ -201,6 +215,7 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
                     onManage={() => openTool('documents')}
                     onReset={() => setResetDialogOpen(true)}
                     onManageTemplates={() => openTool('library')}
+                    end={<div ref={setNoticeSlot} className="contents" />}
                     viewMode={
                         currentDocument && currentDefinition && currentView ? (
                             <>
@@ -271,17 +286,19 @@ export function SheetWorkspace({ renderDocument }: SheetWorkspaceProps) {
             />
 
             {currentDocument ? (
-                <PaneArea documentId={currentDocument.id} renderDocument={renderDocument} />
+                <PaneArea
+                    documentId={currentDocument.id}
+                    renderDocument={renderDocument}
+                    notices={notices}
+                    toolbarSlot={noticeSlot}
+                />
             ) : (
                 // With no document there is no layout to dock in: the tools float.
                 <FloatingTabs
+                    notices={notices}
                     renderDocument={renderDocument}
                     titleOf={(key) => tabKindOf(key)?.title() ?? key}
                 />
-            )}
-            {/* Outside the template tree: no page template, shipped or custom, can remove it. */}
-            {currentDocument && (
-                <PolicyBadges policies={resolveDocumentPolicies(systemRegistry, currentDocument)} />
             )}
         </>
     );

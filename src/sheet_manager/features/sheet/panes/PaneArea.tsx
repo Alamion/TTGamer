@@ -5,10 +5,12 @@ import { useMediaQuery } from '@site/src/shared/hooks/useMediaQuery';
 import { useMeasuredElement } from '@site/src/shared/hooks/usePaneSizes';
 import { clsx } from 'clsx';
 import { type DragEvent, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 
 import { useDocumentStore } from '../../../store/documentStore';
 import { documentLabeler } from '../../documents/labeler';
+import type { BadgePlace } from '../shell/PolicyNotice';
 import { bodyTarget, documentIn, type DropTarget, edgeAt, useRowDragging } from './dropTargets';
 import { FloatingTabs } from './FloatingTabs';
 import { MIN_GROUP_HEIGHT, moveDivider, SIDE_BY_SIDE_WIDTH, weightsOf } from './layout';
@@ -110,6 +112,10 @@ function useFillHeight(node: HTMLElement | null): number {
     return height;
 }
 
+/** The documents among these tabs. */
+const documentIdsIn = (keys: readonly string[]) =>
+    keys.map(documentIdOf).filter((id): id is string => id !== null);
+
 /** The first group's shown tab inside a node: what a divider next to it is named after. */
 const shownOf = (node: LayoutNode) => groupsInOrder(node)[0]?.shown;
 
@@ -131,10 +137,19 @@ function childAt(root: LayoutNode | null, path: readonly number[]): LayoutNode |
  */
 export function PaneArea({
     documentId,
+    notices,
     renderDocument,
+    toolbarSlot,
 }: {
     documentId: string;
+    /**
+     * The publisher badges of these documents (constitution VIII), placed once per surface: under
+     * the page while one document scrolls with it, at the end of the toolbar (`toolbarSlot`) over
+     * groups that fill the window, at the foot of each floating document.
+     */
+    notices: (documentIds: readonly string[], place: BadgePlace) => ReactNode;
     renderDocument: (documentId: string, viewId?: string) => ReactNode;
+    toolbarSlot: HTMLElement | null;
 }) {
     const stored = usePaneStore();
     const entries = useDocumentStore((state) => state.entries);
@@ -251,7 +266,11 @@ export function PaneArea({
     }, [shownKey, loadIntoCache]);
 
     const floatingLayer = (
-        <FloatingTabs renderDocument={renderDocument} titleOf={(key: string) => titleOf(key)} />
+        <FloatingTabs
+            notices={notices}
+            renderDocument={renderDocument}
+            titleOf={(key: string) => titleOf(key)}
+        />
     );
 
     // Groups of tools give way to strips before the layout falls back to one tab at a time.
@@ -301,6 +320,7 @@ export function PaneArea({
                 <PaneSourceProvider documentId={documentId}>
                     {renderDocument(documentId)}
                 </PaneSourceProvider>
+                {notices([documentId], 'page')}
                 {(rowDragging || windowDrag) && area && (
                     // While a row or a window is dragged, a layer over the page takes it
                     // (floating windows stay above, so a row can be picked up there).
@@ -389,6 +409,7 @@ export function PaneArea({
                     end={viewSelect(selected)}
                 />
                 <div ref={areaRef}>{body(selected, false)}</div>
+                {notices(documentIdsIn([selected]), 'page')}
                 {floatingLayer}
             </div>
         );
@@ -449,6 +470,7 @@ export function PaneArea({
         return (
             <div ref={areaRef} className="px-4 pb-4 pt-3" data-panes="">
                 {group(groups[0]!, 1, false)}
+                {notices(documentIdsIn([groups[0]!.shown]), 'page')}
                 {tabMenu}
                 {announcer}
                 {floatingLayer}
@@ -592,6 +614,19 @@ export function PaneArea({
             {tabMenu}
             {announcer}
             {floatingLayer}
+            {toolbarSlot &&
+                createPortal(
+                    notices(
+                        documentIdsIn(
+                            placement.groups
+                                .map(({ id }) => findGroup(drawn, id)!)
+                                .filter((node) => !node.collapsed)
+                                .map((node) => node.shown)
+                        ),
+                        'toolbar'
+                    ),
+                    toolbarSlot
+                )}
         </div>
     );
 }

@@ -126,7 +126,10 @@ appropriate for layout/manager operations that explicitly manage the collection.
 - Publisher policies come from `systems/policies.ts` (the Dark Pack covers V5 material only; WoD 2e
   and Star Wars declare none); `SheetWorkspace` renders only the badge (`PolicyBadges`, linking to
   the policy's docs page) outside the template tree so no template can remove it, and exports carry
-  `notices`. The full text lives on one docs page.
+  `notices`. The full text lives on one docs page. The layout places the badge once per surface for
+  the documents it shows (`PaneArea`'s `notices`): under the page while one document scrolls with
+  it, at the end of the toolbar over groups that fill the window, at the foot of a floating
+  document's window.
 - Dice mechanics belong to the ruleset (`SystemPlugin.dice`): `traitPool` builds a stat's notation
   (a plugin without it shows no stat dice button; Star Wars declares the classic
   `systems/wod-like/dicePool.ts`, V5 its own 6+ pool), and an optional `reading` (V5:

@@ -1,4 +1,5 @@
 // @vitest-environment happy-dom
+import { useDiceRollerStore } from '@site/src/dice_roller/store/diceRollerStore';
 import { CharacterSheet } from '@site/src/sheet_manager/features/sheet/CharacterSheet';
 import {
     groupsInOrder,
@@ -38,6 +39,8 @@ afterEach(() => {
     vi.restoreAllMocks();
     cleanup();
     resetDocuments();
+    // An open dice panel would open its tab again on the next sheet.
+    useDiceRollerStore.setState({ panelOpen: false });
 });
 
 describe('groups side by side (spec 036, Foundation)', () => {
@@ -311,5 +314,42 @@ describe('phones and narrow windows (spec 036, US6)', () => {
         expect(screen.getByRole('dialog', { name: 'Cleo' })).toBeTruthy();
         const { root } = usePaneStore.getState();
         expect((root as SplitNode).weights).toEqual([2, 1, 1]);
+    });
+});
+
+describe('where the publisher badge goes (constitution VIII, spec 036)', () => {
+    const badges = () =>
+        screen
+            .queryAllByRole('complementary', { name: 'Publisher notice' })
+            .map((badge) => badge.dataset.badgePlace);
+
+    it('under the one document, as before', async () => {
+        vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1280);
+        resetLayout();
+        seedDocuments(['Ana'], { current: 'Ana' });
+        render(createElement(CharacterSheet));
+        expect(badges()).toEqual(['page']);
+    });
+
+    it('once at the end of the toolbar over groups that fill the window', async () => {
+        await open(['Ana', 'Bruno'], 1280);
+        expect(badges()).toEqual(['toolbar']);
+    });
+
+    it('at the foot of a floating document, not under a tool shown in the page', async () => {
+        vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1280);
+        resetLayout();
+        seedDocuments(['Ana'], { current: 'Ana' });
+        usePaneStore.setState({
+            root: { type: 'group', id: 'T', tabs: ['t:dice'], shown: 't:dice' },
+            recent: ['d:Ana'],
+            floating: [{ key: 'd:Ana', rect: { x: 40, y: 40, width: 600, height: 500 } }],
+        });
+        render(createElement(CharacterSheet));
+        const window = await screen.findByRole('dialog', { name: 'Ana' });
+        expect(badges()).toEqual(['window']);
+        expect(
+            within(window).getByRole('complementary', { name: 'Publisher notice' })
+        ).toBeTruthy();
     });
 });
