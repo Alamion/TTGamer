@@ -29,7 +29,7 @@ import {
     type SplitSide,
 } from './layoutTree';
 import { Pane } from './Pane';
-import { DropOverlay, MaximizeButton, PaneGroup } from './PaneGroup';
+import { DockCompass, DropOverlay, MaximizeButton, PaneGroup } from './PaneGroup';
 import { tabId } from './paneIds';
 import { PaneSourceProvider } from './PaneSourceProvider';
 import {
@@ -129,6 +129,8 @@ export function PaneArea({
     );
     const [announcement, setAnnouncement] = useState('');
     const dockHint = usePaneStore((state) => state.dockHint);
+    const dockCompass = usePaneStore((state) => state.dockCompass);
+    const windowDrag = usePaneStore((state) => state.windowDrag);
     const rowDragging = useRowDragging();
     useTabKinds();
 
@@ -264,6 +266,8 @@ export function PaneArea({
     };
     const targetOf = (groupId: string) =>
         [dockHint, drag.target].find((hint) => hint?.groupId === groupId) ?? null;
+    const compassOf = (groupId: string) =>
+        dockCompass?.groupId === groupId ? dockCompass.sides : null;
 
     const only = groups.length === 1 && groups[0]!.tabs.length === 1 ? groups[0]! : null;
     if (only?.shown === currentKey) {
@@ -275,9 +279,9 @@ export function PaneArea({
                 <PaneSourceProvider documentId={documentId}>
                     {renderDocument(documentId)}
                 </PaneSourceProvider>
-                {rowDragging && area && (
-                    // While a row is dragged, a layer over the page takes it (floating windows
-                    // stay above, so the row can be picked up there).
+                {(rowDragging || windowDrag) && area && (
+                    // While a row or a window is dragged, a layer over the page takes it
+                    // (floating windows stay above, so a row can be picked up there).
                     <div
                         data-group-body={only.id}
                         className="fixed bottom-0 z-[800]"
@@ -291,6 +295,9 @@ export function PaneArea({
                         onDragLeave={drag.clear}
                     >
                         <DropOverlay target={targetOf(only.id)} />
+                        {compassOf(only.id) && (
+                            <DockCompass sides={compassOf(only.id)!} target={targetOf(only.id)} />
+                        )}
                     </div>
                 )}
                 {floatingLayer}
@@ -376,6 +383,7 @@ export function PaneArea({
             onMenu={(key, anchor) => setMenu({ key, anchor })}
             drag={coarse ? null : drag}
             target={targetOf(node.id)}
+            compass={compassOf(node.id)}
             bodyTarget={targetIn(node)}
             body={body(node.shown, fill)}
             end={

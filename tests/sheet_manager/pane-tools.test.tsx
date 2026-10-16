@@ -131,10 +131,20 @@ describe('tools in the layout (spec 036, US3)', () => {
         const page = screen.getByRole('region', { name: 'Bruno' }).parentElement!;
         document.elementsFromPoint = () => [page];
         const bar = windowOf('Dice Roller').querySelector<HTMLElement>('[data-window-titlebar]')!;
+        // Over a group's page the window only moves; the compass in its middle docks it.
         fireEvent.pointerDown(bar, { button: 0, pointerId: 1, clientX: 500, clientY: 100 });
         fireEvent.pointerMove(bar, { pointerId: 1, clientX: 10, clientY: 200 });
-        expect(groupFrameOf('Bruno').querySelector('[data-drop-overlay="left"]')).toBeTruthy();
+        expect(groupFrameOf('Bruno').querySelector('[data-dock-compass]')).toBeTruthy();
+        expect(groupFrameOf('Bruno').querySelector('[data-drop-overlay]')).toBeNull();
         fireEvent.pointerUp(bar, { pointerId: 1, clientX: 10, clientY: 200 });
+        expect(floatingKeys()).toEqual(['t:dice']);
+        expect(document.querySelector('[data-dock-compass]')).toBeNull();
+
+        // The page is a 400 px box: its compass is at 200, 200, the left square 40 px left.
+        fireEvent.pointerDown(bar, { button: 0, pointerId: 1, clientX: 500, clientY: 100 });
+        fireEvent.pointerMove(bar, { pointerId: 1, clientX: 160, clientY: 200 });
+        expect(groupFrameOf('Bruno').querySelector('[data-drop-overlay="left"]')).toBeTruthy();
+        fireEvent.pointerUp(bar, { pointerId: 1, clientX: 160, clientY: 200 });
         expect(floatingKeys()).toEqual([]);
         expect(tabsByGroup()).toEqual([['t:dice'], ['d:Ana', 'd:Bruno']]);
 

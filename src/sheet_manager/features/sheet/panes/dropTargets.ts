@@ -78,6 +78,45 @@ export function gapAt(tabs: readonly Pick<Box, 'left' | 'width'>[], x: number): 
     return index === -1 ? tabs.length : index;
 }
 
+/** The side of a dock compass square, and the gap between squares (spec 036, US3 follow-up). */
+export const COMPASS_SQUARE = 36;
+const COMPASS_STEP = COMPASS_SQUARE + 4;
+
+/** Where each square of a dock compass sits, from the middle of the group's page. */
+export const COMPASS_OFFSETS: Record<'middle' | SplitSide, { x: number; y: number }> = {
+    middle: { x: 0, y: 0 },
+    left: { x: -COMPASS_STEP, y: 0 },
+    right: { x: COMPASS_STEP, y: 0 },
+    top: { x: 0, y: -COMPASS_STEP },
+    bottom: { x: 0, y: COMPASS_STEP },
+};
+
+/**
+ * The square of the dock compass in the middle of `box` that the point is on: the middle, or a
+ * side the group may split on (`sides`). A floating window docks only there, so it can be moved
+ * over the groups freely.
+ */
+export function compassAt(
+    box: Box,
+    x: number,
+    y: number,
+    sides: readonly SplitSide[]
+): 'middle' | SplitSide | null {
+    const centerX = box.left + box.width / 2;
+    const centerY = box.top + box.height / 2;
+    const half = COMPASS_SQUARE / 2;
+    for (const place of ['middle', ...sides] as const) {
+        const offset = COMPASS_OFFSETS[place];
+        if (
+            Math.abs(x - (centerX + offset.x)) <= half &&
+            Math.abs(y - (centerY + offset.y)) <= half
+        ) {
+            return place;
+        }
+    }
+    return null;
+}
+
 /** The side a body drop takes: an edge when splitting there is allowed, else the middle. */
 export function bodyTarget(
     groupId: string,

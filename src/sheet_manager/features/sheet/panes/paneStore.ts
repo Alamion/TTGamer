@@ -109,38 +109,53 @@ export interface PaneState extends LayoutState {
     shownTool: TabKey | null;
     /** Where a floating window's title bar would dock, while it is dragged. */
     dockHint: DropTarget | null;
+    /** The group a floating window is dragged over, with the sides its dock compass offers. */
+    dockCompass: { groupId: string; sides: SplitSide[] } | null;
+    /** A floating window is being dragged by its title bar. */
+    windowDrag: boolean;
 }
 
 export const usePaneStore = create<PaneState>()(
-    persist((): PaneState => ({ ...EMPTY_LAYOUT, shownTool: null, dockHint: null }), {
-        name: PANES_STORAGE_KEY,
-        version: 2,
-        storage: createJSONStorage(() => safeStorage),
-        partialize: ({ root, recent, views, maximized, floating, lastRect, lastSide }) => ({
-            root,
-            recent,
-            views,
-            maximized,
-            floating,
-            lastRect,
-            lastSide,
+    persist(
+        (): PaneState => ({
+            ...EMPTY_LAYOUT,
+            shownTool: null,
+            dockHint: null,
+            dockCompass: null,
+            windowDrag: false,
         }),
-        merge: (persisted, current) => {
-            if (persisted === undefined || persisted === null) {
-                const migrated = migrateArrangement();
-                return migrated ? { ...current, ...migrated } : current;
-            }
-            const stored = readLayout(persisted);
-            if (!stored) {
-                invalid('The stored layout could not be read; one document shows');
-                return current;
-            }
-            if (stored.dropped.length > 0) {
-                invalid(`Parts of the stored layout were dropped: ${stored.dropped.join('; ')}`);
-            }
-            return { ...current, ...stored.layout };
-        },
-    })
+        {
+            name: PANES_STORAGE_KEY,
+            version: 2,
+            storage: createJSONStorage(() => safeStorage),
+            partialize: ({ root, recent, views, maximized, floating, lastRect, lastSide }) => ({
+                root,
+                recent,
+                views,
+                maximized,
+                floating,
+                lastRect,
+                lastSide,
+            }),
+            merge: (persisted, current) => {
+                if (persisted === undefined || persisted === null) {
+                    const migrated = migrateArrangement();
+                    return migrated ? { ...current, ...migrated } : current;
+                }
+                const stored = readLayout(persisted);
+                if (!stored) {
+                    invalid('The stored layout could not be read; one document shows');
+                    return current;
+                }
+                if (stored.dropped.length > 0) {
+                    invalid(
+                        `Parts of the stored layout were dropped: ${stored.dropped.join('; ')}`
+                    );
+                }
+                return { ...current, ...stored.layout };
+            },
+        }
+    )
 );
 
 /** The layout made true for the current document and the documents that exist. */
@@ -563,7 +578,7 @@ export function dockFloating(key: TabKey, target?: DropTarget): void {
         const group = focusedGroup(state);
         root = group ? placeTab(state.root, key, group.id) : makeGroup([key]);
     }
-    usePaneStore.setState({ ...state, root, floating, dockHint: null });
+    usePaneStore.setState({ ...state, root, floating, dockHint: null, dockCompass: null });
     focusTab(key);
 }
 

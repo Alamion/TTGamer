@@ -224,6 +224,13 @@ restore at the browser level → **Finish**.
       with the same edges and middle; floating windows stay above it. A zero-height element before
       the page measures the area. The overlay is shared (`DropOverlay`).
     - A row over the documents window's own tree is left to the tree (moving it between folders).
+- **Dock compass (maintainer's walk after US4)**: a floating window docked on whatever group was
+  under its title bar, so with several groups it could hardly be moved without docking. Now, while
+  it is dragged, a compass of five 36 px squares shows in the middle of the group's page (the
+  middle, and each side the group may split on); the window docks only on a square or on a strip,
+  and anywhere else it only moves (the Visual Studio pattern). Dragged tabs keep the large zones: a
+  tab is always dropped somewhere in the layout. The one document's drop layer also shows while a
+  window is dragged, so it has a compass too.
 - **US5**:
     - `Splitter` collapses by side (`onCollapse('start' | 'end')`): a drag ending 80 px past either
       neighbour's minimum collapses that neighbour; Enter collapses the `primary` side, which the

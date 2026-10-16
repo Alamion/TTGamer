@@ -1,5 +1,6 @@
 import {
     bodyTarget,
+    compassAt,
     edgeAt,
     gapAt,
 } from '@site/src/sheet_manager/features/sheet/panes/dropTargets';
@@ -39,5 +40,18 @@ describe('where a dragged tab lands (spec 036, D7)', () => {
         });
         expect(bodyTarget('A', 'left', () => false)).toEqual({ kind: 'middle', groupId: 'A' });
         expect(bodyTarget('A', null, () => true)).toEqual({ kind: 'middle', groupId: 'A' });
+    });
+});
+
+describe('the dock compass of a floating window (spec 036, US3 follow-up)', () => {
+    const box = { left: 0, top: 0, width: 400, height: 400 };
+
+    it('docks only on a square, and only on the sides offered', () => {
+        expect(compassAt(box, 200, 200, [])).toBe('middle');
+        expect(compassAt(box, 160, 200, ['left'])).toBe('left');
+        expect(compassAt(box, 200, 240, ['left', 'bottom'])).toBe('bottom');
+        expect(compassAt(box, 160, 200, ['right'])).toBeNull();
+        expect(compassAt(box, 10, 200, ['left', 'right', 'top', 'bottom'])).toBeNull();
+        expect(compassAt(box, 260, 200, ['right'])).toBeNull();
     });
 });

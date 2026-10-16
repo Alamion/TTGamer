@@ -5,7 +5,8 @@ import { useMediaQuery } from '@site/src/shared/hooks/useMediaQuery';
 import { PanelTop } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-import { bodyTarget, type DropTarget, edgeAt, gapAt } from './dropTargets';
+import { compassAt, type DropTarget, gapAt } from './dropTargets';
+import type { SplitSide } from './layoutTree';
 import { Pane } from './Pane';
 import {
     canSplitAt,
@@ -20,11 +21,20 @@ import { documentIdOf, tabKindOf, useTabKinds } from './tabKeys';
 
 const labels = uiMessages.sheet.documents.panes;
 
+const SIDES: SplitSide[] = ['left', 'right', 'top', 'bottom'];
+
+interface DockPlace {
+    target: DropTarget | null;
+    compass: { groupId: string; sides: SplitSide[] } | null;
+}
+
 /**
- * Where a floating window's title bar, let go at a point, would dock: a group's strip (at a gap)
- * or its page (an edge, or the middle). Floating windows under the point are looked through.
+ * Where a floating window's title bar, let go at a point, would dock: a group's strip (at a gap),
+ * or a square of the dock compass in the middle of a group's page (an edge, or the middle).
+ * Anywhere else on the page the window only moves. Floating windows under the point are looked
+ * through.
  */
-function dockTargetAt(point: { x: number; y: number }, key: string): DropTarget | null {
+function dockPlaceAt(point: { x: number; y: number }, key: string): DockPlace {
     const layers = document.elementsFromPoint?.(point.x, point.y) ?? [];
     for (const layer of layers) {
         if (layer.closest('[data-floating-window]')) continue;
@@ -33,16 +43,24 @@ function dockTargetAt(point: { x: number; y: number }, key: string): DropTarget 
             const tabs = [...strip.querySelectorAll<HTMLElement>('[data-tab]')].map((tab) =>
                 tab.getBoundingClientRect()
             );
-            return { kind: 'strip', groupId: strip.dataset.groupStrip!, gap: gapAt(tabs, point.x) };
+            const groupId = strip.dataset.groupStrip!;
+            return { target: { kind: 'strip', groupId, gap: gapAt(tabs, point.x) }, compass: null };
         }
         const body = layer.closest<HTMLElement>('[data-group-body]');
         if (body) {
             const groupId = body.dataset.groupBody!;
-            const side = edgeAt(body.getBoundingClientRect(), point.x, point.y);
-            return bodyTarget(groupId, side, (edge) => canSplitAt(groupId, edge, key));
+            const sides = SIDES.filter((side) => canSplitAt(groupId, side, key));
+            const place = compassAt(body.getBoundingClientRect(), point.x, point.y, sides);
+            const target: DropTarget | null =
+                place === null
+                    ? null
+                    : place === 'middle'
+                      ? { kind: 'middle', groupId }
+                      : { kind: 'edge', groupId, side: place };
+            return { target, compass: { groupId, sides } };
         }
     }
-    return null;
+    return { target: null, compass: null };
 }
 
 /**
@@ -98,12 +116,17 @@ export function FloatingTabs({
                 zIndex={900 + index}
                 onFocus={() => raise(key)}
                 moveLabel={translate(labels.moveWindow, { name: title })}
-                onDragMove={(point) =>
-                    usePaneStore.setState({ dockHint: dockTargetAt(point, key) })
-                }
+                onDragMove={(point) => {
+                    const place = dockPlaceAt(point, key);
+                    usePaneStore.setState({
+                        dockHint: place.target,
+                        dockCompass: place.compass,
+                        windowDrag: true,
+                    });
+                }}
                 onDragEnd={(point) => {
-                    const target = dockTargetAt(point, key);
-                    usePaneStore.setState({ dockHint: null });
+                    const { target } = dockPlaceAt(point, key);
+                    usePaneStore.setState({ dockHint: null, dockCompass: null, windowDrag: false });
                     if (!target) return false;
                     dockFloating(key, target);
                     return true;
