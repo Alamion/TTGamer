@@ -1,0 +1,20 @@
+# Edge proxy of the stack (T-118). SITE_ADDRESS is a domain (Let's Encrypt certificate), `localhost`
+# (Caddy's local certificate), or `:80` (plain HTTP behind another proxy).
+{$SITE_ADDRESS:localhost} {
+	encode zstd gzip
+
+	# The contract's server is /api/v1: the prefix reaches the backend unchanged.
+	@api path /api /api/*
+	handle @api {
+		reverse_proxy {$API_UPSTREAM:api:8000}
+	}
+
+	handle {
+		reverse_proxy web:8080
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+}

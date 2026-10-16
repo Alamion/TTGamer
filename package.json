@@ -1,7 +1,7 @@
 {
     "name": "ttgamer",
     "packageManager": "yarn@1.22.22",
-    "version": "3.28.0",
+    "version": "3.28.1",
     "private": true,
     "scripts": {
         "docusaurus": "docusaurus",
@@ -48,6 +48,7 @@
         "ci:validate": "yarn validate:backlog && yarn validate:contract && yarn validate:data && yarn validate:i18n && yarn check:version",
         "ci:build": "yarn build",
         "ci:e2e": "yarn ci:build && yarn test:e2e",
+        "ci:docker": "docker build -t ttgamer-web:check . && E2E_IMAGE=ttgamer-web:check playwright test --project smoke",
         "verify:fast": "yarn ci:lint && yarn ci:typecheck && yarn ci:validate",
         "verify": "yarn verify:fast && yarn ci:deadcode && yarn ci:test",
         "verify:full": "yarn verify && yarn ci:test:perf && yarn ci:e2e"

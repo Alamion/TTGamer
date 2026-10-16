@@ -13,7 +13,8 @@ const config: Config = {
         v4: true,
     },
 
-    url: 'https://ttgamer.vercel.app',
+    // A Docker image for another domain sets SITE_URL at build time (deploy/AGENTS.md).
+    url: process.env.SITE_URL || 'https://ttgamer.vercel.app',
     baseUrl: '/',
 
     organizationName: 'Alamion',
